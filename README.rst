@@ -49,3 +49,5 @@ ID conversion module (bioigaph.mapping) can be used independently. It has the fe
 **MySQL** submodule helps to manage MySQL connections and track queries.
 
 **ModuLand** module for running the ModuLand method family
+
+**Mapping** 
