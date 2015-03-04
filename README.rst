@@ -2,13 +2,14 @@ Bioigraph
 #########
 
 
-:note: Bioigraph supported only in Python 2.7, and no version 3.x is available currently.
+:note: Bioigraph supports only Python 2.7, and no version 3.x is available currently.
 
 :contributions: denes@ebi.ac.uk
 :issues: https://github.com/saezlab/bioigraph/issues
 :documentation: http://www.ebi.ac.uk/~denes/bioigraph/docs/
 
-**Bioigraph** is a Python package built around igraphthat to work with molecular network representations e.g. PPI, miRNA, drug compound interaction networks.
+**Bioigraph** is a Python package built around igraph, to help the analysis of network representations of biochemical regulatory 
+systems i.e. protein, RNA and drug compound interaction networks.
 
 Installation
 ============
