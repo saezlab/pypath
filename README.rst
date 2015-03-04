@@ -5,7 +5,7 @@ Bioigraph
 :note: Bioigraph supported only in Python 2.7, and no version 3.x is available currently.
 
 :contributions: denes@ebi.ac.uk
-:issues: https://bitbucket.org/paulrenner/bioigraph/issues
+:issues: https://github.com/saezlab/bioigraph/issues
 
 **Bioigraph** is a Python package built around igraphthat to work with molecular network representations e.g. PPI, miRNA, drug compound interaction networks.
 
@@ -24,11 +24,12 @@ Download the package from /dist, and install with pip:
 Build source distribution
 -------------------------
 
-Clone the git repo, and run setup.py:
+Clone the git repo, and run build.sh:
 
 .. code:: bash
     
-    python2 setup.py sdist
+    cd path/
+    ./build.sh
 
 Features
 ========
@@ -46,3 +47,5 @@ ID conversion module (bioigaph.mapping) can be used independently. It has the fe
 **ChEMBL** submodule queries directly your own ChEMBL MySQL instance, has the features to search targets and compounds from custom assay types and relationship types, to get activity values, binding domains, and action types. You need to download the ChEMBL MySQL dump, and load into your own server.
 
 **MySQL** submodule helps to manage MySQL connections and track queries.
+
+**ModuLand** module for running the ModuLand method family
