@@ -1,0 +1,5 @@
+include HISTORY.rst
+recursive-include src/bioigraph *.py
+recursive-include src/bioigraph/data *
+recursive-include src/bioigraph/mysql_config *
+

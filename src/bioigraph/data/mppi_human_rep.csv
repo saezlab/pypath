@@ -1,0 +1,765 @@
+PMID|Methods|UniPro|SwissP/TrEMBL_A|Gene_names_A|NCBI_tax_ID_A|UniPro|SwissP/TrEMBL_B|Gene_names_B|NCBI_tax_ID_B
+9867828|two hybrid|P05109|SP|S100A8;CAGA;MRP8;calgranulin A (migration inhibitory factor-related protein 8)|9606|P06702|SP|S100A9;CAGB;MRP14;calgranulin B (migration inhibitory factor-related protein 14)|9606
+9867828|two hybrid|P06702|SP|S100A9;CAGB;MRP14;calgranulin B (migration inhibitory factor-related protein 14)|9606|P05109|SP|S100A8;CAGA;MRP8;calgranulin A (migration inhibitory factor-related protein 8)|9606
+10611319|copurification|U47050|GB|TRP3;calcium influx channel protein|9606|D26351|GB|IP3R-3;inositol 1,4,5-trisphosphate receptor, type 3|9606
+10611319|copurification|D26351|GB|IP3R-3;inositol 1,4,5-trisphosphate receptor, type 3|9606|U47050|GB|TRP3;calcium influx channel protein|9606
+10611319|coip:coimmunoprecipitation|U47050|GB|TRP3;calcium influx channel protein|9606|D26351|GB|IP3R-3;inositol 1,4,5-trisphosphate receptor, type 3|9606
+8649853|coip:coimmunoprecipitation|P42684|SP|ARG;ABL2;ABLL;nonreceptor protein-tyrosine kinase Arg (Abelson family)|9606|X95632|GB|ArgBP1A;Arg protein tyrosine kinase binding protein|9606
+8628302|coip:coimmunoprecipitation|Q07244|SP|hnRNP K;heterogeneous nuclear ribonucleoprotein K|9606|P20226|SP|TBP;TATA-binding protein|9606
+8628302|copurification|Q07244|SP|hnRNP K;heterogeneous nuclear ribonucleoprotein K|9606|P20226|SP|TBP;TATA-binding protein|9606
+11134351|two hybrid|P22712|SP|MPB-1;C-myc promoter-binding protein (MPB-1)|9606|AF0589|GB|MIP-2A;MBP-1 interacting protein-2A (MIP-2A)|9606
+11134351|two hybrid|P22712|SP|MPB-1;C-myc promoter-binding protein (MPB-1)|9606|AF0589|GB|MIP-2A;MBP-1 interacting protein-2A (MIP-2A)|9606
+11134351|copurification|P22712|SP|MPB-1;C-myc promoter-binding protein (MPB-1)|9606|AF0589|GB|MIP-2A;MBP-1 interacting protein-2A (MIP-2A)|9606
+11134351|copurification|AF0589|GB|MIP-2A;MBP-1 interacting protein-2A (MIP-2A)|9606|P22712|SP|MPB-1;C-myc promoter-binding protein (MPB-1)|9606
+11134351|coip:coimmunoprecipitation|P22712|SP|MPB-1;C-myc promoter-binding protein (MPB-1)|9606|AF0589|GB|MIP-2A;MBP-1 interacting protein-2A (MIP-2A)|9606
+10593949|copurification|O60828|SP|PQBP-1;JM26;NPW38;Polyglutamine binding protein 1|9606|Q9Y2W2|SP|NPWBP;NPW38-binding protein NPWBP|9606
+10593949|copurification|O60828|SP|PQBP-1;JM26;NPW38;Polyglutamine binding protein 1|9606|Q9Y2W2|SP|NPWBP;NPW38-binding protein NPWBP|9606
+10593949|two hybrid|O60828|SP|PQBP-1;JM26;NPW38;Polyglutamine binding protein 1|9606|Q9Y2W2|SP|NPWBP;NPW38-binding protein NPWBP|9606
+10593949|coip:coimmunoprecipitation|O60828|SP|PQBP-1;JM26;NPW38;Polyglutamine binding protein 1|9606|Q9Y2W2|SP|NPWBP;NPW38-binding protein NPWBP|9606
+10330166|copurification|P06400|SP|RB1;retinoblastoma-associated protein RB (retinoblastoma susceptibility protein)|9606|Q92994|SP|BRF;BRF1;TFIIIB BRF subunit (transcription factor IIIB 90 kDa subunit;B-related factor 1)|9606
+10330166|copurification|P28749|SP|RBL1;retinoblastoma-associated protein p107 (pocket protein p107)|9606|Q92994|SP|BRF;BRF1;TFIIIB BRF subunit (transcription factor IIIB 90 kDa subunit;B-related factor 1)|9606
+10330166|copurification|Q08999|SP|RB2;RBL2;retinoblastoma-associated protein p130 (pocket protein p130)|9606|Q92994|SP|BRF;BRF1;TFIIIB BRF subunit (transcription factor IIIB 90 kDa subunit;B-related factor 1)|9606
+10330166|coip:coimmunoprecipitation|P06400|SP|RB1;retinoblastoma-associated protein RB (retinoblastoma susceptibility protein)|9606|Q92994|SP|BRF;BRF1;TFIIIB BRF subunit (transcription factor IIIB 90 kDa subunit;B-related factor 1)|9606
+10330166|coip:coimmunoprecipitation|Q08999|SP|RB2;RBL2;retinoblastoma-associated protein p130 (pocket protein p130)|9606|Q92994|SP|BRF;BRF1;TFIIIB BRF subunit (transcription factor IIIB 90 kDa subunit;B-related factor 1)|9606
+10330166|coip:coimmunoprecipitation|P28749|SP|RBL1;retinoblastoma-associated protein p107 (pocket protein p107)|9606|Q92994|SP|BRF;BRF1;TFIIIB BRF subunit (transcription factor IIIB 90 kDa subunit;B-related factor 1)|9606
+10330166|coip:coimmunoprecipitation|Q92994|SP|BRF;BRF1;TFIIIB BRF subunit (transcription factor IIIB 90 kDa subunit;B-related factor 1)|9606|P28749|SP|RBL1;retinoblastoma-associated protein p107 (pocket protein p107)|9606
+10330166|coip:coimmunoprecipitation|Q92994|SP|BRF;BRF1;TFIIIB BRF subunit (transcription factor IIIB 90 kDa subunit;B-related factor 1)|9606|Q08999|SP|RB2;RBL2;retinoblastoma-associated protein p130 (pocket protein p130)|9606
+10330166|experimental knowledge based|Q92994|SP|BRF;BRF1;TFIIIB BRF subunit (transcription factor IIIB 90 kDa subunit;B-related factor 1)|9606|Q08999|SP|RB2;RBL2;retinoblastoma-associated protein p130 (pocket protein p130)|9606
+10330166|experimental knowledge based|Q92994|SP|BRF;BRF1;TFIIIB BRF subunit (transcription factor IIIB 90 kDa subunit;B-related factor 1)|9606|P28749|SP|RBL1;retinoblastoma-associated protein p107 (pocket protein p107)|9606
+10562431|coip:coimmunoprecipitation|P11166|SP|SLC2A1;GLUT1;solute carrier family 2, facilitated glucose transporter, member 1|9606|P27105|SP|EPB72;BND7;stomatin|9606
+10562431|coip:coimmunoprecipitation|P27105|SP|EPB72;BND7;stomatin|9606|P11166|SP|SLC2A1;GLUT1;solute carrier family 2, facilitated glucose transporter, member 1|9606
+10562279|two hybrid|O00623|SP|PEX12;PAF3;peroxisome assembly protein 12|9606|P50542|SP PXR1;PEX5;peroxisomal targeting signal 1 receptor|9606
+10562279|coip:coimmunoprecipitation|O00623|SP|PEX12;PAF3;peroxisome assembly protein 12|9606|P50542|SP PXR1;PEX5;peroxisomal targeting signal 1 receptor|9606
+10562279|two hybrid|O00623|SP|PEX12;PAF3;peroxisome assembly protein 12|9606|O60683|SP|PEX10;peroxisome assembly protein 10|9606
+10562279|coip:coimmunoprecipitation|O00623|SP|PEX12;PAF3;peroxisome assembly protein 12|9606|O60683|SP|PEX10;peroxisome assembly protein 10|9606
+10561498|coip:coimmunoprecipitation|Q06187|SP|BTK;ATK;AGMX1;BPK;tyrosine-protein kinase BTK (Bruton`s tyrosine kinase)|9606|Q15139|SP|PRKCM;PKD;protein kinase C, mu type|9606
+10561498|coip:coimmunoprecipitation|Q15139|SP|PRKCM;PKD;protein kinase C, mu type|9606|Q06187|SP|BTK;ATK;AGMX1;BPK;tyrosine-protein kinase BTK (Bruton`s tyrosine kinase)|9606
+10561498|copurification|Q06187|SP|BTK;ATK;AGMX1;BPK;tyrosine-protein kinase BTK (Bruton`s tyrosine kinase)|9606|Q15139|SP|PRKCM;PKD;protein kinase C, mu type|9606
+10332029|two hybrid|P20265|SP POU3F2;BRN2;OTF7;OCT7;Nervous-system specific octamer-binding transcription factor N-OCT 3 (BRN-2 protein)|9606|O60828|O60828|PQBP-1;JM26;NPW38;Polyglutamine binding protein 1|9606
+10332029|coip:coimmunoprecipitation|P20265|SP POU3F2;BRN2;OTF7;OCT7;Nervous-system specific octamer-binding transcription factor N-OCT 3 (BRN-2 protein)|9606|O60828|O60828|PQBP-1;JM26;NPW38;Polyglutamine binding protein 1|9606
+1316909|experimental knowledge based|P08069|SP|IGF1R;Insulin-like growth factor I receptor|9606|P08069|SP|IGF1R;Insulin-like growth factor I receptor|9606
+10557326|copurification|O00244|SP|ATOX1;HAH1;copper transport protein ATOX1|9606|P35670|SP|ATP7B;WND;PWD;WC1;copper-transporting ATPase 2 (Wilson disease-associated protein)|9606
+10557326|coip:coimmunoprecipitation|O00244|SP|ATOX1;HAH1;copper transport protein ATOX1|9606|P35670|SP|ATP7B;WND;PWD;WC1;copper-transporting ATPase 2 (Wilson disease-associated protein)|9606
+10557326|coip:coimmunoprecipitation|P35670|SP|ATP7B;WND;PWD;WC1;copper-transporting ATPase 2 (Wilson disease-associated protein)|9606|O00244|SP|ATOX1;HAH1;copper transport protein ATOX1|9606
+10557326|coip:coimmunoprecipitation|Q04656|SP|ATP7A;MNK;MC1;copper-transporting ATPase 1 (Menkes disease-associated protein)|9606|O00244|SP|ATOX1;HAH1;copper transport protein ATOX1|9606
+10557084|coip:coimmunoprecipitation|Q9UP38|SP|FZD1;frizzled 1 (precursor)|9606|P56704|SP|WNT3A;WNT-3A protein (precursor)|9606
+10557084|coip:coimmunoprecipitation|P56704|SP|WNT3A;WNT-3A protein (precursor)|9606|Q9UP38|SP|FZD1;frizzled 1 (precursor)|9606
+10557084|coip:coimmunoprecipitation|Q9UP38|SP|FZD1;frizzled 1 (precursor)|9606|P41221|SP|WNT5A;WNT-5A protein (precursor)|9606
+10557084|coip:coimmunoprecipitation|P41221|SP|WNT5A;WNT-5A protein (precursor)|9606|Q9UP38|SP|FZD1;frizzled 1 (precursor)|9606
+9064349|coip:coimmunoprecipitation|Q8NFC7|SP|NCF2;p67phox protein (neutrophil cytosolic factor|9606|Q15080|SP|NCF4;p40phox protein (neutrophil cytosolic factor 4)|9606
+10545505|coip:coimmunoprecipitation|Q05397|SP PTK2;FAK1;FAK;focal adhesion kinase 1 (pp125FAK)|9606|P49023|P49023|PXN;paxillin|9606
+10545505|coip:coimmunoprecipitation|Q05397|SP PTK2;FAK1;FAK;focal adhesion kinase 1 (pp125FAK)|9606|P49023|P49023|PXN;paxillin|9606
+10545505|coip:coimmunoprecipitation|Q05397|SP PTK2;FAK1;FAK;focal adhesion kinase 1 (pp125FAK)|9606|P18206|P18206|VCL;vinculin|9606
+10545505|coip:coimmunoprecipitation|Q05397|SP PTK2;FAK1;FAK;focal adhesion kinase 1 (pp125FAK)|9606|P56945|SP BCA|9606
+9353320|coip:coimmunoprecipitation|Q12876|TREMBL|PLAUR;Urokinase-type plasminogen activator receptor (uPAR)|9606|P40189|SP|IL6ST;Interleukin-6 receptor beta chain (gp130)|9606
+8927054|two hybrid|P27540|SP|ARNT;Aryl hydrocarbon receptor nuclear translocator (ARNT protein)|9606|P27540|SP|ARNT;Aryl hydrocarbon receptor nuclear translocator (ARNT protein)|9606
+11901144|coip:coimmunoprecipitation|P98161|SP|PKD1;polycystin 1 precursor (autosomal dominant polycystic kidney disease protein 1)|9606|Q13563|SP|PKD2;polycystin 2 (autosomal dominant polycystic kidney disease type II protein)|9606
+11901144|coip:coimmunoprecipitation|Q13563|SP|PKD2;polycystin 2 (autosomal dominant polycystic kidney disease type II protein)|9606|P98161|SP|PKD1;polycystin 1 precursor (autosomal dominant polycystic kidney disease protein 1)|9606
+11901144|experimental knowledge based|P98161|SP|PKD1;polycystin 1 precursor (autosomal dominant polycystic kidney disease protein 1)|9606|Q13563|SP|PKD2;polycystin 2 (autosomal dominant polycystic kidney disease type II protein)|9606
+8927054|two hybrid|Q16665|SP|HIF1A;Hypoxia-inducible factor 1 alpha (HIF-1 alpha) (MOP1)|9606|P27540|SP|ARNT;Aryl hydrocarbon receptor nuclear translocator (ARNT protein)|9606
+8927054|two hybrid|P27540|SP|ARNT;Aryl hydrocarbon receptor nuclear translocator (ARNT protein)|9606|Q16665|SP|HIF1A;Hypoxia-inducible factor 1 alpha (HIF-1 alpha) (MOP1)|9606
+8903513|coip:coimmunoprecipitation|P04899|SP|GNAI2;Guanine nucleotide-binding protein G(i), alpha subunit (G(i) alpha-2)|9606|P25024|SP|IL8RA;CXCR1;Interleukin-8 type A receptor|9606
+10504303|cross-linking studies|P35555|SP|FBN1;FBN;fibrillin 1 (precursor)|9606|P35556|SP|FBN2;fibrillin 2 (precursor)|9606
+9353307|copurification|P04150|SP|GR;Glucocorticoid receptor (GR)|9606|Q00839|SP|HNRPU;Heterogenous nuclear ribonucleoprotein U (nRNP U)|9606
+9353307|coip:coimmunoprecipitation|P04150|SP|GR;Glucocorticoid receptor (GR)|9606|Q00839|SP|HNRPU;Heterogenous nuclear ribonucleoprotein U (nRNP U)|9606
+9353307|coip:coimmunoprecipitation|Q00839|SP|HNRPU;Heterogenous nuclear ribonucleoprotein U (nRNP U)|9606|P04150|SP|GR;Glucocorticoid receptor (GR)|9606
+8816435|coip:coimmunoprecipitation|P27540|SP|ARNT;Aryl hydrocarbon receptor nuclear translocator (ARNT protein)|9606|Q16665|SP|HIF1A;Hypoxia-inducible factor 1 alpha (HIF-1 alpha) (MOP1)|9606
+9353299|two hybrid|Q03164|SP|MLL;Zinc finger protein HRX|9606|Q01105|SP|SET;SET protein|9606
+9353299|copurification|Q03164|SP|MLL;Zinc finger protein HRX|9606|Q01105|SP|SET;SET protein|9606
+9353299|coip:coimmunoprecipitation|Q03164|SP|MLL;Zinc finger protein HRX|9606|Q01105|SP|SET;SET protein|9606
+9353299|coip:coimmunoprecipitation|Q01105|SP|SET;SET protein|9606|P30154|SP|PPP2R1B;serine/threonine protein phosphatase 2A, 65 kDa regulatory subunit A, beta isoform|9606
+9353299|coip:coimmunoprecipitation|Q01105|SP|SET;SET protein|9606|P05323|SP|PPP2CA;Serine/threonine protein phosphatase 2A, catalytic subunit, alpha isoform|9606
+10490642|two hybrid|Q03164|SP|MLL;HRX;ALL1;TRX1;HTRX;zinc finger protein HRX|9606|O75807|SP|GADD34;apoptosis associated protein (growth arrest and DNA-damage-inducible 34)|9606
+10490642|coip:coimmunoprecipitation|Q03164|SP|MLL;HRX;ALL1;TRX1;HTRX;zinc finger protein HRX|9606|O75807|SP|GADD34;apoptosis associated protein (growth arrest and DNA-damage-inducible 34)|9606
+10490642|coip:coimmunoprecipitation|Q03164|SP|MLL;HRX;ALL1;TRX1;HTRX;zinc finger protein HRX|9606|O75807|SP|GADD34;apoptosis associated protein (growth arrest and DNA-damage-inducible 34)|9606
+10490642|coip:coimmunoprecipitation|Q03164|SP|MLL;HRX;ALL1;TRX1;HTRX;zinc finger protein HRX|9606|O75807|SP|GADD34;apoptosis associated protein (growth arrest and DNA-damage-inducible 34)|9606
+11517336|two hybrid|P07948|SP|LYN;tyrosine-protein kinase LYN|9606|O75807|SP|GADD34;apoptosis associated protein (growth arrest and DNA-damage-inducible 34)|9606
+11517336|copurification|P07948|SP|LYN;tyrosine-protein kinase LYN|9606|O75807|SP|GADD34;apoptosis associated protein (growth arrest and DNA-damage-inducible 34)|9606
+11517336|copurification|P07948|SP|LYN;tyrosine-protein kinase LYN|9606|O75807|SP|GADD34;apoptosis associated protein (growth arrest and DNA-damage-inducible 34)|9606
+11517336|coip:coimmunoprecipitation|O75807|SP|GADD34;apoptosis associated protein (growth arrest and DNA-damage-inducible 34)|9606|P07948|SP|LYN;tyrosine-protein kinase LYN|9606
+11517336|coip:coimmunoprecipitation|P07948|SP|LYN;tyrosine-protein kinase LYN|9606|O75807|SP|GADD34;apoptosis associated protein (growth arrest and DNA-damage-inducible 34)|9606
+8703036|coip:coimmunoprecipitation|Q07954|SP|LRP1;low density lipoprotein receptor-related protein LRP|9606|Q07954|SP|LRP1;low density lipoprotein receptor-related protein LRP|9606
+8703036|coip:coimmunoprecipitation|Q07954|SP|LRP1;low density lipoprotein receptor-related protein LRP|9606|Q07954|SP|LRP1;low density lipoprotein receptor-related protein LRP|9606
+10486269|two hybrid|Q01113|SP|IL-9R;interleukin-9 receptor (precursor)|9606|Q92993|SP|HTATIP;TIP60;histone acetyltransferase HTATIP;HIV-1 Tat interactive protein|9606
+10486269|two hybrid|Q01113|SP|IL-9R;interleukin-9 receptor (precursor)|9606|Q92993|SP|HTATIP;TIP60;histone acetyltransferase HTATIP;HIV-1 Tat interactive protein|9606
+10486269|two hybrid|Q01113|SP|IL-9R;interleukin-9 receptor (precursor)|9606|Q92993|SP|HTATIP;TIP60;histone acetyltransferase HTATIP;HIV-1 Tat interactive protein|9606
+10486269|two hybrid|Q01113|SP|IL-9R;interleukin-9 receptor (precursor)|9606|Q92993|SP|HTATIP;TIP60;histone acetyltransferase HTATIP;HIV-1 Tat interactive protein|9606
+10486269|two hybrid|Q01113|SP|IL-9R;interleukin-9 receptor (precursor)|9606|Q92993|SP|HTATIP;TIP60;histone acetyltransferase HTATIP;HIV-1 Tat interactive protein|9606
+10486269|two hybrid|Q01113|SP|IL-9R;interleukin-9 receptor (precursor)|9606|Q92993|SP|HTATIP;TIP60;histone acetyltransferase HTATIP;HIV-1 Tat interactive protein|9606
+10486269|coip:coimmunoprecipitation|Q01113|SP|IL-9R;interleukin-9 receptor (precursor)|9606|Q92993|SP|HTATIP;TIP60;histone acetyltransferase HTATIP;HIV-1 Tat interactive protein|9606
+10486269|coip:coimmunoprecipitation|Q01113|SP|IL-9R;interleukin-9 receptor (precursor)|9606|Q92993|SP|HTATIP;TIP60;histone acetyltransferase HTATIP;HIV-1 Tat interactive protein|9606
+10486269|coip:coimmunoprecipitation|Q01113|SP|IL-9R;interleukin-9 receptor (precursor)|9606|Q92993|SP|HTATIP;TIP60;histone acetyltransferase HTATIP;HIV-1 Tat interactive protein|9606
+10486269|coip:coimmunoprecipitation|Q01113|SP|IL-9R;interleukin-9 receptor (precursor)|9606|Q92993|SP|HTATIP;TIP60;histone acetyltransferase HTATIP;HIV-1 Tat interactive protein|9606
+10486269|copurification|Q92993|SP|HTATIP;TIP60;histone acetyltransferase HTATIP;HIV-1 Tat interactive protein|9606|Q01113|SP|IL-9R;interleukin-9 receptor (precursor)|9606
+10486269|copurification|Q92993|SP|HTATIP;TIP60;histone acetyltransferase HTATIP;HIV-1 Tat interactive protein|9606|Q01113|SP|IL-9R;interleukin-9 receptor (precursor)|9606
+10486269|copurification|Q92993|SP|HTATIP;TIP60;histone acetyltransferase HTATIP;HIV-1 Tat interactive protein|9606|Q01113|SP|IL-9R;interleukin-9 receptor (precursor)|9606
+10486269|copurification|Q92993|SP|HTATIP;TIP60;histone acetyltransferase HTATIP;HIV-1 Tat interactive protein|9606|Q01113|SP|IL-9R;interleukin-9 receptor (precursor)|9606
+9346935|far western blotting|Q16587|SP|ZNF74;Zinc finger protein 74|9606|P24978|SP|POLR2A;DNA-directed RNA polymerase II largest subunit|9606
+9346935|coip:coimmunoprecipitation|Q16587|SP|ZNF74;Zinc finger protein 74|9606|P24978|SP|POLR2A;DNA-directed RNA polymerase II largest subunit|9606
+10477597|coip:coimmunoprecipitation|Q8IVH8|SP|MAP4K3;mitogen-activated protein kinase kinase kinase kinase 3;germinal center kinase related protein;MAPK/ERK kinase kinase kinase 3|9606|Q12933|SP|TRAF2;TRAP3;TNF receptor associated factor 2 (TRAF2;tumor necrosis factor type 2 receptor associated protein 3)|9606
+10477597|coip:coimmunoprecipitation|Q8IVH8|SP|MAP4K3;mitogen-activated protein kinase kinase kinase kinase 3;germinal center kinase related protein;MAPK/ERK kinase kinase kinase 3|9606|Q12933|SP|TRAF2;TRAP3;TNF receptor associated factor 2 (TRAF2;tumor necrosis factor type 2 receptor associated protein 3)|9606
+10477597|coip:coimmunoprecipitation|Q12933|SP|TRAF2;TRAP3;TNF receptor associated factor 2 (TRAF2;tumor necrosis factor type 2 receptor associated protein 3)|9606|Q8IVH8|SP|MAP4K3;mitogen-activated protein kinase kinase kinase kinase 3;germinal center kinase related protein;MAPK/ERK kinase kinase kinase 3|9606
+10477597|coip:coimmunoprecipitation|Q8IVH8|SP|MAP4K3;mitogen-activated protein kinase kinase kinase kinase 3;germinal center kinase related protein;MAPK/ERK kinase kinase kinase 3|9606|Q12933|SP|TRAF2;TRAP3;TNF receptor associated factor 2 (TRAF2;tumor necrosis factor type 2 receptor associated protein 3)|9606
+9325245|coip:coimmunoprecipitation|P13224|SP|GP1BB;Platelet glycoprotein Ib beta chain precursor (GP-Ib beta)|9606|P07359|SP|GP1BA;Platelet glycoprotein Ib alpha chain precursor|9606
+8702870|coip:coimmunoprecipitation|Q13043|SP|MST1;STK4;serine/threonine kinase 4 (STE20-like kinase MST1)|9606|Q13043|SP|MST1;STK4;serine/threonine kinase 4 (STE20-like kinase MST1)|9606
+8702870|two hybrid|Q13043|SP|MST1;STK4;serine/threonine kinase 4 (STE20-like kinase MST1)|9606|Q13043|SP|MST1;STK4;serine/threonine kinase 4 (STE20-like kinase MST1)|9606
+8702870|cross-linking studies|Q13043|SP|MST1;STK4;serine/threonine kinase 4 (STE20-like kinase MST1)|9606|Q13043|SP|MST1;STK4;serine/threonine kinase 4 (STE20-like kinase MST1)|9606
+9326449|coip:coimmunoprecipitation|P35221|SP|CTNNA1;Alpha-1 catenin|9606|P12814|SP|ACTN1;Alpha-actinin 1|9606
+9326449|coip:coimmunoprecipitation|P12830|SP|CDH1;Epithelial-cadherin precursor (E-cadherin)|9606|P35222|SP|CTNNB1;Beta-catenin|9606
+9326449|coip:coimmunoprecipitation|P35222|SP|CTNNB1;Beta-catenin|9606|P12830|SP|CDH1;Epithelial-cadherin precursor (E-cadherin)|9606
+9326449|coip:coimmunoprecipitation|P12830|SP|CDH1;Epithelial-cadherin precursor (E-cadherin)|9606|P35221|SP|CTNNA1;Alpha-1 catenin|9606
+10446910|coip:coimmunoprecipitation|P08047|SP|SP1;TSFP1;transcription factor Sp1|9606|P23511|SP|NFYA;NF-Y protein chain A (CCAAT-binding transcription factor subunit B)|9606
+9299436|two hybrid|P29354|SP|GRB2 or ASH;growth factor receptor-bound protein 2 (isoform GRB3-3);GRB2 adapter protein (isoform GRB3-3);SH2/SH3 adapter GRB2 (isoform GRB3-3)|9606|P00813|SP|ADA;Adenosine deaminase(ADA)|9606
+9299436|copurification|P00813|SP|ADA;Adenosine deaminase(ADA)|9606|P29354|SP|GRB2 or ASH;growth factor receptor-bound protein 2 (isoform GRB3-3);GRB2 adapter protein (isoform GRB3-3);SH2/SH3 adapter GRB2 (isoform GRB3-3)|9606
+9299436|coip:coimmunoprecipitation|P00813|SP|ADA;Adenosine deaminase(ADA)|9606|P29354|SP|GRB2 or ASH;growth factor receptor-bound protein 2 (isoform GRB3-3);GRB2 adapter protein (isoform GRB3-3);SH2/SH3 adapter GRB2 (isoform GRB3-3)|9606
+929417|coip:coimmunoprecipitation|Q15401|TREMBL|LINE-1 retrotransposon protein (ORF1)|9606|Q15401|TREMBL|LINE-1 retrotransposon protein (ORF1)|9606
+9269765|coip:coimmunoprecipitation|P02749|SP|APOH;Beta-2-glycoprotein I precursor|9606|P08519|SP|LPA;Apolipoprotein(a)|9606
+10444072|coip:coimmunoprecipitation|P23258|SP|TUBG;tubulin gamma-1 chain|9606|P05783|SP|KRT18;CYK18;keratin, type I cytoskeletal 18 (cytokeratin 18)|9606
+10444072|coip:coimmunoprecipitation|P23258|SP|TUBG;tubulin gamma-1 chain|9606|P08727|SP|KRT19;keratin, type I cytoskeletal 19 (cytokeratin 19)|9606
+9242679|coip:coimmunoprecipitation|Q00978|SP|SGF3G;Transcriptional regulator ISGF3 gamma subunit (p48)|9606|P52630|SP|STAT2;Signal transducer and activator of transcription 2|9606
+9242679|copurification|Q00978|SP|SGF3G;Transcriptional regulator ISGF3 gamma subunit (p48)|9606|P52630|SP|STAT2;Signal transducer and activator of transcription 2|9606
+9242679|copurification|P52630|SP|STAT2;Signal transducer and activator of transcription 2|9606|Q00978|SP|SGF3G;Transcriptional regulator ISGF3 gamma subunit (p48)|9606
+8663389|experimental knowledge based|P18428|SP|LBP;Lipopolysaccharide-binding protein LBP|9606|P02647|SP|APOA1;Apolipoprotein A-I|9606
+9270879;12226755|coip:coimmunoprecipitation|P19174|SP|PLCG1;PLC1;1-phosphatidylinositol-4,5-bisphosphate phosphodiesterase gamma 1;PLC-gamma-1;Phosphoinositide phospholipase C;Phospholipase C-gamma-1|9606|P02570|SP|ACTB;Actin, cytoplasmic 1|9606
+8663389|experimental knowledge based|P18428|SP|LBP;Lipopolysaccharide-binding protein LBP|9606|Q03591|SP|FHR1;Complement factor H-related protein 1 FHRP-1|9606
+8663389|coip:coimmunoprecipitation|Q03591|SP|FHR1;Complement factor H-related protein 1 FHRP-1|9606|P18428|SP|LBP;Lipopolysaccharide-binding protein LBP|9606
+10436022|copurification|Q13492|SP|PICALM;CALM;clathrin assembly lymphoid myeloid leukemia protein|9606|Q00610|SP|CLTC;CLH17;KIAA0034;clathrin heavy chain 1|9606
+10436022|copurification|Q13492|SP|PICALM;CALM;clathrin assembly lymphoid myeloid leukemia protein|9606|Q00610|SP|CLTC;CLH17;KIAA0034;clathrin heavy chain 1|9606
+10436022|coip:coimmunoprecipitation|Q13492|SP|PICALM;CALM;clathrin assembly lymphoid myeloid leukemia protein|9606|Q00610|SP|CLTC;CLH17;KIAA0034;clathrin heavy chain 1|9606
+10436022|coip:coimmunoprecipitation|Q00610|SP|CLTC;CLH17;KIAA0034;clathrin heavy chain 1|9606|Q13492|SP|PICALM;CALM;clathrin assembly lymphoid myeloid leukemia protein|9606
+10436022|coip:coimmunoprecipitation|Q13492|SP|PICALM;CALM;clathrin assembly lymphoid myeloid leukemia protein|9606|Q00610|SP|CLTC;CLH17;KIAA0034;clathrin heavy chain 1|9606
+10436022|coip:coimmunoprecipitation|Q13492|SP|PICALM;CALM;clathrin assembly lymphoid myeloid leukemia protein|9606|Q00610|SP|CLTC;CLH17;KIAA0034;clathrin heavy chain 1|9606
+10430017|two hybrid|P56589|SP|PEX3;peroxisomal assembly protein PEX3|9606|P40855|SP|PXF;HK33;PEX1;peroxisomal farnesylated protein PEX19|9606
+10430017|coip:coimmunoprecipitation|P56589|SP|PEX3;peroxisomal assembly protein PEX3|9606|P40855|SP|PXF;HK33;PEX1;peroxisomal farnesylated protein PEX19|9606
+9202294|coip:coimmunoprecipitation|P05067|SP|APP;Amyloid beta A4 protein|9606|P02649|SP|APOE;Apolipoprotein E|9606
+9202294|coip:coimmunoprecipitation|P05067|SP|APP;Amyloid beta A4 protein|9606|P02649|SP|APOE;Apolipoprotein E|9606
+9200449|two hybrid|P16410|SP|CTLA4;Cytotoxic T-lymphocyte protein 4 (CTLA-4)|9606|P20172|SP|AP2M1;Clathrin coat assembly protein AP50 (AP-2 mu 2 chain)|9606
+9200449|coip:coimmunoprecipitation|P16410|SP|CTLA4;Cytotoxic T-lymphocyte protein 4 (CTLA-4)|9606|P20172|SP|AP2M1;Clathrin coat assembly protein AP50 (AP-2 mu 2 chain)|9606
+8662954|coip:coimmunoprecipitation|P35638|SP|DDIT3;CHOP;GADD153;Growth arrest and DNA-damage-inducible protein GADD153 (DNA-damage inducible transcript 3) (DDIT3) (C/EBP-homologous protein)|9606|P17676|SP|CEBPB;TCF5;CCAAT/enhancer binding protein beta (C/EBP beta) (Nuclear factor NF-IL6) (Transcription factor 5)|9606
+8662954|coip:coimmunoprecipitation|P17676|SP|CEBPB;TCF5;CCAAT/enhancer binding protein beta (C/EBP beta) (Nuclear factor NF-IL6) (Transcription factor 5)|9606|P35638|SP|DDIT3;CHOP;GADD153;Growth arrest and DNA-damage-inducible protein GADD153 (DNA-damage inducible transcript 3) (DDIT3) (C/EBP-homologous protein)|9606
+8657141|copurification|Q01094|SP|E2F1;RBBP3;transcription factor E2F1|9606|P08047|SP|SP1;TSFP1;transcription factor Sp1|9606
+8657141|copurification|Q01094|SP|E2F1;RBBP3;transcription factor E2F1|9606|P08047|SP|SP1;TSFP1;transcription factor Sp1|9606
+8657141|copurification|Q01094|SP|E2F1;RBBP3;transcription factor E2F1|9606|P08047|SP|SP1;TSFP1;transcription factor Sp1|9606
+8657141|copurification|Q01094|SP|E2F1;RBBP3;transcription factor E2F1|9606|P08047|SP|SP1;TSFP1;transcription factor Sp1|9606
+8657141|copurification|P08047|SP|SP1;TSFP1;transcription factor Sp1|9606|Q01094|SP|E2F1;RBBP3;transcription factor E2F1|9606
+8657141|copurification|P08047|SP|SP1;TSFP1;transcription factor Sp1|9606|Q01094|SP|E2F1;RBBP3;transcription factor E2F1|9606
+8657141|copurification|Q14209|SP|E2F2;transcription factor E2F2|9606|P08047|SP|SP1;TSFP1;transcription factor Sp1|9606
+8657141|copurification|O00716|SP|E2F3;transcription factor E2F3|9606|P08047|SP|SP1;TSFP1;transcription factor Sp1|9606
+10373438|coip:coimmunoprecipitation|Q14191|SP|WRN;RECQL2;RECQ3;Werner syndrome helicase|9606|P27694|SP|RPA1;RPA70;REPA1;replication protein A 70 kDa DNA-binding subunit|9606
+9192670|far western blotting|P00001|SP|CYC;Cytochrome c|9606|Q07817|SP|BCL2L1;BCL2L;BCLX;Apoptosis regulator Bcl-X|9606
+9192670|coip:coimmunoprecipitation|P00001|SP|CYC;Cytochrome c|9606|Q07817|SP|BCL2L1;BCL2L;BCLX;Apoptosis regulator Bcl-X|9606
+9192670|coip:coimmunoprecipitation|Q07817|SP|BCL2L1;BCL2L;BCLX;Apoptosis regulator Bcl-X|9606|P00001|SP|CYC;Cytochrome c|9606
+9188717|coip:coimmunoprecipitation|P08575|SP|CD45;Leukocyte common antigen;protein tyrosine phosphatase PTP|9606|Q14761|SP|PTPRCAP;Protein tyrosine phosphatase receptor type C-associated protein (CD45-AP)|9606
+9188717|coip:coimmunoprecipitation|Q14761|SP|PTPRCAP;Protein tyrosine phosphatase receptor type C-associated protein (CD45-AP)|9606|P08575|SP|CD45;Leukocyte common antigen;protein tyrosine phosphatase PTP|9606
+9169441|copurification|P06400|SP|RB1;retinoblastoma-associated protein RB (retinoblastoma susceptibility protein)|9606|Q16632|TREMBL|TFIIIC2 subunit|9606
+9169441|copurification|P06400|SP|RB1;retinoblastoma-associated protein RB (retinoblastoma susceptibility protein)|9606|Q16632|TREMBL|TFIIIC2 subunit|9606
+9169441|copurification|P06400|SP|RB1;retinoblastoma-associated protein RB (retinoblastoma susceptibility protein)|9606|Q92994|SP|BRF;BRF1;TFIIIB BRF subunit (transcription factor IIIB 90 kDa subunit;B-related factor 1)|9606
+9178760|copurification|P19174|SP|PLCG1;PLC1;1-phosphatidylinositol-4,5-bisphosphate phosphodiesterase gamma 1;PLC-gamma-1;Phosphoinositide phospholipase C;Phospholipase C-gamma-1|9606|P30530|SP|AXL;UFO;Tyrosine-protein kinase receptor UFO precursor|9606
+9178760|far western blotting|P19174|SP|PLCG1;PLC1;1-phosphatidylinositol-4,5-bisphosphate phosphodiesterase gamma 1;PLC-gamma-1;Phosphoinositide phospholipase C;Phospholipase C-gamma-1|9606|P30530|SP|AXL;UFO;Tyrosine-protein kinase receptor UFO precursor|9606
+9178760|coip:coimmunoprecipitation|P30530|SP|AXL;UFO;Tyrosine-protein kinase receptor UFO precursor|9606|P19174|SP|PLCG1;PLC1;1-phosphatidylinositol-4,5-bisphosphate phosphodiesterase gamma 1;PLC-gamma-1;Phosphoinositide phospholipase C;Phospholipase C-gamma-1|9606
+9178760|coip:coimmunoprecipitation|P30530|SP|AXL;UFO;Tyrosine-protein kinase receptor UFO precursor|9606|P27986|SP|PIK3R1;Phosphatidylinositol 3-kinase regulatory alpha subunit|9606
+9178760|copurification|P27986|SP|PIK3R1;Phosphatidylinositol 3-kinase regulatory alpha subunit|9606|P30530|SP|AXL;UFO;Tyrosine-protein kinase receptor UFO precursor|9606
+9178760|far western blotting|P27986|SP|PIK3R1;Phosphatidylinositol 3-kinase regulatory alpha subunit|9606|P30530|SP|AXL;UFO;Tyrosine-protein kinase receptor UFO precursor|9606
+9178760|far western blotting|O00459|SP|PIK3R2;Phosphatidylinositol 3-kinase regulatory beta subunit|9606|P30530|SP|AXL;UFO;Tyrosine-protein kinase receptor UFO precursor|9606
+9178760|copurification|O00459|SP|PIK3R2;Phosphatidylinositol 3-kinase regulatory beta subunit|9606|P30530|SP|AXL;UFO;Tyrosine-protein kinase receptor UFO precursor|9606
+9178760|coip:coimmunoprecipitation|P30530|SP|AXL;UFO;Tyrosine-protein kinase receptor UFO precursor|9606|O00459|SP|PIK3R2;Phosphatidylinositol 3-kinase regulatory beta subunit|9606
+9178760|copurification|P41240|SP|CSK;Tyrosine-protein kinase CSK|9606|P30530|SP|AXL;UFO;Tyrosine-protein kinase receptor UFO precursor|9606
+9178760|far western blotting|P41240|SP|CSK;Tyrosine-protein kinase CSK|9606|P30530|SP|AXL;UFO;Tyrosine-protein kinase receptor UFO precursor|9606
+9178760|coip:coimmunoprecipitation|P30530|SP|AXL;UFO;Tyrosine-protein kinase receptor UFO precursor|9606|P41240|SP|CSK;Tyrosine-protein kinase CSK|9606
+9178760|coip:coimmunoprecipitation|P30530|SP|AXL;UFO;Tyrosine-protein kinase receptor UFO precursor|9606|P06239|SP|LCK;Lck;proto-oncogene tyrosine-protein kinase LCK;lymphocyte specific kinase Lck|9606
+9178760|copurification|P06239|SP|LCK;Lck;proto-oncogene tyrosine-protein kinase LCK;lymphocyte specific kinase Lck|9606|P30530|SP|AXL;UFO;Tyrosine-protein kinase receptor UFO precursor|9606
+9178760|far western blotting|P06239|SP|LCK;Lck;proto-oncogene tyrosine-protein kinase LCK;lymphocyte specific kinase Lck|9606|P30530|SP|AXL;UFO;Tyrosine-protein kinase receptor UFO precursor|9606
+9178760|far western blotting|P29354|SP|GRB2 or ASH;growth factor receptor-bound protein 2 (isoform GRB3-3);GRB2 adapter protein (isoform GRB3-3);SH2/SH3 adapter GRB2 (isoform GRB3-3)|9606|P30530|SP|AXL;UFO;Tyrosine-protein kinase receptor UFO precursor|9606
+9178760|copurification|P29354|SP|GRB2 or ASH;growth factor receptor-bound protein 2 (isoform GRB3-3);GRB2 adapter protein (isoform GRB3-3);SH2/SH3 adapter GRB2 (isoform GRB3-3)|9606|P30530|SP|AXL;UFO;Tyrosine-protein kinase receptor UFO precursor|9606
+9178760|coip:coimmunoprecipitation|P30530|SP|AXL;UFO;Tyrosine-protein kinase receptor UFO precursor|9606|P29354|SP|GRB2 or ASH;growth factor receptor-bound protein 2 (isoform GRB3-3);GRB2 adapter protein (isoform GRB3-3);SH2/SH3 adapter GRB2 (isoform GRB3-3)|9606
+9197239|coip:coimmunoprecipitation|P06213|SP|INSR;insulin receptor (precursor)|9606|P32889|SP|ARF1;ADP-ribosylation factor 1|9606
+10373512|two hybrid|P51587|SP|BRCA2;breast cancer type 2 susceptibility protein|9606|Q13437|SP|SHFDG1;DSS1;deleted in split hand/split foot protein 1 DSS1|9606
+10373512|two hybrid|P51587|SP|BRCA2;breast cancer type 2 susceptibility protein|9606|Q13437|SP|SHFDG1;DSS1;deleted in split hand/split foot protein 1 DSS1|9606
+10373512|coip:coimmunoprecipitation|Q13437|SP|SHFDG1;DSS1;deleted in split hand/split foot protein 1 DSS1|9606|P51587|SP|BRCA2;breast cancer type 2 susceptibility protein|9606
+10373512|coip:coimmunoprecipitation|Q13437|SP|SHFDG1;DSS1;deleted in split hand/split foot protein 1 DSS1|9606|P51587|SP|BRCA2;breast cancer type 2 susceptibility protein|9606
+10373512|coip:coimmunoprecipitation|P51587|SP|BRCA2;breast cancer type 2 susceptibility protein|9606|Q13437|SP|SHFDG1;DSS1;deleted in split hand/split foot protein 1 DSS1|9606
+10373512|two hybrid|P51587|SP|BRCA2;breast cancer type 2 susceptibility protein|9606|Q06609|SP|RAD51;RAD51A;DNA repair protein RAD51 homolog 1|9606
+9148970|coip:coimmunoprecipitation|P01009|SP|SERPINA1;Alpha-1-antitrypsin (AAT)|9606|Q9NYU2|TREMBL|UDP-glucose:glycoprotein glucosyltransferase 1 (UGTR)|9606
+10366599|two hybrid|P49810|SP|PSEN2;PSNL2;AD4;PS2;STM2;presenilin 2|9606|Q99828|SP|CIB1;PRKDCIP;KIP;CIB;calcium and integrin-binding protein 1 (calmyrin)|9606
+10366599|two hybrid|P49810|SP|PSEN2;PSNL2;AD4;PS2;STM2;presenilin 2|9606|Q99828|SP|CIB1;PRKDCIP;KIP;CIB;calcium and integrin-binding protein 1 (calmyrin)|9606
+10366599|two hybrid|P49810|SP|PSEN2;PSNL2;AD4;PS2;STM2;presenilin 2|9606|Q99828|SP|CIB1;PRKDCIP;KIP;CIB;calcium and integrin-binding protein 1 (calmyrin)|9606
+10366599|copurification|Q99828|SP|CIB1;PRKDCIP;KIP;CIB;calcium and integrin-binding protein 1 (calmyrin)|9606|P49810|SP|PSEN2;PSNL2;AD4;PS2;STM2;presenilin 2|9606
+10366599|coip:coimmunoprecipitation|Q99828|SP|CIB1;PRKDCIP;KIP;CIB;calcium and integrin-binding protein 1 (calmyrin)|9606|P49810|SP|PSEN2;PSNL2;AD4;PS2;STM2;presenilin 2|9606
+10366599|coip:coimmunoprecipitation|P49810|SP|PSEN2;PSNL2;AD4;PS2;STM2;presenilin 2|9606|Q99828|SP|CIB1;PRKDCIP;KIP;CIB;calcium and integrin-binding protein 1 (calmyrin)|9606
+10366599|two hybrid|P49768|SP|PSEN1;PSNL1;AD3;PS1;presenilin 1|9606|Q99828|SP|CIB1;PRKDCIP;KIP;CIB;calcium and integrin-binding protein 1 (calmyrin)|9606
+10366599|two hybrid|P49768|SP|PSEN1;PSNL1;AD3;PS1;presenilin 1|9606|Q99828|SP|CIB1;PRKDCIP;KIP;CIB;calcium and integrin-binding protein 1 (calmyrin)|9606
+10361124|coip:coimmunoprecipitation|P10276|SP|RARA;NR1B1;retinoic acid receptor alpha (RAR-alpha)|9606|P08047|SP|SP1;TSFP1;transcription factor Sp1|9606
+10361124|two hybrid|P10276|SP|RARA;NR1B1;retinoic acid receptor alpha (RAR-alpha)|9606|P08047|SP|SP1;TSFP1;transcription factor Sp1|9606
+10361124|copurification|P10276|SP|RARA;NR1B1;retinoic acid receptor alpha (RAR-alpha)|9606|P08047|SP|SP1;TSFP1;transcription factor Sp1|9606
+9151675|two hybrid|P03372|SP|ESR1;NR3A1;ESR;estrogen receptor ESR1;ER-alpha|9606|P07900|SP|HSPCA;Heat shock protein HSP 90-alpha|9606
+9115298|cross-linking studies|P03372|SP|ESR1;NR3A1;ESR;estrogen receptor ESR1;ER-alpha|9606|P07900|SP|HSPCA;Heat shock protein HSP 90-alpha|9606
+9111321|two hybrid|Q92940|SP|MADH3 or SMAD3;Mothers against decapentaplegic homolog 3 (SMAD3)|9606|Q13485|SP|MADH4 or SMAD4;Mothers against decapentaplegic homolog 4 (SMAD4)|9606
+9111321|two hybrid|Q13485|SP|MADH4 or SMAD4;Mothers against decapentaplegic homolog 4 (SMAD4)|9606|Q92940|SP|MADH3 or SMAD3;Mothers against decapentaplegic homolog 3 (SMAD3)|9606
+9111321|two hybrid|Q92940|SP|MADH3 or SMAD3;Mothers against decapentaplegic homolog 3 (SMAD3)|9606|Q92940|SP|MADH3 or SMAD3;Mothers against decapentaplegic homolog 3 (SMAD3)|9606
+9111321|two hybrid|Q13485|SP|MADH4 or SMAD4;Mothers against decapentaplegic homolog 4 (SMAD4)|9606|Q13485|SP|MADH4 or SMAD4;Mothers against decapentaplegic homolog 4 (SMAD4)|9606
+9111321|coip:coimmunoprecipitation|Q13485|SP|MADH4 or SMAD4;Mothers against decapentaplegic homolog 4 (SMAD4)|9606|Q13485|SP|MADH4 or SMAD4;Mothers against decapentaplegic homolog 4 (SMAD4)|9606
+9111321|coip:coimmunoprecipitation|Q92940|SP|MADH3 or SMAD3;Mothers against decapentaplegic homolog 3 (SMAD3)|9606|Q92940|SP|MADH3 or SMAD3;Mothers against decapentaplegic homolog 3 (SMAD3)|9606
+10358085|electron resonance|P05106|SP ITGB3;GP3A;integrin beta-3 (precursor)|9606|P08514|P08514|ITGA2B;ITGAB;GP2B;integrin alpha-IIb (precursor)|9606
+10358085|electron resonance|Q99828|SP|CIB1;PRKDCIP;KIP;CIB;calcium and integrin-binding protein 1 (calmyrin)|9606|P08514|SP|ITGA2B;ITGAB;GP2B;integrin alpha-IIb (precursor)|9606
+9079689|coip:coimmunoprecipitation|P35869|SP|AHR;aryl hydrocarbon receptor (AhR);AHR protein;aromatic hydrogen receptor|9606|O00327|SP|ARNTL;Brain and muscle ARNT-like 1 (MOP3)|9606
+9079689|coip:coimmunoprecipitation|P07900|SP|HSPCA;Heat shock protein HSP 90-alpha|9606|O00327|SP|ARNTL;Brain and muscle ARNT-like 1 (MOP3)|9606
+9079689|two hybrid|Q16665|SP|HIF1A;Hypoxia-inducible factor 1 alpha (HIF-1 alpha) (MOP1)|9606|P27540|SP|ARNT;Aryl hydrocarbon receptor nuclear translocator (ARNT protein)|9606
+9079689|coip:coimmunoprecipitation|P27540|SP|ARNT;Aryl hydrocarbon receptor nuclear translocator (ARNT protein)|9606|Q16665|SP|HIF1A;Hypoxia-inducible factor 1 alpha (HIF-1 alpha) (MOP1)|9606
+9079689|coip:coimmunoprecipitation|P27540|SP|ARNT;Aryl hydrocarbon receptor nuclear translocator (ARNT protein)|9606|Q99814|SP|EPAS1;Endothelial PAS domain protein 1 (MOP2)|9606
+9079689|two hybrid|Q99814|SP|EPAS1;Endothelial PAS domain protein 1 (MOP2)|9606|P27540|SP|ARNT;Aryl hydrocarbon receptor nuclear translocator (ARNT protein)|9606
+9079689|coip:coimmunoprecipitation|P07900|SP|HSPCA;Heat shock protein HSP 90-alpha|9606|Q16665|SP|HIF1A;Hypoxia-inducible factor 1 alpha (HIF-1 alpha) (MOP1)|9606
+9079689|coip:coimmunoprecipitation|P07900|SP|HSPCA;Heat shock protein HSP 90-alpha|9606|Q99743|SP|NPAS2;Neuronal PAS domain protein 2 (MOP4)|9606
+10347167|two hybrid|P10275|SP|AR;NR3C4;DHTR;androgen receptor|9606|Q13772|SP|NCOA4;ARA70;RFG;ELE1;nuclear receptor coactivator 4 (ARA70)|9606
+10347167|coip:coimmunoprecipitation|P10275|SP|AR;NR3C4;DHTR;androgen receptor|9606|Q13772|SP|NCOA4;ARA70;RFG;ELE1;nuclear receptor coactivator 4 (ARA70)|9606
+8761950|two hybrid|P40123|SP|CAP2;adenylyl cyclase-associated protein 2 CAP2 homolog|9606|Q01518|SP|CAP;adenylyl cyclase-associated protein CAP homolog CAP|9606
+8761950|coip:coimmunoprecipitation|P40123|SP|CAP2;adenylyl cyclase-associated protein 2 CAP2 homolog|9606|Q01518|SP|CAP;adenylyl cyclase-associated protein CAP homolog CAP|9606
+9058808|coip:coimmunoprecipitation|O00165|SP|HS1BP1;HAX1;HS1-binding protein (HAX-1)|9606|P27348|SP|YWHAQ;14-3-3 protein tau (HS1 protein)|9606
+9058808|two hybrid|O00165|SP|HS1BP1;HAX1;HS1-binding protein (HAX-1)|9606|P27348|SP|YWHAQ;14-3-3 protein tau (HS1 protein)|9606
+10347167|two hybrid|P19793|SP|RXRA;NR2B1;retinoic acid receptor RXR-alpha|9606|Q13772|SP|NCOA4;ARA70;RFG;ELE1;nuclear receptor coactivator 4 (ARA70)|9606
+10347167|coip:coimmunoprecipitation|P19793|SP|RXRA;NR2B1;retinoic acid receptor RXR-alpha|9606|Q13772|SP|NCOA4;ARA70;RFG;ELE1;nuclear receptor coactivator 4 (ARA70)|9606
+8761950|two hybrid|Q01518|SP|CAP;adenylyl cyclase-associated protein CAP homolog CAP|9606|Q01518|SP|CAP;adenylyl cyclase-associated protein CAP homolog CAP|9606
+8761950|copurification|Q01518|SP|CAP;adenylyl cyclase-associated protein CAP homolog CAP|9606|Q01518|SP|CAP;adenylyl cyclase-associated protein CAP homolog CAP|9606
+8761950|coip:coimmunoprecipitation|Q01518|SP|CAP;adenylyl cyclase-associated protein CAP homolog CAP|9606|Q01518|SP|CAP;adenylyl cyclase-associated protein CAP homolog CAP|9606
+9124532|coip:coimmunoprecipitation|Q04941|SP|PLP2;A4;Intestinal membrane A4 protein|9606|Q04941|SP|PLP2;A4;Intestinal membrane A4 protein|9606
+10220385|coip:coimmunoprecipitation|P56524|SP|HDAC4;KIAA0288;histone deacetylase 4|9606|Q09028|SP|RBBP4;RBAP48;chromatin assembly factor 1 subunit C|9606
+10220385|coip:coimmunoprecipitation|P56524|SP|HDAC4;KIAA0288;histone deacetylase 4|9606|O15379|SP|HDAC3;histone deacetylase 3|9606
+10220385|coip:coimmunoprecipitation|Q9UQL6|SP|HDAC5 or KIAA0600;histone deacetylase 5|9606|O15379|SP|HDAC3;histone deacetylase 3|9606
+9000562|coip:coimmunoprecipitation|O95782|SP|AP2A1;Adapter-related protein complex 2 alpha 1 subunit|9606|P42566|SP|EPS15;Epidermal growth factor receptor substrate 15|9606
+8978305|coip:coimmunoprecipitation|P46109|SP|CRKL;Crk-like protein|9606|Q8NEY0|SP|BCR-ABL fusion protein|9606
+8978305|coip:coimmunoprecipitation|P46109|SP|CRKL;Crk-like protein|9606|Q8NEY0|SP|BCR-ABL fusion protein|9606
+8978305|coip:coimmunoprecipitation|Q8NEY0|SP|BCR-ABL fusion protein|9606|P46109|SP|CRKL;Crk-like protein|9606
+8978305|two hybrid|Q8NEY0|SP|BCR-ABL fusion protein|9606|P46109|SP|CRKL;Crk-like protein|9606
+8978305|copurification|P46109|SP|CRKL;Crk-like protein|9606|Q8NEY0|SP|BCR-ABL fusion protein|9606
+8978305|far western blotting|P46109|SP|CRKL;Crk-like protein|9606|Q8NEY0|SP|BCR-ABL fusion protein|9606
+8628273|coip:coimmunoprecipitation|P29597|SP|TYK2;Non-receptor tyrosine-protein kinase TYK2|9606|P17181|SP|IFNAR1;Interferon-alpha/beta receptor alpha chai|9606
+8628273|copurification|P17181|SP|IFNAR1;Interferon-alpha/beta receptor alpha chai|9606|P29597|SP|TYK2;Non-receptor tyrosine-protein kinase TYK2|9606
+8612709|coip:coimmunoprecipitation|P27038|SP|ACVR2;ACVR2A;Activin receptor type II|9606|Q61271|SP|ACVR1B;Activin type IB receptor|9606
+8612709|coip:coimmunoprecipitation|P27038|SP|ACVR2;ACVR2A;Activin receptor type II|9606|P37023|SP|ACVRL1;Serine/threonine-protein kinase receptor R3|9606
+8621542|coip:coimmunoprecipitation|P45983|SP|MAPK8 or PRKM8 or JNK1;mitogen-activated protein kinase 8|9606|Q04864|SP|REL;C-Rel proto-oncogene protein|9606
+8666948|coip:coimmunoprecipitation|P32927|SP|CSF2RB or IL5RB or IL3RB;Cytokine receptor common beta chain|9606|P32927|SP|CSF2RB or IL5RB or IL3RB;Cytokine receptor common beta chain|9606
+8621542|coip:coimmunoprecipitation|Q04864|SP|REL;C-Rel proto-oncogene protein|9606|P45983|SP|MAPK8 or PRKM8 or JNK1;mitogen-activated protein kinase 8|9606
+8621542|two hybrid|Q04864|SP|REL;C-Rel proto-oncogene protein|9606|P45983|SP|MAPK8 or PRKM8 or JNK1;mitogen-activated protein kinase 8|9606
+8641969|coip:coimmunoprecipitation|P24941|SP|CDK2;Cell division protein kinase 2|9606|P38936|SP|CDKN1A;Cyclin-dependent kinase inhibitor 1|9606
+8567649|copurification|P11387|SP|TOP1;DNA topoisomerase I|9606|P19338|SP|NCL;Nucleolin|9606
+8567649|coip:coimmunoprecipitation|P19338|SP|NCL;Nucleolin|9606|P11387|SP|TOP1;DNA topoisomerase I|9606
+8729618|coip:coimmunoprecipitation|P08107|SP|HSPA1A;Heat shock 70 kDa protein 1|9606|P04637|SP|TP53;P53 protein|9606
+8729618|coip:coimmunoprecipitation|P04637|SP|TP53;P53 protein|9606|P08107|SP|HSPA1A;Heat shock 70 kDa protein 1|9606
+10220378|coip:coimmunoprecipitation|P15154|SP|RAC1;Ras-related C3 botulinum toxin substrate 1|9606|Q13972|SP RASGRF1;CDC25;guanine nucleotide releasing protein|9606
+10220378|coip:coimmunoprecipitation|P06749|SP|ARHA;ARH12;RHOA;RHO12;transforming protein RhoA|9606|Q13972|SP RASGRF1;CDC25;guanine nucleotide releasing protein|9606
+10207079|coip:coimmunoprecipitation|Q14493|SP|SLBP;HBP;histone RNA hairpin-binding protein|9606|Q969L4|SP|LSM10;U7 snRNA-associated Sm-like protein LSm10|9606
+9418871|copurification|Q01094|SP|E2F1;RBBP3;transcription factor E2F1|9606|Q92466|SP|DDB2;DNA damage binding protein 2 (DDB p48 subunit;UV-damaged DNA-binding protein 2;DDBb;UV-DDB 2)|9606
+9418871|coip:coimmunoprecipitation|Q01094|SP|E2F1;RBBP3;transcription factor E2F1|9606|Q92466|SP|DDB2;DNA damage binding protein 2 (DDB p48 subunit;UV-damaged DNA-binding protein 2;DDBb;UV-DDB 2)|9606
+9418871|coip:coimmunoprecipitation|Q92466|SP|DDB2;DNA damage binding protein 2 (DDB p48 subunit;UV-damaged DNA-binding protein 2;DDBb;UV-DDB 2)|9606|Q01094|SP|E2F1;RBBP3;transcription factor E2F1|9606
+9418871|coip:coimmunoprecipitation|Q92466|SP|DDB2;DNA damage binding protein 2 (DDB p48 subunit;UV-damaged DNA-binding protein 2;DDBb;UV-DDB 2)|9606|Q16531|SP|DDB1;DNA damage binding protein 1 (Damage-specific DNA binding protein 1;DDB p127 subunit;DDBa;UV-DDB 1;XAP-1;Xeroderma pigmentosum group E complementing protein)|9606
+10207062|two hybrid|P10827|SP|THRA;NR1A1;THRA1;ERBA1;thyroid hormone receptor alpha|9606|Q9UNI2|SP|ALIEN;ALIEN|9606
+10207062|coip:coimmunoprecipitation|P10827|SP|THRA;NR1A1;THRA1;ERBA1;thyroid hormone receptor alpha|9606|Q9UNI2|SP|ALIEN;ALIEN|9606
+10207062|copurification|Q9UNI2|SP|ALIEN;ALIEN|9606|P10827|SP|THRA;NR1A1;THRA1;ERBA1;thyroid hormone receptor alpha|9606
+10207062|two hybrid|P10827|SP|THRA;NR1A1;THRA1;ERBA1;thyroid hormone receptor alpha|9606|Q9UNI2|SP|ALIEN;ALIEN|9606
+10207062|coip:coimmunoprecipitation|P10827|SP|THRA;NR1A1;THRA1;ERBA1;thyroid hormone receptor alpha|9606|Q9UNI2|SP|ALIEN;ALIEN|9606
+10207062|two hybrid|P10828|SP|THRB;NR1A2;ERBA2;THR1;thyroid hormone receptor beta-1|9606|Q9UNI2|SP|ALIEN;ALIEN|9606
+10207062|copurification|P10828|SP|THRB;NR1A2;ERBA2;THR1;thyroid hormone receptor beta-1|9606|Q9UNI2|SP|ALIEN;ALIEN|9606
+10207062|two hybrid|P10276|SP|RARA;NR1B1;retinoic acid receptor alpha (RAR-alpha)|9606|Q9UNI2|SP|ALIEN;ALIEN|9606
+10207062|copurification|Q9UNI2|SP|ALIEN;ALIEN|9606|P10589|SP|NR2F1;TFCOUP1;ERBAL3;EAR3;COUP transcription factor 1|9606
+10620799|two hybrid|Q96C41|SP|RAD9;RAD9 homolog|9606|P10415|SP|BCL2;Apoptosis regulator Bcl-2|9606
+9418880|far western blotting|O43432|SP|EIF-4G2;Translation initiation factor 4G-II (eIF4GII;eukaryotic protein synthesis initiation factor eIF4G2)|9606|P06730|SP|EIF-4E;Translation initiation factor 4E (eIF4E;mRNA cap-binding protein)|9606
+9418880|coip:coimmunoprecipitation|P06730|SP|EIF-4E;Translation initiation factor 4E (eIF4E;mRNA cap-binding protein)|9606|O43432|SP|EIF-4G2;Translation initiation factor 4G-II (eIF4GII;eukaryotic protein synthesis initiation factor eIF4G2)|9606
+9418880|coip:coimmunoprecipitation|P06730|SP|EIF-4E;Translation initiation factor 4E (eIF4E;mRNA cap-binding protein)|9606|O43177|SP|EIF-4G1;Translation initiation factor 4G-I (eIF4GI;eukaryotic protein synthesis initiation factor eIF4G1)|9606
+9418880|coip:coimmunoprecipitation|O43432|SP|EIF-4G2;Translation initiation factor 4G-II (eIF4GII;eukaryotic protein synthesis initiation factor eIF4G2)|9606|P04765|SP|EIF-4A;Translation initiation factor 4A (eIF4A;eukaryotic protein synthesis initiation factor eIF4A)|9606
+9418880|coip:coimmunoprecipitation|O43177|SP|EIF-4G1;Translation initiation factor 4G-I (eIF4GI;eukaryotic protein synthesis initiation factor eIF4G1)|9606|P04765|SP|EIF-4A;Translation initiation factor 4A (eIF4A;eukaryotic protein synthesis initiation factor eIF4A)|9606
+9418880|copurification|O43177|SP|EIF-4G1;Translation initiation factor 4G-I (eIF4GI;eukaryotic protein synthesis initiation factor eIF4G1)|9606|P06730|SP|EIF-4E;Translation initiation factor 4E (eIF4E;mRNA cap-binding protein)|9606
+9418880|copurification|O43432|SP|EIF-4G2;Translation initiation factor 4G-II (eIF4GII;eukaryotic protein synthesis initiation factor eIF4G2)|9606|P06730|SP|EIF-4E;Translation initiation factor 4E (eIF4E;mRNA cap-binding protein)|9606
+10197586|coip:coimmunoprecipitation|Q02548|SP|PAX5;paired box protein Pax-5|9606|P20226|SP|TBP;TFIID;TF2D;transcription initiation factor TFIID|9606
+10197586|coip:coimmunoprecipitation|Q02548|SP|PAX5;paired box protein Pax-5|9606|P06400|SP|RB1;retinoblastoma-associated protein RB (retinoblastoma susceptibility protein)|9606
+10196099|coip:coimmunoprecipitation|P25445|SP|TNFRSF6;APT1;FAS;FAS1;tumor necrosis factor receptor superfamily member 6 (CD95) (Apo-1 antigen)|9606|Q14790|SP|CASP8;MCH5;caspase-8 precursor;ICE-like apoptotic protease 5;MORT1-associated CED-3 homolog;apoptotic cysteine protease;apoptotic protease Mch-5|9606
+10196099|coip:coimmunoprecipitation|P25445|SP|TNFRSF6;APT1;FAS;FAS1;tumor necrosis factor receptor superfamily member 6 (CD95) (Apo-1 antigen)|9606|Q13158|SP|FADD;MORT1;FADD protein|9606
+10194762|copurification|P42229|SP|STAT5A;STAT5;signal transducer and activator of transcription 5A|9606|P27361|SP|MAPK3;PRKM3;ERK1 or MAPK1;PRKM1;ERK2;extracellular signal-regulated kinase 1 or 2|9606
+10194762|coip:coimmunoprecipitation|P27361|SP|MAPK3;PRKM3;ERK1 or MAPK1;PRKM1;ERK2;extracellular signal-regulated kinase 1 or 2|9606|P42229|SP|STAT5A;STAT5;signal transducer and activator of transcription 5A|9606
+10194762|coip:coimmunoprecipitation|P27361|SP|MAPK3;PRKM3;ERK1 or MAPK1;PRKM1;ERK2;extracellular signal-regulated kinase 1 or 2|9606|P42229|SP|STAT5A;STAT5;signal transducer and activator of transcription 5A|9606
+10189366|two hybrid|P11171|SP|EPB41;E41;protein 4.1 (4.1R)|9606|Q14980|SP|NuMA protein|9606
+10189366|two hybrid|P11171|SP|EPB41;E41;protein 4.1 (4.1R)|9606|Q14980|SP|NuMA protein|9606
+10189366|two hybrid|P11171|SP|EPB41;E41;protein 4.1 (4.1R)|9606|Q14980|SP|NuMA protein|9606
+10189366|two hybrid|P11171|SP|EPB41;E41;protein 4.1 (4.1R)|9606|Q14980|SP|NuMA protein|9606
+10189366|copurification|P11171|SP|EPB41;E41;protein 4.1 (4.1R)|9606|Q14980|SP|NuMA protein|9606
+10189366|copurification|P11171|SP|EPB41;E41;protein 4.1 (4.1R)|9606|Q14980|SP|NuMA protein|9606
+10189366|copurification|P11171|SP|EPB41;E41;protein 4.1 (4.1R)|9606|Q14980|SP|NuMA protein|9606
+10189366|copurification|P11171|SP|EPB41;E41;protein 4.1 (4.1R)|9606|Q14980|SP|NuMA protein|9606
+10189366|copurification|P11171|SP|EPB41;E41;protein 4.1 (4.1R)|9606|Q14980|SP|NuMA protein|9606
+10189366|coip:coimmunoprecipitation|P11171|SP|EPB41;E41;protein 4.1 (4.1R)|9606|Q14980|SP|NuMA protein|9606
+10189366|coip:coimmunoprecipitation|Q14980|SP|NuMA protein|9606|P11171|SP|EPB41;E41;protein 4.1 (4.1R)|9606
+10093054|coip:coimmunoprecipitation|Q14654|SP|KCNJ11;ATP-sensitive inward rectifier potassium channel 11 (Kir6.2)|9606|O60706|SP|ABCC9;SUR2;sulfonylurea receptor 2|9606
+10093054|coip:coimmunoprecipitation|Q14654|SP|KCNJ11;ATP-sensitive inward rectifier potassium channel 11 (Kir6.2)|9606|O60706|SP|ABCC9;SUR2;sulfonylurea receptor 2|9606
+10093054|coip:coimmunoprecipitation|Q14654|SP|KCNJ11;ATP-sensitive inward rectifier potassium channel 11 (Kir6.2)|9606|Q09428|SP|ABCC8;SUR1;SUR;sulfonylurea receptor 1|9606
+10093054|coip:coimmunoprecipitation|Q14654|SP|KCNJ11;ATP-sensitive inward rectifier potassium channel 11 (Kir6.2)|9606|Q09428|SP|ABCC8;SUR1;SUR;sulfonylurea receptor 1|9606
+10082537|coip:coimmunoprecipitation|Q00577|SP|PURA;PUR1;transcriptional activator protein PUR-alpha|9606|P16991|SP|NSEP1;YB1;Y-box transcription factor (YB-1)|9606
+10082537|copurification|P16991|SP|NSEP1;YB1;Y-box transcription factor (YB-1)|9606|Q00577|SP|PURA;PUR1;transcriptional activator protein PUR-alpha|9606
+10082537|copurification|Q00577|SP|PURA;PUR1;transcriptional activator protein PUR-alpha|9606|P16991|SP|NSEP1;YB1;Y-box transcription factor (YB-1)|9606
+10082537|copurification|Q00577|SP|PURA;PUR1;transcriptional activator protein PUR-alpha|9606|P16991|SP|NSEP1;YB1;Y-box transcription factor (YB-1)|9606
+10082537|coip:coimmunoprecipitation|P16991|SP|NSEP1;YB1;Y-box transcription factor (YB-1)|9606|Q00577|SP|PURA;PUR1;transcriptional activator protein PUR-alpha|9606
+10082537|copurification|P16991|SP|NSEP1;YB1;Y-box transcription factor (YB-1)|9606|Q00577|SP|PURA;PUR1;transcriptional activator protein PUR-alpha|9606
+10082537|copurification|P16991|SP|NSEP1;YB1;Y-box transcription factor (YB-1)|9606|Q00577|SP|PURA;PUR1;transcriptional activator protein PUR-alpha|9606
+10082537|copurification|P16991|SP|NSEP1;YB1;Y-box transcription factor (YB-1)|9606|Q00577|SP|PURA;PUR1;transcriptional activator protein PUR-alpha|9606
+9442080|coip:coimmunoprecipitation|P10912|SP|GHR;Growth hormone receptor|9606|P10912|SP|GHR;Growth hormone receptor|9606
+9442080|copurification|P10912|SP|GHR;Growth hormone receptor|9606|P10912|SP|GHR;Growth hormone receptor|9606
+9447969|coip:coimmunoprecipitation|P40337|SP|VHL;Von Hippel-Lindau disease tumor suppressor (G7 protein)|9606|Q13617|SP|CUL2;Cullin homolog 2 (Cul-2)|9606
+9447969|coip:coimmunoprecipitation|P40337|SP|VHL;Von Hippel-Lindau disease tumor suppressor (G7 protein)|9606|Q15370|SP|Elongin B (RNA polymerase II transcription factor SIII P18 subunit)|9606
+9447969|coip:coimmunoprecipitation|P40337|SP|VHL;Von Hippel-Lindau disease tumor suppressor (G7 protein)|9606|Q15369|SP|Elongin C (RNA polymerase II elongation factor SIII, p15 subunit (Transcription elongation factor B (SIII), polypeptide 1)|9606
+9447969|coip:coimmunoprecipitation|P40337|SP|VHL;Von Hippel-Lindau disease tumor suppressor (G7 protein)|9606|P40337|SP|VHL;Von Hippel-Lindau disease tumor suppressor (G7 protein)|9606
+9447969|copurification|P40337|SP|VHL;Von Hippel-Lindau disease tumor suppressor (G7 protein)|9606|Q13617|SP|CUL2;Cullin homolog 2 (Cul-2)|9606
+9447969|copurification|P40337|SP|VHL;Von Hippel-Lindau disease tumor suppressor (G7 protein)|9606|Q15370|SP|Elongin B (RNA polymerase II transcription factor SIII P18 subunit)|9606
+9447969|copurification|P40337|SP|VHL;Von Hippel-Lindau disease tumor suppressor (G7 protein)|9606|Q15369|SP|Elongin C (RNA polymerase II elongation factor SIII, p15 subunit (Transcription elongation factor B (SIII), polypeptide 1)|9606
+9447969|copurification|Q15369|SP|Elongin C (RNA polymerase II elongation factor SIII, p15 subunit (Transcription elongation factor B (SIII), polypeptide 1)|9606|Q13617|SP|CUL2;Cullin homolog 2 (Cul-2)|9606
+9447969|copurification|Q15369|SP|Elongin C (RNA polymerase II elongation factor SIII, p15 subunit (Transcription elongation factor B (SIII), polypeptide 1)|9606|Q15370|SP|Elongin B (RNA polymerase II transcription factor SIII P18 subunit)|9606
+10078972|coip:coimmunoprecipitation|P49810|SP|PSEN2;PSNL2;AD4;PS2;STM2;presenilin 2|9606|P05067|SP|APP;Amyloid beta A4 protein|9606
+10078972|coip:coimmunoprecipitation|P49810|SP|PSEN2;PSNL2;AD4;PS2;STM2;presenilin 2|9606|P05067|SP|APP;Amyloid beta A4 protein|9606
+10078972|coip:coimmunoprecipitation|P49810|SP|PSEN2;PSNL2;AD4;PS2;STM2;presenilin 2|9606|P05067|SP|APP;Amyloid beta A4 protein|9606
+10078972|coip:coimmunoprecipitation|P49810|SP|PSEN2;PSNL2;AD4;PS2;STM2;presenilin 2|9606|P05067|SP|APP;Amyloid beta A4 protein|9606
+10078972|coip:coimmunoprecipitation|P49810|SP|PSEN2;PSNL2;AD4;PS2;STM2;presenilin 2|9606|P05067|SP|APP;Amyloid beta A4 protein|9606
+10078972|coip:coimmunoprecipitation|P49768|SP|PSEN1;PSNL1;AD3;PS1;presenilin 1|9606|P05067|SP|APP;Amyloid beta A4 protein|9606
+10078972|coip:coimmunoprecipitation|P49768|SP|PSEN1;PSNL1;AD3;PS1;presenilin 1|9606|P05067|SP|APP;Amyloid beta A4 protein|9606
+10049767|two hybrid|P05067|SP|APP;Amyloid beta A4 protein|9606|O96018|SP|APBA3;MINT3;X11L2;Amyloid beta A4 precursor protein-binding family A member 3 (Neuron-specific X11L2 protein)|9606
+10049767|two hybrid|O96018|SP|APBA3;MINT3;X11L2;Amyloid beta A4 precursor protein-binding family A member 3 (Neuron-specific X11L2 protein)|9606|P05067|SP|APP;Amyloid beta A4 protein|9606
+10049767|copurification|P05067|SP|APP;Amyloid beta A4 protein|9606|O96018|SP|APBA3;MINT3;X11L2;Amyloid beta A4 precursor protein-binding family A member 3 (Neuron-specific X11L2 protein)|9606
+10049767|coip:coimmunoprecipitation|P05067|SP|APP;Amyloid beta A4 protein|9606|O96018|SP|APBA3;MINT3;X11L2;Amyloid beta A4 precursor protein-binding family A member 3 (Neuron-specific X11L2 protein)|9606
+10037471|two hybrid|P49768|SP|PSEN1;PSNL1;AD3;PS1;presenilin 1|9606|Q9UQB3|SP|CTNND2;NPRAP;Catenin delta-2 (GT24)|9606
+10037471|two hybrid|P49768|SP|PSEN1;PSNL1;AD3;PS1;presenilin 1|9606|Q9UQB3|SP|CTNND2;NPRAP;Catenin delta-2 (GT24)|9606
+10037471|two hybrid|P49768|SP|PSEN1;PSNL1;AD3;PS1;presenilin 1|9606|Q9UQB3|SP|CTNND2;NPRAP;Catenin delta-2 (GT24)|9606
+10037471|coip:coimmunoprecipitation|P49768|SP|PSEN1;PSNL1;AD3;PS1;presenilin 1|9606|Q9UQB3|SP|CTNND2;NPRAP;Catenin delta-2 (GT24)|9606
+10037471|coip:coimmunoprecipitation|Q9UQB3|SP|CTNND2;NPRAP;Catenin delta-2 (GT24)|9606|P49768|SP|PSEN1;PSNL1;AD3;PS1;presenilin 1|9606
+10037471|two hybrid|P49768|SP|PSEN1;PSNL1;AD3;PS1;presenilin 1|9606|Q99569|SP|PKP4;Plakophilin 4 (p0071)|9606
+10037471|coip:coimmunoprecipitation|P49768|SP|PSEN1;PSNL1;AD3;PS1;presenilin 1|9606|P35222|SP|CTNNB1;Beta-catenin|9606
+10037471|coip:coimmunoprecipitation|P35222|SP|CTNNB1;Beta-catenin|9606|P49768|SP|PSEN1;PSNL1;AD3;PS1;presenilin 1|9606
+10037471|coip:coimmunoprecipitation|P49810|SP|PSEN2;PSNL2;AD4;PS2;STM2;presenilin 2|9606|Q9UQB3|SP|CTNND2;NPRAP;Catenin delta-2 (GT24)|9606
+10037471|coip:coimmunoprecipitation|P49810|SP|PSEN2;PSNL2;AD4;PS2;STM2;presenilin 2|9606|P35222|SP|CTNNB1;Beta-catenin|9606
+9974409|coip:coimmunoprecipitation|P42224|SP|STAT1;signal transducer and activator of transcription 1-alpha/beta|9606|Q03405|SP|PLAUR;UPAR;MO3;Urokinase plasminogen activator surface receptor (precursor), uPAR|9606
+9974409|coip:coimmunoprecipitation|Q03405|SP|PLAUR;UPAR;MO3;Urokinase plasminogen activator surface receptor (precursor), uPAR|9606|P29597|SP|TYK2;Non-receptor tyrosine-protein kinase TYK2|9606
+9974409|coip:coimmunoprecipitation|Q03405|SP|PLAUR;UPAR;MO3;Urokinase plasminogen activator surface receptor (precursor), uPAR|9606|P23458|SP|JAK1;Tyrosine-protein kinase JAK1|9606
+9971746|experimental knowledge based|Q9UQB3|SP|CTNND2;NPRAP;Catenin delta-2 (GT24)|9606|P19022|SP|CDH2;CDHN;NCAD;Neural-cadherin (precursor) (N-cadherin)|9606
+9694734|two hybrid|P11171|SP|EPB41;E41;protein 4.1 (4.1R)|9606|P54105|SP|CLNS1A;Chloride conductance regulatory protein ICln|9606
+9694734|coip:coimmunoprecipitation|P11171|SP|EPB41;E41;protein 4.1 (4.1R)|9606|P54105|SP|CLNS1A;Chloride conductance regulatory protein ICln|9606
+9694722|coip:coimmunoprecipitation|Q04206|SP|RELA;Transcription factor p65|9606|P25963|SP|NFKBIA;NF-kappaB inhibitor alpha|9606
+9679133|two hybrid|Q14978|SP|NOLC1;Nucleolar phosphoprotein p130|9606|P38432|SP|COIL;Coilin|9606
+9679133|coip:coimmunoprecipitation|Q14978|SP|NOLC1;Nucleolar phosphoprotein p130|9606|P38432|SP|COIL;Coilin|9606
+9666482|cross-linking studies|P49768|SP|PSEN1;PSNL1;AD3;PS1;presenilin 1|9606|P49768|SP|PSEN1;PSNL1;AD3;PS1;presenilin 1|9606
+9666482|coip:coimmunoprecipitation|P49768|SP|PSEN1;PSNL1;AD3;PS1;presenilin 1|9606|P49768|SP|PSEN1;PSNL1;AD3;PS1;presenilin 1|9606
+9666482|coip:coimmunoprecipitation|P49810|SP|PSEN2;PSNL2;AD4;PS2;STM2;presenilin 2|9606|P49810|SP|PSEN2;PSNL2;AD4;PS2;STM2;presenilin 2|9606
+9660918|cross-linking studies|P55061|SP|TEGT;BI1;Bax inhibitor-1|9606|P10415|SP|BCL2;Apoptosis regulator Bcl-2|9606
+9660918|coip:coimmunoprecipitation|P55061|SP|TEGT;BI1;Bax inhibitor-1|9606|P10415|SP|BCL2;Apoptosis regulator Bcl-2|9606
+9660918|cross-linking studies|P55061|SP|TEGT;BI1;Bax inhibitor-1|9606|Q92934|SP|BAD;Bcl2-antagonist of cell death|9606
+9660918|coip:coimmunoprecipitation|P55061|SP|TEGT;BI1;Bax inhibitor-1|9606|Q92934|SP|BAD;Bcl2-antagonist of cell death|9606
+9658162|coip:coimmunoprecipitation|O15126|SP|SCAMP1;secretory carrier-associated membrane protein 1|9606|P00533|SP|EGFR;Epidermal growth factor receptor|9606
+9658162|coip:coimmunoprecipitation|O14828|SP|SCAMP3;Secretory carrier-associated membrane protein 3|9606|P00533|SP|EGFR;Epidermal growth factor receptor|9606
+9635436|copurification|P06749|SP|ARHA;ARH12;RHOA;RHO12;transforming protein RhoA|9606|P16389|SP|KCNA2;Potassium voltage-gated channel subfamily A member 2|9606
+9864373|coip:coimmunoprecipitation|Q92629|SP|SGCD;Delta-sarcoglycan|9606|Q92629|SP|SGCD;Delta-sarcoglycan|9606
+9864373|coip:coimmunoprecipitation|Q92629|SP|SGCD;Delta-sarcoglycan|9606|Q16586|SP|SGCA;ADL;DAG2;Alpha-sarcoglycan|9606
+9864373|coip:coimmunoprecipitation|Q92629|SP|SGCD;Delta-sarcoglycan|9606|Q16585|SP|SGCB;Beta-sarcoglycan|9606
+9864373|coip:coimmunoprecipitation|Q92629|SP|SGCD;Delta-sarcoglycan|9606|Q13326|SP|SGCG;Gamma-sarcoglycan|9606
+9584165|copurification|P25388|SP|GNB2L1;Guanine nucleotide-binding protein beta subunit-like protein 12.3|9606|P12931|SP|SRC;Proto-oncogene tyrosine-protein kinase SRC|9606
+9584165|copurification|P12931|SP|SRC;Proto-oncogene tyrosine-protein kinase SRC|9606|P25388|SP|GNB2L1;Guanine nucleotide-binding protein beta subunit-like protein 12.3|9606
+9584165|two hybrid|P12931|SP|SRC;Proto-oncogene tyrosine-protein kinase SRC|9606|P25388|SP|GNB2L1;Guanine nucleotide-binding protein beta subunit-like protein 12.3|9606
+9584165|coip:coimmunoprecipitation|P25388|SP|GNB2L1;Guanine nucleotide-binding protein beta subunit-like protein 12.3|9606|P12931|SP|SRC;Proto-oncogene tyrosine-protein kinase SRC|9606
+9584165|coip:coimmunoprecipitation|P25388|SP|GNB2L1;Guanine nucleotide-binding protein beta subunit-like protein 12.3|9606|P12931|SP|SRC;Proto-oncogene tyrosine-protein kinase SRC|9606
+9596688|coip:coimmunoprecipitation|Q00597|SP|FANCC;Fanconi anemia group C protein|9606|P14625|SP|TRA1;Endoplasmin|9606
+9596688|two hybrid|Q00597|SP|FANCC;Fanconi anemia group C protein|9606|P14625|SP|TRA1;Endoplasmin|9606
+9545286|coip:coimmunoprecipitation|P28340|SP|POL;DNA polymerase delta catalytic subunit|9606|P24941|SP|CDK2;Cell division protein kinase 2|9606
+9545286|coip:coimmunoprecipitation|P24941|SP|CDK2;Cell division protein kinase 2|9606|P28340|SP|POL;DNA polymerase delta catalytic subunit|9606
+9529384|coip:coimmunoprecipitation|Q08722|SP|CD47;Leukocyte surface antigen CD47 precursor (IAP)|9606|P17301|SP|ITGA2;Integrin alpha-2 (precursor)  (CD49b;VLA-2 alpha chain;Platelet membrane glycoprotein Ia)|9606
+9529384|coip:coimmunoprecipitation|Q08722|SP|CD47;Leukocyte surface antigen CD47 precursor (IAP)|9606|P05556|SP|ITGB1;Integrin beta-1 precursor (CD29 antigen;Integrin VLA-4 beta subunit)|9606
+9570313|coip:coimmunoprecipitation|O43447|TREMBL|USA-CYP;U-snRNP-associated cyclophilin|9606|O43172|SP|PRPF4;U4/U6 small nuclear ribonucleoprotein Prp4|9606
+9516488|coip:coimmunoprecipitation|P29354|SP|GRB2 or ASH;growth factor receptor-bound protein 2 (isoform GRB3-3);GRB2 adapter protein (isoform GRB3-3);SH2/SH3 adapter GRB2 (isoform GRB3-3)|9606|P07910|SP|HNRPC;Heterogeneous nuclear ribonucleoproteins C1/C2|9606
+9516488|coip:coimmunoprecipitation|P07910|SP|HNRPC;Heterogeneous nuclear ribonucleoproteins C1/C2|9606|P29354|SP|GRB2 or ASH;growth factor receptor-bound protein 2 (isoform GRB3-3);GRB2 adapter protein (isoform GRB3-3);SH2/SH3 adapter GRB2 (isoform GRB3-3)|9606
+9482849|coip:coimmunoprecipitation|P10275|SP|AR;NR3C4;DHTR;androgen receptor|9606|Q92793|SP|CBP;CREB-binding protein|9606
+9528938|coip:coimmunoprecipitation|P22888|SP|LHCGR;Lutropin-choriogonadotropic hormone receptor precursor|9606|P27824|SP|CANX;Calnexin precursor|9606
+9528938|coip:coimmunoprecipitation|P27824|SP|CANX;Calnexin precursor|9606|P22888|SP|LHCGR;Lutropin-choriogonadotropic hormone receptor precursor|9606
+9528938|coip:coimmunoprecipitation|P23945|SP|FSHR;Follicle stimulating hormone receptor|9606|P27824|SP|CANX;Calnexin precursor|9606
+9472030|cosedimentation|P36897|SP|TGFBR1;TGF-beta receptor type I|9606|P36897|SP|TGFBR1;TGF-beta receptor type I|9606
+9472030|coip:coimmunoprecipitation|P36897|SP|TGFBR1;TGF-beta receptor type I|9606|P36897|SP|TGFBR1;TGF-beta receptor type I|9606
+9472030|cosedimentation|P37173|SP|TGFBR2;TGF-beta receptor type II|9606|P37173|SP|TGFBR2;TGF-beta receptor type II|9606
+9488451|coip:coimmunoprecipitation|Q14653|SP|IRF3;Interferon regulatory factor 3|9606|Q99966|SP|CITED1;Cbp/p300-interacting transactivator 1|9606
+9488451|coip:coimmunoprecipitation|Q14653|SP|IRF3;Interferon regulatory factor 3|9606|Q99966|SP|CITED1;Cbp/p300-interacting transactivator 1|9606
+9488451|two hybrid|Q92830|SP|HGCN5;General control of amino acid synthesis protein 5-like 2|9606|P12956|SP|G22P1;ATP-dependent DNA helicase II, 70 kDa subunit (Ku70)|9606
+9488451|copurification|P12956|SP|G22P1;ATP-dependent DNA helicase II, 70 kDa subunit (Ku70)|9606|Q92830|SP|HGCN5;General control of amino acid synthesis protein 5-like 2|9606
+9488451|experimental knowledge based|Q92830|SP|HGCN5;General control of amino acid synthesis protein 5-like 2|9606|P12956|SP|G22P1;ATP-dependent DNA helicase II, 70 kDa subunit (Ku70)|9606
+9488451|experimental knowledge based|P12956|SP|G22P1;ATP-dependent DNA helicase II, 70 kDa subunit (Ku70)|9606|P13010|SP|XRCC5;G22P2;ATP-dependent DNA helicase II, 80 kDa subunit (Ku80)|9606
+9488451|experimental knowledge based|Q92830|SP|HGCN5;General control of amino acid synthesis protein 5-like 2|9606|P13010|SP|XRCC5;G22P2;ATP-dependent DNA helicase II, 80 kDa subunit (Ku80)|9606
+9422762|coip:coimmunoprecipitation|Q14289|SP|PTK2B;Protein tyrosine kinase 2 beta (CAK beta)|9606|O43294|TREMBL|Hic-5|9606
+9781816|coip:coimmunoprecipitation|Q13287|SP|NMI;N-myc-interactor|9606|P01106|SP|MYC;Myc proto-oncogene protein (c-myc)|9606
+9781816|two hybrid|Q13287|SP|NMI;N-myc-interactor|9606|P01106|SP|MYC;Myc proto-oncogene protein (c-myc)|9606
+9781816|coip:coimmunoprecipitation|Q13287|SP|NMI;N-myc-interactor|9606|P04198|SP|MYCN;N-myc proto-oncogene protein|9606
+9781816|coip:coimmunoprecipitation|Q13287|SP|NMI;N-myc-interactor|9606|Q14803|TREMBL|MAX;Max protein|9606
+9781816|coip:coimmunoprecipitation|Q13287|SP|NMI;N-myc-interactor|9606|P01100|SP|FOS;Proto-oncogene protein c-fos|9606
+9916731|coip:coimmunoprecipitation|P19438|SP|TNFRSF1A;TNFR1;TNFAR;Tumor necrosis factor receptor superfamily member 1A (precursor)|9606|Q15628|SP|TRADD;Tumor necrosis factor receptor type 1 associated DEATH domain protein|9606
+9886493|coip:coimmunoprecipitation|Q9UNH0|TREMBL|MAD1;Mitotic checkpoint protein|9606|Q14803|TREMBL|MAX;Max protein|9606
+9886493|coip:coimmunoprecipitation|Q14803|TREMBL|MAX;Max protein|9606|Q9UNH0|TREMBL|MAD1;Mitotic checkpoint protein|9606
+9886493|coip:coimmunoprecipitation|P01106|SP|MYC;Myc proto-oncogene protein (c-myc)|9606|Q14803|TREMBL|MAX;Max protein|9606
+9886493|coip:coimmunoprecipitation|Q14803|TREMBL|MAX;Max protein|9606|P01106|SP|MYC;Myc proto-oncogene protein (c-myc)|9606
+9685412|coip:coimmunoprecipitation|Q9Y6Q6|SP|RANK;Tumor necrosis factor receptor superfamily member 11A|9606|Q12933|SP|TRAF2;TRAP3;TNF receptor associated factor 2 (TRAF2;tumor necrosis factor type 2 receptor associated protein 3)|9606
+9685412|coip:coimmunoprecipitation|Q9Y6Q6|SP|RANK;Tumor necrosis factor receptor superfamily member 11A|9606|O00463|TREMBL|TNF receptor associated factor 5|9606
+9685412|coip:coimmunoprecipitation|Q9Y6Q6|SP|RANK;Tumor necrosis factor receptor superfamily member 11A|9606|Q9Y4K3|TREMBL|TRAF6;Putative interleukin 1 signal transducer|9606
+9845531|coip:coimmunoprecipitation|P46109|SP|CRKL;Crk-like protein|9606|P42229|SP|STAT5A;STAT5;signal transducer and activator of transcription 5A|9606
+9845531|copurification|P46109|SP|CRKL;Crk-like protein|9606|P42229|SP|STAT5A;STAT5;signal transducer and activator of transcription 5A|9606
+9764818|copurification|P29354|SP|GRB2 or ASH;growth factor receptor-bound protein 2 (isoform GRB3-3);GRB2 adapter protein (isoform GRB3-3);SH2/SH3 adapter GRB2 (isoform GRB3-3)|9606|Q15300|SP|RET/PTC2;RET tyrosine kinase/cAMP protein kinase A subunit RI|9606
+9764818|coip:coimmunoprecipitation|Q15300|SP|RET/PTC2;RET tyrosine kinase/cAMP protein kinase A subunit RI|9606|P29354|SP|GRB2 or ASH;growth factor receptor-bound protein 2 (isoform GRB3-3);GRB2 adapter protein (isoform GRB3-3);SH2/SH3 adapter GRB2 (isoform GRB3-3)|9606
+9764818|coip:coimmunoprecipitation|P29354|SP|GRB2 or ASH;growth factor receptor-bound protein 2 (isoform GRB3-3);GRB2 adapter protein (isoform GRB3-3);SH2/SH3 adapter GRB2 (isoform GRB3-3)|9606|Q15300|SP|RET/PTC2;RET tyrosine kinase/cAMP protein kinase A subunit RI|9606
+9764818|coip:coimmunoprecipitation|P07949|SP|RET;Proto-oncogene tyrosine-protein kinase receptor ret|9606|P29354|SP|GRB2 or ASH;growth factor receptor-bound protein 2 (isoform GRB3-3);GRB2 adapter protein (isoform GRB3-3);SH2/SH3 adapter GRB2 (isoform GRB3-3)|9606
+9764818|copurification|P29354|SP|GRB2 or ASH;growth factor receptor-bound protein 2 (isoform GRB3-3);GRB2 adapter protein (isoform GRB3-3);SH2/SH3 adapter GRB2 (isoform GRB3-3)|9606|P07949|SP|RET;Proto-oncogene tyrosine-protein kinase receptor ret|9606
+9764818|coip:coimmunoprecipitation|P29354|SP|GRB2 or ASH;growth factor receptor-bound protein 2 (isoform GRB3-3);GRB2 adapter protein (isoform GRB3-3);SH2/SH3 adapter GRB2 (isoform GRB3-3)|9606|P07949|SP|RET;Proto-oncogene tyrosine-protein kinase receptor ret|9606
+9843949|coip:coimmunoprecipitation|Q16611|SP|BAK;Apoptosis regulator BAK|9606|P21796|SP|VDAC;VDAC1;Voltage-dependent anion-selective channel protein 1|9606
+9843949|coip:coimmunoprecipitation|Q07812|SP|BAX;Apoptosis regulator BAX, membrane isoform alpha|9606|P21796|SP|VDAC;VDAC1;Voltage-dependent anion-selective channel protein 1|9606
+9843949|coip:coimmunoprecipitation|P21796|SP|VDAC;VDAC1;Voltage-dependent anion-selective channel protein 1|9606|Q07812|SP|BAX;Apoptosis regulator BAX, membrane isoform alpha|9606
+9756848|cross-linking studies|P11387|SP|TOP1;DNA topoisomerase I|9606|P23246|SP|PSF;Polypyrimidine tract-binding protein-associated splicing factor|9606
+9756848|coip:coimmunoprecipitation|P11387|SP|TOP1;DNA topoisomerase I|9606|P23246|SP|PSF;Polypyrimidine tract-binding protein-associated splicing factor|9606
+9756848|copurification|P11387|SP|TOP1;DNA topoisomerase I|9606|P23246|SP|PSF;Polypyrimidine tract-binding protein-associated splicing factor|9606
+9751722|coip:coimmunoprecipitation|P40337|SP|VHL;Von Hippel-Lindau disease tumor suppressor (G7 protein)|9606|Q15370|SP|Elongin B (RNA polymerase II transcription factor SIII P18 subunit)|9606
+9751722|coip:coimmunoprecipitation|P40337|SP|VHL;Von Hippel-Lindau disease tumor suppressor (G7 protein)|9606|Q15369|SP|Elongin C (RNA polymerase II elongation factor SIII, p15 subunit (Transcription elongation factor B (SIII), polypeptide 1)|9606
+9751722|coip:coimmunoprecipitation|P40337|SP|VHL;Von Hippel-Lindau disease tumor suppressor (G7 protein)|9606|Q13617|SP|CUL2;Cullin homolog 2 (Cul-2)|9606
+9724754|two hybrid|P42224|SP|STAT1;signal transducer and activator of transcription 1-alpha/beta|9606|O75925|SP|PIAS1;Protein inhibitor of activated STAT protein 1|9606
+9858594|coip:coimmunoprecipitation|P29992|SP|GNA11;GA11;Guanine nucleotide-binding protein G(Y), alpha subunit (Alpha-11)|9606|P49796|SP|RGS3;Regulator of G-protein signaling 3|9606
+9724754|coip:coimmunoprecipitation|O75925|SP|PIAS1;Protein inhibitor of activated STAT protein 1|9606|P42224|SP|STAT1;signal transducer and activator of transcription 1-alpha/beta|9606
+9724754|coip:coimmunoprecipitation|Q9Y6X2|SP|PIAS3;Protein inhibitor of activated STAT protein 3|9606|P40763|TREMBL|STAT3;Signal transducer and activator of transcription 3|9606
+9710638|two hybrid|P54198|SP|HIRA;HIRA protein|9606|O60814|TREMBL|HIRIP1;Histone H2B|9606
+9710638|copurification|O60814|TREMBL|HIRIP1;Histone H2B|9606|P54198|SP|HIRA;HIRA protein|9606
+9710638|copurification|P54198|SP|HIRA;HIRA protein|9606|O60814|TREMBL|HIRIP1;Histone H2B|9606
+9710638|coip:coimmunoprecipitation|P54198|SP|HIRA;HIRA protein|9606|O60814|TREMBL|HIRIP1;Histone H2B|9606
+9710638|copurification|P02304|SP|H4F2;Histone H4|9606|P54198|SP|HIRA;HIRA protein|9606
+9710638|two hybrid|P54198|SP|HIRA;HIRA protein|9606|Q9BW71|SP|HIRIP3;HIRA-interacting protein 3|9606
+9710638|copurification|Q9BW71|SP|HIRIP3;HIRA-interacting protein 3|9606|P54198|SP|HIRA;HIRA protein|9606
+9710638|copurification|Q9BW71|SP|HIRIP3;HIRA-interacting protein 3|9606|O60814|TREMBL|HIRIP1;Histone H2B|9606
+11342215|copurification|Q9UMS0|SP|HIRIP5;HIRA-interacting protein 5|9606|P54198|SP|HIRA;HIRA protein|9606
+11342215|two hybrid|P54198|SP|HIRA;HIRA protein|9606|Q9UMS0|SP|HIRIP5;HIRA-interacting protein 5|9606
+7592647|copurification|Q00577|SP|PURA;PUR1;transcriptional activator protein PUR-alpha|9606|P06400|SP|RB1;retinoblastoma-associated protein RB (retinoblastoma susceptibility protein)|9606
+9858594|coip:coimmunoprecipitation|P49796|SP|RGS3;Regulator of G-protein signaling 3|9606|P29992|SP|GNA11;GA11;Guanine nucleotide-binding protein G(Y), alpha subunit (Alpha-11)|9606
+9858594|coip:coimmunoprecipitation|P49796|SP|RGS3;Regulator of G-protein signaling 3|9606|P08754|SP|GNAI3;Guanine nucleotide-binding protein G(k), alpha subunit (G(i) alpha-3)|9606
+9819401|copurification|P08047|SP|SP1;TSFP1;transcription factor Sp1|9606|Q05516|SP|PLZF;Zinc finger protein PLZF (promyelocytic leukemia protein PML)|9606
+9819401|two hybrid|P08047|SP|SP1;TSFP1;transcription factor Sp1|9606|Q05516|SP|PLZF;Zinc finger protein PLZF (promyelocytic leukemia protein PML)|9606
+9819401|two hybrid|Q05516|SP|PLZF;Zinc finger protein PLZF (promyelocytic leukemia protein PML)|9606|P08047|SP|SP1;TSFP1;transcription factor Sp1|9606
+9819401|copurification|Q05516|SP|PLZF;Zinc finger protein PLZF (promyelocytic leukemia protein PML)|9606|P08047|SP|SP1;TSFP1;transcription factor Sp1|9606
+9819401|coip:coimmunoprecipitation|Q05516|SP|PLZF;Zinc finger protein PLZF (promyelocytic leukemia protein PML)|9606|P08047|SP|SP1;TSFP1;transcription factor Sp1|9606
+10594036|two hybrid|O00268|SP|TAF4;TAF4A;TAF2C1;TAF2C;TAFII135;TAFII130;Transcription initiation factor TFIID 135 kDa subunit (TAFII-135)|9606|Q16514|SP|TAF12;TAF2J;TAFII20;TAF15;Transcription initiation factor TFIID 20/15 kDa subunits (TAFII-20/TAFII-15)|9606
+10594036|two hybrid|Q16514|SP|TAF12;TAF2J;TAFII20;TAF15;Transcription initiation factor TFIID 20/15 kDa subunits (TAFII-20/TAFII-15)|9606|O00268|SP|TAF4;TAF4A;TAF2C1;TAF2C;TAFII135;TAFII130;Transcription initiation factor TFIID 135 kDa subunit (TAFII-135)|9606
+10594036|two hybrid|O00268|SP|TAF4;TAF4A;TAF2C1;TAF2C;TAFII135;TAFII130;Transcription initiation factor TFIID 135 kDa subunit (TAFII-135)|9606|Q16514|SP|TAF12;TAF2J;TAFII20;TAF15;Transcription initiation factor TFIID 20/15 kDa subunits (TAFII-20/TAFII-15)|9606
+10594036|two hybrid|O00268|SP|TAF4;TAF4A;TAF2C1;TAF2C;TAFII135;TAFII130;Transcription initiation factor TFIID 135 kDa subunit (TAFII-135)|9606|Q16514|SP|TAF12;TAF2J;TAFII20;TAF15;Transcription initiation factor TFIID 20/15 kDa subunits (TAFII-20/TAFII-15)|9606
+10594036|copurification|Q16514|SP|TAF12;TAF2J;TAFII20;TAF15;Transcription initiation factor TFIID 20/15 kDa subunits (TAFII-20/TAFII-15)|9606|O00268|SP|TAF4;TAF4A;TAF2C1;TAF2C;TAFII135;TAFII130;Transcription initiation factor TFIID 135 kDa subunit (TAFII-135)|9606
+10594036|far western blotting|O00268|SP|TAF4;TAF4A;TAF2C1;TAF2C;TAFII135;TAFII130;Transcription initiation factor TFIID 135 kDa subunit (TAFII-135)|9606|Q16514|SP|TAF12;TAF2J;TAFII20;TAF15;Transcription initiation factor TFIID 20/15 kDa subunits (TAFII-20/TAFII-15)|9606
+10601570|two hybrid|O43680|SP|TCF21;POD1;Transcription factor 21 (Pod-1/Capsulin)|9606|Q99081|SP|TCF12;HTF4;HEB;Transcription factor 12|9606
+10617585|two hybrid|P43699|SP|TITF1;TTF1;NKX2-1;NKX2A;Thyroid transcription factor 1|9606|P10276|SP|RARA;NR1B1;retinoic acid receptor alpha (RAR-alpha)|9606
+10617585|two hybrid|P43699|SP|TITF1;TTF1;NKX2-1;NKX2A;Thyroid transcription factor 1|9606|Q15596|SP|NCOA2;TIF2;Nuclear receptor coactivator 2|9606
+10623590|two hybrid|P53365|SP|POR1;Arfaptin 2 (Partner of RAC1) (POR1 protein)|9606|P32889|SP|ARF1;ADP-ribosylation factor 1|9606
+10623590|two hybrid|Q9NRD5|SP|PRKCABP OR PICK1;PRKCA-binding protein (Protein kinase C-alpha binding protein)|9606|P32889|SP|ARF1;ADP-ribosylation factor 1|9606
+10623590|two hybrid|Q9NRD5|SP|PRKCABP OR PICK1;PRKCA-binding protein (Protein kinase C-alpha binding protein)|9606|P16587|SP|ARF3;ADP-ribosylation factor 3|9606
+9707615|coip:coimmunoprecipitation|Q13315|SP|ATM;Serine-protein kinase ATM|9606|Q10567|SP|AP1B1;Adapter-related protein complex 1 beta 1 subunit|9606
+10197438|coip:coimmunoprecipitation|Q07817|SP|BCL2L1;BCL2L;BCLX;Apoptosis regulator Bcl-X|9606|O15519|SP|CFLAR;CLARP;MRIT;CASH;CASP8 and FADD-like apoptosis regulator (precursor)|9606
+10620799|two hybrid|P10415|SP|BCL2;Apoptosis regulator Bcl-2|9606|Q96C41|SP|RAD9;RAD9 homolog|9606
+10620799|coip:coimmunoprecipitation|P10415|SP|BCL2;Apoptosis regulator Bcl-2|9606|Q96C41|SP|RAD9;RAD9 homolog|9606
+10620799|coip:coimmunoprecipitation|Q96C41|SP|RAD9;RAD9 homolog|9606|P10415|SP|BCL2;Apoptosis regulator Bcl-2|9606
+10620799|two hybrid|Q07817|SP|BCL2L1;BCL2L;BCLX;Apoptosis regulator Bcl-X|9606|Q96C41|SP|RAD9;RAD9 homolog|9606
+10620799|coip:coimmunoprecipitation|Q07817|SP|BCL2L1;BCL2L;BCLX;Apoptosis regulator Bcl-X|9606|Q96C41|SP|RAD9;RAD9 homolog|9606
+10620799|coip:coimmunoprecipitation|Q96C41|SP|RAD9;RAD9 homolog|9606|Q07817|SP|BCL2L1;BCL2L;BCLX;Apoptosis regulator Bcl-X|9606
+10620799|two hybrid|Q07812|SP|BAX;Apoptosis regulator BAX, membrane isoform alpha|9606|P10415|SP|BCL2;Apoptosis regulator Bcl-2|9606
+10620799|two hybrid|Q92934|SP|BAD;Bcl2-antagonist of cell death|9606|Q07817|SP|BCL2L1;BCL2L;BCLX;Apoptosis regulator Bcl-X|9606
+10629059|two hybrid|Q99741|SP|HSCDC6;HSCDC18;CDC6;CDC6-related protein (CDC6 cell division cycle 6 homolog)|9606|Q9Y5P8|SP|PR48;Serine/threonine protein phosphatase 2A, 48 kDa regulatory subunit B (PP2A, subunit B, PR48 isoform)|9606
+10629059|coip:coimmunoprecipitation|Q99741|SP|HSCDC6;HSCDC18;CDC6;CDC6-related protein (CDC6 cell division cycle 6 homolog)|9606|Q9Y5P8|SP|PR48;Serine/threonine protein phosphatase 2A, 48 kDa regulatory subunit B (PP2A, subunit B, PR48 isoform)|9606
+10629059|copurification|Q99741|SP|HSCDC6;HSCDC18;CDC6;CDC6-related protein (CDC6 cell division cycle 6 homolog)|9606|Q9Y5P8|SP|PR48;Serine/threonine protein phosphatase 2A, 48 kDa regulatory subunit B (PP2A, subunit B, PR48 isoform)|9606
+10629059|two hybrid|P30153|SP|PPP2R1A;Serine/threonine protein phosphatase 2A, 65 KDA regulatory subunit A, alpha isoform (PP2A, subunit A, PR65-alpha isoform)|9606|Q9Y5P8|SP|PR48;Serine/threonine protein phosphatase 2A, 48 kDa regulatory subunit B (PP2A, subunit B, PR48 isoform)|9606
+10629059|two hybrid|P30153|SP|PPP2R1A;Serine/threonine protein phosphatase 2A, 65 KDA regulatory subunit A, alpha isoform (PP2A, subunit A, PR65-alpha isoform)|9606|Q06190|SP|PPP2R3A OR PPP2R3;Serine/threonine protein phosphatase 2A, 72/130 kDa regulatory subunit B (PP2A, subunit B, B'-PR72/PR130)|9606
+10629059|two hybrid|Q99741|SP|HSCDC6;HSCDC18;CDC6;CDC6-related protein (CDC6 cell division cycle 6 homolog)|9606|Q06190|SP|PPP2R3A OR PPP2R3;Serine/threonine protein phosphatase 2A, 72/130 kDa regulatory subunit B (PP2A, subunit B, B'-PR72/PR130)|9606
+9813091|coip:coimmunoprecipitation|P21926|SP|CD9;MIC3;CD9 antigen (Leukocyte antigen MIC3)|9606|P08648|SP|ITGA5;FNRA;Integrin alpha-5 (precursor) (CD49e;VLA-5;Fibronectin receptor alpha subunit)|9606
+9813091|coip:coimmunoprecipitation|P21926|SP|CD9;MIC3;CD9 antigen (Leukocyte antigen MIC3)|9606|P26006|SP|ITGA3;Integrin alpha-3 (precursor) (VLA-3 alpha chain;CD49c)|9606
+9813091|coip:coimmunoprecipitation|P21926|SP|CD9;MIC3;CD9 antigen (Leukocyte antigen MIC3)|9606|P17301|SP|ITGA2;Integrin alpha-2 (precursor)  (CD49b;VLA-2 alpha chain;Platelet membrane glycoprotein Ia)|9606
+9813091|coip:coimmunoprecipitation|P21926|SP|CD9;MIC3;CD9 antigen (Leukocyte antigen MIC3)|9606|P05556|SP|ITGB1;Integrin beta-1 precursor (CD29 antigen;Integrin VLA-4 beta subunit)|9606
+9813091|coip:coimmunoprecipitation|P05556|SP|ITGB1;Integrin beta-1 precursor (CD29 antigen;Integrin VLA-4 beta subunit)|9606|P21926|SP|CD9;MIC3;CD9 antigen (Leukocyte antigen MIC3)|9606
+9794406|coip:coimmunoprecipitation|Q13114|SP|TRAF3;CRAF1;CAP1;TNF receptor associated factor 3 (TRAF3;CD40 receptor associated factor 1;LMP1 associated protein)|9606|P26842|SP|TNFRSF7;CD27;Tumor necrosis factor receptor superfamily member 7 (precursor)  (CD27L receptor;T-cell activation antigen CD27;T14)|9606
+10629222|two hybrid|Q13326|SP|SGCG;Gamma-sarcoglycan|9606|O95303|SP|ABPL;FLN2;Gamma-filamin (Filamin 2)|9606
+10629222|copurification|O95303|SP|ABPL;FLN2;Gamma-filamin (Filamin 2)|9606|Q13326|SP|SGCG;Gamma-sarcoglycan|9606
+10629222|coip:coimmunoprecipitation|Q13326|SP|SGCG;Gamma-sarcoglycan|9606|O95303|SP|ABPL;FLN2;Gamma-filamin (Filamin 2)|9606
+10629222|two hybrid|Q92629|SP|SGCD;Delta-sarcoglycan|9606|O95303|SP|ABPL;FLN2;Gamma-filamin (Filamin 2)|9606
+10629222|copurification|O95303|SP|ABPL;FLN2;Gamma-filamin (Filamin 2)|9606|Q92629|SP|SGCD;Delta-sarcoglycan|9606
+10629222|coip:coimmunoprecipitation|O95303|SP|ABPL;FLN2;Gamma-filamin (Filamin 2)|9606|Q92629|SP|SGCD;Delta-sarcoglycan|9606
+10629222|coip:coimmunoprecipitation|Q92629|SP|SGCD;Delta-sarcoglycan|9606|O95303|SP|ABPL;FLN2;Gamma-filamin (Filamin 2)|9606
+10636891|two hybrid|Q04759|SP|PRKCQ;PRKCT;Protein kinase C, theta type|9606|Q9P1B0|SP|PICOT;PKCq-interacting protein PICOT (Thioredoxin-like)|9606
+10636891|coip:coimmunoprecipitation|Q9P1B0|SP|PICOT;PKCq-interacting protein PICOT (Thioredoxin-like)|9606|Q04759|SP|PRKCQ;PRKCT;Protein kinase C, theta type|9606
+10636863|coip:coimmunoprecipitation|P28907|SP|CD38;ADP-ribosyl cyclase 1 or cyclic ADP-ribose hydrolase 1 or Lymphocyte differentiation antigen CD38 or type II transmembrane glycoprotein CD38|9606|P06239|SP|LCK;Lck;proto-oncogene tyrosine-protein kinase LCK;lymphocyte specific kinase Lck|9606
+10636891|copurification|Q9P1B0|SP|PICOT;PKCq-interacting protein PICOT (Thioredoxin-like)|9606|Q04759|SP|PRKCQ;PRKCT;Protein kinase C, theta type|9606
+10636891|copurification|Q9P1B0|SP|PICOT;PKCq-interacting protein PICOT (Thioredoxin-like)|9606|Q05513|SP|PRKCZ;PKC2;Protein kinase C, zeta type|9606
+10636863|coip:coimmunoprecipitation|P28907|SP|CD38;ADP-ribosyl cyclase 1 or cyclic ADP-ribose hydrolase 1 or Lymphocyte differentiation antigen CD38 or type II transmembrane glycoprotein CD38|9606|P06239|SP|LCK;Lck;proto-oncogene tyrosine-protein kinase LCK;lymphocyte specific kinase Lck|9606
+10636891|copurification|Q9P1B0|SP|PICOT;PKCq-interacting protein PICOT (Thioredoxin-like)|9606|Q04759|SP|PRKCQ;PRKCT;Protein kinase C, theta type|9606
+10637334|two hybrid|Q7Z3K2|TREMBL|NOT1;General negative regulator of transcription NOT1 homolog|9606|Q9NZN8|TREMBL|NOT2;Not2 protein (CCR4-NOT transcription complex, subunit 2)|9606
+10637334|two hybrid|Q7Z3K2|TREMBL|NOT1;General negative regulator of transcription NOT1 homolog|9606|Q9NZN6|TREMBL|NOT4-N;Not4-N protein|9606
+10637334|two hybrid|Q7Z3K2|TREMBL|NOT1;General negative regulator of transcription NOT1 homolog|9606|Q9UFF9|SP|CNOT8;CALIF;POP2;CCR4-NOT transcription complex, subunit 8;CAF1-like protein|9606
+10637334|two hybrid|Q9NZN7|TREMBL|NOT3;Not3 protein|9606|Q9UFF9|SP|CNOT8;CALIF;POP2;CCR4-NOT transcription complex, subunit 8;CAF1-like protein|9606
+10637334|coip:coimmunoprecipitation|Q9UFF9|SP|CNOT8;CALIF;POP2;CCR4-NOT transcription complex, subunit 8;CAF1-like protein|9606|Q9NZN7|TREMBL|NOT3;Not3 protein|9606
+10644691|two hybrid|O14641|SP|Dvl2;dishevelled-2;segment polarity protein dishevelled homolog DVL-2;DSH homolog Dvl2|9606|Q15763|SP|TCTEL1;TCTEX1;TCTEX-1;protein CW-1;cytoplasmic dynein light chain;T-complex testis-specific protein 1 homolog|9606
+9819383|coip:coimmunoprecipitation|P06748|SP|NPM;NPM1 and ALK;fusion protein p80 (contains:(NPM;Nucleophosmin;Nuclear phosphoprotein B23;Numatrin;Nucleolar protein NO38) and (ALK tyrosine kinase receptor precursor;Anaplastic lymphoma kinase))|9606|P16885|SP|PLCG2;1-phosphatidylinositol-4,5-bisphosphate phosphodiesterase gamma 2 (Phosphoinositide phospholipase C;Phospholipase C-gamma-2;PLC-IV)|9606
+9819383|coip:coimmunoprecipitation|P16885|SP|PLCG2;1-phosphatidylinositol-4,5-bisphosphate phosphodiesterase gamma 2 (Phosphoinositide phospholipase C;Phospholipase C-gamma-2;PLC-IV)|9606|P06748|SP|NPM;NPM1 and ALK;fusion protein p80 (contains:(NPM;Nucleophosmin;Nuclear phosphoprotein B23;Numatrin;Nucleolar protein NO38) and (ALK tyrosine kinase receptor precursor;Anaplastic lymphoma kinase))|9606
+9819383|coip:coimmunoprecipitation|P16885|SP|PLCG2;1-phosphatidylinositol-4,5-bisphosphate phosphodiesterase gamma 2 (Phosphoinositide phospholipase C;Phospholipase C-gamma-2;PLC-IV)|9606|P16885|SP|PLCG2;1-phosphatidylinositol-4,5-bisphosphate phosphodiesterase gamma 2 (Phosphoinositide phospholipase C;Phospholipase C-gamma-2;PLC-IV)|9606
+10644691|two hybrid|O14641|SP|Dvl2;dishevelled-2;segment polarity protein dishevelled homolog DVL-2;DSH homolog Dvl2|9606|P35813|SP|PPM1A;protein phosphatase 2C alpha isoform;PP2C-alpha|9606
+10644691|two hybrid|O14640|SP|DVL1;dishevelled-1;segment polarity protein dishevelled homolog DVL-1|9606|P35813|SP|PPM1A;protein phosphatase 2C alpha isoform;PP2C-alpha|9606
+10644691|two hybrid|O14640|SP|DVL1;dishevelled-1;segment polarity protein dishevelled homolog DVL-1|9606|Q15763|SP|TCTEL1;TCTEX1;TCTEX-1;protein CW-1;cytoplasmic dynein light chain;T-complex testis-specific protein 1 homolog|9606
+10644691|coip:coimmunoprecipitation|P35813|SP|PPM1A;protein phosphatase 2C alpha isoform;PP2C-alpha|9606|Q92997|SP|DVL3;dishevelled-3;segment polarity protein dishevelled homolog DVL-3|9606
+10644691|coip:coimmunoprecipitation|P35813|SP|PPM1A;protein phosphatase 2C alpha isoform;PP2C-alpha|9606|P35222|SP|CTNNB1;Beta-catenin|9606
+10644691|coip:coimmunoprecipitation|Q92997|SP|DVL3;dishevelled-3;segment polarity protein dishevelled homolog DVL-3|9606|P35222|SP|CTNNB1;Beta-catenin|9606
+10644691|coip:coimmunoprecipitation|P35222|SP|CTNNB1;Beta-catenin|9606|Q92997|SP|DVL3;dishevelled-3;segment polarity protein dishevelled homolog DVL-3|9606
+10330181|coip:coimmunoprecipitation|Q92997|SP|DVL3;dishevelled-3;segment polarity protein dishevelled homolog DVL-3|9606|O14640|SP|DVL1;dishevelled-1;segment polarity protein dishevelled homolog DVL-1|9606
+10330181|coip:coimmunoprecipitation|Q92997|SP|DVL3;dishevelled-3;segment polarity protein dishevelled homolog DVL-3|9606|O14640|SP|DVL1;dishevelled-1;segment polarity protein dishevelled homolog DVL-1|9606
+10330181|cosedimentation|Q92997|SP|DVL3;dishevelled-3;segment polarity protein dishevelled homolog DVL-3|9606|O14640|SP|DVL1;dishevelled-1;segment polarity protein dishevelled homolog DVL-1|9606
+10330181|cosedimentation|O14640|SP|DVL1;dishevelled-1;segment polarity protein dishevelled homolog DVL-1|9606|O14640|SP|DVL1;dishevelled-1;segment polarity protein dishevelled homolog DVL-1|9606
+10644764|coip:coimmunoprecipitation|P35869|SP|AHR;aryl hydrocarbon receptor (AhR);AHR protein;aromatic hydrogen receptor|9606|P06400|SP|RB1;retinoblastoma-associated protein RB (retinoblastoma susceptibility protein)|9606
+10644764|coip:coimmunoprecipitation|P06400|SP|RB1;retinoblastoma-associated protein RB (retinoblastoma susceptibility protein)|9606|P35869|SP|AHR;aryl hydrocarbon receptor (AhR);AHR protein;aromatic hydrogen receptor|9606
+10644998|copurification|O95996|TREMBL|APCL;APCL protein|9606|Q15691|SP|MAPRE1;Microtubule-associated protein RP/EB family member 1;protein EB1|9606
+10644998|copurification|Q9UPY8|SP|MAPRE3;Microtubule-associated protein RP/EB family member 3;protein EB3|9606|O95996|TREMBL|APCL;APCL protein|9606
+10644998|two hybrid|O95996|TREMBL|APCL;APCL protein|9606|Q9UPY8|SP|MAPRE3;Microtubule-associated protein RP/EB family member 3;protein EB3|9606
+10644998|coip:coimmunoprecipitation|O95996|TREMBL|APCL;APCL protein|9606|Q9UPY8|SP|MAPRE3;Microtubule-associated protein RP/EB family member 3;protein EB3|9606
+10644998|coip:coimmunoprecipitation|Q9UPY8|SP|MAPRE3;Microtubule-associated protein RP/EB family member 3;protein EB3|9606|O95996|TREMBL|APCL;APCL protein|9606
+10644998|copurification|Q15691|SP|MAPRE1;Microtubule-associated protein RP/EB family member 1;protein EB1|9606|O95996|TREMBL|APCL;APCL protein|9606
+10644998|copurification|O95996|TREMBL|APCL;APCL protein|9606|Q9UPY8|SP|MAPRE3;Microtubule-associated protein RP/EB family member 3;protein EB3|9606
+9705328|coip:coimmunoprecipitation|P15311|SP|VIL2;Ezrin|9606|P13598|SP|ICAM-2;Intercellular adhesion molecule-2|9606
+9705328|coip:coimmunoprecipitation|P13598|SP|ICAM-2;Intercellular adhesion molecule-2|9606|P15311|SP|VIL2;Ezrin|9606
+9705328|elisa:enzyme-linked immunosorbent assay|P13598|SP|ICAM-2;Intercellular adhesion molecule-2|9606|P15311|SP|VIL2;Ezrin|9606
+9705328|electron resonance|P13598|SP|ICAM-2;Intercellular adhesion molecule-2|9606|P15311|SP|VIL2;Ezrin|9606
+9705328|copurification|P13598|SP|ICAM-2;Intercellular adhesion molecule-2|9606|P15311|SP|VIL2;Ezrin|9606
+9705328|elisa:enzyme-linked immunosorbent assay|P05362|SP|ICAM-1;Intercellular adhesion molecule-1|9606|P15311|SP|VIL2;Ezrin|9606
+9705328|coip:coimmunoprecipitation|P05362|SP|ICAM-1;Intercellular adhesion molecule-1|9606|P15311|SP|VIL2;Ezrin|9606
+10646847|two hybrid|O00633|TREMBL|PTEN;MMAC1;TEP1;phosphatidylinositol-3,4,5-trisphosphate 3-phosphatase PTEN;MMAC1 (mutated in multiple advanced cancers 1)|9606|Q12959|SP|hdlg-1;DLG1;human discs-large isoform 1;human homolog of Drosophila discs large protein isoform 1|9606
+10646847|coip:coimmunoprecipitation|Q12959|SP|hdlg-1;DLG1;human discs-large isoform 1;human homolog of Drosophila discs large protein isoform 1|9606|O00633|TREMBL|PTEN;MMAC1;TEP1;phosphatidylinositol-3,4,5-trisphosphate 3-phosphatase PTEN;MMAC1 (mutated in multiple advanced cancers 1)|9606
+10648614|coip:coimmunoprecipitation|O15111|TREMBL|CHUK;IKKA;inhibitor of nuclear factor kappa-B kinase alpha subunit;I kappa-B kinase alpha;IkBKA;IKK-alpha;IkappaB kinase;nuclear factor NFkappaB inhibitor kinase alpha|9606|P19525|TREMBL|PRKR;EIF2AK2;interferon-induced, double-stranded RNA-activated protein kinase (catalytically inactive mutant);interferon-inducible RNA-dependent protein kinase;p68 kinase;P1/eIF-2A protein kinase|9606
+10649446|two hybrid|Q14192|TREMBL|FHL2;SLIM3;DRAL;heart specific FHL2 protein;four and a half LIM domains protein 2|9606|P33993|TREMBL|MCM7;MCMD7;CDC47;DNA replication licensing factor MCM7;CDC47 homolog|9606
+10650002|coip:coimmunoprecipitation|Q12933|SP|TRAF2;TRAP3;TNF receptor associated factor 2 (TRAF2;tumor necrosis factor type 2 receptor associated protein 3)|9606|O75460|SP|IRE1a;serine/threonine-protein kinase IRE1-alpha precursor, inositol requiring;endoplasmic reticulum to nucleus signalling 1|9606
+10649446|copurification|Q14192|TREMBL|FHL2;SLIM3;DRAL;heart specific FHL2 protein;four and a half LIM domains protein 2|9606|P33993|TREMBL|MCM7;MCMD7;CDC47;DNA replication licensing factor MCM7;CDC47 homolog|9606
+10649446|copurification|Q14192|TREMBL|FHL2;SLIM3;DRAL;heart specific FHL2 protein;four and a half LIM domains protein 2|9606|P33993|TREMBL|MCM7;MCMD7;CDC47;DNA replication licensing factor MCM7;CDC47 homolog|9606
+10650943|two hybrid|Q06124|SP|PTPN11;PTP2C;SHPTP2;Protein-tyrosine phosphatase, non-receptor type 11;SHP-2|9606|Q8WU20|SP|SNT-1;FRS2;Suc1-associated neurotrophic factor target;FGFR signalling adaptorSNT-1;FRS2|9606
+10650943|two hybrid|Q06124|SP|PTPN11;PTP2C;SHPTP2;Protein-tyrosine phosphatase, non-receptor type 11;SHP-2|9606|Q8WU20|SP|SNT-1;FRS2;Suc1-associated neurotrophic factor target;FGFR signalling adaptorSNT-1;FRS2|9606
+10650943|coip:coimmunoprecipitation|Q8WU20|SP|SNT-1;FRS2;Suc1-associated neurotrophic factor target;FGFR signalling adaptorSNT-1;FRS2|9606|Q06124|SP|PTPN11;PTP2C;SHPTP2;Protein-tyrosine phosphatase, non-receptor type 11;SHP-2|9606
+two hybrid|O15360|O15360|FANCA;FAA;Fanconi anemia group A protein;FACA protein|9606|O15287|O15287|FANCG;XRCC9;Fanconi anemia group G protein;FACG protein|9606 two hybrid|O15360|SP|FANCA;FAA;Fanconi anemia group A protein;FACA protein|9606|O15360|SP|FANCA;FAA;Fanconi anemia group A protein;FACA protein|9606
+two hybrid|O15287|O15287|FANCG;XRCC9;Fanconi anemia group G protein;FACG protein|9606|O15287|O15287|FANCG;XRCC9;Fanconi anemia group G protein;FACG protein|9606 two hybrid|O15360|SP|FANCA;FAA;Fanconi anemia group A protein;FACA protein|9606|O15287|SP|FANCG;XRCC9;Fanconi anemia group G protein;FACG protein|9606
+two hybrid|O15360|O15360|FANCA;FAA;Fanconi anemia group A protein;FACA protein|9606|O15287|O15287|FANCG;XRCC9;Fanconi anemia group G protein;FACG protein|9606 two hybrid|O15360|SP|FANCA;FAA;Fanconi anemia group A protein;FACA protein|9606|O15287|SP|FANCG;XRCC9;Fanconi anemia group G protein;FACG protein|9606
+two hybrid|O15287|O15287|FANCG;XRCC9;Fanconi anemia group G protein;FACG protein|9606|O15287|O15287|FANCG;XRCC9;Fanconi anemia group G protein;FACG protein|9606 two hybrid|O15287|SP|FANCG;XRCC9;Fanconi anemia group G protein;FACG protein|9606|O15287|SP|FANCG;XRCC9;Fanconi anemia group G protein;FACG protein|9606
+10648616|experimental knowledge based|O15350|SP|TP73 or P73;Tumor protein p73|9606|Q09472|SP|EP300;P300;E1A-associated protein p300|9606
+10648616|experimental knowledge based|Q09472|SP|EP300;P300;E1A-associated protein p300|9606|O15350|SP|TP73 or P73;Tumor protein p73|9606
+10648616|copurification|Q09472|SP|EP300;P300;E1A-associated protein p300|9606|O15350|SP|TP73 or P73;Tumor protein p73|9606
+10648616|copurification|Q09472|SP|EP300;P300;E1A-associated protein p300|9606|O15350|SP|TP73 or P73;Tumor protein p73|9606
+10648616|copurification|Q09472|SP|EP300;P300;E1A-associated protein p300|9606|O15350|SP|TP73 or P73;Tumor protein p73|9606
+10648616|copurification|Q09472|SP|EP300;P300;E1A-associated protein p300|9606|P04637|SP|TP53;P53 protein|9606
+10648616|coip:coimmunoprecipitation|O15350|SP|TP73 or P73;Tumor protein p73|9606|Q09472|SP|EP300;P300;E1A-associated protein p300|9606
+10648616|copurification|Q09472|SP|EP300;P300;E1A-associated protein p300|9606|P04637|SP|TP53;P53 protein|9606
+10648616|copurification|Q92793|SP|CBP;CREB-binding protein|9606|P04637|SP|TP53;P53 protein|9606
+10648616|coip:coimmunoprecipitation|Q09472|SP|EP300;P300;E1A-associated protein p300|9606|O15350|SP|TP73 or P73;Tumor protein p73|9606
+10648616|coip:coimmunoprecipitation|Q92793|SP|CBP;CREB-binding protein|9606|O15350|SP|TP73 or P73;Tumor protein p73|9606
+10648616|copurification|O15350|SP|TP73 or P73;Tumor protein p73|9606|Q92793|SP|CBP;CREB-binding protein|9606
+10648616|copurification|O15350|SP|TP73 or P73;Tumor protein p73|9606|Q09472|SP|EP300;P300;E1A-associated protein p300|9606
+9812906|coip:coimmunoprecipitation|P05556|SP|ITGB1;Integrin beta-1 precursor (CD29 antigen;Integrin VLA-4 beta subunit)|9606|P21926|SP|CD9;MIC3;CD9 antigen (Leukocyte antigen MIC3)|9606
+9812906|coip:coimmunoprecipitation|P21926|SP|CD9;MIC3;CD9 antigen (Leukocyte antigen MIC3)|9606|P05556|SP|ITGB1;Integrin beta-1 precursor (CD29 antigen;Integrin VLA-4 beta subunit)|9606
+9812906|coip:coimmunoprecipitation|P21926|SP|CD9;MIC3;CD9 antigen (Leukocyte antigen MIC3)|9606|P17301|SP|ITGA2;Integrin alpha-2 (precursor)  (CD49b;VLA-2 alpha chain;Platelet membrane glycoprotein Ia)|9606
+9812906|coip:coimmunoprecipitation|P21926|SP|CD9;MIC3;CD9 antigen (Leukocyte antigen MIC3)|9606|P26006|SP|ITGA3;Integrin alpha-3 (precursor) (VLA-3 alpha chain;CD49c)|9606
+9812906|coip:coimmunoprecipitation|P21926|SP|CD9;MIC3;CD9 antigen (Leukocyte antigen MIC3)|9606|P08648|SP|ITGA5;FNRA;Integrin alpha-5 (precursor) (CD49e;VLA-5;Fibronectin receptor alpha subunit)|9606
+11157805|two hybrid|Q9NPI8|SP|FANCF;Fanconi anemia group F protein|9606|O15287|SP|FANCG;XRCC9;Fanconi anemia group G protein;FACG protein|9606
+11157805|two hybrid|O15287|SP|FANCG;XRCC9;Fanconi anemia group G protein;FACG protein|9606|Q9NPI8|SP|FANCF;Fanconi anemia group F protein|9606
+11157805|two hybrid|Q00597|SP|FANCC;Fanconi anemia group C protein|9606|Q9HB96|SP|FANCE;Fanconi anemia protein E|9606
+11157805|two hybrid|Q9HB96|SP|FANCE;Fanconi anemia protein E|9606|Q00597|SP|FANCC;Fanconi anemia group C protein|9606
+11157805|two hybrid|Q9HB96|SP|FANCE;Fanconi anemia protein E|9606|O15360|SP|FANCA;FAA;Fanconi anemia group A protein;FACA protein|9606
+11157805|two hybrid|Q9HB96|SP|FANCE;Fanconi anemia protein E|9606|O15287|SP|FANCG;XRCC9;Fanconi anemia group G protein;FACG protein|9606
+11157805|two hybrid|O15287|SP|FANCG;XRCC9;Fanconi anemia group G protein;FACG protein|9606|O15287|SP|FANCG;XRCC9;Fanconi anemia group G protein;FACG protein|9606
+11157805|two hybrid|O15360|SP|FANCA;FAA;Fanconi anemia group A protein;FACA protein|9606|O15287|SP|FANCG;XRCC9;Fanconi anemia group G protein;FACG protein|9606
+11157805|two hybrid|O15287|SP|FANCG;XRCC9;Fanconi anemia group G protein;FACG protein|9606|O15360|SP|FANCA;FAA;Fanconi anemia group A protein;FACA protein|9606
+10594036|two hybrid|O00268|SP|TAF4;TAF4A;TAF2C1;TAF2C;TAFII135;TAFII130;Transcription initiation factor TFIID 135 kDa subunit (TAFII-135)|9606|Q16514|SP|TAF12;TAF2J;TAFII20;TAF15;Transcription initiation factor TFIID 20/15 kDa subunits (TAFII-20/TAFII-15)|9606
+10594036|two hybrid|O00268|SP|TAF4;TAF4A;TAF2C1;TAF2C;TAFII135;TAFII130;Transcription initiation factor TFIID 135 kDa subunit (TAFII-135)|9606|Q16514|SP|TAF12;TAF2J;TAFII20;TAF15;Transcription initiation factor TFIID 20/15 kDa subunits (TAFII-20/TAFII-15)|9606
+10594036|two hybrid|O00268|SP|TAF4;TAF4A;TAF2C1;TAF2C;TAFII135;TAFII130;Transcription initiation factor TFIID 135 kDa subunit (TAFII-135)|9606|Q16514|SP|TAF12;TAF2J;TAFII20;TAF15;Transcription initiation factor TFIID 20/15 kDa subunits (TAFII-20/TAFII-15)|9606
+10594036|copurification|Q16514|SP|TAF12;TAF2J;TAFII20;TAF15;Transcription initiation factor TFIID 20/15 kDa subunits (TAFII-20/TAFII-15)|9606|O00268|SP|TAF4;TAF4A;TAF2C1;TAF2C;TAFII135;TAFII130;Transcription initiation factor TFIID 135 kDa subunit (TAFII-135)|9606
+11157805|coip:coimmunoprecipitation|O15360|SP|FANCA;FAA;Fanconi anemia group A protein;FACA protein|9606|O15287|SP|FANCG;XRCC9;Fanconi anemia group G protein;FACG protein|9606
+11157805|coip:coimmunoprecipitation|O15287|SP|FANCG;XRCC9;Fanconi anemia group G protein;FACG protein|9606|Q9NPI8|SP|FANCF;Fanconi anemia group F protein|9606
+11157805|coip:coimmunoprecipitation|Q9HB96|SP|FANCE;Fanconi anemia protein E|9606|Q00597|SP|FANCC;Fanconi anemia group C protein|9606
+10660610|two hybrid|O60673|TREMBL|REV3L;POLZ;REV3;DNA polymerase zeta catalytic subunit|9606|Q9UI95|TREMBL|MAD2L2;MAD2B;REV7;mitotic spindle assembly checkpoint protein MAD2B;REV7 protein|9606
+10660610|two hybrid|O60673|TREMBL|REV3L;POLZ;REV3;DNA polymerase zeta catalytic subunit|9606|Q9UI95|TREMBL|MAD2L2;MAD2B;REV7;mitotic spindle assembly checkpoint protein MAD2B;REV7 protein|9606
+10660610|two hybrid|O60673|TREMBL|REV3L;POLZ;REV3;DNA polymerase zeta catalytic subunit|9606|Q9UI95|TREMBL|MAD2L2;MAD2B;REV7;mitotic spindle assembly checkpoint protein MAD2B;REV7 protein|9606
+10660610|two hybrid|O60673|TREMBL|REV3L;POLZ;REV3;DNA polymerase zeta catalytic subunit|9606|Q9UI95|TREMBL|MAD2L2;MAD2B;REV7;mitotic spindle assembly checkpoint protein MAD2B;REV7 protein|9606
+10660610|cosedimentation|O60673|TREMBL|REV3L;POLZ;REV3;DNA polymerase zeta catalytic subunit|9606|Q9UI95|TREMBL|MAD2L2;MAD2B;REV7;mitotic spindle assembly checkpoint protein MAD2B;REV7 protein|9606
+10660610|cosedimentation|Q9UI95|TREMBL|MAD2L2;MAD2B;REV7;mitotic spindle assembly checkpoint protein MAD2B;REV7 protein|9606|O60673|TREMBL|REV3L;POLZ;REV3;DNA polymerase zeta catalytic subunit|9606
+10660610|cosedimentation|Q13257|TREMBL|MAD2L1;MAD2;mitotic spindle assembly checkpoint protein MAD2A;MAD2 protein|9606|Q9UI95|TREMBL|MAD2L2;MAD2B;REV7;mitotic spindle assembly checkpoint protein MAD2B;REV7 protein|9606
+10660610|cosedimentation|Q9UI95|TREMBL|MAD2L2;MAD2B;REV7;mitotic spindle assembly checkpoint protein MAD2B;REV7 protein|9606|Q13257|TREMBL|MAD2L1;MAD2;mitotic spindle assembly checkpoint protein MAD2A;MAD2 protein|9606
+10660610|cosedimentation|Q13257|TREMBL|MAD2L1;MAD2;mitotic spindle assembly checkpoint protein MAD2A;MAD2 protein|9606|O60673|TREMBL|REV3L;POLZ;REV3;DNA polymerase zeta catalytic subunit|9606
+10660610|cosedimentation|Q13257|TREMBL|MAD2L1;MAD2;mitotic spindle assembly checkpoint protein MAD2A;MAD2 protein|9606|Q13312|TREMBL|MAD1;TXBP181;mitotic spindle assembly checkpoint protein MAD1;MAD1 protein|9606
+10660620|two hybrid|P29350|SP|PTPN6;PTP1C;HCP;Protein-tyrosine phosphatase, non-receptor type 6 (SHP-1)|9606|Q9UKJ1|TREMBL|PILRA;paired immunoglobulin-like receptor;inhibitory receptor PILRalpha|9606
+10660620|coip:coimmunoprecipitation|P29350|SP|PTPN6;PTP1C;HCP;Protein-tyrosine phosphatase, non-receptor type 6 (SHP-1)|9606|Q9UKJ1|TREMBL|PILRA;paired immunoglobulin-like receptor;inhibitory receptor PILRalpha|9606
+10660620|coip:coimmunoprecipitation|Q9UKJ1|TREMBL|PILRA;paired immunoglobulin-like receptor;inhibitory receptor PILRalpha|9606|P29350|SP|PTPN6;PTP1C;HCP;Protein-tyrosine phosphatase, non-receptor type 6 (SHP-1)|9606
+10660620|electron resonance|Q9UKJ1|TREMBL|PILRA;paired immunoglobulin-like receptor;inhibitory receptor PILRalpha|9606|P29350|SP|PTPN6;PTP1C;HCP;Protein-tyrosine phosphatase, non-receptor type 6 (SHP-1)|9606
+10660620|electron resonance|Q9UKJ1|TREMBL|PILRA;paired immunoglobulin-like receptor;inhibitory receptor PILRalpha|9606|P29350|SP|PTPN6;PTP1C;HCP;Protein-tyrosine phosphatase, non-receptor type 6 (SHP-1)|9606
+10660620|electron resonance|Q9UKJ1|TREMBL|PILRA;paired immunoglobulin-like receptor;inhibitory receptor PILRalpha|9606|P29350|SP|PTPN6;PTP1C;HCP;Protein-tyrosine phosphatase, non-receptor type 6 (SHP-1)|9606
+11877430|two hybrid|P51813|SP|BMX;cytoplasmic tyrosine-protein kinase BMX;epithelial and endothelial tyrosine kinase;ETK protein|9606|Q96T51|SP|RUFY1;FYVE-finger protein EIP1;RUFY1 protein;RUN and FYVE domain containing protein 1|9606
+11877430|coip:coimmunoprecipitation|Q96T51|SP|RUFY1;FYVE-finger protein EIP1;RUFY1 protein;RUN and FYVE domain containing protein 1|9606|P51813|SP|BMX;cytoplasmic tyrosine-protein kinase BMX;epithelial and endothelial tyrosine kinase;ETK protein|9606
+11877430|coip:coimmunoprecipitation|P51813|SP|BMX;cytoplasmic tyrosine-protein kinase BMX;epithelial and endothelial tyrosine kinase;ETK protein|9606|Q96T51|SP|RUFY1;FYVE-finger protein EIP1;RUFY1 protein;RUN and FYVE domain containing protein 1|9606
+11877430|coip:coimmunoprecipitation|P51813|SP|BMX;cytoplasmic tyrosine-protein kinase BMX;epithelial and endothelial tyrosine kinase;ETK protein|9606|Q8WXA3|SP|RUFY2;FYVE-finger protein EIP2;RUFY2 protein;RUN and FYVE domain containing protein 2|9606
+11877430|coip:coimmunoprecipitation|P51813|SP|BMX;cytoplasmic tyrosine-protein kinase BMX;epithelial and endothelial tyrosine kinase;ETK protein|9606|Q96T51|SP|RUFY1;FYVE-finger protein EIP1;RUFY1 protein;RUN and FYVE domain containing protein 1|9606
+11877430|coip:coimmunoprecipitation|P51813|SP|BMX;cytoplasmic tyrosine-protein kinase BMX;epithelial and endothelial tyrosine kinase;ETK protein|9606|Q96T51|SP|RUFY1;FYVE-finger protein EIP1;RUFY1 protein;RUN and FYVE domain containing protein 1|9606
+11877430|coip:coimmunoprecipitation|P51813|SP|BMX;cytoplasmic tyrosine-protein kinase BMX;epithelial and endothelial tyrosine kinase;ETK protein|9606|Q96T51|SP|RUFY1;FYVE-finger protein EIP1;RUFY1 protein;RUN and FYVE domain containing protein 1|9606
+11877430|coip:coimmunoprecipitation|P51813|SP|BMX;cytoplasmic tyrosine-protein kinase BMX;epithelial and endothelial tyrosine kinase;ETK protein|9606|Q96T51|SP|RUFY1;FYVE-finger protein EIP1;RUFY1 protein;RUN and FYVE domain containing protein 1|9606
+11877430|two hybrid|P51813|SP|BMX;cytoplasmic tyrosine-protein kinase BMX;epithelial and endothelial tyrosine kinase;ETK protein|9606|Q96T51|SP|RUFY1;FYVE-finger protein EIP1;RUFY1 protein;RUN and FYVE domain containing protein 1|9606
+10662555|cosedimentation|P50606|SP|MAGOH;mago nashi protein homolog|9606|Q9GZX8|SP|RBM8B;MDS014;RNA binding motif protein 8B;MDS014 protein|9606
+10662555|two hybrid|P50606|SP|MAGOH;mago nashi protein homolog|9606|Q9GZX8|SP|RBM8B;MDS014;RNA binding motif protein 8B;MDS014 protein|9606
+10662555|two hybrid|P50606|SP|MAGOH;mago nashi protein homolog|9606|Q9GZX8|SP|RBM8B;MDS014;RNA binding motif protein 8B;MDS014 protein|9606
+10662555|two hybrid|Q9GZX8|SP|RBM8B;MDS014;RNA binding motif protein 8B;MDS014 protein|9606|P50606|SP|MAGOH;mago nashi protein homolog|9606
+10664457|coip:coimmunoprecipitation|P42345|SP|FRAP1 OR FRAP;FKBP-rapamycin associated protein;FRAP|9606|P27348|SP|YWHAQ;14-3-3 protein tau (HS1 protein)|9606
+10664457|coip:coimmunoprecipitation|P27348|SP|YWHAQ;14-3-3 protein tau (HS1 protein)|9606|P42345|SP|FRAP1 OR FRAP;FKBP-rapamycin associated protein;FRAP|9606
+10664457|far western blotting|P42345|SP|FRAP1 OR FRAP;FKBP-rapamycin associated protein;FRAP|9606|P27348|SP|YWHAQ;14-3-3 protein tau (HS1 protein)|9606
+10664457|coip:coimmunoprecipitation|P42345|SP|FRAP1 OR FRAP;FKBP-rapamycin associated protein;FRAP|9606|P27348|SP|YWHAQ;14-3-3 protein tau (HS1 protein)|9606
+10664457|coip:coimmunoprecipitation|P42345|SP|FRAP1 OR FRAP;FKBP-rapamycin associated protein;FRAP|9606|P27348|SP|YWHAQ;14-3-3 protein tau (HS1 protein)|9606
+10664457|coip:coimmunoprecipitation|P42345|SP|FRAP1 OR FRAP;FKBP-rapamycin associated protein;FRAP|9606|P27348|SP|YWHAQ;14-3-3 protein tau (HS1 protein)|9606
+10664457|coip:coimmunoprecipitation|P42345|SP|FRAP1 OR FRAP;FKBP-rapamycin associated protein;FRAP|9606|P27348|SP|YWHAQ;14-3-3 protein tau (HS1 protein)|9606
+10664457|coip:coimmunoprecipitation|P42345|SP|FRAP1 OR FRAP;FKBP-rapamycin associated protein;FRAP|9606|P27348|SP|YWHAQ;14-3-3 protein tau (HS1 protein)|9606
+10664460|two hybrid|P15498|SP|VAV1;VAV;Vav proto-oncogene|9606|P52566|SP|RHGDIB;GDID4;Rho GDP-dissociation inhibitor 2;Rho GDI 2;Rho-GDI beta;Ly-GDI|9606
+10664460|copurification|P52566|SP|RHGDIB;GDID4;Rho GDP-dissociation inhibitor 2;Rho GDI 2;Rho-GDI beta;Ly-GDI|9606|P15498|SP|VAV1;VAV;Vav proto-oncogene|9606
+10664460|copurification|P15498|SP|VAV1;VAV;Vav proto-oncogene|9606|P52566|SP|RHGDIB;GDID4;Rho GDP-dissociation inhibitor 2;Rho GDI 2;Rho-GDI beta;Ly-GDI|9606
+10664460|coip:coimmunoprecipitation|P15498|SP|VAV1;VAV;Vav proto-oncogene|9606|P52566|SP|RHGDIB;GDID4;Rho GDP-dissociation inhibitor 2;Rho GDI 2;Rho-GDI beta;Ly-GDI|9606
+10664460|coip:coimmunoprecipitation|P52566|SP|RHGDIB;GDID4;Rho GDP-dissociation inhibitor 2;Rho GDI 2;Rho-GDI beta;Ly-GDI|9606|P15498|SP|VAV1;VAV;Vav proto-oncogene|9606
+10664460|copurification|P52566|SP|RHGDIB;GDID4;Rho GDP-dissociation inhibitor 2;Rho GDI 2;Rho-GDI beta;Ly-GDI|9606|P15498|SP|VAV1;VAV;Vav proto-oncogene|9606
+10664460|copurification|P52565|SP|ARHGDIA;GDIA1;Rho GDP-dissociation inhibitor 1;Rho GDI 1;Rho-GDI alpha|9606|P15498|SP|VAV1;VAV;Vav proto-oncogene|9606
+10664460|coip:coimmunoprecipitation|P15498|SP|VAV1;VAV;Vav proto-oncogene|9606|P52565|SP|ARHGDIA;GDIA1;Rho GDP-dissociation inhibitor 1;Rho GDI 1;Rho-GDI alpha|9606
+10666456|two hybrid|Q06609|SP|RAD51;RAD51A;DNA repair protein RAD51 homolog 1|9606|Q93068|SP|UBL1;SMT3H3;SMT3C;Ubiquitin-like protein UBL1 (Ubiquitin-like protein SMT3C;Ubiquitin-related protein SUMO-1;GAP modifying protein 1;Sentrin)|9606
+10666456|two hybrid|Q06609|SP|RAD51;RAD51A;DNA repair protein RAD51 homolog 1|9606|P50550|SP|UBE2I;UBC9;UBCE9;Ubiquitin-like protein SUMO-1 conjugating enzyme ( Ubiquitin carrier protein)|9606
+10666456|coip:coimmunoprecipitation|Q06609|SP|RAD51;RAD51A;DNA repair protein RAD51 homolog 1|9606|P50550|SP|UBE2I;UBC9;UBCE9;Ubiquitin-like protein SUMO-1 conjugating enzyme ( Ubiquitin carrier protein)|9606
+10666456|coip:coimmunoprecipitation|Q06609|SP|RAD51;RAD51A;DNA repair protein RAD51 homolog 1|9606|P43351|SP|RAD52;DNA repair protein RAD52 homolog|9606
+10666456|coip:coimmunoprecipitation|Q06609|SP|RAD51;RAD51A;DNA repair protein RAD51 homolog 1|9606|Q93068|SP|UBL1;SMT3H3;SMT3C;Ubiquitin-like protein UBL1 (Ubiquitin-like protein SMT3C;Ubiquitin-related protein SUMO-1;GAP modifying protein 1;Sentrin)|9606
+10666456|coip:coimmunoprecipitation|P43351|SP|RAD52;DNA repair protein RAD52 homolog|9606|Q06609|SP|RAD51;RAD51A;DNA repair protein RAD51 homolog 1|9606
+10666456|coip:coimmunoprecipitation|Q93068|SP|UBL1;SMT3H3;SMT3C;Ubiquitin-like protein UBL1 (Ubiquitin-like protein SMT3C;Ubiquitin-related protein SUMO-1;GAP modifying protein 1;Sentrin)|9606|Q06609|SP|RAD51;RAD51A;DNA repair protein RAD51 homolog 1|9606
+10666456|coip:coimmunoprecipitation|Q93068|SP|UBL1;SMT3H3;SMT3C;Ubiquitin-like protein UBL1 (Ubiquitin-like protein SMT3C;Ubiquitin-related protein SUMO-1;GAP modifying protein 1;Sentrin)|9606|P43351|SP|RAD52;DNA repair protein RAD52 homolog|9606
+10666456|coip:coimmunoprecipitation|P43351|SP|RAD52;DNA repair protein RAD52 homolog|9606|P50550|SP|UBE2I;UBC9;UBCE9;Ubiquitin-like protein SUMO-1 conjugating enzyme ( Ubiquitin carrier protein)|9606
+10666456|coip:coimmunoprecipitation|P43351|SP|RAD52;DNA repair protein RAD52 homolog|9606|Q93068|SP|UBL1;SMT3H3;SMT3C;Ubiquitin-like protein UBL1 (Ubiquitin-like protein SMT3C;Ubiquitin-related protein SUMO-1;GAP modifying protein 1;Sentrin)|9606
+10666456|coip:coimmunoprecipitation|Q93068|SP|UBL1;SMT3H3;SMT3C;Ubiquitin-like protein UBL1 (Ubiquitin-like protein SMT3C;Ubiquitin-related protein SUMO-1;GAP modifying protein 1;Sentrin)|9606|P50550|SP|UBE2I;UBC9;UBCE9;Ubiquitin-like protein SUMO-1 conjugating enzyme ( Ubiquitin carrier protein)|9606
+10669754|two hybrid|Q8WUA0|SP|PML;promyelocytic leukemia gene;PML|9606|Q9UER7|SP|DAXX;BING2;Death domain-associated protein 6;Daxx|9606
+10669754|two hybrid|Q8WUA0|SP|PML;promyelocytic leukemia gene;PML|9606|Q9UER7|SP|DAXX;BING2;Death domain-associated protein 6;Daxx|9606
+10669754|two hybrid|Q8WUA0|SP|PML and RARA;NR1B1;fusion protein ( contains:promyelocytic leukemia gene PML and retinoic acid receptor alpha (RAR-alpha), short form|9606|Q9UER7|SP|DAXX;BING2;Death domain-associated protein 6;Daxx|9606
+10669754|coip:coimmunoprecipitation|Q8WUA0|SP|PML;promyelocytic leukemia gene;PML|9606|Q9UER7|SP|DAXX;BING2;Death domain-associated protein 6;Daxx|9606
+10669754|coip:coimmunoprecipitation|Q9UER7|SP|DAXX;BING2;Death domain-associated protein 6;Daxx|9606|Q8WUA0|SP|PML;promyelocytic leukemia gene;PML|9606
+10669754|far western blotting|Q13547|SP|HDAC1;RPD3L1;Histone deacetylase 1;HD1|9606|Q9UER7|SP|DAXX;BING2;Death domain-associated protein 6;Daxx|9606
+10669754|copurification|Q13547|SP|HDAC1;RPD3L1;Histone deacetylase 1;HD1|9606|Q9UER7|SP|DAXX;BING2;Death domain-associated protein 6;Daxx|9606
+10669754|coip:coimmunoprecipitation|Q9UER7|SP|DAXX;BING2;Death domain-associated protein 6;Daxx|9606|Q13547|SP|HDAC1;RPD3L1;Histone deacetylase 1;HD1|9606
+10669754|far western blotting|Q92769|SP|HDAC2;Histone deacetylase 2;HD2|9606|Q9UER7|SP|DAXX;BING2;Death domain-associated protein 6;Daxx|9606
+10669754|far western blotting|O15379|SP|HDAC3;histone deacetylase 3|9606|Q9UER7|SP|DAXX;BING2;Death domain-associated protein 6;Daxx|9606
+10672011|two hybrid|P35968|SP|KDR;FLK1;vascular endothelial growth factor receptor 2 precursor;protein-tyrosine kinase receptor Flk-1;VEGFR-2;kinase insert domain receptor|9606|P19174|SP|PLCG1;PLC1;1-phosphatidylinositol-4,5-bisphosphate phosphodiesterase gamma 1;PLC-gamma-1;Phosphoinositide phospholipase C;Phospholipase C-gamma-1|9606
+10672011|two hybrid|P35968|SP|KDR;FLK1;vascular endothelial growth factor receptor 2 precursor;protein-tyrosine kinase receptor Flk-1;VEGFR-2;kinase insert domain receptor|9606|P19174|SP|PLCG1;PLC1;1-phosphatidylinositol-4,5-bisphosphate phosphodiesterase gamma 1;PLC-gamma-1;Phosphoinositide phospholipase C;Phospholipase C-gamma-1|9606
+10672011|two hybrid|P35968|SP|KDR;FLK1;vascular endothelial growth factor receptor 2 precursor;protein-tyrosine kinase receptor Flk-1;VEGFR-2;kinase insert domain receptor|9606|P19174|SP|PLCG1;PLC1;1-phosphatidylinositol-4,5-bisphosphate phosphodiesterase gamma 1;PLC-gamma-1;Phosphoinositide phospholipase C;Phospholipase C-gamma-1|9606
+10672011|two hybrid|P35968|SP|KDR;FLK1;vascular endothelial growth factor receptor 2 precursor;protein-tyrosine kinase receptor Flk-1;VEGFR-2;kinase insert domain receptor|9606|P19174|SP|PLCG1;PLC1;1-phosphatidylinositol-4,5-bisphosphate phosphodiesterase gamma 1;PLC-gamma-1;Phosphoinositide phospholipase C;Phospholipase C-gamma-1|9606
+10672011|two hybrid|P35968|SP|KDR;FLK1;vascular endothelial growth factor receptor 2 precursor;protein-tyrosine kinase receptor Flk-1;VEGFR-2;kinase insert domain receptor|9606|P19174|SP|PLCG1;PLC1;1-phosphatidylinositol-4,5-bisphosphate phosphodiesterase gamma 1;PLC-gamma-1;Phosphoinositide phospholipase C;Phospholipase C-gamma-1|9606
+10672011|two hybrid|P35968|SP|KDR;FLK1;vascular endothelial growth factor receptor 2 precursor;protein-tyrosine kinase receptor Flk-1;VEGFR-2;kinase insert domain receptor|9606|P19174|SP|PLCG1;PLC1;1-phosphatidylinositol-4,5-bisphosphate phosphodiesterase gamma 1;PLC-gamma-1;Phosphoinositide phospholipase C;Phospholipase C-gamma-1|9606
+10672011|two hybrid|P35968|SP|KDR;FLK1;vascular endothelial growth factor receptor 2 precursor;protein-tyrosine kinase receptor Flk-1;VEGFR-2;kinase insert domain receptor|9606|P19174|SP|PLCG1;PLC1;1-phosphatidylinositol-4,5-bisphosphate phosphodiesterase gamma 1;PLC-gamma-1;Phosphoinositide phospholipase C;Phospholipase C-gamma-1|9606
+10672011|two hybrid|P35968|SP|KDR;FLK1;vascular endothelial growth factor receptor 2 precursor;protein-tyrosine kinase receptor Flk-1;VEGFR-2;kinase insert domain receptor|9606|P19174|SP|PLCG1;PLC1;1-phosphatidylinositol-4,5-bisphosphate phosphodiesterase gamma 1;PLC-gamma-1;Phosphoinositide phospholipase C;Phospholipase C-gamma-1|9606
+10672011|two hybrid|P35968|SP|KDR;FLK1;vascular endothelial growth factor receptor 2 precursor;protein-tyrosine kinase receptor Flk-1;VEGFR-2;kinase insert domain receptor|9606|P19174|SP|PLCG1;PLC1;1-phosphatidylinositol-4,5-bisphosphate phosphodiesterase gamma 1;PLC-gamma-1;Phosphoinositide phospholipase C;Phospholipase C-gamma-1|9606
+10672011|two hybrid|P35968|SP|KDR;FLK1;vascular endothelial growth factor receptor 2 precursor;protein-tyrosine kinase receptor Flk-1;VEGFR-2;kinase insert domain receptor|9606|P19174|SP|PLCG1;PLC1;1-phosphatidylinositol-4,5-bisphosphate phosphodiesterase gamma 1;PLC-gamma-1;Phosphoinositide phospholipase C;Phospholipase C-gamma-1|9606
+10672011|two hybrid|P35968|SP|KDR;FLK1;vascular endothelial growth factor receptor 2 precursor;protein-tyrosine kinase receptor Flk-1;VEGFR-2;kinase insert domain receptor|9606|P19174|SP|PLCG1;PLC1;1-phosphatidylinositol-4,5-bisphosphate phosphodiesterase gamma 1;PLC-gamma-1;Phosphoinositide phospholipase C;Phospholipase C-gamma-1|9606
+10672011|two hybrid|P35968|SP|KDR;FLK1;vascular endothelial growth factor receptor 2 precursor;protein-tyrosine kinase receptor Flk-1;VEGFR-2;kinase insert domain receptor|9606|P19174|SP|PLCG1;PLC1;1-phosphatidylinositol-4,5-bisphosphate phosphodiesterase gamma 1;PLC-gamma-1;Phosphoinositide phospholipase C;Phospholipase C-gamma-1|9606
+10672011|coip:coimmunoprecipitation|P35968|SP|KDR;FLK1;vascular endothelial growth factor receptor 2 precursor;protein-tyrosine kinase receptor Flk-1;VEGFR-2;kinase insert domain receptor|9606|P19174|SP|PLCG1;PLC1;1-phosphatidylinositol-4,5-bisphosphate phosphodiesterase gamma 1;PLC-gamma-1;Phosphoinositide phospholipase C;Phospholipase C-gamma-1|9606
+10657303|copurification|P25963|SP|NFKBIA;NF-kappaB inhibitor alpha|9606|Q9NYS0|SP|Kappa B-ras 1|9606
+10657303|copurification|Q15653|SP|NFKBIB;NF-kappaB inhibitor beta|9606|Q9NYS0|SP|Kappa B-ras 1|9606
+10657303|copurification|Q15653|SP|NFKBIB;NF-kappaB inhibitor beta|9606|Q9NYR9|SP|Kappa B-ras 2|9606
+10657303|copurification|P25963|SP|NFKBIA;NF-kappaB inhibitor alpha|9606|Q9NYR9|SP|Kappa B-ras 2|9606
+10657303|copurification|Q9NYS0|SP|Kappa B-ras 1|9606|P25963|SP|NFKBIA;NF-kappaB inhibitor alpha|9606
+10681512|copurification|P08047|SP|SP1;TSFP1;transcription factor Sp1|9606|Q92731|SP|ESR2;NR3A2;ESTRB;estrogen receptor beta|9606
+10681512|copurification|P08047|SP|SP1;TSFP1;transcription factor Sp1|9606|Q92731|SP|ESR2;NR3A2;ESTRB;estrogen receptor beta|9606
+10681512|copurification|P08047|SP|SP1;TSFP1;transcription factor Sp1|9606|Q92731|SP|ESR2;NR3A2;ESTRB;estrogen receptor beta|9606
+10683443|two hybrid|P08575|SP|CD45;Leukocyte common antigen;protein tyrosine phosphatase PTP|9606|P08575|SP|CD45;Leukocyte common antigen;protein tyrosine phosphatase PTP|9606
+10692439|two hybrid|P27540|SP|ARNT;Aryl hydrocarbon receptor nuclear translocator (ARNT protein)|9606|Q9UBP5|SP|HEY2;CHF1;Basic-helix-loop-helix protein, BHLH DJ293L8.1;Cardiovascular basic helix-loop-helix factor 1, CHF1|9606
+10692439|two hybrid|P27540|SP|ARNT;Aryl hydrocarbon receptor nuclear translocator (ARNT protein)|9606|Q9Y5J3|SP|HEY1;HESR1;CHF2;Hairy/enhancer-of-split related with YRPW motif 1;Cardiovascular helix-loop-helix factor CHF2|9606
+10692483|two hybrid|P14416|SP|DRD2;D(2) dopamine receptor|9606|P21333|SP|FLNA;FLN1;FLN;Filamin A (ABP-280)|9606
+10692483|two hybrid|P14416|SP|DRD2;D(2) dopamine receptor|9606|P21333|SP|FLNA;FLN1;FLN;Filamin A (ABP-280)|9606
+10692483|copurification|P14416|SP|DRD2;D(2) dopamine receptor|9606|P21333|SP|FLNA;FLN1;FLN;Filamin A (ABP-280)|9606
+10692483|two hybrid|P35462|SP|DRD3;D(3) dopamine receptor|9606|P21333|SP|FLNA;FLN1;FLN;Filamin A (ABP-280)|9606
+10692483|copurification|P35462|SP|DRD3;D(3) dopamine receptor|9606|P21333|SP|FLNA;FLN1;FLN;Filamin A (ABP-280)|9606
+10694430|two hybrid|O75030|SP|MITF;Microphthalmia-associated transcription factor MITF|9606|P50550|SP|UBE2I;UBC9;UBCE9;Ubiquitin-like protein SUMO-1 conjugating enzyme ( Ubiquitin carrier protein)|9606
+10694430|copurification|P50550|SP|UBE2I;UBC9;UBCE9;Ubiquitin-like protein SUMO-1 conjugating enzyme ( Ubiquitin carrier protein)|9606|O75030|SP|MITF;Microphthalmia-associated transcription factor MITF|9606
+10698743|two hybrid|P21728|SP|DRD1;D(1A) dopamine receptor|9606|Q9NYX4|SP|D1 dopamine receptor-interacting protein calcyon|9606
+10702276|far western blotting|P98160|SP|HSPG2;Basement membrane-specific heparan sulfate proteoglycan core protein precursor HSPG;perlecan;PLC|9606|P21781|SP|FGF7;KGF;Keratinocyte growth factor precursor KGF;fibroblast growth factor-7;FGF-7 HBGF-7|9606
+10702276|far western blotting|P98160|SP|HSPG2;Basement membrane-specific heparan sulfate proteoglycan core protein precursor HSPG;perlecan;PLC|9606|P21781|SP|FGF7;KGF;Keratinocyte growth factor precursor KGF;fibroblast growth factor-7;FGF-7 HBGF-7|9606
+10702276|two hybrid|P21781|SP|FGF7;KGF;Keratinocyte growth factor precursor KGF;fibroblast growth factor-7;FGF-7 HBGF-7|9606|P98160|SP|HSPG2;Basement membrane-specific heparan sulfate proteoglycan core protein precursor HSPG;perlecan;PLC|9606
+10702276|far western blotting|P98160|SP|HSPG2;Basement membrane-specific heparan sulfate proteoglycan core protein precursor HSPG;perlecan;PLC|9606|P21781|SP|FGF7;KGF;Keratinocyte growth factor precursor KGF;fibroblast growth factor-7;FGF-7 HBGF-7|9606
+10702276|two hybrid|P21781|SP|FGF7;KGF;Keratinocyte growth factor precursor KGF;fibroblast growth factor-7;FGF-7 HBGF-7|9606|P98160|SP|HSPG2;Basement membrane-specific heparan sulfate proteoglycan core protein precursor HSPG;perlecan;PLC|9606
+10702276|two hybrid|P21781|SP|FGF7;KGF;Keratinocyte growth factor precursor KGF;fibroblast growth factor-7;FGF-7 HBGF-7|9606|P98160|SP|HSPG2;Basement membrane-specific heparan sulfate proteoglycan core protein precursor HSPG;perlecan;PLC|9606
+10702276|two hybrid|P21781|SP|FGF7;KGF;Keratinocyte growth factor precursor KGF;fibroblast growth factor-7;FGF-7 HBGF-7|9606|P98160|SP|HSPG2;Basement membrane-specific heparan sulfate proteoglycan core protein precursor HSPG;perlecan;PLC|9606
+10702276|two hybrid|P98160|SP|HSPG2;Basement membrane-specific heparan sulfate proteoglycan core protein precursor HSPG;perlecan;PLC|9606|P21781|SP|FGF7;KGF;Keratinocyte growth factor precursor KGF;fibroblast growth factor-7;FGF-7 HBGF-7|9606
+10702276|two hybrid|P98160|SP|HSPG2;Basement membrane-specific heparan sulfate proteoglycan core protein precursor HSPG;perlecan;PLC|9606|P21781|SP|FGF7;KGF;Keratinocyte growth factor precursor KGF;fibroblast growth factor-7;FGF-7 HBGF-7|9606
+10702276|two hybrid|P98160|SP|HSPG2;Basement membrane-specific heparan sulfate proteoglycan core protein precursor HSPG;perlecan;PLC|9606|P21781|SP|FGF7;KGF;Keratinocyte growth factor precursor KGF;fibroblast growth factor-7;FGF-7 HBGF-7|9606
+10702276|two hybrid|P98160|SP|HSPG2;Basement membrane-specific heparan sulfate proteoglycan core protein precursor HSPG;perlecan;PLC|9606|P21781|SP|FGF7;KGF;Keratinocyte growth factor precursor KGF;fibroblast growth factor-7;FGF-7 HBGF-7|9606
+10698492|two hybrid|P14921|SP|ETS1;C-ets-1 protein (p54)|9606|Q9UER7|SP|DAXX;BING2;Death domain-associated protein 6;Daxx|9606
+10698492|copurification|Q9UER7|SP|DAXX;BING2;Death domain-associated protein 6;Daxx|9606|P14921|SP|ETS1;C-ets-1 protein (p54)|9606
+10698492|copurification|P14921|SP|ETS1;C-ets-1 protein (p54)|9606|Q9UER7|SP|DAXX;BING2;Death domain-associated protein 6;Daxx|9606
+10707955|coip:coimmunoprecipitation|P03372|SP|ESR1;NR3A1;ESR;estrogen receptor ESR1;ER-alpha|9606|Q15424|SP|HET;SAF-B;HSP27 ERE-TATA-binding protein (nuclear matrix protein/scaffold attachment factor HET/SAF-B)|9606
+10707955|copurification|Q15424|SP|HET;SAF-B;HSP27 ERE-TATA-binding protein (nuclear matrix protein/scaffold attachment factor HET/SAF-B)|9606|P03372|SP|ESR1;NR3A1;ESR;estrogen receptor ESR1;ER-alpha|9606
+10707955|copurification|P03372|SP|ESR1;NR3A1;ESR;estrogen receptor ESR1;ER-alpha|9606|Q15424|SP|HET;SAF-B;HSP27 ERE-TATA-binding protein (nuclear matrix protein/scaffold attachment factor HET/SAF-B)|9606
+10707955|copurification|P03372|SP|ESR1;NR3A1;ESR;estrogen receptor ESR1;ER-alpha|9606|Q15424|SP|HET;SAF-B;HSP27 ERE-TATA-binding protein (nuclear matrix protein/scaffold attachment factor HET/SAF-B)|9606
+10707955|copurification|P03372|SP|ESR1;NR3A1;ESR;estrogen receptor ESR1;ER-alpha|9606|Q15424|SP|HET;SAF-B;HSP27 ERE-TATA-binding protein (nuclear matrix protein/scaffold attachment factor HET/SAF-B)|9606
+10707955|copurification|P03372|SP|ESR1;NR3A1;ESR;estrogen receptor ESR1;ER-alpha|9606|Q15424|SP|HET;SAF-B;HSP27 ERE-TATA-binding protein (nuclear matrix protein/scaffold attachment factor HET/SAF-B)|9606
+10707955|copurification|P03372|SP|ESR1;NR3A1;ESR;estrogen receptor ESR1;ER-alpha|9606|Q15424|SP|HET;SAF-B;HSP27 ERE-TATA-binding protein (nuclear matrix protein/scaffold attachment factor HET/SAF-B)|9606
+10707955|copurification|P03372|SP|ESR1;NR3A1;ESR;estrogen receptor ESR1;ER-alpha|9606|Q15424|SP|HET;SAF-B;HSP27 ERE-TATA-binding protein (nuclear matrix protein/scaffold attachment factor HET/SAF-B)|9606
+8633037|coip:coimmunoprecipitation|P29353|SP|SHC;SHC transforming protein|9606|P06748|SP|NPM;NPM1 and ALK;fusion protein p80 (contains:(NPM;Nucleophosmin;Nuclear phosphoprotein B23;Numatrin;Nucleolar protein NO38) and (ALK tyrosine kinase receptor precursor;Anaplastic lymphoma kinase))|9606
+8633037|coip:coimmunoprecipitation|P35568|SP|IRS1;IRS-1;Insulin receptor substrate 1|9606|P06748|SP|NPM;NPM1 and ALK;fusion protein p80 (contains:(NPM;Nucleophosmin;Nuclear phosphoprotein B23;Numatrin;Nucleolar protein NO38) and (ALK tyrosine kinase receptor precursor;Anaplastic lymphoma kinase))|9606
+8633037|copurification|P29354|SP|GRB2;ASH;Growth factor receptor-bound protein 2 (GRB2 adapter protein)|9606|P06748|SP|NPM;NPM1 and ALK;fusion protein p80 (contains:(NPM;Nucleophosmin;Nuclear phosphoprotein B23;Numatrin;Nucleolar protein NO38) and (ALK tyrosine kinase receptor precursor;Anaplastic lymphoma kinase))|9606
+8633037|copurification|P29354|SP|GRB2;ASH;Growth factor receptor-bound protein 2 (GRB2 adapter protein)|9606|P06748|SP|NPM;NPM1 and ALK;fusion protein p80 (contains:(NPM;Nucleophosmin;Nuclear phosphoprotein B23;Numatrin;Nucleolar protein NO38) and (ALK tyrosine kinase receptor precursor;Anaplastic lymphoma kinase))|9606
+10712517|coip:coimmunoprecipitation|Q13873|SP|BMPR2;PPH1;Bone morphogenetic protein receptor type II precursor|9606|Q13873|SP|BMPR2;PPH1;Bone morphogenetic protein receptor type II precursor|9606
+10712517|coip:coimmunoprecipitation|Q13873|SP|BMPR2;PPH1;Bone morphogenetic protein receptor type II precursor|9606|P36894|SP|BMPR1A;ACVRLK3;Bone morphogenetic protein receptor type IA precursor|9606
+10712517|coip:coimmunoprecipitation|P36894|SP|BMPR1A;ACVRLK3;Bone morphogenetic protein receptor type IA precursor|9606|Q13873|SP|BMPR2;PPH1;Bone morphogenetic protein receptor type II precursor|9606
+10712517|coip:coimmunoprecipitation|P36894|SP|BMPR1A;ACVRLK3;Bone morphogenetic protein receptor type IA precursor|9606|Q13873|SP|BMPR2;PPH1;Bone morphogenetic protein receptor type II precursor|9606
+10712517|coip:coimmunoprecipitation|P36894|SP|BMPR1A;ACVRLK3;Bone morphogenetic protein receptor type IA precursor|9606|P36894|SP|BMPR1A;ACVRLK3;Bone morphogenetic protein receptor type IA precursor|9606
+10713076|two hybrid|Q9UNI2|SP|ALIEN;ALIEN|9606|P51843|SP|NR0B1;AHC;DAX1;Orphan nuclear receptor DAX-1|9606
+10713076|two hybrid|Q9UNI2|SP|ALIEN;ALIEN|9606|P51843|SP|NR0B1;AHC;DAX1;Orphan nuclear receptor DAX-1|9606
+10713076|copurification|Q9UNI2|SP|ALIEN;ALIEN|9606|P51843|SP|NR0B1;AHC;DAX1;Orphan nuclear receptor DAX-1|9606
+10713076|coip:coimmunoprecipitation|Q9UNI2|SP|ALIEN;ALIEN|9606|P51843|SP|NR0B1;AHC;DAX1;Orphan nuclear receptor DAX-1|9606
+10713076|two hybrid|Q9UNI2|SP|ALIEN;ALIEN|9606|P10828|SP|THRB;NR1A2;ERBA2;THR1;thyroid hormone receptor beta-1|9606
+10713076|two hybrid|Q9UNI2|SP|ALIEN;ALIEN|9606|P10828|SP|THRB;NR1A2;ERBA2;THR1;thyroid hormone receptor beta-1|9606
+10713105|copurification|P78317|SP|RNF4;RING finger protein 4|9606|Q9P1A9|SP|PATZ;POZ-AT hook-zinc finger protein;PATZ|9606
+10713105|copurification|Q9P1A9|SP|PATZ;POZ-AT hook-zinc finger protein;PATZ|9606|P78317|SP|RNF4;RING finger protein 4|9606
+10713105|coip:coimmunoprecipitation|P78317|SP|RNF4;RING finger protein 4|9606|Q9P1A9|SP|PATZ;POZ-AT hook-zinc finger protein;PATZ|9606
+10713105|two hybrid|P78317|SP|RNF4;RING finger protein 4|9606|P17096|SP|HMGA1;HMGIY;High mobility group protein HMG-I/HMG-Y|9606
+10713105|copurification|P17096|SP|HMGA1;HMGIY;High mobility group protein HMG-I/HMG-Y|9606|P78317|SP|RNF4;RING finger protein 4|9606
+10713182|two hybrid|P10828|SP|THRB;NR1A2;ERBA2;THR1;thyroid hormone receptor beta-1|9606|P10588|SP|NR2F6;ERBAL2;EAR2;Orphan nuclear receptor EAR-2|9606
+10713182|copurification|P10828|SP|THRB;NR1A2;ERBA2;THR1;thyroid hormone receptor beta-1|9606|P10588|SP|NR2F6;ERBAL2;EAR2;Orphan nuclear receptor EAR-2|9606
+10713182|copurification|P10588|SP|NR2F6;ERBAL2;EAR2;Orphan nuclear receptor EAR-2|9606|P10828|SP|THRB;NR1A2;ERBA2;THR1;thyroid hormone receptor beta-1|9606
+10713182|copurification|P10588|SP|NR2F6;ERBAL2;EAR2;Orphan nuclear receptor EAR-2|9606|P10828|SP|THRB;NR1A2;ERBA2;THR1;thyroid hormone receptor beta-1|9606
+10713182|copurification|P10588|SP|NR2F6;ERBAL2;EAR2;Orphan nuclear receptor EAR-2|9606|P10828|SP|THRB;NR1A2;ERBA2;THR1;thyroid hormone receptor beta-1|9606
+10713182|coip:coimmunoprecipitation|P10588|SP|NR2F6;ERBAL2;EAR2;Orphan nuclear receptor EAR-2|9606|P10828|SP|THRB;NR1A2;ERBA2;THR1;thyroid hormone receptor beta-1|9606
+10713182|copurification|P10588|SP|NR2F6;ERBAL2;EAR2;Orphan nuclear receptor EAR-2|9606|P04150|SP|GR;Glucocorticoid receptor (GR)|9606
+11713164|two hybrid|Q9CV75|SP|Skiip;SKIIP, Ski-interating protein, nuclear receptor coactivator|9606|Q06330|SP|CBF1;recombining binding protein suppressor of hairless,  J kappa-recombination signal binding protein,  RBP-JK, CBF1 (CSL protein)|9606
+10713667|two hybrid|P30305|SP|CDC25B;CDC25HU2;M-phase inducer phosphatase 2;dual specificity phosphatase Cdc25B|9606|P29312|SP|YWHAZ;14-3-3 protein zeta/delta|9606
+10713667|two hybrid|P30305|SP|CDC25B;CDC25HU2;M-phase inducer phosphatase 2;dual specificity phosphatase Cdc25B|9606|Q04917|SP|YWHAH;YWHA1;14-3-3 protein eta|9606
+10713667|two hybrid|P30305|SP|CDC25B;CDC25HU2;M-phase inducer phosphatase 2;dual specificity phosphatase Cdc25B|9606|P31946|SP|YWHAB;14-3-3 protein beta/alpha|9606
+10713667|coip:coimmunoprecipitation|P30305|SP|CDC25B;CDC25HU2;M-phase inducer phosphatase 2;dual specificity phosphatase Cdc25B|9606|Q04917|SP|YWHAH;YWHA1;14-3-3 protein eta|9606
+11713164|copurification|Q06330|SP|CBF1;recombining binding protein suppressor of hairless,  J kappa-recombination signal binding protein,  RBP-JK, CBF1 (CSL protein)|9606|Q9CV75|SP|Skiip;SKIIP, Ski-interating protein, nuclear receptor coactivator|9606
+10713667|copurification|Q04917|SP|YWHAH;YWHA1;14-3-3 protein eta|9606|P30305|SP|CDC25B;CDC25HU2;M-phase inducer phosphatase 2;dual specificity phosphatase Cdc25B|9606
+10713667|copurification|P29312|SP|YWHAZ;14-3-3 protein zeta/delta|9606|P30305|SP|CDC25B;CDC25HU2;M-phase inducer phosphatase 2;dual specificity phosphatase Cdc25B|9606
+11713164|two hybrid|Q9Y618|SP|NCOR2, SMRT;nuclear receptor co-repressor, silencing mediator of retinoic acid and thyroid hormone receptor SMRT|9606|Q9CV75|SP|Skiip;SKIIP, Ski-interating protein, nuclear receptor coactivator|9606
+11713164|two hybrid|Q9Y618|SP|NCOR2, SMRT;nuclear receptor co-repressor, silencing mediator of retinoic acid and thyroid hormone receptor SMRT|9606|Q9CV75|SP|Skiip;SKIIP, Ski-interating protein, nuclear receptor coactivator|9606
+10713667|copurification|Q04917|SP|YWHAH;YWHA1;14-3-3 protein eta|9606|P30305|SP|CDC25B;CDC25HU2;M-phase inducer phosphatase 2;dual specificity phosphatase Cdc25B|9606
+10713667|copurification|Q04917|SP|YWHAH;YWHA1;14-3-3 protein eta|9606|P30305|SP|CDC25B;CDC25HU2;M-phase inducer phosphatase 2;dual specificity phosphatase Cdc25B|9606
+10713667|copurification|Q04917|SP|YWHAH;YWHA1;14-3-3 protein eta|9606|P30305|SP|CDC25B;CDC25HU2;M-phase inducer phosphatase 2;dual specificity phosphatase Cdc25B|9606
+10719365|two hybrid|P42771|SP|CDKN2A;CDKN2;cyclin-dependent kinase 4 inhibitor A;tumor suppressor CDKN2A (cell cycle inhibitor)|9606|P11802|SP|CDK4;cell division protein kinase 4;cyclin-dependent kinase 4|9606
+10725395|two hybrid|Q15303|SP|ERBB4;HER4;Receptor protein-tyrosine kinase erbB-4 precursor;Tyrosine kinase-type cell surface receptor HER4|9606|P78352|SP|DLG4;PSD95;Presynaptic density protein 95;PSD-95|9606
+10725395|two hybrid|Q15303|SP|ERBB4;HER4;Receptor protein-tyrosine kinase erbB-4 precursor;Tyrosine kinase-type cell surface receptor HER4|9606|Q15700|SP|DLG2;Channel associated protein of synapse-110;Chapsyn-110;Discs, large homolog 2|9606
+10725395|two hybrid|Q15303|SP|ERBB4;HER4;Receptor protein-tyrosine kinase erbB-4 precursor;Tyrosine kinase-type cell surface receptor HER4|9606|Q92796|SP|DLG3;KIAA1232;Presynaptic protein SAP102;synapse-associated protein 102;Discs, large homolog 3|9606
+10725395|two hybrid|Q15303|SP|ERBB4;HER4;Receptor protein-tyrosine kinase erbB-4 precursor;Tyrosine kinase-type cell surface receptor HER4|9606|Q13425|SP|SNTB2;SNT2B2;Beta-2-syntrophin|9606
+10727212|two hybrid|Q12830|SP|FALZ;FAC1;Fetal Alzheimer antigen;Fetal Alz-50-reactive clone 1|9606|P56270|SP|MAZ;Myc-associated zinc finger protein (MAZI);purine-binding transcription factor|9606
+10727212|copurification|Q12830|SP|FALZ;FAC1;Fetal Alzheimer antigen;Fetal Alz-50-reactive clone 1|9606|P56270|SP|MAZ;Myc-associated zinc finger protein (MAZI);purine-binding transcription factor|9606
+10727212|copurification|Q12830|SP|FALZ;FAC1;Fetal Alzheimer antigen;Fetal Alz-50-reactive clone 1|9606|P56270|SP|MAZ;Myc-associated zinc finger protein (MAZI);purine-binding transcription factor|9606
+10727212|copurification|P56270|SP|MAZ;Myc-associated zinc finger protein (MAZI);purine-binding transcription factor|9606|Q12830|SP|FALZ;FAC1;Fetal Alzheimer antigen;Fetal Alz-50-reactive clone 1|9606
+10727212|coip:coimmunoprecipitation|Q12830|SP|FALZ;FAC1;Fetal Alzheimer antigen;Fetal Alz-50-reactive clone 1|9606|P56270|SP|MAZ;Myc-associated zinc finger protein (MAZI);purine-binding transcription factor|9606
+10727444|two hybrid|P22557|SP|ALAS2;ALASE;ASB;5-aminolevulinic acid synthase, erythroid-specific, mitochondrial precursor|9606|Q9P2R7|SP|SUCLA2;Succinyl-CoA ligase [ADP-forming] beta-chain, mitochondrial precursor|9606
+10727444|coip:coimmunoprecipitation|P22557|SP|ALAS2;ALASE;ASB;5-aminolevulinic acid synthase, erythroid-specific, mitochondrial precursor|9606|Q9P2R7|SP|SUCLA2;Succinyl-CoA ligase [ADP-forming] beta-chain, mitochondrial precursor|9606
+10727444|coip:coimmunoprecipitation|Q9P2R7|SP|SUCLA2;Succinyl-CoA ligase [ADP-forming] beta-chain, mitochondrial precursor|9606|P22557|SP|ALAS2;ALASE;ASB;5-aminolevulinic acid synthase, erythroid-specific, mitochondrial precursor|9606
+10727444|two hybrid|P22557|SP|ALAS2;ALASE;ASB;5-aminolevulinic acid synthase, erythroid-specific, mitochondrial precursor|9606|Q9P2R7|SP|SUCLA2;Succinyl-CoA ligase [ADP-forming] beta-chain, mitochondrial precursor|9606
+10727444|two hybrid|Q9P2R7|SP|SUCLA2;Succinyl-CoA ligase [ADP-forming] beta-chain, mitochondrial precursor|9606|P22557|SP|ALAS2;ALASE;ASB;5-aminolevulinic acid synthase, erythroid-specific, mitochondrial precursor|9606
+10727444|two hybrid|P22557|SP|ALAS2;ALASE;ASB;5-aminolevulinic acid synthase, erythroid-specific, mitochondrial precursor|9606|Q9P2R7|SP|SUCLA2;Succinyl-CoA ligase [ADP-forming] beta-chain, mitochondrial precursor|9606
+10727444|two hybrid|P22557|SP|ALAS2;ALASE;ASB;5-aminolevulinic acid synthase, erythroid-specific, mitochondrial precursor|9606|Q9P2R7|SP|SUCLA2;Succinyl-CoA ligase [ADP-forming] beta-chain, mitochondrial precursor|9606
+10727209|two hybrid|P18054|SP|ALOX12;LOG12;Arachidonate 12-lipoxygenase, 12S-type (12-LOX)|9606|P13647|SP|KRT5;Keratin, type II cytoskeletal 5|9606
+10727209|experimental knowledge based|P18054|SP|ALOX12;LOG12;Arachidonate 12-lipoxygenase, 12S-type (12-LOX)|9606|P13647|SP|KRT5;Keratin, type II cytoskeletal 5|9606
+10727209|coip:coimmunoprecipitation|P13647|SP|KRT5;Keratin, type II cytoskeletal 5|9606|P18054|SP|ALOX12;LOG12;Arachidonate 12-lipoxygenase, 12S-type (12-LOX)|9606
+10727209|coip:coimmunoprecipitation|P18054|SP|ALOX12;LOG12;Arachidonate 12-lipoxygenase, 12S-type (12-LOX)|9606|P13647|SP|KRT5;Keratin, type II cytoskeletal 5|9606
+10722692|two hybrid|Q92905|SP|JUN activation domain-binding protein-1 (JAB1)|9606|O00150|SP|Steroid receptor coactivator-1 (SRC-1)|9606
+10722692|two hybrid|O00150|SP|Steroid receptor coactivator-1 (SRC-1)|9606|Q92905|SP|JUN activation domain-binding protein-1 (JAB1)|9606
+10722692|two hybrid|Q92905|SP|JUN activation domain-binding protein-1 (JAB1)|9606|O00150|SP|Steroid receptor coactivator-1 (SRC-1)|9606
+10722692|two hybrid|O00150|SP|Steroid receptor coactivator-1 (SRC-1)|9606|Q92905|SP|JUN activation domain-binding protein-1 (JAB1)|9606
+10722692|copurification|Q92905|SP|JUN activation domain-binding protein-1 (JAB1)|9606|O00150|SP|Steroid receptor coactivator-1 (SRC-1)|9606
+10731636|two hybrid|O00150|SP|Steroid receptor coactivator-1 (SRC-1)|9606|P03372|SP|ESR1;NR3A1;ESR;estrogen receptor ESR1;ER-alpha|9606
+10731636|two hybrid|O00150|SP|Steroid receptor coactivator-1 (SRC-1)|9606|Q92731|SP|ESR2;NR3A2;ESTRB;estrogen receptor beta|9606
+10731636|two hybrid|O00150|SP|Steroid receptor coactivator-1 (SRC-1)|9606|P04150|SP|GR;Glucocorticoid receptor (GR)|9606
+10731636|two hybrid|O00150|SP|Steroid receptor coactivator-1 (SRC-1)|9606|P10275|SP|AR;NR3C4;DHTR;androgen receptor|9606
+10731636|two hybrid|O00150|SP|Steroid receptor coactivator-1 (SRC-1)|9606|Q07869|SP|PPARA;NR1C1;PPAR;Peroxisome proliferator activated receptor alpha;PPAR-alpha|9606
+10731636|two hybrid|O00150|SP|Steroid receptor coactivator-1 (SRC-1)|9606|P37231|SP|PPARG;NR1C3;Peroxisome proliferator activated receptor gamma;PPAR-gamma|9606
+10487761|coip:coimmunoprecipitation|P56524|SP|HDAC4;KIAA0288;histone deacetylase 4|9606|Q02078|SP|MEF2A or MEF2;Myocyte-specific enhancer factor 2A|9606
+10487761|coip:coimmunoprecipitation|P56524|SP|HDAC4;KIAA0288;histone deacetylase 4|9606|Q02078|SP|MEF2A or MEF2;Myocyte-specific enhancer factor 2A|9606
+10487761|copurification|P56524|SP|HDAC4;KIAA0288;histone deacetylase 4|9606|Q02078|SP|MEF2A or MEF2;Myocyte-specific enhancer factor 2A|9606
+10487761|coip:coimmunoprecipitation|Q9UKV0|SP|HDAC9 or HDAC7B or HDAC7 or KIAA0744 or MITR;Histone deacetylase 9, splice form 3|9606|Q02078|SP|MEF2A or MEF2;Myocyte-specific enhancer factor 2A|9606
+12901838|coip:coimmunoprecipitation|P49768|SP|PSEN1;PSNL1;AD3;PS1;presenilin 1|9606|P56817|SP|BACE1;Beta-secretase|9606

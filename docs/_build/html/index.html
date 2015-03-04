@@ -1,0 +1,542 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to bioigraph’s documentation! &mdash; bioigraph 0.1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="bioigraph 0.1.1 documentation" href="#" />
+    <link rel="next" title="Welcome to bioigraph’s documentation!" href="" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="#" title="Welcome to bioigraph’s documentation!"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">bioigraph 0.1.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="welcome-to-bioigraph-s-documentation">
+<h1>Welcome to bioigraph&#8217;s documentation!<a class="headerlink" href="#welcome-to-bioigraph-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Welcome to bioigraph&#8217;s documentation!</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#examples">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#example-1-building-the-network">Example 1: building the network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-2-using-the-mapper-class-for-translating-ids">Example 2: using the Mapper class for translating IDs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#module-bioigraph.bioigraph">Reference</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="example-1-building-the-network">
+<h2>Example 1: building the network<a class="headerlink" href="#example-1-building-the-network" title="Permalink to this headline">¶</a></h2>
+<p>Import the module and create an instance. MySQL settings are stored by default in mysql_config/defaults.mysql, now you don&#8217;t need to modify it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">bioigraph</span>
+<span class="n">mysql_gelati</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="s">&#39;mapping_gelati&#39;</span><span class="p">)</span>
+<span class="n">mysql_chembl</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="s">&#39;chembl_ebi&#39;</span><span class="p">)</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">bioigraph</span><span class="o">.</span><span class="n">BioGraph</span><span class="p">(</span><span class="mi">9606</span><span class="p">,</span> <span class="n">mysql</span> <span class="o">=</span> <span class="n">mysql_gelati</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The tables for ID conversions, and the network of the selected manually curated pathway databases can be initialized this way:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">net</span><span class="o">.</span><span class="n">init_network</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Resources without references for each interaction are available separately. For example, to build a comprehensive phosphonetwork, you might want to load interactions from high-throughput data in PhosphoSite, kinase-substrate relationships from PhosphoNetworks and MIMP. This is the way to do it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">bioigraph.data_formats</span> <span class="kn">import</span> <span class="n">good</span>
+<span class="n">net</span><span class="o">.</span><span class="n">load_resources</span><span class="p">(</span><span class="n">lst</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;mimp&#39;</span><span class="p">:</span> <span class="n">good</span><span class="p">[</span><span class="s">&#39;mimp&#39;</span><span class="p">]})</span>
+<span class="n">net</span><span class="o">.</span><span class="n">load_resources</span><span class="p">(</span><span class="n">lst</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;pnetworks&#39;</span><span class="p">:</span> <span class="n">good</span><span class="p">[</span><span class="s">&#39;pnetworks&#39;</span><span class="p">]})</span>
+<span class="n">net</span><span class="o">.</span><span class="n">load_resources</span><span class="p">(</span><span class="n">lst</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;psite_noref&#39;</span><span class="p">:</span> <span class="n">good</span><span class="p">[</span><span class="s">&#39;psite_noref&#39;</span><span class="p">]})</span>
+</pre></div>
+</div>
+<p>In case you have your own interaction data, and you wish to merge this into the network, you first need to define its format, and then call the load_resource() function. In this simple example, the proteins are noted by Gene Symbols, their names are in columns #0 and #1, while from column #2 an edge attribute named &#8216;score&#8217; will be read. The file is tab separated, and the file name is &#8216;mylist.sif&#8217;. (This won&#8217;t work unless you really have a file like this.)</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">mylist</span> <span class="o">=</span> <span class="n">bioigraph</span><span class="o">.</span><span class="n">input_formats</span><span class="o">.</span><span class="n">ReadSettings</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;mylist&quot;</span><span class="p">,</span>
+    <span class="n">separator</span> <span class="o">=</span> <span class="s">&quot;</span><span class="se">\t</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">nameColA</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">nameColB</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">nameTypeA</span> <span class="o">=</span> <span class="s">&quot;genesymbol&quot;</span><span class="p">,</span> <span class="n">nameTypeB</span> <span class="o">=</span> <span class="s">&quot;genesymbol&quot;</span><span class="p">,</span>
+    <span class="n">isDirected</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">inFile</span> <span class="o">=</span> <span class="s">&#39;mylist.sif&#39;</span><span class="p">,</span>
+    <span class="n">extraEdgeAttrs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;score&#39;</span><span class="p">:</span> <span class="mi">2</span>
+    <span class="p">})</span>
+<span class="n">net</span><span class="o">.</span><span class="n">load_resource</span><span class="p">(</span><span class="n">mylist</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Although proteins are identified by UniProt IDs, it is useful to have standard gene symbols as labels, to make things more human understandable.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">net</span><span class="o">.</span><span class="n">genesymbol_labels</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Now the igraph object is in net.graph, vertex and edge attributes are accessible the usual way:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">net</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+<span class="n">net</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;label&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Let&#8217;s see the default attributes of edges:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">net</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;sources&#39;</span><span class="p">]</span>
+<span class="n">net</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;references&#39;</span><span class="p">]</span>
+<span class="n">net</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;dirs&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The graph is undirected by default, and &#8216;Direction&#8217; objects can be found in &lt;edge&gt;[&#8216;dirs&#8217;] to describe the directions and signs of the edge:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">print</span> <span class="n">net</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="mi">111</span><span class="p">][</span><span class="s">&#39;dirs&#39;</span><span class="p">]</span>
+<span class="n">net</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="mi">111</span><span class="p">]</span><span class="o">.</span><span class="n">is_directed</span><span class="p">()</span>
+<span class="n">net</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="mi">111</span><span class="p">][</span><span class="s">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">is_inhibition</span><span class="p">()</span>
+<span class="n">net</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="mi">111</span><span class="p">][</span><span class="s">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">which_dirs</span><span class="p">()</span>
+<span class="n">net</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="mi">111</span><span class="p">][</span><span class="s">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_dir</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="mi">111</span><span class="p">][</span><span class="s">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">which_dirs</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>To convert the igraph object to a directed graph, use this function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">net</span><span class="o">.</span><span class="n">get_directed</span><span class="p">()</span>
+<span class="n">net</span><span class="o">.</span><span class="n">dgraph</span><span class="o">.</span><span class="n">ecount</span><span class="p">()</span>
+<span class="n">net</span><span class="o">.</span><span class="n">dgraph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To replace the graph with the giant component of the directed graph:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">net</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">get_giant</span><span class="p">(</span><span class="n">graph</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">dgraph</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Get compounds for all the proteins in the network:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">net</span><span class="o">.</span><span class="n">compounds_from_chembl</span><span class="p">((</span><span class="bp">None</span><span class="p">,</span> <span class="s">&#39;chembl_ebi&#39;</span><span class="p">),</span> <span class="n">pchembl</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This works only from EBI, as the ChEMBL MySQL instance running on an EBI virtual machine. To use it from home, start an SSH tunnel to EBI: ssh -o proxycommand=&#8221;ssh -p 2222 gate.ebi.ac.uk proxy %h&#8221; login.ebi.ac.uk -L 3306:172.22.68.151:3306
+And while the tunnel is open, run the command above with mysql settings pointing to localhost:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">net</span><span class="o">.</span><span class="n">compounds_from_chembl</span><span class="p">((</span><span class="bp">None</span><span class="p">,</span> <span class="s">&#39;chembl&#39;</span><span class="p">),</span> <span class="n">pchembl</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can find the list of compounds and the requested data (now only the pchembl values) in vertex attributes:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">net</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="s">&#39;compounds_chembl&#39;</span><span class="p">]</span>
+<span class="n">net</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="s">&#39;compounds_data&#39;</span><span class="p">]</span>
+<span class="n">net</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="s">&#39;compounds_data&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;pchembl&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Loading PTMs. This function loads PTMs from all the available resources. It takes long time first, but once it saves the downloaded data under ./cache directory, it is much faster to run again.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">net</span><span class="o">.</span><span class="n">load_ptms</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Individual PTM resources can be loaded the following way:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">net</span><span class="o">.</span><span class="n">load_phospho_dmi</span><span class="p">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">&#39;phosphoELM&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the latter case, this function is needed to merge the identical PTMs loaded from multiple resources:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">net</span><span class="o">.</span><span class="n">uniq_ptms</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>PTMs are stored in objects. This example shows how to access the type of modification, and the number and name of the modified residue.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">net</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="mi">70</span><span class="p">][</span><span class="s">&#39;ptm&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">typ</span>
+<span class="n">net</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="mi">70</span><span class="p">][</span><span class="s">&#39;ptm&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">protein</span>
+<span class="n">net</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="mi">70</span><span class="p">][</span><span class="s">&#39;ptm&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span>
+<span class="n">net</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="mi">70</span><span class="p">][</span><span class="s">&#39;ptm&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">number</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-2-using-the-mapper-class-for-translating-ids">
+<h2>Example 2: using the Mapper class for translating IDs<a class="headerlink" href="#example-2-using-the-mapper-class-for-translating-ids" title="Permalink to this headline">¶</a></h2>
+<p>The mapping submodule of bioigraph can be used for ID conversion. Here is a basic example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">bioigraph</span> <span class="kn">import</span> <span class="n">mapping</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">Mapper</span><span class="p">((</span><span class="bp">None</span><span class="p">,</span> <span class="s">&#39;mysql_gelati&#39;</span><span class="p">))</span>
+<span class="n">m</span><span class="o">.</span><span class="n">load_mappings</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">gene_list</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;EGFR&#39;</span><span class="p">,</span> <span class="s">&#39;AKT1&#39;</span><span class="p">,</span> <span class="s">&#39;GABARAPL1&#39;</span><span class="p">,</span> <span class="s">&#39;TP53&#39;</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">gene_list</span><span class="p">:</span>
+    <span class="n">result</span><span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s">&#39;uniprot&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="module-bioigraph.bioigraph">
+<span id="reference"></span><h1>Reference<a class="headerlink" href="#module-bioigraph.bioigraph" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="bioigraph.bioigraph.BioGraph">
+<em class="property">class </em><tt class="descclassname">bioigraph.bioigraph.</tt><tt class="descname">BioGraph</tt><big>(</big><em>ncbi_tax_id</em>, <em>default_name_type={'protein': 'uniprot'</em>, <em>'drug': 'chembl'</em>, <em>'mirna': 'mirbase'}</em>, <em>copy=None</em>, <em>mysql=(None</em>, <em>'mapping')</em>, <em>name='unnamed'</em>, <em>outdir='results'</em>, <em>loglevel='INFO'</em><big>)</big><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="bioigraph.bioigraph.BioGraph.all_between">
+<tt class="descname">all_between</tt><big>(</big><em>nameA</em>, <em>nameB</em><big>)</big><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.all_between"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.all_between" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns all edges between two given vertex names. Similar to 
+straight_between(), but checks both directions, and returns 
+list of edge ids in [undirected, straight, reveresed] format,
+for both nameA -&gt; nameB and nameB -&gt; nameA edges.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bioigraph.bioigraph.BioGraph.basic_stats">
+<tt class="descname">basic_stats</tt><big>(</big><em>latex=False</em><big>)</big><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.basic_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.basic_stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns basic numbers about the network resources, e.g. edge and 
+node counts.</p>
+<dl class="docutils">
+<dt>latex</dt>
+<dd>Return table in a LaTeX document. This can be compiled by
+PDFLaTeX: 
+latex stats.tex</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="bioigraph.bioigraph.BioGraph.edge_exists">
+<tt class="descname">edge_exists</tt><big>(</big><em>nameA</em>, <em>nameB</em><big>)</big><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.edge_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.edge_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a tuple of vertice indices if edge doesn&#8217;t exists, 
+otherwise edge id. Not sensitive to direction.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bioigraph.bioigraph.BioGraph.get_edge">
+<tt class="descname">get_edge</tt><big>(</big><em>nodes</em><big>)</big><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.get_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.get_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the edge id only if there is an edge from nodes[0] to nodes[1],
+returns False if edge exists in opposite direction, or no edge exists 
+between the two vertices, or any of the vertice ids doesn&#8217;t exist.
+To find edges without regarding their direction, see edge_exists().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bioigraph.bioigraph.BioGraph.get_giant">
+<tt class="descname">get_giant</tt><big>(</big><em>replace=False</em>, <em>graph=None</em><big>)</big><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.get_giant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.get_giant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the giant component of the graph, or 
+replaces the igraph object with only the giant 
+component.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bioigraph.bioigraph.BioGraph.load_ddi">
+<tt class="descname">load_ddi</tt><big>(</big><em>ddi</em><big>)</big><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.load_ddi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.load_ddi" title="Permalink to this definition">¶</a></dt>
+<dd><p>ddi is either a list of intera.DomainDomain objects, 
+or a function resulting this list</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bioigraph.bioigraph.BioGraph.load_dmi">
+<tt class="descname">load_dmi</tt><big>(</big><em>dmi</em><big>)</big><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.load_dmi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.load_dmi" title="Permalink to this definition">¶</a></dt>
+<dd><p>dmi is either a list of intera.DomainMotif objects, 
+or a function resulting this list</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bioigraph.bioigraph.BioGraph.load_expression">
+<tt class="descname">load_expression</tt><big>(</big><em>array=False</em><big>)</big><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.load_expression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.load_expression" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expression data can be loaded into vertex attributes, 
+or into a pandas DataFrame – the latter offers faster 
+ways to process and use these huge matrices.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bioigraph.bioigraph.BioGraph.load_mutations">
+<tt class="descname">load_mutations</tt><big>(</big><em>attributes=None</em><big>)</big><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.load_mutations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.load_mutations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mutations are listed in vertex attributes. Mutation() objects 
+offers methods to identify residues and look up in Ptm(), Motif() 
+and Domain() objects, to check if those residues are 
+modified, or are in some short motif or domain.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bioigraph.bioigraph.BioGraph.mutated_edges">
+<tt class="descname">mutated_edges</tt><big>(</big><em>sample</em><big>)</big><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.mutated_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.mutated_edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compares the mutated residues and the modified residues in PTMs.
+Interactions are marked as mutated if the target residue in the 
+underlying PTM is mutated.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bioigraph.bioigraph.BioGraph.network_filter">
+<tt class="descname">network_filter</tt><big>(</big><em>p=2.0</em><big>)</big><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.network_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.network_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function aims to cut the number of edges in the network, 
+without loosing nodes, to make the network less connected, 
+less hairball-like, more usable for analysis.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bioigraph.bioigraph.BioGraph.shortest_path_dist">
+<tt class="descname">shortest_path_dist</tt><big>(</big><em>graph=None</em>, <em>subset=None</em>, <em>outfile=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.shortest_path_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.shortest_path_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>subset is a tuple of two lists if you wish to look for
+paths between elements of two groups, or a list if you 
+wish to look for shortest paths within this group</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bioigraph.bioigraph.BioGraph.source_network">
+<tt class="descname">source_network</tt><big>(</big><em>font='HelveticaNeueLTStd'</em><big>)</big><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.source_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.source_network" title="Permalink to this definition">¶</a></dt>
+<dd><p>For EMBL branding, use Helvetica Neue Linotype Standard light</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bioigraph.bioigraph.BioGraph.straight_between">
+<tt class="descname">straight_between</tt><big>(</big><em>nameA</em>, <em>nameB</em><big>)</big><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.straight_between"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.straight_between" title="Permalink to this definition">¶</a></dt>
+<dd><p>This does actually the same as get_edge(), but by names
+instead of vertex ids.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-bioigraph.intera"></span><dl class="class">
+<dt id="bioigraph.intera.Residue">
+<em class="property">class </em><tt class="descclassname">bioigraph.intera.</tt><tt class="descname">Residue</tt><big>(</big><em>number</em>, <em>name</em>, <em>identifier</em>, <em>id_type='uniprot'</em>, <em>isoform=1</em>, <em>mutated=False</em><big>)</big><a class="reference internal" href="_modules/bioigraph/intera.html#Residue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.Residue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="bioigraph.intera.Mutation">
+<em class="property">class </em><tt class="descclassname">bioigraph.intera.</tt><tt class="descname">Mutation</tt><big>(</big><em>original</em>, <em>mutated</em>, <em>sample</em>, <em>properties={}</em><big>)</big><a class="reference internal" href="_modules/bioigraph/intera.html#Mutation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.Mutation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="bioigraph.intera.Motif">
+<em class="property">class </em><tt class="descclassname">bioigraph.intera.</tt><tt class="descname">Motif</tt><big>(</big><em>protein</em>, <em>start</em>, <em>end</em>, <em>id_type='uniprot'</em>, <em>regex=None</em>, <em>instance=None</em>, <em>isoform=1</em>, <em>motif_name=None</em>, <em>prob=None</em>, <em>elm=None</em>, <em>description=None</em><big>)</big><a class="reference internal" href="_modules/bioigraph/intera.html#Motif"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.Motif" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="bioigraph.intera.Ptm">
+<em class="property">class </em><tt class="descclassname">bioigraph.intera.</tt><tt class="descname">Ptm</tt><big>(</big><em>protein</em>, <em>id_type='uniprot'</em>, <em>typ='unknown'</em>, <em>motif=None</em>, <em>residue=None</em>, <em>source=None</em>, <em>isoform=1</em><big>)</big><a class="reference internal" href="_modules/bioigraph/intera.html#Ptm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.Ptm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="bioigraph.intera.Domain">
+<em class="property">class </em><tt class="descclassname">bioigraph.intera.</tt><tt class="descname">Domain</tt><big>(</big><em>protein</em>, <em>id_type='uniprot'</em>, <em>domain=None</em>, <em>domain_id_type='pfam'</em>, <em>start=None</em>, <em>end=None</em>, <em>isoform=1</em>, <em>chains={}</em><big>)</big><a class="reference internal" href="_modules/bioigraph/intera.html#Domain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.Domain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="bioigraph.intera.DomainMotif">
+<em class="property">class </em><tt class="descclassname">bioigraph.intera.</tt><tt class="descname">DomainMotif</tt><big>(</big><em>domain</em>, <em>ptm</em>, <em>sources=None</em>, <em>refs=None</em>, <em>pdbs=None</em><big>)</big><a class="reference internal" href="_modules/bioigraph/intera.html#DomainMotif"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.DomainMotif" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="bioigraph.intera.DomainDomain">
+<em class="property">class </em><tt class="descclassname">bioigraph.intera.</tt><tt class="descname">DomainDomain</tt><big>(</big><em>domain_a</em>, <em>domain_b</em>, <em>pdbs=None</em>, <em>sources=None</em>, <em>refs=None</em>, <em>contact_residues=None</em><big>)</big><a class="reference internal" href="_modules/bioigraph/intera.html#DomainDomain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.DomainDomain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="bioigraph.intera.Interface">
+<em class="property">class </em><tt class="descclassname">bioigraph.intera.</tt><tt class="descname">Interface</tt><big>(</big><em>id_a</em>, <em>id_b</em>, <em>source</em>, <em>id_type='uniprot'</em>, <em>pdb=None</em>, <em>css=None</em>, <em>stab_en=None</em>, <em>solv_en=None</em>, <em>area=None</em>, <em>isoform_a=1</em>, <em>isoform_b=1</em><big>)</big><a class="reference internal" href="_modules/bioigraph/intera.html#Interface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.Interface" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="bioigraph.intera.Interface.add_residues">
+<tt class="descname">add_residues</tt><big>(</big><em>res_a</em>, <em>res_b</em>, <em>typ='undefined'</em><big>)</big><a class="reference internal" href="_modules/bioigraph/intera.html#Interface.add_residues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.Interface.add_residues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds one pair of residues of type <a href="#id1"><span class="problematic" id="id2">`</span></a>typ&#8217;, 
+where <a href="#id3"><span class="problematic" id="id4">`</span></a>res_a&#8217; and <a href="#id5"><span class="problematic" id="id6">`</span></a>res_b&#8217; are tuples of 
+residue number in sequence and residue type,
+e.g. (124, &#8216;S&#8217;) &#8211; (means Serine #124)
+<a href="#id7"><span class="problematic" id="id8">`</span></a>typ&#8217; can be undefined, hbonds, sbridges, ssbonds or covbonds</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bioigraph.intera.Interface.bond_types">
+<tt class="descname">bond_types</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/bioigraph/intera.html#Interface.bond_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.Interface.bond_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the bond types present in this interface</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bioigraph.intera.Interface.get_bonds">
+<tt class="descname">get_bonds</tt><big>(</big><em>typ=None</em>, <em>mode=None</em><big>)</big><a class="reference internal" href="_modules/bioigraph/intera.html#Interface.get_bonds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.Interface.get_bonds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives a generator to iterate throught bonds in 
+this interface. If no type given, bonds of all types 
+returned.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bioigraph.intera.Interface.numof_residues">
+<tt class="descname">numof_residues</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/bioigraph/intera.html#Interface.numof_residues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.Interface.numof_residues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of residue pairs by bound type</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-bioigraph.mapping"></span><dl class="class">
+<dt id="bioigraph.mapping.Mapper">
+<em class="property">class </em><tt class="descclassname">bioigraph.mapping.</tt><tt class="descname">Mapper</tt><big>(</big><em>ncbi_tax_id</em>, <em>mysql_conf=(None</em>, <em>'mapping')</em>, <em>log=None</em><big>)</big><a class="reference internal" href="_modules/bioigraph/mapping.html#Mapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.mapping.Mapper" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<span class="target" id="module-bioigraph.moduland"></span><span class="target" id="module-bioigraph.gdsc"></span><span class="target" id="module-bioigraph.dataio"></span><dl class="class">
+<dt id="bioigraph.dataio.ResidueMapper">
+<em class="property">class </em><tt class="descclassname">bioigraph.dataio.</tt><tt class="descname">ResidueMapper</tt><a class="reference internal" href="_modules/bioigraph/dataio.html#ResidueMapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.dataio.ResidueMapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class stores and serves the PDB &#8211;&gt; UniProt 
+residue level mapping. Attempts to download the 
+mapping, and stores it for further use. Converts 
+PDB residue numbers to the corresponding UniProt ones.</p>
+<dl class="method">
+<dt id="bioigraph.dataio.ResidueMapper.clean">
+<tt class="descname">clean</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/bioigraph/dataio.html#ResidueMapper.clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.dataio.ResidueMapper.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes cached mappings, freeing up memory.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="bioigraph.dataio.get_complexportal">
+<tt class="descclassname">bioigraph.dataio.</tt><tt class="descname">get_complexportal</tt><big>(</big><em>species=9606</em>, <em>zipped=True</em><big>)</big><a class="reference internal" href="_modules/bioigraph/dataio.html#get_complexportal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.dataio.get_complexportal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complex dataset from IntAct.
+See more:
+<a class="reference external" href="http://www.ebi.ac.uk/intact/complex/">http://www.ebi.ac.uk/intact/complex/</a>
+<a class="reference external" href="http://nar.oxfordjournals.org/content/early/2014/10/13/nar.gku975.full.pdf">http://nar.oxfordjournals.org/content/early/2014/10/13/nar.gku975.full.pdf</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bioigraph.dataio.get_domino_ptms">
+<tt class="descclassname">bioigraph.dataio.</tt><tt class="descname">get_domino_ptms</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/bioigraph/dataio.html#get_domino_ptms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.dataio.get_domino_ptms" title="Permalink to this definition">¶</a></dt>
+<dd><p>The table comes from dataio.get_domino(), having the following fields:
+header = [&#8216;uniprot-A&#8217;, &#8216;uniprot-B&#8217;, &#8216;isoform-A&#8217;, &#8216;isoform-B&#8217;, #3
+&#8216;exp. method&#8217;, &#8216;references&#8217;, &#8216;taxon-A&#8217;, &#8216;taxon-B&#8217;, #7
+&#8216;role-A&#8217;, &#8216;role-B&#8217;, &#8216;binding-site-range-A&#8217;, &#8216;binding-site-range-B&#8217;, #11
+&#8216;domains-A&#8217;, &#8216;domains-B&#8217;, &#8216;ptm-residue-A&#8217;, &#8216;ptm-residue-B&#8217;, #15
+&#8216;ptm-type-mi-A&#8217;, &#8216;ptm-type-mi-B&#8217;, &#8216;ptm-type-A&#8217;, &#8216;ptm-type-B&#8217;, #19
+&#8216;ptm-res-name-A&#8217;, &#8216;ptm-res-name-B&#8217;, &#8216;mutations-A&#8217;, &#8216;mutations-B&#8217;, #23
+&#8216;mutation-effects-A&#8217;, &#8216;mutation-effects-B&#8217;, &#8216;domains-interpro-A&#8217;, #26 
+&#8216;domains-interpro-B&#8217;, &#8216;negative&#8217;] #28</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bioigraph.dataio.get_i3d">
+<tt class="descclassname">bioigraph.dataio.</tt><tt class="descname">get_i3d</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/bioigraph/dataio.html#get_i3d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.dataio.get_i3d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interaction3D contains residue numbers in given chains in 
+given PDB stuctures, so we need to add an offset to get the residue 
+numbers valid for UniProt sequences. Offsets can be obtained from
+Instruct, or from the Pfam PDB-chain-UniProt mapping table.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bioigraph.dataio.get_instruct">
+<tt class="descclassname">bioigraph.dataio.</tt><tt class="descname">get_instruct</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/bioigraph/dataio.html#get_instruct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.dataio.get_instruct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instruct contains residue numbers in UniProt sequences, it means
+no further calculations of offsets in chains of PDB structures needed.
+Chains are not given, only a set of PDB structures supporting the 
+domain-domain // protein-protein interaction.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bioigraph.dataio.get_instruct_offsets">
+<tt class="descclassname">bioigraph.dataio.</tt><tt class="descname">get_instruct_offsets</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/bioigraph/dataio.html#get_instruct_offsets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.dataio.get_instruct_offsets" title="Permalink to this definition">¶</a></dt>
+<dd><p>These offsets should be understood as from UniProt to PDB.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bioigraph.dataio.get_switches_elm">
+<tt class="descclassname">bioigraph.dataio.</tt><tt class="descname">get_switches_elm</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/bioigraph/dataio.html#get_switches_elm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.dataio.get_switches_elm" title="Permalink to this definition">¶</a></dt>
+<dd><p>switches.elm is a resource containing functional switches in molecular regulation,
+in domain-motif level resolution, classified into categories according to their
+mechanism.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bioigraph.dataio.read_complexes_havugimana">
+<tt class="descclassname">bioigraph.dataio.</tt><tt class="descname">read_complexes_havugimana</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/bioigraph/dataio.html#read_complexes_havugimana"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.dataio.read_complexes_havugimana" title="Permalink to this definition">¶</a></dt>
+<dd><p>Supplement Table S3/1 from Havugimana 2012
+Cell. 150(5): 1068–1081.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bioigraph.dataio.read_table">
+<tt class="descclassname">bioigraph.dataio.</tt><tt class="descname">read_table</tt><big>(</big><em>fileObject</em>, <em>cols</em>, <em>sep='\t'</em>, <em>sep2=None</em>, <em>rem=[]</em>, <em>hdr=None</em><big>)</big><a class="reference internal" href="_modules/bioigraph/dataio.html#read_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.dataio.read_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic function to read data tables.</p>
+<dl class="docutils">
+<dt>fileObject <span class="classifier-delimiter">:</span> <span class="classifier">file-like</span></dt>
+<dd>Any file like object: file opened for read, or StringIO buffer</dd>
+<dt>cols <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd>Dictionary of columns to read. Keys identifying fields are returned 
+in the result. Values are column numbers.</dd>
+<dt>sepLevel1 <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Field separator of the file.</dd>
+<dt>sepLevel2 <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd>Subfield separators and prefixes. 
+E.g. {2: &#8216;,&#8217;, 3: &#8216;|&#8217;}</dd>
+<dt>hdr <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of header lines. If None, no headers assumed.</dd>
+<dt>rem <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
+<dd>Strings to remove. For each line these elements will be replaced with &#8216;&#8217;.</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-bioigraph.chembl"></span><span class="target" id="module-bioigraph.unichem"></span><span class="target" id="module-bioigraph.seq"></span><span class="target" id="module-bioigraph.mysql"></span><span class="target" id="module-bioigraph.mysql_connect"></span><span class="target" id="module-bioigraph.seq"></span></div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to bioigraph&#8217;s documentation!</a></li>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#example-1-building-the-network">Example 1: building the network</a></li>
+<li><a class="reference internal" href="#example-2-using-the-mapper-class-for-translating-ids">Example 2: using the Mapper class for translating IDs</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-bioigraph.bioigraph">Reference</a></li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href=""
+                        title="next chapter">Welcome to bioigraph&#8217;s documentation!</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="#" title="Welcome to bioigraph’s documentation!"
+             >next</a> |</li>
+        <li><a href="#">bioigraph 0.1.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Dénes Türei.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
