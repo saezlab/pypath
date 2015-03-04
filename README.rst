@@ -6,6 +6,7 @@ Bioigraph
 
 :contributions: denes@ebi.ac.uk
 :issues: https://github.com/saezlab/bioigraph/issues
+:documentation: http://www.ebi.ac.uk/~denes/bioigraph/docs/
 
 **Bioigraph** is a Python package built around igraphthat to work with molecular network representations e.g. PPI, miRNA, drug compound interaction networks.
 
@@ -30,6 +31,11 @@ Clone the git repo, and run build.sh:
     
     cd path/
     ./build.sh
+
+Documentation
+=============
+
+For some basic example, and a far from complete documentation see here: http://www.ebi.ac.uk/~denes/bioigraph/docs/
 
 Features
 ========
