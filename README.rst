@@ -17,7 +17,13 @@ Installation
 With pip
 --------
 
-Download the package from /dist, and install with pip:
+Install the recent version from git:
+
+.. code:: bash
+    
+    pip install git+https://github.com/saezlab/bioigraph.git
+
+Or download the package from /dist, and install with pip (these are tested at least at a minimal level):
 
 .. code:: bash
     
