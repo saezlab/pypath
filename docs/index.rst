@@ -158,7 +158,7 @@ The mapping submodule of bioigraph can be used for ID conversion. Here is a basi
 .. code-block:: python
 
     from bioigraph import mapping
-    m = mapping.Mapper((None, 'mysql_gelati'))
+    m = mapping.Mapper(9606, mysql_conf = (None, 'mapping_gelati'))
     m.load_mappings()
     result = {}
     gene_list = ['EGFR', 'AKT1', 'GABARAPL1', 'TP53']
