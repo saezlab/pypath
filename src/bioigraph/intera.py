@@ -44,7 +44,7 @@ class Residue(object):
         self.id_type = id_type
         self.mutated = mutated
         self.isoform = isoform if type(isoform) is int \
-            else int(non_digit.sub('',isoform))
+            else int(non_digit.sub('', isoform))
     
     def __eq__(self, other):
         if other is not None and self.__dict__ == other.__dict__:
@@ -56,8 +56,8 @@ class Residue(object):
         return not self.__eq__(other)
     
     def __str__(self):
-        return 'Residue %s-%u in protein %s-%u\n' % (self.name, self.number, 
-            self.protein, self.isoform)
+        return 'Residue %s-%u in protein %s-%u%s\n' % (self.name, self.number, 
+            self.protein, self.isoform, ' (mutated)' if self.mutated else '')
     
     def serialize(self):
         return '%s:%u' % (self.name, self.number)
@@ -495,7 +495,7 @@ class DomainMotif(object):
 class Regulation(object):
     
     def __init__(self, ptm, source, target, effect, sources = None, refs = None):
-        self.ptm = ptm
+        self.ptm = ptm if type(ptm) is list else [ptm]
         self.source = source
         self.target = target
         self.effect = effect
@@ -541,6 +541,31 @@ class Regulation(object):
             self.ptm.merge(other.ptm)
             self.add_sources(other.sources)
             self.add_refs(other.refs)
+
+class Complex(object):
+    
+    def __init__(self, proteins, name, long_name, sources):
+        self.synonyms = set([])
+        sources = sources if type(sources) is list else [sources]
+        sources = set(sources)
+        proteins = proteins if type(proteins) is list else list(proteins)
+        self.proteins = set(proteins)
+        for key, val in locals().iteritems():
+            setattr(self, key, val)
+    
+    def __contains__(self, item):
+        return item in self.proteins
+    
+    def __eq__(self, other):
+        return self.proteins == other.proteins
+    
+    def merge(self, other):
+        for p in self.proteins:
+            other.proteins.add(p)
+        other.synonyms.add(self.name)
+        other.synonyms.add(self.long_name)
+        other.synonyms = self.synonyms | other.synonyms
+        return other
 
 class Interface(object):
     

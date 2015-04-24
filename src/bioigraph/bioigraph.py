@@ -31,7 +31,10 @@ import textwrap
 import copy
 import json
 import pandas
+import operator
+import heapq
 from itertools import chain
+from collections import Counter
 import cPickle as pickle
 
 # from this module:
@@ -44,7 +47,9 @@ import gdsc
 import mysql
 import dataio
 import intera
+import go
 import drawing as bdrawing
+import proteomicsdb
 from ig_drawing import *
 from common import *
 from colorgen import *
@@ -52,40 +57,24 @@ from gr_plot import *
 from progress import *
 from data_formats import *
 
-__all__ = ['PlotParam', 'BioGraph', 'Direction']
-
-class PlotParam(object):
-    
-    def __init__(
-        self, graph = None, filename = None, graphix_dir = "pdf",
-        graphix_format = "pdf", name = None,
-        layout = "fruchterman_reingold", vertex_label = None, vertex_size = 2,
-        vertex_color = "#87AADEAA", vertex_label_color = "#000033CC",
-        vertex_label_size = "degree_label_size", edge_width = 0.02, 
-        edge_color = "#CCCCCCAA", vertex_frame_color = "#FFFFFF00", 
-        vertex_frame_width = 0, vertex_fill_alpha = "AA", 
-        vertex_label_font = "sans-serif", palette = "rainbow", 
-        bbox=igraph.drawing.utils.BoundingBox(10, 10, 1260, 1260),
-        dimensions = (1280, 1280), grouping = None, **kwargs):
-        for key, val in locals().iteritems():
-            setattr(self, key, val)
+__all__ = ['BioGraph', 'Direction']
 
 class Direction(object):
     
     def __init__(self,nameA,nameB):
-        self.nodes = [nameA,nameB]
+        self.nodes = [nameA, nameB]
         self.nodes.sort()
-        self.straight = (self.nodes[0],self.nodes[1])
-        self.reverse = (self.nodes[1],self.nodes[0])
+        self.straight = (self.nodes[0], self.nodes[1])
+        self.reverse = (self.nodes[1], self.nodes[0])
         self.dirs = {
             self.straight: False,
             self.reverse: False,
             'undirected': False
             }
         self.sources = {
-            self.straight: [],
-            self.reverse: [],
-            'undirected': []
+            self.straight: set([]),
+            self.reverse: set([]),
+            'undirected': set([])
         }
         self.positive = {
             self.straight: False,
@@ -96,12 +85,12 @@ class Direction(object):
             self.reverse: False
         }
         self.positive_sources = {
-            self.straight: [],
-            self.reverse: []
+            self.straight: set([]),
+            self.reverse: set([])
         }
         self.negative_sources = {
-            self.straight: [],
-            self.reverse: []
+            self.straight: set([]),
+            self.reverse: set([])
         }
         self.mechanisms = {}
         self.methods = {}
@@ -145,9 +134,8 @@ class Direction(object):
         '''
         if self.check_param(direction):
             self.dirs[direction] = True
-            if type(source) is not list:
-                source = [source]
-            self.sources[direction] = uniqList(self.sources[direction] + source)
+            source = set(source) if type(source) is list else set([source])
+            self.sources[direction] = self.sources[direction] | source
     
     def get_dir(self, direction, sources = False):
         '''
@@ -224,11 +212,11 @@ class Direction(object):
             if sign == 'positive':
                 self.positive[direction] = True
                 if source not in self.positive_sources[direction]:
-                    self.positive_sources[direction].append(source)
+                    self.positive_sources[direction].add(source)
             else:
                 self.negative[direction] = True
                 if source not in self.negative_sources[direction]:
-                    self.negative_sources[direction].append(source)
+                    self.negative_sources[direction].add(source)
     
     def get_sign(self, direction, sign = None, sources = False):
         if self.check_nodes(direction):
@@ -269,6 +257,30 @@ class Direction(object):
             if len(self.negative_sources[direction]) == 0:
                 self.negative[direction] = False
     
+    def src(self):
+        '''
+        Returns the IDs of effector molecules in this directed 
+        interaction. If the interaction is bidirectional, the 
+        list will contain 2 IDs. If the interaction is undirec-
+        ted, an empty list will be returned.
+        '''
+        return [k[0] for k, v in self.dirs.iteritems() if k != 'undirected' and v]
+    
+    def tgt(self):
+        '''
+        Returns the IDs of the target moleculess in the inter-
+        action. Same behaviour as `Direction.src()`.
+        '''
+        return [k[1] for k, v in self.dirs.iteritems() if k != 'undirected' and v]
+    
+    def src_by_source(self, source):
+        return [k[0] for k, v in self.sources.iteritems() \
+            if k != 'undirected' and source in v]
+    
+    def tgt_by_source(self, source):
+        return [k[1] for k, v in self.sources.iteritems() \
+            if k != 'undirected' and source in v]
+    
     def merge(self,other):
         if other.__class__.__name__ == 'Direction' and self.check_nodes(other.nodes):
             self.dirs[self.straight] = self.dirs[self.straight] or \
@@ -277,12 +289,12 @@ class Direction(object):
                 other.dirs[self.reverse]
             self.dirs['undirected'] = self.dirs['undirected'] or \
                 other.dirs['undirected']
-            self.sources[self.straight] = uniqList(self.sources[self.straight] + \
-                other.sources[self.straight])
-            self.sources[self.reverse] = uniqList(self.sources[self.reverse] + \
-                other.sources[self.reverse])
-            self.sources['undirected'] = uniqList(self.sources['undirected'] + \
-                other.sources['undirected'])
+            self.sources[self.straight] = self.sources[self.straight] | \
+                other.sources[self.straight]
+            self.sources[self.reverse] = self.sources[self.reverse] | \
+                other.sources[self.reverse]
+            self.sources['undirected'] = self.sources['undirected'] | \
+                other.sources['undirected']
             self.positive[self.straight] = self.positive[self.straight] or \
                 other.positive[self.straight]
             self.negative[self.reverse] = self.negative[self.reverse] or \
@@ -301,22 +313,40 @@ class BioGraph(object):
     ###
     
     default_name_type = {
-        "protein": "uniprot", 
-        "mirna": "mirbase", 
-        "drug": "chembl"
+        'protein': 'uniprot', 
+        'mirna': 'mirbase', 
+        'drug': 'chembl'
     }
     
-    def __init__(self, ncbi_tax_id, default_name_type=default_name_type,
-                 copy=None,mysql=(None,'mapping'), name='unnamed', outdir='results',
-                 loglevel='INFO'):
-        # mysql gives the parameters of mysql server, if available
-        # it is a dict like this: 
-            #{
-              #"host": 127.0.0.1, 
-              #"user": "somebody", 
-              #"passwd": "xxxx", 
-              #"db": "mydb"
-            #}
+    def __init__(self, ncbi_tax_id = 9606, default_name_type = default_name_type,
+                 copy = None, mysql = (None, 'mapping'), name = 'unnamed', 
+                 outdir = 'results', loglevel = 'INFO'):
+        '''
+        Currently only one organism molecular interaction networks
+        are supported. Some functions supports multi-species networks,
+        and maybe once the whole module will support that.
+        
+        @ncbi_tax_id : int
+            The ID of the organism in NCBI Taxonomy. Defaults to human 
+            (9606).
+        @mysql
+            The MySQL parameter used by the mapping module to load some
+            ID conversion tables from MySQL. 
+        @default_name_type : dict
+            Dictionary of default ID types, what all identifiers of the
+            given molecular species should be converted to. By default, 
+            for protein it is UniProt. It could be any other, only then
+            you need to supply the required format definitions for the 
+            ID conversion tables.
+        @copy : BioGraph object
+            In case you copy an other instance.
+        @name : str
+            This is a custom session/project name.
+        @outdir : str
+            The directory where you wish to create all the output files.
+        @loglevel : str
+            Passed to logging module.
+        '''
         for d in ['results', 'log', 'cache']:
             if not os.path.exists(d):
                 os.makedirs(d)
@@ -334,17 +364,20 @@ class BioGraph(object):
             g.vs['nameType'] = []
             g.vs['originalNames'] = [[] for _ in xrange(self.graph.vcount())]
             g.vs['ncbi_tax_id'] = []
-            g.es['sources'] = [[] for _ in xrange(self.graph.vcount())]
-            g.es['references'] = [[] for _ in xrange(self.graph.vcount())]
-            g.es['refs_by_source'] = [{} for _ in xrange(self.graph.vcount())]
-            g.es['negative_refs'] = [[] for _ in xrange(self.graph.vcount())]
-            g.es['negative'] = [[] for _ in xrange(self.graph.vcount())]
+            g.vs['exp'] = [{}]
+            g.es['sources'] = [[] for _ in xrange(self.graph.ecount())]
+            g.es['type'] = [[] for _ in xrange(self.graph.ecount())]
+            g.es['references'] = [[] for _ in xrange(self.graph.ecount())]
+            g.es['refs_by_source'] = [{} for _ in xrange(self.graph.ecount())]
+            g.es['refs_by_type'] = [{} for _ in xrange(self.graph.ecount())]
+            g.es['sources_by_type'] = [{} for _ in xrange(self.graph.ecount())]
+            g.es['negative_refs'] = [[] for _ in xrange(self.graph.ecount())]
+            g.es['negative'] = [[] for _ in xrange(self.graph.ecount())]
             g.es['dirs'] = [None]
             g['layout_type'] = None
             g['layout_data'] = None
             g['only_directed'] = False
             self.failed_edges = []
-            self.edges_depod = None
             self.uniprot_mapped = []
             self.mysql_conf = mysql
             # self.mysql = mysql.MysqlRunner(self.mysql_conf)
@@ -358,6 +391,8 @@ class BioGraph(object):
             self.raw_data = None
             self.lists = {}
             self.plots = {}
+            self.proteomicsdb = None
+            self.exp_samples = set([])
             self.sources = []
             self.db_dict = {}
             self.pathway_types = []
@@ -366,34 +401,68 @@ class BioGraph(object):
             self.edgeAttrs = {}
             self.u_pfam = None
             self.seq = None
+            self.palette = ['#6EA945', '#007B7F', '#FCCC06', '#DA0025', '#000000']
             self.session = gen_session_id()
             self.session_name = ''.join([self.name,'-',self.session])
             self.loglevel = loglevel
             self.ownlog = logn.logw(self.session,self.loglevel)
             self.mapper = mapping.Mapper(self.ncbi_tax_id, 
-                                         mysql_conf = self.mysql_conf, log = self.ownlog)
+                mysql_conf = self.mysql_conf, log = self.ownlog)
             self.ownlog.msg(1, "bioIgraph has been initialized")
             self.ownlog.msg(1, "Beginning session '%s'" % self.session)
             sys.stdout.write(
-                """\t» New session started,\n\tsession ID: '%s'\n\tlogfile: './%s'.\n""" % \
+                """\t» New session started,\n\tsession ID: '%s'\n\tlogfile:"""\
+                """'./%s'.\n""" % \
                 (self.session,self.ownlog.logfile))
         else:
             self.copy(copy)
     
     def copy(self,other):
+        '''
+        
+        '''
         self.__dict__ = other.__dict__
-        self.ownlog.msg(1,"Reinitialized",'INFO')
+        self.ownlog.msg(1, "Reinitialized", 'INFO')
     
-    def init_network(self):
-        self.load_mappings()
+    def init_network(self, pfile = False, save = False):
+        '''
+        This is a lazy way to start the module, load data 
+        and build the high confidence, literature curated
+        part of the signaling network.
+        '''
+        if pfile:
+            pfile = pfile if type(pfile) is not bool \
+                else os.path.join('cache', 'default_network.pickle')
+            if os.path.exists(pfile):
+                sys.stdout.write('\t:: Loading igraph object from file `%s`...' % pfile)
+                sys.stdout.flush()
+                graph = pickle.load(open(pfile, 'rb'))
+                if type(graph) is igraph.Graph and graph.vcount() > 0:
+                    self.graph = graph
+                    sys.stdout.write('\r%s\r\t:: Network loaded from `%s`. %u nodes, '\
+                        '%u edges.\n' % (' '*90, pfile, \
+                            self.graph.vcount(), self.graph.ecount()))
+                    sys.stdout.flush()
+                    return None
         self.load_reflists()
         self.load_resources()
+        if save:
+            sys.stdout.write('\t:: Saving igraph object to file `%s`...' % pfile)
+            sys.stdout.flush()
+            self.save_network()
+            sys.stdout.write('\r%s\r\t:: Network saved successfully to file `%s`.\n' % \
+                (' '*90, pfile))
+            sys.stdout.flush()
     
+    def save_network(self, pfile = None):
+        pfile = pfile if pfile is not None \
+            else os.path.join('cache', 'default_network.pickle')
+        pickle.dump(self.graph, open(pfile, 'wb'))
     ###
     ### functions to read networks from text files or mysql
     ###
     
-    def get_max(self,attrList):
+    def get_max(self, attrList):
         maxC = 0
         for val in attrList.values():
             if val.__class__ is tuple:
@@ -455,159 +524,193 @@ class BioGraph(object):
             return gg
     
     def update_vname(self):
+        '''
+        For fast lookup of node names and indexes, these are 
+        hold in a list and a dict as well. However, every time
+        new nodes are added, these should be updated. This 
+        function is automatically called after all operations
+        affecting node indices.
+        '''
         self.nodInd = set(self.graph.vs['name'])
-        self.nodDct = dict(zip(self.graph.vs['name'], range(0,self.graph.vcount())))
+        self.nodDct = dict(zip(self.graph.vs['name'], 
+            range(0,self.graph.vcount())))
     
-    def read_data_file(self, settings, keep_raw=False):
+    def update_vindex(self):
+        '''
+        See update_vname().
+        '''
+        self.nodNam = dict(zip(range(0, self.graph.vcount()), 
+            self.graph.vs['name']))
+    
+    def vertex_pathways(self):
+        '''
+        Some resources assignes interactions some others 
+        proteins to pathways.
+        This function converts pathway annotations from 
+        edge attributes to vertex attributes.
+        '''
+        for eattr in self.graph.es.attributes():
+            if eattr.endswith('pathways'):
+                if eattr not in self.graph.vs.attributes():
+                    self.graph.vs[eattr] = [[] for _ in self.graph.vs]
+                for e in self.graph.es:
+                    self.graph.vs[e.source][eattr] = e[eattr]
+                    self.graph.vs[e.target][eattr] = e[eattr]
+    
+    def read_data_file(self, settings, keep_raw = False):
+        '''
+        Interaction data with node and edge attributes can be read 
+        from simple text based files. This function works not only
+        with files, but with lists as well. Any other function can 
+        be written to download a preprocess data, and then give it
+        to this function to finally attach to the network.
+        
+        @settings : ReadSettings instance
+            The detailed definition of the input format. Instead of 
+            the file name you can give a function name, which will 
+            be executed, and the returned data will be used.
+        @keep_raw : boolean
+            To keep the raw data read by this function, in order for
+            debugging purposes, or further use.
+        '''
         edgeList = []
         nodeList = []
         if settings.__class__.__name__ != "ReadSettings":
             self.ownlog.msg(2,("""No proper input file definition!\n\'settings\'
                 should be a \'ReadSettings\' instance\n"""), 'ERROR')
             return None
-        elif not os.path.isfile(settings.inFile) and \
-            not hasattr(dataio, settings.inFile):
-            self.ownlog.msg(2,"%s: No such file or dataio function! :(\n" % \
-                (filename), 'ERROR')
-            return None
+        # reading from remote or local file, or executing import function:
+        if settings.inFile.startswith('http') or \
+            settings.inFile.startswith('ftp'):
+            infile = dataio.curl(settings.inFile, silent = False)
+            infile = [x for x in infile.replace('\r', '').split('\n') if len(x) > 0]
+            self.ownlog.msg(2, "Retrieving data from%s ..." % settings.inFile)
+        elif hasattr(dataio, settings.inFile):
+            toCall = dataio.__dict__[settings.inFile]
+            infile = toCall(**settings.inputArgs)
+            self.ownlog.msg(2, "Retrieving data by dataio.%s() ..." % \
+                toCall.__name__)
+        elif os.path.isfile(settings.inFile):
+            infile = codecs.open(settings.inFile, encoding='utf-8', mode='r')
+            self.ownlog.msg(2, "%s opened..." % settings.inFile)
         else:
-            fromA = settings.nameTypeA
-            toA = self.default_name_type[settings.typeA]
-            fromB = settings.nameTypeB
-            toB = self.default_name_type[settings.typeB]
-            mapOne = ''.join([fromA,"_",toA])
-            mapTwo = ''.join([fromB,"_",toB])
-            if mapOne not in self.mapper.tables and fromA != toA:
-                self.mapper.map_table_error(fromA, toA)
-                return None
-            if mapTwo not in self.mapper.tables and fromB != toB:
-                self.mapper.map_table_error(fromB, toB)
-                return None
-            if ((toA == "uniprot" or toB == "uniprot") 
-                and "uniprot-sec_uniprot-pri" not in self.mapper.tables):
-                self.mapper.map_table_error("uniprot-sec", "uniprot-pri")
-                return None
-            # reading from local file, or executing import function:
-            if hasattr(dataio, settings.inFile):
-                toCall = dataio.__dict__[settings.inFile]
-                infile = toCall(**settings.inputArgs)
-                self.ownlog.msg(2, "Retrieving data by dataio.%s() ..." % \
-                    toCall.__name__)
-            else:
-                infile = codecs.open(settings.inFile, encoding='utf-8', mode='r')
-                self.ownlog.msg(2, "%s opened..." % settings.inFile)
-            # finding the largest referred column number, 
-            # to avoid references out of range
-            isDir = settings.isDirected
-            sign = settings.sign
-            refCol = None if type(settings.refs) is not tuple else settings.refs[0]
-            sigCol = None if type(sign) is not tuple else sign[0]
-            dirCol = None if type(isDir) is not tuple else isDir[0]
-            dirVal = None if type(isDir) is not tuple else isDir[1]
-            refs = []
-            maxCol = max(
-                [ 
-                    settings.nameColA, 
-                    settings.nameColB, 
-                    self.get_max(settings.extraEdgeAttrs), 
-                    self.get_max(settings.extraNodeAttrsA), 
-                    self.get_max(settings.extraNodeAttrsB),
-                    refCol,dirCol,sigCol
-                ])
-            # iterating lines from input file
-            lnum = 1
-            readError = 0
-            for line in infile:
-                if len(line) <= 1 or (lnum == 1 and settings.header):
-                    # empty lines
-                    # or header row
-                    lnum += 1
-                    continue
-                if type(line) is not list:
-                    line = line.replace('\n','').replace('\r','').split(settings.separator)
-                else:
-                    line = [x.replace('\n','').replace('\r','') for x in line]
-                # in case line has less fields than needed
-                if len(line) < maxCol:
-                    self.ownlog.msg(2,(
-                        "Line #%u has less than %u fields! :(\n" % (lnum, maxCol)),
-                        'ERROR')
-                    readError = 1
-                    break
-                else:
-                    # reading names and attributes
-                    # try:
-                    if isDir != True:
-                        isDir = (False if type(isDir) is not tuple else 
-                            True if line[isDir[0]] in isDir[1] else False)
-                    if refCol is not None:
-                        refs = list(set(line[refCol].split(settings.refs[1])))
-                    # to give an easy way:
-                    if type(settings.ncbiTaxId) is int:
-                        taxA = settings.ncbiTaxId
-                        taxB = settings.ncbiTaxId
-                    # to enable more sophisticated inputs:
-                    if type(settings.ncbiTaxId) is dict:
-                        taxx = self.get_taxon(settings.ncbiTaxId, line)
-                        if type(taxx) is tuple:
-                            taxA = taxx[0]
-                            taxB = taxx[1]
-                        else:
-                            taxA = taxB = taxx
-                    if taxA is None or taxB is None:
-                        continue
-                    stim = False
-                    inh = False
-                    if type(sign) is tuple:
-                        if line[sign[0]] == sign[1] or (type(sign[1]) is list \
-                            and line[sign[0]]):
-                            stim = True
-                        elif line[sign[0]] == sign[2] or (type(sign[2]) is list \
-                            and line[sign[2]]):
-                            inh = True
-                    newEdge = {
-                        "nameA": line[settings.nameColA], 
-                        "nameB": line[settings.nameColB], 
-                        "nameTypeA": settings.nameTypeA, 
-                        "nameTypeB": settings.nameTypeB, 
-                        "typeA": settings.typeA, 
-                        "typeB": settings.typeB, 
-                        "source": settings.name, 
-                        "isDirected": isDir,
-                        "references": refs,
-                        "stim": stim,
-                        "inh": inh,
-                        "taxA": taxA,
-                        "taxB": taxB,
-                        "type": settings.intType}
-                    #except:
-                        #self.ownlog.msg(2,("""Wrong name column indexes (%u and %u), 
-                            #or wrong separator (%s)? Line #%u\n""" 
-                            #% (
-                                #settings.nameColA, settings.nameColB, 
-                                #settings.separator, lnum)), 'ERROR')
-                        #readError = 1
-                        #break
-                    # getting additional edge and node attributes
-                    attrsEdge = self.get_attrs(line, settings.extraEdgeAttrs, lnum)
-                    attrsNodeA = self.get_attrs(line, settings.extraNodeAttrsA, lnum)
-                    attrsNodeB = self.get_attrs(line, settings.extraNodeAttrsB, lnum)
-                    # merging dictionaries
-                    nodeAttrs = {
-                        "attrsNodeA": attrsNodeA, 
-                        "attrsNodeB": attrsNodeB, 
-                        "attrsEdge": attrsEdge}
-                    newEdge = dict(chain(newEdge.iteritems(), nodeAttrs.iteritems() ))
-                if readError != 0:
-                    break
-                edgeList.append(newEdge)
+            self.ownlog.msg(2,"%s: No such file or dataio function! :(\n" % \
+            (filename), 'ERROR')
+            return None
+        # finding the largest referred column number, 
+        # to avoid references out of range
+        isDir = settings.isDirected
+        sign = settings.sign
+        refCol = None if type(settings.refs) is not tuple else settings.refs[0]
+        sigCol = None if type(sign) is not tuple else sign[0]
+        dirCol = None if type(isDir) is not tuple else isDir[0]
+        dirVal = None if type(isDir) is not tuple else isDir[1]
+        refs = []
+        maxCol = max(
+            [ 
+                settings.nameColA, 
+                settings.nameColB, 
+                self.get_max(settings.extraEdgeAttrs), 
+                self.get_max(settings.extraNodeAttrsA), 
+                self.get_max(settings.extraNodeAttrsB),
+                refCol,dirCol,sigCol
+            ])
+        # iterating lines from input file
+        lnum = 1
+        readError = 0
+        for line in infile:
+            if len(line) <= 1 or (lnum == 1 and settings.header):
+                # empty lines
+                # or header row
                 lnum += 1
-            if type(infile) is file:
-                infile.close()
-            ### !!!! ##
-            edgeListMapped = self.map_list(edgeList)
-            self.ownlog.msg(2, "%u lines have been read from %s, %u links after mapping" %
-                            (lnum-1, settings.inFile, len(edgeListMapped)))
+                continue
+            if type(line) is not list:
+                line = line.replace('\n','').replace('\r','').\
+                split(settings.separator)
+            else:
+                line = [x.replace('\n','').replace('\r','') for x in line]
+            # in case line has less fields than needed
+            if len(line) < maxCol:
+                self.ownlog.msg(2,(
+                    "Line #%u has less than %u fields! :(\n" % (lnum, maxCol)),
+                    'ERROR')
+                readError = 1
+                break
+            else:
+                # reading names and attributes
+                # try:
+                if isDir != True:
+                    isDir = (False if type(isDir) is not tuple else 
+                        True if line[isDir[0]] in isDir[1] else False)
+                if refCol is not None:
+                    refs = list(set(line[refCol].split(settings.refs[1])))
+                # to give an easy way:
+                if type(settings.ncbiTaxId) is int:
+                    taxA = settings.ncbiTaxId
+                    taxB = settings.ncbiTaxId
+                # to enable more sophisticated inputs:
+                if type(settings.ncbiTaxId) is dict:
+                    taxx = self.get_taxon(settings.ncbiTaxId, line)
+                    if type(taxx) is tuple:
+                        taxA = taxx[0]
+                        taxB = taxx[1]
+                    else:
+                        taxA = taxB = taxx
+                if taxA is None or taxB is None:
+                    continue
+                stim = False
+                inh = False
+                if type(sign) is tuple:
+                    if line[sign[0]] == sign[1] or (type(sign[1]) is list \
+                        and line[sign[0]]):
+                        stim = True
+                    elif line[sign[0]] == sign[2] or (type(sign[2]) is list \
+                        and line[sign[2]]):
+                        inh = True
+                newEdge = {
+                    "nameA": line[settings.nameColA], 
+                    "nameB": line[settings.nameColB], 
+                    "nameTypeA": settings.nameTypeA, 
+                    "nameTypeB": settings.nameTypeB, 
+                    "typeA": settings.typeA, 
+                    "typeB": settings.typeB, 
+                    "source": settings.name, 
+                    "isDirected": isDir,
+                    "references": refs,
+                    "stim": stim,
+                    "inh": inh,
+                    "taxA": taxA,
+                    "taxB": taxB,
+                    "type": settings.intType}
+                #except:
+                    #self.ownlog.msg(2,("""Wrong name column indexes (%u and %u), 
+                        #or wrong separator (%s)? Line #%u\n""" 
+                        #% (
+                            #settings.nameColA, settings.nameColB, 
+                            #settings.separator, lnum)), 'ERROR')
+                    #readError = 1
+                    #break
+                # getting additional edge and node attributes
+                attrsEdge = self.get_attrs(line, settings.extraEdgeAttrs, lnum)
+                attrsNodeA = self.get_attrs(line, settings.extraNodeAttrsA, lnum)
+                attrsNodeB = self.get_attrs(line, settings.extraNodeAttrsB, lnum)
+                # merging dictionaries
+                nodeAttrs = {
+                    "attrsNodeA": attrsNodeA, 
+                    "attrsNodeB": attrsNodeB, 
+                    "attrsEdge": attrsEdge}
+                newEdge = dict(chain(newEdge.iteritems(), nodeAttrs.iteritems() ))
+            if readError != 0:
+                break
+            edgeList.append(newEdge)
+            lnum += 1
+        if type(infile) is file:
+            infile.close()
+        ### !!!! ##
+        edgeListMapped = self.map_list(edgeList)
+        self.ownlog.msg(2, "%u lines have been read from %s,'\
+            %u links after mapping" % \
+            (lnum-1, settings.inFile, len(edgeListMapped)))
         if keep_raw:
             self.data[settings.name] = edgeListMapped
         self.raw_data = edgeListMapped
@@ -624,13 +727,6 @@ class BioGraph(object):
             originalNameType = settings.nameType
             defaultNameType = self.default_name_type[settings.typ]
             mapTbl = ''.join([originalNameType,"_",defaultNameType])
-            if mapTbl not in self.mapper.tables and originalNameType != defaultNameType:
-                self.mapper.map_table_error(originalNameType, defaultNameType)
-                return None
-            if (defaultNameType == "uniprot" and 
-                "uniprot-sec_uniprot-pri" not in self.mapper.tables):
-                self.mapper.map_table_error("uniprot-sec", "uniprot-pri")
-                return None
             infile = codecs.open(settings.inFile, encoding='utf-8', mode='r')
             self.ownlog.msg(2, "%s opened..." % settings.inFile)
             # finding the largest referred column number, 
@@ -680,13 +776,16 @@ class BioGraph(object):
                 lnum += 1
             infile.close()
             itemListMapped = self.map_list(itemList,singleList=True)
-            itemListMapped = list(set(itemListMapped) - set(["unmapped"]))
-            self.ownlog.msg(2, "%u lines have been read from %s, %u items after mapping" %
-                            (lnum, settings.inFile, len(itemListMapped)))
+            itemListMapped = list(set(itemListMapped))
+            self.ownlog.msg(2, "%u lines have been read from %s, %u '\
+                items after mapping" %
+                (lnum, settings.inFile, len(itemListMapped)))
         self.lists[settings.name] = itemListMapped
     
     def map_list(self,lst,singleList=False):
-        # only a wrapper for map_edge()
+        '''
+        Only a wrapper for map_edge()
+        '''
         listMapped = []
         if singleList:
             for item in lst:
@@ -701,7 +800,7 @@ class BioGraph(object):
             item['name'],
             item['nameType'],
             self.default_name_type[item['type']])
-        if defaultNames[0] == 'unmapped':
+        if len(defaultNames) == 0:
             self.unmapped.append(item['name'])
         return defaultNames
     
@@ -715,12 +814,6 @@ class BioGraph(object):
             edge['nameB'], 
             edge['nameTypeB'], 
             self.default_name_type[edge['typeB']])
-        if self.default_name_type[edge['typeA']] == 'uniprot':
-            defaultNameA = self.mapper.get_primary_uniprot(defaultNameA)
-            defaultNameA = self.mapper.trembl_swissprot(defaultNameA)
-        if self.default_name_type[edge['typeB']] == 'uniprot':
-            defaultNameB = self.mapper.get_primary_uniprot(defaultNameB)
-            defaultNameB = self.mapper.trembl_swissprot(defaultNameB)
         # this is needed because the possibility ambigous mapping
         # one name can be mapped to multiple ones
         # this multiplies the nodes and edges
@@ -818,10 +911,12 @@ class BioGraph(object):
                 uniqLst[n[0]] = self.merge_attrs(uniqLst[n[0]],n[1])
         return uniqLst
     
-    def map_network(self,mapping="trembl_swissprot"):
-        # in the whole network changes every uniprot id to primary
-        if not self.mapper.has_mapping_table("uniprot-sec", "uniprot-pri"):
-            return None
+    def map_network(self, mapping = ('trembl', 'swissprot')):
+        '''
+        This function is not needed any more, will be removed soon.
+        
+        In the whole network changes every uniprot id to primary.
+        '''
         self.ownlog.msg(1,"Mapping network by %s..." % mapping,'INFO')
         g = self.graph
         self.ownlog.msg(2,("Num of edges: %u, num of vertices: %u" %
@@ -916,15 +1011,38 @@ class BioGraph(object):
         self.ownlog.msg(2,("Num of edges: %u, num of vertices: %u" %
             (g.ecount(),g.vcount())), 'INFO')
     
-    def delete_by_taxon(self,tax):
+    def delete_by_taxon(self, tax):
+        '''
+        Removes the proteins of all organisms which are not listed.
+        
+        @tax : list
+            List of NCBI Taxonomy IDs of the organisms of interest.
+            E.g. [7227, 9606]
+        '''
         g = self.graph
         toDel = []
         for v in g.vs:
             if v['ncbi_tax_id'] not in tax:
                 toDel.append(v.index)
         g.delete_vertices(toDel)
+        self.update_vname()
+        self.update_db_dict()
     
-    def delete_unknown(self,tax,typ='protein',defaultNameType=None):
+    def delete_unknown(self, tax, typ = 'protein', defaultNameType = None):
+        '''
+        Removes those proteins which are not in the list of all default
+        IDs of the organisms. By default, it means to remove all protein 
+        nodes not having a human SwissProt ID. 
+        
+        @tax : list
+            List of NCBI Taxonomy IDs of the organisms of interest.
+            E.g. [7227, 9606]
+        @typ : str
+            Molecule type. E.g. 'protein' or 'mirna'
+        @defaultNameType : str
+            The default name type of the given molecular species.
+            For proteins it's 'uniprot' by default.
+        '''
         g = self.graph
         if not defaultNameType:
             defaultNameType = self.default_name_type[typ]
@@ -976,6 +1094,9 @@ class BioGraph(object):
     ###
     
     def count_sol(self):
+        '''
+        Counts nodes with zero degree.
+        '''
         s = 0
         for i in self.graph.vs.degree():
             if i == 0:
@@ -985,6 +1106,13 @@ class BioGraph(object):
     def add_update_vertex(
             self, defAttrs, originalName, 
             originalNameType, extraAttrs={}, add=False):
+        '''
+        Updates the attributes of one node in the network.
+        Optionally it creates a new node and sets the attributes,
+        but it is not efficient as igraph needs to reindex vertices 
+        after this operation, so better to create new nodes and 
+        edges in batch.
+        '''
         g = self.graph
         if not defAttrs["name"] in g.vs["name"]:
             if not add:
@@ -1027,14 +1155,9 @@ class BioGraph(object):
             g.add_edge(edge[0], edge[1])
             edge = self.edge_exists(nameA, nameB)
         # assigning source:
-        if not g.es[edge]["sources"]:
-            g.es[edge]["sources"] = []
-        if source not in g.es[edge]["sources"]:
-            g.es[edge]["sources"].append(source)
+        self.add_list_eattr(edge, 'sources', source)
         # adding references:
-        if not g.es[edge]["references"]:
-            g.es[edge]["references"] = []
-        g.es[edge]["references"] += refs
+        self.add_list_eattr(edge, 'references', refs)
         # setting directions:
         if not g.es[edge]['dirs']:
             g.es[edge]['dirs'] = Direction(nameA,nameB)
@@ -1048,13 +1171,13 @@ class BioGraph(object):
         if inh:
             g.es[edge]['dirs'].set_sign((nameA,nameB),'negative',source)
         # updating references-by-source dict:
-        if not g.es[edge]['refs_by_source']:
-            g.es[edge]['refs_by_source'] = {}
-        if source not in g.es[edge]['refs_by_source']:
-            g.es[edge]['refs_by_source'][source] = []
-        g.es[edge]['refs_by_source'][source] += refs
+        self.add_grouped_eattr(edge, 'refs_by_source', source, refs)
+        # updating refrences-by-type dict:
+        self.add_grouped_eattr(edge, 'refs_by_type', typ, refs)
+        # updating sources-by-type dict:
+        self.add_grouped_eattr(edge, 'sources_by_type', typ, source)
         # adding type:
-        g.es[edge]['type'] = typ
+        self.add_list_eattr(edge, 'type', typ)
         # adding extra attributes:
         for key, value in extraAttrs.iteritems():
             if key not in g.es.attributes():
@@ -1062,13 +1185,34 @@ class BioGraph(object):
                     if type(value) is list else [None]
             g.es[edge][key] = self.combine_attr([g.es[edge][key], value])
     
-    def get_directed(self,graph=False,conv_edges=False,ret=False):
+    def add_list_eattr(self, edge, attr, value):
+        value = value if type(value) is list else [value]
+        e = self.graph.es[edge]
+        if attr not in self.graph.es.attributes():
+            self.graph.es[attr] = [[] for _ in xrange(0, self.graph.ecount())]
+        if type(e[attr]) is None:
+            e[attr] = []
+        elif type(e[attr]) is not list:
+            e[attr] = [e[attr]]
+        e[attr] = uniqList(e[attr] + value)
+    
+    def add_grouped_eattr(self, edge, attr, group, value):
+        value = value if type(value) is list else [value]
+        e = self.graph.es[edge]
+        if attr not in self.graph.es.attributes():
+            self.graph.es[attr] = [{} for _ in xrange(0, self.graph.ecount())]
+        if type(e[attr]) is not dict:
+            e[attr] = {}
+        if  group not in e[attr] or type(e[attr][group]) is None:
+            e[attr][group] = []
+        elif type(e[attr][group]) is not list:
+            e[attr][group] = [e[attr][group]]
+        e[attr][group] = uniqList(e[attr][group] + value)
+    
+    def get_directed(self, graph = False, conv_edges = False, mutual = False, ret = False):
         toDel = []
-        if not graph:
-            g = self.graph
-        else:
-            g = graph
-        d = g.as_directed(mutual=True)
+        g = self.graph if not graph else graph
+        d = g.as_directed(mutual = True)
         self.update_vname()
         d.es['directed_sources'] = [[] for _ in xrange(g.ecount())]
         d.es['undirected_sources'] = [[] for _ in xrange(g.ecount())]
@@ -1079,14 +1223,15 @@ class BioGraph(object):
             This works because in directed graphs get_eid() defaults to 
             directed = True, so the source -> target edge is returned.
             '''
-            dir_one = (g.vs['name'][e.source],g.vs['name'][e.target])
-            dir_two = (g.vs['name'][e.target],g.vs['name'][e.source])
+            dir_one = (g.vs['name'][e.source], g.vs['name'][e.target])
+            dir_two = (g.vs['name'][e.target], g.vs['name'][e.source])
             dir_edge_one = d.get_eid(d.vs['name'].index(g.vs['name'][e.source]),
                                  d.vs['name'].index(g.vs['name'][e.target]))
             dir_edge_two = d.get_eid(d.vs['name'].index(g.vs['name'][e.target]),
                                  d.vs['name'].index(g.vs['name'][e.source]))
             if not e['dirs'].get_dir(dir_one):
-                toDel.append(dir_edge_one)
+                if not conv_edges or e['dirs'].get_dir(dir_two):
+                    toDel.append(dir_edge_one)
             else:
                 d.es[dir_edge_one]['directed'] = True
                 d.es[dir_edge_one]['directed_sources'] += \
@@ -1094,7 +1239,8 @@ class BioGraph(object):
                 d.es[dir_edge_one]['undirected_sources'] += \
                     e['dirs'].get_dir('undirected', sources = True)
             if not e['dirs'].get_dir(dir_two):
-                toDel.append(dir_edge_two)
+                if not conv_edges or e['dirs'].get_dir(dir_one):
+                    toDel.append(dir_edge_two)
             else:
                 d.es[dir_edge_two]['directed'] = True
                 d.es[dir_edge_two]['directed_sources'] += \
@@ -1107,8 +1253,11 @@ class BioGraph(object):
                 if conv_edges:
                     d.es[dir_edge_one]['undirected_sources'] += \
                         e['dirs'].get_dir('undirected', sources = True)
-                    d.es[dir_edge_two]['undirected_sources'] += \
-                        e['dirs'].get_dir('undirected', sources = True)
+                    if mutual:
+                        d.es[dir_edge_two]['undirected_sources'] += \
+                            e['dirs'].get_dir('undirected', sources = True)
+                    else:
+                        toDel.append(dir_edge_two)
                 else:
                     toDel += [dir_edge_one, dir_edge_two]
             prg.step()
@@ -1148,6 +1297,12 @@ class BioGraph(object):
         else:
             nodes.sort()
             return nodes
+    
+    def edge_names(self, e):
+        if type(e) is int:
+            e = self.graph.es[e]
+        return (self.graph.vs[e.source]['name'], 
+                self.graph.vs[e.target]['name'])
     
     def node_exists(self, name):
         if not hasattr(self, 'nodInd'):
@@ -1310,8 +1465,6 @@ class BioGraph(object):
                     edges.append(tuple(edge))
                 prg.step()
         prg.terminate()
-        if e['source'] == 'DEPOD':
-            self.edges_depod = edges
         self.new_edges(set(edges))
         self.ownlog.msg(2,"New edges have been created",'INFO')
         self.ownlog.msg(2,("""Introducing new node and edge attributes..."""), 'INFO')
@@ -1432,103 +1585,6 @@ class BioGraph(object):
     ### functions for plotting // with custom typeface ;)
     ###
     
-    def make_layout(self,layout_type,graph=None, **kwargs):
-        if graph is None:
-            g = self.graph
-        else:
-            g = graph
-        if (not hasattr(g,"layout_type") or g.layout_type != layout_type or not
-                hasattr(g,"layout_data") or len(g.layout_data) != len(g.vs)):
-            self.ownlog.msg(2,("""Calculating %s layout... (numof nodes/edges: %u/%u)""" % 
-                (layout_type, g.vcount(), g.ecount())), 'INFO')
-            g['layout_data'] = g.layout(layout_type, **kwargs)
-            g['layout_type'] = layout_type
-    
-    def basic_plot(self, param, **kwargs):
-        if param.__class__.__name__ != "PlotParam":
-            self.ownlog.msg(2,("""No proper graphical parameters definition!\n\'param\'
-                should be a \'PlotParam\' instance\n"""), 'ERROR')
-            return None
-        if param.graph is None:
-            g = self.graph
-            gl = None
-        else:
-            g = param.graph
-            gl = g
-        if type(param.vertex_label) is str:
-            param.vertex_label = g.vs[param.vertex_label]
-        g.font = param.vertex_label_font
-        if param.name is None:
-            param.name = 'plot'+str(len(self.plots)+1)
-        if param.filename is None:
-            param.filename = ''.join([
-                'network-',self.session,'-',param.name,'.',param.graphix_format
-                ])
-        filename = os.path.join(param.graphix_dir, param.filename)
-        print filename
-        # ## layout ## #
-        if param.grouping is not None:
-            self.ownlog.msg(2,("""Calculating %s layout... (numof nodes/edges: %u/%u)""" % 
-                (layout_type+' grouped', g.vcount(), g.ecount())), 'INFO')
-            if param.layout in set(["intergroup","modular_fr","modular_circle"]):
-                f = getattr(gr_plot,"layout_"+param.layout)
-                f(g,param.grouping,**kwargs)
-            else:
-                if param.layout not in set(["fruchterman_reingold","fr","circle"]):
-                    param.layout = "fr"
-                g['layout_data'] = layout_intergroup(g,param.grouping, **kwargs)
-                g['layout_type'] = "layout_intergroup"
-            if param.vertex_color == "groups":
-                g.vs["color"] = group_colors(g,param.grouping)
-        else:
-            self.make_layout(param.layout, graph = gl, **kwargs)
-        # ## layout ready ## #
-        self.ownlog.msg(2,("""Plotting %s to file %s...""" % 
-            (param.graphix_format,filename)), 'INFO')
-        if param.graphix_format == "pdf":
-            sf = cairo.PDFSurface(filename, param.dimensions[0], param.dimensions[1])
-        else:
-            # currently doing only pdf
-            sf = cairo.PDFSurface(filename, param.dimensions[0], param.dimensions[1])
-        if type(param.vertex_label_color) is list:
-            vColAlpha = []
-            for col in param.vertex_label_color:
-                vColAlpha.append(''.join([col[0:7],param.vertex_fill_alpha]))
-            param.vertex_label_color = vColAlpha
-        elif type(param.vertex_label_color) is str:
-            vertex_label_color = ''.join([
-                param.vertex_label_color[0:7],
-                param.vertex_fill_alpha])
-        if param.vertex_label_size == "degree_label_size":
-            # TODO
-            dgr = g.vs.degree()
-            maxDgr = float(max(dgr))
-            g.vs["label_size"] = [None]
-            for v in g.vs:
-                v["label_size"] = math.log(float(v.degree()) / maxDgr + 1.0)*9.0 + 1.7
-            param.vertex_label_size = g.vs["label_size"]
-        elif type(param.vertex_label_size) is not int:
-            param.vertex_label_size = 6
-        plot = igraph.plot(g, layout = g['layout_data'],
-                    target = sf,
-                    bbox = param.bbox,
-                    drawer_factory = DefaultGraphDrawerFFsupport,
-                    vertex_size = param.vertex_size,
-                    vertex_color = param.vertex_color,
-                    vertex_frame_color = param.vertex_frame_color,
-                    vertex_frame_width = param.vertex_frame_width,
-                    vertex_label = param.vertex_label,
-                    vertex_label_color = param.vertex_label_color,
-                    vertex_label_size = param.vertex_label_size,
-                    edge_color = param.edge_color,
-                    edge_width = param.edge_width,
-                    **param.kwargs)
-        plot.redraw()
-        plot.save()
-        self.ownlog.msg(2,("""Plot saved to %s""" % filename), 'INFO')
-        self.plots[param.name] = plot
-        return self.plots[param.name]
-    
     #
     # functions to compare networks and pathways
     #
@@ -1537,18 +1593,14 @@ class BioGraph(object):
         g = self.graph
         edges = {}
         nodes = {}
-        for e in g.es:
-            for s in e["sources"]:
-                if s not in edges:
-                    edges[s] = []
-                if s not in nodes:
-                    nodes[s] = []
-                edges[s].append(e.index)
-                nodes[s].append(e.source)
-                nodes[s].append(e.target)
+        self.update_sources()
+        nodes = dict([(s, [v.index for v in g.vs if s in v['sources']]) \
+            for s in self.sources])
+        edges = dict([(s, [e.index for e in g.es if s in e['sources']]) \
+            for s in self.sources])
         sNodes = self.sorensen_groups(nodes)
         sEdges = self.sorensen_groups(edges)
-        return {"nodes": sNodes, "edges": sEdges}
+        return {'nodes': sNodes, 'edges': sEdges}
     
     def sorensen_groups(self,groups):
         grs = groups.keys()
@@ -1733,30 +1785,27 @@ class BioGraph(object):
     def delete_unmapped(self):
         if "unmapped" in self.graph.vs["name"]:
             self.graph.delete_vertices(self.graph.vs.find(name="unmapped").index)
+            self.update_db_dict()
+            self.update_vname()
     
     def genesymbol_labels(self):
         g = self.graph
         defaultNameType = self.default_name_type["protein"]
         geneSymbol = "genesymbol"
-        mapTbl = ''.join([defaultNameType,'_',geneSymbol])
-        mapTblRev = ''.join([geneSymbol,'_',defaultNameType])
-        if not((mapTbl in self.mapper.tables and 
-                len(self.mapper.tables[mapTbl].mapping['to']) > 0) or 
-               (mapTblRev in self.mapper.tables and 
-                len(self.mapper.tables[mapTblRev].mapping['from']) > 0)):
-                    self.ownlog.msg(2,("Missing mapping table: %s or %s" % 
-                        (mapTbl,mapTblRev)),'ERROR')
-                    return False
         g.vs["label"] = [None]
         for v in g.vs:
             if v["type"] == "protein":
                 label = self.mapper.map_name(v["name"],defaultNameType,geneSymbol)
-                if label[0] == "unmapped":
+                if len(label) == 0:
                     v["label"] = v["name"]
                 else:
                     v["label"] = label[0]
     
-    def network_stats(self,outfile=None):
+    def network_stats(self, outfile = None):
+        '''
+        Calculates basic statistics for the whole network 
+        and each of sources. Writes the results in a tab file.
+        '''
         if outfile is None:
             outfile = '-'.join(["pwnet",self.session,"stats"])
         stats = {}
@@ -1767,10 +1816,11 @@ class BioGraph(object):
             g = self.graph if k == len(self.sources) else self.get_network({
                 "edge": {"sources": [s]}, "node": {}})
             if g.vcount() > 0:
-                stats[s] = [g.vcount(), g.ecount(), sum(g.vs.degree())/len(g.vs),
+                stats[s] = [g.vcount(), g.ecount(),
+                    sum(g.vs.degree())/float(len(g.vs)),
                     g.diameter(), g.transitivity_undirected(), g.adhesion(),
                     g.cohesion()]
-        self.write_table(stats,outfile)
+        self.write_table(stats, outfile)
     
     def degree_dists(self):
         dds = {}
@@ -2045,16 +2095,36 @@ class BioGraph(object):
         outf.write(out[:-1])
         outf.close()
     
-    def load_resources(self,lst=best):
-        for k,v in lst.iteritems():
+    def load_resources(self, lst = best):
+        '''
+        Loads multiple resources, and cleans up after. 
+        Looks up ID types, and loads all ID conversion 
+        tables from UniProt if necessary. This is much
+        faster than loading the ID conversion and the 
+        resources one by one.
+        '''
+        self.load_reflists()
+        ac_types = set([])
+        for k, v in lst.iteritems():
+            ac_types.add(v.nameTypeA)
+            ac_types.add(v.nameTypeB)
+        table_loaded = set([])
+        for ids in self.mapper.tables.keys():
+            if ids[1] == 'uniprot':
+                table_loaded.add(ids[0])
+        self.mapper.load_uniprot_mappings(list(ac_types - table_loaded & \
+            set(self.mapper.name_types.keys())))
+        for k, v in lst.iteritems():
             self.load_resource(v, clean = False)
         sys.stdout.write('\n')
         self.clean_graph()
         self.update_sources()
         self.update_vertex_sources()
         sys.stdout.write(
-            '''\n » %u interactions between %u nodes\n from %u resources have been loaded,\n for details see the log: ./%s\n''' %
-            (self.graph.ecount(),self.graph.vcount(),len(self.sources),self.ownlog.logfile))
+            '''\n » %u interactions between %u nodes\n from %u'''\
+            ''' resources have been loaded,\n for details see the log: ./%s\n''' %
+            (self.graph.ecount(), self.graph.vcount(), 
+            len(self.sources), self.ownlog.logfile))
     
     def load_mappings(self):
         self.mapper.load_mappings(maps=data_formats.mapList)
@@ -2124,7 +2194,7 @@ class BioGraph(object):
     # functions to make topological analysis on the graph
     #
     
-    def first_neighbours(self,node,indices=False):
+    def first_neighbours(self, node, indices=False):
         g = self.graph
         lst = []
         if type(node) is not int:
@@ -2142,7 +2212,7 @@ class BioGraph(object):
                 nlst.append(g.vs[v]['name'])
             return nlst
     
-    def second_neighbours(self,node,indices=False,with_first=False):
+    def second_neighbours(self, node, indices = False, with_first = False):
         g = self.graph
         lst = []
         if type(node) is int:
@@ -2155,9 +2225,9 @@ class BioGraph(object):
                 node_n = node
             else:
                 return lst
-        first = self.first_neighbours(node_i,indices=indices)
+        first = self.first_neighbours(node_i, indices = indices)
         for n in first:
-            lst += self.first_neighbours(n,indices=indices)
+            lst += self.first_neighbours(n, indices = indices)
         if with_first:
             lst += first
         else:
@@ -2167,7 +2237,7 @@ class BioGraph(object):
         else:
             return list(set(lst)-set([node_n]))
     
-    def all_neighbours(self,indices=False):
+    def all_neighbours(self, indices=False):
         g = self.graph
         g.vs['neighbours'] = [[] for _ in xrange(g.vcount())]
         prg = Progress(
@@ -2267,7 +2337,8 @@ class BioGraph(object):
         if 'ptm' not in g.es.attributes():
             g.es['ptm'] = [[] for _ in g.es]
         header = ['UniProt_A', 'UniProt_B', 'GeneSymbol_B', 'GeneSymbol_A', 'Databases',
-                  'PubMed_IDs', 'Stimulation', 'Inhibition', 'PTM']
+                  'PubMed_IDs', 'Stimulation', 'Inhibition', 'Substrate-isoform', 
+                  'Residue_number', 'Residue_letter', 'PTM_type']
         stripJson = re.compile(r'[\[\]{}\"]')
         # first row is header
         outl = [header]
@@ -2302,12 +2373,14 @@ class BioGraph(object):
                     for dmi in e['ptm']:
                         if dmi.__class__.__name__ == 'DomainMotif':
                             if dmi.ptm.residue is not None:
-                                if dmi.ptm.residue.identifier == di[1]:
+                                if dmi.ptm.residue.protein == di[1]:
                                     uniqedges.append(e.index)
                                     r = row + [
                                         '%s-%u' % (dmi.ptm.protein, 
                                             dmi.ptm.isoform),
-                                        str(dmi.ptm.residue.number), dmi.ptm.typ]
+                                        str(dmi.ptm.residue.number),
+                                        dmi.ptm.residue.name, 
+                                        dmi.ptm.typ]
                                     # here each ptm in separate row:
                                     outl.append(r)
                     # row complete, appending to main list
@@ -2432,6 +2505,24 @@ class BioGraph(object):
                 f.write('\t'.join(thisEdge) + '\n')
                 prg.step()
         prg.terminate()
+    
+    def export_sif(self, outfile = None):
+        outfile = outfile if outfile is not None \
+            else 'network-%s.sif'%self.session
+        with open(outfile, 'w') as f:
+            for e in self.graph.es:
+                for d in [d for d, b in e['dirs'].dirs.iteritems() if b]:
+                    if e['dirs'].is_directed() and d == 'undirected':
+                        continue
+                    sign = '' if d == 'undirected' \
+                        else ''.join([['+', '-'][i] \
+                        for i, v in enumerate(e['dirs'].get_sign(d)) if v])
+                    dirn = '=' if d == 'undirected' else '>'
+                    source = self.graph.vs[e.source]['name'] \
+                        if d == 'undirected' else d[0]
+                    target = self.graph.vs[e.target]['name'] \
+                        if d == 'undirected' else d[1]
+                    f.write('\t'.join([source, sign + dirn, target]) + '\n')
     
     def export_graphml(self,outfile=None,graph=None,name='main'):
         self.genesymbol_labels()
@@ -2807,8 +2898,6 @@ class BioGraph(object):
                     c['gsymbols'] += self.mapper.map_name(u,'uniprot','genesymbol')
                 c['gsymbols'] = list(set([gs.replace('; ','') for gs in c['gsymbols']]))
                 if len(c['uniprots']) > 0:
-                    if 'unmapped' in c['uniprots']:
-                        c['uniprots'].remove('unmapped')
                     for u in c['uniprots']:
                         if u in graph.vs['name']:
                             name = '-'.join(c['gsymbols'])
@@ -3458,12 +3547,13 @@ class BioGraph(object):
                                             self.graph.es[e]['ptm'].append(reg)
         prg.terminate()
     
-    def load_comppi(self):
+    def load_comppi(self, graph = None):
+        graph = graph if graph is not None else self.graph
         self.update_vname()
-        if 'comppi' not in self.graph.es.attributes():
-            self.graph.es['comppi'] = [None for _ in self.graph.es]
-        if 'comppi' not in self.graph.vs.attributes():
-            self.graph.vs['comppi'] = [{} for _ in self.graph.vs]
+        if 'comppi' not in graph.es.attributes():
+            graph.es['comppi'] = [None for _ in graph.es]
+        if 'comppi' not in graph.vs.attributes():
+            graph.vs['comppi'] = [{} for _ in graph.vs]
         comppi = dataio.get_comppi()
         prg = Progress(len(comppi), 'Processing localizations', 33)
         for c in comppi:
@@ -3473,22 +3563,36 @@ class BioGraph(object):
             for u1 in uniprots1:
                 if self.node_exists(u1):
                     for loc in [x.split(':') for x in c['loc1'].split('|')]:
-                        self.graph.vs[self.nodDct[u1]]\
+                        graph.vs[self.nodDct[u1]]\
                             ['comppi'][loc[0]] = float(loc[1])
             for u2 in uniprots1:
                 if self.node_exists(u2):
                     for loc in [x.split(':') for x in c['loc2'].split('|')]:
-                        self.graph.vs[self.nodDct[u2]]\
+                        graph.vs[self.nodDct[u2]]\
                             ['comppi'][loc[0]] = float(loc[1])
             for u1 in uniprots1:
                 for u2 in uniprots2:
                     if self.node_exists(u1) and self.node_exists(u2):
                         nodes = self.get_node_pair(u1, u2)
                         if nodes:
-                            e = self.graph.get_eid(nodes[0], nodes[1], error = False)
+                            e = graph.get_eid(nodes[0], nodes[1], error = False)
                             if e != -1:
-                                self.graph.es[e]['comppi'] = float(c['loc_score'])
+                                graph.es[e]['comppi'] = float(c['loc_score'])
         prg.terminate()
+    
+    def edge_loc(self, graph = None, topn = 2):
+        graph = graph if graph is not None else self.graph
+        if 'comppi' not in graph.vs.attributes():
+            self.load_comppi()
+        graph.es['loc'] = [[] for _ in graph.es]
+        for e in graph.es:
+            e['loc'] = list(set([i[0] for i in \
+                heapq.nlargest(2 , graph.vs[e.source]['comppi'].iteritems(), 
+                operator.itemgetter(1))
+            ]) & set([i[0] for i in \
+                heapq.nlargest(2 , graph.vs[e.target]['comppi'].iteritems(), 
+                operator.itemgetter(1))
+            ]))
     
     def sequences(self, isoforms = False):
         self.seq = dataio.swissprot_seq(self.ncbi_tax_id, isoforms)
@@ -3508,7 +3612,8 @@ class BioGraph(object):
             return trace
     
     def load_pnetworks_dmi(self, trace = False, **kwargs):
-        trace = self.load_phospho_dmi(source = 'PhosphoNetworks', trace = trace, **kwargs)
+        trace = self.load_phospho_dmi(source = 'PhosphoNetworks', 
+            trace = trace, **kwargs)
         if trace:
             return trace
     
@@ -3518,13 +3623,13 @@ class BioGraph(object):
         if trace:
             return trace
     
-    def load_dbptm(self, non_matching = False, **kwargs):
+    def load_dbptm(self, non_matching = False, trace = False, **kwargs):
         trace = self.load_phospho_dmi(source = 'dbPTM', trace = trace, **kwargs)
         if trace:
             return trace
     
     def load_psite_phos(self, trace = False, **kwargs):
-        trace = self.load_phospho_dmi(source = 'PhosphoSite', trace = trace **kwargs)
+        trace = self.load_phospho_dmi(source = 'PhosphoSite', trace = trace, **kwargs)
         if trace:
             return trace
     
@@ -3620,7 +3725,7 @@ class BioGraph(object):
                                     p['typ'] = 'phosphorylation'
                                 mot = intera.Motif(s[0], p['start'], p['end'], 
                                     instance = p['instance'], isoform = s[1])
-                                ptm = intera.Ptm(s, motif = mot, residue = res, 
+                                ptm = intera.Ptm(s[0], motif = mot, residue = res, 
                                     typ = p['typ'], source = [source], 
                                     isoform = s[1])
                                 dom = intera.Domain(protein = k)
@@ -3991,7 +4096,8 @@ class BioGraph(object):
     # Load data from GDSC
     #
     
-    def load_mutations(self, attributes = None):
+    def load_mutations(self, attributes = None, gdsc_datadir = None, 
+            mutation_file = None):
         '''
         Mutations are listed in vertex attributes. Mutation() objects 
         offers methods to identify residues and look up in Ptm(), Motif() 
@@ -4002,7 +4108,8 @@ class BioGraph(object):
         attributes = attributes if attributes is not None else \
             ['Consequence', 'COSMIC_ID', 'SAMPLE_NAME', 'Tissue_TCGA', 'ZYGOSITY']
         self.update_vname()
-        data = gdsc.read_mutations(attributes = attributes)
+        g = gdsc.GDSC(datadir = gdsc_datadir)
+        data = g.read_mutations(attributes = attributes, infile = mutation_file)
         if 'mut' not in self.graph.vs.attributes():
             self.graph.vs['mut'] = [{} for _ in self.graph.vs]
         prg = Progress(len(data), 'Processing mutations', 33)
@@ -4053,6 +4160,32 @@ class BioGraph(object):
                                 self.graph.vs[self.nodDct[up]]['exp'].items())
         prg.terminate()
     
+    def edges_expression(self, func = lambda x, y: x * y):
+        '''
+        Executes function `func` for each pairs of connected proteins in the 
+        network, for every expression dataset. By default, `func` simply
+        gives the product the (normalized) expression values.
+        
+        func : callable
+            Function to handle 2 vectors (pandas.Series() objects), should
+            return one vector of the same length.
+        '''
+        self.update_vindex()
+        self.exp_prod = pandas.DataFrame(index = self.exp.index, 
+            columns = [])
+        prg = Progress(self.graph.ecount(), 
+            'Weigh edges based on protein expression', 37)
+        for e in self.graph.es:
+            prg.step()
+            nodes = self.edge_names(e)
+            if nodes[0] in self.exp.columns and nodes[1] in self.exp.columns:
+                self.exp_prod[e.index] = func(self.exp[nodes[0]], 
+                    self.exp[nodes[1]])
+            else:
+                self.exp_prod[e.index] = pandas.Series([None] * \
+                    self.exp_prod.shape[0])
+        prg.terminate()
+    
     #
     # Find and remove edges where mutations disrupt PTMs
     #
@@ -4078,3 +4211,189 @@ class BioGraph(object):
                                 disrupted[e.index]['disr'] += 1
         return toDel, disrupted
     
+    def load_go(self, aspect = ['C', 'F', 'P']):
+        self.update_vname()
+        aspect = aspect if type(aspect) is list else [aspect]
+        self.graph.vs['go'] = [{'C': [], 'F': [], 'P': []} \
+            for _ in self.graph.vs]
+        go = dataio.get_go_goa()
+        prg = Progress(self.graph.vcount(), 'Loading GO annotations', 9)
+        for v in self.graph.vs:
+            prg.step()
+            for asp in aspect:
+                if v['name'] in go[asp]:
+                    v['go'][asp] = go[asp][v['name']]
+        prg.terminate()
+    
+    def go_dict(self, organism = 9606):
+        if not hasattr(self, 'go'):
+            self.go = {}
+        self.go[organism] = go.GO(organism)
+    
+    def find_all_paths(self, start, end, mode = 'OUT', 
+            maxlen = None, graph = None):
+        '''
+        Finds all paths up to length `maxlen` between groups of
+        vertices. This function is needed only becaues igraph`s
+        get_all_shortest_paths() finds only the shortest, not any
+        path up to a defined length.
+        
+        @start : int or list
+            Indices of the starting node(s) of the paths.
+        @end : int or list
+            Indices of the target node(s) of the paths.
+        @mode : 'IN', 'OUT', 'ALL'
+            Passed to igraph.Graph.neighbors()
+        @maxlen : int
+            Maximum length of paths in steps, i.e. if maxlen = 3, then 
+            the longest path may consist of 3 edges and 4 nodes.
+        @graph : igraph.Graph object
+            The graph you want to find paths in. self.graph by default.
+        '''
+        def find_all_paths_aux(adjlist, start, end, path, maxlen = None):
+            path = path + [start]
+            if start == end:
+                return [path]
+            paths = []
+            if len(path) < maxlen + 1:
+                for node in adjlist[start] - set(path):
+                    paths.extend(find_all_paths_aux(adjlist, node, end, path, maxlen))
+            return paths
+        graph = self.graph if graph is None else graph
+        adjlist = [set(graph.neighbors(node, mode = mode)) \
+            for node in xrange(graph.vcount())]
+        all_paths = []
+        start = start if type(start) is list else [start]
+        end = end if type(end) is list else [end]
+        prg = Progress(len(start) * len(end), 
+            'Looking up all paths up to length %u'%maxlen, 1)
+        for s in start:
+            for e in end:
+                prg.step()
+                all_paths.extend(find_all_paths_aux(adjlist, s, e, [], maxlen))
+        prg.terminate()
+        return all_paths
+    
+    def find_all_paths2(self, graph, start, end, mode = 'OUT', maxlen = 2, psize = 100):
+        def one_step(paths, adjlist):
+            # extends all paths by one step using all neighbors in adjacency list
+            return [i for ii in [[s + [a] for a in adjlist[s[-1]] if a not in s] \
+                for s in paths] for i in ii]
+        def parts(paths, targets, adjlist, maxlen = 2, psize = 100, depth = 1):
+            complete_paths = [p for p in paths if p[-1] in targets]
+            if len(paths) > 0 and len(paths[0]) <= maxlen:
+                for i in xrange(0, len(paths), psize):
+                    new_paths = one_step(paths[i:i+psize], adjlist)
+                    complete_paths += parts(new_paths, targets, adjlist, maxlen, psize, 
+                        depth = depth + 1)
+                    sys.stdout.write("\r"+" "*90)
+                    sys.stdout.write('\r\tDepth: %u :: Paths found: %u' % \
+                        (depth, len(complete_paths)))
+                    sys.stdout.flush()
+            return complete_paths
+        graph = self.graph if graph is None else graph
+        all_paths = []
+        start = start if type(start) is list else [start]
+        end = end if type(end) is list else [end]
+        send = set(end)
+        sys.stdout.write('\n')
+        adjlist = [set(graph.neighbors(node, mode = mode)) \
+            for node in xrange(graph.vcount())]
+        paths = [[s] for s in start]
+        all_paths = parts(paths, end, adjlist, maxlen, psize)
+        sys.stdout.write('\n')
+        return all_paths
+    
+    def transcription_factors(self):
+        return uniqList([j for ssl in \
+            [i for sl in \
+                [[e['dirs'].src_by_source(s) for s in e['sources_by_type']['TF']]\
+                    for e in self.graph.es if 'TF' in e['type']] \
+            for i in sl] \
+            for j in ssl])
+    
+    def neighbourhood_network(self, center, second = False):
+        center = center if type(center) is int else self.graph.vs['name'].index(center)
+        if second:
+            nodes = self.second_neighbours(center, indices = True, with_first = True)
+        else:
+            nodes = self.first_neighbours(center, indices = True)
+        nodes.append(center)
+        return self.graph.induced_subgraph(nodes, implementation = 'create_from_scratch')
+    
+    def get_proteomicsdb(self, user, passwd, tissues = None, pickle = None):
+        self.proteomicsdb = proteomicsdb.ProteomicsDB(user, passwd)
+        self.proteomicsdb.load(pfile = pickle)
+        self.proteomicsdb.get_tissues()
+        self.proteomicsdb.tissues_x_proteins(tissues = tissues)
+        self.exp_samples = self.proteomicsdb.tissues_loaded
+    
+    def prdb_tissue_expr(self, tissue, prdb = None, graph = None, occurrence = 1, 
+        group_function = lambda x: sum(x) / float(len(x))):
+        graph = self.graph if graph is None else graph
+        prdb = self.proteomicsdb if prdb is None else prdb
+        nsamples = len(prdb.samples[tissue])
+        occurrence = min(nsamples, occurrence) \
+            if type(occurrence) is int \
+            else nsamples * occurrence
+        proteins_present = set([uniprot for uniprot, cnt in \
+            Counter([uniprot for uniprots in \
+                [expr.keys() for expr in \
+                    [prdb.expression[sample] for sample in prdb.samples[tissue]] \
+                ] for uniprot in uniprots]).iteritems() \
+            if cnt >= occurrence]) & set(graph.vs['name'])
+        expressions = dict([(uniprot, group_function(
+            [prdb.expression[sample][uniprot] \
+                for sample in prdb.samples[tissue] \
+                if uniprot in prdb.expression[sample]])) \
+            for uniprot in proteins_present])
+        graph.vs[tissue] = [0.0 if v['name'] not in expressions \
+            else expressions[v['name']] for v in graph.vs]
+    
+    def prdb_tissue_network(self, tissue, graph = None):
+        graph = self.graph if graph is None else graph
+        if tissue not in graph.vs.attributes():
+            self.prdb_tissue_expr(tissue, graph = graph)
+        return graph.induced_subgraph([v.index for v in graph.vs if v[tissue] > 0.0])
+    
+    def small_plot(self, graph, **kwargs):
+        arrow_size = []
+        arrow_width = []
+        edge_color = []
+        dgraph = graph if graph.is_directed() else self.get_directed(graph, 
+            True, False, True)
+        toDel = []
+        for e in dgraph.es:
+            if not e['dirs'].is_directed and e.index not in toDel:
+                opp = dgraph.get_eid(e.target, e.soure, error = False)
+                if opp != -1 and not dgraph.es[opp]['dirs'].is_directed():
+                    toDel.append(opp)
+        dgraph.delete_edges(list(set(toDel)))
+        for e in dgraph.es:
+            src = dgraph.vs[e.source]['name']
+            tgt = dgraph.vs[e.target]['name']
+            if not e['dirs'].is_directed():
+                edge_color.append('#646567')
+                arrow_size.append(0.0001)
+                arrow_width.append(0.0001)
+            else:
+                if e['dirs'].is_stimulation((src, tgt)):
+                    edge_color.append('#6EA945')
+                    arrow_size.append(0.5)
+                    arrow_width.append(0.7)
+                elif e['dirs'].is_inhibition((src, tgt)):
+                    edge_color.append('#DA0025')
+                    arrow_size.append(0.5)
+                    arrow_width.append(0.7)
+                else:
+                    edge_color.append('#007B7F')
+                    arrow_size.append(0.5)
+                    arrow_width.append(0.7)
+        p = bdrawing.Plot(graph = dgraph, edge_color = edge_color, 
+            edge_arrow_size = arrow_size, edge_arrow_width = arrow_width,
+            vertex_label = dgraph.vs['label'], vertex_color = 'ltp', 
+            vertex_alpha = 'FF', edge_alpha = 'FF', 
+            edge_label = [', '.join(l) for l in dgraph.es['loc']],
+            vertex_label_font = 'HelveticaNeueLT Std Lt', 
+            edge_label_font = 'HelveticaNeueLT Std Lt', **kwargs)
+        return p.draw()

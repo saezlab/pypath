@@ -33,7 +33,7 @@ class Chembl(object):
         self.ncbi_tax_id = ncbi_tax_id
         if mapper.__class__.__name__ != 'Mapper':
             self.mapper = mapping.Mapper(ncbi_tax_id,mapping_mysql)
-            self.mapper.load_mappings(maps=data_formats.mapListUniprot)
+            # self.mapper.load_mappings(maps=data_formats.mapListUniprot)
         else:
             self.mapper = mapper
         self.chembl_uniprot_table()

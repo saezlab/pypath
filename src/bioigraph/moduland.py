@@ -38,7 +38,7 @@ class Moduland(object):
             weight = None, name = None, 
             max_threads = None, moduland_executables = None):
         '''
-        This class is to run a multiple ModuLand threads. 
+        This class is to run multiple ModuLand threads. 
         
         Parameters
         ----------
@@ -126,7 +126,8 @@ class Moduland(object):
             'perturland': '%s' % (self.modexe['perturland']) + ' %s %f 0 %s 0'
         }
         self.gradient_commands = {
-            'total': '%s' % (self.modexe['total_lowmem']) + ' --no-edge-belong -m 1000 %s',
+            'total': '%s' % (self.modexe['total_lowmem']) + \
+                ' --no-edge-belong -m 1000 %s',
             'gradient': '%s' % (self.modexe['prop']) + \
                 ' %s H --noEdgeBelong --gradientMethod',
             'proportional': '%s' % (self.modexe['prop']) + ' %s H --noEdgeBelong'
@@ -246,7 +247,8 @@ class Moduland(object):
             if returncode is not None:
                 if os.path.exists(self.cxg):
                     self.console('Network has been converted to cxg format.')
-                    self.console('Now ModuLand methods are available to run parallely.')
+                    self.console('Now ModuLand methods are available'\
+                        'to run parallely.')
                     self.state = 'Ready to run landscape calculations.'
                 else:
                     self.console('Failed to convert pajek file to cxg format.')
@@ -255,7 +257,7 @@ class Moduland(object):
     
     def memberships(self, cxb):
         result = None
-        cmd = ' '.join([self.modexe['cpxext_cat'],cxb,'|',self.modexe['mm.sh']])
+        cmd = ' '.join([self.modexe['cpxext_cat'], cxb, '|', self.modexe['mm.sh']])
         proc = subprocess.Popen(cmd, 
             stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = True)
         while True:
@@ -280,14 +282,16 @@ class Moduland(object):
         for cmd, proc in self.processes.iteritems():
             this_cmd = proc['cmd']
             if len(this_cmd) > 80:
-                this_cmd = '%s...\n               ...%s' % (this_cmd[:70], this_cmd[70:])
+                this_cmd = '%s...\n               ...%s' % \
+                    (this_cmd[:70], this_cmd[70:])
             s += '       [+] %s\n'%this_cmd
             if proc['state'] != 'waiting' and proc['state'] != 'starting':
                 rtime = self.time_elapsed(proc['started'], 
                     end = proc['finished'], string = True)
             else:
                 rtime = '00:00:00'
-            s += '           [state: %s :: running time: %s]\n' % (proc['state'], rtime)
+            s += '           [state: %s :: running time: %s]\n' % \
+                (proc['state'], rtime)
         return s
     
     def run_perturland(self, p = 0.01, recalculate = False):
@@ -464,7 +468,8 @@ class Moduland(object):
                                 if type(state) is int and state < 0:
                                     self.processes[cmd]['state'] = 'killed'
                                     self.running -= 1
-                                elif sum([os.path.exists(x) for x in proc['outputs']]) < \
+                                elif sum([os.path.exists(x) \
+                                    for x in proc['outputs']]) < \
                                     len(proc['outputs']):
                                     self.processes[cmd]['state'] = 'failed'
                                     self.running -= 1
@@ -474,7 +479,8 @@ class Moduland(object):
                                 self.processes[cmd]['returncode'] = state
                                 self.processes[cmd]['stdout'] = proc['process'].stdout
                                 self.processes[cmd]['stderr'] = proc['process'].stderr
-                                self.processes[cmd]['finished'] = datetime.datetime.now()
+                                self.processes[cmd]['finished'] = \
+                                    datetime.datetime.now()
             self.free_threads = self.threads - self.running
             if self.running > 0 or self.waiting > 0:
                 self.state = 'Working: \n\t:: running processes: %u\n\t '\

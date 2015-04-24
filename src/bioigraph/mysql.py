@@ -17,8 +17,8 @@
 
 import sys
 import codecs
-import MySQLdb
-import MySQLdb.cursors as cursors
+import pymysql as MySQLdb
+import pymysql.cursors as cursors
 
 import mysql_connect
 
@@ -43,7 +43,7 @@ class MysqlRunner(object):
             port = self.param['port'],
             passwd = self.param['password'],
             db = self.param['db'],
-            cursorclass=cursors.DictCursor
+            cursorclass = cursors.DictCursor
             )
     
     def connekt(self):
@@ -65,7 +65,7 @@ class MysqlRunner(object):
         if not silent:
             sys.stdout.write('\t:: Waiting for MySQL...')
             sys.stdout.flush()
-        with open('mysql.log','w') as f:
+        with open('mysql.log', 'w') as f:
             f.write(query+'\n')
         if self.con is not None:
             try:

@@ -42,10 +42,15 @@ import gzip
 import zipfile
 import tarfile
 import bs4
+import xml.etree.ElementTree as ET
 import hashlib
 import time
 import struct
+import json
 from bioservices import WSDLService
+from contextlib import closing
+from fabric.network import connect, HostConnectionCache
+from fabric.state import env
 
 import data_formats
 import progress
@@ -56,6 +61,40 @@ import seq as se
 
 CURSOR_UP_ONE = '\x1b[1A'
 ERASE_LINE = '\x1b[2K'
+
+class RemoteFile(object):
+    
+    def __init__(self, filename, user, host, passwd, port = 22, sep = '\t', 
+        header = True, rownames = True):
+        for key, val in locals().iteritems():
+            setattr(self, key, val)
+        env.keepalive = 60
+        env.connection_attempts = 5
+        env.password = self.passwd
+    
+    def wcl(self):
+        with closing(connect(self.user, self.host, self.port, \
+            HostConnectionCache())) as ssh:
+            stdin, stdout, stderr = ssh.exec_command('wc -l %s'%self.filename)
+            return int(stdout.readlines()[0].split()[0]) - (1 if self.header else 0)
+    
+    def rowns(self):
+        with closing(connect(self.user, self.host, self.port, \
+            HostConnectionCache())) as ssh:
+            stdin, stdout, stderr = ssh.exec_command(
+                'awk \'BEGIN{FS="%s"}{print $1}\' %s%s' % \
+                (self.sep, self.filename, '' if not self.header else ' | tail -n +2'))
+            return [x.strip() for x in stdout.readlines()]
+    
+    def open(self, return_header = True):
+        with closing(connect(self.user, self.host, self.port, \
+            HostConnectionCache())) as ssh:
+            with closing(ssh.open_sftp()) as sftp:
+                with closing(sftp.open(self.filename)) as f:
+                    if not return_header:
+                        line = f.readline()
+                    for line in f:
+                        yield line
 
 def test(debug_type, debug_msg):
     print "debug(%d): %s" % (debug_type, debug_msg)
@@ -76,12 +115,24 @@ def get_headers(header_list):
         headers[name] = value
     return headers
 
-def curl(url, silent=True, post=None, req_headers = None, cache=True, debug = False, 
-         outf=None, compr=None, encoding=None, files_needed = None, timeout = 300):
+def get_jsessionid(headers):
+    rejsess = re.compile(r'.*(JSESSIONID=[A-Z0-9]*)')
+    for hdr in headers:
+        jsess = rejsess.findall(hdr)
+        if len(jsess) > 0:
+            return ['Cookie: %s'%jsess[0]]
+
+def get_xsessionid(headers):
+    pass
+
+def curl(url, silent = True, post = None, req_headers = None, cache = True, 
+        debug = False, outf = None, compr = None, encoding = None, 
+        files_needed = None, timeout = 300, init_url = None, 
+        init_fun = 'get_jsessionid', follow = True, large = False):
     # either from cache or from download, we load the data into StringIO:
     multifile = False
-    result = StringIO()
-    domain = url.replace('http://','').replace('ftp://','').split('/')[0]
+    domain = url.replace('https://', '').replace('http://','').\
+        replace('ftp://','').split('/')[0]
     # first try to find file in cache:
     if cache:
         # outf param is to give a unique name to data
@@ -96,20 +147,31 @@ def curl(url, silent=True, post=None, req_headers = None, cache=True, debug = Fa
         usecache = True if os.path.exists(cachefile) else False
         # load from cache:
         if usecache:
-            with open(cachefile,'rb') as f:
-                if not silent:
-                    sys.stdout.write('\t:: Loading %s from cache, previously '\
-                        'downloaded from %s\n'%(outf,domain))
-                    sys.stdout.flush()
-                result.write(f.read())
+            if not silent:
+                sys.stdout.write('\t:: Loading %s from cache, previously '\
+                    'downloaded from %s\n'%(outf,domain))
+                sys.stdout.flush()
+            if large:
+                result = open(cachefile, 'rb')
+            else:
+                with open(cachefile,'rb') as f:
+                    result = StringIO()
+                    result.write(f.read())
     else:
         usecache = False
     # if not found in cache, download with curl:
     if not usecache:
         headers = []
+        if not init_url and large:
+            result = open(cachefile, 'wb')
+        else:
+            result = StringIO()
         c = pycurl.Curl()
-        c.setopt(c.URL, url)
-        c.setopt(c.FOLLOWLOCATION, True)
+        if init_url:
+            c.setopt(c.URL, init_url)
+        else:
+            c.setopt(c.URL, url)
+        c.setopt(c.FOLLOWLOCATION, follow)
         c.setopt(c.CONNECTTIMEOUT, 15)
         c.setopt(c.TIMEOUT, timeout)
         if type(req_headers) is list:
@@ -143,8 +205,24 @@ def curl(url, silent=True, post=None, req_headers = None, cache=True, debug = Fa
             except:
                 status = 500
         c.close()
+    # sometimes authentication or cookies are needed to access the target url:
+    if init_url and not usecache:
+        if not silent:
+            sys.stdout.write('\b'*20 + ' '*20 + '\b'*20 + 'Success.\n')
+            sys.stdout.flush()
+        # here, you may define a custom function to fetch 
+        # the authentication data from cookies/headers, 
+        # and return with headers for the main request:
+        req_headers = globals()[init_fun](headers)
+        return curl(url = url, req_headers = req_headers, silent = silent, 
+            debug = debug, outf = outf, compr = compr, encoding = encoding, 
+            files_needed = files_needed, timeout = timeout, large = large)
     # get the data from the file downloaded/loaded from cache:
     if usecache or status == 200:
+        if type(result) is file:
+            fname = result.name
+            result.close()
+            result = open(fname, 'r')
         # find out the encoding:
         if encoding is None:
             if not usecache:
@@ -177,14 +255,18 @@ def curl(url, silent=True, post=None, req_headers = None, cache=True, debug = Fa
                     and m.size != 0:
                     # m.size is 0 for dierctories
                     this_file = res.extractfile(m)
-                    results[m.name] = this_file.read()
-                    this_file.close()
+                    if large:
+                        results[m.name] = this_file
+                    else:
+                        results[m.name] = this_file.read()
+                        this_file.close()
             res.close()
         elif url.endswith('gz') or compr == 'gz':
             res = gzip.GzipFile(fileobj=result, mode='rb')
-            res = res.read()
-            res = res.decode(encoding)
-            res = res.encode('utf-8')
+            if not large:
+                res = res.read()
+                res = res.decode(encoding)
+                res = res.encode('utf-8')
         elif url.endswith('zip') or compr == 'zip':
             multifile = True
             results = {}
@@ -193,26 +275,33 @@ def curl(url, silent=True, post=None, req_headers = None, cache=True, debug = Fa
             for m in membs:
                 if files_needed is None or m in files_needed:
                     this_file = res.open(m)
-                    results[m] = this_file.read()
-                    this_file.close()
+                    if large:
+                        results[m] = this_file
+                    else:
+                        results[m] = this_file.read()
+                        this_file.close()
             res.close()
         else:
-            res = result.getvalue()
+            if large:
+                res = result
+            else:
+                res = result.getvalue()
         if not multifile:
             results = {'one': res}
-        for k in results.keys():
-            # handle files with CR line endings:
-            if '\r' in results[k] and '\n' not in results[k]:
-                results[k] = results[k].replace('\r','\n')
-            else:
-                results[k] = results[k].replace('\r','')
-            if 'encoding' != 'utf-8':
-                try:
-                    results[k] = results[k].decode(encoding)
-                    results[k] = results[k].encode('utf-8')
-                except:
-                    pass
-        if cache and not usecache:
+        if not large:
+            for k in results.keys():
+                # handle files with CR line endings:
+                if '\r' in results[k] and '\n' not in results[k]:
+                    results[k] = results[k].replace('\r','\n')
+                else:
+                    results[k] = results[k].replace('\r','')
+                if 'encoding' != 'utf-8':
+                    try:
+                        results[k] = results[k].decode(encoding)
+                        results[k] = results[k].encode('utf-8')
+                    except:
+                        pass
+        if cache and not usecache and not large:
             for k in results.keys():
                 if not multifile and not url.endswith('gz'):
                 # write the decoded data back to StringIO
@@ -227,15 +316,18 @@ def curl(url, silent=True, post=None, req_headers = None, cache=True, debug = Fa
     else:
         # download error:
         if not silent:
-            sys.stdout.write('\b'*20 + ' '*20 + '\b'*20 + 'Failed. (Status: %u)\n'%status)
+            sys.stdout.write('\b'*20 + ' '*20 + '\b'*20 + \
+                'Failed. (Status: %u)\n'%status)
             if status > 200:
                 sys.stdout.write('\t# URL: %s\n\t# POST: %s\n' % \
                     (url, '' if type(post) is not dict else urllib.urlencode(post)))
             sys.stdout.flush()
         res = None
+    # returns raw data, dict of file names and raw data in case of 
+    # multiple file archives, or file object in case of large files:
     return res
 
-def read_table(fileObject, cols, sep='\t', sep2=None, rem=[], hdr=None):
+def read_table(fileObject, cols, sep = '\t', sep2 = None, rem = [], hdr = None):
     '''
     Generic function to read data tables.
     
@@ -279,10 +371,12 @@ def read_table(fileObject, cols, sep='\t', sep2=None, rem=[], hdr=None):
     fileObject.close()
     return res
 
-def all_uniprots(organism = 9606):
+def all_uniprots(organism = 9606, swissprot = None):
     result = []
+    rev = '' if swissprot is None else ' AND reviewed:%s'%swissprot
     url = data_formats.urls['uniprot_basic']['url']
-    post = {'query': 'organism:%s'%str(organism), 'format': 'tab', 'columns': 'id'}
+    post = {'query': 'organism:%s%s' % (str(organism), rev), 
+        'format': 'tab', 'columns': 'id'}
     data = curl(url, post = post, silent = False)
     data = data.split('\n')
     del data[0]
@@ -2201,7 +2295,7 @@ def get_phosphoelm(organism = 'Homo sapiens', ltp_only = True):
                 'end': None,
                 'substrate': l[0],
                 'kinase': kinase,
-                'references': l[4].split(';'),
+                'references': [non_digit.sub('', r) for r in l[4].split(';')],
                 'experiment': l[6],
                 'organism': l[7]
             })
@@ -2528,3 +2622,199 @@ def get_acsn():
         l[0] = regreek.sub('', l[0]).split('_')[0].split('~')[0]
         l[2] = regreek.sub('', l[2]).split('_')[0].split('~')[0]
     return data
+
+def get_abs():
+    result = []
+    url = data_formats.urls['abs']['url']
+    data = curl(url, silent = False)
+    data = [[x.replace('*', '') for x in xx.split('\t')] for xx in data.split('\n')]
+    for d in data:
+        if len(d) > 2:
+            result.append([d[2], d[0]])
+    return result
+
+def get_pazar():
+    url = data_formats.urls['pazar']['url']
+    data = curl(url, silent = False)
+    return [map(x.split('\t').__getitem__, (1, 4, 10)) \
+        for x in ''.join(data.values()).split('\n') if len(x) > 0]
+
+def get_htri():
+    data = curl(data_formats.urls['htri']['url'], 
+        init_url = data_formats.urls['htri']['init_url'], silent = False)
+    return [map(x.split(';').__getitem__, (1, 3, 6)) \
+        for x in data.split('\n') if len(x) > 0][1:]
+
+def get_oreganno(organism = 'Homo sapiens'):
+    nsep = re.compile(r'([-A-Za-z0-9]{3,})[\s/\(]*.*')
+    nrem = re.compile(r'[-/]')
+    result = []
+    url = data_formats.urls['oreganno']['url']
+    data = curl(url, silent = False)
+    data = [x.split('\t') for x in data.split('\n') if len(x) > 0][1:]
+    for l in data:
+        if l[0] == organism and \
+            l[10].startswith('TRANSCRIPTION FACTOR BINDING SITE') and \
+            not l[11].startswith('UNKNOWN') and not l[14].startswith('UNKNOWN'):
+            result.append([
+                l[11] if len(l[11]) < 3 else nrem.sub('', nsep.findall(l[11])[0]),
+                l[14] if len(l[14]) < 3 else nrem.sub('', nsep.findall(l[14])[0]), l[18]])
+    return result
+
+def get_cpdb_ltp():
+    return get_cpdb(['HPRD', 'BioGRID', 'PhosphoPOINT', 'MINT', 'BIND', 'IntAct'])
+
+def get_cpdb(exclude = None):
+    exclude = set(exclude) if type(exclude) is list else exclude
+    result = []
+    url = data_formats.urls['cpdb']['url']
+    data = curl(url, silent = False)
+    data = [x.split('\t') for x in data.split('\n') \
+        if not x.startswith('#') and len(x) > 0]
+    for l in data:
+        participants = l[2].split(',')
+        if len(participants) == 2:
+            if not exclude or len(set(l[0].split(',')) - exclude) > 0:
+                result.append([participants[0], participants[1], l[0], l[1]])
+    return result
+
+def get_uniprot_sec():
+    url = data_formats.urls['uniprot_sec']['url']
+    data = curl(url, silent = False)
+    data = [x.split() for x in data.split('\n')[30:]]
+    return data
+
+def get_go(organism = 9606, swissprot = 'yes'):
+    rev = '' if swissprot is None \
+            else ' AND reviewed:%s' % swissprot
+    query = 'organism:%u%s' % (int(organism), rev)
+    url = data_formats.urls['uniprot_basic']['url']
+    post = {
+        'query': query, 
+        'format': 'tab', 
+        'columns': 'id,go-id'
+    }
+    data = curl(url, post = post, silent = False)
+    return dict([(x[0], [go.strip() for go in x[1].split(';')]) for x in \
+        [x.split('\t') for x in data.split('\n')] if len(x) > 1])
+
+def get_go_goa(organism = 'human'):
+    result = {'P': {}, 'C': {}, 'F': {}}
+    url = data_formats.urls['goa']['url'] % (organism.upper(), organism)
+    data = curl(url, silent = False)
+    data = [x.split('\t') for x in data.split('\n') \
+        if not x.startswith('!') and len(x) > 0]
+    for l in data:
+        if l[1] not in result[l[8]]:
+            result[l[8]][l[1]] = []
+        result[l[8]][l[1]].append(l[4])
+    return result
+
+def get_go_quick(organism = 9606):
+    terms = {'C': {}, 'F': {}, 'P': {}}
+    names = {}
+    url = data_formats.urls['quickgo']['url'] % organism
+    data = curl(url, silent = False)
+    data = [x.split('\t') for x in data.split('\n') if len(x) > 0]
+    del data[0]
+    for l in data:
+        try:
+            if l[0] not in terms[l[3][0]]:
+                terms[l[3][0]][l[0]] = []
+            terms[l[3][0]][l[0]].append(l[1])
+            names[l[1]] = l[2]
+        except:
+            print l
+    return {'terms': terms, 'names': names}
+
+def netpath_names():
+    repwnum = re.compile(r'_([0-9]+)$')
+    result = {}
+    url = data_formats.urls['netpath_names']['url']
+    html = curl(url, silent = False)
+    soup = bs4.BeautifulSoup(html)
+    for a in soup.find_all('a'):
+        if a.attrs['href'].startswith('pathways'):
+            num = repwnum.findall(a.attrs['href'])[0]
+            name = a.text
+            result[num] = name
+    return result
+
+def netpath():
+    result = []
+    repwnum = re.compile(r'NetPath_([0-9]+)_')
+    mi = '{net:sf:psidev:mi}'
+    url = data_formats.urls['netpath_psimi']['url']
+    data = curl(url, silent = False)
+    data = dict([(k, v) for k, v in data.iteritems() if k.endswith('xml')])
+    pwnames = netpath_names()
+    for pwfile, rawxml in data.iteritems():
+        try:
+            pwnum = repwnum.findall(pwfile)[0]
+        except:
+            print pwfile
+        pwname = pwnames[pwnum]
+        root = ET.fromstring(rawxml)
+        for e in root.findall(mi+'entry'):
+            thisInt = ()
+            db = [pr.find(mi+'primaryRef').attrib['db'] \
+                for pr in e.find(mi+'source').findall(mi+'xref')]
+            refs = []
+            mets = []
+            for ex in e.find(mi+'experimentList').findall(mi+'experimentDescription'):
+                for pm in ex.find(mi+'bibref').iter(mi+'primaryRef'):
+                    if pm.attrib['db'] == 'pubmed':
+                        refs.append(pm.attrib['id'])
+                for me in ex.find(mi+'interactionDetectionMethod').\
+                    iter(mi+'shortLabel'):
+                    mets.append(me.text)
+            mols = {}
+            for mo in e.find(mi+'interactorList').findall(mi+'interactor'):
+                iid = mo.attrib['id']
+                name = mo.find(mi+'names').find(mi+'shortLabel').text
+                entrez = ''
+                if mo.find(mi+'xref') is not None:
+                    entrez = ';'.join(
+                        [ac.attrib['id'] for ac in mo.find(mi+'xref')\
+                            .findall(mi+'secondaryRef') 
+                        if ac.attrib['db'] == 'Entrez gene'])
+                mols[iid] = (name,entrez)
+            theInt = e.find(mi+'interactionList').find(mi+'interaction')
+            for p in theInt.find(mi+'participantList').findall(mi+'participant'):
+                pid = p.find(mi+'interactorRef').text
+                roles = ''
+                if p.find(mi+'experimentalRoleList') is not None:
+                    roles = ';'.join(
+                        [rl.find(mi+'names').find(mi+'shortLabel').text 
+                        for rl in p.find(mi+'experimentalRoleList')\
+                            .findall(mi+'experimentalRole')])
+                mols[pid] += (roles,)
+            intTyp = theInt.find(mi+'interactionType').find(mi+'names')\
+                .find(mi+'shortLabel').text
+            for i in range(0,len(mols)-1):
+                for j in range(i,len(mols)):
+                    A = mols[mols.keys()[i]][0:2]
+                    B = mols[mols.keys()[j]][0:2]
+                    if A[0] != B[0]:
+                        result.append(list(A) + list(B) + \
+                            [';'.join(refs), ';'.join(mets), intTyp, pwname])
+    return result
+
+class ProteomicsDB(object):
+    
+    def __init__(self):
+        # BRENDA Tissue Ontology
+        self.bto = get_ontology('BTO')
+        # subs: uniprot, ms_level, scope
+        self.exp_url = data_formats.urls['protdb_exp']['url']
+        # subs: bto, swissprot_only, isoform
+        self.tis_url = data_formats.urls['protdb_tis']['url']
+    
+    def get_expression(self, uniprot, ms_level = 1, scope = 1):
+        url = self.exp_url % (uniprot, ms_level, scope)
+        data = curl(url)
+        try:
+            data = json.loads(data)
+            return data
+        except:
+            return {'url': url, 'response': data}

@@ -1,4 +1,2 @@
 python-igraph
 MySQL-python
-bioservices
-pycurl

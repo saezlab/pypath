@@ -22,23 +22,82 @@ __all__ = ['MysqlMapping','FileMapping','ReferenceList',
 
 class MysqlMapping(object):
         
-    def __init__(self,tableName,fieldOne,fieldTwo,db=None,tax=None,bi=False):
+    def __init__(self, tableName, fieldOne, fieldTwo, db = None, tax = None, 
+            bi = False, mysql = None, typ = 'protein'):
         self.tableName = tableName
         self.fieldOne = fieldOne
         self.fieldTwo = fieldTwo
         self.tax = tax
         self.db = db
         self.bi = bi
+        self.mysql = mysql
+        self.typ = typ
 
 class FileMapping(object):
         
-    def __init__(self,textFile,oneCol,twoCol,separator,header=0,bi=False,tax=9606):
-        self.textFile = textFile
+    def __init__(self, input, oneCol, twoCol, separator = None,
+        header = 0, bi = False, tax = 9606, typ = 'protein'):
+        self.input = input
         self.oneCol = oneCol
         self.twoCol = twoCol
         self.separator = separator
         self.header = header
+        self.typ = typ
         self.bi = bi
+
+#class UniprotMapping(object):
+    
+    #def __init__(self, ac_type, field = None, 
+        #bi = False, tax = 9606, swissprot = 'yes', subfield = None):
+        #self.bi = bi
+        #self.tax = int(tax)
+        #self.ac_type = ac_type
+        #self.typ = 'protein'
+        #if field is not None:
+            #self.field = field
+            #self.subfield = subfield
+        #elif self.ac_type in ac_types:
+            #self.field = ac_types[self.ac_type][0]
+            #self.subfield = ac_types[self.ac_type][1]
+        #self.swissprot = swissprot
+
+class UniprotMapping(object):
+    
+    def __init__(self, nameType, bi = False, tax = 9606, swissprot = 'yes'):
+        '''
+        Defines an ID conversion table to retrieve from UniProt.
+        
+        @nameType : str
+            Type of accession numbers you would like to translate.
+        @targetNameType : str
+            Type of accession numbers you would like to translate to.
+        @bi : bool
+            Build the mapping table only from original AC to target AC,
+            or if bi = True, the reverse table is also generated (from 
+            target to original). 
+        @tax : int
+            NCBI Taxonomy ID of the organism of interest.
+        @swissprot : str
+            Look for SwissProt or Trembl.
+            Passed directly to UniProt`s `reviewed` parameter. `yes` or `no`
+            To fetch Trembl and SwissProt together, set value to None.
+        @mapping : bool
+            Get the data from UniProt`s programmatic access query interface,
+            (uniprot.org/uniprot) or the batch retrieval/id mapping service 
+            (uniprot.org/mapping). These have slightly different APIs and 
+            capabilities. Some IDs can be obtained from the former, some 
+            from the latter.
+        '''
+        self.bi = bi
+        self.tax = int(tax)
+        self.typ = 'protein'
+        self.swissprot = swissprot
+        self.nameType = nameType
+        self.targetNameType = 'uniprot'
+        self.field = None if nameType not in ac_query \
+            else ac_query[nameType][0]
+        self.subfield = None if nameType not in ac_query \
+            else ac_query[nameType][1]
 
 class ReferenceList(object):
     
@@ -57,8 +116,8 @@ class ReferenceList(object):
         self.lst = set(lst)
 
 class PickleMapping(object):
-        
-    def __init__(self,pickleFile):
+    
+    def __init__(self, pickleFile):
         self.pickleFile = pickleFile
 
 class ReadSettings:
@@ -93,8 +152,9 @@ class ReadSettings:
 
 class ReadList:
     
-    def __init__(self,name="unknown",separator=None,nameCol=0,
-            nameType="uniprot",typ="protein",inFile=None,extraAttrs={},header=False):
+    def __init__(self, name="unknown", separator=None, nameCol=0,
+            nameType = "uniprot", typ="protein", inFile=None,
+            extraAttrs={},header=False):
         self.typ = typ
         self.nameCol = nameCol
         self.nameType = nameType
@@ -103,3 +163,33 @@ class ReadList:
         self.name = name
         self.separator = separator
         self.header = header
+
+ac_query = {
+    'genesymbol': ['genes', 'PREFERRED'],
+    'genesymbol-syn': ['genes', 'ALTERNATIVE'],
+    'hgnc': ['database', 'HGNC'],
+    'embl': ['database', 'embl'],
+    'entrez': ['database', 'geneid'],
+    'refseqp': ['database', 'refseq'],
+    'enst': ['database', 'ensembl'],
+    'uniprot-entry': ['entry name', None]
+}
+
+ac_mapping = {
+    'uniprot': 'ACC',
+    'uniprot_id': 'ID',
+    'embl': 'EMBL',
+    'embl_id': 'EMBL_ID',
+    'pir': 'PIR',
+    'entrez': 'P_ENTREZGENEID',
+    'gi': 'P_GI',
+    'refseqp': 'P_REFSEQ_AC',
+    'refseqn': 'REFSEQ_NT_ID',
+    'ensembl': 'ENSEMBL_ID',
+    'ensp': 'ENSEMBL_PRO_ID',
+    'enst': 'ENSEMBL_TRS_ID',
+    'ensg': 'ENSEMBLGENOME_ID',
+    'ensgp': 'ENSEMBLGENOME_PRO_ID',
+    'ensgt': 'ENSEMBLGENOME_TRS_ID',
+    'hgnc': 'HGNC_ID'
+}

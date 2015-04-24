@@ -9,9 +9,70 @@ import glob
 
 _MAJOR = 0
 _MINOR = 1
-_MICRO = 2
+_MICRO = 17
 version = '%d.%d.%d' % (_MAJOR, _MINOR, _MICRO)
 release = '%d.%d' % (_MAJOR, _MINOR)
+
+def which(exe):
+    '''
+    Checks if executable is available.
+    Source:
+    http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python
+    '''
+    def is_exe(fpath):
+        return os.path.exists(fpath) and os.access(fpath, os.X_OK)
+    
+    def ext_candidates(fpath):
+        yield fpath
+        for ext in os.environ.get("PATHEXT", "").split(os.pathsep):
+            yield fpath + ext
+    
+    fpath, fname = os.path.split(exe)
+    if fpath:
+        if is_exe(exe):
+            return True
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            exe_file = os.path.join(path, exe)
+            for candidate in ext_candidates(exe_file):
+                if is_exe(candidate):
+                    return True
+    return False
+
+
+def query_yes_no(question, default="yes"):
+    """
+    From http://stackoverflow.com/questions/3041986/python-command-line-yes-no-input
+    
+    Ask a yes/no question via raw_input() and return their answer.
+
+    "question" is a string that is presented to the user.
+    "default" is the presumed answer if the user just hits <Enter>.
+        It must be "yes" (the default), "no" or None (meaning
+        an answer is required of the user).
+
+    The "answer" return value is True for "yes" or False for "no".
+    """
+    valid = {"yes": True, "y": True, "ye": True,
+             "no": False, "n": False}
+    if default is None:
+        prompt = " [y/n] "
+    elif default == "yes":
+        prompt = " [Y/n] "
+    elif default == "no":
+        prompt = " [y/N] "
+    else:
+        raise ValueError("invalid default answer: '%s'" % default)
+    while True:
+        sys.stdout.write(question + prompt)
+        choice = raw_input().lower()
+        if default is not None and choice == '':
+            return valid[default]
+        elif choice in valid:
+            return valid[choice]
+        else:
+            sys.stdout.write("Please respond with 'yes' or 'no' "
+                             "(or 'y' or 'n').\n")
 
 metainfo = {
     'authors': {
@@ -94,6 +155,18 @@ with open('README.rst') as f:
 with open('HISTORY.rst') as f:
     history = f.read()
 
+# choosing module for mysql access:
+deps = ['python-igraph', 'pandas', 'bioservices', 'beautifulsoup4', 'pymysql']
+
+#mysql = 'pymysql'
+#if which('mysql') and which('mysql_config'):
+    #mysql_alt = query_yes_no('Looks like MySQL is installed on your system. \n'\
+        #'Do you want to use MySQL-python instead of pymysql?')
+    #if mysql_alt:
+        #mysql = 'MySQL-python'
+
+#deps.append(mysql)
+
 setup(
     name = 'bioigraph',
     version = version,
@@ -113,5 +186,5 @@ setup(
     package_dir = {'':'src'},
     packages = list(set(find_packages() + ['bioigraph', 'bioigraph.data'])),
     include_package_data = True,
-    install_requires = ['python-igraph','MySQL-python','bioservices', 'pycurl']
+    install_requires = deps
 )

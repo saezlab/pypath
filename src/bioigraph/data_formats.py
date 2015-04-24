@@ -22,8 +22,9 @@ import os
 import input_formats
 import common
 
-__all__ = ['urls','mapList','otherMappings','refLists',
-           'best','good','negative','gdsc_comp_target','cgc']
+__all__ = ['urls', 'mapList', 'otherMappings', 'refLists', 
+           'best', 'good', 'transcription', 'negative', 'gdsc_comp_target', 'cgc', 
+           'mapListUniprot', 'mapListBasic']
 
 ROOT = common.ROOT
 
@@ -278,6 +279,102 @@ urls = {
     'acsn': {
         'label': 'Atlas of Cancer Signaling Networks',
         'url': 'https://acsn.curie.fr/files/acsn_ppi.sif'
+    },
+    'protdb_exp': {
+        'label': 'Expression data from ProteomicsDB',
+        'url': 'https://www.proteomicsdb.org/proteomicsdb/logic/api/'\
+            'proteinexpression.xsodata/InputParams(PROTEINFILTER='\
+            '%%27%s%%27,MS_LEVEL=%u,TISSUE_ID_SELECTION=%%27%%27,'\
+            'TISSUE_CATEGORY_SELECTION=%%27tissue;fluid%%27,SCOPE_SELECTION=%u,'\
+            'GROUP_BY_TISSUE=1,CALCULATION_METHOD=0,EXP_ID=-1)/Results?'\
+            '$select=UNIQUE_IDENTIFIER,TISSUE_ID,TISSUE_NAME,TISSUE_SAP_SYNONYM,'\
+            'SAMPLE_ID,SAMPLE_NAME,AFFINITY_PURIFICATION,EXPERIMENT_ID,'\
+            'EXPERIMENT_NAME,EXPERIMENT_SCOPE,EXPERIMENT_SCOPE_NAME,PROJECT_ID,'\
+            'PROJECT_NAME,PROJECT_STATUS,UNNORMALIZED_INTENSITY,'\
+            'NORMALIZED_INTENSITY,MIN_NORMALIZED_INTENSITY,'\
+            'MAX_NORMALIZED_INTENSITY,SAMPLES&$format=json',
+        'subs': ['uniprot', 'ms_level', 'scope']
+    },
+    'protdb_tis': {
+        'label': 'Get all tissues where a given protein is expressed',
+        'url': 'https://www.proteomicsdb.org/proteomicsdb/logic/api/'\
+            'proteinspertissue.xsodata/InputParams(TISSUE_ID='\
+            '%%27%s%%27,CALCULATION_METHOD=0,SWISSPROT_ONLY=%u,'\
+            'NO_ISOFORM=%u)/Results?$select=ENTRY_NAME,UNIQUE_IDENTIFIER,DATABASE,'\
+            'PROTEIN_DESCRIPTION,PEPTIDES,SAMPLE_NAME,SAMPLE_DESCRIPTION,'\
+            'UNNORMALIZED_EXPRESSION,NORMALIZED_EXPRESSION&$format=xml',
+        'subs': ['bto', 'swissprot_only', 'isoform']
+    },
+    'abs': {
+        'label': '',
+        'url': 'http://genome.crg.es/datasets/abs2005/data/abs.gff'
+    },
+    'uniprot_sec': {
+        'label': 'Secondary UniProt ACs',
+        'url': 'ftp://ftp.uniprot.org/pub/databases/uniprot/'\
+            'knowledgebase/docs/sec_ac.txt'
+    },
+    'uniprot_idmap_ftp': {
+        'label': 'Human ID mapping from UniProt',
+        'url': 'ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/'\
+            'knowledgebase/idmapping/by_organism/HUMAN_9606_idmapping.dat.gz'
+    },
+    'uniprot_idmap': {
+        'label': 'ID mapping from UniProt',
+        'url': 'http://uniprot.org/mapping/'
+    },
+    'pazar': {
+        'label': 'TF-target gene lists from PAZAR',
+        'url': 'http://www.pazar.info/tftargets/tftargets.zip'
+    },
+    'htri': {
+        'label': 'TF-target gene lists from HTRI',
+        'url': 'http://www.lbbc.ibb.unesp.br/htri/consulta?type=1&all=true&down=3'\
+            '&iconss1.x=57&iconss1.y=48',
+        'init_url': 'http://www.lbbc.ibb.unesp.br/htri/pagdown.jsp'
+    },
+    'oreganno': {
+        'label': 'TF-target gene lists from ORegAnno',
+        'url': 'http://www.oreganno.org/oregano/htdocs'\
+            '/data/oreganno_UCSC_08Nov10.txt.gz'
+    },
+    'cpdb': {
+        'label': 'All human interactions from ConsensusPathDB',
+        'url': 'http://cpdb.molgen.mpg.de/download/ConsensusPathDB_human_PPI.gz'
+    },
+    'goa': {
+        'label': 'UniProt GO annotations from GOA',
+        'url': 'ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/%s/'\
+            'gene_association.goa_%s.gz'
+    },
+    'quickgo': {
+        'label': 'UniProt GO annotations from QuickGO',
+        'url': 'http://www.ebi.ac.uk/QuickGO/GAnnotation?format=tsv&'\
+            'limit=-1&tax=%u&col=proteinID,goID,goName,aspect'
+    },
+    'netpath_names': {
+        'label': 'NetPath numeric pathway IDs can be translated to '\
+            'pathway names only by extracting them from HTML....',
+        'url': 'http://www.netpath.org/browse'
+    },
+    'netpath_psimi': {
+        'label': 'Batch download of NetPath pathways in PSI-MI format',
+        'url': 'http://www.netpath.org/download/zipped/PSI-MI.zip'
+    },
+    'proteomemap': {
+        'label': 'Human Proteome Map: Mass-spec expression data in healthy human tissues',
+        'url': 'http://www.humanproteomemap.org/Download_HPM/HPM_protein_level_'\
+            'expression_matrix_Kim_et_al_052914.csv'
+    },
+    'proteinatlas_normal': {
+        'label': 'Human Protein Atlas: Immuncytochemistry expression data in '\
+            'healthy human cells',
+        'utl': 'http://www.proteinatlas.org/download/normal_tissue.csv.zip'
+    },
+    'proteinatlas_cancer': {
+        'label': 'Human Protein Atlas: Immuncytochemistry expression data in '\
+            'human tumour cells',
+        'utl': 'http://www.proteinatlas.org/download/cancer.csv.zip'
     }
 }
 
@@ -360,11 +457,42 @@ mapList = [
         "src": "mysql",
         "par": input_formats.MysqlMapping("hgnc_names","u","gsy","mapping",None)
     }
+    #,
+    #{
+        #"one": "uniprot",
+        #"two": "hgnc",
+        #"typ": "protein",
+        #"src": "mysql",
+        #"par": input_formats.UniprotMapping("hgnc_names","u","gsy","mapping",None)
+    #}
 ]
+
+mapListUniprot = {
+    ('embl', 'uniprot'): input_formats.UniprotMapping('embl'), 
+    ('genesymbol', 'uniprot'): input_formats.UniprotMapping('genesymbol', 
+        bi = True), 
+    ('genesymbol-syn', 'uniprot'): input_formats.UniprotMapping('genesymbol-syn'), 
+    ('entrez', 'uniprot'): input_formats.UniprotMapping('entrez'), 
+    ('hgnc', 'uniprot'): input_formats.UniprotMapping('hgnc'), 
+    ('enst', 'uniprot'): input_formats.UniprotMapping('enst'), 
+    ('refseqp', 'uniprot'): input_formats.UniprotMapping('refseqp'),
+    ('uniprot-entry', 'uniprot'): input_formats.UniprotMapping('uniprot-entry')
+}
+
+mapListBasic = {
+    ('uniprot-sec', 'uniprot-pri'): input_formats.FileMapping(
+        'get_uniprot_sec', 0, 1, None, header = 0),
+    ('genesymbol', 'trembl'): input_formats.UniprotMapping('genesymbol', 
+        swissprot = 'no', bi = True),
+    ('genesymbol', 'swissprot'): input_formats.UniprotMapping('genesymbol'),
+    ('genesymbol-syn', 'swissprot'): input_formats.UniprotMapping('genesymbol-syn'),
+    ('genesymbol', 'uniprot'): 
+        input_formats.UniprotMapping('genesymbol', bi = True, swissprot = None)
+}
 
 # this is all what is needed for corrections of unirpot ids 
 # i.e. to get primary swissprot id for all proteins
-mapListUniprot = [
+mapListUniprotOld = [
     {
         "one": "uniprot-sec",
         "two": "uniprot-pri",
@@ -449,9 +577,12 @@ best = {
                 header=True),
     'spike': input_formats.ReadSettings(name="SPIKE", separator="\t", nameColA=1, nameColB=3,
                 nameTypeA="genesymbol", nameTypeB="genesymbol",
-                typeA="protein", typeB="protein", isDirected=(4,['1']),sign=False,
+                typeA="protein", typeB="protein", isDirected=(4,['1']), 
+                sign = (7, '1', '2'),
                 inFile=os.path.join(ROOT, 'data', 'spike_hc.csv'),references=(5, ";"),ncbiTaxId=9606,
-                extraEdgeAttrs={},
+                extraEdgeAttrs={
+                    'spike_effect': 7, 
+                    'spike_mechanism': 11},
                 extraNodeAttrsA={},
                 extraNodeAttrsB={}),
     'mppi': input_formats.ReadSettings(name="MPPI", separator="|", nameColA=2, nameColB=6,
@@ -470,7 +601,8 @@ best = {
                     "psite_evidences": (4, ";")},
                 extraNodeAttrsA={},
                 extraNodeAttrsB={}),
-    'dip': input_formats.ReadSettings(name="DIP", separator="\t", nameColA=0, nameColB=1,
+    'dip': input_formats.ReadSettings(name="DIP", separator="\t", 
+                nameColA=0, nameColB=1,
                 nameTypeA="uniprot", nameTypeB="uniprot",
                 typeA="protein", typeB="protein",isDirected=False,sign=False,
                 inFile=os.path.join(ROOT, 'data', 'dip_human_core_processed.csv'),
@@ -480,19 +612,25 @@ best = {
                     "dip_type": (3, ";")},
                 extraNodeAttrsA={},
                 extraNodeAttrsB={}),
-    'netpath': input_formats.ReadSettings(name="NetPath", separator="\t", nameColA=1, nameColB=3,
+    'netpath': input_formats.ReadSettings(name = "NetPath", separator = None,
+                nameColA = 1, nameColB = 3,
                 nameTypeA="entrez", nameTypeB="entrez",
                 typeA="protein", typeB="protein", isDirected=False, sign=False,
-                inFile=os.path.join(ROOT, 'data', 'netpath_refs.csv'),references=(4, ";"),ncbiTaxId=9606,
+                inFile='netpath', references=(4, ";"), ncbiTaxId=9606,
                 extraEdgeAttrs={
                     "netpath_methods": (5, ";"),
-                    "netpath_type": (6, ";")},
+                    "netpath_type": (6, ";"),
+                    "netpath_pathways": (7, ';')},
                 extraNodeAttrsA={},
                 extraNodeAttrsB={}),
-    'ca1': input_formats.ReadSettings(name="CA1", separator=";", nameColA=1, nameColB=6,
+    'ca1': input_formats.ReadSettings(name="CA1", separator=";", 
+                nameColA=1, nameColB=6,
                 nameTypeA="uniprot", nameTypeB="uniprot",
-                typeA="protein", typeB="protein", isDirected=(10,['_','+']), sign=(10,'+','_'),
-                header=True, inFile=os.path.join(ROOT, 'data', 'ca1.csv'),references=(12, ";"),ncbiTaxId=9606,
+                typeA="protein", typeB="protein", 
+                isDirected=(10,['_','+']), sign=(10,'+','_'),
+                header=True, 
+                inFile=os.path.join(ROOT, 'data', 'ca1.csv'),
+                references=(12, ";"), ncbiTaxId=9606,
                 extraEdgeAttrs={
                     "ca1_effect": 10,
                     "ca1_type": 11},
@@ -607,13 +745,16 @@ best = {
                     },
                 extraNodeAttrsA={},
                 extraNodeAttrsB={}),
-    'signor': input_formats.ReadSettings(name="Signor", separator="\t", nameColA=2, nameColB=6,
+    'signor': input_formats.ReadSettings(name="Signor", separator="\t", 
+                nameColA=2, nameColB=6,
                 nameTypeA="uniprot", nameTypeB="uniprot",
-                typeA="protein", typeB="protein", isDirected=1, sign=False,ncbiTaxId=9606,
+                typeA="protein", typeB="protein", isDirected=1, 
+                sign=False, ncbiTaxId=9606,
                 inFile=os.path.join(ROOT, 'data', 'signor_ppi.tsv'),references=(19, ";"),header=True,
                 extraEdgeAttrs={
                     "signor_effect": (8,';'),
-                    "signor_mechanism": (9, ';')
+                    "signor_mechanism": (9, ';'),
+                    "signor_pathways": (24, ';')
                     },
                 extraNodeAttrsA={},
                 extraNodeAttrsB={}),
@@ -647,7 +788,8 @@ best = {
                 typeA = "protein", typeB = "protein", isDirected = 0, sign = False,
                 ncbiTaxId = {'A': {'col': 6, 'dict': {'9606': 9606}}, 
                              'B': {'col': 7, 'dict': {'9606': 9606}}},
-                inFile = 'get_domino_interactions', references = (5, ';'), header = False,
+                inFile = 'get_domino_interactions', references = (5, ';'), 
+                header = False,
                 extraEdgeAttrs={'domino_methods': (4, ';')},
                 extraNodeAttrsA={},
                 extraNodeAttrsB={}),
@@ -692,15 +834,15 @@ good = {
                 extraEdgeAttrs={},
                 extraNodeAttrsA={},
                 extraNodeAttrsB={}),
-    'mimp': input_formats.ReadSettings(name="MIMP", 
-                separator = None, nameColA=0,
-                nameColB=1, nameTypeA="genesymbol", nameTypeB="genesymbol",
+    'mimp': input_formats.ReadSettings(name = "MIMP", 
+                separator = None, nameColA = 0,
+                nameColB = 1, nameTypeA = "genesymbol", nameTypeB = "genesymbol",
                 typeA = "protein", typeB = "protein", isDirected = 1, sign = False,
                 ncbiTaxId = 9606,
                 inFile = 'mimp_interactions', references = False, header = False,
-                extraEdgeAttrs={},
-                extraNodeAttrsA={},
-                extraNodeAttrsB={})
+                extraEdgeAttrs = {},
+                extraNodeAttrsA = {},
+                extraNodeAttrsB = {})
 }
 
 ugly = {
@@ -719,7 +861,125 @@ ugly = {
                     'acsn_effect': 1
                 },
                 extraNodeAttrsA={},
-                extraNodeAttrsB={})
+                extraNodeAttrsB={}),
+    'hi3': input_formats.ReadSettings(name="HI-III", 
+                separator = None, nameColA=1,
+                nameColB=3, nameTypeA="genesymbol", nameTypeB="genesymbol",
+                typeA = "protein", typeB = "protein", 
+                isDirected = False, 
+                sign = False,
+                ncbiTaxId = 9606,
+                inFile = '/home/denes/Dokumentumok/pw/data/hi3.tsv', 
+                references = False, header = True,
+                extraEdgeAttrs = {},
+                extraNodeAttrsA = {},
+                extraNodeAttrsB = {}),
+    'lit13': input_formats.ReadSettings(name="Lit-BM-13", 
+                separator = None, nameColA=1,
+                nameColB=3, nameTypeA="genesymbol", nameTypeB="genesymbol",
+                typeA = "protein", typeB = "protein", 
+                isDirected = False, 
+                sign = False,
+                ncbiTaxId = 9606,
+                inFile = '/home/denes/Dokumentumok/pw/data/Lit-BM-13.tsv', 
+                references = False, header = True,
+                extraEdgeAttrs = {},
+                extraNodeAttrsA = {},
+                extraNodeAttrsB = {}),
+    'cpdb': input_formats.ReadSettings(name="CPDB", 
+                separator = None, nameColA = 0,
+                nameColB = 1, nameTypeA="uniprot-entry", nameTypeB="uniprot-entry",
+                typeA = "protein", typeB = "protein", 
+                isDirected = False, 
+                sign = False,
+                ncbiTaxId = 9606,
+                inFile = 'get_cpdb', 
+                references = (3, ','), header = False,
+                extraEdgeAttrs = {},
+                extraNodeAttrsA = {},
+                extraNodeAttrsB = {})
+}
+
+transcription = {
+    'abs': input_formats.ReadSettings(name="ABS", 
+                separator = None, nameColA = 0,
+                nameColB = 1, nameTypeA = "genesymbol", nameTypeB="embl_id",
+                typeA = "protein", typeB = "protein", 
+                isDirected = True, 
+                sign = False,
+                ncbiTaxId = 9606,
+                inFile = 'get_abs', 
+                interactionType = 'TF',
+                references = False, header = False,
+                extraEdgeAttrs = {},
+                extraNodeAttrsA = {},
+                extraNodeAttrsB = {}),
+    'encode_dist': input_formats.ReadSettings(name = "ENCODE_distal", 
+                separator = None, nameColA = 0,
+                nameColB = 2, nameTypeA = "genesymbol", nameTypeB = "genesymbol",
+                typeA = "protein", typeB = "protein", 
+                isDirected = True, 
+                sign = False,
+                ncbiTaxId = 9606,
+                inFile = 'http://encodenets.gersteinlab.org/enets3.Distal.txt', 
+                interactionType = 'TF',
+                references = False, header = False,
+                extraEdgeAttrs = {},
+                extraNodeAttrsA = {},
+                extraNodeAttrsB = {}),
+    'encode_prox': input_formats.ReadSettings(name = "ENCODE_proximal", 
+                separator = None, nameColA = 0,
+                nameColB = 2, nameTypeA = "genesymbol", nameTypeB = "genesymbol",
+                typeA = "protein", typeB = "protein", 
+                isDirected = True, 
+                sign = False,
+                ncbiTaxId = 9606,
+                inFile = \
+                    'http://encodenets.gersteinlab.org/enets2.Proximal_filtered.txt', 
+                interactionType = 'TF',
+                references = False, header = False,
+                extraEdgeAttrs = {},
+                extraNodeAttrsA = {},
+                extraNodeAttrsB = {}),
+    'pazar': input_formats.ReadSettings(name = "PAZAR", 
+                separator = None, nameColA = 0,
+                nameColB = 1, nameTypeA = "enst", nameTypeB = "ensg",
+                typeA = "protein", typeB = "protein", 
+                isDirected = True, 
+                sign = False,
+                ncbiTaxId = 9606,
+                inFile = 'get_pazar', 
+                interactionType = 'TF',
+                references = 2, header = False,
+                extraEdgeAttrs = {},
+                extraNodeAttrsA = {},
+                extraNodeAttrsB = {}),
+    'htri': input_formats.ReadSettings(name = "HTRI", 
+                separator = None, nameColA = 0,
+                nameColB = 1, nameTypeA = "entrez", nameTypeB = "entrez",
+                typeA = "protein", typeB = "protein", 
+                isDirected = True, 
+                sign = False,
+                ncbiTaxId = 9606,
+                inFile = 'get_htri', 
+                interactionType = 'TF',
+                references = 2, header = False,
+                extraEdgeAttrs = {},
+                extraNodeAttrsA = {},
+                extraNodeAttrsB = {}),
+    'oreganno': input_formats.ReadSettings(name = "ORegAnno", 
+                separator = None, nameColA = 0,
+                nameColB = 1, nameTypeA = "genesymbol", nameTypeB = "genesymbol",
+                typeA = "protein", typeB = "protein", 
+                isDirected = True, 
+                sign = False,
+                ncbiTaxId = 9606,
+                inFile = 'get_oreganno', 
+                interactionType = 'TF',
+                references = 2, header = False,
+                extraEdgeAttrs = {},
+                extraNodeAttrsA = {},
+                extraNodeAttrsB = {})
 }
 
 negative = {
@@ -974,6 +1234,11 @@ gdsc_comp_target = input_formats.ReadSettings(name="GDSC",
 gdsc_lst = input_formats.ReadList(name="GDSC", separator=";", nameCol=0,
                 nameType="genesymbol", typ="protein",
                 inFile=os.path.join(ROOT, 'data', 'gdsc.sif'),
+                extraAttrs={'drugs': 2})
+
+gdsc_lst = input_formats.ReadList(name="atg", separator=";", nameCol=0,
+                nameType="genesymbol", typ="protein",
+                inFile=os.path.join(ROOT, 'data', 'autophagy.list'),
                 extraAttrs={'drugs': 2})
 
 cgc = input_formats.ReadList(name="CancerGeneCensus", separator="|", nameCol=2,

@@ -18,8 +18,8 @@
 import os
 import sys
 import ConfigParser
-import MySQLdb
-import MySQLdb.cursors as cursors
+import pymysql as MySQLdb
+import pymysql.cursors as cursors
 
 import common
 

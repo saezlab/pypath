@@ -21,7 +21,7 @@ import random
 import textwrap
 
 __all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'uniqList', 'addToList', 
-           'gen_session_id', 'sorensen_index', 'console']
+           'gen_session_id', 'sorensen_index', 'console', 'wcl']
 
 # get the location
 ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -64,10 +64,28 @@ aaletters = dict(zip(aacodes.values(),aacodes.keys()))
 
 simpleTypes = [int, float, str, unicode]
 
-def uniqList(lst):
-    ls = set(lst)
-    return list(ls)
-    
+def uniqList(seq):
+   # Not order preserving
+   # from http://www.peterbe.com/plog/uniqifiers-benchmark
+   keys = {}
+   for e in seq:
+       keys[e] = 1
+   return keys.keys()
+
+def uniqOrdList(seq, idfun = None): 
+   # Order preserving
+   # from http://www.peterbe.com/plog/uniqifiers-benchmark
+   if idfun is None:
+       def idfun(x): return x
+   seen = {}
+   result = []
+   for item in seq:
+       marker = idfun(item)
+       if marker in seen: continue
+       seen[marker] = 1
+       result.append(item)
+   return result
+
 def addToList(lst, toadd):
     if isinstance(toadd, list):
         lst += toadd
@@ -92,3 +110,14 @@ def console(message):
     sys.stdout.write(('\n\t'+message).ljust(80))
     sys.stdout.write('\n')
     sys.stdout.flush()
+
+def wcl(f):
+    toClose = type(f) is file
+    f = f if type(f) is file else open(f, 'r')
+    for i, l in enumerate(f):
+        pass
+    if toClose:
+        f.seek(0)
+    else:
+        f.close()
+    return i + 1

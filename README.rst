@@ -2,14 +2,12 @@ Bioigraph
 #########
 
 
-:note: Bioigraph supports only Python 2.7, and no version 3.x is available currently.
+:note: Bioigraph supported only in Python 2.7, and no version 3.x is available currently.
 
 :contributions: denes@ebi.ac.uk
-:issues: https://github.com/saezlab/bioigraph/issues
-:documentation: http://www.ebi.ac.uk/~denes/bioigraph/docs/
+:issues: https://bitbucket.org/paulrenner/bioigraph/issues
 
-**Bioigraph** is a Python package built around igraph, to help the analysis of network representations of biochemical regulatory 
-systems i.e. protein, RNA and drug compound interaction networks.
+**Bioigraph** is a Python package built around igraphthat to work with molecular network representations e.g. PPI, miRNA, drug compound interaction networks.
 
 Installation
 ============
@@ -17,13 +15,7 @@ Installation
 With pip
 --------
 
-Install the recent version from git:
-
-.. code:: bash
-    
-    pip install git+https://github.com/saezlab/bioigraph.git
-
-Or download the package from /dist, and install with pip (these are tested at least at a minimal level):
+Download the package from /dist, and install with pip:
 
 .. code:: bash
     
@@ -32,17 +24,11 @@ Or download the package from /dist, and install with pip (these are tested at le
 Build source distribution
 -------------------------
 
-Clone the git repo, and run build.sh:
+Clone the git repo, and run setup.py:
 
 .. code:: bash
     
-    cd path/
-    ./build.sh
-
-Documentation
-=============
-
-For some basic example, and a far from complete documentation see here: http://www.ebi.ac.uk/~denes/bioigraph/docs/
+    python2 setup.py sdist
 
 Features
 ========
@@ -60,7 +46,3 @@ ID conversion module (bioigaph.mapping) can be used independently. It has the fe
 **ChEMBL** submodule queries directly your own ChEMBL MySQL instance, has the features to search targets and compounds from custom assay types and relationship types, to get activity values, binding domains, and action types. You need to download the ChEMBL MySQL dump, and load into your own server.
 
 **MySQL** submodule helps to manage MySQL connections and track queries.
-
-**ModuLand** module for running the ModuLand method family
-
-**Mapping** 
