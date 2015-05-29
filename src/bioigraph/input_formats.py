@@ -127,7 +127,8 @@ class ReadSettings:
             typeB = "protein", isDirected = False, sign = False, inFile = None, 
             references = False, extraEdgeAttrs = {}, extraNodeAttrsA = {}, 
             extraNodeAttrsB = {}, header = False, taxonA = False, taxonB = False, 
-            ncbiTaxId = False, interactionType = 'PPI', inputArgs = {}):
+            ncbiTaxId = False, interactionType = 'PPI', 
+            positiveFilters = [], negativeFilters = [], inputArgs = {}):
         self.typeA = typeA
         self.typeB = typeB
         self.nameColA = nameColA
@@ -148,6 +149,8 @@ class ReadSettings:
         self.taxonB = taxonB
         self.ncbiTaxId = ncbiTaxId
         self.intType = interactionType
+        self.positiveFilters = positiveFilters
+        self.negativeFilters = negativeFilters
         self.inputArgs = inputArgs
 
 class ReadList:

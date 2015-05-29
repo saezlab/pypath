@@ -53,12 +53,12 @@ from igraph.configuration import Configuration
 from igraph.drawing.baseclasses import AbstractDrawer, AbstractCairoDrawer, \
                                        AbstractXMLRPCDrawer
 from igraph.drawing.colors import color_to_html_format, color_name_to_rgb
-from igraph.drawing.edge import ArrowEdgeDrawer
+from ig_drawing_edge import ArrowEdgeDrawer
 from igraph.drawing.text import TextAlignment, TextDrawer
 from igraph.drawing.metamagic import AttributeCollectorBase
 from igraph.drawing.shapes import PolygonDrawer
 from igraph.drawing.utils import Point
-from igraph.drawing.vertex import DefaultVertexDrawer
+from ig_drawing_vertex import DefaultVertexDrawer
 from igraph.layout import Layout
 from igraph.drawing.graph import AbstractCairoGraphDrawer
 
@@ -330,10 +330,8 @@ class DefaultGraphDrawerFFsupport(AbstractCairoGraphDrawer):
             drawer_method(visual_vertex, vertex, coords)
 
         # Set the font we will use to draw the labels
-        vertexFontFamily = 'sans-serif' if not hasattr(graph, "vertex_label_font") \
-            else graph.vertex_label_font
-        context.select_font_face(vertexFontFamily, cairo.FONT_SLANT_NORMAL, \
-            cairo.FONT_WEIGHT_NORMAL)
+        vertex_label_family = 'sans-serif' if not hasattr(graph, "vertex_label_family") \
+            else graph.vertex_label_family
 
         # Decide whether the labels have to be wrapped
         wrap = kwds.get("wrap_labels")
@@ -355,6 +353,9 @@ class DefaultGraphDrawerFFsupport(AbstractCairoGraphDrawer):
             if vertex.label is None:
                 continue
 
+            if hasattr(vertex, 'label_family'):
+                context.select_font_face(vertex.label_family, \
+                    cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
             context.set_font_size(vertex.label_size)
             context.set_source_rgba(*vertex.label_color)
             label_drawer.text = vertex.label
@@ -421,19 +422,16 @@ class DefaultGraphDrawerFFsupport(AbstractCairoGraphDrawer):
         else:
             # Specified edge order
             edge_coord_iter = ((es[i], edge_builder[i]) for i in edge_order)
-        
-        # Edge label font
-        edgeFontFamily = 'sans-serif' if not hasattr(graph, "edge_label_font") \
-            else graph.edge_label_font
-        context.select_font_face(edgeFontFamily, cairo.FONT_SLANT_NORMAL, \
-            cairo.FONT_WEIGHT_NORMAL)
-        
+
         # Draw the edge labels
         for edge, visual_edge in edge_coord_iter:
             if visual_edge.label is None:
                 continue
 
             # Set the font size, color and text
+            if hasattr(visual_edge, 'label_family'):
+                context.select_font_face(visual_edge.label_family, \
+                    cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
             context.set_font_size(visual_edge.label_size)
             context.set_source_rgba(*visual_edge.label_color)
             label_drawer.text = visual_edge.label

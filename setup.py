@@ -9,7 +9,7 @@ import glob
 
 _MAJOR = 0
 _MINOR = 1
-_MICRO = 17
+_MICRO = 23
 version = '%d.%d.%d' % (_MAJOR, _MINOR, _MICRO)
 release = '%d.%d' % (_MAJOR, _MINOR)
 
@@ -85,10 +85,11 @@ metainfo = {
     'description': 'Work with molecular networks in Python igraph',
     'platforms': ['Linux', 'Unix', 'MacOSX', 'Windows'],
     'keywords': ['graph', 'network', 'protein', 'mRNA', 'DNA', 'signaling',
-                 'SignaLink', 'SIGNOR', 'InnateDB', 'IntAct', 'Reactome',
+                 'SignaLink', 'Signor', 'InnateDB', 'IntAct', 'Reactome',
                  'MPPI', 'NCI-PID', 'DIP', 'MatrixDB', 'PANTHER',
                  'PhosphoSite', 'PhosphoPoint', 'DEPOD', 'SPIKE', 'KEGG',
-                 'Autophagy', 'ARN', 'NRF2', 'NRF2ome', 'regulation',
+                 'Autophagy', 'ARN', 'NRF2', 'NRF2ome', 'Guide to Pharmacology', 
+                 'regulation',
                  'phosphorylation', 'kinase', 'phosphatase',
                  'dephosphorylation', 'directed graph'],
     'classifiers': [
@@ -156,7 +157,9 @@ with open('HISTORY.rst') as f:
     history = f.read()
 
 # choosing module for mysql access:
-deps = ['python-igraph', 'pandas', 'bioservices', 'beautifulsoup4', 'pymysql']
+deps = ['python-igraph', 'pandas', 'bioservices', 'beautifulsoup4', 'pymysql', 
+    'pyopenssl', 'ndg-httpsclient', 'chembl_webresource_client', 'pyasn1',
+    'twisted']
 
 #mysql = 'pymysql'
 #if which('mysql') and which('mysql_config'):

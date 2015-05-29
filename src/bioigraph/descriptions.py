@@ -18,6 +18,8 @@
 #http://www.ijbs.com/v06p0051.htm
 #http://www.nature.com/cddis/journal/v4/n8/full/cddis2013292a.html
 
+import codecs
+
 descriptions = {
     'DeathDomain': {
         'urls': {
@@ -719,3 +721,64 @@ descriptions = {
         ]
     }
 }
+
+    
+def html(self, filename = None):
+    filename = 'resources.html' if filename is None else filename
+    head = '''<!DOCTYPE HTML>
+    <html>
+        <head>
+            <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+            <meta http-equiv="Content-Language" content="en">
+            <meta name="dc.language" content="en">
+            <meta name="viewport" content="width=device-width, 
+            initial-scale=1.0">
+            <style type="text/css">
+                .quotebox {
+                    border-color: #7AADBD;
+                    border-style: solid;
+                    border-width: 1px 1px 1px 3px;
+                    margin: 0.75em 1em;
+                    padding: 0px 0.75em;
+                    background-color: #F6F9FC;
+                    color: #444444;
+                }
+            </style>
+        </head>
+        <body>
+        <h1>PPI resources'''
+    foot = '''\t</body>\n
+    </html>\n'''
+    doc = ''
+    for k,v in descriptions.iteritems():
+        doc += '\t\t<h2>%s</h2>\n' % k
+        for uk,uv in v['urls'].iteritems():
+            doc += '\t\t\t<h3>%s</h3>\n' % (uk.capitalize())
+            for a in uv:
+                doc += '\t\t\t\t<a href="%s" target="_blank">%s</a>\n' % (
+                    a,a)
+        if 'taxons' in v:
+            doc += '<p><b>Taxons: </b>%s</p>' % ', '.join(v['taxons'])
+        if 'size' in v:
+            doc += '<p><b>Nodes: </b>%s, <b>Edges:</b>%s</p>' % (
+                v['size']['nodes'],v['size']['edges'])
+        if 'descriptions' in v:
+            doc += '\t\t\t\t<div class="quotebox">\n'
+            pars = v['descriptions'][0].split('\n')
+            for p in pars:
+                p = p.strip()
+                if len(p) > 0:
+                    doc += '\t\t\t\t<p>%s</p>\n' % p
+            doc += '\t\t\t\t</div>\n'
+        if 'notes' in v:
+            doc += '\t\t\t\t<div class="quotebox">\n'
+            pars = v['notes'][0].split('\n')
+            for p in pars:
+                p = p.strip()
+                if len(p) > 0:
+                    doc += '\t\t\t\t<p>%s</p>\n' % p
+            doc += '\t\t\t\t</div>\n'
+    html = head + doc + foot
+    with codecs.open(filename,encoding='utf-8',mode='w') as f:
+        f.write(html)

@@ -33,6 +33,7 @@ import json
 import pandas
 import operator
 import heapq
+import threading
 from itertools import chain
 from collections import Counter
 import cPickle as pickle
@@ -57,7 +58,21 @@ from gr_plot import *
 from progress import *
 from data_formats import *
 
-__all__ = ['BioGraph', 'Direction']
+__all__ = ['BioGraph', 'Direction', 'Reference']
+
+class Reference(object):
+    
+    def __init__(self, pmid):
+        self.pmid = pmid
+        
+    def __eq__(self, other):
+        return type(other) == Reference and self.pmid == other.pmid
+    
+    def open(self):
+        dataio.open_pubmed(self.pmid)
+    
+    def info(self):
+        return dataio.get_pubmeds([self.pmid])
 
 class Direction(object):
     
@@ -408,12 +423,17 @@ class BioGraph(object):
             self.ownlog = logn.logw(self.session,self.loglevel)
             self.mapper = mapping.Mapper(self.ncbi_tax_id, 
                 mysql_conf = self.mysql_conf, log = self.ownlog)
+            self.disclaimer = '\tNote: this module contains unpublished\n'\
+                '\tdata from the Signor database. Please\n'\
+                '\tconsider this before including Signor\n'\
+                '\tin your analysis.\n'
             self.ownlog.msg(1, "bioIgraph has been initialized")
             self.ownlog.msg(1, "Beginning session '%s'" % self.session)
             sys.stdout.write(
                 """\t» New session started,\n\tsession ID: '%s'\n\tlogfile:"""\
                 """'./%s'.\n""" % \
                 (self.session,self.ownlog.logfile))
+            sys.stdout.write(self.disclaimer)
         else:
             self.copy(copy)
     
@@ -443,6 +463,9 @@ class BioGraph(object):
                         '%u edges.\n' % (' '*90, pfile, \
                             self.graph.vcount(), self.graph.ecount()))
                     sys.stdout.flush()
+                    self.update_vname()
+                    self.update_vindex()
+                    self.update_sources()
                     return None
         self.load_reflists()
         self.load_resources()
@@ -557,6 +580,19 @@ class BioGraph(object):
                     self.graph.vs[e.source][eattr] = e[eattr]
                     self.graph.vs[e.target][eattr] = e[eattr]
     
+    def filters(self, line, positiveFilters = [], negativeFilters = []):
+        for filtr in positiveFilters:
+            if not ((type(filtr[1]) in simpleTypes and \
+                line[filtr[0]] == filtr[1]) or \
+                line[filtr[0]] in filtr[1]):
+                    return True
+        for filtr in negativeFilters:
+            if (type(filtr[1]) in simpleTypes and \
+                line[filtr[0]] == filtr[1]) or \
+                line[filtr[0]] in filtr[1]:
+                    return True
+        return False
+    
     def read_data_file(self, settings, keep_raw = False):
         '''
         Interaction data with node and edge attributes can be read 
@@ -575,6 +611,9 @@ class BioGraph(object):
         '''
         edgeList = []
         nodeList = []
+        inputFunc = self.get_function(settings.inFile)
+        if inputFunc is None and hasattr(dataio, settings.inFile):
+            inputFunc = getattr(dataio, settings.inFile)
         if settings.__class__.__name__ != "ReadSettings":
             self.ownlog.msg(2,("""No proper input file definition!\n\'settings\'
                 should be a \'ReadSettings\' instance\n"""), 'ERROR')
@@ -585,27 +624,35 @@ class BioGraph(object):
             infile = dataio.curl(settings.inFile, silent = False)
             infile = [x for x in infile.replace('\r', '').split('\n') if len(x) > 0]
             self.ownlog.msg(2, "Retrieving data from%s ..." % settings.inFile)
-        elif hasattr(dataio, settings.inFile):
-            toCall = dataio.__dict__[settings.inFile]
-            infile = toCall(**settings.inputArgs)
+        # elif hasattr(dataio, settings.inFile):
+        elif inputFunc is not None:
+            infile = inputFunc(**settings.inputArgs)
             self.ownlog.msg(2, "Retrieving data by dataio.%s() ..." % \
-                toCall.__name__)
+                inputFunc.__name__)
         elif os.path.isfile(settings.inFile):
             infile = codecs.open(settings.inFile, encoding='utf-8', mode='r')
             self.ownlog.msg(2, "%s opened..." % settings.inFile)
         else:
             self.ownlog.msg(2,"%s: No such file or dataio function! :(\n" % \
-            (filename), 'ERROR')
+            (settings.inFile), 'ERROR')
             return None
         # finding the largest referred column number, 
         # to avoid references out of range
         isDir = settings.isDirected
         sign = settings.sign
-        refCol = None if type(settings.refs) is not tuple else settings.refs[0]
+        refCol = settings.refs[0] if type(settings.refs) is tuple else settings.refs \
+            if type(settings.refs) is int else None
+        refSep = settings.refs[1] if type(settings.refs) is tuple else ';'
         sigCol = None if type(sign) is not tuple else sign[0]
-        dirCol = None if type(isDir) is not tuple else isDir[0]
-        dirVal = None if type(isDir) is not tuple else isDir[1]
-        refs = []
+        dirCol = None
+        dirVal = None
+        if type(isDir) is tuple:
+            dirCol = isDir[0]
+            dirVal = isDir[1]
+        elif type(sign) is tuple:
+            dirCol = sign[0]
+            dirVal = sign[1:]
+            dirVal = dirVal if type(dirVal[0]) in simpleTypes else flatList(dirVal)
         maxCol = max(
             [ 
                 settings.nameColA, 
@@ -628,7 +675,9 @@ class BioGraph(object):
                 line = line.replace('\n','').replace('\r','').\
                 split(settings.separator)
             else:
-                line = [x.replace('\n','').replace('\r','') for x in line]
+                line = [x.replace('\n','').replace('\r','') \
+                    if type(x) in charTypes else x 
+                    for x in line]
             # in case line has less fields than needed
             if len(line) < maxCol:
                 self.ownlog.msg(2,(
@@ -637,13 +686,18 @@ class BioGraph(object):
                 readError = 1
                 break
             else:
-                # reading names and attributes
-                # try:
-                if isDir != True:
-                    isDir = (False if type(isDir) is not tuple else 
-                        True if line[isDir[0]] in isDir[1] else False)
+                # applying filters:
+                if self.filters(line, settings.positiveFilters, settings.negativeFilters):
+                    continue
+                # reading names and attributes:
+                if isDir:
+                    thisEdgeDir = True
+                else:
+                    thisEdgeDir = False if dirCol is None or dirVal is None else \
+                        True if line[dirCol] in dirVal else False
+                refs = []
                 if refCol is not None:
-                    refs = list(set(line[refCol].split(settings.refs[1])))
+                    refs = delEmpty(list(set(line[refCol].split(refSep))))
                 # to give an easy way:
                 if type(settings.ncbiTaxId) is int:
                     taxA = settings.ncbiTaxId
@@ -661,11 +715,13 @@ class BioGraph(object):
                 stim = False
                 inh = False
                 if type(sign) is tuple:
-                    if line[sign[0]] == sign[1] or (type(sign[1]) is list \
-                        and line[sign[0]]):
+                    if (type(sign[1]) is list \
+                        and line[sign[0]] in sign[1]) or \
+                        line[sign[0]] == sign[1]:
                         stim = True
-                    elif line[sign[0]] == sign[2] or (type(sign[2]) is list \
-                        and line[sign[2]]):
+                    elif (type(sign[2]) is list \
+                        and line[sign[0]] in sign[2]) or \
+                        line[sign[0]] == sign[2]:
                         inh = True
                 newEdge = {
                     "nameA": line[settings.nameColA], 
@@ -675,7 +731,7 @@ class BioGraph(object):
                     "typeA": settings.typeA, 
                     "typeB": settings.typeB, 
                     "source": settings.name, 
-                    "isDirected": isDir,
+                    "isDirected": thisEdgeDir,
                     "references": refs,
                     "stim": stim,
                     "inh": inh,
@@ -1157,7 +1213,13 @@ class BioGraph(object):
         # assigning source:
         self.add_list_eattr(edge, 'sources', source)
         # adding references:
-        self.add_list_eattr(edge, 'references', refs)
+        if len(refs) > 0:
+            refs = [Reference(pmid) for pmid in refs]
+            self.add_list_eattr(edge, 'references', refs)
+            # updating references-by-source dict:
+            self.add_grouped_eattr(edge, 'refs_by_source', source, refs)
+            # updating refrences-by-type dict:
+            self.add_grouped_eattr(edge, 'refs_by_type', typ, refs)
         # setting directions:
         if not g.es[edge]['dirs']:
             g.es[edge]['dirs'] = Direction(nameA,nameB)
@@ -1170,10 +1232,6 @@ class BioGraph(object):
             g.es[edge]['dirs'].set_sign((nameA,nameB),'positive',source)
         if inh:
             g.es[edge]['dirs'].set_sign((nameA,nameB),'negative',source)
-        # updating references-by-source dict:
-        self.add_grouped_eattr(edge, 'refs_by_source', source, refs)
-        # updating refrences-by-type dict:
-        self.add_grouped_eattr(edge, 'refs_by_type', typ, refs)
         # updating sources-by-type dict:
         self.add_grouped_eattr(edge, 'sources_by_type', typ, source)
         # adding type:
@@ -1190,7 +1248,7 @@ class BioGraph(object):
         e = self.graph.es[edge]
         if attr not in self.graph.es.attributes():
             self.graph.es[attr] = [[] for _ in xrange(0, self.graph.ecount())]
-        if type(e[attr]) is None:
+        if e[attr] is None:
             e[attr] = []
         elif type(e[attr]) is not list:
             e[attr] = [e[attr]]
@@ -1308,6 +1366,15 @@ class BioGraph(object):
         if not hasattr(self, 'nodInd'):
             self.update_vname()
         return name in self.nodInd
+    
+    def names2vids(self, names):
+        vids = []
+        if not hasattr(self, 'nodInd'):
+            self.update_vname()
+        for n in names:
+            if n in self.nodInd:
+                vids.append(self.nodDct[n])
+        return vids
     
     def get_edge(self,nodes):
         '''
@@ -1437,7 +1504,7 @@ class BioGraph(object):
                 return False
         nodes = []
         edges = []
-        # add nodes and edges first in bunch, 
+        # adding nodes and edges first in bunch, 
         # to avoid multiple reindexing by igraph
         self.update_vname()
         prg = Progress(
@@ -1469,7 +1536,7 @@ class BioGraph(object):
         self.ownlog.msg(2,"New edges have been created",'INFO')
         self.ownlog.msg(2,("""Introducing new node and edge attributes..."""), 'INFO')
         prg = Progress(
-            total=len(edgeList),name="Processing attributes",interval=50)
+            total=len(edgeList),name="Processing attributes",interval=30)
         nodes_updated = []
         self.update_vname()
         for e in edgeList:
@@ -2621,12 +2688,8 @@ class BioGraph(object):
         for v in self.graph.vs:
             if v.index in nodes and v['nameType'] == 'uniprot':
                 uniprots.append(v['name'])
-        if multi_query:
-            self.chembl.compounds_targets_1b1(uniprots,assay_types=assay_types,
-                            relationship_types=relationship_types,**kwargs)
-        else:
-            self.chembl.compounds_targets(uniprots,assay_types=assay_types,
-                                relationship_types=relationship_types)
+        self.chembl.compounds_targets(uniprots,assay_types=assay_types,
+                            relationship_types=relationship_types)
         self.chembl.compounds_by_target()
         self.update_vname()
         self.graph.vs['compounds_chembl'] = [[] for _ in xrange(self.graph.vcount())]
@@ -2650,67 +2713,6 @@ class BioGraph(object):
         percent = hascomp/float(self.graph.vcount())
         sys.stdout.write('\n\tCompounds found for %u targets, (%.2f%% of all proteins).\n\n'\
             % (hascomp,percent*100.0))
-    
-    def html_descriptions(self,filename=None):
-        filename = os.path.join(self.outdir,'resources.html') \
-            if filename is None else filename
-        head = '''<!DOCTYPE HTML>
-        <html>
-            <head>
-                <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-                <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-                <meta http-equiv="Content-Language" content="en">
-                <meta name="dc.language" content="en">
-                <meta name="viewport" content="width=device-width, 
-                initial-scale=1.0">
-                <style type="text/css">
-                    .quotebox {
-                        border-color: #7AADBD;
-                        border-style: solid;
-                        border-width: 1px 1px 1px 3px;
-                        margin: 0.75em 1em;
-                        padding: 0px 0.75em;
-                        background-color: #F6F9FC;
-                        color: #444444;
-                    }
-                </style>
-            </head>
-            <body>
-            <h1>PPI resources'''
-        foot = '''\t</body>\n
-        </html>\n'''
-        doc = ''
-        for k,v in descriptions.descriptions.iteritems():
-            doc += '\t\t<h2>%s</h2>\n' % k
-            for uk,uv in v['urls'].iteritems():
-                doc += '\t\t\t<h3>%s</h3>\n' % (uk.capitalize())
-                for a in uv:
-                    doc += '\t\t\t\t<a href="%s" target="_blank">%s</a>\n' % (
-                        a,a)
-            if 'taxons' in v:
-                doc += '<p><b>Taxons: </b>%s</p>' % ', '.join(v['taxons'])
-            if 'size' in v:
-                doc += '<p><b>Nodes: </b>%s, <b>Edges:</b>%s</p>' % (
-                    v['size']['nodes'],v['size']['edges'])
-            if 'descriptions' in v:
-                doc += '\t\t\t\t<div class="quotebox">\n'
-                pars = v['descriptions'][0].split('\n')
-                for p in pars:
-                    p = p.strip()
-                    if len(p) > 0:
-                        doc += '\t\t\t\t<p>%s</p>\n' % p
-                doc += '\t\t\t\t</div>\n'
-            if 'notes' in v:
-                doc += '\t\t\t\t<div class="quotebox">\n'
-                pars = v['notes'][0].split('\n')
-                for p in pars:
-                    p = p.strip()
-                    if len(p) > 0:
-                        doc += '\t\t\t\t<p>%s</p>\n' % p
-                doc += '\t\t\t\t</div>\n'
-        html = head + doc + foot
-        with codecs.open(filename,encoding='utf-8',mode='w') as f:
-            f.write(html)
     
     def network_filter(self, p=2.0):
         '''
@@ -4394,6 +4396,67 @@ class BioGraph(object):
             vertex_label = dgraph.vs['label'], vertex_color = 'ltp', 
             vertex_alpha = 'FF', edge_alpha = 'FF', 
             edge_label = [', '.join(l) for l in dgraph.es['loc']],
-            vertex_label_font = 'HelveticaNeueLT Std Lt', 
-            edge_label_font = 'HelveticaNeueLT Std Lt', **kwargs)
+            vertex_label_family = 'HelveticaNeueLT Std Lt', 
+            edge_label_family = 'HelveticaNeueLT Std Lt', **kwargs)
         return p.draw()
+    
+    def communities(self, method, **kwargs):
+        graph = self.graph
+        if method == 'spinglass':
+            giant = self.get_giant()
+            graph = giant
+            if 'spins' not in kwargs:
+                kwargs['spins'] = 255
+        elif method == 'fastgreedy':
+            undgr = self.as_undirected(combine_edges = 'ignore')
+            graph = undgr
+        if hasattr(graph, '%s_community'%method):
+            to_call = getattr(graph, '%s_community'%method)
+            if hasattr(to_call, '__call__'):
+                comm = to_call(**kwargs)
+            if comm.__class__.__name__ == 'VertexDendrogram':
+                comm = comm.as_clustering()
+        return comm
+    
+    def set_receptors(self):
+        self.update_vname()
+        self.graph.vs['rec'] = [False for _ in self.graph.vs]
+        receptors = dataio.get_hpmr()
+        for rec in receptors:
+            urec = self.mapper.map_name(rec, 'genesymbol', 'uniprot')
+            for uniprot in urec:
+                if uniprot in self.nodDct:
+                    self.graph.vs[self.nodDct[uniprot]]['rec'] = True
+    
+    def set_transcription_factors(self, classes = ['a', 'b', 'other']):
+        self.update_vname()
+        self.graph.vs['tf'] = [False for _ in self.graph.vs]
+        tfs = dataio.get_tfcensus(classes)
+        uniprots = flatList([self.mapper.map_name(e, 'ensg', 'uniprot') \
+            for e in tfs['ensg']])
+        uniprots += flatList([self.mapper.map_name(e, 'hgnc', 'uniprot') \
+            for e in tfs['hgnc']])
+        for uniprot in uniprots:
+            if uniprot in self.nodDct:
+                self.graph.vs[self.nodDct[uniprot]]['tf'] = True
+    
+    def guide2pharma(self):
+        result = []
+        data = dataio.get_guide2pharma()
+        for d in data:
+            ulig = []
+            urec = self.mapper.map_name(d['receptor_uniprot'], 'uniprot', 'uniprot')
+            if len(d['ligand_uniprot']) > 0:
+                ulig = self.mapper.map_name(d['ligand_uniprot'], 'uniprot', 'uniprot')
+            if len(d['ligand_genesymbol']) > 0:
+                ulig += self.mapper.map_name(d['ligand_genesymbol'], 
+                    'genesymbol', 'uniprot')
+            if len(ulig) > 0 and len(urec) > 0:
+                for ur in urec:
+                    for ul in ulig:
+                        result.append([ul, ur, d['effect'], d['pubmed'], True])
+        return result
+    
+    def set_tfs(self, classes = ['a', 'b', 'other']):
+        self.set_transcription_factors(classes)
+    

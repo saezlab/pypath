@@ -1,2 +1,10 @@
 python-igraph
-MySQL-python
+pandas
+bioservices
+beautifulsoup4
+pymysql
+pyopenssl
+ndg-httpsclient
+chembl_webresource_client
+pyasn1
+twisted

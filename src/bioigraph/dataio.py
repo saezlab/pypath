@@ -47,6 +47,7 @@ import hashlib
 import time
 import struct
 import json
+import webbrowser
 from bioservices import WSDLService
 from contextlib import closing
 from fabric.network import connect, HostConnectionCache
@@ -415,7 +416,7 @@ def get_pdb():
     u_pdb = {}
     pdb_u = {}
     pdb = None
-    pdb_re = re.compile('[0-9A-Z]{4}')
+    pdb_re = re.compile(r'[0-9A-Z]{4}')
     for l in data:
         l = re.split('[ ]{2,}',re.sub('[ ]+,[ ]+',',',re.sub('[ ]*\(','(',l)))
         if len(l[0]) == 4 and pdb_re.match(l[0]):
@@ -2710,22 +2711,36 @@ def get_go_goa(organism = 'human'):
         result[l[8]][l[1]].append(l[4])
     return result
 
-def get_go_quick(organism = 9606):
+def get_go_quick(organism = 9606, slim = False):
+    termuse = 'slim' if slim or slim is None else 'ancestor'
+    goslim = '' if termuse == 'ancestor' \
+        else '&goid=%s'%','.join(get_goslim(url = slim))
     terms = {'C': {}, 'F': {}, 'P': {}}
     names = {}
-    url = data_formats.urls['quickgo']['url'] % organism
+    url = data_formats.urls['quickgo']['url'] % (goslim, termuse, organism)
     data = curl(url, silent = False)
     data = [x.split('\t') for x in data.split('\n') if len(x) > 0]
     del data[0]
     for l in data:
         try:
             if l[0] not in terms[l[3][0]]:
-                terms[l[3][0]][l[0]] = []
-            terms[l[3][0]][l[0]].append(l[1])
+                terms[l[3][0]][l[0]] = set([])
+            terms[l[3][0]][l[0]].add(l[1])
             names[l[1]] = l[2]
         except:
             print l
     return {'terms': terms, 'names': names}
+
+def get_goslim(url = None):
+    rego = re.compile(r'GO:[0-9]{7}')
+    url = url if type(url) in [str, unicode] \
+        else data_formats.urls['goslim_gen']['url']
+    data = curl(url, silent = False)
+    result = []
+    for l in data.split('\n'):
+        if l.startswith('id:'):
+            result += rego.findall(l)
+    return result
 
 def netpath_names():
     repwnum = re.compile(r'_([0-9]+)$')
@@ -2800,21 +2815,129 @@ def netpath():
                             [';'.join(refs), ';'.join(mets), intTyp, pwname])
     return result
 
-class ProteomicsDB(object):
-    
-    def __init__(self):
-        # BRENDA Tissue Ontology
-        self.bto = get_ontology('BTO')
-        # subs: uniprot, ms_level, scope
-        self.exp_url = data_formats.urls['protdb_exp']['url']
-        # subs: bto, swissprot_only, isoform
-        self.tis_url = data_formats.urls['protdb_tis']['url']
-    
-    def get_expression(self, uniprot, ms_level = 1, scope = 1):
-        url = self.exp_url % (uniprot, ms_level, scope)
-        data = curl(url)
-        try:
-            data = json.loads(data)
-            return data
-        except:
-            return {'url': url, 'response': data}
+def get_pubmeds(pmids):
+    pmids = [str(pmid) for pmid in pmids]
+    url = data_formats.urls['pubmed-eutils']['url']
+    cache = len(pmids) < 10
+    data = {}
+    prg = progress.Progress(len(pmids)/100 + 1, 'Retrieving data from NCBI e-utils', 
+        1, percent = False)
+    for offset in xrange(0, len(pmids), 100):
+        prg.step()
+        post = {'id': ','.join(pmids[offset:offset+100]), 'retmode': 'json', 'db': 'pubmed'}
+        hdr = ['X-HTTP-Method-Override:GET']
+        res = curl(url, silent = False, cache = cache, post = post, req_headers = hdr)
+        data = dict([(k,v) for k,v in json.loads(res)['result'].iteritems()] + \
+            [(k,v) for k,v in data.iteritems()])
+    prg.terminate()
+    return data
+
+def get_lincs_compounds():
+    sys.stdout.write('\n\tReturned dict has names, brand names or company specific\n'\
+        '\tIDs of compounds as keys, and tuples of PubChem, ChEMBL, ChEBI, InChi, \n'\
+        '\tInChi Key, SMILES and LINCS as values.\n\n')
+    sys.stdout.flush()
+    return dict(\
+        [(key, pair[1]) for pair in \
+            [\
+                (\
+                    [it for sl in \
+                        [filter(lambda z: len(z) > 0, y.split(';')) \
+                            for y in x[1:4] \
+                                if len(y) > 0
+                        ] for it in sl\
+                    ], \
+                    (x[4], 
+                        '' if len(x[7]) == 0 else 'CHEMBL%s'%x[7], 
+                        '' if len(x[8]) == 0 else 'CHEBI:%s'%x[8], 
+                    x[9], x[10], x[11], x[3])\
+                ) \
+            for x in \
+                [\
+                    [b.strip() for b in a.split('\t')] \
+                        for a in ''.join(\
+                            [\
+                                s.replace(',','\t') \
+                                    if i%2==0 
+                                    else s.replace('\n', '') \
+                                for i, s in enumerate(\
+                                    curl(\
+                                        data_formats.urls['lincs-compounds']['url'], 
+                                        silent = False)\
+                                    .split('"')\
+                                )] \
+                        ).split('\n')[1:] \
+                            if len(a) > 0]
+                ] \
+        for key in pair[0]]\
+    )
+
+def get_hpmr():
+    html = curl(data_formats.urls['hpmr']['url'], silent = False)
+    soup = bs4.BeautifulSoup(html)
+    gnames = [gname for gname in [tr.find_all('td')[1].text \
+        for tr in soup.find_all('tr', class_ = 'res_receptor_rec')] \
+        if not gname.lower().startswith('similar')]
+    return common.uniqList(gnames)
+
+def get_tfcensus(classes = ['a', 'b', 'other']):
+    ensg = []
+    hgnc = []
+    reensg = re.compile(r'ENSG[0-9]{11}')
+    fname = os.path.join(common.ROOT, 'data', 'vaquerizas2009-s3.txt')
+    with open(fname, 'r') as f:
+        for l in f:
+            if len(l) > 0 and l.split('\t')[0] in classes:
+                ensg += reensg.findall(l)
+                h = l.split('\t')[5].strip()
+                if len(h) > 0:
+                    hgnc.append(h)
+    return {'ensg': ensg, 'hgnc': hgnc}
+
+def get_guide2pharma(organism = 'human', endogenous = True):
+    positives = ['agonist', 'activator', 'potentiation', 'partial agonist', 
+        'inverse antagonist', 'full agonist', 'activation', 
+        'irreversible agonist', 'positive']
+    negatives = ['inhibitor', 'antagonist', 'inhibition', 'irreversible inhibition',
+        'inverse agonist', 'negative', 'weak inhibition', 'reversible inhibition']
+    url = data_formats.urls['gtp']['url']
+    data = curl(url, silent = False)
+    buff = StringIO()
+    buff.write(data)
+    cols = {
+        'receptor_uniprot': 3,
+        'ligand_uniprot': 7,
+        'receptor_species': 9,
+        'ligand_genesymbol': 12,
+        'ligand_species': 13,
+        'effect0': 15,  # Agonist, Activator
+                        # Inhibitor, Antagonist
+        'effect1': 16,  # Potentiation, Partial agonist, inverse antagonist, Full agonist,
+                        # Activator, Activation, Irreversible agonist, Positive
+                        # // Inhibition, irreversible inhibition, Inverse agonist, Negative,
+        'effect2': 17,  # Agonist, Activation, Activator, Partial agonist, Positive,
+                        # Potentiation, //
+                        # Inhibition, weak inhibition, Negative, 
+                        # Reversible inhibition, Irreversible inhibition
+        'endogenous': 18,
+        'pubmed': 33
+    }
+    data = read_table(buff, cols = cols, sep = ',', hdr = 1)
+    if organism is not None:
+        data = [d for d in data if d['receptor_species'].lower().strip() == organism and \
+            d['ligand_species'].lower().strip() == organism]
+    if endogenous:
+        data = [d for d in data if d['endogenous'].strip() == 't']
+    for d in data:
+        d['effect'] = 0
+        for n in [0, 1, 2]:
+            if d['effect%u'%n].lower().strip() in positives:
+                d['effect'] = 1
+            if d['effect%u'%n].lower().strip() in negatives:
+                d['effect'] = -1
+    return data
+
+def open_pubmed(pmid):
+    pmid = str(pmid)
+    url = data_formats.urls['pubmed']['url'] % pmid
+    webbrowser.open(url)

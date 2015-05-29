@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: bioigraph
-Version: 0.1.1
+Version: 0.1.23
 Summary: Work with molecular networks in Python igraph
 Home-page: ['http://157.181.231.40/~denes/bioigraph']
 Author: Dénes Türei
@@ -64,7 +64,7 @@ Description: Bioigraph
         0.1.0: 
         +++++++++++ 
         * First release of Bioigraph, for testing.
-Keywords: graph,network,protein,mRNA,DNA,signaling,SignaLink,SIGNOR,InnateDB,IntAct,Reactome,MPPI,NCI-PID,DIP,MatrixDB,PANTHER,PhosphoSite,PhosphoPoint,DEPOD,SPIKE,KEGG,Autophagy,ARN,NRF2,NRF2ome,regulation,phosphorylation,kinase,phosphatase,dephosphorylation,directed graph
+Keywords: graph,network,protein,mRNA,DNA,signaling,SignaLink,Signor,InnateDB,IntAct,Reactome,MPPI,NCI-PID,DIP,MatrixDB,PANTHER,PhosphoSite,PhosphoPoint,DEPOD,SPIKE,KEGG,Autophagy,ARN,NRF2,NRF2ome,Guide to Pharmacology,regulation,phosphorylation,kinase,phosphatase,dephosphorylation,directed graph
 Platform: Linux
 Platform: Unix
 Platform: MacOSX

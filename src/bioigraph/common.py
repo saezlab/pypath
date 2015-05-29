@@ -21,7 +21,8 @@ import random
 import textwrap
 
 __all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'uniqList', 'addToList', 
-           'gen_session_id', 'sorensen_index', 'console', 'wcl']
+           'gen_session_id', 'sorensen_index', 'console', 'wcl', 'flatList', 
+           'charTypes', 'delEmpty']
 
 # get the location
 ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -64,6 +65,8 @@ aaletters = dict(zip(aacodes.values(),aacodes.keys()))
 
 simpleTypes = [int, float, str, unicode]
 
+charTypes = [str, unicode]
+
 def uniqList(seq):
    # Not order preserving
    # from http://www.peterbe.com/plog/uniqifiers-benchmark
@@ -71,6 +74,12 @@ def uniqList(seq):
    for e in seq:
        keys[e] = 1
    return keys.keys()
+
+def flatList(lst):
+    return [it for sl in lst for it in sl]
+
+def delEmpty(lst):
+    return [i for i in lst if len(i) > 0]
 
 def uniqOrdList(seq, idfun = None): 
    # Order preserving

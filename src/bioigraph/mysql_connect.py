@@ -25,11 +25,12 @@ import common
 
 class MysqlConnect(object):
     
-    def __init__(self,config=None,log=None):
+    def __init__(self, config = None, log = None, timeout = 12):
         '''
         config is the name of a connection config file
         '''
         self.log = log
+        self.timeout = timeout
         self.conf_file = config if config is not None \
             else os.path.join(common.ROOT,'mysql_config','defaults.mysql')
         self.conf_reader = ConfigParser.RawConfigParser()
@@ -42,7 +43,7 @@ class MysqlConnect(object):
         for name in self.configs:
             self.read_config(name)
     
-    def read_config(self,name):
+    def read_config(self, name):
         try:
             self.access[name] = {
                             'host': self.conf_reader.get(name,'host'),
@@ -63,7 +64,7 @@ class MysqlConnect(object):
             else:
                 common.console(error)
     
-    def get_connection(self,name):
+    def get_connection(self, name, cursor = 'SSDictCursor', **kwargs):
         if self.access[name] is None:
             self.read_config(name)
         if self.access[name] is None:
@@ -81,7 +82,9 @@ class MysqlConnect(object):
                     port = self.access[name]['port'],
                     passwd = self.access[name]['password'],
                     db = self.access[name]['db'],
-                    cursorclass=cursors.DictCursor
+                    cursorclass = getattr(cursors, cursor),
+                    connect_timeout = self.timeout,
+                    **kwargs
                 )
                 return con
             except:

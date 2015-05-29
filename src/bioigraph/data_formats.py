@@ -23,7 +23,7 @@ import input_formats
 import common
 
 __all__ = ['urls', 'mapList', 'otherMappings', 'refLists', 
-           'best', 'good', 'transcription', 'negative', 'gdsc_comp_target', 'cgc', 
+           'best', 'good', 'ugly', 'transcription', 'negative', 'gdsc_comp_target', 'cgc', 
            'mapListUniprot', 'mapListBasic']
 
 ROOT = common.ROOT
@@ -350,7 +350,11 @@ urls = {
     'quickgo': {
         'label': 'UniProt GO annotations from QuickGO',
         'url': 'http://www.ebi.ac.uk/QuickGO/GAnnotation?format=tsv&'\
-            'limit=-1&tax=%u&col=proteinID,goID,goName,aspect'
+            'limit=-1%s&termUse=%s&tax=%u&col=proteinID,goID,goName,aspect'
+    },
+    'goslim_gen': {
+        'label': 'Generic GOSlim from GO Consortium',
+        'url': 'http://www.geneontology.org/ontology/subsets/goslim_generic.obo'
     },
     'netpath_names': {
         'label': 'NetPath numeric pathway IDs can be translated to '\
@@ -369,12 +373,37 @@ urls = {
     'proteinatlas_normal': {
         'label': 'Human Protein Atlas: Immuncytochemistry expression data in '\
             'healthy human cells',
-        'utl': 'http://www.proteinatlas.org/download/normal_tissue.csv.zip'
+        'url': 'http://www.proteinatlas.org/download/normal_tissue.csv.zip'
     },
     'proteinatlas_cancer': {
         'label': 'Human Protein Atlas: Immuncytochemistry expression data in '\
             'human tumour cells',
-        'utl': 'http://www.proteinatlas.org/download/cancer.csv.zip'
+        'url': 'http://www.proteinatlas.org/download/cancer.csv.zip'
+    },
+    'lincs-compounds': {
+        'label': 'List of small molecules in LINCS with synonyms and PubChem IDs',
+        'url': 'http://lincs.hms.harvard.edu/db/datasets/20000/smallmolecules'\
+            '?search=&output_type=.csv'
+    },
+    'pubmed-eutils': {
+        'label': 'Retrieving summary of PubMed records',
+        'url': 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi'
+    },
+    'pubmed': {
+        'label': 'PubMed baseurl',
+        'url': 'http://www.ncbi.nlm.nih.gov/pubmed/%s'
+    },
+    'hpmr': {
+        'label': 'Human Plasma Membrane Receptome',
+        'url': 'http://receptome.stanford.edu/hpmr/SearchDB/findGenes.asp?textName=*'
+    },
+    'tfcensus': {
+        'label': 'A census of human transcription factors (Vaquerizas 2009)',
+        'url': 'http://www.nature.com/nrg/journal/v10/n4/extref/nrg2538-s3.txt'
+    },
+    'gtp': {
+        'label': 'Guide to Pharmacology: ligand-receptor interactions',
+        'url': 'http://www.guidetopharmacology.org/DATA/interactions.csv'
     }
 }
 
@@ -565,7 +594,7 @@ best = {
                 extraNodeAttrsB={
                     "slk_pathways": (5, ":"),
                     "gene_name": 3}),
-    'ccmap2': input_formats.ReadSettings(name="CancerCellMap2", 
+    'ccmap': input_formats.ReadSettings(name="CancerCellMap", 
                 separator="\t", nameColA=3, nameColB=4,
                 nameTypeA="genesymbol", nameTypeB="genesymbol",
                 typeA="protein", typeB="protein",
@@ -623,6 +652,15 @@ best = {
                     "netpath_pathways": (7, ';')},
                 extraNodeAttrsA={},
                 extraNodeAttrsB={}),
+    'guide2pharma': input_formats.ReadSettings(name = "Guide2Pharmacology", 
+                separator = None, nameColA = 0, nameColB = 1,
+                nameTypeA = "uniprot", nameTypeB = "uniprot",
+                typeA = "protein", typeB = "protein", isDirected = True, 
+                sign = (2, 1, -1), inFile = 'guide2pharma', 
+                references=(3, "|"), ncbiTaxId = 9606,
+                extraEdgeAttrs = {},
+                extraNodeAttrsA = {'g2p_ligand': 4},
+                extraNodeAttrsB = {'g2p_receptor': 4}),
     'ca1': input_formats.ReadSettings(name="CA1", separator=";", 
                 nameColA=1, nameColB=6,
                 nameTypeA="uniprot", nameTypeB="uniprot",
@@ -736,25 +774,29 @@ best = {
                     },
                 extraNodeAttrsA={},
                 extraNodeAttrsB={}),
-    'death': input_formats.ReadSettings(name="DeathDomain", separator="\t", nameColA=0, nameColB=1,
+    'death': input_formats.ReadSettings(name="DeathDomain", 
+                separator="\t", nameColA=0, nameColB=1,
                 nameTypeA="genesymbol", nameTypeB="genesymbol",
                 typeA="protein", typeB="protein", isDirected=False, sign=False,
-                inFile=os.path.join(ROOT, 'data', 'dd_refs.csv'),references=(3, ";"),ncbiTaxId=9606,
+                inFile=os.path.join(ROOT, 'data', 'dd_refs.csv'),
+                references=(3, ";"), ncbiTaxId = 9606,
                 extraEdgeAttrs={
                     "dd_methods": (2, ';')
                     },
                 extraNodeAttrsA={},
                 extraNodeAttrsB={}),
     'signor': input_formats.ReadSettings(name="Signor", separator="\t", 
-                nameColA=2, nameColB=6,
+                nameColA = 2, nameColB = 6,
                 nameTypeA="uniprot", nameTypeB="uniprot",
-                typeA="protein", typeB="protein", isDirected=1, 
-                sign=False, ncbiTaxId=9606,
-                inFile=os.path.join(ROOT, 'data', 'signor_ppi.tsv'),references=(19, ";"),header=True,
+                positiveFilters = [(22, 'YES')],
+                typeA="protein", typeB="protein", isDirected = None, 
+                sign = (8, ['down-regulates', 'down-regulates activity', 
+                    'down-regulates quantity by destabilization'], ['up-regulates', 
+                    'up-regulates activity', 'up-regulates quantity by stabilization']), 
+                ncbiTaxId=9606,
+                inFile=os.path.join(ROOT, 'data', 'signor_22052015.tab'),references=(21, ";"),header=True,
                 extraEdgeAttrs={
-                    "signor_effect": (8,';'),
-                    "signor_mechanism": (9, ';'),
-                    "signor_pathways": (24, ';')
+                    "signor_mechanism": (9, ';')
                     },
                 extraNodeAttrsA={},
                 extraNodeAttrsB={}),
@@ -1065,7 +1107,7 @@ ccmap = input_formats.ReadSettings(name="CancerCellMap", separator=";", nameColA
                 extraNodeAttrsA={},
                 extraNodeAttrsB={})
 
-ccmap2 = input_formats.ReadSettings(name="CancerCellMap2", separator="\t", nameColA=3, nameColB=4,
+ccmap2 = input_formats.ReadSettings(name="CancerCellMap", separator="\t", nameColA=3, nameColB=4,
                 nameTypeA="genesymbol", nameTypeB="genesymbol",
                 typeA="protein", typeB="protein", isDirected=1, 
                 inFile=os.path.join(ROOT, 'data', 'cell-map-edge-attributes.txt'),

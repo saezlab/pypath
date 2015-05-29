@@ -57,9 +57,10 @@ class Unichem(object):
         self.name_dict = {}
         for k,v in self.uc_dict.iteritems():
             self.name_dict[v] = k
-        self.url_stem = 'https://www.ebi.ac.uk/unichem/rest/src_compound_id/'
+        self.url_stem = 'https://www.ebi.ac.uk/unichem/rest/src_compound_id'
+        self.inchi_stem = 'https://www.ebi.ac.uk/unichem/rest/inchikey/%s'
         self.chembl_url = 'http://www.ebi.ac.uk/chemblws/compounds/smiles/{0}.json'
-        self.cpd_search = 'http://www.ebi.ac.uk/unichem/rest/cpd_search/{0}/{1}/{2}'
+        self.cpd_search = 'http://www.ebi.ac.uk/unichem/rest/{0}/{1}/{2}{3}'
         self.result = {}
     
     def usage(self):
@@ -69,15 +70,26 @@ class Unichem(object):
         ID types you wish to translate from and to.
         E.g. 
         >>> u = unichem.Unichem()
-        >>> u.translate('pubchem','chembl',list_of_pubchems)
+        >>> u.translate('pubchem', 'chembl', list_of_pubchems)
+        
+        Additional ways of translation are from SMILEs to ChEMBL IDs, and
+        from InChiKeys to any ID. These are translated not by the UniChem,
+        but by the ChEMBL webservice.
+        >>> u.translate('smiles', 'chembl', list_of_smiles)
+        >>> u.translate('inchikey', 'chembl', list_of_inchikeys)
         
         Other option to search is connectivity search from UniChem.
         A-G parameters can be defined optionally. See description at
         https://www.ebi.ac.uk/unichem/info/widesearchInfo
-        >>> u.connectivity_search(list_of_zincs,'zinc',parameters=[1,0,0,0,0,1,0])
+        >>> u.connectivity_search(list_of_zincs, 'zinc', parameters=[1,0,0,0,0,1,0])
         
-        It's possible to get ChEMBL IDs from SMILEs via ChEMBL web service:
+        InChiKeys can be used in connectivity search too:
+        >>> u.connectivity_search(list_of_inchikeys, 'inchikey', parameters=[1,0,0,0,0,1,0])
+        
+        You can also call directly functions accessing ChEMBL webservice, with the 
+        same result as you would call `translate()` or `connectivity_search()`:
         >>> u.smiles2chembl(list_of_smiles)
+        >>> u.inchikey2anything('chembl', list_of_inchikeys)
         
         Find the dict in `u.result`. Untranslated items have value `None`.
         Every call overwrites previous result!
@@ -89,6 +101,12 @@ class Unichem(object):
         sys.stdout.flush()
     
     def translate(self,source,target,lst):
+        if source == 'inchikey':
+            self.inchikey2anything(target, lst)
+            return None
+        if source == 'smiles':
+            self.smiles2chembl(lst)
+            return None
         self.result = {}
         source = str(source) if type(source) is int else self.name_dict[source]
         target = str(target) if type(target) is int else self.name_dict[target]
@@ -102,6 +120,21 @@ class Unichem(object):
                 data = json.loads(result)
                 for d in data:
                     self.result[comp].append(d['src_compound_id'])
+            prg.step()
+        prg.terminate()
+    
+    def inchikey2anything(self, target, lst):
+        self.result = {}
+        target = str(target) if type(target) is int else self.name_dict[target]
+        prg = progress.Progress(total=len(lst),name='Translating InChi-Keys',
+            interval=1)
+        for inchik in lst:
+            url = self.inchi_stem%inchik
+            result = dataio.curl(url)
+            if result is not None:
+                data = json.loads(result)
+                self.result[inchik] = [d['src_compound_id'] \
+                    for d in data if d['src_id'] == target]
             prg.step()
         prg.terminate()
     
@@ -133,7 +166,7 @@ class Unichem(object):
             prg.step()
         prg.terminate()
     
-    def connectivity_search(self,id_list,id_type,parameters=[1,0,0,0,0,1,0]):
+    def connectivity_search(self, id_list, id_type, parameters=[1,0,0,0,0,1,0]):
         '''
         [1,0,0,0,0,1,0,  1]
         '''
@@ -144,12 +177,21 @@ class Unichem(object):
         parameters.append(1) # H parameter must be 1 to process the result
         parameters = [str(i) for i in parameters]
         self.result = {}
-        id_type = str(id_type) if type(id_type) is int else self.name_dict[id_type]
+        if id_type == 'inchikey':
+            id_type = ''
+            method = 'key_search'
+        elif id_type == 'smiles':
+            self.result = None
+            return None
+        else:
+            id_type = str(id_type) if type(id_type) is int else self.name_dict[id_type]
+            id_type = '%s/'%id_type
+            method = 'cpd_search'
         prg = progress.Progress(total=len(id_list),name='Connectivity search',
                                 interval=1)
         for i in id_list:
             prg.step()
-            url = self.cpd_search.format(i,id_type,'/'.join(parameters))
+            url = self.cpd_search.format(method, i, id_type, '/'.join(parameters))
             result = dataio.curl(url)
             self.result[i] = []
             if result is not None:

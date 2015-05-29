@@ -118,7 +118,8 @@ class Plot(object):
         if title is not None:
             self.title_text = title
         if self._has_graph():
-            if type(self.vertex_label) is str:
+            if type(self.vertex_label) is str and \
+                self.vartex_label in self.graph.vs.attributes():
                 self.vertex_label = g.vs[self.vertex_label]
             self.graph.vertex_label_font = self.vertex_label_font
             self.graph.edge_label_font = self.edge_label_font
