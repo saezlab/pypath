@@ -216,7 +216,7 @@ urls = {
     'p_elm': {
         'label': 'phosphoELM',
         'url': 'http://phospho.elm.eu.org/dumps/phosphoELM_vertebrate_latest.dump.tgz',
-        'psites': 'phosphoELM_vertebrate_2011-11.dump'
+        'psites': 'phosphoELM_vertebrate_'
     },
     'p_elm_kin': {
         'label': 'List of kinases from phosphoELM',
@@ -790,9 +790,10 @@ best = {
                 nameTypeA="uniprot", nameTypeB="uniprot",
                 positiveFilters = [(22, 'YES')],
                 typeA="protein", typeB="protein", isDirected = None, 
-                sign = (8, ['down-regulates', 'down-regulates activity', 
-                    'down-regulates quantity by destabilization'], ['up-regulates', 
-                    'up-regulates activity', 'up-regulates quantity by stabilization']), 
+                sign = (8, ['up-regulates', 'up-regulates activity', 
+                    'up-regulates quantity by stabilization'],
+                    ['down-regulates', 'down-regulates activity', 
+                    'down-regulates quantity by destabilization']), 
                 ncbiTaxId=9606,
                 inFile=os.path.join(ROOT, 'data', 'signor_22052015.tab'),references=(21, ";"),header=True,
                 extraEdgeAttrs={

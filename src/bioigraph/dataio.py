@@ -2276,7 +2276,9 @@ def get_phosphoelm(organism = 'Homo sapiens', ltp_only = True):
     url = data_formats.urls['p_elm']['url']
     data = curl(url, silent = False, \
         files_needed = [data_formats.urls['p_elm']['psites']])
-    data = data[data_formats.urls['p_elm']['psites']]
+    data = [d for d, n in data.iteritems() \
+        if n.startswith(data_formats.urls['p_elm']['psites'])]
+    data = data[0] if len(data) > 0 else ''
     data = [l.split('\t') for l in data.split('\n')]
     kinases = get_phelm_kinases()
     del data[0]
