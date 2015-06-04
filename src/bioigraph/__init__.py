@@ -5,6 +5,7 @@
 import __main__ as ext
 from bioigraph import BioGraph
 from descriptions import *
+from common import __version__ as __version__
 
 
     #__all__ = ["pwnet", "mapping", "log", "oset"]

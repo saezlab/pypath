@@ -53,12 +53,13 @@ import drawing as bdrawing
 import proteomicsdb
 from ig_drawing import *
 from common import *
+from common import __version__ as __version__
 from colorgen import *
 from gr_plot import *
 from progress import *
 from data_formats import *
 
-__all__ = ['BioGraph', 'Direction', 'Reference']
+__all__ = ['BioGraph', 'Direction', 'Reference', '__version__', 'a']
 
 class Reference(object):
     
@@ -362,6 +363,7 @@ class BioGraph(object):
         @loglevel : str
             Passed to logging module.
         '''
+        self.__version__ = __version__
         for d in ['results', 'log', 'cache']:
             if not os.path.exists(d):
                 os.makedirs(d)
@@ -1670,13 +1672,11 @@ class BioGraph(object):
         return {'nodes': sNodes, 'edges': sEdges}
     
     def sorensen_groups(self,groups):
-        grs = groups.keys()
-        sor = {}
-        for g in grs:
-            sor[g] = {}
+        grs = sorted(groups.keys())
+        sor = dict([(g, {}) for g in grs])
         for g1 in xrange(0,len(grs)):
             for g2 in xrange(g1,len(grs)):
-                sor[grs[g1]][grs[g2]] = sorensen_index(grs[g1],grs[g2])
+                sor[grs[g1]][grs[g2]] = sorensen_index(groups[grs[g1]], groups[grs[g2]])
                 sor[grs[g2]][grs[g1]] = sor[grs[g1]][grs[g2]]
         return sor
     

@@ -236,10 +236,10 @@ def embl_palette(textf = '/home/denes/embl_colors'):
                 series = []
     return cols
 
-def boxplot(data, labels, xlab, ylab, fname, fontface = 'sans-serif',
+def boxplot(data, labels, xlab, ylab, fname, fontfamily = 'Helvetica Neue LT Std',
     textcol = 'black', violin = False):
     fig, ax = plt.subplots()
-    sns.set(font = 'Helvetica Neue LT Std')
+    sns.set(font = fontfamily)
     if violin:
         ax = sns.violinplot(data, names = labels, 
             color = embl_colors, linewidth = 0.1, saturation = 0.66)
@@ -257,6 +257,28 @@ def boxplot(data, labels, xlab, ylab, fname, fontface = 'sans-serif',
         tick.label.set_fontsize(11)
         tick.label.set_color(textcol)
     fig.savefig(fname)
+
+def barplot(x, y, data, fname, font_family = 'Helvetica Neue LT Std', 
+    xlab = '', ylab = '', lab_angle = 90, lab_size = 9, color = '#007b7f'):
+    if type(x) is list:
+        x = np.array(x)
+    if type(y) is list:
+        y = np.array(y)
+    fig, ax = plt.subplots()
+    sns.set(font = font_family)
+    sns.set_context('talk', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
+        'grid.linewidth': 1.0})
+    ax = sns.barplot(x, y = y, data = data, color = color)
+    sns.set_context('talk', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
+        'grid.linewidth': 1.0})
+    for tick in ax.xaxis.get_major_ticks():
+        tick.label.set_fontsize(lab_size)
+    ax.set_ylabel(ylab)
+    ax.set_xlabel(xlab)
+    plt.setp(ax.xaxis.get_majorticklabels(), rotation = lab_angle)
+    fig.tight_layout()
+    fig.savefig(fname)
+
 
 def rgb2hex(rgb):
     return '#%02x%02x%02x' % rgb

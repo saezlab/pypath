@@ -22,10 +22,19 @@ import textwrap
 
 __all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'uniqList', 'addToList', 
            'gen_session_id', 'sorensen_index', 'console', 'wcl', 'flatList', 
-           'charTypes', 'delEmpty']
+           'charTypes', 'delEmpty', '__version__']
 
 # get the location
 ROOT = os.path.abspath(os.path.dirname(__file__))
+
+def _get_version():
+    with open(os.path.join(ROOT, '__version__'), 'r') as v:
+        return tuple([int(i) for i in v.read().strip().split('.')])
+
+_MAJOR, _MINOR, _MICRO = _get_version()
+__version__ = '%d.%d.%d' % (_MAJOR, _MINOR, _MICRO)
+__release__ = '%d.%d' % (_MAJOR, _MINOR)
+
 
 default_name_type = {
     "protein": "uniprot", 
@@ -111,8 +120,8 @@ def gen_session_id(length=5):
 def sorensen_index(a,b):
     a = set(a)
     b = set(b)
-    ab = a.intersection(b)
-    return float(2 * len(ab)) / float(len(a) + len(b))
+    ab = a & b
+    return float(len(ab)) / float(min(len(a),len(b)))
 
 def console(message):
     message = '\n\t'.join(textwrap.wrap(message,80))

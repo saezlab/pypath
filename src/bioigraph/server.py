@@ -65,7 +65,7 @@ class RestResource(resource.Resource):
             else request.args['fields']
     
     def about(self, req):
-        return 'Hello, this is the REST service of bioigraph 0.1.20. Welcome!'
+        return 'Hello, this is the REST service of bioigraph %s. Welcome!' % __version__
     
     def root(self, req):
         hdr = ['nodes', 'edges', 'is_directed', 'sources']

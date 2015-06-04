@@ -6,12 +6,10 @@ import sys
 import os
 from setuptools import setup, find_packages
 import glob
+import imp
 
-_MAJOR = 0
-_MINOR = 1
-_MICRO = 24
-version = '%d.%d.%d' % (_MAJOR, _MINOR, _MICRO)
-release = '%d.%d' % (_MAJOR, _MINOR)
+common = imp.load_source('common', os.path.join('src', 'bioigraph', 'common.py'))
+__version__ = common.__version__
 
 def which(exe):
     '''
@@ -78,7 +76,7 @@ metainfo = {
     'authors': {
     'Türei':('Dénes Türei','denes@ebi.ac.uk'),
     },
-    'version': version,
+    'version': __version__,
     'license': 'LGPL',
     'download_url': ['http://157.181.231.40/~denes/bioigraph'],
     'url': ['http://157.181.231.40/~denes/bioigraph'],
@@ -172,7 +170,7 @@ deps = ['python-igraph', 'pandas', 'bioservices', 'beautifulsoup4', 'pymysql',
 
 setup(
     name = 'bioigraph',
-    version = version,
+    version = __version__,
     maintainer = metainfo['authors']['Türei'][0],
     maintainer_email = metainfo['authors']['Türei'][1],
     author = metainfo['authors']['Türei'][0],

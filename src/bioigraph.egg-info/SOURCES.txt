@@ -4,6 +4,7 @@ README.rst
 setup.cfg
 setup.py
 src/bioigraph/__init__.py
+src/bioigraph/__version__
 src/bioigraph/bioigraph.py
 src/bioigraph/chembl.py
 src/bioigraph/chemblws.py
