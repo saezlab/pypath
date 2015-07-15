@@ -80,24 +80,10 @@ class RestResource(resource.Resource):
     def interactions(self, req):
         fields = ['sources', 'references']
         result = []
-        names = None if len(req.postpath) <= 1 else req.postpath[1].split(',')
-        ids = range(0, self.g.vcount()) if names is None else self.b.names2vids(names)
-        ids = set(ids)
-        elist = set(range(0, self.g.ecount())) if names is None else set([])
+        elist = self._get_eids(req)
         res = []
         hdr = ['source', 'target', 'is_directed', 'is_stimulation', 'is_inhibition']
         hdr += [f for f in fields if f in req.args['fields']]
-        if names is not None:
-            alist = dict(zip(ids, [self.g.neighbors(i) for i in ids]))
-            for one, others in alist.iteritems():
-                for two in others:
-                    e = self.g.get_eid(one, two, directed = True, error = False)
-                    if e != -1:
-                        elist.add(e)
-                    if self.g.is_directed():
-                        e = self.g.get_eid(two, one, directed = True, error = False)
-                        if e != -1:
-                            elist.add(e)
         for eid in elist:
             e = self.g.es[eid]
             for d in ['straight', 'reverse']:
@@ -129,6 +115,56 @@ class RestResource(resource.Resource):
         if req.args['format'] == 'json':
             return json.dumps([dict(zip(hdr, r)) for r in res])
         else:
-            return '%s%s' % ('' if not bool(req.args['header']) else '%s\n'%'\t'.join(hdr), 
+            return self._table_output(res, hdr, req)
+    
+    def _table_output(self, res, hdr, req):
+        return '%s%s' % ('' if not bool(req.args['header']) else '%s\n'%'\t'.join(hdr), 
                 '\n'.join(['\t'.join([';'.join(f) if type(f) is list else str(f) \
                 for f in r]) for r in res]))
+    
+    def _get_eids(self, req):
+        names = None if len(req.postpath) <= 1 else req.postpath[1].split(',')
+        ids = range(0, self.g.vcount()) if names is None else self.b.names2vids(names)
+        ids = set(ids) 
+        elist = set(range(0, self.g.ecount())) if names is None else set([])
+        if names is not None:
+            alist = dict(zip(ids, [self.g.neighbors(i) for i in ids]))
+            for one, others in alist.iteritems():
+                for two in others:
+                    e = self.g.get_eid(one, two, directed = True, error = False)
+                    if e != -1:
+                        elist.add(e)
+                    if self.g.is_directed():
+                        e = self.g.get_eid(two, one, directed = True, error = False)
+                        if e != -1:
+                            elist.add(e)
+        return elist
+    
+    def ptms(self, req):
+        fields = ['is_stimulation', 'is_inhibition', 'sources', 'references']
+        result = []
+        elist = self._get_eids(req)
+        res = []
+        hdr = ['enzyme', 'substrate', 'residue_type', 'residue_offset', 'modification']
+        hdr += [f for f in fields if f in req.args['fields']]
+        if 'ptm' in self.g.es.attributes():
+            for eid in elist:
+                e = self.g.es[eid]
+                for ptm in e['ptm']:
+                    thisPtm = [ptm.domain.protein, ptm.ptm.protein, ptm.ptm.residue.name, 
+                        ptm.ptm.residue.number, ptm.ptm.typ]
+                    if 'sources' in hdr:
+                        thisPtm.append(ptm.ptm.sources)
+                    if 'references' in hdr:
+                        thisPtm.append(ptm.refs)
+                    if 'is_stimulation' in hdr:
+                        thisPtm.append(int(edge['dirs'].is_stimulation(\
+                            (ptm.domain.protein, ptm.ptm.protein))))
+                    if 'is_inhibition' in hdr:
+                        thisPtm.append(int(edge['dirs'].is_stimulation(\
+                            (ptm.domain.protein, ptm.ptm.protein))))
+                    res.append(thisPtm)
+        if req.args['format'] == 'json':
+            return json.dumps([dict(zip(hdr, r)) for r in res])
+        else:
+            return self._table_output(res, hdr, req)

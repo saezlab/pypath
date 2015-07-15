@@ -24,7 +24,8 @@ mysql_chembl = (None,'chembl_ebi')
 
 net = bioigraph.BioGraph(9606, mysql=mysql_gelati, name="demo")
 
-net.init_network(pfile = 'cache/plus_phospho.pickle')
+net.init_network(pfile = 'cache/default_plus_acsn_phospho.pickle')
+net.load_ptms()
 #net.load_resources(lst={'mimp': good['mimp']})
 #net.load_resources(lst={'pnetworks': good['pnetworks']})
 #net.load_resources(lst={'psite_noref': good['psite_noref']})
