@@ -18,6 +18,7 @@ src/bioigraph/exons.py
 src/bioigraph/gdsc.py
 src/bioigraph/go.py
 src/bioigraph/gr_plot.py
+src/bioigraph/gsea.py
 src/bioigraph/ig_drawing.py
 src/bioigraph/ig_drawing_edge.py
 src/bioigraph/ig_drawing_vertex.py

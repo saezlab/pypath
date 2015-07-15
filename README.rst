@@ -5,12 +5,29 @@ Bioigraph
 :note: Bioigraph supported only in Python 2.7, and no version 3.x is available currently.
 
 :contributions: denes@ebi.ac.uk
-:issues: https://bitbucket.org/paulrenner/bioigraph/issues
+:issues: https://github.com/seazlab/bioigraph/issues
 
 **Bioigraph** is a Python package built around igraphthat to work with molecular network representations e.g. PPI, miRNA, drug compound interaction networks.
 
 Installation
 ============
+
+igraph C library
+----------------
+
+Python igraph is a Python interface to use the igraph C library. The C library should be installed. 
+
+Mac OS X
+--------
+
+On OS X installation of cairo and the igraph C core is not straightforward. It is advised to follow the **mac_install.sh** script. To know more see the description in the script header.
+
+Directly from git
+-----------------
+
+.. code:: bash
+    
+    pip2 install git+https://github.com/saezlab/bioigraph.git
 
 With pip
 --------

@@ -64,10 +64,14 @@ __all__ = ['BioGraph', 'Direction', 'Reference', '__version__', 'a']
 class Reference(object):
     
     def __init__(self, pmid):
-        self.pmid = pmid
+        self.pmid = str(pmid)
+        self._hash = hash(self.pmid)
         
     def __eq__(self, other):
         return type(other) == Reference and self.pmid == other.pmid
+    
+    def __hash__(self):
+        return self._hash
     
     def open(self):
         dataio.open_pubmed(self.pmid)
@@ -425,17 +429,31 @@ class BioGraph(object):
             self.ownlog = logn.logw(self.session,self.loglevel)
             self.mapper = mapping.Mapper(self.ncbi_tax_id, 
                 mysql_conf = self.mysql_conf, log = self.ownlog)
-            self.disclaimer = '\tNote: this module contains unpublished\n'\
+            self.disclaimer = '\n\n\t=== d i s c l a i m e r ===\n\n'\
+                '\tAll data coming with this module\n'\
+                '\teither as redistributed copy or downloaded using the\n'\
+                '\tprogrammatic interfaces included in the present module\n'\
+                '\tare available under public domain, are free to use at\n'\
+                '\tleast for academic research or education purposes.\n'\
+                '\tPlease be aware of the licences of all the datasets\n'\
+                '\tyou use in your analysis, and please give appropriate\n'\
+                '\tcredits for the original sources when you publish your\n'\
+                '\tresults. To find out more about data sources please\n'\
+                '\tlook at `bioigraph.descriptions` and\n'\
+                '\t`bioigraph.data_formats.urls`.\n'\
+                '\n'\
+                '\tNote: this module contains unpublished\n'\
                 '\tdata from the Signor database. Please\n'\
                 '\tconsider this before including Signor\n'\
-                '\tin your analysis.\n'
-            self.ownlog.msg(1, "bioIgraph has been initialized")
+                '\tin your analysis.\n\n'
+            self.licence()
+            self.ownlog.msg(1, "BioGraph has been initialized")
             self.ownlog.msg(1, "Beginning session '%s'" % self.session)
             sys.stdout.write(
                 """\t» New session started,\n\tsession ID: '%s'\n\tlogfile:"""\
                 """'./%s'.\n""" % \
                 (self.session,self.ownlog.logfile))
-            sys.stdout.write(self.disclaimer)
+            
         else:
             self.copy(copy)
     
@@ -862,7 +880,7 @@ class BioGraph(object):
             self.unmapped.append(item['name'])
         return defaultNames
     
-    def map_edge(self,edge):
+    def map_edge(self, edge):
         edgeStack = []
         defaultNameA = self.mapper.map_name(
             edge['nameA'], 
@@ -1658,7 +1676,7 @@ class BioGraph(object):
     # functions to compare networks and pathways
     #
     
-    def sorensen_databases(self):
+    def databases_similarity(self, index = 'simpson'):
         g = self.graph
         edges = {}
         nodes = {}
@@ -1667,18 +1685,26 @@ class BioGraph(object):
             for s in self.sources])
         edges = dict([(s, [e.index for e in g.es if s in e['sources']]) \
             for s in self.sources])
-        sNodes = self.sorensen_groups(nodes)
-        sEdges = self.sorensen_groups(edges)
+        sNodes = self.similarity_groups(nodes, index = index)
+        sEdges = self.similarity_groups(edges, index = index)
         return {'nodes': sNodes, 'edges': sEdges}
     
-    def sorensen_groups(self,groups):
-        grs = sorted(groups.keys())
-        sor = dict([(g, {}) for g in grs])
-        for g1 in xrange(0,len(grs)):
-            for g2 in xrange(g1,len(grs)):
-                sor[grs[g1]][grs[g2]] = sorensen_index(groups[grs[g1]], groups[grs[g2]])
-                sor[grs[g2]][grs[g1]] = sor[grs[g1]][grs[g2]]
-        return sor
+    def similarity_groups(self, groups, index = 'simpson'):
+        index_func = '%s_index'%index
+        # these are imported into globals() from common:
+        if hasattr(sys.modules['%s.common'%self.__module__.split('.')[0]], index_func):
+            to_call = getattr(sys.modules['%s.common'%self.__module__.split('.')[0]],
+                index_func)
+            grs = sorted(groups.keys())
+            sor = dict([(g, {}) for g in grs])
+            for g1 in xrange(0,len(grs)):
+                for g2 in xrange(g1,len(grs)):
+                    sor[grs[g1]][grs[g2]] = to_call(groups[grs[g1]],
+                        groups[grs[g2]])
+                    sor[grs[g2]][grs[g1]] = sor[grs[g1]][grs[g2]]
+            return sor
+        else:
+            self.ownlog.msg(2, 'No such function: %s()'%index_func, 'ERROR')
     
     def sorensen_pathways(self,pwlist=None):
         g = self.graph
@@ -1756,7 +1782,7 @@ class BioGraph(object):
                 return False
         return True
     
-    def get_sub(self,crit,andor="or"):
+    def get_sub(self, crit, andor="or"):
         g = self.graph
         keepV = []
         delE = []
@@ -1799,11 +1825,15 @@ class BioGraph(object):
                 inv.append(e.index)
         return inv
     
-    def get_network(self,crit,andor="or"):
+    def get_network(self, crit, andor="or"):
         sub = self.get_sub(crit,andor=andor)
         new = self.graph.copy()
         new.delete_edges(sub["edges"])
         return new.induced_subgraph(sub["nodes"])
+    
+    def separate(self):
+        return dict([(s, self.get_network({'edge': {'sources': [s]}, 'node': {}})) \
+            for s in self.sources])
     
     def update_pathway_types(self):
         g = self.graph
@@ -3600,6 +3630,7 @@ class BioGraph(object):
         self.seq = dataio.swissprot_seq(self.ncbi_tax_id, isoforms)
     
     def load_ptms(self):
+        self.load_hprd_ptms()
         self.load_mimp_dmi()
         self.load_pnetworks_dmi()
         self.load_phosphoelm()
@@ -3630,6 +3661,11 @@ class BioGraph(object):
         if trace:
             return trace
     
+    def load_hprd_ptms(self, non_matching = False, trace = False, **kwargs):
+        trace = self.load_phospho_dmi(source = 'HPRD', trace = trace, **kwargs)
+        if trace:
+            return trace
+    
     def load_psite_phos(self, trace = False, **kwargs):
         trace = self.load_phospho_dmi(source = 'PhosphoSite', trace = trace, **kwargs)
         if trace:
@@ -3641,13 +3677,14 @@ class BioGraph(object):
             'PhosphoNetworks': 'get_phosphonetworks',
             'phosphoELM': 'get_phosphoelm',
             'dbPTM': 'get_dbptm',
-            'PhosphoSite': 'get_psite_phos'
+            'PhosphoSite': 'get_psite_phos',
+            'HPRD': 'get_hprd_ptms'
         }
         self.update_vname()
         toCall = getattr(dataio, functions[source])
         data = toCall(**kwargs)
         if self.seq is None:
-            self.sequences()
+            self.sequences(isoforms = True)
         if 'ptm' not in self.graph.es.attributes():
             self.graph.es['ptm'] = [[] for _ in self.graph.es]
         nomatch = []
@@ -3681,6 +3718,10 @@ class BioGraph(object):
                 if source in ['phosphoELM', 'dbPTM', 'PhosphoSite']:
                     substrate_ups_all = self.mapper.map_name(p['substrate'], 
                         'uniprot', 'uniprot')
+                if source == 'HPRD':
+                    substrate_ups_all = self.mapper.map_name(p['substrate_refseqp'], 
+                        'refseqp', 'uniprot')
+                    substrate_ups_all = uniqList(substrate_ups_all)
                 for k in p['kinase']:
                     if k not in kin_ambig:
                         kin_ambig[k] = kinase_ups
@@ -4460,3 +4501,8 @@ class BioGraph(object):
     def set_tfs(self, classes = ['a', 'b', 'other']):
         self.set_transcription_factors(classes)
     
+    def _disclaimer(self):
+        sys.stdout.write(self.disclaimer)
+    
+    def licence(self):
+        self._disclaimer()

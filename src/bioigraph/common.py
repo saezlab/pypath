@@ -77,12 +77,17 @@ simpleTypes = [int, float, str, unicode]
 charTypes = [str, unicode]
 
 def uniqList(seq):
-   # Not order preserving
-   # from http://www.peterbe.com/plog/uniqifiers-benchmark
-   keys = {}
-   for e in seq:
-       keys[e] = 1
-   return keys.keys()
+    # Not order preserving
+    # from http://www.peterbe.com/plog/uniqifiers-benchmark
+    keys = {}
+    for e in seq:
+        try:
+            keys[e] = 1
+        except:
+            print e
+            print seq
+            print keys
+    return keys.keys()
 
 def flatList(lst):
     return [it for sl in lst for it in sl]
@@ -117,11 +122,23 @@ def gen_session_id(length=5):
     abc = '0123456789abcdefghijklmnopqrstuvwxyz'
     return ''.join(random.choice(abc) for i in range(length))
 
-def sorensen_index(a,b):
+def simpson_index(a, b):
     a = set(a)
     b = set(b)
     ab = a & b
     return float(len(ab)) / float(min(len(a),len(b)))
+
+def sorensen_index(a, b):
+    a = set(a)
+    b = set(b)
+    ab = a & b
+    return float(len(ab)) / float(len(a) + len(b))
+
+def jaccard_index(a, b):
+    a = set(a)
+    b = set(b)
+    ab = a & b
+    return float(len(ab)) / float(len(a | b))
 
 def console(message):
     message = '\n\t'.join(textwrap.wrap(message,80))

@@ -211,7 +211,8 @@ urls = {
     },
     'hprd_all': {
         'label': 'HPRD all data in flat files',
-        'url': 'http://www.hprd.org/RELEASE9/HPRD_FLAT_FILES_041310.tar.gz'
+        'url': 'http://www.hprd.org/RELEASE9/HPRD_FLAT_FILES_041310.tar.gz',
+        'ptm_file': 'FLAT_FILES_072010/POST_TRANSLATIONAL_MODIFICATIONS.txt'
     },
     'p_elm': {
         'label': 'phosphoELM',
@@ -505,7 +506,10 @@ mapListUniprot = {
     ('hgnc', 'uniprot'): input_formats.UniprotMapping('hgnc'), 
     ('enst', 'uniprot'): input_formats.UniprotMapping('enst'), 
     ('refseqp', 'uniprot'): input_formats.UniprotMapping('refseqp'),
-    ('uniprot-entry', 'uniprot'): input_formats.UniprotMapping('uniprot-entry')
+    ('uniprot-entry', 'uniprot'): input_formats.UniprotMapping('uniprot-entry'),
+    ('protein-name', 'uniprot'): input_formats.UniprotMapping('protein-name'),
+    ('protein-name-all', 'uniprot'): input_formats.UniprotMapping('protein-name', 
+        swissprot = None)
 }
 
 mapListBasic = {
@@ -843,6 +847,14 @@ best = {
                 inFile = 'dbptm_interactions', references = (2, ';'), header = False,
                 extraEdgeAttrs={},
                 extraNodeAttrsA={},
+                extraNodeAttrsB={}),
+    'hprd': input_formats.ReadSettings(name="HPRD", separator = None, nameColA = 6,
+                nameColB = 3, nameTypeA = "genesymbol", nameTypeB = "refseqp",
+                typeA = "protein", typeB = "protein", isDirected = 1, sign = False,
+                ncbiTaxId = 9606,
+                inFile = 'hprd_interactions', references = (10, ','), header = False,
+                extraEdgeAttrs={'hprd_mechanism': 8},
+                extraNodeAttrsA={},
                 extraNodeAttrsB={})
 }
 
@@ -1011,7 +1023,7 @@ transcription = {
                 extraNodeAttrsA = {},
                 extraNodeAttrsB = {}),
     'oreganno': input_formats.ReadSettings(name = "ORegAnno", 
-                separator = None, nameColA = 0,
+                separator = None, nameColA = 0, 
                 nameColB = 1, nameTypeA = "genesymbol", nameTypeB = "genesymbol",
                 typeA = "protein", typeB = "protein", 
                 isDirected = True, 
@@ -1099,7 +1111,8 @@ macrophage = input_formats.ReadSettings(name="Macrophage", separator=";", nameCo
                 extraNodeAttrsA={},
                 extraNodeAttrsB={})
 
-ccmap = input_formats.ReadSettings(name="CancerCellMap", separator=";", nameColA=1, nameColB=3,
+ccmap = input_formats.ReadSettings(name="CancerCellMap", separator=";", 
+                nameColA=1, nameColB=3,
                 nameTypeA="entrez", nameTypeB="entrez",
                 typeA="protein", typeB="protein", isDirected=1, 
                 inFile=os.path.join(ROOT, 'data', 'ccmap.sif'),
@@ -1108,7 +1121,8 @@ ccmap = input_formats.ReadSettings(name="CancerCellMap", separator=";", nameColA
                 extraNodeAttrsA={},
                 extraNodeAttrsB={})
 
-ccmap2 = input_formats.ReadSettings(name="CancerCellMap", separator="\t", nameColA=3, nameColB=4,
+ccmap2 = input_formats.ReadSettings(name="CancerCellMap", separator="\t", 
+                nameColA=3, nameColB=4,
                 nameTypeA="genesymbol", nameTypeB="genesymbol",
                 typeA="protein", typeB="protein", isDirected=1, 
                 inFile=os.path.join(ROOT, 'data', 'cell-map-edge-attributes.txt'),

@@ -28,17 +28,17 @@ class GO(object):
         self.name = go['names']
         self.term = dict([(v, k) for k, v in self.name.iteritems()])
     
-    def get_name(term):
+    def get_name(self, term):
         return None if term not in self.name else self.name[term]
     
-    def get_term(name):
+    def get_term(self, name):
         return None if name not in self.term else self.term[name]
     
-    def get_annot(uniprot, aspect):
+    def get_annot(self, uniprot, aspect):
         dic = getattr(self, aspect.lower())
         return [] if uniprot not in dic else dic[uniprot]
     
-    def get_annots(uniprot):
+    def get_annots(self, uniprot):
         result = {}
         for asp in ['C', 'F', 'P']:
             result[asp.upper()] = self.get_annot(uniprot, asp)

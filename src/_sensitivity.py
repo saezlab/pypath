@@ -45,7 +45,7 @@ def gdsc_chembls(infile = '/home/denes/Dokumentumok/gdsc/drugs_all_unif_manual_m
     return result
 
 def select_chembls(l):
-    chembls = l[24].split(';')
+    chembls = l[24].replace('"', '').split(';')
     if len(chembls) > 9:
         chembls = l[25].split(';') + l[26].split(';')
     chembls = uniqList(chembls)
@@ -199,10 +199,10 @@ def shortest_path_lengths(spaths, rspaths):
         for i in xrange(max(splens + rsplens))]
 
 def scatterplot(x, y, xlab, ylab, fname, colors, 
-    fontface = 'sans-serif',
+    fontface = 'Helvetica Neue LT Std', legend = None, 
     textcol = 'black', xlog = False, ylog = False, ylim = None, **kwargs):
     fig, ax = plt.subplots()
-    sns.set(font = 'Helvetica Neue LT Std')
+    sns.set(font = fontface)
     # ax = sns.regplot(x, y, fit_reg = False, 
     #    color = embl_colors, saturation = 0.66)
     for i, xi in enumerate(x):
@@ -221,6 +221,12 @@ def scatterplot(x, y, xlab, ylab, fname, colors,
     for tick in ax.yaxis.get_major_ticks():
         tick.label.set_fontsize(9)
         tick.label.set_color(textcol)
+    if type(legend) is dict:
+        legend_patches = [mpatches.Patch(color=col, label=lab) \
+            for lab, col in legend.iteritems()]
+        ax.legend(handles = legend_patches)
+        xlm = ax.get_xlim()
+        ax.set_xlim((xlm[0], xlm[1]*1.2))
     fig.tight_layout()
     fig.savefig(fname)
 
@@ -258,17 +264,38 @@ def boxplot(data, labels, xlab, ylab, fname, fontfamily = 'Helvetica Neue LT Std
         tick.label.set_color(textcol)
     fig.savefig(fname)
 
-def barplot(x, y, data, fname, font_family = 'Helvetica Neue LT Std', 
-    xlab = '', ylab = '', lab_angle = 90, lab_size = 9, color = '#007b7f'):
-    if type(x) is list:
+def stacked_barplot(x, y, data, fname, names, font_family = 'Helvetica Neue LT Std', 
+    xlab = '', ylab = '', lab_angle = 90, lab_size = 9, legend = True, 
+    colors = ['#007b7f', '#6ea945', '#fccc06', '#818284', '#da0025'], 
+    order = False, desc = True):
+    if type(x) is list or type(x) is tuple:
         x = np.array(x)
-    if type(y) is list:
-        y = np.array(y)
+    for i, yi in enumerate(y):
+        if type(yi) is list or type(yi) is tuple:
+            y[i] = np.array(yi)
+    total = np.array([sum([y[j][i] for j in xrange(len(y))]) for i in xrange(len(y[0]))])
+    if order == 'x':
+        ordr = np.array([x[i] for i in x.argsort()])
+    elif order == 'y':
+        ordr = np.array([x[i] for i in total.argsort()])
+    elif type(order) is int:
+        ordr = np.array([x[i] for i in y[order].argsort()])
+    else:
+        ordr = x
+    if desc:
+        ordr = ordr[::-1]
     fig, ax = plt.subplots()
     sns.set(font = font_family)
     sns.set_context('talk', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
         'grid.linewidth': 1.0})
-    ax = sns.barplot(x, y = y, data = data, color = color)
+    for j in xrange(len(y), 0, -1):
+        this_level = np.array([sum([y[jj][i] for jj in xrange(j)]) \
+            for i in xrange(len(y[0]))])
+        ax = sns.barplot(x, y = this_level, data = data, 
+            color = colors[j-1], order = ordr)
+    #ax = sns.barplot(x, y = y, data = data, color = color, x_order = ordr)
+    #plt.bar(range(len(ordr)), [y[i] for i in ordr], align = 'center')
+    #plt.xticks(list(ordr), [x[i] for i in ordr])
     sns.set_context('talk', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
         'grid.linewidth': 1.0})
     for tick in ax.xaxis.get_major_ticks():
@@ -278,7 +305,69 @@ def barplot(x, y, data, fname, font_family = 'Helvetica Neue LT Std',
     plt.setp(ax.xaxis.get_majorticklabels(), rotation = lab_angle)
     fig.tight_layout()
     fig.savefig(fname)
+    plt.close(fig)
 
+def barplot(x, y, data, fname, font_family = 'Helvetica Neue LT Std', 
+    xlab = '', ylab = '', lab_angle = 90, lab_size = 9, color = '#007b7f', 
+    order = False, desc = True, legend = None, fin = True, **kwargs):
+    if type(x) is list or type(x) is tuple:
+        x = np.array(x)
+    if type(y) is list or type(y) is tuple:
+        y = np.array(y)
+    if order == 'x':
+        ordr = np.array([x[i] for i in x.argsort()])
+    elif order == 'y':
+        ordr = np.array([x[i] for i in y.argsort()])
+    else:
+        ordr = x
+    if desc:
+        ordr = ordr[::-1]
+    if type(color) is list and len(color) == len(ordr):
+        xl = list(x)
+        color = [color[xl.index(xi)] for xi in ordr]
+    fig, ax = plt.subplots()
+    sns.set(font = font_family)
+    sns.set_context('talk', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
+        'grid.linewidth': 1.0})
+    ax = sns.barplot(x, y = y, data = data, color = color, order = ordr, **kwargs)
+    #ax = sns.barplot(x, y = y, data = data, color = color, x_order = ordr)
+    #plt.bar(range(len(ordr)), [y[i] for i in ordr], align = 'center')
+    #plt.xticks(list(ordr), [x[i] for i in ordr])
+    sns.set_context('talk', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
+        'grid.linewidth': 1.0})
+    for tick in ax.xaxis.get_major_ticks():
+        tick.label.set_fontsize(lab_size)
+    ax.set_ylabel(ylab)
+    ax.set_xlabel(xlab)
+    plt.setp(ax.xaxis.get_majorticklabels(), rotation = lab_angle)
+    if type(legend) is dict:
+        legend_patches = [mpatches.Patch(color=col, label=lab) \
+            for lab, col in legend.iteritems()]
+        ax.legend(handles = legend_patches)
+    if fin:
+        finish(fig, fname)
+    else:
+        return fig, ax
+
+def finish(fig, fname):
+    fig.tight_layout()
+    fig.savefig(fname)
+    plt.close(fig)
+
+def in_complex(self, csources = ['corum']):
+    self.graph.es['in_complex'] = \
+    [sum([len(set(self.graph.vs[e.source]['complexes'][cs].keys()) & \
+    set(self.graph.vs[e.target]['complexes'][cs].keys())) for cs in csources]) > 0 \
+    for e in self.graph.es]
+
+def complexes_in_network(g, csource = 'corum'):
+    cdict = {}
+    allv = set(g.vs['name'])
+    for v in g.vs:
+        for c, cdata in v['complexes'][csource].iteritems():
+            if c not in cdict:
+                cdict[c] = set(cdata['all_members'])
+    return [c for c, memb in cdict.iteritems() if len(memb - allv) == 0]
 
 def rgb2hex(rgb):
     return '#%02x%02x%02x' % rgb

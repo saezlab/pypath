@@ -164,12 +164,15 @@ class MappingTable(object):
                 '' if param.subfield is None else '(%s)'%param.subfield)
         }
         data = dataio.curl(url, post = post, silent = False, cache = False)
-        data = [[[xxx for xxx in resep.split(scolend.sub('', xx.strip())) if len(xxx) > 0] \
+        data = [[[xx] if param.field == 'protein names' else \
+            [xxx for xxx in resep.split(scolend.sub('', xx.strip())) if len(xxx) > 0] \
             for xx in x.split('\t') if len(xx.strip()) > 0] 
             for x in data.split('\n') if len(x.strip()) > 0]
         del data[0]
         for l in data:
             if len(l) > 1:
+                l[1] = self.process_protein_name(l[1][0]) \
+                    if param.field == 'protein names' else l[1]
                 for other in l[1]:
                     if other not in mapping_o:
                         mapping_o[other] = []
@@ -236,20 +239,22 @@ class MappingTable(object):
             self.cleanDict(self.mapping["from"])
         prg.terminate()
     
+    def process_protein_name(self, name):
+        rebr = re.compile(r'\(([^\)]{3,})\)')
+        resq = re.compile(r'\[([^\]]{3,})\]')
+        names = [name.split('(')[0]]
+        names += rebr.findall(name)
+        others = flatList([x.split(';') for x in resq.findall(name)])
+        others = [x.split(':')[1] if ':' in x else x for x in others]
+        others = [x.split('(')[1] if '(' in x else x for x in others]
+        names += others
+        return [x.strip() for x in names]
+    
     def id_max_len(self):
-        if self.maxlOne is None or self.maxlTwo is None:
-            maxlOne = 0
-            maxlTwo = 0
-            for i in self.mapping["to"].values():
-                for j in i:
-                    if len(j) > maxlOne:
-                        maxlOne = len(j)
-            for i in self.mapping["from"].values():
-                for j in i:
-                    if len(j) > maxlTwo:
-                        maxlTwo = len(j)
-            self.maxlOne = maxlOne
-            self.maxlTwo = maxlTwo
+        if self.maxlOne is None:
+            self.maxlOne = max(len(i) for i in flatList(self.mapping["to"].values()))
+        if self.maxlTwo is None:
+            self.maxlTwo = max(len(i) for i in flatList(self.mapping["from"].values()))
         return {"one": self.maxlOne, "two": self.maxlTwo}
 
 class Mapper(object):
@@ -366,8 +371,15 @@ class Mapper(object):
                 return [ name ]
             else:
                 mappedNames = [ name ]
+        elif '.' in name and nameType.startswith('refseq'):
+            return self.map_name(name.split('.')[0], nameType, targetNameType, 
+                strict = strict, silent = silent)
         else:
             mappedNames = self._map_name(name, nameType, targetNameType)
+        if len(mappedNames) == 0:
+            mappedNames = self._map_name(name.upper(), nameType, targetNameType)
+        if len(mappedNames) == 0:
+            mappedNames = self._map_name(name.lower(), nameType, targetNameType)
         if len(mappedNames) == 0 and nameType == 'genesymbol':
             mappedNames = self._map_name(name, 'genesymbol-syn', targetNameType)
             if not strict and len(mappedNames) == 0:

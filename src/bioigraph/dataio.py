@@ -266,8 +266,12 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
             res = gzip.GzipFile(fileobj=result, mode='rb')
             if not large:
                 res = res.read()
-                res = res.decode(encoding)
-                res = res.encode('utf-8')
+                try:
+                    res = res.decode(encoding)
+                    res = res.encode('utf-8')
+                except:
+                    # better to proceed even if there is some trouble with encodings...
+                    pass
         elif url.endswith('zip') or compr == 'zip':
             multifile = True
             results = {}
@@ -1887,6 +1891,39 @@ def get_psite_phos(raw = True, organism = 'human'):
                     result.append(dommot)
     return result
 
+def get_psite_p(organism = 'human'):
+    result = []
+    url = data_formats.urls['psite_p']['url']
+    data = curl(url, silent = False)
+    data = [r.split('\t') for r in data.split('\n')[4:]]
+    nondigit = re.compile(r'[^\d]+')
+    remot = re.compile(r'(_*)([A-Za-z]+)(_*)')
+    for r in data:
+        if len(r) > 9 and (organism is None or r[6] == organism):
+            uniprot = r[1]
+            isoform = 1 if '-' not in uniprot else int(uniprot.split('-')[1])
+            uniprot = uniprot.split('-')[0]
+            typ = r[3].lower()
+            if len(typ) == 0:
+                typ = r[4].split('-')[1] if '-' in r[4] else None
+            aa = r[4][0]
+            num = int(nondigit.sub('', r[4]))
+            motif = remot.match(r[9])
+            if motif:
+                start = num -7 + len(motif.groups()[0])
+                end = num + 7 - len(motif.groups()[2])
+                instance = r[9].replace('_', '').upper()
+            else:
+                start = None
+                end = None
+                instance = None
+            res = intera.Residue(num, aa, uniprot, isoform = isoform)
+            mot = intera.Motif(uniprot, start, end, instance = instance, isoform = isoform)
+            ptm = intera.Ptm(uniprot, typ = typ, motif = mot, residue = res, 
+                source = 'PhosphoSite', isoform = isoform)
+            result.append(ptm)
+    return result
+
 def get_psite_reg():
     url = data_formats.urls['psite_reg']['url']
     data = curl(url, silent = False, compr = 'gz', encoding = 'iso-8859-1')
@@ -2943,3 +2980,38 @@ def open_pubmed(pmid):
     pmid = str(pmid)
     url = data_formats.urls['pubmed']['url'] % pmid
     webbrowser.open(url)
+
+def get_hprd(in_vivo = True):
+    url = data_formats.urls['hprd_all']['url']
+    files = [data_formats.urls['hprd_all']['ptm_file']]
+    data = curl(url, silent = False, files_needed = files)
+    if len(data) == 0:
+        return []
+    data = [l.split('\t') for l in data[files[0]].split('\n')][:-1]
+    if in_vivo:
+        data = [i for i in data if 'in vivo' in i[9].split(';')]
+    return data
+
+def hprd_interactions(in_vivo = True):
+    return [i for i in get_hprd(in_vivo = in_vivo) if i[6] != '-']
+
+def get_hprd_ptms(in_vivo = True):
+    ptms = []
+    non_digit = re.compile(r'[^\d]+')
+    data = get_hprd(in_vivo = in_vivo)
+    for ptm in data:
+        if ptm[6] != '-':
+            resnums = [int(nn) for nn in \
+                [non_digit.sub('', n) for n in ptm[4].split(';')]\
+                if len(nn) > 0]
+            for resnum in resnums:
+                ptms.append({
+                    'resaa': ptm[5],
+                    'resnum': resnum,
+                    'typ': ptm[8].lower(),
+                    'refs': ptm[10].split(','),
+                    'kinase': ptm[6],
+                    'substrate_refseqp': ptm[3],
+                    'substrate': ptm[1]
+                })
+    return ptms

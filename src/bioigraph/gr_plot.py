@@ -18,6 +18,7 @@
 from colorgen import *
 import math
 from igraph import *
+from common import uniqList, flatList
 
 def inter_group(g,groups):
     # group-group adjacency matrix weighted by connecting edges, 
@@ -97,10 +98,6 @@ def meta_layout(g,groups,layout,**kwargs):
         for j, v in enumerate(thisGroupVs):
             g.vs[v]["lo"] = loo[j]
     return Layout(coords=g.vs["lo"],dim=2)
-
-def uniqList(lst):
-    ls = set(lst)
-    return list(ls)
 
 def layout_norm(lo,xlim,ylim):
     x = []

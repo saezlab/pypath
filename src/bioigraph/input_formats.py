@@ -175,7 +175,8 @@ ac_query = {
     'entrez': ['database', 'geneid'],
     'refseqp': ['database', 'refseq'],
     'enst': ['database', 'ensembl'],
-    'uniprot-entry': ['entry name', None]
+    'uniprot-entry': ['entry name', None],
+    'protein-name': ['protein names', None]
 }
 
 ac_mapping = {
