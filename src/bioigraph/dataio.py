@@ -3009,9 +3009,12 @@ def get_hprd_ptms(in_vivo = True):
                     'resaa': ptm[5],
                     'resnum': resnum,
                     'typ': ptm[8].lower(),
-                    'refs': ptm[10].split(','),
+                    'references': ptm[10].split(','),
                     'kinase': ptm[6],
                     'substrate_refseqp': ptm[3],
-                    'substrate': ptm[1]
+                    'substrate': ptm[1],
+                    'start': max(resnum -7, 1),
+                    'end': resnum + 7,
+                    'instance': None
                 })
     return ptms

@@ -151,19 +151,20 @@ class RestResource(resource.Resource):
             for eid in elist:
                 e = self.g.es[eid]
                 for ptm in e['ptm']:
-                    thisPtm = [ptm.domain.protein, ptm.ptm.protein, ptm.ptm.residue.name, 
-                        ptm.ptm.residue.number, ptm.ptm.typ]
-                    if 'sources' in hdr:
-                        thisPtm.append(ptm.ptm.sources)
-                    if 'references' in hdr:
-                        thisPtm.append(ptm.refs)
-                    if 'is_stimulation' in hdr:
-                        thisPtm.append(int(edge['dirs'].is_stimulation(\
-                            (ptm.domain.protein, ptm.ptm.protein))))
-                    if 'is_inhibition' in hdr:
-                        thisPtm.append(int(edge['dirs'].is_stimulation(\
-                            (ptm.domain.protein, ptm.ptm.protein))))
-                    res.append(thisPtm)
+                    if 'ptmtype' not in req.args or ptm.ptm.typ in req.args['ptmtype']:
+                        thisPtm = [ptm.domain.protein, ptm.ptm.protein, ptm.ptm.residue.name, 
+                            ptm.ptm.residue.number, ptm.ptm.typ]
+                        if 'is_stimulation' in hdr:
+                            thisPtm.append(int(e['dirs'].is_stimulation(\
+                                (ptm.domain.protein, ptm.ptm.protein))))
+                        if 'is_inhibition' in hdr:
+                            thisPtm.append(int(e['dirs'].is_inhibition(\
+                                (ptm.domain.protein, ptm.ptm.protein))))
+                        if 'sources' in hdr:
+                            thisPtm.append(ptm.ptm.sources)
+                        if 'references' in hdr:
+                            thisPtm.append(ptm.refs)
+                        res.append(thisPtm)
         if req.args['format'] == 'json':
             return json.dumps([dict(zip(hdr, r)) for r in res])
         else:

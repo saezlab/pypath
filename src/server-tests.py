@@ -19,13 +19,26 @@ from bioigraph.common import *
 from bioigraph.data_formats import *
 from bioigraph import server
 
-mysql_gelati = (None,'mapping_gelati')
-mysql_chembl = (None,'chembl_ebi')
-
-net = bioigraph.BioGraph(9606, mysql=mysql_gelati, name="demo")
+net = bioigraph.BioGraph(ncbi_tax_id = 9606)
 
 net.init_network(pfile = 'cache/default_plus_acsn_phospho.pickle')
 net.load_ptms()
+
+#from bioigraph.data_formats import best
+#net.read_data_file(best['hprd'], keep_raw = True)
+#tr = net.load_hprd_ptms(trace = True)
+#len(tr['kinase_ambiguousity'])
+#len([x for x in tr['kinase_ambiguousity'].values() if len(x) == 0])
+#len([x for x in tr['kinase_ambiguousity'].values() if len(x) != 0])
+#len(tr['substrate_ambiguousity'])
+#len([x for x in tr['substrate_ambiguousity'].values() if len(x) == 0])
+#len([x for x in tr['substrate_ambiguousity'].values() if len(x) != 0])
+#from bioigraph import dataio
+#import igraph
+#h = dataio.get_hprd_ptms()
+#hh = dataio.get_hprd_ptms()
+#[net.mapper.map_name(h[i]['substrate_refseqp'].split('.')[0], 'refseqp', 'uniprot') for i in xrange(len(h))]
+#[net.mapper.map_name(hi[3].split('.')[0], 'refseqp', 'uniprot') for hi in hh]
 #net.load_resources(lst={'mimp': good['mimp']})
 #net.load_resources(lst={'pnetworks': good['pnetworks']})
 #net.load_resources(lst={'psite_noref': good['psite_noref']})

@@ -886,10 +886,12 @@ class BioGraph(object):
             edge['nameA'], 
             edge['nameTypeA'], 
             self.default_name_type[edge['typeA']])
+        # print 'mapped %s to %s' % (str(edge['nameA']), str(defaultNameA))
         defaultNameB = self.mapper.map_name(
             edge['nameB'], 
             edge['nameTypeB'], 
             self.default_name_type[edge['typeB']])
+        # print 'mapped %s to %s' % (str(edge['nameB']), str(defaultNameB))
         # this is needed because the possibility ambigous mapping
         # one name can be mapped to multiple ones
         # this multiplies the nodes and edges
@@ -901,6 +903,7 @@ class BioGraph(object):
                 edge['defaultNameB'] = dnB
                 edge['defaultNameTypeB'] = self.default_name_type[edge['typeB']]
                 edgeStack.append(edge)
+                # print 'new edge: %s' % str(edge)
         return edgeStack
     
     def merge_attrs(self,a,b,exc=["name"]):

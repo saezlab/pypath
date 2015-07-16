@@ -366,14 +366,14 @@ class Mapper(object):
             To use other IDs, you need to define the input method
             and load the table before calling Mapper.map_name().
         '''
+        # print '\tmapping %s' % name
         if nameType == targetNameType:
             if targetNameType != 'uniprot':
                 return [ name ]
             else:
                 mappedNames = [ name ]
-        elif '.' in name and nameType.startswith('refseq'):
-            return self.map_name(name.split('.')[0], nameType, targetNameType, 
-                strict = strict, silent = silent)
+        elif nameType.startswith('refseq'):
+            mappedNames = self.map_refseq(name, nameType, targetNameType, strict = strict)
         else:
             mappedNames = self._map_name(name, nameType, targetNameType)
         if len(mappedNames) == 0:
@@ -390,7 +390,20 @@ class Mapper(object):
             mappedNames = self.trembl_swissprot(mappedNames)
             if len(set(orig) - set(mappedNames)) > 0:
                 self.uniprot_mapped.append((orig, mappedNames))
+        # print '\tmapped to %s' % str(mappedNames)
         return list(set(mappedNames))
+    
+    def map_refseq(self, refseq, nameType, targetNameType, strict = False):
+        mappedNames = []
+        if '.' in refseq:
+            mappedNames += self._map_name(refseq, nameType, targetNameType)
+            if len(mappedNames) == 0 and not strict:
+                mappedNames += self._map_name(refseq.split('.')[0], nameType, targetNameType)
+        if len(mappedNames) == 0 and not strict:
+            rstem = refseq.split('.')[0]
+            for n in xrange(49):
+                mappedNames += self._map_name('%s.%u'%(rstem, n), nameType, targetNameType)
+        return mappedNames
     
     def _map_name(self, name, nameType, targetNameType):
         '''
