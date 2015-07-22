@@ -97,8 +97,9 @@ class RemoteFile(object):
                     for line in f:
                         yield line
 
-def test(debug_type, debug_msg):
-    print "debug(%d): %s" % (debug_type, debug_msg)
+def print_debug_info(debug_type, debug_msg, truncate = 1000):
+    sys.stdout.write("debug(%d): %s\n" % (debug_type, debug_msg[:truncate]))
+    sys.stdout.flush()
 
 #class Dataio(object):
 #    
@@ -129,7 +130,8 @@ def get_xsessionid(headers):
 def curl(url, silent = True, post = None, req_headers = None, cache = True, 
         debug = False, outf = None, compr = None, encoding = None, 
         files_needed = None, timeout = 300, init_url = None, 
-        init_fun = 'get_jsessionid', follow = True, large = False):
+        init_fun = 'get_jsessionid', follow = True, large = False,
+        override_post = False):
     # either from cache or from download, we load the data into StringIO:
     multifile = False
     domain = url.replace('https://', '').replace('http://','').\
@@ -175,6 +177,9 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
         c.setopt(c.FOLLOWLOCATION, follow)
         c.setopt(c.CONNECTTIMEOUT, 15)
         c.setopt(c.TIMEOUT, timeout)
+        if override_post:
+            if req_headers is None: req_headers = []
+            req_headers.append('X-HTTP-Method-Override: GET')
         if type(req_headers) is list:
             c.setopt(c.HTTPHEADER, req_headers)
         c.setopt(c.WRITEFUNCTION, result.write)
@@ -182,29 +187,36 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
         # if debug is necessary:
         if debug:
             c.setopt(pycurl.VERBOSE, 1)
-            # c.setopt(pycurl.DEBUGFUNCTION, test)
+            c.setopt(pycurl.DEBUGFUNCTION, print_debug_info)
         if type(post) is dict:
             postfields = urllib.urlencode(post)
             c.setopt(c.POSTFIELDS, postfields)
             c.setopt(c.POST, 1)
+            c.setopt(c.STDERR, sys.stdout.write)
         if not silent:
             sys.stdout.write('\t:: Downloading data from %s. Waiting for reply...' % \
                 domain)
             sys.stdout.flush()
         for i in xrange(3):
             try:
+                if debug:
+                    sys.stdout.write('\t:: bioigraph.dataio.curl() :: attempt #%u\n' % i)
+                    sys.stdout.flush()
                 c.perform()
                 if url.startswith('http'):
                     status = c.getinfo(pycurl.HTTP_CODE)
+                    if status == 200:
+                        break
                 if url.startswith('ftp'):
                     status = 500
                     for h in headers:
                         if h.startswith('226'):
                             status = 200
                             break
-                break
-            except:
+            except pycurl.error as e:
                 status = 500
+                sys.stdout.write('\tPycURL error: %u, %s\n' % (e.errno, e.strerror))
+                sys.stdout.flush()
         c.close()
     # sometimes authentication or cookies are needed to access the target url:
     if init_url and not usecache:
@@ -2912,6 +2924,9 @@ def get_lincs_compounds():
     )
 
 def get_hpmr():
+    # human receptor census from HPMR
+    # Human Plasma Membrane Receptome
+    # http://receptome.stanford.edu/HPMR/
     html = curl(data_formats.urls['hpmr']['url'], silent = False)
     soup = bs4.BeautifulSoup(html)
     gnames = [gname for gname in [tr.find_all('td')[1].text \

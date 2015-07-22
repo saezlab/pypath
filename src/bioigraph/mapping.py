@@ -63,6 +63,7 @@ class MappingTable(object):
         self.cache = cache
         self.cachedir = cachedir
         self.mapping = {"to": {}, "from": {}}
+        self.mid = hashlib.md5(str((one, param.bi))).hexdigest()
         if log.__class__.__name__ != 'logw':
             self.session = gen_session_id()
             self.ownlog = logn.logw(self.session,'INFO')
@@ -73,7 +74,9 @@ class MappingTable(object):
             self.cachefile = os.path.join(self.cachedir, md5param)
             if self.cache and os.path.isfile(self.cachefile):
                 self.mapping = pickle.load(open(self.cachefile, 'rb'))
-            else:
+            elif len(self.mapping['to']) == 0 or (param.bi and len(self.mapping['from']) == 0):
+                if os.path.exists(self.cachefile):
+                    os.remove(self.cachefile)
                 if source == "mysql":
                     self.read_mapping_mysql(param)
                 elif source == "file":
@@ -82,7 +85,8 @@ class MappingTable(object):
                     self.read_mapping_pickle(param)
                 elif source == "uniprot":
                     self.read_mapping_uniprot(param)
-                pickle.dump(self.mapping, open(self.cachefile, 'wb'))
+                if len(self.mapping['to']) != 0 and (not param.bi or len(self.mapping['from']) != 0):
+                    pickle.dump(self.mapping, open(self.cachefile, 'wb'))
     
     def cleanDict(self,mapping):
         for key, value in mapping.iteritems():
@@ -156,14 +160,16 @@ class MappingTable(object):
         rev = '' if param.swissprot is None \
             else ' AND reviewed:%s' % param.swissprot
         query = 'organism:%u%s' % (int(param.tax), rev)
-        url = data_formats.urls['uniprot_basic']['url']
-        post = {
+        self.url = data_formats.urls['uniprot_basic']['url']
+        self.post = {
             'query': query, 
             'format': 'tab', 
             'columns': 'id,%s%s' % (param.field, 
                 '' if param.subfield is None else '(%s)'%param.subfield)
         }
-        data = dataio.curl(url, post = post, silent = False, cache = False)
+        self.url = '%s?%s' % (self.url, urllib.urlencode(self.post))
+        data = dataio.curl(self.url, silent = False)
+        self.data = data
         data = [[[xx] if param.field == 'protein names' else \
             [xxx for xxx in resep.split(scolend.sub('', xx.strip())) if len(xxx) > 0] \
             for xx in x.split('\t') if len(xx.strip()) > 0] 
@@ -476,7 +482,7 @@ class Mapper(object):
         "src": "mysql", "par": "mysql_param/file_param")
         by default those are loaded from pickle files
         '''
-        if maps is None:
+        if maps is None: 
             try:
                 maps = data_formats.mapList
             except:
@@ -572,6 +578,7 @@ class Mapper(object):
                 self.tables[(ac_typ, 'uniprot')].mapping = \
                     pickle.load(open(cachefile, 'rb'))
                 ac_types.remove(ac_typ)
+                self.tables[(ac_typ, 'uniprot')].mid = md5ac
         if len(ac_types) > 0:
             url = data_formats.urls['uniprot_idmap_ftp']['url']
             data = dataio.curl(url, silent = False)

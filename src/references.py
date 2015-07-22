@@ -61,6 +61,8 @@ pubmeds = uniqList(flatList([[r.pmid for r in e['references']] for e in net.grap
 pmdata = dataio.get_pubmeds(pubmeds)
 
 pickle.dump(pmdata, open('cache/pubmed2.pickle', 'wb'))
+# pmdata = pickle.load(open('cache/pubmed2.pickle', 'rb'))
+
 points = []
 for e in net.graph.es:
     for s, rs in e['refs_by_source'].iteritems():
@@ -198,5 +200,21 @@ grid.set_ylabels('PubMed IDs')
 grid.set_xlabels('Years')
 grid.fig.tight_layout()
 grid.fig.savefig('references-by-db-year.pdf')
+
+medpubyr = [(s, np.median(points[(points.database == s)]['year'])) \
+    for s in net.sources if s != 'HPRD' and s != 'ACSN']
+medpubyr = sorted(medpubyr, key = lambda x: x[1])
+
+fig, ax = plt.subplots()
+ax = sns.boxplot('database', 'year', data = points, color = sens.embl_colors[0], 
+    linewidth = 0.1, saturation = 0.66, order = [i[0] for i in medpubyr])
+ax.set_xlabel('Pathway resources', weight = 'light', fontsize = 12, 
+        variant = 'normal', color = '#000000', stretch = 'normal')
+ax.set_ylabel('Year', weight = 'light', fontsize = 12, 
+    variant = 'normal', color = '#000000', stretch = 'normal')
+plt.setp(ax.xaxis.get_majorticklabels(), rotation = 90)
+fig.tight_layout()
+fig.savefig('pubyear-boxplot.pdf')
+plt.close(fig)
 
 #points.groupby(['database','year']).count()

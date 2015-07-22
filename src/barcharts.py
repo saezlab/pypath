@@ -57,6 +57,7 @@ from bioigraph.common import *
 from bioigraph.data_formats import best, good, ugly, transcription
 import _sensitivity as sens
 from bioigraph import progress
+from bioigraph import dataio
 from bioigraph.ig_drawing import DefaultGraphDrawerFFsupport
 
 omnipath = 'OmniPath'
@@ -93,6 +94,11 @@ net.read_list_file(bioigraph.data_formats.cgc)
 net.read_list_file(bioigraph.data_formats.intogene_cancer)
 net.load_comppi()
 sep = net.separate()
+
+net.lists['rec'] = uniqList(flatList([net.mapper.map_name(rec, 'genesymbol', 'uniprot') \
+    for rec in dataio.get_hpmr()]))
+net.lists['tfs'] = uniqList(flatList([net.mapper.map_name(tf, 'ensg', 'uniprot') \
+    for tf in dataio.get_tfcensus()['ensg']]))
 # sep = dict([(s, net.get_network({'edge': {'sources': [s]}, 'node': {}})) for s in net.sources])
 
 # source-vcount sens.barplot
@@ -153,6 +159,15 @@ sens.barplot(x = d[0], y = d[1],
     ylab = 'Percentage of receptors', 
     xlab = 'Pathway resources', order = 'y')
 
+# receptors prop sens.barplot
+d = zip(*[(s, len([v for v in g.vs if v['rec']])/float(len(net.lists['rec']))*100) \
+    for s, g in sep.iteritems()] + \
+    [(omnipath, sum(net.graph.vs['rec'])/float(len(net.lists['rec']))*100)])
+sens.barplot(x = d[0], y = d[1], 
+    data = None, fname = 'receptorcov-by-db.pdf', lab_size = 11, 
+    ylab = 'Percentage of all\nhuman receptors covered', 
+    xlab = 'Pathway resources', order = 'y')
+
 # transcription factors sens.barplot
 d = zip(*[(s, len([v for v in g.vs if v['tf']])) \
     for s, g in sep.iteritems()] + \
@@ -169,6 +184,14 @@ d = zip(*[(s, len([v for v in g.vs if v['tf']])/float(g.vcount())*100) \
 sens.barplot(x = d[0], y = d[1], 
     data = None, fname = 'tfprop-by-db.pdf', lab_size = 11, 
     ylab = 'Percentage of transcription factors', 
+    xlab = 'Pathway resources', order = 'y')
+
+d = zip(*[(s, len([v for v in g.vs if v['tf']])/float(len(net.lists['tfs']))*100) \
+    for s, g in sep.iteritems()] + \
+    [(omnipath, sum(net.graph.vs['tf'])/float(len(net.lists['tfs']))*100)])
+sens.barplot(x = d[0], y = d[1], 
+    data = None, fname = 'tfcov-by-db.pdf', lab_size = 11, 
+    ylab = 'Percentage of all human\ntranscription factors covered', 
     xlab = 'Pathway resources', order = 'y')
 
 # stacked sens.barplot example
@@ -217,6 +240,15 @@ sens.barplot(x = d[0], y = d[1],
         sum([len(e['ptm']) for e in net.graph.es]), 
     xlab = 'Pathway resources', order = 'y')
 
+# number of ptms sens.barplot
+d = zip(*[(s, len([1 for e in g.es if len(e['ptm']) != 0])) \
+    for s, g in sep.iteritems()] + \
+    [(omnipath, len([1 for e in net.graph.es if len(e['ptm']) != 0]))])
+sens.barplot(x = d[0], y = d[1], 
+    data = None, fname = 'havingptm-by-db.pdf', lab_size = 11, 
+    ylab = 'Interactions having PTM', 
+    xlab = 'Pathway resources', order = 'y')
+
 # cosmic cancer gene census coverage sens.barplot
 d = zip(*[(s, len(set(net.lists['CancerGeneCensus']) & set(g.vs['name'])) / \
         float(len(net.lists['CancerGeneCensus']))*100) \
@@ -237,6 +269,27 @@ d = zip(*[(s, len(set(net.lists['Intogene']) & set(g.vs['name'])) / \
 sens.barplot(x = d[0], y = d[1], 
     data = None, fname = 'intocov-by-db.pdf', lab_size = 11, 
     ylab = 'Percentage of\nIntogene cancer driver genes covered', 
+    xlab = 'Pathway resources', order = 'y')
+
+# dirs signes w/o omnipath
+d = zip(*[(s, 
+    sum([sum([s in e['dirs'].positive_sources[e['dirs'].straight],
+        s in e['dirs'].positive_sources[e['dirs'].reverse]]) for e in g.es]),
+    sum([sum([s in e['dirs'].negative_sources[e['dirs'].straight],
+        s in e['dirs'].negative_sources[e['dirs'].reverse]]) for e in g.es]),
+    sum([sum([s in ((e['dirs'].sources[e['dirs'].straight] - \
+        e['dirs'].positive_sources[e['dirs'].straight]) - \
+        e['dirs'].negative_sources[e['dirs'].straight]),
+        s in ((e['dirs'].sources[e['dirs'].reverse] - \
+        e['dirs'].positive_sources[e['dirs'].reverse]) - \
+        e['dirs'].negative_sources[e['dirs'].reverse])]) for e in g.es]),
+    sum([s in e['dirs'].sources['undirected'] for e in g.es])
+        ) \
+    for s, g in sep.iteritems()])
+sens.stacked_barplot(x = d[0], y = d[1:], 
+    names = ['positive', 'negative', 'unknown effect', 'unknown direction'],
+    data = None, fname = 'dirs-signes-by-db-wo-op.pdf', lab_size = 11, 
+    ylab = 'Interactions:\npositive/negative/directed unknown effect/undirected', 
     xlab = 'Pathway resources', order = 'y')
 
 # number of complexes sens.barplot
@@ -399,3 +452,46 @@ grid.set_ylabels('Number of proteins')
 grid.set_xlabels('Localization')
 grid.fig.tight_layout()
 grid.fig.savefig('comppi-node-by-db2.pdf')
+
+# scatterplots:
+topdata = {
+'Proteins': [len([v for v in net.graph.vs if s in v['sources']]) for s in net.sources],
+'Interactions': [len([e for e in net.graph.es if s in e['sources']]) for s in net.sources],
+'Density': [sep[s].density() for s in net.sources],
+'Transitivity': [sep[s].transitivity_undirected() for s in net.sources],
+'Diameter': [sep[s].diameter() for s in net.sources]
+}
+topdf = pd.DataFrame(topdata, index = net.sources)
+fig, ax = plt.subplots()
+g = sns.pairplot(topdf)
+#fig.tight_layout()
+g.savefig('topology_pairplot.pdf')
+plt.close(fig)
+
+fig, ax = plt.subplots()
+pc = plt.scatter(list(topdf['Density']), list(topdf['Diameter']), 
+    s = [np.pi * (50.0 * x/float(max(topdf['Proteins'])))**2 \
+        for x in list(topdf['Proteins'])], c = '#6ea945', alpha = 0.5, 
+        edgecolors = 'none')
+plt.xlabel('Density')
+plt.ylabel('Diameter')
+plt.axis('tight')
+plt.xlim([-0.01, 0.07])
+#ax.autoscale_view()
+fig.savefig('dens-diam-vcount.pdf')
+plt.close(fig)
+
+fig, ax = plt.subplots()
+pc = plt.scatter(list(topdf['Density']), list(topdf['Transitivity']), 
+    s = [np.pi * (50.0 * x/float(max(topdf['Proteins'])))**2 \
+        for x in list(topdf['Proteins'])], c = '#6ea945', alpha = 0.5, 
+        edgecolors = 'none')
+plt.xlabel('Density')
+plt.ylabel('Transitivity')
+#plt.xlim([-0.01, 0.07])
+#ax.set_xscale('log')
+#ax.set_yscale('log')
+plt.axis('tight')
+#ax.autoscale_view()
+fig.savefig('dens-trans-vcount.pdf')
+plt.close(fig)
