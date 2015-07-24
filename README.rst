@@ -52,14 +52,17 @@ Features
 
 The primary aim of **Bioigraph** is to build up networks from multiple sources on one igraph object. **Bioigraph** handles ambiguous ID conversion, reads custom edge and node attributes from text files and **MySQL**.
 
-**Bioigraph** includes data and format definition from 19 high quality, literature curated databases. Descriptions and comprehensive information about the resources is available in the ``descriptions`` module. 
-
 Submodules perform various features, e.g. graph visualization, working with drug compound data, searching drug targets and compounds in **ChEMBL**. 
 
 ID conversion
 -------------
 
 The ID conversion module ``mapping`` can be used independently. It has the feature to translate secondary UniProt IDs to primaries, and Trembl IDs to SwissProt, using primary Gene Symbols to find the connections. This module automatically loads and stores the necessary conversion tables. Many tables are predefined, such as all the IDs in **UniProt mapping service,** while users are able to load any table from **file** or **MySQL,** using the classes provided in the module ``input_formats``.
+
+Pathways
+--------
+
+**Bioigraph** includes data and predefined format descriptions for more than 25  high quality, literature curated databases. The inut formats are defined in the ``data_formats`` module. For some resources data downloaded on the fly, where it is not possible, data is redistributed with the module. Descriptions and comprehensive information about the resources is available in the ``descriptions`` module. 
 
 Structural features
 -------------------
@@ -93,4 +96,6 @@ Technical
 
 **MySQL** submodule helps to manage MySQL connections and track queries. It is able to run queries parallely to optimize CPU and memory usage on the server, handling queues, and serve the result by server side or client side storage. The ``chembl`` and potentially the ``mapping`` modules rely on this ``mysql`` module.
 
-The most important function in module ``dataio`` is a very flexible download manager built around ``curl``. The function ``dataio.curl()`` accepts numerous arguments, tries to deal in a smart way with local cache, authentication, redirects, uncompression, character encodings, FTP and HTTP transactions, and many more stuff. Cache can grow to several GBs, and takes place in ``./cache`` by default. Please be aware of this, and use for example symlinks in case of using multiple working directories.
+The most important function in module ``dataio`` is a very flexible **download manager** built around ``curl``. The function ``dataio.curl()`` accepts numerous arguments, tries to deal in a smart way with local **cache,** authentication, redirects, uncompression, character encodings, FTP and HTTP transactions, and many other stuff. Cache can grow to several GBs, and takes place in ``./cache`` by default. Please be aware of this, and use for example symlinks in case of using multiple working directories.
+
+A simple **webservice** comes with this module: the ``server`` module based on ``twisted.web.server`` opens a custom port and serves plain text tables over HTTP with REST style querying.
