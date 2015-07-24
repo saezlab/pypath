@@ -410,6 +410,17 @@ urls = {
         'label': 'JSON network from GIANT by gene based query',
         'init_url': 'http://giant.princeton.edu/',
         'url': 'http://giant.princeton.edu/contexts/integration/query/%u/?%s&prior=0.1'
+    },
+    'msigdb': {
+        'label': 'Molecular Signatures Database', 
+        'login1': 'http://www.broadinstitute.org/gsea/login.jsp',
+        'login2': 'http://www.broadinstitute.org/gsea/j_spring_security_check',
+        'url': 'http://www.broadinstitute.org/gsea/msigdb/download_file.jsp?'\
+            'filePath=/resources/msigdb/5.0/%s.all.v5.0.%s.gmt',
+        'coll': 'http://www.broadinstitute.org/gsea/msigdb/collections.jsp',
+        'url_stem': 'http://www.broadinstitute.org/gsea/%s',
+        'one_set': 'http://www.broadinstitute.org/gsea/msigdb/download_geneset.jsp?'\
+            'geneSetName=%s&fileType=txt'
     }
 }
 

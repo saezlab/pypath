@@ -131,13 +131,14 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
         debug = False, outf = None, compr = None, encoding = None, 
         files_needed = None, timeout = 300, init_url = None, 
         init_fun = 'get_jsessionid', follow = True, large = False,
-        override_post = False):
+        override_post = False, init_headers = False, 
+        write_cache = True):
     # either from cache or from download, we load the data into StringIO:
     multifile = False
     domain = url.replace('https://', '').replace('http://','').\
         replace('ftp://','').split('/')[0]
     # first try to find file in cache:
-    if cache:
+    if cache or write_cache:
         # outf param is to give a unique name to data
         # downloaded previously by post requests
         outf = outf if outf is not None else url.split('/')[-1].split('?')[0]
@@ -147,7 +148,7 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
         if not os.path.exists(os.path.join(os.getcwd(),'cache')):
             os.mkdir(os.path.join(os.getcwd(),'cache'))
         cachefile = os.path.join(os.getcwd(),'cache',urlmd5+'-'+outf)
-        usecache = True if os.path.exists(cachefile) else False
+        usecache = True if os.path.exists(cachefile) and cache else False
         # load from cache:
         if usecache:
             if not silent:
@@ -192,7 +193,6 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
             postfields = urllib.urlencode(post)
             c.setopt(c.POSTFIELDS, postfields)
             c.setopt(c.POST, 1)
-            c.setopt(c.STDERR, sys.stdout.write)
         if not silent:
             sys.stdout.write('\t:: Downloading data from %s. Waiting for reply...' % \
                 domain)
@@ -227,9 +227,11 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
         # the authentication data from cookies/headers, 
         # and return with headers for the main request:
         req_headers = globals()[init_fun](headers)
+        if init_headers: return req_headers
         return curl(url = url, req_headers = req_headers, silent = silent, 
             debug = debug, outf = outf, compr = compr, encoding = encoding, 
-            files_needed = files_needed, timeout = timeout, large = large)
+            files_needed = files_needed, timeout = timeout, large = large,
+            write_cache = write_cache)
     # get the data from the file downloaded/loaded from cache:
     if usecache or status == 200:
         if type(result) is file:
@@ -318,7 +320,7 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
                         results[k] = results[k].encode('utf-8')
                     except:
                         pass
-        if cache and not usecache and not large:
+        if (cache or write_cache) and not usecache and not large:
             for k in results.keys():
                 if not multifile and not url.endswith('gz'):
                 # write the decoded data back to StringIO
@@ -399,7 +401,7 @@ def all_uniprots(organism = 9606, swissprot = None):
     del data[0]
     for l in data:
         result.append(l.strip())
-    return result
+    return filter(lambda x: len(x) > 0, result)
 
 def swissprot_seq(organism = 9606, isoforms = False):
     taxids = {

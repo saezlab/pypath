@@ -4258,23 +4258,23 @@ class BioGraph(object):
         return toDel, disrupted
     
     def load_go(self, aspect = ['C', 'F', 'P']):
-        self.update_vname()
-        aspect = aspect if type(aspect) is list else [aspect]
-        self.graph.vs['go'] = [{'C': [], 'F': [], 'P': []} \
-            for _ in self.graph.vs]
-        go = dataio.get_go_goa()
-        prg = Progress(self.graph.vcount(), 'Loading GO annotations', 9)
-        for v in self.graph.vs:
-            prg.step()
-            for asp in aspect:
-                if v['name'] in go[asp]:
-                    v['go'][asp] = go[asp][v['name']]
-        prg.terminate()
+        go.load_go(self.graph, aspect = aspect)
     
     def go_dict(self, organism = 9606):
         if not hasattr(self, 'go'):
             self.go = {}
-        self.go[organism] = go.GO(organism)
+        self.go[organism] = go.GOAnnotation(organism)
+    
+    def go_enrichment(self, proteins, aspect = 'P', alpha = 0.05, 
+        correction_method = 'hommel'):
+        all_proteins = set(self.graph.vs['name'])
+        annotation = dict([(up, go) for up, og in \
+            getattr(self.go[self.ncbi_tax_id], aspect.lower()).iteritems() \
+            if up in all_proteins])
+        enr = go.GOEnrichmentSet(aspect = aspect, organism = self.ncbi_tax_id, 
+            basic_set = annotation, alpha = alpha, correction_method = correction_method)
+        enr.new_set(set_names = proteins)
+        return enr
     
     def find_all_paths(self, start, end, mode = 'OUT', 
             maxlen = None, graph = None):
