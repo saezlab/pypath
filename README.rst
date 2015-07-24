@@ -52,14 +52,45 @@ Features
 
 The primary aim of **Bioigraph** is to build up networks from multiple sources on one igraph object. **Bioigraph** handles ambiguous ID conversion, reads custom edge and node attributes from text files and **MySQL**.
 
-**Bioigraph** includes data and format definition from 19 high quality, literature curated databases. Descriptions and comprehensive information about the resources is available in the package. 
+**Bioigraph** includes data and format definition from 19 high quality, literature curated databases. Descriptions and comprehensive information about the resources is available in the ``descriptions`` module. 
 
-Submodules serves the handling of graph visualization, working with drug compound data, searching drug targets and compounds in **ChEMBL**. 
+Submodules perform various features, e.g. graph visualization, working with drug compound data, searching drug targets and compounds in **ChEMBL**. 
 
-ID conversion module (bioigaph.mapping) can be used independently. It has the feature to translate secondary UniProt IDs to primaries, and Trembl IDs to Swissprot, using primary gene symbols to find the connections. 
+ID conversion
+-------------
+
+The ID conversion module ``mapping`` can be used independently. It has the feature to translate secondary UniProt IDs to primaries, and Trembl IDs to SwissProt, using primary Gene Symbols to find the connections. This module automatically loads and stores the necessary conversion tables. Many tables are predefined, such as all the IDs in **UniProt mapping service,** while users are able to load any table from **file** or **MySQL,** using the classes provided in the module ``input_formats``.
+
+Structural features
+-------------------
+
+One of the modules called ``intera`` provides many classes for representing structures and mechanisms behind protein interactions. These are ``Residue`` (optionally mutated), ``Motif``, ``Ptm``, ``Domain``, ``DomainMotif``, ``DomainDomain`` and ``Interface``. All these classes have ``__eq__()`` methods to test equality between instances, and also ``__contains__()`` methods to look up easily if a residue is within a short motif or protein domain, or is the target residue of a PTM.
+
+Sequences
+---------
+
+The module ``seq`` contains a simple class for quick lookup any residue or segment in **UniProt** protein sequences while being aware of isoforms.
+
+Tissue expression
+-----------------
+
+For 3 protein expression databases there are functions and modules for downloading and combining the expression data with the network. These are the Human Protein Atlas, the ProteomicsDB and GIANT. The ``giant`` and ``proteomicsdb`` modules can be used also as stand alone Python clients for these resources.
+
+Functional annotations
+----------------------
+
+**GSEA** and **Gene Ontology** are two approaches for annotating genes and gene products, and enrichment analysis technics aims to use these annotations to highlight the biological functions a given set of genes is related to. Here the ``enrich`` module gives abstract classes to calculate enrichment statistics, while the ``go`` and the ``gsea`` modules give access to GO and GSEA data, and make it easy to count enrichment statistics for sets of genes.
+
+Drug compounds
+--------------
 
 **UniChem** submodule provides an interface to effectively query the UniChem service, use connectivity search with custom settings, and translate SMILEs to ChEMBL IDs with ChEMBL web service.
 
 **ChEMBL** submodule queries directly your own ChEMBL MySQL instance, has the features to search targets and compounds from custom assay types and relationship types, to get activity values, binding domains, and action types. You need to download the ChEMBL MySQL dump, and load into your own server.
 
-**MySQL** submodule helps to manage MySQL connections and track queries.
+Technical
+---------
+
+**MySQL** submodule helps to manage MySQL connections and track queries. It is able to run queries parallely to optimize CPU and memory usage on the server, handling queues, and serve the result by server side or client side storage. The ``chembl`` and potentially the ``mapping`` modules rely on this ``mysql`` module.
+
+The most important function in module ``dataio`` is a very flexible download manager built around ``curl``. The function ``dataio.curl()`` accepts numerous arguments, tries to deal in a smart way with local cache, authentication, redirects, uncompression, character encodings, FTP and HTTP transactions, and many more stuff. Cache can grow to several GBs, and takes place in ``./cache`` by default. Please be aware of this, and use for example symlinks in case of using multiple working directories.
