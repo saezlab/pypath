@@ -83,6 +83,8 @@ class GOEnrichmentSet(enrich.EnrichmentSet):
         self.set_annot = None
         self.set_size = None
         self.counts_set = None
+        self.top_terms = self.top_names
+        self.top_accessions = self.top_ids
     
     def new_set(self, set_names = None, set_annot = None):
         self.set_annot = set_annot if set_annot is not None \
@@ -108,13 +110,6 @@ class GOEnrichmentSet(enrich.EnrichmentSet):
     def count(self, data):
         return Counter(flatList(list(vals) for vals in data.values()))
         #return dict((name, count/float(len(data))) for name, count in cnt.iteritems())
-    
-    def top_terms(self, length = None, significant = True):
-        return [t.data[0] for t in \
-            self.toplist(length = length, significant = significant).values()]
-    
-    def top_accessions(self, length = None, significant = True):
-        return self.toplist(length = length, significant = significant).keys()
     
     def __str__(self):
         if self.set_annot is None:

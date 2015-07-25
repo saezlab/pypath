@@ -62,9 +62,20 @@ class EnrichmentSet(object):
         for i, k in zip(xrange(len(pvals_corr)), self.enrichments.keys()):
             setattr(self.enrichments[k], 'pval_adj', pvals_corr[i])
     
-    def toplist(self, length = None, alpha = None, significant = True):
+    def toplist(self, length = None, alpha = None, significant = True, 
+        min_set_size = 0, filtr = lambda x: True):
         if alpha is None: alpha = self.alpha
-        siglen = len([1 for e in self.enrichments.values() if e.pval_adj <= alpha])
-        length = siglen if length is None else min(length, siglen) if significant else length
-        return OrderedDict(sorted(self.enrichments.iteritems(), \
+        # siglen = len([1 for e in self.enrichments.values() if e.pval_adj <= alpha])
+        # length = siglen if length is None else min(length, siglen) if significant else length
+        return OrderedDict(sorted([(k, e) for k, e in self.enrichments.iteritems() \
+                if (not significant or e.pval_adj <= alpha) \
+                and e.set_size > min_set_size and filtr((k, e))], \
             key = lambda x: x[1].pval_adj)[:length])
+    
+    def top_names(self, length = None, significant = True, alpha = 0.05, 
+        min_set_size = 0, filtr = lambda x: True):
+        return [t.data[0] for t in self.toplist(**locals()).values()]
+    
+    def top_ids(self, length = None, significant = True, 
+        alpha = 0.05, min_set_size = 0, filtr = lambda x: True):
+        return self.toplist(**locals()).keys()

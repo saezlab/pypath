@@ -18,6 +18,8 @@
 import re
 import bs4
 import sys
+import os
+import cPickle as pickle
 from collections import OrderedDict
 
 # from this module:
@@ -77,7 +79,11 @@ class GSEA(object):
         sys.stdout.write(s)
         sys.stdout.flush()
     
-    def load_collection(self, collname, id_type = 'entrez', map_ids = True):
+    def load_collection(self, collname, id_type = 'entrez', map_ids = True, 
+            cachedir = 'cache'):
+        if os.path.exists(os.path.join(cachedir, 'gsea-%s.pickle'%collname)):
+            self.load([collname])
+            return None
         url = self.collections[collname]['urls'][id_type]
         data = dataio.curl(url, req_headers = self.session, silent = False, 
             cache = False, write_cache = True)
@@ -89,9 +95,10 @@ class GSEA(object):
             setname = line[0].strip()
             self.write_set(line[2:], setname, id_type, map_ids)
             self.get_desc(setname)
-            names.append((setname, self.info[setname]))
+            names.append(setname)
         prg.terminate()
-        self.groups[collname] = names
+        self.groups[collname] = set(names)
+        self.save([collname], cachedir = cachedir)
     
     def get_desc(self, setname):
         url = data_formats.urls['msigdb']['one_set'] % setname
@@ -111,6 +118,27 @@ class GSEA(object):
             self.mapper.map_name(n, self.ids[id_type], self.target_id) \
                 for n in id_list))) if map_ids \
             else set(id_list)
+    
+    def save(self, collections, cachedir = 'cache'):
+        if collections is None: collections = self.groups.keys()
+        if type(collections) is not list: collections = [collections]
+        collections = set(collections) & set(self.groups.keys())
+        for coll in collections:
+            pfile = os.path.join(cachedir, 'gsea-%s.pickle'%coll)
+            sets = dict([(k, v) for k, v in self.sets.iteritems() if k in self.groups[coll]])
+            info = dict([(k, v) for k, v in self.info.iteritems() if k in self.groups[coll]])
+            group = self.groups[coll]
+            pickle.dump((sets, info, group), open(pfile, 'wb'))
+    
+    def load(self, collections, cachedir = 'cache'):
+        if type(collections) is not list: collections = [collections]
+        for coll in collections:
+            pfile = os.path.join(cachedir, 'gsea-%s.pickle'%coll)
+            if os.path.exists(pfile):
+                sets, info, group = pickle.load(open(pfile, 'rb'))
+                self.sets = dict(self.sets.items() + sets.items())
+                self.info = dict(self.info.items() + info.items())
+                self.groups[coll] = group
 
 class GSEABinaryEnrichmentSet(enrich.EnrichmentSet):
     
@@ -133,6 +161,8 @@ class GSEABinaryEnrichmentSet(enrich.EnrichmentSet):
         self.pop_size = len(self.basic_set)
         self.set_size = None
         self.counts_set = None
+        self.top_geneset_ids = self.top_ids
+        self.top_genesets = self.top_names
     
     def count(self, this_set):
         return dict((i, len(this_set & s)) \
@@ -143,19 +173,18 @@ class GSEABinaryEnrichmentSet(enrich.EnrichmentSet):
         self.set_size = len(set_names)
         self.counts_set = self.count(set_names)
         self.calculate()
-        
+    
     def calculate(self):
         data = dict([(gset_id, (cnt, self.counts_pop[gset_id], self.set_size, \
             self.gsea.info[gset_id])) for gset_id, cnt in self.counts_set.iteritems()])
         enrich.EnrichmentSet.__init__(self, data, self.pop_size, alpha = self.alpha, 
             correction_method = self.correction_method)
     
-    def top_genesets(self, length = None, significant = True):
-        return [t.data[0] for t in \
-            self.toplist(length = length, significant = significant).values()]
-    
-    def top_geneset_ids(self, length = None, significant = True):
-        return self.toplist(length = length, significant = significant).keys()
+    def toplist(self, length = None, alpha = None, significant = True, min_set_size = 0, 
+        groups = None):
+        if groups is None: groups = self.groups.keys() # all by default
+        sets = set(flatList(s for g, s in self.groups.iteritems() if g in groups))
+        super(GSEABinaryEnrichmentSet, self).toplist(filtr = lambda x: x[0] in sets, **kwargs)
     
     def __str__(self):
         if self.counts_set is None:
