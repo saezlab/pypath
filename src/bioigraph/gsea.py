@@ -181,10 +181,12 @@ class GSEABinaryEnrichmentSet(enrich.EnrichmentSet):
             correction_method = self.correction_method)
     
     def toplist(self, length = None, alpha = None, significant = True, min_set_size = 0, 
-        groups = None):
-        if groups is None: groups = self.groups.keys() # all by default
-        sets = set(flatList(s for g, s in self.groups.iteritems() if g in groups))
-        super(GSEABinaryEnrichmentSet, self).toplist(filtr = lambda x: x[0] in sets, **kwargs)
+        groups = None, filtr = lambda x: True, **kwargs):
+        args = get_args(locals(), ['filtr', 'groups'])
+        if groups is None: groups = self.gsea.groups.keys() # all by default
+        sets = set(flatList(s for g, s in self.gsea.groups.iteritems() if g in groups))
+        return super(GSEABinaryEnrichmentSet, self).toplist(
+            filtr = lambda x: x[0] in sets and filtr(x), **args)
     
     def __str__(self):
         if self.counts_set is None:

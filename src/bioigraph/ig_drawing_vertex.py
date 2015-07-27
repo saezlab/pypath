@@ -83,13 +83,21 @@ class DefaultVertexDrawer(AbstractCairoVertexDrawer):
             position = dict(func=self.layout.__getitem__)
             shape = ("circle", ShapeDrawerDirectory.resolve_default)
             size  = 20.0
+            width = None
+            height = None
         return VisualVertexBuilder
 
     def draw(self, visual_vertex, vertex, coords):
         context = self.context
-
+        
+        print '#1 width = %s, height = %s' % \
+            (str(visual_vertex.width), str(visual_vertex.height))
+        if visual_vertex.width is None: visual_vertex.width = visual_vertex.size
+        if visual_vertex.height is None: visual_vertex.width = visual_vertex.width
+        print '#2 width = %s, height = %s' % \
+            (str(visual_vertex.width), str(visual_vertex.height))
         visual_vertex.shape.draw_path(context, \
-                coords[0], coords[1], visual_vertex.size)
+            coords[0], coords[1], visual_vertex.width, visual_vertex.height)
         context.set_source_rgba(*visual_vertex.color)
         context.fill_preserve()
         context.set_source_rgba(*visual_vertex.frame_color)

@@ -22,7 +22,7 @@ import textwrap
 
 __all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'uniqList', 'addToList', 
            'gen_session_id', 'sorensen_index', 'console', 'wcl', 'flatList', 
-           'charTypes', 'delEmpty', '__version__']
+           'charTypes', 'delEmpty', '__version__', 'get_args']
 
 # get the location
 ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -156,3 +156,12 @@ def wcl(f):
     else:
         f.close()
     return i + 1
+
+def get_args(loc_dict, remove = set([])):
+    if type(remove) not in [set, list]: remove = set([remove])
+    if type(remove) is list: remove = set(remove)
+    remove.add('self')
+    remove.add('kwargs')
+    args = dict((k, v) for k, v in loc_dict.iteritems() if k not in remove)
+    if 'kwargs' in loc_dict: args = dict(args.items() + loc_dict['kwargs'].items())
+    return args

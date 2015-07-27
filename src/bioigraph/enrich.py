@@ -26,6 +26,8 @@ import fisher
 import statsmodels.stats.multitest as smm
 from collections import OrderedDict
 
+from common import *
+
 class Enrichment(object):
     
     def __init__(self, set_count, pop_count, set_size, pop_size, data):
@@ -73,9 +75,12 @@ class EnrichmentSet(object):
             key = lambda x: x[1].pval_adj)[:length])
     
     def top_names(self, length = None, significant = True, alpha = 0.05, 
-        min_set_size = 0, filtr = lambda x: True):
-        return [t.data[0] for t in self.toplist(**locals()).values()]
+        min_set_size = 0, filtr = lambda x: True, **kwargs):
+        args = get_args(locals())
+        return [t.data[0] for t in \
+            self.toplist(**args).values()]
     
     def top_ids(self, length = None, significant = True, 
-        alpha = 0.05, min_set_size = 0, filtr = lambda x: True):
-        return self.toplist(**locals()).keys()
+        alpha = 0.05, min_set_size = 0, filtr = lambda x: True, **kwargs):
+        args = get_args(locals())
+        return self.toplist(**args).keys()
