@@ -32,6 +32,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import scipy.cluster.hierarchy as hc
 import hcluster as hc2
+import matplotlib.gridspec as gridspec
 
 from bioigraph.progress import Progress
 from bioigraph.common import uniqList
@@ -309,7 +310,16 @@ def stacked_barplot(x, y, data, fname, names, font_family = 'Helvetica Neue LT S
 
 def barplot(x, y, data, fname, font_family = 'Helvetica Neue LT Std', 
     xlab = '', ylab = '', lab_angle = 90, lab_size = 9, color = '#007b7f', 
-    order = False, desc = True, legend = None, fin = True, **kwargs):
+    order = False, desc = True, legend = None, fin = True, 
+    y_break = None, **kwargs):
+    '''
+    y_break : tuple
+    If not None, the y-axis will have a break. 2 floats in the tuple, < 1.0, 
+    mean the lower and upper proportion of the plot shown. The part between
+    them will be hidden. E.g. y_break = (0.3, 0.1) shows the lower 30% and 
+    upper 10%, but 60% in the middle will be cut out.
+    '''
+    ax2 = None
     if type(x) is list or type(x) is tuple:
         x = np.array(x)
     if type(y) is list or type(y) is tuple:
@@ -325,15 +335,34 @@ def barplot(x, y, data, fname, font_family = 'Helvetica Neue LT Std',
     if type(color) is list and len(color) == len(ordr):
         xl = list(x)
         color = [color[xl.index(xi)] for xi in ordr]
-    fig, ax = plt.subplots()
+    if y_break:
+        gs = gridspec.GridSpec(2, 1, height_ratios = [y_break[1] / sum(y_break), y_break[0] / sum(y_break)])
+        fig = plt.figure()
+        ax2 = fig.add_subplot(gs[0])
+        ax = fig.add_subplot(gs[1])
+    else:
+        fig, ax = plt.subplots()
     sns.set(font = font_family)
-    sns.set_context('talk', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
+    sns.set_context('poster', rc = {'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
         'grid.linewidth': 1.0})
-    ax = sns.barplot(x, y = y, data = data, color = color, order = ordr, **kwargs)
-    #ax = sns.barplot(x, y = y, data = data, color = color, x_order = ordr)
-    #plt.bar(range(len(ordr)), [y[i] for i in ordr], align = 'center')
-    #plt.xticks(list(ordr), [x[i] for i in ordr])
-    sns.set_context('talk', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
+    ax = sns.barplot(x, y = y, data = data, color = color, order = ordr, ax = ax, **kwargs)
+    if y_break:
+        ax2 = sns.barplot(x, y = y, data = data, color = color, order = ordr, ax = ax2, **kwargs)
+        ax2.yaxis.set_major_locator(MaxNLocator(nbins = int(9/sum(y_break) + 1), steps = [1, 2, 5, 10]))
+        originalYticks = ax2.get_yticks()
+        ymin, ymax = ax.get_ylim()
+        ymax = min(ytick for ytick in ax.get_yticks() if ytick > max(y))
+        ax.set_ylim((ymin, ymax * y_break[0]))
+        ax2.set_ylim((ymax - ymax * y_break[1], ymax))
+        axmin, axmax = ax.get_ylim()
+        ax2min, ax2max = ax2.get_ylim()
+        plt.subplots_adjust(hspace = 0.08)
+        ax2.spines['bottom'].set_visible(False)
+        plt.setp(ax2.xaxis.get_majorticklabels(), visible = False)
+        ax.spines['top'].set_visible(False)
+        ax.set_yticks([yt for yt in originalYticks if yt >= axmin and yt <= axmax])
+        ax2.set_yticks([yt for yt in originalYticks if yt >= ax2min and yt <= ax2max])
+    sns.set_context('poster', rc = {'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
         'grid.linewidth': 1.0})
     for tick in ax.xaxis.get_major_ticks():
         tick.label.set_fontsize(lab_size)
@@ -341,13 +370,13 @@ def barplot(x, y, data, fname, font_family = 'Helvetica Neue LT Std',
     ax.set_xlabel(xlab)
     plt.setp(ax.xaxis.get_majorticklabels(), rotation = lab_angle)
     if type(legend) is dict:
-        legend_patches = [mpatches.Patch(color=col, label=lab) \
+        legend_patches = [mpatches.Patch(color = col, label = lab) \
             for lab, col in legend.iteritems()]
         ax.legend(handles = legend_patches)
     if fin:
         finish(fig, fname)
     else:
-        return fig, ax
+        return fig, ax, ax2
 
 def finish(fig, fname):
     fig.tight_layout()

@@ -93,7 +93,7 @@ class DefaultVertexDrawer(AbstractCairoVertexDrawer):
         print '#1 width = %s, height = %s' % \
             (str(visual_vertex.width), str(visual_vertex.height))
         if visual_vertex.width is None: visual_vertex.width = visual_vertex.size
-        if visual_vertex.height is None: visual_vertex.width = visual_vertex.width
+        if visual_vertex.height is None: visual_vertex.height = visual_vertex.width
         print '#2 width = %s, height = %s' % \
             (str(visual_vertex.width), str(visual_vertex.height))
         visual_vertex.shape.draw_path(context, \

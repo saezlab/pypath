@@ -421,6 +421,11 @@ urls = {
         'url_stem': 'http://www.broadinstitute.org/gsea/%s',
         'one_set': 'http://www.broadinstitute.org/gsea/msigdb/download_geneset.jsp?'\
             'geneSetName=%s&fileType=txt'
+    },
+    'disgenet': {
+        'label': 'Disease-gene associations',
+        'url': 'http://www.disgenet.org/ds/DisGeNET/results/%s_gene_disease_associations.tar.gz',
+        'datasets': ['curated', 'literature', 'befree', 'all']
     }
 }
 

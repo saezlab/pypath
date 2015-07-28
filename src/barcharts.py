@@ -48,6 +48,7 @@ import seaborn as sns
 import scipy.cluster.hierarchy as hc
 import hcluster as hc2
 import matplotlib.patches as mpatches
+from matplotlib import gridspec
 
 # from bioigraph #
 
@@ -115,7 +116,8 @@ d = zip(*[(s, len([e for e in net.graph.es if s in e['sources']])) for s in net.
 sens.barplot(x = d[0], y = d[1], 
     data = None, fname = 'interactions-by-db.pdf', lab_size = 11, 
     ylab = 'Number of interactions', 
-    xlab = 'Pathway resources', order = 'y')
+    xlab = 'Pathway resources', order = 'y', 
+    y_break = (0.3, 0.1))
 
 # density sens.barplot
 d = zip(*[(s, g.density()) for s, g in sep.iteritems()] + \
@@ -192,6 +194,24 @@ d = zip(*[(s, len([v for v in g.vs if v['tf']])/float(len(net.lists['tfs']))*100
 sens.barplot(x = d[0], y = d[1], 
     data = None, fname = 'tfcov-by-db.pdf', lab_size = 11, 
     ylab = 'Percentage of all human\ntranscription factors covered', 
+    xlab = 'Pathway resources', order = 'y')
+
+# disease associations:
+net.load_disgenet()
+diss = dataio.get_disgenet()
+dis = {}
+for d in diss:
+    ups = net.mapper.map_name(d['entrez'], 'entrez', 'uniprot')
+    for u in ups:
+        if u not in dis: dis[u] = []
+        dis[u].append(d['disease'])
+
+d = zip(*[(s, sum(len(x) for u, x in dis.iteritems() if u in g.vs['name'])/float(sum(len(x) for x in dis.values()))*100) \
+    for s, g in sep.iteritems()] + \
+    [(omnipath, sum(len(x) for x in net.graph.vs['dis'])/float(sum(len(x) for x in dis.values()))*100)])
+sens.barplot(x = d[0], y = d[1], 
+    data = None, fname = 'discov-by-db.pdf', lab_size = 11, 
+    ylab = 'Percentage of disease-gene associations covered', 
     xlab = 'Pathway resources', order = 'y')
 
 # stacked sens.barplot example

@@ -4265,15 +4265,15 @@ class BioGraph(object):
             self.go = {}
         self.go[organism] = go.GOAnnotation(organism)
     
-    def go_enrichment(self, proteins, aspect = 'P', alpha = 0.05, 
+    def go_enrichment(self, proteins = None, aspect = 'P', alpha = 0.05, 
         correction_method = 'hommel'):
         all_proteins = set(self.graph.vs['name'])
-        annotation = dict([(up, go) for up, og in \
+        annotation = dict([(up, g) for up, g in \
             getattr(self.go[self.ncbi_tax_id], aspect.lower()).iteritems() \
             if up in all_proteins])
         enr = go.GOEnrichmentSet(aspect = aspect, organism = self.ncbi_tax_id, 
             basic_set = annotation, alpha = alpha, correction_method = correction_method)
-        enr.new_set(set_names = proteins)
+        if proteins is not None: enr.new_set(set_names = proteins)
         return enr
     
     def find_all_paths(self, start, end, mode = 'OUT', 
@@ -4503,6 +4503,17 @@ class BioGraph(object):
     
     def set_tfs(self, classes = ['a', 'b', 'other']):
         self.set_transcription_factors(classes)
+    
+    def load_disgenet(self, dataset = 'curated', score = 0.0):
+        self.update_vname()
+        data = dataio.get_disgenet(dataset = dataset)
+        self.graph.vs['dis'] = [[] for _ in self.graph.vs]
+        for d in data:
+            if d['score'] >= score:
+                uniprots = self.mapper.map_name(d['entrez'], 'entrez', 'uniprot')
+                for up in uniprots:
+                    if up in self.nodInd:
+                        self.graph.vs[self.nodDct[up]]['dis'].append(d['disease'])
     
     def _disclaimer(self):
         sys.stdout.write(self.disclaimer)

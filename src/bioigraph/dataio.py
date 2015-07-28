@@ -346,7 +346,7 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
     # multiple file archives, or file object in case of large files:
     return res
 
-def read_table(fileObject, cols, sep = '\t', sep2 = None, rem = [], hdr = None):
+def read_table(cols, fileObject = None, data = None, sep = '\t', sep2 = None, rem = [], hdr = None):
     '''
     Generic function to read data tables.
     
@@ -365,17 +365,21 @@ def read_table(fileObject, cols, sep = '\t', sep2 = None, rem = [], hdr = None):
     rem : list
         Strings to remove. For each line these elements will be replaced with ''.
     '''
-    if 'readline' not in fileObject.__class__.__dict__:
-        funname = sys._getframe().f_code.co_name
-        sys.stdout.write('\tERROR: %s() expects file like object (file opened for read'\
-            ', or StringIO buffer, etc)\n'%funname)
-    fileObject.seek(0)
+    if data is None:
+        if 'readline' not in fileObject.__class__.__dict__:
+            funname = sys._getframe().f_code.co_name
+            sys.stdout.write('\tERROR: %s() expects file like object (file opened for read'\
+                ', or StringIO buffer, etc)\n'%funname)
+        fileObject.seek(0)
+        if hdr:
+            for h in xrange(0,hdr):
+                null = fileObject.readline()
+                del null
+        data = fileObject
+    else:
+        data = [l.strip() for l in data.split('\n') if len(l) > 0][hdr:]
     res = []
-    if hdr:
-        for h in xrange(0,hdr):
-            null = fileObject.readline()
-            del null
-    for l in fileObject:
+    for l in data:
         for r in rem:
             l = l.replace(r,'')
         l = [f.strip() for f in l.split(sep)]
@@ -387,7 +391,7 @@ def read_table(fileObject, cols, sep = '\t', sep2 = None, rem = [], hdr = None):
                     field = [sf.strip() for sf in field.split(sep2) if len(sf) > 0]
                 dic[name] = field
             res.append(dic)
-    fileObject.close()
+    if fileObject is not None: fileObject.close()
     return res
 
 def all_uniprots(organism = 9606, swissprot = None):
@@ -1656,7 +1660,7 @@ def get_switches_elm():
         'effectors': 22,
         'references': 26
         }
-    table = read_table(buff,cols=cols,sepLevel2=subf,hdr=1)
+    table = read_table(cols=cols,fileObject = buff, sep2 = subf, hdr = 1)
     mod_ont = get_ontology('MOD')
     for l in table:
         if l['modification'].startswith('MOD'):
@@ -1716,7 +1720,7 @@ def get_csa(uniprots=None):
         'chem_fun': 5,
         'evidence': 6,
         }
-    table = read_table(buff,cols=cols,sep=',',hdr=1)
+    table = read_table(cols = cols, fileObject = buff, sep = ',', hdr = 1)
     css = {}
     prg = progress.Progress(len(table),'Processing catalytic sites',11)
     for l in table:
@@ -1854,7 +1858,7 @@ def get_comppi():
     }
     buff = StringIO()
     buff.write(data)
-    data = read_table(buff, cols = cols, hdr = 1, sep = '\t')
+    data = read_table(cols = cols, fileObject = buff, hdr = 1, sep = '\t')
     return data
 
 def get_psite_phos(raw = True, organism = 'human'):
@@ -1870,7 +1874,7 @@ def get_psite_phos(raw = True, organism = 'human'):
     }
     buff = StringIO()
     buff.write(data)
-    data = read_table(buff, cols = cols, sep = '\t', hdr = 4)
+    data = read_table(cols = cols, fileObject = buff, sep = '\t', hdr = 4)
     result = []
     non_digit = re.compile(r'[^\d.-]+')
     motre = re.compile(r'(_*)([A-Za-z]+)(_*)')
@@ -1952,7 +1956,7 @@ def get_psite_reg():
     }
     buff = StringIO()
     buff.write(data)
-    data = read_table(buff, cols = cols, sep = '\t', hdr = 4)
+    data = read_table(cols = cols, fileObject = buff, sep = '\t', hdr = 4)
     regsites = {}
     for r in data:
         interact = [[y.replace(')', '').strip() for y in x.split('(')] \
@@ -2978,7 +2982,7 @@ def get_guide2pharma(organism = 'human', endogenous = True):
         'endogenous': 18,
         'pubmed': 33
     }
-    data = read_table(buff, cols = cols, sep = ',', hdr = 1)
+    data = read_table(cols = cols, fileObject = buff, sep = ',', hdr = 1)
     if organism is not None:
         data = [d for d in data if d['receptor_species'].lower().strip() == organism and \
             d['ligand_species'].lower().strip() == organism]
@@ -3035,3 +3039,22 @@ def get_hprd_ptms(in_vivo = True):
                     'instance': None
                 })
     return ptms
+
+def get_disgenet(dataset = 'curated'):
+    url = data_formats.urls['disgenet']['url'] % dataset
+    data = curl(url, silent = False, files_needed = [url.split('/')[-1].replace('tar.gz', 'txt')])
+    cols = {
+        'entrez': 0,
+        'genesymbol': 1,
+        'umls': 3,
+        'disease': 4,
+        'score': 5,
+        'assoc_typ': 7,
+        'source': 8
+    }
+    data = read_table(cols = cols, data = data.values()[0], hdr = 1, sep = '\t')
+    for i, d in enumerate(data):
+        data[i]['score'] = float(data[i]['score'])
+        data[i]['assoc_typ'] = [x.strip() for x in data[i]['assoc_typ'].split(',')]
+        data[i]['source'] = [x.strip() for x in data[i]['source'].split(',')]
+    return data
