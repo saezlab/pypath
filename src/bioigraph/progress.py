@@ -65,3 +65,4 @@ class Progress(object):
             sys.stdout.write("\r\t:: %s: %s %u/%u" % (self.name, '%s,'%self.status, self.total, self.total))
         sys.stdout.write("\n")
         sys.stdout.flush()
+

@@ -20,8 +20,468 @@
 
 import codecs
 
-descriptions = {
+data = {
+    'CancerCellMap': {
+        'year': 2006,
+        'size': 0,
+        'authors': ['Bader Lab', 'Sander Group'],
+        'label': 'Cancer Cell Map',
+        'color': ''
+    },
+    'MatrixDB': {
+        'year': None,
+        'size': None,
+        'authors': None,
+        'label': None,
+        'color': None
+    },
+    'SPIKE': {
+        'year': 2012,
+        'releases': [2008, 2011],
+        'size': 0,
+        'authors': [''],
+        'label': 'SPIKE',
+        'color': '',
+        'data_import': ['KEGG', 'Reactome', 'HPRD', 'IntAct', 'NetPath', 'MINT', 'TFE', 'Rual2005', 'Ataxia']
+    },
+    'DIP': {
+        'year': 2014,
+        'size': 0,
+        'authors': ['UCLA', 'Eisenberg Group'],
+        'label': 'DIP',
+        'color': ''
+    },
+    'HPRD': {
+        'year': None,
+        'size': None,
+        'authors': None,
+        'label': None,
+        'color': None
+    },
+    'PDZBase': {
+        'year': None,
+        'size': None,
+        'authors': None,
+        'label': None,
+        'color': None
+    },
+    'dbPTM': {
+        'year': None,
+        'size': None,
+        'authors': None,
+        'label': None,
+        'color': None
+    },
+    'InnateDB': {
+        'year': 2014,
+        'size': 0,
+        'authors': ['Brinkman Lab', 'Hancock Lab'],
+        'label': 'InnateDB',
+        'color': ''
+    },
+    'ACSN': {
+        'year': 2015,
+        'size': 0,
+        'authors': ['Curie'],
+        'label': 'ACSN',
+        'color': ''
+    },
+    'DOMINO': {
+        'year': 2006,
+        'releases': [2006],
+        'size': 0,
+        'authors': ['Cesareni Group'],
+        'label': 'DOMINO',
+        'color': ''
+    },
+    'Signor': {
+        'year': 2015,
+        'size': 0,
+        'authors': ['Cesareni Group'],
+        'label': 'Signor',
+        'color': '',
+        'data_import': ['SignaLink2', 'PhosphoSite']
+    },
+    'Macrophage': {
+        'year': 2010,
+        'releases': [2006, 2010],
+        'size': 0,
+        'authors': ['Raza', 'Oda'],
+        'label': 'Macrophage',
+        'color': ''
+    },
+    'NetPath': {
+        'year': 2010,
+        'size': 0,
+        'authors': ['Pandey Lab', 'IOB Bangalore'],
+        'label': 'NetPath',
+        'color': '',
+        'data_import': ['CancerCellMap']
+    },
+    'ELM': {
+        'year': 2014,
+        'releases': [2003, 2008, 2009, 2012, 2013, 2014],
+        'size': 0,
+        'authors': 'ELM Consortium',
+        'label': 'ELM',
+        'color': ''
+    },
+    'SignaLink2': {
+        'year': 2012,
+        'size': 0,
+        'authors': ['NetBiol Group'],
+        'label': 'SignaLink',
+        'color': ''
+    },
+    'NRF2ome': {
+        'year': 2012,
+        'size': 0,
+        'authors': ['NetBiol Group'],
+        'label': 'NRF2ome',
+        'color': ''
+    },
+    'DEPOD': {
+        'year': 2014,
+        'size': 0,
+        'authors': ['EMBL & EBI'],
+        'label': 'DEPOD',
+        'color': ''
+    },
+    'MPPI': {
+        'year': 2005,
+        'size': 0,
+        'authors': ['MIPS Munich'],
+        'label': 'MPPI',
+        'color': ''
+    },
+    'Guide2Pharmacology': {
+        'year': None,
+        'size': None,
+        'authors': None,
+        'label': None,
+        'color': None
+    },
+    'IntAct': {
+        'year': 2015,
+        'size': 0,
+        'authors': ['EBI'],
+        'label': None,
+        'color': None,
+        'data_import': ['InnateDB']
+    },
+    'AlzPathway': {
+        'year': 2012,
+        'size': 0,
+        'authors': ['Tokyo Bioinf'],
+        'label': 'AlzPathway',
+        'color': ''
+    },
+    'PhosphoSite': {
+        'year': 2015,
+        'size': 0,
+        'authors': ['CST'],
+        'label': 'PhosphoSite',
+        'color': ''
+    },
+    'NCI-PID': {
+        'year': 2014,
+        'size': 0,
+        'authors': ['NCI'],
+        'label': 'NCI-PID',
+        'color': ''
+    },
     'DeathDomain': {
+        'year': 2012,
+        'releases': [2011, 2012],
+        'size': 0,
+        'authors': [''],
+        'label': 'DeathDomain',
+        'color': ''
+    },
+    'ARN': {
+        'year': 2014,
+        'releases': [2014],
+        'size': 0,
+        'authors': ['NetBiol Group'],
+        'label': 'ARN',
+        'color': ''
+    },
+    'BioCarta': {
+        'year': 2006,
+        'releases': [2006],
+        'size': 0,
+        'authors': ['Community'],
+        'label': 'BioCarta',
+        'color': ''
+    },
+    'CA1': {
+        'year': 2005,
+        'releases': [2005],
+        'size': 0,
+        'authors': ['Ma\'ayan Lab'],
+        'label': 'Ma\'ayan 2005',
+        'color': ''
+    },
+    'Cui2007': {
+        'year': 2007,
+        'size': 0,
+        'authors': ['Wang Group'],
+        'label': 'Cui 2007',
+        'color': '',
+        'data_import': ['Awan2007', 'CancerCellMap']
+    },
+    'Awan2007': {
+        'year': 2007,
+        'size': 0,
+        'authors': ['Wang Group'],
+        'label': 'Awan 2007',
+        'color': '',
+        'data_import': ['BioCarta', 'CA1']
+    },
+    'CST': {
+        'year': None,
+        'size': 0,
+        'authors': ['CST'],
+        'label': 'CST pathways',
+        'color': ''
+    },
+    'HSN': {
+        'year': 2014,
+        'size': 0,
+        'authors': ['Wang Group'],
+        'label': 'HumanSignalingNetwork',
+        'color': '',
+        'data_import': ['Cui2007', 'BioCarta', 'CST', 'NCI-PID']
+    }
+}
+
+
+descriptions = {
+    'ELM': {
+        'year': 2014,
+        'releases': [2003, 2008, 2009, 2012, 2013, 2014],
+        'size': {
+            'nodes': None,
+            'edges': None
+        },
+        'authors': 'ELM Consortium',
+        'label': 'ELM',
+        'color': '',
+        'urls': {
+            'webpages': [
+                'http://elm.eu.org/'
+            ],
+            'articles': [
+                'http://nar.oxfordjournals.org/content/40/D1/D242.long'
+                'http://nar.oxfordjournals.org/content/42/D1/D259.long'
+            ]
+        },
+        'pubmeds': [22110040, 24214962]
+    },
+    'Guide2Pharmacology': {
+        'year': 2015,
+        'releases': [2007, 2008, 2009, 2011, 2015],
+        'size': None,
+        'authors': None,
+        'label': None,
+        'color': None,
+        'pubmeds': [24234439],
+        'urls': {
+            'webpages': [
+                'http://www.guidetopharmacology.org/'
+            ],
+            'articles': [
+                'http://nar.oxfordjournals.org/content/42/D1/D1098.long',
+                'http://onlinelibrary.wiley.com/doi/10.1111/j.1476-5381.2011.01649_1.x/full'
+            ]
+        },
+        'descriptions': [
+            '''
+            Presently, the resource describes the interactions between target proteins and 6064 distinct ligand entities (Table 1). Ligands are listed against targets by their action (e.g. activator, inhibitor), and also classified according to substance types and their status as approved drugs. Classes include metabolites (a general category for all biogenic, non-peptide, organic molecules including lipids, hormones and neurotransmitters), synthetic organic chemicals (e.g. small molecule drugs), natural products, mammalian endogenous peptides, synthetic and other peptides including toxins from non-mammalian organisms, antibodies, inorganic substances and other, not readily classifiable compounds. 
+            The new database was constructed by integrating data from IUPHAR-DB and the published GRAC compendium. An overview of the curation process is depicted as an organizational flow chart in Figure 2. New information was added to the existing relational database behind IUPHAR-DB and new webpages were created to display the integrated information. For each new target, information on human, mouse and rat genes and proteins, including gene symbol, full name, location, gene ID, UniProt and Ensembl IDs was manually curated from HGNC, the Mouse Genome Database (MGD) at Mouse Genome Informatics (MGI), the Rat Genome Database (RGD), UniProt and Ensembl, respectively. In addition, ‘Other names’, target-specific fields such as ‘Principal transduction’, text from the ‘Overview’ and ‘Comments’ sections and reference citations (downloaded from PubMed; http://www.ncbi.nlm.nih.gov/pubmed) were captured from GRAC and uploaded into the database against a unique Object ID.
+            '''
+        ]
+    },
+    'SignaLink2': {
+        'year': 2012,
+        'releases': [2010, 2012],
+        'size': 0,
+        'authors': ['NetBiol Group'],
+        'label': 'SignaLink',
+        'color': '',
+        'pubmeds': [20542890, 23331499],
+        'urls': {
+            'webpages': [
+                'http://signalink.org/'
+            ],
+            'articles': [
+                'http://bioinformatics.oxfordjournals.org/content/26/16/2042.long',
+                'http://www.biomedcentral.com/1752-0509/7/7'
+            ]
+        },
+        'taxons': [
+            'human',
+            'D. melanogaster',
+            'C. elegans'
+        ],
+        'descriptions': [
+            '''
+            In each of the three organisms, we first listed signaling proteins and interactions from reviews (and from WormBook in C.elegans) and then added further signaling interactions of the listed proteins. To identify additional interactions in C.elegans, we examined all interactions (except for transcription regulation) of the signaling proteins listed in WormBase and added only those to SignaLink that we could manually identify in the literature as an experimentally verified signaling interaction. For D.melanogaster, we added to SignaLink those genetic interactions from FlyBase that were also reported in at least one yeast-2-hybrid experiment. For humans, we manually checked the reliability and directions for the PPIs found with the search engines iHop and Chilibot. 
+            SignaLink assigns proteins to signaling pathways using the full texts of pathway reviews (written by pathway experts). While most signaling resources consider 5–15 reviews per pathway, SignaLink uses a total of 170 review papers, i.e. more than 20 per pathway on average. Interactions were curated from a total of 941 articles (PubMed IDs are available at the website). We added a small number of proteins based on InParanoid ortholog clusters. For curation, we used a self-developed graphical tool and Perl/Python scripts. The current version of SignaLink was completed in May 2008 based on WormBase (version 191), FlyBase (2008.6), Ensembl (49), UniProt (87) and the publications listed on the website. 
+            The curation protocol of SignaLink (Fig. 1A) contains several steps aimed specifically at reducing data and curation errors. We used reviews as a starting point, manually looked up interactions three times, and manually searched for interactions of known signaling proteins with no signaling interactions so far in the database. 
+            '''
+        ]
+    },
+    'NRF2ome': {
+        'year': 2013,
+        'releases': [2013],
+        'size': {
+            'nodes': None,
+            'edges': None,
+        },
+        'authors': ['NetBiol Group'],
+        'label': 'NRF2ome',
+        'color': '',
+        'urls': {
+            'webpages': [
+                'http://nrf2.elte.hu/'
+            ],
+            'articles': [
+                'http://www.hindawi.com/journals/omcl/2013/737591/',
+                'http://www.sciencedirect.com/science/article/pii/S0014579312003912'
+            ]
+        },
+        'pubmeds': [22641035, 23710289],
+        'taxons': [
+            'human'
+        ],
+        'descriptions': [
+            '''
+            From Korcsmaros 2010: ... we first listed signaling proteins and interactions from reviews and then added further signaling interactions of the listed proteins. We used reviews as a starting point, manually looked up interactions three times, and manually searched for interactions of known signaling proteins with no signaling interactions so far in the database.
+            '''
+        ]
+    },
+    'ARN': {
+        'year': 2014,
+        'releases': [2014],
+        'size': 0,
+        'authors': ['NetBiol Group'],
+        'label': 'ARN',
+        'color': '',
+        'pubmeds': [25635527],
+        'urls': {
+            'webpages': [
+                'http://autophagy-regulation.org/'
+            ],
+            'articles': [
+                'http://www.tandfonline.com/doi/full/10.4161/15548627.2014.994346'
+            ]
+        },
+        'taxons': [
+            'human'
+        ],
+        'descriptions': [
+            '''
+            From Korcsmaros 2010: ... we first listed signaling proteins and interactions from reviews and then added further signaling interactions of the listed proteins. We used reviews as a starting point, manually looked up interactions three times, and manually searched for interactions of known signaling proteins with no signaling interactions so far in the database.
+            '''
+        ]
+    },
+    'HPRD': {
+        'year': 2010,
+        'releases': [2002, 2005, 2009, 2010],
+        'urls': {
+            'webpages': [
+                'http://www.hprd.org/'
+            ],
+            'articles': [
+                'http://genome.cshlp.org/content/13/10/2363.long',
+                'http://nar.oxfordjournals.org/content/34/suppl_1/D411.long',
+                'http://nar.oxfordjournals.org/content/37/suppl_1/D767.long'
+            ]
+        },
+        'pubmeds': [14525934, 16381900, 18988627],
+        'descriptions': [
+            '''
+            The information about protein-protein interactions was cataloged after a critical reading of the published literature. Exhaustive searches were done based on keywords and medical subject headings (MeSH) by using Entrez. The type of experiments that served as the basis for establishing protein-protein interactions was also annotated. Experiments such as coimmunoprecipitation were designated in vivo, GST fusion and similar “pull-down” type of experiments were designated in vitro, and those identified by yeast two-hybrid were annotated as yeast two-hybrid.
+            Posttranslational modifications were annotated based on the type of modification, site of modification, and the modified residue. In addition, the upstream enzymes that are responsible for modifications of these proteins were reported if described in the articles. The most commonly known and the alternative subcellular localization of the protein were based on the literature. The sites of expression of protein and/or mRNA were annotated based on published studies.
+            '''
+        ]
+    },
+    'ACSN': {
+        'year': 2015,
+        'releases': [2008, 2015],
+        'authors': ['Curie'],
+        'urls': {
+            'webpages': [
+                'https://acsn.curie.fr'
+            ],
+            'articles': [
+                'http://www.nature.com/oncsis/journal/v4/n7/full/oncsis201519a.html'
+            ]
+        },
+        'pubmeds': [
+            26192618,
+            18319725
+        ],
+        'taxons': [
+            'human'
+        ],
+        'descriptions': [
+            '''
+            The map curator studies the body of literature dedicated to the biological process or molecular mechanism of interest. The initial sources of information are the major review articles from high-impact journals that represent the consensus view on the studied topic and also provide a list of original references. The map curator extracts information from review papers and represents it in the form of biochemical reactions in CellDesigner. This level of details reflects the ‘canonical’ mechanisms. Afterwards, the curator extends the search and analyses original papers from the list provided in the review articles and beyond. This information is used to enrich the map with details from the recent discoveries in the field. The rule for confident acceptance and inclusion of a biochemical reaction or a process is the presence of sufficient evidences from more than two studies, preferably from different scientific groups. The content of ACSN is also verified and compared with publicly available databases such as REACTOME, KEGG, WikiPathways, BioCarta, Cell Signalling and others to ensure comprehensive representation of consensus pathways and links on PMIDs of original articles confirmed annotated molecular interactions.
+            ''',
+            '''
+            CellDesigner 3.5 version was used to enter biological facts from a carefully studied selection of papers (see the whole bibliography on the web site with Supplementary information). Whenever the details of a biological fact could not be naturally expressed with CellDesigner standard notations, it was fixed and some solution was proposed. For example, we added a notation (co‐factor) to describe all the components intervening in the transcription of genes mediated by the E2F family proteins. 
+            '''
+        ]
+    },
+    'DOMINO': {
+        'urls': {
+            'articles': [
+                'http://nar.oxfordjournals.org/content/35/suppl_1/D557.full'
+            ],
+            'webpages': [
+                'http://mint.bio.uniroma2.it/domino/'
+            ]
+        },
+        'descriptions': [
+            '''
+            DOMINO is an open-access database comprising more than 3900 annotated experiments describing interactions mediated by protein-interaction domains. The curation effort aims at covering the interactions mediated by the following domains (SH3, SH2, 14-3-3, PDZ, PTB, WW, EVH, VHS, FHA, EH, FF, BRCT, Bromo, Chromo, GYF). However, interactions mediated by as many as 150 different domain families are stored in DOMINO.
+            ''',
+            '''
+            The curation process follows the PSI-MI 2.5 standard but with special emphasis on the mapping of the interaction to specific protein domains of both participating proteins. This is achieved by paying special attention to the shortest protein fragment that was experimentally verified as sufficient for the interaction. Whenever the authors report only the name of the domain mediating the interaction (i.e. SH3, SH2 ...), without stating the coordinates of the experimental binding range, the curator may choose to enter the coordinates of the Pfam domain match in the protein sequence. Finally whenever the information is available, any mutation or post- translational modification affecting the interaction affinity is noted in the database.
+            '''
+        ],
+        'taxons': [
+            'human',
+            'yeast',
+            'C. elegans',
+            'mouse',
+            'rat',
+            'HIV',
+            'D. melanogaster',
+            'A. thaliana',
+            'X. laevis',
+            'B. taurus',
+            'G. gallus',
+            'O. cuniculus',
+            'Plasmodium falciparum'
+        ]
+    },
+    'DeathDomain': {
+        'year': 2012,
+        'releases': [2011, 2012],
+        'size': {
+            'nodes': None,
+            'edges': None
+        },
+        'authors': ['Myoungji University'],
+        'label': 'DeathDomain',
+        'color': '',
+        'taxons': [
+            'human'
+        ],
+        'pubmeds': [22135292],
         'urls': {
             'articles': [
                 'http://nar.oxfordjournals.org/content/40/D1/D331'
@@ -102,7 +562,42 @@ descriptions = {
             """
         ]
     },
+    'Awan2007': {
+        'year': 2007,
+        'size': 0,
+        'authors': ['Wang Group'],
+        'label': 'Awan 2007',
+        'color': '',
+        'data_import': ['BioCarta', 'CA1'],
+        'contains': [
+            'BioCarta',
+            'CA1'
+        ],
+        'urls': {
+            'articles': [
+                'http://www.cancer-systemsbiology.org/Papers/iet-sb2007.pdf'
+            ]
+        },
+        'pubmeds': [17907678],
+        'descriptions': [
+            '''
+            To construct the human cellular signalling network, we manually curated signalling pathways from literature. The signalling data source for our pathways is the BioCarta database (http://www.biocarta.com/genes/allpathways.asp), which, so far, is the most comprehensive database for human cellular signalling pathways. Our curated pathway database recorded gene names and functions, cellular locations of each gene and relationships between genes such as activation, inhibition, translocation, enzyme digestion, gene transcription and translation, signal stimulation and so on. To ensure the accuracy and the consistency of the database, each referenced pathway was cross-checked by different researchers and finally all the documented pathways were checked by one researcher. In total, 164 signalling pathways were documented (supplementary Table 2). Furthermore, we merged the curated data with another literature-mined human cellular signalling network. As a result, the merged network contains nearly 1100 proteins (SupplementaryNetworkFile). To construct a signalling network, we considered relationships of proteins as links (activation or inactivation as directed links and physical interactions in protein complexes as neutral links) and proteins as nodes.
+            '''
+        ]
+    },
     'Cui2007': {
+        'year': 2007,
+        'authors': ['Wang Group'],
+        'label': 'Cui 2007',
+        'color': '',
+        'data_import': ['Awan2007', 'CancerCellMap'],
+        'pubmeds': [18091723],
+        'contains': [
+            'Awan2007',
+            'CancerCellMap',
+            'CA1',
+            'BioCarta'
+        ],
         'urls': {
             'articles': [
                 'http://msb.embopress.org/content/3/1/152'
@@ -134,8 +629,10 @@ descriptions = {
         ],
         'descriptions': [
             """
-            To build up the human signaling network, we manually curated the signaling molecules (most of them are proteins) and the interactions between these molecules from the most comprehensive signaling pathway database, BioCarta (http://www.biocarta.com/). The pathways in the database are illustrated as diagrams. We manually recorded the names, functions, cellular locations, biochemical classifications and the regulatory (including activating and inhibitory) and interaction relations of the signaling molecules for each signaling pathway. To ensure the accuracy of the curation, all the data have been crosschecked four times by different researchers. After combining the curated information with another literature‐mined signaling network that contains ∼500 signaling molecules (Ma'ayan et al, 2005)[this is the CA1!!!], we obtained a signaling network containing ∼1100 proteins (Awan et al, 2007). We further extended this network by extracting and adding the signaling molecules and their relations from the Cancer Cell Map (http://cancer.cellmap.org/cellmap/), a database that contains 10 manually curated signaling pathways for cancer. As a result, the network contains 1634 nodes and 5089 links that include 2403 activation links (positive links), 741 inhibitory links (negative links), 1915 physical links (neutral links) and 30 links whose types are unknown (Supplementary Table 9). To our knowledge, this network is the biggest cellular signaling network at present.
-            To construct the human cellular signalling network, we manually curated signalling pathways from literature. The signalling data source for our pathways is the BioCarta database (http://www.biocarta.com/genes/allpathways.asp), which, so far, is the most comprehensive database for human cellular signalling pathways. Our curated pathway database recorded gene names and functions, cellular locations of each gene and relationships between genes such as activation, inhibition, translocation, enzyme digestion, gene transcription and translation, signal stimulation and so on. To ensure the accuracy and the consistency of the database, each referenced pathway was cross-checked by different researchers and finally all the documented pathways were checked by one researcher.
+            To build up the human signaling network, we manually curated the signaling molecules (most of them are proteins) and the interactions between these molecules from the most comprehensive signaling pathway database, BioCarta (http://www.biocarta.com/). The pathways in the database are illustrated as diagrams. We manually recorded the names, functions, cellular locations, biochemical classifications and the regulatory (including activating and inhibitory) and interaction relations of the signaling molecules for each signaling pathway. To ensure the accuracy of the curation, all the data have been crosschecked four times by different researchers. After combining the curated information with another literature‐mined signaling network that contains ∼500 signaling molecules (Ma'ayan et al, 2005)[this is the CA1], we obtained a signaling network containing ∼1100 proteins (Awan et al, 2007). We further extended this network by extracting and adding the signaling molecules and their relations from the Cancer Cell Map (http://cancer.cellmap.org/cellmap/), a database that contains 10 manually curated signaling pathways for cancer. As a result, the network contains 1634 nodes and 5089 links that include 2403 activation links (positive links), 741 inhibitory links (negative links), 1915 physical links (neutral links) and 30 links whose types are unknown (Supplementary Table 9). To our knowledge, this network is the biggest cellular signaling network at present.
+            """,
+            """
+            From Awan 2007: To construct the human cellular signalling network, we manually curated signalling pathways from literature. The signalling data source for our pathways is the BioCarta database (http://www.biocarta.com/genes/allpathways.asp), which, so far, is the most comprehensive database for human cellular signalling pathways. Our curated pathway database recorded gene names and functions, cellular locations of each gene and relationships between genes such as activation, inhibition, translocation, enzyme digestion, gene transcription and translation, signal stimulation and so on. To ensure the accuracy and the consistency of the database, each referenced pathway was cross-checked by different researchers and finally all the documented pathways were checked by one researcher.
             """
         ],
         'notes': [
@@ -145,6 +642,15 @@ descriptions = {
         ]
     },
     'BioCarta': {
+        'year': 2006,
+        'releases': [2006],
+        'size': {
+            'nodes': None,
+            'edges': None
+        },
+        'authors': ['Community'],
+        'label': 'BioCarta',
+        'color': '',
         'urls': {
             'webpages': [
                 'http://www.biocarta.com/'
@@ -173,10 +679,21 @@ descriptions = {
         }
     },
     'CA1': {
+        'year': 2005,
+        'releases': [2005],
+        'size': {
+            'nodes': 545,
+            'edges': 1259
+        },
+        'authors': ['Ma\'ayan Lab'],
+        'label': 'Ma\'ayan 2005',
+        'color': '',
+        'pubmeds': [16099987],
         'urls': {
             'articles': [
                 'http://www.sciencemag.org/content/309/5737/1078.full'
-            ]
+            ],
+            'webpages': []
         },
         'taxons': [
             'human',
@@ -211,10 +728,18 @@ descriptions = {
             """
         ]
     },
-    'HumanSignalingNetwork': {
+    'HSN': {
+        'year': 2014,
+        'releases': [2009, 2010, 2011, 2012, 2013, 2014],
+        'nodes': 6300,
+        'edges': 63000,
+        'authors': ['Wang Group'],
+        'label': 'HumanSignalingNetwork',
+        'color': '',
+        'data_import': ['Cui2007', 'BioCarta', 'CST', 'NCI-PID'],
         'urls':{
             'webpages': [
-                'http://www.cancer-systemsbiology.org/datasoftware.htm'
+                'http://www.bri.nrc.ca/wang/'
             ],
             'articles': []
         },
@@ -228,21 +753,25 @@ descriptions = {
             'CancerCellMap',
             'Awan2007',
             'NetPath',
-            'CA1'
+            'CA1',
+            'NCI-PID',
+            'BioCarta',
+            'CST'
         ],
         'descriptions': [
             """
             Composed from multiple manually curated datasets, and contains own manual cuartion effort. Methods are unclear, and the dataset has not been published in reviewed paper. Based on the CancerCellMap.
-            Wang Lab has manually curated human signaling data from literature since 2005. The data sources include BioCarta, CST Signaling pathways, Pathway Interaction database, IHOP, and many review papers. The contents are updated every year. 
+            Wang Lab has manually curated human signaling data from literature since 2005. The data sources include BioCarta, CST Signaling pathways, NCI Pathway Interaction Database, IHOP, and many review papers. The contents are updated every year. 
             """
         ],
         'notes': [
             """
-            This network aims to merge multiple manually curated networks. It's a pity, that a precise description of the sources and methods is missing. Also, the dataset doesn't include references.
+            This network aims to merge multiple manually curated networks. It's a pity, that a precise description of the sources and methods is missing. Also, the dataset doesn't include the references.
             """
         ]
     },
     'Ataxia': {
+        'year': 2010,
         'urls':{
             'webpages': [
                 'http://franklin.imgen.bcm.tmc.edu/ppi/tables.html'
@@ -322,17 +851,25 @@ descriptions = {
         ]
     },
     'AlzPathway': {
+        'year': 2012,
+        'releases': [2012],
+        'size': 0,
+        'authors': ['Tokyo Bioinf'],
+        'label': 'AlzPathway',
+        'color': '',
         'urls': {
             'articles': [
-                'http://www.biomedcentral.com/1752-0509/6/52'
+                'http://www.biomedcentral.com/1752-0509/6/52',
+                'http://onlinelibrary.wiley.com/doi/10.1038/clpt.2013.37/epdf'
             ],
             'webpages': [
                 'http://alzpathway.org/AlzPathway.html'
             ]
         },
+        'pubmeds': [23511713, 22647208],
         'descriptions': [
             """
-            We collected 123 review articles related to AD accessible from PubMed. We then manually curated these review articles, and have built an AD pathway map by using CellDesigner. Molecules are distinguished by the following types: proteins, complexes, simple molecules, genes, RNAs, ions, degraded products, and phenotypes. Gene symbols are pursuant to the HGNC symbols. Reactions are also distinguished by the following categories: state transition, transcription, translation, heterodimer association, dissociation, transport, unknown transition, and omitted transition. All the reactions have evidences to the references in PubMed ID using the MIRIAM scheme [14]. All the references used for constructing the AlzPathway are listed in the ‘References for AlzPathway’. Cellular types are distinguished by the followings: neuron, astrocyte, and microglial cells. Cellular compartments are also distinguished by the followings: brain blood barrier, presynaptic, postsynaptic, and their inner cellular localizations.
+            We collected 123 review articles related to AD accessible from PubMed. We then manually curated these review articles, and have built an AD pathway map by using CellDesigner. Molecules are distinguished by the following types: proteins, complexes, simple molecules, genes, RNAs, ions, degraded products, and phenotypes. Gene symbols are pursuant to the HGNC symbols. Reactions are also distinguished by the following categories: state transition, transcription, translation, heterodimer association, dissociation, transport, unknown transition, and omitted transition. All the reactions have evidences to the references in PubMed ID using the MIRIAM scheme. All the references used for constructing the AlzPathway are listed in the ‘References for AlzPathway’. Cellular types are distinguished by the followings: neuron, astrocyte, and microglial cells. Cellular compartments are also distinguished by the followings: brain blood barrier, presynaptic, postsynaptic, and their inner cellular localizations.
             """
         ],
         'notes': [
@@ -342,6 +879,14 @@ descriptions = {
         ]
     },
     'MPPI': {
+        'year': 2005,
+        'size': {
+            'nodes': None,
+            'edges': None
+        },
+        'authors': ['MIPS Munich'],
+        'label': 'MPPI',
+        'color': '',
         'urls': {
             'articles': [
                 'http://bioinformatics.oxfordjournals.org/content/21/6/832'
@@ -350,6 +895,11 @@ descriptions = {
                 'http://mips.helmholtz-muenchen.de/proj/ppi/'
             ]
         },
+        'pubmeds': [15531608],
+        'taxons': [
+            'human',
+            'mammalia'
+        ],
         'descriptions': [
             """
             The first and foremost principle of our MPPI database is to favor quality over completeness. Therefore, we decided to include only published experimental evidence derived from individual experiments as opposed to large-scale surveys. High-throughput data may be integrated later, but will be marked to distinguish it from evidence derived from individual experiments.
@@ -412,6 +962,7 @@ descriptions = {
         ]
     },
     'InnateDB': {
+        'year': 2015,
         'urls': {
             'articles': [
                 'http://msb.embopress.org/content/4/1/218.long',
@@ -422,6 +973,12 @@ descriptions = {
                 'http://www.innatedb.com/'
             ]
         },
+        'pubmeds': [
+            20727158,
+            23180781,
+            18766178
+        ],
+        'releases': [2008, 2010, 2013],
         'descriptions': [
             """
             To date, the InnateDB curation team has reviewed more than 1000 publications and curated more than 3500 innate immunity-relevant interactions, richly annotating them in terms of the experimental evidence and the context in which they occur.
@@ -458,7 +1015,14 @@ descriptions = {
             """
         ]
     },
-    'CellSignalingTechnology': {
+    'CST': {
+        'year': 2015,
+        'nodes': None,
+        'edges': None,
+        'authors': ['CST'],
+        'label': 'CST pathways',
+        'color': '',
+        'full_name': 'Cell Signaling Technology pathways',
         'urls': {
             'articles': [],
             'webpages': [
@@ -502,14 +1066,25 @@ descriptions = {
         ]
     },
     'DEPOD': {
+        'year': 2014,
+        'releases': [2013, 2014],
+        'size': {
+            'nodes': None,
+            'edges': None
+        },
+        'authors': ['EMBL & EBI'],
+        'label': 'DEPOD',
+        'color': '',
         'urls': {
             'articles': [
-                'http://stke.sciencemag.org/content/6/275/rs10.long'
+                'http://stke.sciencemag.org/content/6/275/rs10.long',
+                'http://nar.oxfordjournals.org/content/43/D1/D531.long'
             ],
             'webpages': [
                 'http://www.koehn.embl.de/depod/index.php'
             ]
         },
+        'pubmeds': [23674824, 25332398],
         'taxons': [
             'human'
         ],
@@ -565,6 +1140,16 @@ descriptions = {
         ]
     },
     'PhosphoSite': {
+        'year': 2015,
+        'releases': [2012, 2015],
+        'size': {
+            'nodes': None,
+            'edges': None
+        },
+        'authors': ['CST'],
+        'label': 'PhosphoSite',
+        'full_name': 'PhosphoSitePlus',
+        'color': '',
         'urls': {
             'articles': [
                 'http://nar.oxfordjournals.org/content/40/D1/D261.long'
@@ -573,7 +1158,10 @@ descriptions = {
                 'http://www.phosphosite.org/homeAction.do'
             ]
         },
+        'pubmeds': [22135298],
         'taxons': [
+            'human',
+            'mouse',
             'eubacteria',
             'eukarya'
         ],
@@ -604,6 +1192,16 @@ descriptions = {
         ]
     },
     'NCI-PID': {
+        'year': 2012,
+        'releases': [2008, 2012],
+        'size': {
+            'nodes': None,
+            'edges': None
+        },
+        'authors': ['NCI'],
+        'label': 'NCI-PID',
+        'full_name': 'Pathway Interaction Database',
+        'color': '',
         'urls': {
             'webpages': [
                 'http://pid.nci.nih.gov/index.shtml'
@@ -612,6 +1210,15 @@ descriptions = {
                 'http://nar.oxfordjournals.org/content/37/suppl_1/D674.long'
             ]
         },
+        'pubmeds': [18832364],
+        'data_import': ['BioCarta', 'Reactome'],
+        'contains': [
+            'BioCarta',
+            'Reactome'
+        ],
+        'taxons': [
+            'human'
+        ],
         'descriptions': [
             """
             In curating, editors synthesize meaningful networks of events into defined pathways and adhere to the PID data model for consistency in data representation: molecules and biological processes are annotated with standardized names and unambiguous identifiers; and signaling and regulatory events are annotated with evidence codes and references. To ensure accurate data representation, editors assemble pathways from data that is principally derived from primary research publications. The majority of data in PID is human; however, if a finding discovered in another mammal is also deemed to occur in humans, editors may decide to include this finding, but will also record that the evidence was inferred from another species. Prior to publication, all pathways are reviewed by one or more experts in a field for accuracy and completeness.
@@ -684,14 +1291,28 @@ descriptions = {
         ]
     },
     'IntAct': {
+        'year': 2015,
+        'releases': [2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015],
+        'size': {
+            'nodes': None,
+            'edges': None
+        },
+        'authors': ['EBI'],
+        'label': 'IntAct',
+        'color': '',
+        'data_import': ['InnateDB', 'MINT'],
         'urls': {
             'articles': [
-                'http://nar.oxfordjournals.org/content/40/D1/D841.long'
+                'http://nar.oxfordjournals.org/content/40/D1/D841.long',
+                'http://nar.oxfordjournals.org/content/38/suppl_1/D525.long',
+                'http://nar.oxfordjournals.org/content/35/suppl_1/D561.long',
+                'http://nar.oxfordjournals.org/content/32/suppl_1/D452.long'
             ],
             'webpages': [
                 'http://www.ebi.ac.uk/intact/'
             ]
         },
+        'pubmeds': [14681455, 17145710, 19850723, 22121220, 24234451],
         'descriptions': [
             """
             The information within the IntAct database primarily consists of protein–protein interaction (PPI) data. The majority of the PPI data within the database is annotated to IMEx standards, as agreed by the IMEx consortium. All such records contain a full description of the experimental conditions in which the interaction was observed. This includes full details of the constructs used in each experiment, such as the presence and position of tags, the minimal binding region defined by deletion mutants and the effect of any point mutations, referenced to UniProtKB (2), the underlying protein sequence database. Protein interactions can be described down to the isoform level, or indeed to the post-translationally cleaved mature peptide level if such information is available in the publication, using the appropriate UniProtKB identifiers.

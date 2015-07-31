@@ -4515,6 +4515,96 @@ class BioGraph(object):
                     if up in self.nodInd:
                         self.graph.vs[self.nodDct[up]]['dis'].append(d['disease'])
     
+    def curation_stats(self):
+        result = {}
+        all_refs = len(set(flatList([[r.pmid for r in e['references']] \
+            for e in self.graph.es])))
+        for s in self.sources:
+            src_edges = len([e.index for e in self.graph.es if s in e['sources']])
+            src_edges_pct = len([e.index \
+                for e in self.graph.es if s in e['sources']]) / \
+                    float(self.graph.ecount()) * 100.0
+            only_src_edges = len([e.index for e in self.graph.es \
+                if s in e['sources'] and len(e['sources']) == 1])
+            shared_edges = len([e.index for e in self.graph.es \
+                if s in e['sources'] and len(e['sources']) > 1])
+            src_refs = set(uniqList([r.pmid for r in flatList([e['refs_by_source'][s] \
+                for e in self.graph.es if s in e['refs_by_source']])]))
+            other_refs = set(flatList([[r.pmid for r in \
+                flatList([rr for sr, rr in e['refs_by_source'].iteritems() if sr != s])] \
+                for e in self.graph.es]))
+            only_src_refs = len(src_refs - other_refs)
+            src_refs_pct = len(src_refs) / float(all_refs) * 100.0
+            shared_refs = len(src_refs & other_refs)
+            shared_curation_effort = sum([len(x) for x in \
+                [set(flatList([[(r.pmid, e.index) for r in rr] \
+                    for sr, rr in e['refs_by_source'].iteritems() if sr != s])) & \
+                set([(rl.pmid, e.index) for rl in e['refs_by_source'][s]]) \
+                for e in self.graph.es if s in e['refs_by_source']] if len (x) != 0])
+            src_only_curation_effort = sum([len(x) for x in \
+                [set([(rl.pmid, e.index) for rl in e['refs_by_source'][s]]) - \
+                set(flatList([[(r.pmid, e.index) for r in rr] \
+                    for sr, rr in e['refs_by_source'].iteritems() if sr != s])) \
+                for e in self.graph.es if s in e['refs_by_source']] if len (x) != 0])
+            src_curation_effort = sum([len(x) for x in \
+                [set([(rl.pmid, e.index) for rl in e['refs_by_source'][s]]) \
+                    for e in self.graph.es if s in e['refs_by_source']] if len (x) != 0])
+            result[s] = {
+                'source_edges': src_edges,
+                'source_edges_percentage': src_edges_pct,
+                'specific_edges': only_src_edges,
+                'shared_edges': shared_edges,
+                'specific_refs': only_src_refs,
+                'source_refs': len(src_refs),
+                'source_refs_percentage': src_refs_pct,
+                'shared_refs': shared_refs,
+                'source_curation_effort': src_curation_effort,
+                'source_specific_curation_effort': src_only_curation_effort,
+                'shared_curation_effort': shared_curation_effort
+            }
+        return result
+    
+    def table_latex(self, fname, header, data, sum_row = True, row_order = None, 
+        latex_hdr = True, caption = '', font = 'HelveticaNeueLTStd-Lt', fontsize = 10):
+        row_order = sorted(data.keys()) if row_order is None else row_order
+        latex_tab = r'''%s\begin{table}[h]
+            \begin{tabularx}{\textwidth}[%s]
+            \toprule
+                %s
+            \midrule
+                %s
+            \bottomrule
+            \end{tabularx}
+            \caption{%s}
+            \end{table}
+            %s
+            '''
+        _latex_hdr = r'''\documentclass[a4paper,%upt]{article}
+                \usepackage{fontspec}
+                \usepackage{xunicode}
+                \usepackage{polyglossia}
+                \setdefaultlanguage{english}
+                \usepackage{xltxtra}
+                \usepackage{microtype}
+                \usepackage[margin=5pt,landscape]{geometry}
+                \usepackage{amsmath}
+                \usepackage{amssymb}
+                \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+                \usepackage{color}
+                \usepackage{booktabs}
+                \usepackage{tabularx}
+                \setmainfont{%s}
+                \definecolor{grey875}{gray}{0.125}
+                \begin{document}
+                \color{grey875}
+                \thispagestyle{empty}
+                \vfill
+            ''' % (fontsize, font) if latex_hdr else ''
+        _hdr_row = ' & '.join([h[1] for h in header]) + r'\\'
+        _rows = [' & '.join([k] + [data[k][h[0]]) \
+            for h in header] for k in row_order]
+        
+    
     def _disclaimer(self):
         sys.stdout.write(self.disclaimer)
     

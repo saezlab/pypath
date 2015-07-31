@@ -3058,3 +3058,33 @@ def get_disgenet(dataset = 'curated'):
         data[i]['assoc_typ'] = [x.strip() for x in data[i]['assoc_typ'].split(',')]
         data[i]['source'] = [x.strip() for x in data[i]['source'].split(',')]
     return data
+
+def load_lmpid(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
+    result = []
+    with open(os.path.join(common.ROOT, 'data', fname), 'r') as f:
+        data = f.read()
+    soup = bs4.BeautifulSoup(data)
+    uniprots = all_uniprots(organism = organism, swissprot = None)
+    prg = progress.Progress(len(soup.find_all('record')), 'Processing data from LMPID', 21)
+    for rec in soup.find_all('record'):
+        prg.step()
+        uniprot_bait = rec.bait_uniprot_id.text
+        uniprot_prey = rec.prey_uniprot_id.text
+        if uniprot_bait in uniprots and uniprot_prey in uniprots:
+            result.append({
+                'bait': uniprot_bait,
+                'prey': uniprot_prey,
+                'refs': [x.strip() for x in rec.references.text.split(',')],
+                'pos': [int(x) for x in rec.sequence_position.text.split('-')],
+                'inst': rec.motif_instance.text,
+                'dom': rec.interacting_domain.text
+            })
+    prg.terminate()
+    return result
+
+def lmpid_interactions(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
+    data = load_lmpid(fname = fname, organism = organism)
+    return [[l['prey'], l['bait'], ';'.join(l['refs'])] for l in data]
+
+def lmpid_dmi(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
+    data = load_lmpid(fname = fname, organism = organism)

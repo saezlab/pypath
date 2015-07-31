@@ -63,13 +63,13 @@ class MappingTable(object):
         self.cache = cache
         self.cachedir = cachedir
         self.mapping = {"to": {}, "from": {}}
-        self.mid = hashlib.md5(str((one, param.bi))).hexdigest()
         if log.__class__.__name__ != 'logw':
             self.session = gen_session_id()
-            self.ownlog = logn.logw(self.session,'INFO')
+            self.ownlog = logn.logw(self.session, 'INFO')
         else:
             self.ownlog = log
         if param is not None:
+            self.mid = hashlib.md5(str((one, two, self.param.bi))).hexdigest()
             md5param = hashlib.md5(json.dumps(self.param.__dict__)).hexdigest()
             self.cachefile = os.path.join(self.cachedir, md5param)
             if self.cache and os.path.isfile(self.cachefile):
@@ -560,25 +560,28 @@ class Mapper(object):
     
     def load_uniprot_mappings(self, ac_types = None, bi = False):
         ac_types = ac_types if ac_types is not None else self.name_types.keys()
+        # creating empty MappingTable objects:
         for ac_typ in ac_types:
             self.tables[(ac_typ, 'uniprot')] = MappingTable(
                 ac_typ, 
                 'uniprot',
                 'protein',
                 ac_typ,
-                None,
+                None, 
                 self.ncbi_tax_id, 
                 None,
                 log = self.ownlog)
+        # attempting to load them from Pickle
         i = 0
         for ac_typ in ac_types:
-            md5ac = hashlib.md5(str((ac_typ, bi))).hexdigest()
+            md5ac = hashlib.md5(str((ac_typ, 'uniprot', bi))).hexdigest()
             cachefile = os.path.join('cache', md5ac)
             if self.cache and os.path.isfile(cachefile):
                 self.tables[(ac_typ, 'uniprot')].mapping = \
                     pickle.load(open(cachefile, 'rb'))
                 ac_types.remove(ac_typ)
                 self.tables[(ac_typ, 'uniprot')].mid = md5ac
+        # loading the remaining from the big UniProt mapping file:
         if len(ac_types) > 0:
             url = data_formats.urls['uniprot_idmap_ftp']['url']
             data = dataio.curl(url, silent = False)

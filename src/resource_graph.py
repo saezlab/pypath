@@ -59,6 +59,7 @@ from bioigraph.ig_drawing import DefaultGraphDrawerFFsupport
 
 net = bioigraph.BioGraph(9606)
 
+#net.init_network(pfile = 'cache/default_network.pickle')
 #net.init_network(pfile = 'cache/plus_phospho.pickle')
 #net.load_resources(lst={'mimp': good['mimp']})
 #net.load_resources(lst={'pnetworks': good['pnetworks']})
@@ -70,7 +71,7 @@ net = bioigraph.BioGraph(9606)
 #net.init_network(pfile = 'cache/default_network.pickle')
 #net.load_resources(lst={'acsn': ugly['acsn']})
 #net.save_network(pfile = 'cache/default_plus_acsn.pickle')
-net.init_network(pfile = 'cache/default_plus_acsn.pickle')
+#net.init_network(pfile = 'cache/default_plus_acsn.pickle')
 
 net.genesymbol_labels()
 
@@ -202,3 +203,43 @@ plot = igraph.plot(c, vertex_label = c.vs['name'],
 
 plot.redraw()
 plot.save()
+
+## TikZ summary figure ##
+
+
+tikzfname = 'resource_tree_tikz.tex'
+
+tikz = r'''\documentclass[a4paper,10pt]{article}
+    \usepackage{fontspec}
+    \usepackage{xunicode}
+    \usepackage{polyglossia}
+    \setdefaultlanguage{english}
+    \usepackage{xltxtra}
+    \usepackage{microtype}
+    \usepackage{fullpage}
+    \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+    \usepackage{color}
+    \setmainfont{HelveticaNeueLTStd-Lt}
+    \usepackage{tikz}
+    \definecolor{zircon}{RGB}{228, 236, 236}
+    \definecolor{teal}{RGB}{0, 123, 127}
+    \definecolor{twilightblue}{RGB}{239, 244, 233}
+    \definecolor{mantis}{RGB}{110, 169, 69}
+    \begin{document}
+    \thispagestyle{empty}
+    \begin{tikzpicture}
+'''
+
+for i in xrange(11):
+    tikz += r'''        \fill[anchor = south west, fill = twilightblue] '''\
+        r'''(0.0, %f) rectangle (17.0, %f);
+        \node[anchor = west] at (0.33, %f) {\LARGE{\color{teal}%u}};
+''' % (float(i), i + 0.96, i + 0.50, 2005 + i)
+
+tikz += r'''\end{tikzpicture}
+    \end{document}
+'''
+
+with open(tikzfname, 'w') as f:
+    f.write(tikz)
+

@@ -60,6 +60,7 @@ import _sensitivity as sens
 from bioigraph import progress
 from bioigraph import dataio
 from bioigraph.ig_drawing import DefaultGraphDrawerFFsupport
+from bioigraph import plot
 
 omnipath = 'OmniPath'
 
@@ -105,15 +106,24 @@ net.lists['tfs'] = uniqList(flatList([net.mapper.map_name(tf, 'ensg', 'uniprot')
 # source-vcount sens.barplot
 d = zip(*[(s, len([v for v in net.graph.vs if s in v['sources']])) for s in net.sources] + \
     [(omnipath, net.graph.vcount())])
-sens.barplot(x = d[0], y = d[1], 
+bp = plot.Barplot(x = d[0], y = d[1], 
     data = None, fname = 'proteins-by-db.pdf', lab_size = 11, 
     ylab = 'Number of proteins', 
-    xlab = 'Pathway resources', order = 'y')
+    xlab = 'Pathway resources', order = 'y',
+    y_break = (0.25, 0.15))
 
 # source-ecount sens.barplot
 d = zip(*[(s, len([e for e in net.graph.es if s in e['sources']])) for s in net.sources] + \
     [(omnipath, net.graph.ecount())])
-sens.barplot(x = d[0], y = d[1], 
+bp = plot.Barplot(x = d[0], y = d[1], 
+    data = None, fname = 'interactions-by-db.pdf', lab_size = 11, 
+    ylab = 'Number of interactions', 
+    xlab = 'Pathway resources', order = 'y', 
+    y_break = (0.3, 0.1))
+
+import cPickle as pickle
+d = pickle.load(open('testd.pickle', 'rb'))
+bp = plot.Barplot(x = d[0], y = d[1], 
     data = None, fname = 'interactions-by-db.pdf', lab_size = 11, 
     ylab = 'Number of interactions', 
     xlab = 'Pathway resources', order = 'y', 
@@ -122,7 +132,7 @@ sens.barplot(x = d[0], y = d[1],
 # density sens.barplot
 d = zip(*[(s, g.density()) for s, g in sep.iteritems()] + \
     [(omnipath, net.graph.density())])
-sens.barplot(x = d[0], y = d[1], 
+bp = plot.Barplot(x = d[0], y = d[1], 
     data = None, fname = 'density-by-db.pdf', lab_size = 11, 
     ylab = 'Graph density', 
     xlab = 'Pathway resources', order = 'y')
@@ -130,7 +140,7 @@ sens.barplot(x = d[0], y = d[1],
 # transitivity sens.barplot
 d = zip(*[(s, g.transitivity_undirected()) for s, g in sep.iteritems()] + \
     [(omnipath, net.graph.transitivity_undirected())])
-sens.barplot(x = d[0], y = d[1], 
+bp = plot.Barplot(x = d[0], y = d[1], 
     data = None, fname = 'transitivity-by-db.pdf', lab_size = 11, 
     ylab = 'Graph global transitivity', 
     xlab = 'Pathway resources', order = 'y')
@@ -138,7 +148,7 @@ sens.barplot(x = d[0], y = d[1],
 # diameter sens.barplot
 d = zip(*[(s, g.diameter()) for s, g in sep.iteritems()] + \
     [(omnipath, net.graph.diameter())])
-sens.barplot(x = d[0], y = d[1], 
+bp = plot.Barplot(x = d[0], y = d[1], 
     data = None, fname = 'diameter-by-db.pdf', lab_size = 11, 
     ylab = 'Graph diameter', 
     xlab = 'Pathway resources', order = 'y')
@@ -147,7 +157,7 @@ sens.barplot(x = d[0], y = d[1],
 d = zip(*[(s, len([v for v in g.vs if v['rec']])) \
     for s, g in sep.iteritems()] + \
     [(omnipath, sum(net.graph.vs['rec']))])
-sens.barplot(x = d[0], y = d[1], 
+bp = plot.Barplot(x = d[0], y = d[1], 
     data = None, fname = 'receptors-by-db.pdf', lab_size = 11, 
     ylab = 'Number of receptors', 
     xlab = 'Pathway resources', order = 'y')
@@ -156,7 +166,7 @@ sens.barplot(x = d[0], y = d[1],
 d = zip(*[(s, len([v for v in g.vs if v['rec']])/float(g.vcount())*100) \
     for s, g in sep.iteritems()] + \
     [(omnipath, sum(net.graph.vs['rec'])/float(net.graph.vcount())*100)])
-sens.barplot(x = d[0], y = d[1], 
+bp = plot.Barplot(x = d[0], y = d[1], 
     data = None, fname = 'receptorprop-by-db.pdf', lab_size = 11, 
     ylab = 'Percentage of receptors', 
     xlab = 'Pathway resources', order = 'y')
@@ -165,7 +175,7 @@ sens.barplot(x = d[0], y = d[1],
 d = zip(*[(s, len([v for v in g.vs if v['rec']])/float(len(net.lists['rec']))*100) \
     for s, g in sep.iteritems()] + \
     [(omnipath, sum(net.graph.vs['rec'])/float(len(net.lists['rec']))*100)])
-sens.barplot(x = d[0], y = d[1], 
+bp = plot.Barplot(x = d[0], y = d[1], 
     data = None, fname = 'receptorcov-by-db.pdf', lab_size = 11, 
     ylab = 'Percentage of all\nhuman receptors covered', 
     xlab = 'Pathway resources', order = 'y')
@@ -174,7 +184,7 @@ sens.barplot(x = d[0], y = d[1],
 d = zip(*[(s, len([v for v in g.vs if v['tf']])) \
     for s, g in sep.iteritems()] + \
     [(omnipath, sum(net.graph.vs['tf']))])
-sens.barplot(x = d[0], y = d[1], 
+bp = plot.Barplot(x = d[0], y = d[1], 
     data = None, fname = 'tfs-by-db.pdf', lab_size = 11, 
     ylab = 'Number of transcription factors', 
     xlab = 'Pathway resources', order = 'y')
@@ -183,7 +193,7 @@ sens.barplot(x = d[0], y = d[1],
 d = zip(*[(s, len([v for v in g.vs if v['tf']])/float(g.vcount())*100) \
     for s, g in sep.iteritems()] + \
     [(omnipath, sum(net.graph.vs['tf'])/float(net.graph.vcount())*100)])
-sens.barplot(x = d[0], y = d[1], 
+bp = plot.Barplot(x = d[0], y = d[1], 
     data = None, fname = 'tfprop-by-db.pdf', lab_size = 11, 
     ylab = 'Percentage of transcription factors', 
     xlab = 'Pathway resources', order = 'y')
@@ -191,7 +201,7 @@ sens.barplot(x = d[0], y = d[1],
 d = zip(*[(s, len([v for v in g.vs if v['tf']])/float(len(net.lists['tfs']))*100) \
     for s, g in sep.iteritems()] + \
     [(omnipath, sum(net.graph.vs['tf'])/float(len(net.lists['tfs']))*100)])
-sens.barplot(x = d[0], y = d[1], 
+bp = plot.Barplot(x = d[0], y = d[1], 
     data = None, fname = 'tfcov-by-db.pdf', lab_size = 11, 
     ylab = 'Percentage of all human\ntranscription factors covered', 
     xlab = 'Pathway resources', order = 'y')
@@ -209,7 +219,7 @@ for d in diss:
 d = zip(*[(s, sum(len(x) for u, x in dis.iteritems() if u in g.vs['name'])/float(sum(len(x) for x in dis.values()))*100) \
     for s, g in sep.iteritems()] + \
     [(omnipath, sum(len(x) for x in net.graph.vs['dis'])/float(sum(len(x) for x in dis.values()))*100)])
-sens.barplot(x = d[0], y = d[1], 
+bp = plot.Barplot(x = d[0], y = d[1], 
     data = None, fname = 'discov-by-db.pdf', lab_size = 11, 
     ylab = 'Percentage of disease-gene associations covered', 
     xlab = 'Pathway resources', order = 'y')
