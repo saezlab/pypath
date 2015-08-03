@@ -4549,6 +4549,7 @@ class BioGraph(object):
             src_curation_effort = sum([len(x) for x in \
                 [set([(rl.pmid, e.index) for rl in e['refs_by_source'][s]]) \
                     for e in self.graph.es if s in e['refs_by_source']] if len (x) != 0])
+            ratio = len(src_refs) / float(src_edges)
             result[s] = {
                 'source_edges': src_edges,
                 'source_edges_percentage': src_edges_pct,
@@ -4560,24 +4561,26 @@ class BioGraph(object):
                 'shared_refs': shared_refs,
                 'source_curation_effort': src_curation_effort,
                 'source_specific_curation_effort': src_only_curation_effort,
-                'shared_curation_effort': shared_curation_effort
+                'shared_curation_effort': shared_curation_effort,
+                'refs_edges_ratio': ratio
             }
         return result
     
     def table_latex(self, fname, header, data, sum_row = True, row_order = None, 
-        latex_hdr = True, caption = '', font = 'HelveticaNeueLTStd-Lt', fontsize = 10):
-        row_order = sorted(data.keys()) if row_order is None else row_order
-        latex_tab = r'''%s\begin{table}[h]
-            \begin{tabularx}{\textwidth}[%s]
-            \toprule
+        latex_hdr = True, caption = '', font = 'HelveticaNeueLTStd-Lt', fontsize = 10,
+        sum_label = 'Total', sum_cols = None, header_format = '%s'):
+        non_digit = re.compile(r'[^\d.-]+')
+        row_order = sorted(data.keys(), key = lambda x: x.upper()) \
+            if row_order is None else row_order
+        _latex_tab = r'''%s
+                \begin{tabularx}{\textwidth}{%s}
+                \toprule
+                    %s
+                \midrule
+                    %s
+                %s\bottomrule
+                \end{tabularx}
                 %s
-            \midrule
-                %s
-            \bottomrule
-            \end{tabularx}
-            \caption{%s}
-            \end{table}
-            %s
             '''
         _latex_hdr = r'''\documentclass[a4paper,%upt]{article}
                 \usepackage{fontspec}
@@ -4599,11 +4602,49 @@ class BioGraph(object):
                 \color{grey875}
                 \thispagestyle{empty}
                 \vfill
+                \begin{table}[h]
             ''' % (fontsize, font) if latex_hdr else ''
-        _hdr_row = ' & '.join([h[1] for h in header]) + r'\\'
-        _rows = [' & '.join([k] + [data[k][h[0]]) \
-            for h in header] for k in row_order]
-        
+        _latex_end = r'''
+                \caption{%s}
+                \end{table}
+                \end{document}
+            ''' % caption if latex_hdr else ''
+        _hdr_row = ' & '.join([''] + [header_format%h[1].replace(r'%', r'\%') \
+            for h in header]) + '\\\\\n'
+        formatter = lambda x: '%.2f'%x if type(x) is float else '%u'%x
+        intfloat = lambda x: float(x) if '.' in x else int(x)
+        _rows = '\\\\\n'.join([' & '.join([k] + [formatter(data[k][h[0]]) \
+            for h in header]) for k in row_order]) + '\\\\\n'
+        sum_cols = xrange(len(header)) if sum_cols is None \
+            else sum_cols
+        _sum_row = ' & '.join([sum_label] + ['' if i not in sum_cols else formatter(sum([ \
+            intfloat(filter(lambda x: len(x) > 0, [non_digit.sub('', str(v[h[0]])), '0'])[0]) \
+            for v in data.values()])) \
+            for i, h in enumerate(header)]) + '\\\\\n'
+        _latex_tab = _latex_tab % (_latex_hdr, 'X' + 'r'*len(header), _hdr_row, _rows, 
+            r'\midrule' + '\n%s'%_sum_row if sum_row else '', _latex_end)
+        with open(fname, 'w') as f:
+            f.write(_latex_tab)
+    
+    def curation_tab(self, fname = 'curation_stats.tex', **kwargs):
+        header = [
+            ('source_edges', 'Edges'),
+            ('source_edges_percentage', r'Edges [%]'),
+            ('shared_edges', 'Shared edges'),
+            ('specific_edges', 'Specific edges'),
+            ('source_refs', 'References'),
+            ('source_refs_percentage', r'References [%]'),
+            ('shared_refs', 'Shared references'),
+            ('specific_refs', 'Specific references'),
+            ('source_curation_effort', 'Curation effort'),
+            ('shared_curation_effort', 'Shared curation effort'),
+            ('source_specific_curation_effort', 'Specific curation effort'),
+            ('refs_edges_ratio', 'References-edges ratio')
+        ]
+        header_format = r'\rotatebox{90}{\footnotesize %s}'
+        cs = self.curation_stats()
+        self.table_latex(fname, header, cs, header_format = header_format, 
+            sum_row = False, **kwargs)
     
     def _disclaimer(self):
         sys.stdout.write(self.disclaimer)
