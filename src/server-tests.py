@@ -21,11 +21,13 @@ from bioigraph import server
 
 net = bioigraph.BioGraph(ncbi_tax_id = 9606)
 
-net.init_network(pfile = 'cache/default_plus_acsn_phospho.pickle')
-net.load_ptms()
+# net.init_network(pfile = 'cache/default_plus_acsn_phospho.pickle')
+ #net.load_ptms()
 
 #from bioigraph.data_formats import best
 #net.read_data_file(best['hprd'], keep_raw = True)
+# net.load_resources(lst = {'signor': best['signor']})
+# net.load_phospho_dmi('Li2012', trace = True)
 #tr = net.load_hprd_ptms(trace = True)
 #len(tr['kinase_ambiguousity'])
 #len([x for x in tr['kinase_ambiguousity'].values() if len(x) == 0])

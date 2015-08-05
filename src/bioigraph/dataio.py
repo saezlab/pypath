@@ -3088,3 +3088,82 @@ def lmpid_interactions(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
 
 def lmpid_dmi(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
     data = load_lmpid(fname = fname, organism = organism)
+
+def get_hsn():
+    url = data_formats.urls['hsn']['url']
+    data = curl(url, silent = False).split('\n')[1:]
+    data = [r.split(',') for r in data if len(r) > 0]
+    return data
+
+def get_li2012():
+    fname = os.path.join(common.ROOT, 'data', data_formats.urls['li2012']['file'])
+    with open(fname, 'r') as f:
+        data = [r.split('\t') for r in f.read().split('\n')[1:] if len(r) > 0]
+    return data
+
+def li2012_interactions():
+    result = []
+    data = get_li2012()
+    for l in data:
+        subs_protein = l[1].split('/')[0]
+        tk_protein = l[2].split()[0]
+        reader_protein = l[3].split()[0]
+        route = l[4]
+        result.append((
+            tk_protein, subs_protein, route, 'phosphorylation'
+        ))
+        result.append((
+            subs_protein, reader_protein, route, 'phosphomotif_binding'
+        ))
+    return [list(l) for l in common.uniqList(result)]
+
+def li2012_phospho():
+    result = []
+    non_digit = re.compile(r'[^\d]+')
+    data = get_li2012()
+    for l in data:
+        subs_protein = l[1].split('/')[0]
+        tk_protein = l[2].split()[0]
+        subs_resnum = int(non_digit.sub('', l[1].split('/')[1]))
+        result.append((subs_protein, tk_protein, None, 
+            None, None, 'Y', subs_resnum))
+    result = [dict(zip(['substrate', 'kinase', 'instance', \
+        'start', 'end', 'resaa', 'resnum'], \
+        list(l))) for l in common.uniqList(result)]
+    return result
+
+def li2012_dmi(mapper = None):
+    result = {}
+    nondigit = re.compile(r'[^\d]+')
+    se = swissprot_seq(isoforms = True)
+    if type(mapper) is not mapping.Mapper: mapper = mapping.Mapper(9606)
+    data = get_li2012()
+    for l in data:
+        subs_protein = l[1].split('/')[0]
+        tk_protein = l[2].split()[0]
+        reader_protein = l[3].split()[0]
+        subs_uniprots = mapper.map_name(subs_protein, 'genesymbol', 'uniprot')
+        tk_uniprots = mapper.map_name(tk_protein, 'genesymbol', 'uniprot')
+        reader_uniprots = mapper.map_name(reader_protein, 'genesymbol', 'uniprot')
+        subs_resnum = int(non_digit.sub('', l[1].split('/')[1]))
+        for su in subs_uniprots:
+            if su in se:
+                subs_iso = None
+                for iso, s in se[su].isof.iteritems():
+                    if se[su].get(subs_resnum, isoform = iso) == 'Y':
+                        subs_iso = iso
+                        break
+                if subs_iso:
+                    start = min(1, subs_resnum - 7)
+                    end = max(subs_resnum + 7, len(se[su].isof[subs_iso]))
+                    for ku in tk_uniprots:
+                        res = intera.Residue(subs_resnum, 'Y', su, isoform = subs_iso)
+                        mot = intera.Motif(su, start, end, isoform = subs_iso, 
+                            instance = se[su].get(start, end, isoform = subs_iso))
+                        ptm = intera.Ptm(su, motif = mot, residue = res, 
+                            isoform = subs_iso, source = 'Li2012')
+                        dom = intera.Domain(ku)
+                        dommot = intera.DomainMotif(domain = dom, ptm = ptm, 
+                            sources = ['Li2012'])
+                        result = {}
+    return result

@@ -20,6 +20,7 @@ from twisted.internet import reactor
 import urllib
 import json
 from common import *
+import descriptions
 
 class Rest(object):
     
@@ -35,37 +36,45 @@ class RestResource(resource.Resource):
         self.b = biograph
         self.g = biograph.graph
         self.isLeaf = True
+        self.htmls = ['info']
     
     def render_GET(self, request):
-        self.set_defaults(request)
+        html = len(request.postpath) > 0 and request.postpath[0] in self.htmls
+        self.set_defaults(request, html = html)
         if len(request.postpath) > 0 and hasattr(self, request.postpath[0]):
             toCall = getattr(self, request.postpath[0])
             if hasattr(toCall, '__call__'):
-                return str(toCall(request))
+                return unicode(toCall(request)).encode('utf-8')
         elif len(request.postpath) == 0:
             return self.root(request)
-        return str(request.__dict__)
+        # return str(request.__dict__)
         return "Not found: %s%s" % ('/'.join(request.postpath), 
             '' if len(request.args) == 0 else \
             '?%s' % '&'.join(['%s=%s'%(k, v) for k, v in request.args.iteritems()]))
     
-    def set_defaults(self, request):
+    def set_defaults(self, request, html = False):
         request.setHeader('Cache-Control', 'Public')
         if '' in request.postpath:
             request.postpath.remove('')
-        if 'format' in request.args and request.args['format'][0] == 'json':
+        if html:
+            request.setHeader('Content-Type', 'text/html; charset=utf-8')
+        elif 'format' in request.args and request.args['format'][0] == 'json':
             request.args['format'] = 'json'
-            request.setHeader('Content-Type', 'text/json')
+            request.setHeader('Content-Type', 'text/json; charset=utf-8')
         else:
             request.args['format'] = 'text'
-            request.setHeader('Content-Type', 'text/plain')
+            request.setHeader('Content-Type', 'text/plain; charset=utf-8')
         request.args['header'] = 1 if 'header' not in request.args \
             else int(request.args['header'][0])
         request.args['fields'] = [] if 'fields' not in request.args \
             else request.args['fields']
     
     def about(self, req):
-        return 'Hello, this is the REST service of bioigraph %s. Welcome!' % __version__
+        return 'Hello, this is the REST service of bioigraph %s. Welcome!\n'\
+            'For the descriptions of pathway resources go to `/info`.' % __version__
+    
+    def info(self, req):
+        return descriptions.gen_html()
     
     def root(self, req):
         hdr = ['nodes', 'edges', 'is_directed', 'sources']

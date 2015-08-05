@@ -35,7 +35,7 @@ __all__ = ['Residue', 'Ptm', 'Motif', 'Domain',
 class Residue(object):
     
     def __init__(self, number, name, identifier, id_type='uniprot', 
-            isoform = 1, mutated = False):
+            isoform = 1, mutated = False, seq = None):
         non_digit = re.compile(r'[^\d.-]+')
         self.name = name
         self.number = number if type(number) not in [str, unicode] \
@@ -43,11 +43,16 @@ class Residue(object):
         self.protein = identifier
         self.id_type = id_type
         self.mutated = mutated
+        self.seq = seq
         self.isoform = isoform if type(isoform) is int \
             else int(non_digit.sub('', isoform))
     
+    def __hash__(self):
+        return hash((self.number, self.name, self.protein))
+    
     def __eq__(self, other):
-        if other is not None and self.__dict__ == other.__dict__:
+        if type(other) is Residue and self.protein == other.protein and \
+            self.number == other.number and self.name == other.name:
             return True
         else:
             return False
@@ -61,6 +66,15 @@ class Residue(object):
     
     def serialize(self):
         return '%s:%u' % (self.name, self.number)
+    
+    def in_isoform(self, isoform, seq = None):
+        seq = seq or self.seq
+        if seq and seq.has_isoform(isoform):
+            if seq.get(self.number, isoform = isoform) == self.name:
+                res = Residue(self.number, self.name, self.protein, self.id_type, 
+                    isoform, self.mutated)
+                return res
+        return None
 
 class Mutation(object):
     
@@ -83,6 +97,9 @@ class Mutation(object):
                 'mutated: %s-%u %s%u\n'%(original.protein, original.isoform, 
                     original.name, original.number, mutated.protein, mutated.isoform, 
                     mutated.name, mutated.number))
+    
+    def __hash__(self):
+        return hash((self.original, self.mutated))
     
     def __str__(self):
         return '%s%u%s' % (self.original.name, self.number, self.mutated.name)
@@ -113,20 +130,27 @@ class Mutation(object):
 class Ptm(object):
     
     def __init__(self, protein, id_type = 'uniprot', typ = 'unknown', 
-            motif = None, residue = None, source = None, isoform = 1):
-        non_digit = re.compile(r'[^\d.-]+')
+            motif = None, residue = None, source = None, isoform = 1, 
+            seq = None):
+        self.non_digit = re.compile(r'[^\d.-]+')
         self.protein = protein
         self.id_type = id_type
         self.typ = typ
+        self.seq = seq
         self.motif = motif
         self.residue = residue
         self.isoform = isoform if type(isoform) is int \
-            else int(non_digit.sub('', isoform))
+            else int(self.non_digit.sub('', isoform))
         self.sources = []
         self.add_source(source)
+        self.isoforms = set([])
+        self.add_isoform(isoform)
+    
+    def __hash__(self):
+        return hash((self.residue, self.typ))
     
     def __eq__(self, other):
-        if other.__class__.__name__ == 'Ptm' and \
+        if type(other) == Ptm and \
             self.protein == other.protein and \
             (self.residue == other.residue or \
                 (
@@ -188,15 +212,49 @@ class Ptm(object):
             if (self.typ == 'unknown' or len(self.typ) == 3) and \
                 other.typ != 'unknown':
                 self.typ = other.typ
+            self.isoform = min(self.isoform, other.isoform)
+            self.isoforms = other.isoforms | self.isoforms
+    
+    def add_isoform(self, isoform):
+        isoform = isoform if type(isoform) is int \
+            else int(self.non_digit.sub('', isoform))
+        self.isoforms.add(isoform)
+    
+    def get_isoforms(self, seq = None):
+        result = []
+        seq = seq or self.seq
+        if seq:
+            for isoform in seq.get_isoforms():
+                ptm = self.in_isoform(isoform, seq)
+                if ptm:
+                    result.append(ptm)
+        return result
+    
+    def in_isoform(self, isoform, seq = None):
+        seq = seq or self.seq
+        
+        if seq and seq.has_isoform(isoform):
+            
+            if seq.get(self.residue.number, 
+                    isoform = isoform) == self.residue.name:
+                
+                res = self.residue.in_isoform(isoform, seq = seq)
+                mot = self.motif.in_isoform(isoform, seq = seq)
+                ptm = Ptm(self.protein, self.id_type, self.typ, 
+                    mot, res, self.sources, isoform, seq)
+                
+                return ptm
+        return None
 
 class Motif(object):
     
     def __init__(self, protein, start, end, id_type = 'uniprot', regex = None, 
         instance = None, isoform = 1, motif_name = None, prob = None, elm = None,
-        description = None):
+        description = None, seq = None):
         non_digit = re.compile(r'[^\d.-]+')
         self.protein = protein
         self.id_type = id_type
+        self.seq = seq
         self.isoform = isoform if type(isoform) is int \
             else int(non_digit.sub('',isoform))
         self.start = start if type(start) not in [str, unicode] \
@@ -209,6 +267,9 @@ class Motif(object):
         self.prob = prob
         self.elm = elm
         self.description = description
+    
+    def __hash__(self):
+        return hash((self.protein, self.start, self.end))
     
     def __eq__(self, other):
         if other.protein == self.protein and \
@@ -266,6 +327,16 @@ class Motif(object):
                 0 if self.end is None else self.end, 
                 'unknown' if self.regex is None else self.regex.pattern,
                 'unknown' if self.instance is None else self.instance)
+    
+    def in_isoform(self, isoform, seq = None):
+        seq = seq or self.seq
+        if seq and seq.has_isoform(isoform):
+            start, end, reg = seq.get_region(self.start, self.start, self.end)
+            mot = Motif(self.protein, start, end, self.id_type, self.refex, 
+                reg, isoform, self.motif_name, self.prob, self.elm, 
+                self.description, seq)
+            return mot
+        return None
 
 class Domain(object):
     
@@ -286,6 +357,9 @@ class Domain(object):
         self.pdbs = {}
         for pdb, chain in chains.iteritems():
             self.add_chains(pdb, chain)
+    
+    def __hash__(self):
+        return hash((self.protein, self.domain))
     
     def __eq__(self, other):
         if (self.start and self.end and other.start and other.end) is None:
@@ -390,6 +464,9 @@ class DomainDomain(object):
         two numbers in the tuple are the length of domain sequences.'''
         self.contact_residues = contact_residues
     
+    def __hash__(self):
+        return hash((self.domain_a, self.domain_b))
+    
     def __eq__(self, other):
         if self.__dict__ == other.__dict__:
             return True
@@ -438,6 +515,9 @@ class DomainMotif(object):
         self.add_refs(refs)
         self.add_pdbs(pdbs)
         self.pnetw_score = None
+    
+    def __hash__(self):
+        return hash((self.domain, self.ptm))
     
     def __eq__(self, other):
         if other.__class__.__name__ == 'DomainMotif' and \
@@ -504,6 +584,9 @@ class Regulation(object):
         self.add_sources(sources)
         self.add_refs(refs)
     
+    def __hash__(self):
+        return hash((self.ptm, self.source, self.target, self.effect))
+    
     def __eq__(self, other):
         if other.__class__.__name__ == 'Regulation' and \
             self.ptm == other.ptm and \
@@ -552,6 +635,9 @@ class Complex(object):
         self.proteins = set(proteins)
         for key, val in locals().iteritems():
             setattr(self, key, val)
+    
+    def __hash__(self):
+        return hash(tuple(sorted(self.proteins)))
     
     def __contains__(self, item):
         return item in self.proteins

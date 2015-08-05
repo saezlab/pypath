@@ -3681,7 +3681,8 @@ class BioGraph(object):
             'phosphoELM': 'get_phosphoelm',
             'dbPTM': 'get_dbptm',
             'PhosphoSite': 'get_psite_phos',
-            'HPRD': 'get_hprd_ptms'
+            'HPRD': 'get_hprd_ptms',
+            'Li2012': 'li2012_phospho'
         }
         self.update_vname()
         toCall = getattr(dataio, functions[source])
@@ -3711,7 +3712,7 @@ class BioGraph(object):
                         p['kinase'] = [p['kinase']]
                 if p['substrate'].startswith('HLA'):
                     continue
-                if source in ['MIMP', 'PhosphoNetworks']:
+                if source in ['MIMP', 'PhosphoNetworks', 'Li2012']:
                     substrate_ups_all = self.mapper.map_name(p['substrate'], 
                         'genesymbol', 'uniprot')
                 if source == 'MIMP':

@@ -426,6 +426,15 @@ urls = {
         'label': 'Disease-gene associations',
         'url': 'http://www.disgenet.org/ds/DisGeNET/results/%s_gene_disease_associations.tar.gz',
         'datasets': ['curated', 'literature', 'befree', 'all']
+    },
+    'hsn': {
+        'label': 'The Wang Human Signaling Network',
+        'url': 'http://www.cancer-systemsbiology.org/HuamnSignalingNet_v6.csv'
+    },
+    'li2012': {
+        'label': 'Human Phosphotyrosine Signaling Network',
+        'url': 'http://genome.cshlp.org/content/22/7/1222/suppl/DC1',
+        'file': 'li2012.csv'
     }
 }
 
@@ -623,7 +632,7 @@ best = {
                 separator="\t", nameColA=3, nameColB=4,
                 nameTypeA="genesymbol", nameTypeB="genesymbol",
                 typeA="protein", typeB="protein",
-                isDirected=False,sign=False,ncbiTaxId=9606,
+                isDirected = False, sign = False, ncbiTaxId=9606,
                 inFile=os.path.join(ROOT, 'data', 'cell-map-edge-attributes.txt'),references=(6, ";"),
                 extraEdgeAttrs={},
                 extraNodeAttrsA={},
@@ -930,6 +939,27 @@ good = {
 }
 
 ugly = {
+    'hsn': input_formats.ReadSettings(name="Wang", separator=",", 
+                nameColA = 0, nameColB = 2,
+                nameTypeA="entrez", nameTypeB="entrez",
+                typeA="protein", typeB="protein", isDirected = (4, ['Pos', 'Neg']), 
+                sign = (4, 'Pos', 'Neg'),
+                inFile = 'get_hsn',references = False, ncbiTaxId = 9606,
+                extraEdgeAttrs={},
+                extraNodeAttrsA={},
+                extraNodeAttrsB={}),
+    'li2012': input_formats.ReadSettings(name = "Li2012", separator = False, 
+                nameColA = 0, nameColB = 1,
+                nameTypeA="genesymbol", nameTypeB="genesymbol",
+                typeA="protein", typeB="protein", isDirected = 1, 
+                sign = False,
+                inFile = 'li2012_interactions', references = False, ncbiTaxId = 9606,
+                extraEdgeAttrs = {
+                    'li2012_mechanism': 3,
+                    'li2012_route': 2
+                },
+                extraNodeAttrsA = {},
+                extraNodeAttrsB = {}),
     'acsn': input_formats.ReadSettings(name="ACSN", 
                 separator = None, nameColA=0,
                 nameColB=2, nameTypeA="genesymbol", nameTypeB="genesymbol",
@@ -1140,7 +1170,8 @@ macrophage = input_formats.ReadSettings(name="Macrophage", separator=";", nameCo
                 extraNodeAttrsA={},
                 extraNodeAttrsB={})
 
-ccmap = input_formats.ReadSettings(name="CancerCellMap", separator=";", 
+# this was Wang's network
+hsn = input_formats.ReadSettings(name="Wang", separator=";", 
                 nameColA=1, nameColB=3,
                 nameTypeA="entrez", nameTypeB="entrez",
                 typeA="protein", typeB="protein", isDirected=1, 

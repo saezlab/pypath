@@ -1,0 +1,584 @@
+substrate family	protein/pY position	TK writers	SH2/PTB Readers	signaling route	tissue specificity	evo-patterns
+BCR	BCR/177	ABL	PTPN SH2	CTK_Cytoplasm	ubiquitous	PPP
+BCR	BCR/177	ABL	GRB2 SH2	CTK_Cytoplasm	ubiquitous	PPP
+CAV	CAV1/14	ABL	GRB7 SH2	CTK_Membrane	ubiquitous	PPP
+CBL	CBL/700	ABL	CRK SH2	CTK_Cytoplasm	ubiquitous	PPP
+CBL	CBL/700	ABL	VAV SH2	CTK_Cytoplasm	ubiquitous	PPP
+CBL	CBL/774	ABL	CRK SH2	CTK_Cytoplasm	ubiquitous	PPP
+CBL	CBL/774	ABL	NCK SH2	CTK_Cytoplasm	ubiquitous	PPB
+CRK	CRK/221	ABL	CRK SH2	CTK_Cytoplasm	ubiquitous	PPP
+CRK	CRK/221	ABL	NCK SH2	CTK_Cytoplasm	ubiquitous	PPB
+EGFR	EGFR/1016	ABL	SRC SH2	CTK_Cytoplasm	ubiquitous	PPP
+EGFR	EGFR/1016	ABL	PLCG SH2	CTK_Cytoplasm	ubiquitous	PPP
+EGFR	EGFR/1092	ABL	GRB2 SH2	CTK_Cytoplasm	ubiquitous	PPP
+EGFR	EGFR/1197	ABL	PLCG SH2	CTK_Cytoplasm	ubiquitous	PPP
+MUC1	MUC1/1243	ABL	GRB2 SH2	CTK_Membrane	ubiquitous	PVP
+PKD	PRKD1/463	ABL	SRC SH2	CTK_Cytoplasm	ubiquitous	PPP
+PLSCR1	PLSCR1/69	ABL	CRK SH2	CTK_Membrane	x	PPP
+PLSCR1	PLSCR1/74	ABL	CRK SH2	CTK_Membrane	x	PPP
+SYK	ZAP70/319	ABL	SRC SH2	CTK_Cytoplasm	ubiquitous	PPP
+PLSCR1	PLSCR1/69	ABL	SHC PTB	CTK_Membrane	x	PPP
+STAT	STAT1/701	ALK	STAT SH2	RTK_Membrane	ubiquitous	BPP
+PLCG	PLCG1/771	AXL	SYK SH2	RTK_Cytoplasm	ubiquitous	VPP
+PLCG	PLCG1/771	AXL	ABL SH2	RTK_Cytoplasm	ubiquitous	VPP
+PLCG	PLCG1/771	AXL	PLCG SH2	RTK_Cytoplasm	ubiquitous	VPP
+SRC	FGR/523	CSK	SRC SH2	CTK_Cytoplasm	ubiquitous	PPP
+BCAR1	BCAR1/664	EGFR	SRC SH2	RTK_Cytoplasm	ubiquitous	PBP
+CBL	CBL/371	EGFR	PI3K SH2	RTK_Cytoplasm	ubiquitous	PPP
+CRK	CRK/221	EGFR	CRK SH2	RTK_Cytoplasm	ubiquitous	PPP
+CRK	CRK/221	EGFR	NCK SH2	RTK_Cytoplasm	ubiquitous	PPB
+EGFR	EGFR/1016	EGFR	SRC SH2	RTK_Cytoplasm	ubiquitous	PPP
+EGFR	EGFR/1016	EGFR	PLCG SH2	RTK_Cytoplasm	ubiquitous	PPP
+EGFR	EGFR/1069	EGFR	CBL SH2	RTK_Cytoplasm	ubiquitous	PPP
+EGFR	EGFR/1092	EGFR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	PPP
+EGFR	EGFR/1110	EGFR	SRC SH2	RTK_Cytoplasm	ubiquitous	PPP
+EGFR	EGFR/1110	EGFR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	PPP
+EGFR	EGFR/1172	EGFR	SRC SH2	RTK_Cytoplasm	ubiquitous	PPP
+EGFR	EGFR/1172	EGFR	PTPN SH2	RTK_Cytoplasm	ubiquitous	PPP
+EGFR	EGFR/1172	EGFR	SHC SH2	RTK_Cytoplasm	ubiquitous	PPP
+EGFR	EGFR/1197	EGFR	PLCG SH2	RTK_Cytoplasm	ubiquitous	PPP
+EGFR	ERBB2/1139	EGFR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	PPP
+EGFR	ERBB2/1221	EGFR	SHC SH2	RTK_Cytoplasm	ubiquitous	PPP
+EGFR	ERBB2/1222	EGFR	SHC SH2	RTK_Cytoplasm	ubiquitous	PPP
+EGFR	ERBB3/1199	EGFR	GRB7 SH2	RTK_Cytoplasm	ubiquitous	PPP
+EGFR	ERBB3/1262	EGFR	GRB7 SH2	RTK_Cytoplasm	ubiquitous	PPP
+EZR	EZR/354	EGFR	PI3K SH2	RTK_Membrane	ubiquitous	PPP
+FYB	FYB/595	EGFR	SLP76 SH2	RTK_Cytoplasm	x	PVV
+FYB	FYB/651	EGFR	SLP76 SH2	RTK_Cytoplasm	x	PVV
+GAB	GAB1/373	EGFR	CRK SH2	RTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB1/406	EGFR	CRK SH2	RTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB1/406	EGFR	SHC SH2	RTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB1/447	EGFR	PI3K SH2	RTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB1/472	EGFR	PI3K SH2	RTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB1/589	EGFR	PI3K SH2	RTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB1/627	EGFR	PTPN SH2	RTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB1/659	EGFR	PTPN SH2	RTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB1/307	EGFR	CRK SH2	RTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB1/627	EGFR	SRC SH2	RTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB1/659	EGFR	SRC SH2	RTK_Cytoplasm	ubiquitous	PPP
+GRB2	GRB2/209	EGFR	PLCG SH2	RTK_Cytoplasm	ubiquitous	PPP
+GRB2	GRB2/209	EGFR	RASA1 SH2	RTK_Cytoplasm	ubiquitous	PPP
+GRB2	GRB2/209	EGFR	VAV SH2	RTK_Cytoplasm	ubiquitous	PPP
+HGS	HGS/329	EGFR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	PPP
+JAK	JAK2/813	EGFR	APS SH2	RTK_Membrane	ubiquitous	PBB
+MUC1	MUC1/1229	EGFR	SRC SH2	RTK_Membrane	ubiquitous	PVP
+MUC1	MUC1/1229	EGFR	SYK SH2	RTK_Membrane	ubiquitous	PVP
+PLCG	PLCG1/472	EGFR	PLCG SH2	RTK_Cytoplasm	ubiquitous	PPP
+PLCG	PLCG1/771	EGFR	PLCG SH2	RTK_Cytoplasm	ubiquitous	PPP
+PLCG	PLCG1/472	EGFR	SYK SH2	RTK_Cytoplasm	ubiquitous	PPP
+PLCG	PLCG1/771	EGFR	SYK SH2	RTK_Cytoplasm	ubiquitous	PPP
+PLCG	PLCG1/771	EGFR	ABL SH2	RTK_Cytoplasm	ubiquitous	PPP
+PTPN1	PTPN1/66	EGFR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	PPP
+RASA1	RASA1/460	EGFR	SRC SH2	RTK_Cytoplasm	tissue specific	PPP
+SHC	SHC1/349	EGFR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	PPP
+SHC	SHC1/349	EGFR	SHIP SH2	RTK_Cytoplasm	ubiquitous	PPP
+SHC	SHC1/427	EGFR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	PPP
+SHC	SHC1/349	EGFR	SRC SH2	RTK_Cytoplasm	ubiquitous	PPP
+SHC	SHC1/427	EGFR	PI3K SH2	RTK_Cytoplasm	ubiquitous	PPP
+STAT	STAT1/701	EGFR	STAT SH2	RTK_Membrane	ubiquitous	PPP
+VAV	VAV1/174	EGFR	PTPN SH2	RTK_Cytoplasm	ubiquitous	PPP
+VAV	VAV1/142	EGFR	SYK SH2	RTK_Cytoplasm	ubiquitous	PPP
+VAV	VAV1/160	EGFR	SRC SH2	RTK_Cytoplasm	ubiquitous	PPP
+VAV	VAV1/160	EGFR	TEC SH2	RTK_Cytoplasm	ubiquitous	PPP
+VAV	VAV1/160	EGFR	SLP76 SH2	RTK_Cytoplasm	ubiquitous	PPV
+VAV	VAV1/174	EGFR	SRC SH2	RTK_Cytoplasm	ubiquitous	PPP
+VAV	VAV1/174	EGFR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	PPP
+VAV	VAV1/174	EGFR	SYK SH2	RTK_Cytoplasm	ubiquitous	PPP
+EGFR	EGFR/1110	EGFR	SHC PTB	RTK_Membrane	ubiquitous	PPP
+EGFR	EGFR/1172	EGFR	SHC PTB	RTK_Membrane	ubiquitous	PPP
+EGFR	ERBB3/1328	EGFR	SHC PTB	RTK_Membrane	ubiquitous	PPP
+EPH	EPHB1/928	EPH	GRB7 SH2	RTK_Cytoplasm	ubiquitous	PPP
+EPH	EPHB2/596	EPH	SRC SH2	RTK_Cytoplasm	ubiquitous	PPP
+EPH	EPHB2/596	EPH	RASA1 SH2	RTK_Cytoplasm	ubiquitous	PPP
+EPH	EPHB2/596	EPH	SH2D2 SH2	RTK_Cytoplasm	ubiquitous	PPV
+EPH	EPHB3/614	EPH	SRC SH2	RTK_Cytoplasm	ubiquitous	PPP
+EPH	EPHB3/614	EPH	CRK SH2	RTK_Cytoplasm	ubiquitous	PPP
+EPH	EPHB3/614	EPH	RASA1 SH2	RTK_Cytoplasm	ubiquitous	PPP
+FAK	PTK2/397	FAK	SRC SH2	CTK_Cytoplasm	ubiquitous	PPP
+FAK	PTK2/397	FAK	PI3K SH2	CTK_Cytoplasm	ubiquitous	PPP
+FAK	PTK2/397	FAK	PLCG SH2	CTK_Cytoplasm	ubiquitous	PPP
+FAK	PTK2/397	FAK	SHC SH2	CTK_Cytoplasm	ubiquitous	PPP
+FAK	PTK2/397	FAK	GRB7 SH2	CTK_Cytoplasm	ubiquitous	PPP
+FAK	PTK2/925	FAK	GRB2 SH2	CTK_Cytoplasm	ubiquitous	PPP
+FAK	PTK2/925	FAK	PTPN SH2	CTK_Cytoplasm	ubiquitous	PPP
+PXN	PXN/118	FAK	CRK SH2	CTK_Cytoplasm	ubiquitous	PPP
+PXN	PXN/31	FAK	CRK SH2	CTK_Cytoplasm	ubiquitous	PPP
+BCR	BCR/177	FER	PTPN SH2	CTK_Cytoplasm	ubiquitous	PPP
+BCR	BCR/177	FER	GRB2 SH2	CTK_Cytoplasm	ubiquitous	PPP
+BCR	BCR/246	FER	SRC SH2	CTK_Cytoplasm	ubiquitous	PPP
+BCR	BCR/276	FER	SHC SH2	CTK_Cytoplasm	ubiquitous	PPP
+BCR	BCR/279	FER	SHC SH2	CTK_Cytoplasm	ubiquitous	PPP
+BCR	BCR/283	FER	SHC SH2	CTK_Cytoplasm	ubiquitous	PPP
+CD79A	CD79A/188	FER	SHIP SH2	CTK_Cytoplasm	tissue specific	PVP
+CD79A	CD79A/210	FER	SHIP SH2	CTK_Cytoplasm	tissue specific	PVP
+CD79B	CD79B/196	FER	SHIP SH2	CTK_Membrane	tissue specific	PVP
+CD79B	CD79B/207	FER	SHIP SH2	CTK_Membrane	tissue specific	PVP
+BCAR1	BCAR1/249	FGFR	NCK SH2	RTK_Cytoplasm	ubiquitous	PBB
+BCAR1	BCAR1/306	FGFR	NCK SH2	RTK_Cytoplasm	ubiquitous	PBB
+BCAR1	BCAR1/327	FGFR	NCK SH2	RTK_Cytoplasm	ubiquitous	PBB
+BCAR1	BCAR1/128	FGFR	ABL SH2	RTK_Cytoplasm	ubiquitous	PBP
+BCAR1	BCAR1/249	FGFR	ABL SH2	RTK_Cytoplasm	ubiquitous	PBP
+BCAR1	BCAR1/249	FGFR	CRK SH2	RTK_Cytoplasm	ubiquitous	PBP
+BCAR1	BCAR1/306	FGFR	ABL SH2	RTK_Cytoplasm	ubiquitous	PBP
+BCAR1	BCAR1/306	FGFR	CRK SH2	RTK_Cytoplasm	ubiquitous	PBP
+BCAR1	BCAR1/327	FGFR	CRK SH2	RTK_Cytoplasm	ubiquitous	PBP
+FGFR	FGFR1/766	FGFR	PLCG SH2	RTK_Membrane	ubiquitous	PPP
+PLCG	PLCG1/472	FGFR	PLCG SH2	RTK_Cytoplasm	ubiquitous	PPP
+PLCG	PLCG1/771	FGFR	PLCG SH2	RTK_Cytoplasm	ubiquitous	PPP
+PLCG	PLCG1/472	FGFR	SYK SH2	RTK_Cytoplasm	ubiquitous	PPP
+PLCG	PLCG1/771	FGFR	SYK SH2	RTK_Cytoplasm	ubiquitous	PPP
+PLCG	PLCG1/771	FGFR	ABL SH2	RTK_Cytoplasm	ubiquitous	PPP
+BCAR1	BCAR1/653	INSR	SRC SH2	RTK_Cytoplasm	ubiquitous	BBP
+BCAR1	BCAR1/653	INSR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	BBP
+BCAR1	BCAR1/653	INSR	FER SH2	RTK_Cytoplasm	ubiquitous	BBP
+BCAR1	BCAR1/653	INSR	TNS SH2	RTK_Cytoplasm	ubiquitous	BBB
+blnk	BLNK/72	INSR	VAV SH2	RTK_Membrane	ubiquitous	BVP
+blnk	BLNK/72	INSR	GRB2 SH2	RTK_Membrane	ubiquitous	BVP
+blnk	BLNK/96	INSR	NCK SH2	RTK_Membrane	ubiquitous	BVB
+CBL	CBL/371	INSR	PI3K SH2	RTK_Cytoplasm	ubiquitous	BPP
+CBL	CBL/700	INSR	CRK SH2	RTK_Cytoplasm	ubiquitous	BPP
+CBL	CBL/700	INSR	VAV SH2	RTK_Cytoplasm	ubiquitous	BPP
+CBL	CBL/774	INSR	CRK SH2	RTK_Cytoplasm	ubiquitous	BPP
+CBL	CBL/774	INSR	NCK SH2	RTK_Cytoplasm	ubiquitous	BPB
+CRK	CRK/221	INSR	CRK SH2	RTK_Cytoplasm	ubiquitous	BPP
+CRK	CRK/221	INSR	NCK SH2	RTK_Cytoplasm	ubiquitous	BPB
+DOK	DOK1/362	INSR	NCK SH2	RTK_Cytoplasm	ubiquitous	BVB
+DOK	DOK1/362	INSR	RASA1 SH2	RTK_Cytoplasm	ubiquitous	BVP
+DOK	DOK1/398	INSR	RASA1 SH2	RTK_Cytoplasm	ubiquitous	BVP
+FAK	PTK2/925	INSR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	BPP
+FAK	PTK2/925	INSR	PTPN SH2	RTK_Cytoplasm	ubiquitous	BPP
+FAK	PTK2B/402	INSR	SRC SH2	RTK_Cytoplasm	ubiquitous	BPP
+GAB	GAB1/373	INSR	CRK SH2	RTK_Cytoplasm	ubiquitous	BPP
+GAB	GAB1/447	INSR	PI3K SH2	RTK_Cytoplasm	ubiquitous	BPP
+GAB	GAB1/472	INSR	PI3K SH2	RTK_Cytoplasm	ubiquitous	BPP
+GAB	GAB1/589	INSR	PI3K SH2	RTK_Cytoplasm	ubiquitous	BPP
+GAB	GAB1/627	INSR	PTPN SH2	RTK_Cytoplasm	ubiquitous	BPP
+GAB	GAB1/242	INSR	CRK SH2	RTK_Cytoplasm	ubiquitous	BPP
+GAB	GAB1/627	INSR	SRC SH2	RTK_Cytoplasm	ubiquitous	BPP
+INSR	IGF1R/1346	INSR	PI3K SH2	RTK_Membrane	ubiquitous	BBP
+INSR	INSR/1185	INSR	SOCS SH2	RTK_Membrane	ubiquitous	BBP
+INSR	INSR/1189	INSR	SOCS SH2	RTK_Membrane	ubiquitous	BBP
+INSR	INSR/1190	INSR	SOCS SH2	RTK_Membrane	ubiquitous	BBP
+INSR	INSR/999	INSR	SOCS SH2	RTK_Membrane	ubiquitous	BBP
+INSR	INSR/1189	INSR	GRB7 SH2	RTK_Membrane	ubiquitous	BBP
+INSR	INSR/1190	INSR	GRB7 SH2	RTK_Membrane	ubiquitous	BBP
+IRS	IRS1/1179	INSR	PTPN SH2	RTK_Cytoplasm	ubiquitous	BPP
+IRS	IRS1/1229	INSR	PTPN SH2	RTK_Cytoplasm	ubiquitous	BPP
+IRS	IRS1/612	INSR	PI3K SH2	RTK_Cytoplasm	ubiquitous	BPP
+IRS	IRS1/632	INSR	PI3K SH2	RTK_Cytoplasm	ubiquitous	BPP
+IRS	IRS1/896	INSR	SRC SH2	RTK_Cytoplasm	ubiquitous	BPP
+IRS	IRS1/896	INSR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	BPP
+IRS	IRS1/941	INSR	PI3K SH2	RTK_Cytoplasm	ubiquitous	BPP
+IRS	IRS1/989	INSR	PI3K SH2	RTK_Cytoplasm	ubiquitous	BPP
+PI3K	PIK3R1/607	INSR	SRC SH2	RTK_Cytoplasm	ubiquitous	BPP
+PI3K	PIK3R1/607	INSR	TEC SH2	RTK_Cytoplasm	ubiquitous	BPP
+PTPN	PTPN11/546	INSR	SRC SH2	RTK_Cytoplasm	ubiquitous	BPP
+PTPN	PTPN11/546	INSR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	BPP
+PTPN	PTPN11/584	INSR	SRC SH2	RTK_Cytoplasm	ubiquitous	BPP
+PTPN	PTPN11/584	INSR	PI3K SH2	RTK_Cytoplasm	ubiquitous	BPP
+PTPN	PTPN11/584	INSR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	BPP
+PTPN	PTPN11/584	INSR	GRB7 SH2	RTK_Cytoplasm	ubiquitous	BPP
+PTPN1	PTPN1/66	INSR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	BPP
+SHC	SHC1/349	INSR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	BPP
+SHC	SHC1/349	INSR	SHIP SH2	RTK_Cytoplasm	ubiquitous	BPP
+SHC	SHC1/427	INSR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	BPP
+SHC	SHC1/349	INSR	SRC SH2	RTK_Cytoplasm	ubiquitous	BPP
+SHC	SHC1/427	INSR	PI3K SH2	RTK_Cytoplasm	ubiquitous	BPP
+STE20	MAP4K1/381	INSR	NCK SH2	RTK_Membrane	x	BBB
+STE20	MAP4K1/381	INSR	BLNK SH2	RTK_Membrane	x	BBB
+INSR	IGF1R/980	INSR	IRS PTB	RTK_Membrane	ubiquitous	BBP
+INSR	IGF1R/980	INSR	SHC PTB	RTK_Membrane	ubiquitous	BBP
+INSR	INSR/999	INSR	IRS PTB	RTK_Membrane	ubiquitous	BBP
+INSR	INSR/999	INSR	SHC PTB	RTK_Membrane	ubiquitous	BBP
+CTLA4	CTLA4/201	JAK	PI3K SH2	CTK_Membrane	x	BVP
+CTLA4	CTLA4/201	JAK	PTPN SH2	CTK_Membrane	x	BVP
+EPOR	EPOR/489	JAK	SRC SH2	CTK_Membrane	x	BVP
+EPOR	EPOR/426	JAK	SHIP SH2	CTK_Membrane	x	BVP
+EPOR	EPOR/426	JAK	PTPN SH2	CTK_Membrane	x	BVP
+EPOR	EPOR/426	JAK	SHC SH2	CTK_Membrane	x	BVP
+EPOR	EPOR/426	JAK	SOCS SH2	CTK_Membrane	x	BVP
+EPOR	EPOR/426	JAK	STAT SH2	CTK_Membrane	x	BVP
+EPOR	EPOR/454	JAK	SOCS SH2	CTK_Membrane	x	BVP
+EPOR	EPOR/456	JAK	CRK SH2	CTK_Membrane	x	BVP
+EPOR	EPOR/456	JAK	SOCS SH2	CTK_Membrane	x	BVP
+EPOR	EPOR/489	JAK	GRB2 SH2	CTK_Membrane	x	BVP
+GNB2L1	GNB2L1/194	JAK	GRB2 SH2	CTK_Cytoplasm	ubiquitous	BPP
+IFNAR1	IFNAR1/466	JAK	STAT SH2	CTK_Membrane	ubiquitous	BVP
+IFNAR1	IFNAR1/481	JAK	STAT SH2	CTK_Membrane	ubiquitous	BVP
+IFNAR1	IFNGR1/457	JAK	STAT SH2	CTK_Membrane	ubiquitous	BVP
+IL10RA	IL10RA/446	JAK	STAT SH2	CTK_Membrane	x	BVP
+IL10RA	IL10RA/496	JAK	STAT SH2	CTK_Membrane	x	BVP
+IL6ST	IL6ST/759	JAK	PTPN SH2	CTK_Membrane	ubiquitous	BVP
+IL6ST	IL6ST/759	JAK	SHC SH2	CTK_Membrane	ubiquitous	BVP
+IL6ST	IL6ST/767	JAK	STAT SH2	CTK_Membrane	ubiquitous	BVP
+IL6ST	IL6ST/814	JAK	STAT SH2	CTK_Membrane	ubiquitous	BVP
+IL6ST	IL6ST/905	JAK	STAT SH2	CTK_Membrane	ubiquitous	BVP
+IL6ST	IL6ST/915	JAK	STAT SH2	CTK_Membrane	ubiquitous	BVP
+STAT	STAT1/701	JAK	STAT SH2	CTK_Membrane	ubiquitous	BPP
+FAK	PTK2/397	MET	SRC SH2	RTK_Cytoplasm	ubiquitous	PPP
+FAK	PTK2/397	MET	PI3K SH2	RTK_Cytoplasm	ubiquitous	PPP
+FAK	PTK2/397	MET	PLCG SH2	RTK_Cytoplasm	ubiquitous	PPP
+FAK	PTK2/397	MET	SHC SH2	RTK_Cytoplasm	ubiquitous	PPP
+FAK	PTK2/397	MET	GRB7 SH2	RTK_Cytoplasm	ubiquitous	PPP
+FAK	PTK2/925	MET	GRB2 SH2	RTK_Cytoplasm	ubiquitous	PPP
+FAK	PTK2/925	MET	PTPN SH2	RTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB1/373	MET	CRK SH2	RTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB1/406	MET	CRK SH2	RTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB1/406	MET	SHC SH2	RTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB1/447	MET	PI3K SH2	RTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB1/472	MET	PI3K SH2	RTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB1/589	MET	PI3K SH2	RTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB1/627	MET	PTPN SH2	RTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB1/659	MET	PTPN SH2	RTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB1/307	MET	CRK SH2	RTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB1/627	MET	SRC SH2	RTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB1/659	MET	SRC SH2	RTK_Cytoplasm	ubiquitous	PPP
+MET	MET/1349	MET	SRC SH2	RTK_Membrane	ubiquitous	PPP
+MET	MET/1349	MET	GRB2 SH2	RTK_Membrane	ubiquitous	PPP
+MET	MET/1349	MET	PI3K SH2	RTK_Membrane	ubiquitous	PPP
+MET	MET/1349	MET	PLCG SH2	RTK_Membrane	ubiquitous	PPP
+MET	MET/1349	MET	PTPN SH2	RTK_Membrane	ubiquitous	PPP
+MET	MET/1349	MET	SHC SH2	RTK_Membrane	ubiquitous	PPP
+MET	MET/1349	MET	SHIP SH2	RTK_Membrane	ubiquitous	PPP
+MET	MET/1349	MET	GRB7 SH2	RTK_Membrane	ubiquitous	PPP
+MET	MET/1356	MET	GRB2 SH2	RTK_Membrane	ubiquitous	PPP
+MET	MET/1356	MET	PI3K SH2	RTK_Membrane	ubiquitous	PPP
+MET	MET/1356	MET	PLCG SH2	RTK_Membrane	ubiquitous	PPP
+MET	MET/1356	MET	PTPN SH2	RTK_Membrane	ubiquitous	PPP
+MET	MET/1356	MET	SHC SH2	RTK_Membrane	ubiquitous	PPP
+MET	MET/1356	MET	SHIP SH2	RTK_Membrane	ubiquitous	PPP
+MET	MET/1356	MET	GRB7 SH2	RTK_Membrane	ubiquitous	PPP
+MET	MET/1363	MET	SRC SH2	RTK_Membrane	ubiquitous	PPP
+CBL	CBL/700	PDGFR	CRK SH2	RTK_Cytoplasm	ubiquitous	VPP
+CBL	CBL/700	PDGFR	VAV SH2	RTK_Cytoplasm	ubiquitous	VPP
+FAK	PTK2/397	PDGFR	SRC SH2	RTK_Cytoplasm	ubiquitous	VPP
+FAK	PTK2/397	PDGFR	PI3K SH2	RTK_Cytoplasm	ubiquitous	VPP
+FAK	PTK2/397	PDGFR	PLCG SH2	RTK_Cytoplasm	ubiquitous	VPP
+FAK	PTK2/397	PDGFR	SHC SH2	RTK_Cytoplasm	ubiquitous	VPP
+FAK	PTK2/397	PDGFR	GRB7 SH2	RTK_Cytoplasm	ubiquitous	VPP
+IRS	IRS1/896	PDGFR	SRC SH2	RTK_Cytoplasm	ubiquitous	VPP
+IRS	IRS1/896	PDGFR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	VPP
+IRS	IRS1/941	PDGFR	PI3K SH2	RTK_Cytoplasm	ubiquitous	VPP
+JAK	JAK2/813	PDGFR	APS SH2	RTK_Membrane	ubiquitous	VVV
+PDGFR	PDGFRB/1009	PDGFR	PTPN SH2	RTK_Membrane	ubiquitous	VVP
+PDGFR	PDGFRB/716	PDGFR	GRB2 SH2	RTK_Membrane	ubiquitous	VVP
+PDGFR	PDGFRB/740	PDGFR	PI3K SH2	RTK_Membrane	ubiquitous	VVP
+PDGFR	PDGFRB/740	PDGFR	SHC SH2	RTK_Membrane	ubiquitous	VVP
+PDGFR	PDGFRB/751	PDGFR	SHC SH2	RTK_Membrane	ubiquitous	VVP
+PDGFR	PDGFRB/771	PDGFR	RASA1 SH2	RTK_Membrane	ubiquitous	VVP
+PDGFR	PDGFRB/771	PDGFR	SHC SH2	RTK_Membrane	ubiquitous	VVP
+PDGFR	PDGFRB/716	PDGFR	GRB7 SH2	RTK_Membrane	ubiquitous	VVP
+PDGFR	PDGFRB/775	PDGFR	GRB7 SH2	RTK_Membrane	ubiquitous	VVP
+PLCG	PLCG1/771	PDGFR	SYK SH2	RTK_Cytoplasm	ubiquitous	VPP
+PLCG	PLCG1/771	PDGFR	ABL SH2	RTK_Cytoplasm	ubiquitous	VPP
+PLCG	PLCG1/771	PDGFR	PLCG SH2	RTK_Cytoplasm	ubiquitous	VPP
+PTPN	PTPN11/546	PDGFR	SRC SH2	RTK_Cytoplasm	ubiquitous	VPP
+PTPN	PTPN11/546	PDGFR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	VPP
+PTPN	PTPN11/584	PDGFR	SRC SH2	RTK_Cytoplasm	ubiquitous	VPP
+PTPN	PTPN11/584	PDGFR	PI3K SH2	RTK_Cytoplasm	ubiquitous	VPP
+PTPN	PTPN11/584	PDGFR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	VPP
+PTPN	PTPN11/584	PDGFR	GRB7 SH2	RTK_Cytoplasm	ubiquitous	VPP
+RASA1	RASA1/460	PDGFR	SRC SH2	RTK_Cytoplasm	tissue specific	VPP
+SHC	SHC1/427	PDGFR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	VPP
+SHC	SHC1/427	PDGFR	PI3K SH2	RTK_Cytoplasm	ubiquitous	VPP
+STE20	MAP4K1/381	PDGFR	NCK SH2	RTK_Membrane	x	VBB
+STE20	MAP4K1/381	PDGFR	BLNK SH2	RTK_Membrane	x	VBB
+RET	RET/981	RET	SRC SH2	RTK_Membrane	ubiquitous	PPP
+RET	RET/1015	RET	PLCG SH2	RTK_Membrane	ubiquitous	PPP
+RET	RET/1096	RET	GRB2 SH2	RTK_Membrane	ubiquitous	PPP
+RET	RET/905	RET	GRB7 SH2	RTK_Membrane	ubiquitous	PPP
+STAT	STAT1/701	RET	STAT SH2	RTK_Membrane	ubiquitous	PPP
+RET	RET/1062	RET	FRS PTB	RTK_Membrane	ubiquitous	PPB
+RET	RET/1062	RET	IRS PTB	RTK_Membrane	ubiquitous	PPP
+RET	RET/1062	RET	SHC PTB	RTK_Membrane	ubiquitous	PPP
+AFAP1	AFAP1/451	SRC	SRC SH2	CTK_Cytoplasm	ubiquitous	PVP
+AFAP1	AFAP1/453	SRC	SRC SH2	CTK_Cytoplasm	ubiquitous	PVP
+AFAP1	AFAP1/93	SRC	SRC SH2	CTK_Cytoplasm	ubiquitous	PVP
+AFAP1	AFAP1/94	SRC	SRC SH2	CTK_Cytoplasm	ubiquitous	PVP
+APS	SH2B3/273	SRC	SRC SH2	CTK_Cytoplasm	ubiquitous	PBP
+BCAR1	BCAR1/653	SRC	SRC SH2	CTK_Cytoplasm	ubiquitous	PBP
+BCAR1	BCAR1/653	SRC	GRB2 SH2	CTK_Cytoplasm	ubiquitous	PBP
+BCAR1	BCAR1/653	SRC	FER SH2	CTK_Cytoplasm	ubiquitous	PBP
+BCAR1	BCAR1/653	SRC	TNS SH2	CTK_Cytoplasm	ubiquitous	PBB
+BCR	BCR/177	SRC	PTPN SH2	CTK_Cytoplasm	ubiquitous	PPP
+BCR	BCR/177	SRC	GRB2 SH2	CTK_Cytoplasm	ubiquitous	PPP
+blnk	BLNK/96	SRC	NCK SH2	CTK_Membrane	ubiquitous	PVB
+CAV	CAV1/14	SRC	GRB7 SH2	CTK_Membrane	ubiquitous	PPP
+CBL	CBL/700	SRC	CRK SH2	CTK_Cytoplasm	ubiquitous	PPP
+CBL	CBL/700	SRC	VAV SH2	CTK_Cytoplasm	ubiquitous	PPP
+CBL	CBL/731	SRC	PI3K SH2	CTK_Cytoplasm	ubiquitous	PPP
+CBL	CBL/774	SRC	CRK SH2	CTK_Cytoplasm	ubiquitous	PPP
+CBL	CBL/774	SRC	NCK SH2	CTK_Cytoplasm	ubiquitous	PPB
+CD19	CD19/500	SRC	PI3K SH2	CTK_Membrane	tissue specific	PVP
+CD19	CD19/531	SRC	PI3K SH2	CTK_Membrane	tissue specific	PVP
+CD22	CD22/762	SRC	PTPN SH2	CTK_Membrane	tissue specific	PPP
+CD22	CD22/807	SRC	PTPN SH2	CTK_Membrane	tissue specific	PPP
+CD22	CD22/822	SRC	PTPN SH2	CTK_Membrane	tissue specific	PPP
+CD22	CD22/842	SRC	PTPN SH2	CTK_Membrane	tissue specific	PPP
+CD22	CD22/762	SRC	SHC SH2	CTK_Membrane	tissue specific	PPP
+CD22	CD22/807	SRC	GRB2 SH2	CTK_Membrane	tissue specific	PPP
+CD22	CD22/822	SRC	SRC SH2	CTK_Membrane	tissue specific	PPP
+CD22	CD22/822	SRC	PI3K SH2	CTK_Membrane	tissue specific	PPP
+CD22	CD22/822	SRC	SYK SH2	CTK_Membrane	tissue specific	PPP
+CD22	CD22/822	SRC	SHC SH2	CTK_Membrane	tissue specific	PPP
+CD22	CD22/842	SRC	SRC SH2	CTK_Membrane	tissue specific	PPP
+CD22	CD22/842	SRC	PI3K SH2	CTK_Membrane	tissue specific	PPP
+CD22	CD22/842	SRC	SYK SH2	CTK_Membrane	tissue specific	PPP
+CD247	CD247/111	SRC	SYK SH2	CTK_Membrane	tissue specific	PVP
+CD247	CD247/123	SRC	SYK SH2	CTK_Membrane	tissue specific	PVP
+CD247	CD247/142	SRC	SYK SH2	CTK_Membrane	tissue specific	PVP
+CD247	CD247/153	SRC	SYK SH2	CTK_Membrane	tissue specific	PVP
+CD247	CD247/64	SRC	SYK SH2	CTK_Membrane	tissue specific	PVP
+CD247	CD247/72	SRC	SYK SH2	CTK_Membrane	tissue specific	PVP
+CD28	CD28/191	SRC	GRB2 SH2	CTK_Membrane	x	PVP
+CD28	CD28/191	SRC	PI3K SH2	CTK_Membrane	x	PVP
+CD33	CD33/340	SRC	PTPN SH2	CTK_Membrane	ubiquitous	PVP
+CD3D	CD3D/149	SRC	SYK SH2	CTK_Membrane	tissue specific	PVP
+CD3D	CD3D/160	SRC	SYK SH2	CTK_Membrane	tissue specific	PVP
+CD3E	CD3E/188	SRC	SYK SH2	CTK_Membrane	tissue specific	PVP
+CD3E	CD3E/199	SRC	SYK SH2	CTK_Membrane	tissue specific	PVP
+CD3G	CD3G/160	SRC	SYK SH2	CTK_Membrane	tissue specific	PVP
+CD3G	CD3G/171	SRC	SYK SH2	CTK_Membrane	tissue specific	PVP
+CD5	CD5/453	SRC	RASA1 SH2	CTK_Membrane	tissue specific	PVP
+CD5	CD5/487	SRC	PI3K SH2	CTK_Membrane	tissue specific	PVP
+CD79A	CD79A/188	SRC	SHIP SH2	CTK_Cytoplasm	tissue specific	PVP
+CD79A	CD79A/210	SRC	SHIP SH2	CTK_Cytoplasm	tissue specific	PVP
+CD79B	CD79B/196	SRC	SHIP SH2	CTK_Membrane	tissue specific	PVP
+CD79B	CD79B/207	SRC	SHIP SH2	CTK_Membrane	tissue specific	PVP
+CLEC1B	CLEC1B/7	SRC	SYK SH2	CTK_Membrane	ubiquitous	PBP
+CLEC7A	CLEC7A/15	SRC	SYK SH2	CTK_Membrane	x	PVP
+EFNB	EFNB1/317	SRC	NCK SH2	CTK_Membrane	ubiquitous	PPB
+EGFR	EGFR/1125	SRC	SRC SH2	CTK_Cytoplasm	ubiquitous	PPP
+ESR1	ESR1/537	SRC	SRC SH2	CTK_Cytoplasm	tissue specific	PVP
+FAK	PTK2/397	SRC	SRC SH2	CTK_Cytoplasm	ubiquitous	PPP
+FAK	PTK2/397	SRC	PI3K SH2	CTK_Cytoplasm	ubiquitous	PPP
+FAK	PTK2/397	SRC	PLCG SH2	CTK_Cytoplasm	ubiquitous	PPP
+FAK	PTK2/397	SRC	SHC SH2	CTK_Cytoplasm	ubiquitous	PPP
+FAK	PTK2/397	SRC	GRB7 SH2	CTK_Cytoplasm	ubiquitous	PPP
+FAK	PTK2/925	SRC	GRB2 SH2	CTK_Cytoplasm	ubiquitous	PPP
+FAK	PTK2/925	SRC	PTPN SH2	CTK_Cytoplasm	ubiquitous	PPP
+FAK	PTK2B/402	SRC	SRC SH2	CTK_Cytoplasm	ubiquitous	PPP
+FCER1G	FCER1G/65	SRC	SYK SH2	CTK_Membrane	tissue specific	PVP
+FCER1G	FCER1G/76	SRC	SYK SH2	CTK_Membrane	tissue specific	PVP
+FCGR2	FCGR2A/281	SRC	SRC SH2	CTK_Membrane	tissue specific	PVP
+FCGR2	FCGR2A/281	SRC	SHC SH2	CTK_Membrane	tissue specific	PVP
+FCGR2	FCGR2A/288	SRC	SYK SH2	CTK_Membrane	tissue specific	PVP
+FCGR2	FCGR2A/288	SRC	SHC SH2	CTK_Membrane	tissue specific	PVP
+FCGR2	FCGR2A/304	SRC	SYK SH2	CTK_Membrane	tissue specific	PVP
+FCGR2	FCGR2A/304	SRC	SHC SH2	CTK_Membrane	tissue specific	PVP
+FCGR2	FCGR2B/292	SRC	SHIP SH2	CTK_Membrane	tissue specific	PVP
+FCGR2	FCGR2B/292	SRC	PTPN SH2	CTK_Membrane	tissue specific	PVP
+FYB	FYB/595	SRC	SLP76 SH2	CTK_Cytoplasm	x	PVV
+FYB	FYB/651	SRC	SLP76 SH2	CTK_Cytoplasm	x	PVV
+GAB	GAB1/589	SRC	PI3K SH2	CTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB2/476	SRC	PI3K SH2	CTK_Cytoplasm	ubiquitous	PPP
+GRLF1	GRLF1/1105	SRC	RASA1 SH2	CTK_Cytoplasm	ubiquitous	PPP
+HCLS1	HCLS1/378	SRC	SRC SH2	CTK_Cytoplasm	tissue specific	PPP
+HCLS1	HCLS1/397	SRC	SRC SH2	CTK_Cytoplasm	tissue specific	PPP
+HNRNPK	HNRNPK/230	SRC	SRC SH2	CTK_Cytoplasm	ubiquitous	PPP
+IL2RB	IL2RB/418	SRC	STAT SH2	CTK_Membrane	x	PVP
+IL2RB	IL2RB/536	SRC	STAT SH2	CTK_Membrane	x	PVP
+IL2RB	IL2RB/387	SRC	SRC SH2	CTK_Membrane	x	PVP
+IL2RB	IL2RB/418	SRC	PTPN SH2	CTK_Membrane	x	PVP
+IL2RB	IL2RB/536	SRC	PTPN SH2	CTK_Membrane	x	PVP
+IL2RB	IL2RB/536	SRC	SYK SH2	CTK_Membrane	x	PVP
+IRS	IRS1/1229	SRC	PTPN SH2	CTK_Cytoplasm	ubiquitous	PPP
+IRS	IRS1/612	SRC	PI3K SH2	CTK_Cytoplasm	ubiquitous	PPP
+ITGB3	ITGB3/773	SRC	GRB2 SH2	CTK_Membrane	tissue specific	PPP
+LRP1	LRP1/4507	SRC	SHC SH2	CTK_Membrane	ubiquitous	PBP
+MAP2	MAP2/67	SRC	GRB2 SH2	CTK_Cytoplasm	ubiquitous	PVP
+MET	MET/1313	SRC	PI3K SH2	CTK_Membrane	ubiquitous	PPP
+MPZL1	MPZL1/263	SRC	PTPN SH2	CTK_Membrane	ubiquitous	PVP
+MSN	MSN/191	SRC	SYK SH2	CTK_Cytoplasm	ubiquitous	PPP
+MSN	MSN/205	SRC	SYK SH2	CTK_Cytoplasm	ubiquitous	PPP
+MUC1	MUC1/1229	SRC	SRC SH2	CTK_Membrane	ubiquitous	PVP
+MUC1	MUC1/1229	SRC	SYK SH2	CTK_Membrane	ubiquitous	PVP
+NFAM1	NFAM1/220	SRC	SYK SH2	CTK_Membrane	ubiquitous	PVP
+NFAM1	NFAM1/231	SRC	SYK SH2	CTK_Membrane	ubiquitous	PVP
+NFKBIA	NFKBIA/42	SRC	PI3K SH2	CTK_Cytoplasm	ubiquitous	PPP
+PDGFR	KIT/900	SRC	TEC SH2	CTK_Membrane	ubiquitous	PVP
+PDGFR	PDGFRB/1009	SRC	PTPN SH2	CTK_Membrane	ubiquitous	PVP
+PDGFR	PDGFRB/771	SRC	RASA1 SH2	CTK_Membrane	ubiquitous	PVP
+PDGFR	PDGFRB/771	SRC	SHC SH2	CTK_Membrane	ubiquitous	PVP
+PI3K	PIK3R1/607	SRC	SRC SH2	CTK_Cytoplasm	ubiquitous	PPP
+PI3K	PIK3R1/607	SRC	TEC SH2	CTK_Cytoplasm	ubiquitous	PPP
+PIK3AP1	PIK3AP1/459	SRC	PI3K SH2	CTK_Membrane	tissue specific	PVP
+PLCG	PLCG2/759	SRC	SLP76 SH2	CTK_Cytoplasm	ubiquitous	PPV
+PLSCR1	PLSCR1/69	SRC	CRK SH2	CTK_Membrane	x	PPP
+PLSCR1	PLSCR1/74	SRC	CRK SH2	CTK_Membrane	x	PPP
+PTPN	PTPN6/536	SRC	SHC SH2	CTK_Cytoplasm	ubiquitous	PPP
+PTPN	PTPN6/536	SRC	GRB2 SH2	CTK_Cytoplasm	ubiquitous	PPP
+PTPN	PTPN6/564	SRC	SYK SH2	CTK_Cytoplasm	ubiquitous	PPP
+PTPN	PTPN6/564	SRC	PI3K SH2	CTK_Cytoplasm	ubiquitous	PPP
+PXN	PXN/40	SRC	SRC SH2	CTK_Cytoplasm	ubiquitous	PPP
+PXN	PXN/88	SRC	CSK SH2	CTK_Cytoplasm	ubiquitous	PPP
+PXN	PXN/118	SRC	CRK SH2	CTK_Cytoplasm	ubiquitous	PPP
+PXN	PXN/31	SRC	CRK SH2	CTK_Cytoplasm	ubiquitous	PPP
+RET	RET/1096	SRC	GRB2 SH2	CTK_Membrane	ubiquitous	PPP
+RET	RET/905	SRC	GRB7 SH2	CTK_Membrane	ubiquitous	PPP
+RHOH	RHOH/73	SRC	SYK SH2	CTK_Cytoplasm	ubiquitous	PVP
+RHOH	RHOH/83	SRC	SYK SH2	CTK_Cytoplasm	ubiquitous	PVP
+SHC	SHC1/349	SRC	GRB2 SH2	CTK_Cytoplasm	ubiquitous	PPP
+SHC	SHC1/349	SRC	SHIP SH2	CTK_Cytoplasm	ubiquitous	PPP
+SHC	SHC1/427	SRC	GRB2 SH2	CTK_Cytoplasm	ubiquitous	PPP
+SHC	SHC1/349	SRC	SRC SH2	CTK_Cytoplasm	ubiquitous	PPP
+SHC	SHC1/427	SRC	PI3K SH2	CTK_Cytoplasm	ubiquitous	PPP
+SKAP1	SKAP1/219	SRC	SRC SH2	CTK_Cytoplasm	tissue specific	PPP
+SKAP1	SKAP1/232	SRC	SRC SH2	CTK_Cytoplasm	tissue specific	PPP
+SLAMF1	SLAMF1/327	SRC	SHIP SH2	CTK_Membrane	tissue specific	PVP
+SLAMF1	SLAMF1/327	SRC	PTPN SH2	CTK_Membrane	tissue specific	PVP
+SLAMF1	SLAMF1/281	SRC	SH2D1 SH2	CTK_Membrane	tissue specific	PVP
+SLAMF1	SLAMF1/307	SRC	SH2D1 SH2	CTK_Membrane	tissue specific	PVP
+SLP76	SLP76/113	SRC	NCK SH2	CTK_Cytoplasm	tissue specific	PVB
+SLP76	SLP76/113	SRC	SRC SH2	CTK_Cytoplasm	tissue specific	PVP
+SLP76	SLP76/113	SRC	VAV SH2	CTK_Cytoplasm	tissue specific	PVP
+SLP76	SLP76/113	SRC	SYK SH2	CTK_Cytoplasm	tissue specific	PVP
+SLP76	SLP76/128	SRC	NCK SH2	CTK_Cytoplasm	tissue specific	PVB
+SLP76	SLP76/128	SRC	SRC SH2	CTK_Cytoplasm	tissue specific	PVP
+SLP76	SLP76/128	SRC	VAV SH2	CTK_Cytoplasm	tissue specific	PVP
+SLP76	SLP76/128	SRC	SYK SH2	CTK_Cytoplasm	tissue specific	PVP
+SLP76	SLP76/145	SRC	NCK SH2	CTK_Cytoplasm	tissue specific	PVB
+SLP76	SLP76/145	SRC	SRC SH2	CTK_Cytoplasm	tissue specific	PVP
+SLP76	SLP76/145	SRC	TEC SH2	CTK_Cytoplasm	tissue specific	PVP
+SOCS	SOCS3/221	SRC	RASA1 SH2	CTK_Cytoplasm	ubiquitous	PPP
+STAT	STAT1/701	SRC	STAT SH2	CTK_Membrane	ubiquitous	PPP
+STE20	MAP4K1/381	SRC	NCK SH2	CTK_Membrane	x	PBB
+STE20	MAP4K1/381	SRC	BLNK SH2	CTK_Membrane	x	PBB
+SYK	SYK/296	SRC	CBL SH2	CTK_Cytoplasm	ubiquitous	PPP
+SYK	ZAP70/292	SRC	CBL SH2	CTK_Cytoplasm	ubiquitous	PPP
+SYK	ZAP70/474	SRC	SHC SH2	CTK_Cytoplasm	ubiquitous	PPP
+SYK	SYK/296	SRC	RASA1 SH2	CTK_Cytoplasm	ubiquitous	PPP
+SYK	SYK/323	SRC	CBL SH2	CTK_Cytoplasm	ubiquitous	PPP
+SYK	ZAP70/315	SRC	PLCG SH2	CTK_Cytoplasm	ubiquitous	PPP
+SYK	ZAP70/315	SRC	VAV SH2	CTK_Cytoplasm	ubiquitous	PPP
+SYK	ZAP70/319	SRC	SRC SH2	CTK_Cytoplasm	ubiquitous	PPP
+TRAT1	TRAT1/79	SRC	PI3K SH2	CTK_Membrane	tissue specific	PVP
+TRK	NTRK1/496	SRC	PLCG SH2	CTK_Membrane	ubiquitous	PVP
+TRK	NTRK1/496	SRC	SHC SH2	CTK_Membrane	ubiquitous	PVP
+TRPV4	TRPV4/253	SRC	SRC SH2	CTK_Membrane	ubiquitous	PVP
+VAV	VAV1/174	SRC	PTPN SH2	CTK_Cytoplasm	ubiquitous	PPP
+VAV	VAV1/142	SRC	SYK SH2	CTK_Cytoplasm	ubiquitous	PPP
+VAV	VAV1/160	SRC	SRC SH2	CTK_Cytoplasm	ubiquitous	PPP
+VAV	VAV1/160	SRC	TEC SH2	CTK_Cytoplasm	ubiquitous	PPP
+VAV	VAV1/160	SRC	SLP76 SH2	CTK_Cytoplasm	ubiquitous	PPV
+VAV	VAV1/174	SRC	SRC SH2	CTK_Cytoplasm	ubiquitous	PPP
+VAV	VAV1/174	SRC	GRB2 SH2	CTK_Cytoplasm	ubiquitous	PPP
+VAV	VAV1/174	SRC	SYK SH2	CTK_Cytoplasm	ubiquitous	PPP
+WAS	WAS/291	SRC	SRC SH2	CTK_Cytoplasm	ubiquitous	PPP
+WAS	WAS/291	SRC	TEC SH2	CTK_Cytoplasm	ubiquitous	PPP
+CD91	CD91/4507	SRC	DAB PTB	CTK_Membrane	ubiquitous	PPP
+CD91	CD91/4507	SRC	GULP1 PTB	CTK_Membrane	ubiquitous	PPP
+CD91	CD91/4507	SRC	SHC PTB	CTK_Membrane	ubiquitous	PPP
+ITGB3	ITGB3/773	SRC	SHC PTB	CTK_Membrane	tissue specific	PPP
+PLSCR1	PLSCR1/74	SRC	SHC PTB	CTK_Membrane	x	PPP
+SHIP	SHIP2/986	SRC	SHC PTB	CTK_Cytoplasm	ubiquitous	PPP
+TRK	NTRK1/496	SRC	FRS PTB	CTK_Membrane	ubiquitous	PVB
+TRK	NTRK1/496	SRC	SHC PTB	CTK_Membrane	ubiquitous	PVP
+APS	SH2B3/273	SYK	SRC SH2	CTK_Cytoplasm	ubiquitous	PBP
+blnk	BLNK/178	SYK	TEC SH2	CTK_Membrane	ubiquitous	PVP
+blnk	BLNK/189	SYK	PLCG SH2	CTK_Membrane	ubiquitous	PVP
+blnk	BLNK/72	SYK	VAV SH2	CTK_Membrane	ubiquitous	PVP
+blnk	BLNK/84	SYK	NCK SH2	CTK_Membrane	ubiquitous	PVB
+blnk	BLNK/96	SYK	NCK SH2	CTK_Membrane	ubiquitous	PVB
+blnk	BLNK/72	SYK	GRB2 SH2	CTK_Membrane	ubiquitous	PVP
+CBL	CBL/700	SYK	CRK SH2	CTK_Cytoplasm	ubiquitous	PPP
+CBL	CBL/700	SYK	VAV SH2	CTK_Cytoplasm	ubiquitous	PPP
+CBL	CBL/774	SYK	CRK SH2	CTK_Cytoplasm	ubiquitous	PPP
+CBL	CBL/774	SYK	NCK SH2	CTK_Cytoplasm	ubiquitous	PPB
+CD19	CD19/500	SYK	PI3K SH2	CTK_Membrane	tissue specific	PVP
+CD19	CD19/531	SYK	PI3K SH2	CTK_Membrane	tissue specific	PVP
+DBNL	DBNL/344	SYK	SYK SH2	CTK_Cytoplasm	ubiquitous	PVP
+DUSP3	DUSP3/138	SYK	SYK SH2	CTK_Cytoplasm	ubiquitous	PPP
+FAK	PTK2B/402	SYK	SRC SH2	CTK_Cytoplasm	ubiquitous	PPP
+FCGR2	FCGR2A/281	SYK	SRC SH2	CTK_Membrane	tissue specific	PVP
+FCGR2	FCGR2A/281	SYK	SHC SH2	CTK_Membrane	tissue specific	PVP
+FCGR2	FCGR2A/288	SYK	SYK SH2	CTK_Membrane	tissue specific	PVP
+FCGR2	FCGR2A/288	SYK	SHC SH2	CTK_Membrane	tissue specific	PVP
+FCGR2	FCGR2A/304	SYK	SYK SH2	CTK_Membrane	tissue specific	PVP
+FCGR2	FCGR2A/304	SYK	SHC SH2	CTK_Membrane	tissue specific	PVP
+GAB	GAB2/614	SYK	SYK SH2	CTK_Cytoplasm	ubiquitous	PPP
+GAB	GAB2/614	SYK	PTPN SH2	CTK_Cytoplasm	ubiquitous	PPP
+HCLS1	HCLS1/378	SYK	SRC SH2	CTK_Cytoplasm	tissue specific	PPP
+HCLS1	HCLS1/397	SYK	SRC SH2	CTK_Cytoplasm	tissue specific	PPP
+ITGB3	ITGB3/773	SYK	GRB2 SH2	CTK_Membrane	tissue specific	PPP
+LAT	LAT/161	SYK	PLCG SH2	CTK_Membrane	tissue specific	PVP
+LAT	LAT/200	SYK	GRB2 SH2	CTK_Membrane	tissue specific	PVP
+LAT	LAT/220	SYK	GRB2 SH2	CTK_Membrane	tissue specific	PVP
+LAT	LAT/220	SYK	PI3K SH2	CTK_Membrane	tissue specific	PVP
+LAT	LAT/220	SYK	VAV SH2	CTK_Membrane	tissue specific	PVP
+LAT	LAT/255	SYK	GRB2 SH2	CTK_Membrane	tissue specific	PVP
+LAT	LAT/200	SYK	SYK SH2	CTK_Membrane	tissue specific	PVP
+LAT	LAT/200	SYK	PI3K SH2	CTK_Membrane	tissue specific	PVP
+LAT	LAT/200	SYK	VAV SH2	CTK_Membrane	tissue specific	PVP
+LAT	LAT/255	SYK	SYK SH2	CTK_Membrane	tissue specific	PVP
+LAT	LAT/255	SYK	TEC SH2	CTK_Membrane	tissue specific	PVP
+LAT	LAT/255	SYK	PI3K SH2	CTK_Membrane	tissue specific	PVP
+LAT	LAT/255	SYK	VAV SH2	CTK_Membrane	tissue specific	PVP
+PIK3AP1	PIK3AP1/459	SYK	PI3K SH2	CTK_Membrane	tissue specific	PVP
+PLCG	PLCG1/771	SYK	PLCG SH2	CTK_Cytoplasm	ubiquitous	PPP
+PLCG	PLCG1/771	SYK	SYK SH2	CTK_Cytoplasm	ubiquitous	PPP
+PLCG	PLCG1/771	SYK	ABL SH2	CTK_Cytoplasm	ubiquitous	PPP
+SHC	SHC1/349	SYK	GRB2 SH2	CTK_Cytoplasm	ubiquitous	PPP
+SHC	SHC1/349	SYK	SHIP SH2	CTK_Cytoplasm	ubiquitous	PPP
+SHC	SHC1/349	SYK	SRC SH2	CTK_Cytoplasm	ubiquitous	PPP
+SLP76	SLP76/113	SYK	NCK SH2	CTK_Cytoplasm	tissue specific	PVB
+SLP76	SLP76/113	SYK	SRC SH2	CTK_Cytoplasm	tissue specific	PVP
+SLP76	SLP76/113	SYK	VAV SH2	CTK_Cytoplasm	tissue specific	PVP
+SLP76	SLP76/113	SYK	SYK SH2	CTK_Cytoplasm	tissue specific	PVP
+SLP76	SLP76/128	SYK	NCK SH2	CTK_Cytoplasm	tissue specific	PVB
+SLP76	SLP76/128	SYK	SRC SH2	CTK_Cytoplasm	tissue specific	PVP
+SLP76	SLP76/128	SYK	VAV SH2	CTK_Cytoplasm	tissue specific	PVP
+SLP76	SLP76/128	SYK	SYK SH2	CTK_Cytoplasm	tissue specific	PVP
+SLP76	SLP76/145	SYK	NCK SH2	CTK_Cytoplasm	tissue specific	PVB
+SLP76	SLP76/145	SYK	SRC SH2	CTK_Cytoplasm	tissue specific	PVP
+SLP76	SLP76/145	SYK	TEC SH2	CTK_Cytoplasm	tissue specific	PVP
+SNCA	SNCA/136	SYK	SRC SH2	CTK_Cytoplasm	x	PVP
+STE20	MAP4K1/381	SYK	BLNK SH2	CTK_Membrane	x	PBB
+STE20	MAP4K1/381	SYK	NCK SH2	CTK_Membrane	x	PBB
+SYK	ZAP70/292	SYK	CBL SH2	CTK_Cytoplasm	ubiquitous	PPP
+SYK	ZAP70/315	SYK	PLCG SH2	CTK_Cytoplasm	ubiquitous	PPP
+SYK	ZAP70/315	SYK	VAV SH2	CTK_Cytoplasm	ubiquitous	PPP
+SYK	SYK/323	SYK	CBL SH2	CTK_Cytoplasm	ubiquitous	PPP
+TUBA1A	TUBA1A/432	SYK	SRC SH2	CTK_Cytoplasm	ubiquitous	PPP
+TYROBP	TYROBP/102	SYK	SYK SH2	CTK_Cytoplasm	ubiquitous	PVP
+TYROBP	TYROBP/91	SYK	SYK SH2	CTK_Cytoplasm	ubiquitous	PVP
+CD19	CD19/500	TEC	PI3K SH2	CTK_Membrane	tissue specific	PVP
+CD19	CD19/531	TEC	PI3K SH2	CTK_Membrane	tissue specific	PVP
+CD28	CD28/191	TEC	GRB2 SH2	CTK_Membrane	x	PVP
+CD28	CD28/191	TEC	PI3K SH2	CTK_Membrane	x	PVP
+CTLA4	CTLA4/201	TEC	PI3K SH2	CTK_Membrane	x	PVP
+CTLA4	CTLA4/201	TEC	PTPN SH2	CTK_Membrane	x	PVP
+PLCG	PLCG2/759	TEC	SLP76 SH2	CTK_Cytoplasm	ubiquitous	PPV
+PXN	PXN/181	TEC	CRK SH2	CTK_Cytoplasm	ubiquitous	PPP
+WAS	WAS/291	TEC	SRC SH2	CTK_Cytoplasm	ubiquitous	PPP
+WAS	WAS/291	TEC	TEC SH2	CTK_Cytoplasm	ubiquitous	PPP
+TIE	TEK/1102	TIE	GRB2 SH2	RTK_Membrane	ubiquitous	VVP
+TIE	TEK/1102	TIE	PI3K SH2	RTK_Membrane	ubiquitous	VVP
+TIE	TEK/1113	TIE	PTPN SH2	RTK_Membrane	ubiquitous	VVP
+TIE	TEK/1102	TIE	GRB7 SH2	RTK_Membrane	ubiquitous	VVP
+TIE	TEK/1108	TIE	DOK PTB	RTK_Membrane	ubiquitous	VVV
+TIE	TEK/1102	TIE	DOK PTB	RTK_Membrane	ubiquitous	VVV
+TRK	NTRK1/496	TRK	PLCG SH2	RTK_Membrane	ubiquitous	VVP
+TRK	NTRK1/496	TRK	SHC SH2	RTK_Membrane	ubiquitous	VVP
+TRK	NTRK1/791	TRK	PI3K SH2	RTK_Membrane	ubiquitous	VVP
+TRK	NTRK1/791	TRK	PLCG SH2	RTK_Membrane	ubiquitous	VVP
+TRK	NTRK1/496	TRK	FRS PTB	RTK_Membrane	ubiquitous	VVB
+TRK	NTRK1/496	TRK	SHC PTB	RTK_Membrane	ubiquitous	VVP
+SHC	SHC1/349	VEGFR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	BPP
+SHC	SHC1/349	VEGFR	SHIP SH2	RTK_Cytoplasm	ubiquitous	BPP
+SHC	SHC1/427	VEGFR	GRB2 SH2	RTK_Cytoplasm	ubiquitous	BPP
+SHC	SHC1/349	VEGFR	SRC SH2	RTK_Cytoplasm	ubiquitous	BPP
+SHC	SHC1/427	VEGFR	PI3K SH2	RTK_Cytoplasm	ubiquitous	BPP
+VEGFR	FLT1/1169	VEGFR	SHB SH2	RTK_Membrane	ubiquitous	BBB
+VEGFR	FLT1/1333	VEGFR	NCK SH2	RTK_Membrane	ubiquitous	BBB
+VEGFR	KDR/1214	VEGFR	SRC SH2	RTK_Membrane	ubiquitous	BBP
+VEGFR	FLT1/1169	VEGFR	PLCG SH2	RTK_Membrane	ubiquitous	BBP
+VEGFR	FLT1/1169	VEGFR	SHC SH2	RTK_Membrane	ubiquitous	BBP
+VEGFR	FLT1/1213	VEGFR	GRB2 SH2	RTK_Membrane	ubiquitous	BBP
+VEGFR	FLT1/1213	VEGFR	PI3K SH2	RTK_Membrane	ubiquitous	BBP
+VEGFR	FLT1/1213	VEGFR	PTPN SH2	RTK_Membrane	ubiquitous	BBP
+VEGFR	FLT1/1333	VEGFR	CRK SH2	RTK_Membrane	ubiquitous	BBP
+VEGFR	FLT1/1333	VEGFR	PLCG SH2	RTK_Membrane	ubiquitous	BBP
+VEGFR	FLT1/794	VEGFR	PLCG SH2	RTK_Membrane	ubiquitous	BBP
+VEGFR	KDR/1214	VEGFR	GRB2 SH2	RTK_Membrane	ubiquitous	BBP
+VEGFR	KDR/951	VEGFR	SH2D2 SH2	RTK_Membrane	ubiquitous	BBV

@@ -50,6 +50,9 @@ class Seq(object):
     def isoforms(self):
         return self.isof.keys()
     
+    def has_isoform(self, isoform):
+        return isoform in self.isof
+    
     def get_region(self, residue, start = None, end = None, flanking = 7, isoform = None):
         isoform = self.canonical if isoform is None else isoform
         if residue > len(self.isof[isoform]):

@@ -84,8 +84,10 @@ net = bioigraph.BioGraph(9606)
 #net.save_network(pfile = 'cache/phospho_plus_acsn.pickle')
 #net.save_network(pfile = 'cache/default_plus_acsn.pickle')
 net.init_network(pfile = 'cache/default_plus_acsn.pickle')
+net.load_resources(lst={'hsn': ugly['hsn']})
+
 net.curation_tab()
-net.curation_tab(fname = 'curation_stats_stripped.tex', latex_hdr = False)
+net.curation_tab(fname = 'curation_stats_wang.tex')
 
 net.genesymbol_labels()
 net.set_tfs()
