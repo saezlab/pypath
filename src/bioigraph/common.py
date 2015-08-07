@@ -22,7 +22,8 @@ import textwrap
 
 __all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'uniqList', 'addToList', 
            'gen_session_id', 'sorensen_index', 'console', 'wcl', 'flatList', 
-           'charTypes', 'delEmpty', '__version__', 'get_args']
+           'charTypes', 'delEmpty', '__version__', 'get_args', 
+           'something']
 
 # get the location
 ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -117,6 +118,11 @@ def addToList(lst, toadd):
     if None in lst:
         lst.remove(None)
     return uniqList(lst)
+
+def something(anything):
+    return not (anything is None or \
+        (type(anything) in [list, set, dict, str, unicode] \
+            and len(anything) == 0))
 
 def gen_session_id(length=5):
     abc = '0123456789abcdefghijklmnopqrstuvwxyz'

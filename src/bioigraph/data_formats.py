@@ -435,6 +435,15 @@ urls = {
         'label': 'Human Phosphotyrosine Signaling Network',
         'url': 'http://genome.cshlp.org/content/22/7/1222/suppl/DC1',
         'file': 'li2012.csv'
+    },
+    'trip': {
+        'label': 'The TRP channel database',
+        'base': 'http://www.trpchannel.org/',
+        'show': 'http://www.trpchannel.org/proteins/show?id=%s',
+        'intr': 'http://www.trpchannel.org/interactions/show?trp=%s&'\
+            'interactor=%s',
+        'url': 'http://www.trpchannel.org/20141116.csv',
+        'json': 'http://www.trpchannel.org/proteins/getjson'
     }
 }
 
@@ -892,6 +901,16 @@ best = {
                 ncbiTaxId = 9606,
                 inFile = 'hprd_interactions', references = (10, ','), header = False,
                 extraEdgeAttrs={'hprd_mechanism': 8},
+                extraNodeAttrsA={},
+                extraNodeAttrsB={}),
+    'trip': input_formats.ReadSettings(name="TRIP", separator = None, nameColA = 1,
+                nameColB = 0, nameTypeA = "uniprot", nameTypeB = "uniprot",
+                typeA = "protein", typeB = "protein", 
+                isDirected = (4, ['stimulation', 'inhibition']), 
+                sign = (4, 'stimulation', 'inhibition'),
+                ncbiTaxId = 9606,
+                inFile = 'trip_interactions', references = (2, ';'), header = False,
+                extraEdgeAttrs={'trip_methods': (3, ';')},
                 extraNodeAttrsA={},
                 extraNodeAttrsB={})
 }

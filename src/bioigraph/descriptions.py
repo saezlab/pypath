@@ -439,7 +439,8 @@ descriptions = {
                 'https://acsn.curie.fr'
             ],
             'articles': [
-                'http://www.nature.com/oncsis/journal/v4/n7/full/oncsis201519a.html'
+                'http://www.nature.com/oncsis/journal/v4/n7/full/oncsis201519a.html',
+                'http://msb.embopress.org/content/4/1/0174.long'
             ]
         },
         'pubmeds': [
@@ -467,6 +468,7 @@ descriptions = {
                 'http://mint.bio.uniroma2.it/domino/'
             ]
         },
+        'pubmeds': [17135199],
         'descriptions': [
             u'''
             DOMINO is an open-access database comprising more than 3900 annotated experiments describing interactions mediated by protein-interaction domains. The curation effort aims at covering the interactions mediated by the following domains (SH3, SH2, 14-3-3, PDZ, PTB, WW, EVH, VHS, FHA, EH, FF, BRCT, Bromo, Chromo, GYF). However, interactions mediated by as many as 150 different domain families are stored in DOMINO.
@@ -543,20 +545,28 @@ descriptions = {
         ],
         'notes': [
             u'''
-            Detailful dataset with many references. Sadly the data can be extracted only by parsing HTML. It doesn't mean more difficulty than parsing XML formats, just it is not intended to use for this purpose.
+            Detailful dataset with many references. Sadly the data can be extracted only by parsing HTML. It doesn't mean more difficulty than parsing XML formats, just these are not intended to use for this purpose.
             '''
         ]
     },
     'TRIP': {
+        'year': 2014,
+        'releases': [2010, 2012],
         'urls': {
             'articles': [
                 'http://www.plosone.org/article/info:doi/10.1371/journal.pone.0047165',
-                'http://nar.oxfordjournals.org/content/39/suppl_1/D356.full'
+                'http://nar.oxfordjournals.org/content/39/suppl_1/D356.full',
+                r'http://link.springer.com/article/10.1007%2Fs00424-013-1292-2'
             ],
             'webpages': [
                 'http://www.trpchannel.org'
             ]
         },
+        'size': {
+            'nodes': 468,
+            'edges': 744
+        },
+        'pubmeds': [20851834, 23071747, 23677537],
         'files': {
             'articles': [
                 'TRIP_Shin2012.pdf'
@@ -569,7 +579,9 @@ descriptions = {
             }
         },
         'taxons': [
-            'mammals'
+            'human',
+            'mouse',
+            'rat'
         ],
         'identifiers': [
             'GeneSymbol'
@@ -581,7 +593,7 @@ descriptions = {
         ],
         'notes': [
             u'''
-            Good manually curated dataset focusing on TRP channel proteins, with ~800 binary interactions. The table is very detailed, and easy to use. However, we can not avoid to loose dozens of interactions in mapping, because of the non standard protein names, with greek letters and only human understandable formulas.
+            Good manually curated dataset focusing on TRP channel proteins, with ~800 binary interactions. The provided formats are not well suitable for bioinformatics use because of the non standard protein names, with greek letters and only human understandable formulas. Using HTML processing, and processing the data from 5-6 different tables, with couple hundreds of lines of code, one have a chance to compile a usable data table. 
             '''
         ]
     },
@@ -842,11 +854,17 @@ descriptions = {
         ]
     },
     'Li2012': {
+        'year': 2012,
         'urls': {
             'articles': [
                 'http://genome.cshlp.org/content/22/7/1222'
             ]
         },
+        'pubmeds': [22194470],
+        'label': 'Li 2012',
+        'taxons': [
+            'human'
+        ],
         'descriptions': [
             u'''
             Human phosphotyrosine signaling network. 
@@ -855,12 +873,16 @@ descriptions = {
         ]
     },
     'Zaman2013': {
+        'year': 2013,
         'urls': {
             'articles': [
                 'http://www.sciencedirect.com/science/article/pii/S2211124713004695'
             ],
             'webpages': []
         },
+        'pubmeds': [24075989],
+        'label': 'Zaman 2013',
+        'authors': ['Wang Lab'],
         'contains': [
             'HumanSignalingNetwork',
             'Cui2007',
@@ -906,6 +928,7 @@ descriptions = {
     },
     'MPPI': {
         'year': 2005,
+        'releases': [2000, 2005],
         'size': {
             'nodes': None,
             'edges': None
@@ -938,6 +961,8 @@ descriptions = {
         ]
     },
     'Negatome': {
+        'year': 2013,
+        'relases': [2009],
         'urls': {
             'articles': [
                 'http://nar.oxfordjournals.org/content/38/suppl_1/D540.long',
@@ -947,6 +972,7 @@ descriptions = {
                 'http://mips.helmholtz-muenchen.de/proj/ppi/negatome/'
             ]
         },
+        'pubmeds': [24214996, 19920129],
         'descriptions': [
             u'''
             Annotation of the manual dataset was performed analogous to the annotation of protein–protein interactions and protein complexes in previous projects published by our group. Information about NIPs was extracted from scientific literature using only data from individual experiments but not from high-throughput experiments. Only mammalian proteins were considered. Data from high-throughput experiments were omitted in order to maintain the highest possible standard of reliability.
@@ -954,12 +980,14 @@ descriptions = {
         ]
     },
     'Macrophage': {
+        'year': 2010,
         'urls': {
             'articles': [
                 'http://www.biomedcentral.com/1752-0509/4/63'
             ],
             'webpages': []
         },
+        'pubmeds': [20470404],
         'descriptions': [
             u'''
             Ongoing analysis of macrophage-related datasets and an interest in consolidating our knowledge of a number of signalling pathways directed our choice of pathways to be mapped (see Figure 1). Public and propriety databases were initially used as resources for data mining, but ultimately all molecular interaction data was sourced from published literature. Manual curation of the literature was performed to firstly evaluate the quality of the evidence supporting an interaction and secondly, to extract the necessary and additional pieces of information required to 'understand' the pathway and construct an interaction diagram. We have drawn pathways based on our desire to model pathways active in a human macrophage and therefore all components have been depicted using standard human gene nomenclature (HGNC). However, our understanding of the pathway components and the interactions between them, have been drawn largely from a consensus view of literature knowledge. As such the pathways presented here are based on data derived from a range of different cellular systems and mammalian species (human and mouse).
@@ -967,6 +995,19 @@ descriptions = {
         ]
     },
     'NetPath': {
+        'year': 2011,
+        'releases': [2010, 2011],
+        'size': {
+            'nodes': None,
+            'edges': None
+        },
+        'authors': ['Pandey Lab', 'IOB Bangalore'],
+        'label': 'NetPath',
+        'color': '',
+        'data_import': [
+            'CancerCellMap'
+        ],
+        'includes': ['CancerCellMap'],
         'urls': {
             'articles': [
                 'http://genomebiology.com/content/11/1/R3',
@@ -976,6 +1017,7 @@ descriptions = {
                 'http://netpath.org/'
             ]
         },
+        'pubmeds': [20067622, 21959865],
         'descriptions': [
             u'''
             The initial annotation process of any signaling pathway involves gathering and reading of review articles to achieve a brief overview of the pathway. This process is followed by listing all the molecules that arereported to be involved in the pathway under annotation. Information regarding potential pathway authorities are also gathered at this initial stage. Pathway experts are involved in initial screening of the molecules listed to check for any obvious omissions. In the second phase, annotators manually perform extensive literature searches using search keys, which include all the alter native names of the molecules involved, the name of the pathway, the names of reactions, and so on. In addition, the iHOP resource is also used to perform advanced PubMed-based literature searches to collect the reactions that were reported to be implicated in a given pathway. The collected reactions are manually entered using the PathBuilder annotation interface, which is subjected to an internal review process involving PhD level scientists with expertise in the areas of molecular biology, immunology and biochemistry. However, there are instances where a molecule has been implicated in a pathway in a published report but the associated experimental evidence is either weak or differs from experiments carried out by other groups. For this purpose, we recruit several investigators as pathway authorities based on their expertise in individual signaling pathways. The review by pathway authorities occasionally leads to correction of errors or, more commonly, to inclusion of additional information. Finally, the pathway authorities help in assessing whether the work of all major laboratories has been incorporated for the given signaling pathway.
@@ -1020,6 +1062,8 @@ descriptions = {
         ]
     },
     'CORUM': {
+        'year': 2009,
+        'releases': [2007, 2009],
         'urls': {
             'articles': [
                 'http://nar.oxfordjournals.org/content/36/suppl_1/D646.long',
@@ -1029,6 +1073,7 @@ descriptions = {
                 'http://mips.helmholtz-muenchen.de/genre/proj/corum'
             ]
         },
+        'pubmeds': [19884131, 17965090],
         'taxons': [
             'human',
             'mouse',
@@ -1067,9 +1112,20 @@ descriptions = {
         ]
     },
     'DIP': {
+        'year': 2014,
+        'releases': [2000, 2011],
+        'size': {
+            'nodes': None,
+            'edges': None
+        },
+        'authors': ['UCLA', 'Eisenberg Group'],
+        'label': 'DIP',
+        'full_name': 'Database of Interacting Proteins',
+        'color': '',
         'urls': {
             'articles': [
                 'http://nar.oxfordjournals.org/content/28/1/289.long',
+                'http://nar.oxfordjournals.org/content/29/1/239.long',
                 'http://nar.oxfordjournals.org/content/30/1/303.long',
                 'http://nar.oxfordjournals.org/content/32/suppl_1/D449.full'
             ],
@@ -1077,9 +1133,10 @@ descriptions = {
                 'http://dip.doe-mbi.ucla.edu/dip/Main.cgi'
             ]
         },
-       'descriptions': [
+        'pubmeds': [10592249, 11125102, 11752321, 14681454],
+        'descriptions': [
             u'''
-            In the beginning (near 2000), it was a proper manually curated database:
+            In the beginning (near 2000), it was a entirely manually curated database:
             Currently protein–protein interactions are entered into the DIP only following publication in peer-reviewed journals. Entry is done manually by the curator, followed by automated tests that show the proteins and citations exist. Interactions are double-checked by a second curator and flagged accordingly in the database. 
             From 2001, it contains high-throughput interactions:
             Because the reliability of experimental evidence varies widely, methods of quality assessment have been developed and utilized to identify the most reliable subset of the interactions. This CORE set can be used as a reference when evaluating the reliability of high-throughput protein-protein interaction data sets, for development of prediction methods, as well as in the studies of the properties of protein interaction networks.
@@ -1126,6 +1183,7 @@ descriptions = {
         ]
     },
     'PhosphoPoint': {
+        'year': 2008,
         'urls': {
             'articles': [
                 'http://bioinformatics.oxfordjournals.org/content/24/16/i14.long'
@@ -1137,6 +1195,7 @@ descriptions = {
         'taxons': [
             'human'
         ],
+        'pubmeds': [18689816],
         'descriptions': [
             u'''
             We have integrated three existing databases, including Phospho.ELM (release 6.0, total 9236 phosphorylation sites), HPRD (release 6, total 8992 phosphorylation sites), SwissProt (release 51.5, total 6529 phosphorylation sites), and our manually curated 400 kinase–substrate pairs, which are primarily from review articles.
@@ -1150,14 +1209,18 @@ descriptions = {
         ]
     },
     'PANTHER': {
+        'year': 2009,
+        'releases': [2006, 2009],
         'urls': {
             'articles': [
-                'http://link.springer.com/protocol/10.1007%2F978-1-60761-175-2_7#section=82252&page=1'
+                'http://link.springer.com/protocol/10.1007%2F978-1-60761-175-2_7#section=82252&page=1',
+                'http://nar.oxfordjournals.org/content/35/suppl_1/D247.long'
             ],
             'webpages': [
                 'http://www.pantherdb.org/'
             ]
         },
+        'pubmeds': [17130144, 19597783],
         'descriptions': [
             u'''
             References are captured at three levels. First, each pathway as a whole requires a reference. For signaling pathways, at least three references, usually review papers, are required in order to provide a more objective view of the scope of the pathway. For metabolic pathways, a textbook reference is usually sufficient. Second, references are often associated to each molecule class in the pathway. Most of these references are OMIM records or review papers. Third, references are provided to support association of specific protein sequences with a particular molecule class, e.g., the SWISS-PROT sequence P53_HUMAN annotated as an instance of the molecule class ‘‘P53’’ appearing in the pathway class ‘‘P53 pathway’’. These are usually research papers that report the experimental evidence that a particular protein or gene participates in the reactions represented in the pathway diagram.
@@ -1178,13 +1241,14 @@ descriptions = {
         'color': '',
         'urls': {
             'articles': [
-                'http://nar.oxfordjournals.org/content/40/D1/D261.long'
+                'http://nar.oxfordjournals.org/content/40/D1/D261.long',
+                'http://nar.oxfordjournals.org/content/43/D1/D512.long'
             ],
             'webpages': [
                 'http://www.phosphosite.org/homeAction.do'
             ]
         },
-        'pubmeds': [22135298],
+        'pubmeds': [22135298, 25514926],
         'taxons': [
             'human',
             'mouse',
@@ -1281,12 +1345,15 @@ descriptions = {
         ]
     },
     'ConsensusPathDB': {
+        'year': 2014,
+        'releases': [2007, 2014],
         'urls': {
             'webpages': [
                 'http://cpdb.molgen.mpg.de/CPDB'
             ],
             'articles': [
-                ''
+                'http://nar.oxfordjournals.org/content/41/D1/D793',
+                
             ]
         },
         'taxons': [
@@ -1294,6 +1361,7 @@ descriptions = {
             'mouse',
             'yeast'
         ],
+        'pubmeds': [18940869, 23143270],
         'descriptions': [
             '''
             
@@ -1431,7 +1499,7 @@ def gen_html():
         'descriptions here aim to cite the relevant sentences '\
         'about the curation protocols from the original articles. '\
         'URLs pointing to the articles and the webpages, and some '\
-        'additional meta data is provided where available. Note: '\
+        'additional metadata is provided where available. Note: '\
         'not all resources listed here were finally included in '\
         'OmniPath.</p>\n'
     doc += '\t<h2>Contents</h2>\n'

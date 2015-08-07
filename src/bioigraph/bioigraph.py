@@ -1399,7 +1399,7 @@ class BioGraph(object):
                 vids.append(self.nodDct[n])
         return vids
     
-    def get_edge(self,nodes):
+    def get_edge(self, nodes):
         '''
         Returns the edge id only if there is an edge from nodes[0] to nodes[1],
         returns False if edge exists in opposite direction, or no edge exists 
@@ -2291,6 +2291,27 @@ class BioGraph(object):
         sys.stdout.write(out)
     
     #
+    # functions to make life easier
+    #
+    
+    def having_attr(self, attr, graph = None, index = True, edges = True):
+        graph = graph or self.graph
+        es_or_vs = getattr(graph, 'es' if edges else 'vs')
+        if attr in es_or_vs.attributes():
+            for i in es_or_vs:
+                if something(i[attr]):
+                    yield i.index if index else i
+    
+    def having_eattr(self, attr, graph = None, index = True):
+        return self.having_attr(attr, graph, index)
+    
+    def having_vattr(self, attr, graph = None, index = True):
+        return self.having_attr(attr, graph, index, False)
+    
+    def having_ptm(self, index = True, graph = None):
+        return self.having_eattr('ptm', graph, index)
+    
+    #
     # functions to make topological analysis on the graph
     #
     
@@ -2818,10 +2839,10 @@ class BioGraph(object):
                         v['pdb'][pdb[0]] = (pdb[1],pdb[2])
             self.ownlog.msg(2,'PDB IDs for proteins has been retrieved.','INFO')
     
-    def load_pfam(self,graph=None):
+    def load_pfam(self, graph = None):
         graph = graph if graph is not None else self.graph
         u_pfam, pfam_u = dataio.get_pfam(graph.vs['name'])
-        if pfams is None:
+        if u_pfam is None:
             self.ownlog.msg(2,'Failed to download Pfam data from UniProt','ERROR')
         else:
             graph.vs['pfam'] = [None]
@@ -3502,6 +3523,68 @@ class BioGraph(object):
                                     intera.DomainMotif(dom, ptm, 'ELM'))
         prg.terminate()
     
+    def load_lmpid(self, method):
+        pass
+    
+    def process_dmi(self, source, **kwargs):
+        '''
+        This is an universal function 
+        for loading domain-motif objects
+        like load_phospho_dmi() for PTMs.
+        TODO this will replace load_elm, load_ielm, etc
+        '''
+        functions = {
+            'LMPID': 'lmpid_dmi'
+        }
+        motif_plus = {
+            'LMPID': []
+        }
+        self.update_vname()
+        toCall = getattr(dataio, functions[source])
+        data = toCall(**kwargs)
+        if self.seq is None:
+            self.sequences(self.ncbi_tax_id)
+        if self.seq is None:
+            self.sequences(isoforms = True)
+        if 'ptm' not in self.graph.es.attributes():
+            self.graph.es['ptm'] = [[] for _ in self.graph.es]
+        prg = Progress(len(data), 'Processing domain-motif interactions from %s'%source, 7)
+        for d in data:
+            prg.step()
+            domain_ups = []
+            motif_upd = []
+            if source == 'LMPID':
+                domain_ups = self.mapper.map_name(d['domain_protein'], 'uniprot', 'uniprot')
+                motif_ups = self.mapper.map_name(d['motif_protein'], 'uniprot', 'uniprot')
+            for du in domain_ups:
+                dom = intera.Domain(du, 
+                    domain = None if 'domain_name' not in d else d['domain_name'], 
+                    domain_id_type = None if 'domain_name_type' not in d else d['domain_name_type'])
+                for mu in motif_ups:
+                    if mu in self.seq and mu in self.nodInd and du in self.nodInd:
+                        edge = self.get_edge((self.nodDct[du], self.nodDct[mu]))
+                        if edge:
+                            mse = self.seq[mu]
+                            isos = []
+                            if d['instance'] is None:
+                                start, end, inst = mse.get_region(start = d['motif_start'], 
+                                    end = d['motif_end'], isoform = 1)
+                                isos.append((start, end, 1, inst))
+                            for iso in mse.isoforms():
+                                start, end, inst = mse.get_region(start = d['motif_start'], 
+                                    end = d['motif_end'], isoform = iso)
+                                if inst == d['instance']:
+                                    isos.append((start, end, iso, inst))
+                            for iso in isos:
+                                motargs = dict([(k, d[k]) for k in motif_plus[source]])
+                                mot = intera.Motif(mu, iso[0], iso[1], isoform = iso[2], 
+                                    instance = iso[3], **motargs)
+                                ptm = intera.Ptm(mu, motif = mot, isoform = iso[2], source = [source])
+                                dommot = intera.DomainMotif(domain = dom, ptm = ptm, 
+                                    sources = [source], refs = d['refs'])
+                                self.graph.es[edge]['ptm'].append(dommot)
+        prg.terminate()
+    
     def load_pepcyber(self):
         self.update_vname()
         if 'ptm' not in self.graph.es.attributes():
@@ -3629,10 +3712,11 @@ class BioGraph(object):
                 operator.itemgetter(1))
             ]))
     
-    def sequences(self, isoforms = False):
+    def sequences(self, isoforms = True):
         self.seq = dataio.swissprot_seq(self.ncbi_tax_id, isoforms)
     
     def load_ptms(self):
+        self.load_li2012_ptms()
         self.load_hprd_ptms()
         self.load_mimp_dmi()
         self.load_pnetworks_dmi()
@@ -3666,6 +3750,11 @@ class BioGraph(object):
     
     def load_hprd_ptms(self, non_matching = False, trace = False, **kwargs):
         trace = self.load_phospho_dmi(source = 'HPRD', trace = trace, **kwargs)
+        if trace:
+            return trace
+    
+    def load_li2012_ptms(self, non_matching = False, trace = False, **kwargs):
+        trace = self.load_phospho_dmi(source = 'Li2012', trace = trace, **kwargs)
         if trace:
             return trace
     

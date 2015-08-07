@@ -35,7 +35,7 @@ class Progress(object):
             sys.stdout.write("\r\t:: %s: %s 0/%u" % (self.name, '%s,'%self.status, self.total))
         sys.stdout.flush()
     
-    def step(self, step = 1, msg = None, status = ''):
+    def step(self, step = 1, msg = None, status = 'working on it'):
         self.set_status(status)
         self.done += step
         if self.done % self.interval == 0:
@@ -43,7 +43,8 @@ class Progress(object):
             if self.percent:
                 sys.stdout.write(
                     "\r\t:: %s: %s %.2f%% %s" % (
-                        self.name, '%s,'%self.status, 
+                        self.name, 
+                        '' if self.status is None else'%s,'%self.status, 
                         float(self.done)/float(self.total)*100.0,
                         '' if msg is None else '[%s]'%msg))
             else:

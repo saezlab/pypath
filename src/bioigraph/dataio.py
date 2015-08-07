@@ -37,6 +37,8 @@ import os
 import re
 import urllib
 import urllib2
+import httplib2
+import urlparse
 import codecs
 import gzip
 import zipfile
@@ -97,6 +99,17 @@ class RemoteFile(object):
                     for line in f:
                         yield line
 
+def url_fix(s, charset='utf-8'):
+    """
+    From http://stackoverflow.com/a/121017/854988
+    """
+    if isinstance(s, unicode):
+        s = s.encode(charset, 'ignore')
+    scheme, netloc, path, qs, anchor = urlparse.urlsplit(s)
+    path = urllib.quote(path, '/%')
+    qs = urllib.quote_plus(qs, ':&=')
+    return urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
+
 def print_debug_info(debug_type, debug_msg, truncate = 1000):
     sys.stdout.write("debug(%d): %s\n" % (debug_type, debug_msg[:truncate]))
     sys.stdout.flush()
@@ -133,6 +146,9 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
         init_fun = 'get_jsessionid', follow = True, large = False,
         override_post = False, init_headers = False, 
         write_cache = True):
+    url = url_fix(url)
+    if init_url is not None:
+        init_url = url_fix(init_url)
     # either from cache or from download, we load the data into StringIO:
     multifile = False
     domain = url.replace('https://', '').replace('http://','').\
@@ -144,7 +160,10 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
         outf = outf if outf is not None else url.split('/')[-1].split('?')[0]
         poststr = '' if post is None else \
             '?' + '&'.join(sorted([i[0]+'='+i[1] for i in post.items()]))
-        urlmd5 = hashlib.md5(url+poststr).hexdigest()
+        try:
+            urlmd5 = hashlib.md5(url+poststr).hexdigest()
+        except UnicodeEncodeError:
+            urlmd5 = hashlib.md5(('%s%s' % (url, poststr)).encode('utf-8')).hexdigest()
         if not os.path.exists(os.path.join(os.getcwd(),'cache')):
             os.mkdir(os.path.join(os.getcwd(),'cache'))
         cachefile = os.path.join(os.getcwd(),'cache',urlmd5+'-'+outf)
@@ -174,7 +193,10 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
         if init_url:
             c.setopt(c.URL, init_url)
         else:
-            c.setopt(c.URL, url)
+            try:
+                c.setopt(c.URL, url)
+            except:
+                return url
         c.setopt(c.FOLLOWLOCATION, follow)
         c.setopt(c.CONNECTTIMEOUT, 15)
         c.setopt(c.TIMEOUT, timeout)
@@ -1772,10 +1794,6 @@ def residue_pdb(pdb,chain,residue):
             result[l[0]] = l[1]
     return result
 
-def pdb_residue_mapper(pdb):
-    
-    return mapper
-
 class ResidueMapper(object):
     
     """
@@ -3088,6 +3106,16 @@ def lmpid_interactions(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
 
 def lmpid_dmi(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
     data = load_lmpid(fname = fname, organism = organism)
+    return [{
+        'motif_protein': l['bait'],
+        'domain_protein': l['prey'],
+        'instance': l['inst'],
+        'motif_start': l['pos'][0],
+        'motif_end': l['pos'][1],
+        'domain_name': l['dom'],
+        'domain_name_type': 'name',
+        'refs': l['refs']
+    } for l in data]
 
 def get_hsn():
     url = data_formats.urls['hsn']['url']
@@ -3167,3 +3195,160 @@ def li2012_dmi(mapper = None):
                             sources = ['Li2012'])
                         result = {}
     return result
+
+def take_a_trip(cachefile = 'trip.pickle'):
+    cachefile = os.path.join('cache', 'trip.pickle')
+    if os.path.exists(cachefile):
+        result = pickle.load(open(cachefile, 'rb'))
+        return result
+    result = {
+        'sc': {},
+        'cc': {},
+        'vvc': {},
+        'vtc': {},
+        'fc': {}
+    }
+    intrs = {}
+    titles = {
+        'Characterization': 'cc',
+        'Screening': 'sc',
+        'Validation: In vitro validation': 'vtc',
+        'Validation: In vivo validation': 'vvc',
+        'Functional consequence': 'fc'
+    }
+    interactors = {}
+    base_url = data_formats.urls['trip']['base']
+    show_url = data_formats.urls['trip']['show']
+    # url = data_formats.urls['trip']['url']
+    # json_url = data_formats.urls['trip']['json']
+    # jsn = curl(json_url, silent = False)
+    # data = curl(url, silent = False)
+    # jsn = json.loads(jsn, encoding = 'utf-8')
+    mainhtml = curl(base_url)
+    mainsoup = bs4.BeautifulSoup(mainhtml)
+    trppages = common.flatList([[a.attrs['href'] for a in ul.find_all('a')] \
+        for ul in mainsoup.find('div', id = 'trp_selector').find('ul').find_all('ul')])
+    for trpp in trppages:
+        trp = trpp.split('/')[-1]
+        trpurl = show_url % trp
+        trphtml = curl(trpurl, silent = False)
+        trpsoup = bs4.BeautifulSoup(trphtml)
+        trp_uniprot = trip_find_uniprot(trpsoup)
+        if trp_uniprot is None or len(trp_uniprot) < 6:
+            print '\t\tcould not find uniprot for %s' % trp
+        for tab in trpsoup.find_all('th', colspan = ['11', '13']):
+            ttl = titles[tab.text.strip()]
+            tab = tab.find_parent('table')
+            trip_process_table(tab, result[ttl], intrs, trp_uniprot)
+    pickle.dump(result, open(cachefile, 'wb'))
+    return result
+
+def trip_process_table(tab, result, intrs, trp_uniprot):
+    for row in tab.find_all('tr'):
+        cells = row.find_all(['td', 'th'])
+        if 'th' not in [c.name for c in cells]:
+            intr = cells[2].text.strip()
+            if intr not in intrs:
+                intr_uniprot = trip_get_uniprot(intr)
+                intrs[intr] = intr_uniprot
+                if intr_uniprot is None or len(intr_uniprot) < 6:
+                    print '\t\tcould not find uniprot for %s' % intr
+            else:
+                intr_uniprot = intrs[intr]
+            if (trp_uniprot, intr_uniprot) not in result:
+                result[(trp_uniprot, intr_uniprot)] = []
+            result[(trp_uniprot, intr_uniprot)].append([c.text.strip() for c in cells])
+
+def trip_get_uniprot(syn):
+    url = data_formats.urls['trip']['show'] % syn
+    html = curl(url)
+    soup = bs4.BeautifulSoup(html)
+    return trip_find_uniprot(soup)
+
+def trip_find_uniprot(soup):
+    for tr in soup.find_all('div', id='tab2')[0].find_all('tr'):
+        if tr.find('td') is not None and tr.find('td').text.strip() == 'Human':
+            uniprot = tr.find_all('td')[2].text.strip()
+            # print '\t\tuniprot found: %s' % str(uniprot)
+            return uniprot
+    return None
+
+def trip_process(exclude_methods = ['Inference', 'Speculation'], 
+    predictions = False, species = 'Human', strict = False):
+    nd = 'Not determined'
+    spec = set([]) if strict \
+        else set(['Not specified', 'Not used as a bait', ''])
+    spec.add(species)
+    result = {}
+    data = take_a_trip()
+    for uniprots in common.uniqList(common.flatList( \
+        [v.keys() for v in data.values()])):
+        to_process = False
+        refs = set([])
+        mets = set([])
+        tiss = set([])
+        reg = set([])
+        eff = set([])
+        if uniprots in data['sc']:
+            for sc in data['sc'][uniprots]:
+                if sc[4] in spec and sc[6] in spec and \
+                    (predictions or sc[9] != 'Prediction') and \
+                    sc[3] not in exclude_methods:
+                    refs.add(sc[10])
+                    mets.add(sc[3])
+                    tiss.add(sc[7])
+        if uniprots in data['vtc']:
+            for vtc in data['vtc'][uniprots]:
+                if vtc[4] in spec and vtc[7] in spec and \
+                    vtc[3] not in exclude_methods:
+                    refs.add(vtc[10])
+                    mets.add(vtc[3])
+        if uniprots in data['vvc']:
+            for vvc in data['vvc'][uniprots]:
+                if vvc[6] in spec and vvc[8] in spec and \
+                    vvc[3] not in exclude_methods:
+                    refs.add(vvc[10])
+                    mets.add(vvc[3])
+                    if len(vvc[4]) > 0:
+                        tiss.add(vvc[4])
+                    if len(vvc[5]) > 0:
+                        tiss.add(vvc[5])
+        if uniprots in data['cc']:
+            for cc in data['cc'][uniprots]:
+                if cc[4] in spec and cc[6] in spec and \
+                    cc[3] not in exclude_methods:
+                    refs.add(cc[10])
+                    mets.add(cc[3])
+                    if (cc[5] != nd and len(cc[5]) > 0) or \
+                        (cc[7] != nd and len(cc[7]) > 0):
+                        reg.add((cc[5], cc[7]))
+        if uniprots in data['fc']:
+            for fc in data['fc'][uniprots]:
+                mets.add(fc[3])
+                refs.add(fc[7])
+                if len(fc[5]) > 0:
+                    eff.add(fc[5])
+                if len(fc[6]) > 0:
+                    eff.add(fc[6])
+        if len(refs) > 0:
+            result[uniprots] = {
+                'refs': refs,
+                'methods': mets,
+                'tissues': tiss,
+                'effect': eff,
+                'regions': reg
+            }
+    return result
+
+def trip_interactions(exclude_methods = ['Inference', 'Speculation'], 
+    predictions = False, species = 'Human', strict = False):
+    data = trip_process(exclude_methods, predictions, species, strict)
+    def trip_effect(eff):
+        pos = set(['Sensitization', 'Activation', 'Increase in plasma membrane level', 
+            'Increase in lysosomal membrane level', 'New channel creation'])
+        neg = set(['Desensitization', 'Decrease in plasma membrane level', 'Inhibition', 
+            'Internalization from membrane by ligand', 'Retain in the endoplasmic reticulum'])
+        return 'stimulation' if len(eff & pos) > 0 \
+            else 'inhibition' if len(eff & neg) > 0 else 'unknown'
+    return [[unipr[0], unipr[1], ';'.join(d['refs']), 
+        ';'.join(d['methods']), trip_effect(d['effect'])] for unipr, d in data.iteritems()]

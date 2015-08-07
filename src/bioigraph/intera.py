@@ -149,6 +149,16 @@ class Ptm(object):
     def __hash__(self):
         return hash((self.residue, self.typ))
     
+    def __str__(self):
+        return '%s in protein %s-%u\n    '\
+            'Motif: %s\n%s' % (
+                'Domain-motif interaction' if self.typ == 'unknown' and self.residue is None \
+                    else 'PTM: %s'%self.typ,
+                self.protein, self.isoform, 
+                'unknown' if self.motif is None else self.motif.__str__(),
+                '' if self.residue is None else '\n    Residue: %s'%self.residue.__str__()
+            )
+    
     def __eq__(self, other):
         if type(other) == Ptm and \
             self.protein == other.protein and \
@@ -519,6 +529,15 @@ class DomainMotif(object):
     def __hash__(self):
         return hash((self.domain, self.ptm))
     
+    def __str__(self):
+        return 'Domain-motif interaction:\n'\
+            '  %s  %s'\
+            '  Data sources: %s\n'\
+            '  References: %s\n'\
+            '  3D structures: %s\n' % (self.domain.__str__(), 
+                self.ptm.__str__(), ', '.join(self.sources), 
+                ', '.join(self.refs), ', '.join(self.pdbs))
+    
     def __eq__(self, other):
         if other.__class__.__name__ == 'DomainMotif' and \
             self.ptm == other.ptm and \
@@ -553,15 +572,6 @@ class DomainMotif(object):
             '%s-%u:' % (self.ptm.protein, self.ptm.isoform) \
                 if self.ptm.motif is None else self.ptm.motif.print_residues(),
             self.ptm.print_residue())
-    
-    def __str__(self):
-        return 'Domain-motif interaction:\n'\
-            ' %s %s\n'\
-            ' Data sources: %s\n'\
-            ' References: %s\n'\
-            ' 3D structures: %s\n' % (self.domain.__str__(), 
-                self.ptm.__str__(), ', '.join(self.sources), 
-                ', '.join(self.refs), ', '.join(self.pdbs))
     
     def merge(self, other):
         if self == other:

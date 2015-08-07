@@ -53,10 +53,12 @@ class Seq(object):
     def has_isoform(self, isoform):
         return isoform in self.isof
     
-    def get_region(self, residue, start = None, end = None, flanking = 7, isoform = None):
+    def get_region(self, residue = None, start = None, end = None, flanking = 7, isoform = None):
         isoform = self.canonical if isoform is None else isoform
+        if residue is None and start is None and end is None:
+            return (1, len(self.isof[isoform]), self.isof[isoform])
         if residue > len(self.isof[isoform]):
-            return None
+            return (None, None, None)
         start = start if start is not None else residue - flanking
         end = end if end is not None else residue + flanking
         start = max(start, 1)
