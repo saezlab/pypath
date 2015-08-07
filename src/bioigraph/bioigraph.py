@@ -340,7 +340,7 @@ class BioGraph(object):
     
     def __init__(self, ncbi_tax_id = 9606, default_name_type = default_name_type,
                  copy = None, mysql = (None, 'mapping'), name = 'unnamed', 
-                 outdir = 'results', loglevel = 'INFO'):
+                 outdir = 'results', loglevel = 'INFO', loops = False):
         '''
         Currently only one organism molecular interaction networks
         are supported. Some functions supports multi-species networks,
@@ -366,6 +366,8 @@ class BioGraph(object):
             The directory where you wish to create all the output files.
         @loglevel : str
             Passed to logging module.
+        @loops : bool
+            Whether to allow loop edges in the graph. Default is False.
         '''
         self.__version__ = __version__
         for d in ['results', 'log', 'cache']:
@@ -398,6 +400,8 @@ class BioGraph(object):
             g['layout_type'] = None
             g['layout_data'] = None
             g['only_directed'] = False
+            # allow loop edges in the graph
+            self.loops = loops
             self.failed_edges = []
             self.uniprot_mapped = []
             self.mysql_conf = mysql
@@ -1157,9 +1161,9 @@ class BioGraph(object):
         self.ownlog.msg(1,"Removing duplicate edges...",'INFO')
         g = self.graph
         if not g.is_simple():
-            g.simplify(loops=True, multiple=True, combine_edges=self.combine_attr)
+            g.simplify(loops = not self.loops, multiple = True, combine_edges = self.combine_attr)
         self.delete_unmapped()
-        ## TODO: multispec ##
+        ## TODO: multiple taxons ##
         if len(self.reflists) != 0:
             self.delete_by_taxon([self.ncbi_tax_id])
             self.delete_unknown([self.ncbi_tax_id])
@@ -2310,6 +2314,12 @@ class BioGraph(object):
     
     def having_ptm(self, index = True, graph = None):
         return self.having_eattr('ptm', graph, index)
+    
+    def loop_edges(self, index = True, graph = None):
+        graph = graph or self.graph
+        for e in graph.es:
+            if e.source == e.target:
+                yield e.index if index else e
     
     #
     # functions to make topological analysis on the graph

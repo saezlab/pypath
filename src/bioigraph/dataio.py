@@ -2885,9 +2885,8 @@ def netpath():
                 for j in range(i,len(mols)):
                     A = mols[mols.keys()[i]][0:2]
                     B = mols[mols.keys()[j]][0:2]
-                    if A[0] != B[0]:
-                        result.append(list(A) + list(B) + \
-                            [';'.join(refs), ';'.join(mets), intTyp, pwname])
+                    result.append(list(A) + list(B) + \
+                        [';'.join(refs), ';'.join(mets), intTyp, pwname])
     return result
 
 def get_pubmeds(pmids):
