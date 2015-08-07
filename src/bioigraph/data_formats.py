@@ -831,8 +831,13 @@ best = {
     'signor': input_formats.ReadSettings(name="Signor", separator="\t", 
                 nameColA = 2, nameColB = 6,
                 nameTypeA="uniprot", nameTypeB="uniprot",
-                positiveFilters = [(22, 'YES')],
-                typeA="protein", typeB="protein", isDirected = None, 
+                positiveFilters = [(22, 'YES')], # only direct interactions
+                negativeFilters = [(9, 'transcriptional regulation')], # exclude TF-target interactions
+                typeA="protein", typeB="protein", 
+                isDirected = (8, ['up-regulates', 'up-regulates activity', 
+                    'up-regulates quantity by stabilization',
+                    'down-regulates', 'down-regulates activity', 
+                    'down-regulates quantity by destabilization']), 
                 sign = (8, ['up-regulates', 'up-regulates activity', 
                     'up-regulates quantity by stabilization'],
                     ['down-regulates', 'down-regulates activity', 

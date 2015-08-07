@@ -3352,3 +3352,34 @@ def trip_interactions(exclude_methods = ['Inference', 'Speculation'],
             else 'inhibition' if len(eff & neg) > 0 else 'unknown'
     return [[unipr[0], unipr[1], ';'.join(d['refs']), 
         ';'.join(d['methods']), trip_effect(d['effect'])] for unipr, d in data.iteritems()]
+
+def load_signor_ptms(fname = 'signor_22052015.tab'):
+    reres = re.compile(r'([A-Za-z]{3})([0-9]+)')
+    result = []
+    aalet = dict((k.lower().capitalize(), v) for k, v in common.aaletters.iteritems())
+    fname = os.path.join(common.ROOT, 'data', fname)
+    if os.path.exists(fname):
+        with open(fname, 'r') as f:
+            data = [[i.strip() for i in l.split('\t')] for l in \
+                [ll.strip() for ll in f.read().split('\n')[1:] \
+                if len(ll.strip()) > 0]]
+    # return data
+    for d in data:
+        resm = reres.match(d[10])
+        if resm is not None:
+            aa = aalet[resm.groups()[0]]
+            aanum = int(resm.groups()[1])
+            typ = d[9]
+            inst = d[11].upper()
+            result.append({
+                'typ': d[9],
+                'resnum': aanum, 
+                'instance': inst, 
+                'substrate': d[6], 
+                'start': aanum - 7, 
+                'end': aanum + 7, 
+                'kinase': d[2], 
+                'resaa': aa, 
+                'motif': inst
+            })
+    return result

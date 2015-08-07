@@ -3758,6 +3758,11 @@ class BioGraph(object):
         if trace:
             return trace
     
+    def load_signor_ptms(self, non_matching = False, trace = False, **kwargs):
+        trace = self.load_phospho_dmi(source = 'Signor', trace = trace, **kwargs)
+        if trace:
+            return trace
+    
     def load_psite_phos(self, trace = False, **kwargs):
         trace = self.load_phospho_dmi(source = 'PhosphoSite', trace = trace, **kwargs)
         if trace:
@@ -3765,6 +3770,7 @@ class BioGraph(object):
     
     def load_phospho_dmi(self, source, trace = False, **kwargs):
         functions = {
+            'Signor': 'load_signor_ptms',
             'MIMP': 'get_mimp',
             'PhosphoNetworks': 'get_phosphonetworks',
             'phosphoELM': 'get_phosphoelm',
@@ -3788,7 +3794,7 @@ class BioGraph(object):
             prg.step()
             if p['kinase'] is not None and len(p['kinase']) > 0:
                 # database specific id conversions
-                if source in ['PhosphoSite', 'phosphoELM']:
+                if source in ['PhosphoSite', 'phosphoELM', 'Signor']:
                     kinase_ups = self.mapper.map_name(p['kinase'], 'uniprot', 'uniprot')
                 else:
                     if type(p['kinase']) is not list:
@@ -3808,7 +3814,7 @@ class BioGraph(object):
                     substrate_ups_all += self.mapper.map_name(p['substrate_refseq'], 
                         'refseq', 'uniprot')
                     substrate_ups_all = list(set(substrate_ups_all))
-                if source in ['phosphoELM', 'dbPTM', 'PhosphoSite']:
+                if source in ['phosphoELM', 'dbPTM', 'PhosphoSite', 'Signor']:
                     substrate_ups_all = self.mapper.map_name(p['substrate'], 
                         'uniprot', 'uniprot')
                 if source == 'HPRD':
