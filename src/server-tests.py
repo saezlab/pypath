@@ -19,15 +19,25 @@ from bioigraph.common import *
 from bioigraph.data_formats import *
 from bioigraph import server
 
-net = bioigraph.BioGraph(ncbi_tax_id = 9606)
+net = bioigraph.BioGraph(ncbi_tax_id = 9606, loops = True)
 
-# net.init_network(pfile = 'cache/default_plus_acsn_phospho.pickle')
- #net.load_ptms()
+#net.init_network()
+#net.load_resources(lst={'li2012': ugly['li2012']})
+#net.load_resources(lst={'acsn': ugly['acsn']})
+#net.load_resources(lst={'mimp': good['mimp']})
+#net.load_resources(lst={'pnetworks': good['pnetworks']})
+#net.load_resources(lst={'psite_noref': good['psite_noref']})
+#net.save_network(pfile = 'cache/default_plus_acsn_phospho.pickle')
+net.init_network(pfile = 'cache/default_plus_acsn_phospho.pickle')
+
+
+net.load_ptms()
+# net.load_phospho_dmi('Li2012', trace = True)
 
 #from bioigraph.data_formats import best
 #net.read_data_file(best['hprd'], keep_raw = True)
 # net.load_resources(lst = {'signor': best['signor']})
-# net.load_phospho_dmi('Li2012', trace = True)
+
 #tr = net.load_hprd_ptms(trace = True)
 #len(tr['kinase_ambiguousity'])
 #len([x for x in tr['kinase_ambiguousity'].values() if len(x) == 0])

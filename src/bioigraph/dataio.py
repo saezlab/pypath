@@ -338,8 +338,7 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
                     results[k] = results[k].replace('\r','')
                 if 'encoding' != 'utf-8':
                     try:
-                        results[k] = results[k].decode(encoding)
-                        results[k] = results[k].encode('utf-8')
+                        results[k] = results[k].decode(encoding).encode('utf-8')
                     except:
                         pass
         if (cache or write_cache) and not usecache and not large:
@@ -2347,10 +2346,9 @@ def get_phosphoelm(organism = 'Homo sapiens', ltp_only = True):
     result = []
     non_digit = re.compile(r'[^\d.-]+')
     url = data_formats.urls['p_elm']['url']
-    data = curl(url, silent = False, \
-        files_needed = [data_formats.urls['p_elm']['psites']])
-    data = [d for d, n in data.iteritems() \
-        if n.startswith(data_formats.urls['p_elm']['psites'])]
+    data = curl(url, silent = False)
+    data = [n for d, n in data.iteritems() \
+        if d.startswith(data_formats.urls['p_elm']['psites'])]
     data = data[0] if len(data) > 0 else ''
     data = [l.split('\t') for l in data.split('\n')]
     kinases = get_phelm_kinases()
@@ -2541,7 +2539,7 @@ def pnetworks_interactions():
 
 def get_depod(organism = 'Homo sapiens'):
     result = []
-    reunip = re.compile(r'uniprotkb:([A-Z0-9]{6})')
+    reunip = re.compile(r'uniprotkb:([A-Z0-9]+)')
     url = data_formats.urls['depod']['urls'][0]
     url_mitab = data_formats.urls['depod']['urls'][1]
     data = curl(url, silent = False)

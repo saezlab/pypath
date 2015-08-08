@@ -3726,6 +3726,8 @@ class BioGraph(object):
         self.seq = dataio.swissprot_seq(self.ncbi_tax_id, isoforms)
     
     def load_ptms(self):
+        self.load_depod_dmi()
+        self.load_signor_ptms()
         self.load_li2012_ptms()
         self.load_hprd_ptms()
         self.load_mimp_dmi()

@@ -14,8 +14,11 @@ src/bioigraph/data_formats.py
 src/bioigraph/dataio.py
 src/bioigraph/descriptions.py
 src/bioigraph/drawing.py
+src/bioigraph/enrich.py
 src/bioigraph/exons.py
 src/bioigraph/gdsc.py
+src/bioigraph/giant-o.py
+src/bioigraph/giant.py
 src/bioigraph/go.py
 src/bioigraph/gr_plot.py
 src/bioigraph/gsea.py
@@ -31,7 +34,10 @@ src/bioigraph/mapping.py
 src/bioigraph/moduland.py
 src/bioigraph/mysql.py
 src/bioigraph/mysql_connect.py
+src/bioigraph/omim.py
 src/bioigraph/orderedset.py
+src/bioigraph/pdb.py
+src/bioigraph/plot.py
 src/bioigraph/progress.py
 src/bioigraph/proteomicsdb.py
 src/bioigraph/residues.py
@@ -43,6 +49,8 @@ src/bioigraph.egg-info/SOURCES.txt
 src/bioigraph.egg-info/dependency_links.txt
 src/bioigraph.egg-info/requires.txt
 src/bioigraph.egg-info/top_level.txt
+src/bioigraph/data/.~lock.signor_22052015.tab#
+src/bioigraph/data/LMPID_DATA_pubmed_ref.xml
 src/bioigraph/data/__init__.py
 src/bioigraph/data/alzpw-ppi.csv
 src/bioigraph/data/arn.csv
@@ -57,12 +65,14 @@ src/bioigraph/data/dd_refs.csv
 src/bioigraph/data/depod-refs.csv
 src/bioigraph/data/dip_human_core_processed.csv
 src/bioigraph/data/elm_deprecated
+src/bioigraph/data/embl_colors
 src/bioigraph/data/entrez_uniprot.csv
 src/bioigraph/data/gdsc.sif
 src/bioigraph/data/human-genesymbol-all.tab
 src/bioigraph/data/innatedb.csv
 src/bioigraph/data/intact_filtered.csv
 src/bioigraph/data/intogene_cancerdrivers.tsv
+src/bioigraph/data/li2012.csv
 src/bioigraph/data/macrophage-strict.csv
 src/bioigraph/data/matrixdb_core.csv
 src/bioigraph/data/mppi_human_rep.csv

@@ -8,3 +8,5 @@ ndg-httpsclient
 chembl_webresource_client
 pyasn1
 twisted
+fisher
+statsmodels
