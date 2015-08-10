@@ -125,14 +125,6 @@ bp = plot.Barplot(x = d[0], y = d[1],
     xlab = 'Pathway resources', order = 'y', 
     y_break = (0.19, 0.1))
 
-#import cPickle as pickle
-#d = pickle.load(open('testd.pickle', 'rb'))
-#bp = plot.Barplot(x = d[0], y = d[1], 
-    #data = None, fname = 'interactions-by-db.pdf', lab_size = 11, 
-    #ylab = 'Number of interactions', 
-    #xlab = 'Pathway resources', order = 'y', 
-    #y_break = (0.3, 0.1))
-
 # density sens.barplot
 d = zip(*[(s, g.density()) for s, g in sep.iteritems()] + \
     [(omnipath, net.graph.density())])

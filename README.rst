@@ -9,6 +9,43 @@ Bioigraph
 
 **Bioigraph** is a Python package built around igraphthat to work with molecular network representations e.g. PPI, miRNA, drug compound interaction networks.
 
+Webservice
+==========
+
+I run and update time to time the bioigraph webservice on my virtual machine on EBI infrastructure, serving the OmniPath data with additional kinase-substrate interactions and PTMs. The current IP address of the VM is 172.22.71.26, but this might eventually change (given by the Systems, every time when I reboot the VM after upgrades). The webservice is set up to listen on port 33333. It serves data in REST style, by HTTP protocol (browser, wget, curl or anything can make requests). This host is accessible only on the EBI internal network. From outside you can use SSH tunnel of course. The webservice currently recognizes 4 types of queries: ``interactions``, ``ptms``, ``about`` and ``info``. 
+
+A request without any parameter, gives some basic numbers about the actual loaded dataset:
+
+    http://172.22.71.26:33333
+
+The ``about`` tells the version number:
+
+    http://172.22.71.26:33333/about
+
+The ``info`` returns a HTML page with comprehensive information about the resources:
+
+    http://172.22.71.26:33333/info
+
+The ``interactions`` accepts some parameters and returns interactions in tabular format. This example returns all interactions of EGFR (P00533), with sources and references listed:
+
+    http://172.22.71.26:33333/interactions/P00533/?fields=sources&fields=references
+
+The parameters can be omitted. More UniProts can be given separated by comma, and JSON format is available too (better for import to Python!):
+
+    http://172.22.71.26:33333/interactions/P00533,O15117,Q96FE5?format=json
+
+Another interface is ``ptms``, to list enzymes, substrates and PTMs. 
+
+    http://172.22.71.26:33333/ptms/P00533?ptm_type=phosphorylation&fields=sources&fields=references
+
+To list all interactions simply request:
+
+    http://172.22.71.26:33333/interactions
+
+To list all PTMs similarly:
+
+    http://172.22.71.26:33333/ptms
+
 Installation
 ============
 
