@@ -235,9 +235,9 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
                         if h.startswith('226'):
                             status = 200
                             break
-            except pycurl.error as e:
+            except pycurl.error as (errno, strerror):
                 status = 500
-                sys.stdout.write('\tPycURL error: %u, %s\n' % (e.errno, e.strerror))
+                sys.stdout.write('\tPycURL error: %u, %s\n' % (errno, strerror))
                 sys.stdout.flush()
         c.close()
     # sometimes authentication or cookies are needed to access the target url:

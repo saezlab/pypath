@@ -257,9 +257,9 @@ urls = {
     'depod': {
         'label': 'Dephosphorylation substrates and sites',
         'urls': [
-            'http://www.koehn.embl.de/depod/download/DEPOD_201408'\
+            'http://www.koehnlab.de/depod/download/DEPOD_201408'\
                 '_human_phosphatase-substrate.txt',
-            'http://www.koehn.embl.de/depod/download/DEPOD_201405'\
+            'http://www.koehnlab.de/depod/download/DEPOD_201405'\
                 '_human_phosphatase-substrate.mitab'
         ]
     },

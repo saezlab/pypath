@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: bioigraph
-Version: 0.1.43
+Version: 0.1.44
 Summary: Work with molecular networks in Python igraph
 Home-page: ['http://157.181.231.40/~denes/bioigraph']
 Author: Dénes Türei

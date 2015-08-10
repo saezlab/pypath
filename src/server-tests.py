@@ -21,13 +21,13 @@ from bioigraph import server
 
 net = bioigraph.BioGraph(ncbi_tax_id = 9606, loops = True)
 
-#net.init_network()
-#net.load_resources(lst={'li2012': ugly['li2012']})
-#net.load_resources(lst={'acsn': ugly['acsn']})
-#net.load_resources(lst={'mimp': good['mimp']})
-#net.load_resources(lst={'pnetworks': good['pnetworks']})
-#net.load_resources(lst={'psite_noref': good['psite_noref']})
-#net.save_network(pfile = 'cache/default_plus_acsn_phospho.pickle')
+net.init_network()
+net.load_resources(lst={'li2012': ugly['li2012']})
+net.load_resources(lst={'acsn': ugly['acsn']})
+net.load_resources(lst={'mimp': good['mimp']})
+net.load_resources(lst={'pnetworks': good['pnetworks']})
+net.load_resources(lst={'psite_noref': good['psite_noref']})
+net.save_network(pfile = 'cache/default_plus_acsn_phospho.pickle')
 net.init_network(pfile = 'cache/default_plus_acsn_phospho.pickle')
 
 
