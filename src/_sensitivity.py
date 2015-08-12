@@ -266,7 +266,8 @@ def boxplot(data, labels, xlab, ylab, fname, fontfamily = 'Helvetica Neue LT Std
     fig.savefig(fname)
 
 def stacked_barplot(x, y, data, fname, names, font_family = 'Helvetica Neue LT Std', 
-    xlab = '', ylab = '', lab_angle = 90, lab_size = 9, legend = True, 
+    xlab = '', ylab = '', lab_angle = 90, lab_size = (18, 21), axis_lab_size = 36, 
+    legend = True, 
     colors = ['#007b7f', '#6ea945', '#fccc06', '#818284', '#da0025'], 
     order = False, desc = True):
     if type(x) is list or type(x) is tuple:
@@ -281,6 +282,8 @@ def stacked_barplot(x, y, data, fname, names, font_family = 'Helvetica Neue LT S
         ordr = np.array([x[i] for i in total.argsort()])
     elif type(order) is int:
         ordr = np.array([x[i] for i in y[order].argsort()])
+    elif len(set(order) & set(x)) == len(x):
+        ordr = order
     else:
         ordr = x
     if desc:
@@ -288,7 +291,7 @@ def stacked_barplot(x, y, data, fname, names, font_family = 'Helvetica Neue LT S
     fig, ax = plt.subplots()
     sns.set(font = font_family)
     sns.set_context('talk', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
-        'grid.linewidth': 1.0})
+        'grid.linewidth': 1.0, 'axes.labelsize': axis_lab_size})
     for j in xrange(len(y), 0, -1):
         this_level = np.array([sum([y[jj][i] for jj in xrange(j)]) \
             for i in xrange(len(y[0]))])
@@ -298,9 +301,11 @@ def stacked_barplot(x, y, data, fname, names, font_family = 'Helvetica Neue LT S
     #plt.bar(range(len(ordr)), [y[i] for i in ordr], align = 'center')
     #plt.xticks(list(ordr), [x[i] for i in ordr])
     sns.set_context('talk', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
-        'grid.linewidth': 1.0})
+        'grid.linewidth': 1.0, 'axes.labelsize': axis_lab_size})
     for tick in ax.xaxis.get_major_ticks():
-        tick.label.set_fontsize(lab_size)
+        tick.label.set_fontsize(lab_size[0])
+    for tick in ax.yaxis.get_major_ticks():
+        tick.label.set_fontsize(lab_size[1])
     ax.set_ylabel(ylab)
     ax.set_xlabel(xlab)
     plt.setp(ax.xaxis.get_majorticklabels(), rotation = lab_angle)

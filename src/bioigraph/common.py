@@ -17,13 +17,14 @@
 
 import os
 import sys
+import math
 import random
 import textwrap
 
 __all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'uniqList', 'addToList', 
            'gen_session_id', 'sorensen_index', 'console', 'wcl', 'flatList', 
            'charTypes', 'delEmpty', '__version__', 'get_args', 
-           'something']
+           'something', 'rotate']
 
 # get the location
 ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -171,3 +172,16 @@ def get_args(loc_dict, remove = set([])):
     args = dict((k, v) for k, v in loc_dict.iteritems() if k not in remove)
     if 'kwargs' in loc_dict: args = dict(args.items() + loc_dict['kwargs'].items())
     return args
+
+def rotate(point, angle, center = (0.0, 0.0)):
+    """
+    from http://stackoverflow.com/a/20024348/854988
+    Rotates a point around center. Angle is in degrees.
+    Rotation is counter-clockwise
+    """
+    angle = math.radians(angle)
+    temp_point = point[0]-center[0] , point[1]-center[1]
+    temp_point = ( temp_point[0]*math.cos(angle)-temp_point[1]*math.sin(angle), \
+        temp_point[0]*math.sin(angle) + temp_point[1]*math.cos(angle))
+    temp_point = temp_point[0]+center[0] , temp_point[1]+center[1]
+    return temp_point

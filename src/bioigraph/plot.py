@@ -53,10 +53,19 @@ def rgb256(rgb1):
 class Plot(object):
     
     def __init__(self, fname = None, font_family = 'Helvetica Neue LT Std', 
-        palette = None, context = 'poster', rc = None):
+        palette = None, context = 'poster', lab_size = (9, 9), 
+        axis_lab_size = 10.0, rc = {}):
         for k, v in locals().iteritems():
             if not hasattr(self, k) or getattr(self, k) is not None:
                 setattr(self, k, v)
+        if type(self.lab_size) is not tuple:
+            self.lab_size = (self.lab_size, ) * 2
+        if 'axes.labelsize' not in self.rc:
+            self.rc['axes.labelsize'] = self.axis_lab_size
+        if 'ytick.labelsize' not in self.rc:
+            self.rc['ytick.labelsize'] = self.lab_size[0]
+        if 'ytick.labelsize' not in self.rc:
+            self.rc['ytick.labelsize'] = self.lab_size[1]
         self.palette = palette or self.embl_palette()
     
     def embl_palette(self, inFile = 'embl_colors'):
@@ -84,9 +93,10 @@ class Plot(object):
 class Barplot(Plot):
     
     def __init__(self, x, y, data = None, fname = None, font_family = 'Helvetica Neue LT Std', 
-        xlab = '', ylab = '', lab_angle = 90, lab_size = 9, color = '#007b7f', 
+        xlab = '', ylab = '', axis_lab_size = 10.0, 
+        lab_angle = 90, lab_size = (9, 9), color = '#007b7f', 
         order = False, desc = True, legend = None, fin = True, 
-        y_break = None, rc = None, palette = None, context = 'poster', **kwargs):
+        y_break = None, rc = {}, palette = None, context = 'poster', **kwargs):
         '''
         y_break : tuple
         If not None, the y-axis will have a break. 2 floats in the tuple, < 1.0, 
@@ -100,7 +110,8 @@ class Barplot(Plot):
         self.rc = self.rc or {'lines.linewidth': 1.0, 'patch.linewidth': 0.0, 
             'grid.linewidth': 1.0}
         super(Barplot, self).__init__(fname = fname, font_family = font_family, 
-            palette = palette, context = context, rc = self.rc)
+            palette = palette, context = context, lab_size = self.lab_size, 
+            axis_lab_size = self.axis_lab_size, rc = self.rc)
         self.color = self.color or self.palette[0][0]
         if type(self.color) is list:
             self.palette = sns.color_palette(self.color)
@@ -139,11 +150,11 @@ class Barplot(Plot):
             self.palette = sns.color_palette([palcyc[i] for i in self.x.argsort()])
         elif self.order == 'y':
             self.ordr = np.array([self.x[i] for i in self.y.argsort()])
-            #print 'palette 1 %s' % str(self.palette)
-            #print 'palcyc %s' % str(palcyc)
             self.palette = sns.color_palette([palcyc[i] for i in self.y.argsort()])
-            #print 'argsort %s' % str(list(self.y.argsort()))
-            #print 'palette 2 %s' % str(self.palette)
+        elif len(set(self.order) & set(self.x)) == len(self.x):
+            self.ordr = np.array(self.order)
+            xl = list(self.x)
+            self.palette = sns.color_palette([palcyc[xl.index(i)] for i in self.ordr])
         else:
             self.ordr = self.x
         if self.desc:
@@ -186,7 +197,12 @@ class Barplot(Plot):
     
     def labels(self):
         for tick in self.ax.xaxis.get_major_ticks():
-            tick.label.set_fontsize(self.lab_size)
+            tick.label.set_fontsize(self.lab_size[0])
+        for tick in self.ax.yaxis.get_major_ticks():
+            tick.label.set_fontsize(self.lab_size[1])
+        if self.y_break:
+            for tick in self.ax2.yaxis.get_major_ticks():
+                tick.label.set_fontsize(self.lab_size[1])
         self.ax.set_ylabel(self.ylab)
         self.ax.set_xlabel(self.xlab)
         plt.setp(self.ax.xaxis.get_majorticklabels(), rotation = self.lab_angle)

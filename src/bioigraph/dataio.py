@@ -65,6 +65,8 @@ import seq as se
 CURSOR_UP_ONE = '\x1b[1A'
 ERASE_LINE = '\x1b[2K'
 
+show_cache = False
+
 class RemoteFile(object):
     
     def __init__(self, filename, user, host, passwd, port = 22, sep = '\t', 
@@ -99,6 +101,21 @@ class RemoteFile(object):
                     for line in f:
                         yield line
 
+def is_quoted(string):
+    '''
+    From http://stackoverflow.com/questions/1637762/test-if-string-is-url-encoded-in-php
+    '''
+    test = string
+    while(urllib.unquote(test) != test):
+        test = urllib.unquote(test)
+    return urllib.quote(test, '/%') == string or urllib.quote(test) == string
+
+def is_quoted_plus(string):
+    test = string
+    while(urllib.unquote_plus(test) != test):
+        test = urllib.unquote_plus(test)
+    return urllib.quote_plus(test, '&=') == string or urllib.quote_plus(test) == string
+
 def url_fix(s, charset='utf-8'):
     """
     From http://stackoverflow.com/a/121017/854988
@@ -106,8 +123,10 @@ def url_fix(s, charset='utf-8'):
     if isinstance(s, unicode):
         s = s.encode(charset, 'ignore')
     scheme, netloc, path, qs, anchor = urlparse.urlsplit(s)
-    path = urllib.quote(path, '/%')
-    qs = urllib.quote_plus(qs, ':&=')
+    if not is_quoted(path):
+        path = urllib.quote(path, '/%')
+    if not is_quoted_plus(qs):
+        qs = urllib.quote_plus(qs, '&=')
     return urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
 
 def print_debug_info(debug_type, debug_msg, truncate = 1000):
@@ -167,6 +186,9 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
         if not os.path.exists(os.path.join(os.getcwd(),'cache')):
             os.mkdir(os.path.join(os.getcwd(),'cache'))
         cachefile = os.path.join(os.getcwd(),'cache',urlmd5+'-'+outf)
+        if show_cache:
+            sys.stdout.write('\tFor URL %s\n' % url)
+            sys.stdout.write('\tChache file is %s' % cachefile)
         usecache = True if os.path.exists(cachefile) and cache else False
         # load from cache:
         if usecache:

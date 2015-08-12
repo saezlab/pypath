@@ -165,7 +165,7 @@ d = zip(*[(s, len([v for v in g.vs if v['rec']])/float(g.vcount())*100) \
     [(omnipath, sum(net.graph.vs['rec'])/float(net.graph.vcount())*100)])
 bp = plot.Barplot(x = d[0], y = d[1], 
     data = None, fname = 'receptorprop-by-db.pdf', lab_size = 11, 
-    ylab = 'Percentage of receptors', color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
+    ylab = r'% of receptors', color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
     xlab = 'Pathway resources', order = 'y', y_break = (0.39, 0.12))
 
 # receptors prop sens.barplot
@@ -174,7 +174,7 @@ d = zip(*[(s, len([v for v in g.vs if v['rec']])/float(len(net.lists['rec']))*10
     [(omnipath, sum(net.graph.vs['rec'])/float(len(net.lists['rec']))*100)])
 bp = plot.Barplot(x = d[0], y = d[1], 
     data = None, fname = 'receptorcov-by-db.pdf', lab_size = 11, 
-    ylab = 'Percentage of all\nhuman receptors covered', 
+    ylab = r'% of all\nhuman receptors covered', 
     color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
     xlab = 'Pathway resources', order = 'y')
 
@@ -195,7 +195,7 @@ d = zip(*[(s, len([v for v in g.vs if v['tf']])/float(g.vcount())*100) \
     [(omnipath, sum(net.graph.vs['tf'])/float(net.graph.vcount())*100)])
 bp = plot.Barplot(x = d[0], y = d[1], 
     data = None, fname = 'tfprop-by-db.pdf', lab_size = 11, 
-    ylab = 'Percentage of transcription factors', 
+    ylab = r'% of transcription factors', 
     color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
     xlab = 'Pathway resources', order = 'y', 
     y_break = (0.53, 0.2))
@@ -205,7 +205,7 @@ d = zip(*[(s, len([v for v in g.vs if v['tf']])/float(len(net.lists['tfs']))*100
     [(omnipath, sum(net.graph.vs['tf'])/float(len(net.lists['tfs']))*100)])
 bp = plot.Barplot(x = d[0], y = d[1], 
     data = None, fname = 'tfcov-by-db.pdf', lab_size = 11, 
-    ylab = 'Percentage of all human\ntranscription factors covered', 
+    ylab = r'% of all human\ntranscription factors covered', 
     color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
     xlab = 'Pathway resources', order = 'y', 
     y_break = (0.5, 0.1))
@@ -225,7 +225,7 @@ d = zip(*[(s, sum(len(x) for u, x in dis.iteritems() if u in g.vs['name'])/float
     [(omnipath, sum(len(x) for x in net.graph.vs['dis'])/float(sum(len(x) for x in dis.values()))*100)])
 bp = plot.Barplot(x = d[0], y = d[1], 
     data = None, fname = 'discov-by-db.pdf', lab_size = 11, 
-    ylab = 'Percentage of disease-gene associations covered', 
+    ylab = r'% of disease-gene associations covered', 
     color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
     xlab = 'Pathway resources', order = 'y', 
     y_break = (0.53, 0.12))
@@ -263,7 +263,7 @@ d = zip(*[(s, len(sens.complexes_in_network(g))) \
 bp = plot.Barplot(x = d[0], y = d[1], 
     fname = 'complexes-by-db.pdf', lab_size = 11, 
     color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
-    ylab = 'Number of complexes (of a total of %u CORUM complexes)'%\
+    ylab = 'Number of complexes (out of %u)'%\
         len(sens.complexes_in_network(net.graph)), 
     xlab = 'Pathway resources', order = 'y', y_break = (0.55, 0.05))
 
@@ -274,7 +274,7 @@ d = zip(*[(s, sum([len(e['ptm']) for e in g.es])) \
 bp = plot.Barplot(x = d[0], y = d[1], 
     fname = 'ptms-by-db.pdf', lab_size = 11, 
     color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
-    ylab = 'Number of PTMs (of a total of %u PTMs)'%\
+    ylab = 'Number of PTMs (out of %u PTMs)'%\
         sum([len(e['ptm']) for e in net.graph.es]), 
     xlab = 'Pathway resources', order = 'y', y_break = (0.6, 0.1))
 
@@ -287,6 +287,8 @@ bp = plot.Barplot(x = d[0], y = d[1],
     color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
     ylab = 'Interactions having PTM', 
     xlab = 'Pathway resources', order = 'y', y_break = (0.5, 0.15))
+
+# TODO difference between COSMIC and Intogene
 
 # cosmic cancer gene census coverage sens.barplot
 d = zip(*[(s, len(set(net.lists['CancerGeneCensus']) & set(g.vs['name'])) / \

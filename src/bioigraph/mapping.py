@@ -174,19 +174,20 @@ class MappingTable(object):
             [xxx for xxx in resep.split(scolend.sub('', xx.strip())) if len(xxx) > 0] \
             for xx in x.split('\t') if len(xx.strip()) > 0] 
             for x in data.split('\n') if len(x.strip()) > 0]
-        del data[0]
-        for l in data:
-            if len(l) > 1:
-                l[1] = self.process_protein_name(l[1][0]) \
-                    if param.field == 'protein names' else l[1]
-                for other in l[1]:
-                    if other not in mapping_o:
-                        mapping_o[other] = []
-                    mapping_o[other].append(l[0][0])
-                    if param.bi:
-                        if l[0][0] not in mapping_i:
-                            mapping_i[l[0][0]] = []
-                        mapping_i[l[0][0]].append(other)
+        if len(data) > 0:
+            del data[0]
+            for l in data:
+                if len(l) > 1:
+                    l[1] = self.process_protein_name(l[1][0]) \
+                        if param.field == 'protein names' else l[1]
+                    for other in l[1]:
+                        if other not in mapping_o:
+                            mapping_o[other] = []
+                        mapping_o[other].append(l[0][0])
+                        if param.bi:
+                            if l[0][0] not in mapping_i:
+                                mapping_i[l[0][0]] = []
+                            mapping_i[l[0][0]].append(other)
         self.mapping['to'] = mapping_o
         if param.bi:
             self.mapping['from'] = mapping_i

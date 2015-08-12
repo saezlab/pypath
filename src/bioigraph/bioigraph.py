@@ -32,6 +32,7 @@ import copy
 import json
 import pandas
 import operator
+import locale
 import heapq
 import threading
 from itertools import chain
@@ -4634,6 +4635,9 @@ class BioGraph(object):
                     float(self.graph.ecount()) * 100.0
             only_src_edges = len([e.index for e in self.graph.es \
                 if s in e['sources'] and len(e['sources']) == 1])
+            only_src_edges_pct = len([e.index for e in self.graph.es \
+                if s in e['sources'] and len(e['sources']) == 1]) / \
+                float(self.graph.ecount()) * 100.0
             shared_edges = len([e.index for e in self.graph.es \
                 if s in e['sources'] and len(e['sources']) > 1])
             src_refs = set(uniqList([r.pmid for r in flatList([e['refs_by_source'][s] \
@@ -4642,6 +4646,7 @@ class BioGraph(object):
                 flatList([rr for sr, rr in e['refs_by_source'].iteritems() if sr != s])] \
                 for e in self.graph.es]))
             only_src_refs = len(src_refs - other_refs)
+            only_src_refs_pct = len(src_refs - other_refs) / float(all_refs) * 100.0
             src_refs_pct = len(src_refs) / float(all_refs) * 100.0
             shared_refs = len(src_refs & other_refs)
             shared_curation_effort = sum([len(x) for x in \
@@ -4662,8 +4667,10 @@ class BioGraph(object):
                 'source_edges': src_edges,
                 'source_edges_percentage': src_edges_pct,
                 'specific_edges': only_src_edges,
+                'specific_edges_percentage': only_src_edges_pct,
                 'shared_edges': shared_edges,
                 'specific_refs': only_src_refs,
+                'specific_refs_percentage': only_src_refs_pct,
                 'source_refs': len(src_refs),
                 'source_refs_percentage': src_refs_pct,
                 'shared_refs': shared_refs,
@@ -4719,7 +4726,8 @@ class BioGraph(object):
             ''' % caption if latex_hdr else ''
         _hdr_row = ' & '.join([''] + [header_format%h[1].replace(r'%', r'\%') \
             for h in header]) + '\\\\\n'
-        formatter = lambda x: '%.2f'%x if type(x) is float else '%u'%x
+        formatter = lambda x: locale.format('%.2f', x, grouping = True) \
+            if type(x) is float else locale.format('%d', x, grouping = True)
         intfloat = lambda x: float(x) if '.' in x else int(x)
         _rows = '\\\\\n'.join([' & '.join([k] + [formatter(data[k][h[0]]) \
             for h in header]) for k in row_order]) + '\\\\\n'
@@ -4740,10 +4748,12 @@ class BioGraph(object):
             ('source_edges_percentage', r'Edges [%]'),
             ('shared_edges', 'Shared edges'),
             ('specific_edges', 'Specific edges'),
+            ('specific_edges_percentage', r'Specific edges [%]'),
             ('source_refs', 'References'),
             ('source_refs_percentage', r'References [%]'),
             ('shared_refs', 'Shared references'),
             ('specific_refs', 'Specific references'),
+            ('specific_refs_percentage', r'Specific references [%]'),
             ('source_curation_effort', 'Curation effort'),
             ('shared_curation_effort', 'Shared curation effort'),
             ('source_specific_curation_effort', 'Specific curation effort'),
