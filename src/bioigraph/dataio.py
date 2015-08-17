@@ -116,16 +116,16 @@ def is_quoted_plus(string):
         test = urllib.unquote_plus(test)
     return urllib.quote_plus(test, '&=') == string or urllib.quote_plus(test) == string
 
-def url_fix(s, charset='utf-8'):
+def url_fix(s, charset='utf-8', force = False):
     """
     From http://stackoverflow.com/a/121017/854988
     """
     if isinstance(s, unicode):
         s = s.encode(charset, 'ignore')
     scheme, netloc, path, qs, anchor = urlparse.urlsplit(s)
-    if not is_quoted(path):
+    if force or not is_quoted(path):
         path = urllib.quote(path, '/%')
-    if not is_quoted_plus(qs):
+    if force or not is_quoted_plus(qs):
         qs = urllib.quote_plus(qs, '&=')
     return urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
 
@@ -164,10 +164,10 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
         files_needed = None, timeout = 300, init_url = None, 
         init_fun = 'get_jsessionid', follow = True, large = False,
         override_post = False, init_headers = False, 
-        write_cache = True):
-    url = url_fix(url)
+        write_cache = True, force_quote = False):
+    url = url_fix(url, force = force_quote)
     if init_url is not None:
-        init_url = url_fix(init_url)
+        init_url = url_fix(init_url, force = force_quote)
     # either from cache or from download, we load the data into StringIO:
     multifile = False
     domain = url.replace('https://', '').replace('http://','').\
@@ -2391,7 +2391,7 @@ def get_phosphoelm(organism = 'Homo sapiens', ltp_only = True):
                 'end': None,
                 'substrate': l[0],
                 'kinase': kinase,
-                'references': [non_digit.sub('', r) for r in l[4].split(';')],
+                'references': l[4].split(';'),
                 'experiment': l[6],
                 'organism': l[7]
             })
@@ -2478,6 +2478,7 @@ def pfam_uniprot(uniprots, infile = None):
 def get_dbptm():
     result = []
     byre = re.compile(r'.*by\s([A-Za-z0-9\s]+)\.*')
+    andre = re.compile(r',|and')
     non_digit = re.compile(r'[^\d.-]+')
     for url in data_formats.urls['dbptm']['urls']:
         extra = curl(url, silent = False)
@@ -2486,7 +2487,7 @@ def get_dbptm():
             for l in data:
                 if len(l) > 8:
                     resnum = int(non_digit.sub('', l[2]))
-                    result.append({
+                    ptm = ({
                         'substrate': l[1],
                         'typ': l[7].lower(),
                         'resaa': l[8][6],
@@ -2495,10 +2496,19 @@ def get_dbptm():
                         'references': l[4].split(';'),
                         'source': l[5].split()[0],
                         'kinase': None if byre.match(l[3]) is None else \
-                            byre.match(l[3]).groups(1)[0].split(' and '),
+                            [i.strip() for i in andre.split(byre.match(l[3]).groups(1)[0])],
                         'start': resnum - 6,
                         'end': resnum + 6
                     })
+                    if ptm['kinase'] is not None:
+                        if 'autocatalysis' in ptm['kinase']:
+                            ptm['kinase'].append(ptm['substrate'])
+                            ptm['kinase'].remove('autocatalysis')
+                        ptm['kinase'] = [k.replace('host', '').strip() for k in ptm['kinase']]
+                        ptm['kinase'] = [k for k in ptm['kinase'] if len(k) > 0]
+                        if len(ptm['kinase']) == 0:
+                            ptm['kinase'] = None
+                    result.append(ptm)
     return result
 
 def dbptm_interactions():
@@ -2510,7 +2520,7 @@ def dbptm_interactions():
                 result.append([
                     src, 
                     r['substrate'],
-                    ';'.join(r['references'])
+                    ';'.join([i for i in r['references'] if i != '-'])
                 ])
     return result
 
@@ -3039,6 +3049,61 @@ def open_pubmed(pmid):
     url = data_formats.urls['pubmed']['url'] % pmid
     webbrowser.open(url)
 
+def only_pmids(idList, strict = True):
+    if type(idList) in common.simpleTypes:
+        idList = [idList]
+    pmids = set([i for i in idList if i.isdigit()])
+    pmcids = [i for i in idList if i.startswith('PMC')]
+    dois = [i for i in idList if '/' in i]
+    manuscids = [i for i in idList if i.startswith('NIHMS')]
+    if not strict:
+        non_pmids = set(idList) - (set(pmids) | set(dois) | set(pmcids) | set(manuscids))
+        pmids = pmids | non_pmids
+    if len(pmcids) > 0:
+        pmids = pmids | set(pmids_list(pmcids))
+    if len(dois) > 0:
+        pmids = pmids | set(pmids_list(dois))
+    return list(pmids)
+
+def get_pmid(idList):
+    '''
+    For a list of doi or PMC IDs 
+    fetches the corresponding PMIDs.
+    '''
+    if type(idList) in common.simpleTypes:
+        idList = [idList]
+    url = data_formats.urls['pubmed-eutils']['conv'] % ','.join(str(i) for i in idList)
+    data = curl(url, silent = True)
+    try:
+        js = json.loads(data)
+    except:
+        js = {}
+    return js
+
+def pmids_dict(idList):
+    jsn = get_pmid(idList)
+    result = {
+        'doi': {},
+        'pmc': {}
+    }
+    if 'records' in jsn:
+        for r in jsn['records']:
+            if 'pmid' in r:
+                if 'doi' in r:
+                    result['doi'][r['pmid']] = r['doi']
+                if 'pmcid' in r:
+                    result['pmc'][r['pmid']] = r['pmcid']
+    return result
+
+def pmids_list(idList):
+    jsn = get_pmid(idList)
+    result = []
+    if 'records' in jsn:
+        for r in jsn['records']:
+            if 'pmid' in r:
+                result.append(r['pmid'])
+    return result
+
 def get_hprd(in_vivo = True):
     url = data_formats.urls['hprd_all']['url']
     files = [data_formats.urls['hprd_all']['ptm_file']]
@@ -3402,3 +3467,10 @@ def load_signor_ptms(fname = 'signor_22052015.tab'):
                 'motif': inst
             })
     return result
+
+def load_macrophage():
+    fname = data_formats.best['macrophage'].inFile
+    fname = os.path.join(common.ROOT, 'data', fname)
+    with open(fname, 'r') as f:
+        data = f.read()
+    data = data.replace('?', '').replace('->', ',')

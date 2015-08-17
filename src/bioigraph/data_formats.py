@@ -388,7 +388,8 @@ urls = {
     },
     'pubmed-eutils': {
         'label': 'Retrieving summary of PubMed records',
-        'url': 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi'
+        'url': 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi',
+        'conv': 'http://www.ncbi.nlm.nih.gov/pmc/utils/idconv/v1.0/?ids=%s&format=json'
     },
     'pubmed': {
         'label': 'PubMed baseurl',
@@ -401,6 +402,10 @@ urls = {
     'tfcensus': {
         'label': 'A census of human transcription factors (Vaquerizas 2009)',
         'url': 'http://www.nature.com/nrg/journal/v10/n4/extref/nrg2538-s3.txt'
+    },
+    'tfcheckp': {
+        'label': 'A comprehensive list of transcription factors',
+        'url': 'http://www.tfcheckpoint.org/data/TFCheckpoint_download_180515.txt'
     },
     'gtp': {
         'label': 'Guide to Pharmacology: ligand-receptor interactions',
@@ -642,7 +647,9 @@ best = {
                 nameTypeA="genesymbol", nameTypeB="genesymbol",
                 typeA="protein", typeB="protein",
                 isDirected = False, sign = False, ncbiTaxId=9606,
-                inFile=os.path.join(ROOT, 'data', 'cell-map-edge-attributes.txt'),references=(6, ";"),
+                inFile=os.path.join(ROOT, 'data', 'cell-map-edge-attributes.txt'),
+                references=(6, ";"),
+                negativeFilters = [(6, 'NOT_SPECIFIED')],
                 extraEdgeAttrs={},
                 extraNodeAttrsA={},
                 extraNodeAttrsB={},
@@ -893,13 +900,15 @@ best = {
                 extraNodeAttrsA={},
                 extraNodeAttrsB={}),
     'dbptm': input_formats.ReadSettings(name="dbPTM", separator = None, nameColA=0,
-                nameColB=1, nameTypeA="genesymbol", nameTypeB="uniprot",
+                nameColB=1, nameTypeA=['genesymbol', 'uniprot'], nameTypeB="uniprot",
                 typeA = "protein", typeB = "protein", isDirected = 1, sign = False,
                 ncbiTaxId = 9606,
-                inFile = 'dbptm_interactions', references = (2, ';'), header = False,
+                inFile = 'dbptm_interactions', 
+                references = (2, ';'), header = False,
                 extraEdgeAttrs={},
                 extraNodeAttrsA={},
-                extraNodeAttrsB={}),
+                extraNodeAttrsB={},
+                must_have_references = True),
     'hprd': input_formats.ReadSettings(name="HPRD", separator = None, nameColA = 6,
                 nameColB = 3, nameTypeA = "genesymbol", nameTypeB = "refseqp",
                 typeA = "protein", typeB = "protein", isDirected = 1, sign = False,

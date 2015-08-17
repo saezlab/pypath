@@ -65,17 +65,19 @@ __all__ = ['BioGraph', 'Direction', 'Reference', '__version__', 'a']
 class Reference(object):
     
     def __init__(self, pmid):
-        self.pmid = str(pmid)
-        self._hash = hash(self.pmid)
+        self.pmid = str(pmid.strip())
         
     def __eq__(self, other):
         return type(other) == Reference and self.pmid == other.pmid
     
     def __hash__(self):
-        return self._hash
+        return hash(self.pmid)
     
     def open(self):
         dataio.open_pubmed(self.pmid)
+    
+    def __str__(self):
+        return self.pmid
     
     def info(self):
         return dataio.get_pubmeds([self.pmid])
@@ -723,6 +725,9 @@ class BioGraph(object):
                 refs = []
                 if refCol is not None:
                     refs = delEmpty(list(set(line[refCol].split(refSep))))
+                refs = dataio.only_pmids([r.strip() for r in refs])
+                if len(refs) == 0 and settings.must_have_references:
+                    continue
                 # to give an easy way:
                 if type(settings.ncbiTaxId) is int:
                     taxA = settings.ncbiTaxId
@@ -2032,18 +2037,13 @@ class BioGraph(object):
     
     def update_vertex_sources(self):
         g = self.graph
-        g.vs['sources'] = [None]
-        for e in g.es:
-            if g.vs[e.source]['sources'] is None:
-                g.vs[e.source]['sources'] = []
-            g.vs[e.source]['sources'] += e['sources']
-            if g.vs[e.target]['sources'] is None:
-                g.vs[e.target]['sources'] = []
-            g.vs[e.target]['sources'] += e['sources']
-        for v in g.vs:
-            if v['sources'] is None:
-                v['sources'] = []
-            v['sources'] = list(set(v['sources']))
+        for attr in ['sources', 'references']:
+            g.vs[attr] = [[] for _ in g.vs]
+            for e in g.es:
+                g.vs[e.source][attr] += e[attr]
+                g.vs[e.target][attr] += e[attr]
+            for v in g.vs:
+                v[attr] = uniqList(v[attr])
     
     def basic_stats_intergroup(self,groupA,groupB,header=None):
         result = {}
@@ -2211,8 +2211,14 @@ class BioGraph(object):
         self.load_reflists()
         ac_types = set([])
         for k, v in lst.iteritems():
-            ac_types.add(v.nameTypeA)
-            ac_types.add(v.nameTypeB)
+            if type(v.nameTypeA) is list:
+                ac_types = ac_types | set(v.nameTypeA)
+            else:
+                ac_types.add(v.nameTypeA)
+            if type(v.nameTypeB) is list:
+                ac_types = ac_types | set(v.nameTypeB)
+            else:
+                ac_types.add(v.nameTypeB)
         table_loaded = set([])
         for ids in self.mapper.tables.keys():
             if ids[1] == 'uniprot':
@@ -4763,6 +4769,39 @@ class BioGraph(object):
         cs = self.curation_stats()
         self.table_latex(fname, header, cs, header_format = header_format, 
             sum_row = False, **kwargs)
+    
+    def remove_htp(self, threshold = 50):
+        self.htp_stats()
+        vcount_before = self.graph.vcount()
+        ecount_before = self.graph.ecount()
+        htedgs = [e.index for e in self.graph.es if \
+            len(set([r.pmid for r in e['references']]) - self.htp[threshold]['htrefs']) == 0]
+        self.graph.delete_edges(htedgs)
+        zerodeg = [v.index for v in self.graph.vs if v.degree() == 0]
+        self.graph.delete_vertices(zerodeg)
+        sys.stdout.write('\t:: Interactions from only high-throughput resources '\
+            'have been removed.\n\t   %u interactions removed.\n\t   Number of edges '\
+            'decreased from %u to %u, number of vertices from %u to %u.\n' % \
+            (len(htedgs), ecount_before, self.graph.ecount(), 
+             vcount_before, self.graph.vcount()))
+        sys.stdout.flush()
+    
+    def htp_stats(self):
+        htdata = {}
+        refc = Counter(flatList((r.pmid for r in e['references']) for e in self.graph.es))
+        for htlim in reversed(xrange(5, 201)):
+            htrefs = set([i[0] for i in refc.most_common() if i[1] > htlim])
+            htedgs = [e.index for e in self.graph.es if \
+                len(set([r.pmid for r in e['references']]) - htrefs) == 0]
+            htsrcs = uniqList(flatList([self.graph.es[e]['sources'] for e in htedgs]))
+            htdata[htlim] = {
+                'rnum': len(htrefs),
+                'enum': len(htedgs),
+                'snum': len(htsrcs),
+                'htrefs': htrefs
+            }
+        self.htp = htdata
+
     
     def _disclaimer(self):
         sys.stdout.write(self.disclaimer)

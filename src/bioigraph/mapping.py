@@ -374,6 +374,12 @@ class Mapper(object):
             and load the table before calling Mapper.map_name().
         '''
         # print '\tmapping %s' % name
+        if type(nameType) is list:
+            mappedNames = []
+            for nt in nameType:
+                mappedNames += self.map_name(name, nt, targetNameType, 
+                    strict, silent)
+            return uniqList(mappedNames)
         if nameType == targetNameType:
             if targetNameType != 'uniprot':
                 return [ name ]
@@ -398,7 +404,7 @@ class Mapper(object):
             if len(set(orig) - set(mappedNames)) > 0:
                 self.uniprot_mapped.append((orig, mappedNames))
         # print '\tmapped to %s' % str(mappedNames)
-        return list(set(mappedNames))
+        return uniqList(mappedNames)
     
     def map_refseq(self, refseq, nameType, targetNameType, strict = False):
         mappedNames = []

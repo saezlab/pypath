@@ -20,9 +20,13 @@
 
 # generic modules #
 
+from collections import Counter
+
 # stats and plotting modules #
 
+import math
 import numpy as np
+import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -147,20 +151,27 @@ def move_labels(dist = (0, 10, 20, 30, 40, 50)):
 
 dists = move_labels()
 fig, ax = plt.subplots()
+font_family = 'Helvetica Neue LT Std'
+sns.set(font = font_family)
 rads = [30.0 * xi/float(max(topdf['Interactions'])) + 5 \
     for xi in list(topdf['Proteins'])]
+ax.set_yscale('log')
+ax.set_xscale('log')
 pc = plt.scatter(list(topdf['Proteins']), list(topdf['Interactions']), \
     s = [np.pi * r**2 for r in rads], c = '#6ea945', alpha = 0.5, \
         edgecolors = 'none')
 
+ax.set_xlim([-20.0, 3500.0])
+ax.set_ylim([-20.0, 11000.0])
+
+tick_loc = [10, 20, 50 ,100, 200, 500, 1000, 2000, 5000, 10000, 20000]
+plt.xticks(tick_loc)
+plt.yticks(tick_loc)
+
 for label, x, y, o in \
     zip(topdf['Database'], topdf['Proteins'], topdf['Interactions'], rads):
-    ang = angles.next()
-    print 'angle of %s: %u' % (label, ang)
-    coo = rotate((-1 * max(o, 30), -1 * max(o, 30)), ang)
     dst = dists.next()
     coo = (-7 - dst / float(3), 21 + dst)
-    print coo
     plt.annotate(
         label, 
         xy = (x, y), xytext = coo,
@@ -173,10 +184,33 @@ for label, x, y, o in \
 
 plt.xlabel('Number of proteins')
 plt.ylabel('Number of interacting pairs')
-plt.axis('tight')
-# plt.xlim([-0.01, 0.07])
+
+ax.set_xlim([-20.0, 3500.0])
+ax.set_ylim([-20.0, 11000.0])
+
+tlabs = []
+for i, t in enumerate(list(ax.xaxis.get_major_locator().locs)):
+    tlabs.append(str(t))
+
+ax.set_xticklabels(tlabs)
+
+tlabs = []
+for i, t in enumerate(list(ax.yaxis.get_major_locator().locs)):
+    tlabs.append(str(t))
+
+ax.set_yticklabels(tlabs)
+
+for t in ax.xaxis.get_major_ticks():
+    t.label.set_fontsize(lab_size[0]*0.66)
+
+for t in ax.yaxis.get_major_ticks():
+    t.label.set_fontsize(lab_size[1]*0.66)
+
+ax.xaxis.label.set_size(axis_lab_size*0.66)
+ax.yaxis.label.set_size(axis_lab_size*0.66)
+fig.tight_layout()
 #ax.autoscale_view()
-fig.savefig('vcount-ecount.pdf')
+fig.savefig('vcount-ecount-log.pdf')
 plt.close(fig)
 
 
@@ -474,3 +508,78 @@ stacked_barplot(x = d[0], y = d[1:],
     axis_lab_size = axis_lab_size, 
     ylab = 'Interactions', 
     xlab = 'Pathway resources', order = 'y')
+
+# ## ##
+net.init_network(pfile = 'cache/default_network.pickle')
+
+# ref ecount barplot
+refc = Counter(flatList((r.pmid for r in e['references']) for e in net.graph.es))
+
+# percentage of high throughput interactions
+htdata = {}
+for htlim in reversed(xrange(5, 201)):
+    htrefs = set([i[0] for i in refc.most_common() if i[1] > htlim])
+    htedgs = [e.index for e in net.graph.es if \
+        len(set([r.pmid for r in e['references']]) - htrefs) == 0]
+    htsrcs = uniqList(flatList([net.graph.es[e]['sources'] for e in htedgs]))
+    htdata[htlim] = {
+        'rnum': len(htrefs),
+        'enum': len(htedgs),
+        'snum': len(htsrcs),
+        'htrefs': htrefs
+    }
+
+for htlim in reversed(xrange(5, 201)):
+    htedgs = [e.index for e in net.graph.es if \
+        len(set([r.pmid for r in e['references']]) - htdata[htlim]['htrefs']) == 0]
+    net.graph.delete_edges(htedgs)
+    zerodeg = [v.index for v in net.graph.vs if v.degree() == 0]
+    net.graph.delete_vertices(zerodeg)
+    ltvcnt = net.graph.vcount()
+    ltecnt = net.graph.ecount()
+    htdata[htlim]['lenum'] = ltecnt
+    htdata[htlim]['lvnum'] = ltvcnt
+
+srcs10 = uniqList(flatList([net.graph.es[e]['sources'] for e in e10]))
+srcs50 = uniqList(flatList([net.graph.es[e]['sources'] for e in e50]))
+srcs100 = uniqList(flatList([net.graph.es[e]['sources'] for e in e100]))
+
+fig, axs = plt.subplots(5, figsize = (10, 20), sharex=True)
+axs[0].plot(sorted(htdata.keys()), [htdata[h]['rnum'] for h in sorted(htdata.keys())], 
+    '-', color = '#007B7F')
+axs[0].set_ylabel('Number of references', fontsize = axis_lab_size * 0.45)
+axs[1].plot(sorted(htdata.keys()), [htdata[h]['enum'] for h in sorted(htdata.keys())], 
+    '-', color = '#6EA945')
+axs[1].set_ylabel('Number of edges', fontsize = axis_lab_size * 0.45)
+axs[2].plot(sorted(htdata.keys()), [htdata[h]['snum'] for h in sorted(htdata.keys())], 
+    '-', color = '#DA0025')
+axs[2].set_ylabel('Number of resources', fontsize = axis_lab_size * 0.45)
+axs[3].plot(sorted(htdata.keys()), [htdata[h]['lenum'] for h in sorted(htdata.keys())], 
+    '-', color = '#996A44')
+axs[3].set_ylabel('LT network edge count', fontsize = axis_lab_size * 0.45)
+axs[4].plot(sorted(htdata.keys()), [htdata[h]['lvnum'] for h in sorted(htdata.keys())], 
+    '-', color = '#FCCC06')
+axs[4].set_xlabel('HT limit', fontsize = axis_lab_size * 0.66)
+axs[4].set_ylabel('LT network node count', fontsize = axis_lab_size * 0.45)
+fig.savefig('ht-limits.pdf')
+plt.close(fig)
+
+
+
+d = zip(*[(s, len(set(net.lists['Intogene']) & set(g.vs['name'])) / \
+        float(len(net.lists['Intogene']))*100) \
+        for s, g in sep.iteritems()] + \
+    [(omnipath, len(set(net.lists['Intogene']) & set(net.graph.vs['name'])) / \
+        float(len(net.lists['Intogene']))*100)])
+bp = plot.Barplot(x = d[0], y = d[1], 
+    data = None, fname = 'intocov-by-db.pdf', lab_size = lab_size, 
+    axis_lab_size = axis_lab_size, 
+    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
+    ylab = r'% of Intogene genes', 
+    xlab = 'Pathway resources', order = 'y')
+bp = plot.Barplot(x = d[0], y = d[1], 
+    data = None, fname = 'intocov-by-db-o.pdf', lab_size = lab_size, 
+    axis_lab_size = axis_lab_size, 
+    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
+    ylab = r'% of Intogene genes', 
+    xlab = 'Pathway resources', order = vcount_ordr, desc = False)
