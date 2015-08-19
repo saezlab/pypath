@@ -1918,7 +1918,8 @@ def get_psite_phos(raw = True, organism = 'human'):
     non_digit = re.compile(r'[^\d.-]+')
     motre = re.compile(r'(_*)([A-Za-z]+)(_*)')
     for r in data:
-        if r['kinase_org'] == organism and r['substrate_org'] == organism:
+        if organism is None or \
+            (r['kinase_org'] == organism and r['substrate_org'] == organism):
             r['resaa'] = r['residue'][0]
             r['resnum'] = int(non_digit.sub('', r['residue'][1:]))
             mot = motre.match(r['motif'])
@@ -1935,17 +1936,15 @@ def get_psite_phos(raw = True, organism = 'human'):
             if raw:
                 result.append(r)
             else:
-                if organism is None or (r['kinase_org'] == organism and \
-                    r['substrate_org'] == organism):
-                    res = intera.Residue(r['resnum'], r['resaa'], r['substrate'])
-                    mot = intera.Motif(r['substrate'], r['start'], r['end'], 
-                    instance = r['instance'])
-                    ptm = intera.Ptm(protein = r['substrate'], residue = res, motif = mot, 
-                        typ = 'phosphorylation', source = 'PhosphoSite')
-                    dom = intera.Domain(protein = r['kinase'])
-                    dommot = intera.DomainMotif(domain = dom, ptm = ptm, 
-                        sources = ['PhosphoSite'])
-                    result.append(dommot)
+                res = intera.Residue(r['resnum'], r['resaa'], r['substrate'])
+                mot = intera.Motif(r['substrate'], r['start'], r['end'], 
+                instance = r['instance'])
+                ptm = intera.Ptm(protein = r['substrate'], residue = res, motif = mot, 
+                    typ = 'phosphorylation', source = 'PhosphoSite')
+                dom = intera.Domain(protein = r['kinase'])
+                dommot = intera.DomainMotif(domain = dom, ptm = ptm, 
+                    sources = ['PhosphoSite'])
+                result.append(dommot)
     return result
 
 def get_psite_p(organism = 'human'):

@@ -37,6 +37,7 @@ from scipy import stats
 from scipy.misc import comb
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 import seaborn as sns
 import scipy.cluster.hierarchy as hc
 import hcluster as hc2
@@ -237,6 +238,7 @@ oppoints.columns = ['database', 'pmid', 'year', 'journal']
 
 allpoints = points.append(oppoints, ignore_index = True)
 
+sns.set(font = 'Helvetica Neue LT Std')
 sns.set_context('poster', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
     'grid.linewidth': 1.0, 'figure.figsize': [12.8, 8.8]})
 fig, ax = plt.subplots()
@@ -261,4 +263,104 @@ fig.tight_layout()
 fig.savefig('pubyear-boxplot.pdf')
 plt.close(fig)
 
-#points.groupby(['database','year']).count()
+# ## # ## # ## # ## # ##
+# Rolland 2014 like visualization
+a = net.graph.get_adjacency()
+a = list(a)
+ordr = [j[0] for j in sorted([(i, sum(l)) for i, l in enumerate(a)], key = lambda x: x[1], reverse = True)]
+refs_per_protein = [len(net.graph.vs[i]['references']) for i in ordr]
+an = np.array(a)
+# sorting by cols and rows
+an = an[an.sum(axis = 1).argsort()[::-1],:][:,an.sum(axis = 0).argsort()[::-1]]
+bincount = 50
+binsize = int(math.ceil(len(an) / float(bincount)))
+abins = []
+refs_pprot_bins = []
+for i in xrange(0, bincount * binsize, binsize):
+    thisRow = []
+    for j in xrange(0, bincount * binsize, binsize):
+        thisRow.append(sum(sum(an[i:i + binsize, j:j + binsize])))
+    abins.append(thisRow)
+    refs_pprot_bins.append(sum(refs_per_protein[i:i + binsize]))
+
+anbins = np.array(abins)
+norm_anbins = np.tril(anbins, k = -1)
+norm_anbins = np.log10(norm_anbins)
+norm_anbins[norm_anbins == -np.inf] = 0.0
+norm_anbins = norm_anbins / norm_anbins.max()
+# rgb(0, 123, 127)
+# (0.0, 0.4823529411764706, 0.4980392156862745)
+cdict = {'red':   [(0.0,  1.0, 1.0),
+                   (1.0,  0.0, 0.0)],
+         'green': [(0.0,  1.0, 1.0),
+                   (1.0,  0.4823529411764706, 0.4823529411764706)],
+         'blue':  [(0.0,  1.0, 1.0),
+                   (1.0,  0.4980392156862745, 0.4980392156862745)]}
+cmap = mpl.colors.LinearSegmentedColormap('emblpetrol', cdict)
+sns.set(font = 'Helvetica Neue LT Std')
+sns.set_context('poster', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
+    'grid.linewidth': 1.0, 'figure.figsize': [8.8, 8.8]})
+fig, ax = plt.subplots()
+gs = gridspec.GridSpec(1, 2, width_ratios=[3, 1]) 
+heatmap = ax.pcolor(norm_anbins.T[::-1], cmap = cmap, color = '#FFFFFF')
+fig.savefig('refs-heatmap.pdf')
+plt.close(fig)
+
+# Rolland 2014 like visualization
+a = net.graph.get_adjacency()
+a = list(a)
+ordr = [j[0] for j in sorted([(i, sum(l)) for i, l in enumerate(a)], 
+    key = lambda x: x[1], reverse = True)]
+refs_per_protein = [len(net.graph.vs[i]['references']) for i in ordr]
+an = np.array(a)
+# sorting by cols and rows
+an = an[an.sum(axis = 1).argsort()[::-1],:][:,an.sum(axis = 0).argsort()[::-1]]
+bincount = 50
+binsize = int(math.ceil(len(an) / float(bincount)))
+abins = []
+prot_bins = []
+refs_pprot_bins = []
+for i in xrange(0, bincount * binsize, binsize):
+    thisRow = []
+    for j in xrange(0, bincount * binsize, binsize):
+        thisRow.append(sum(sum(an[i:i + binsize, j:j + binsize])))
+    abins.append(thisRow)
+    refs_pprot_bins.append(sum(refs_per_protein[i:i + binsize]))
+    prot_bins.append(set(ordr[i:i + binsize]))
+
+refs_int_bins = []
+
+anbins = np.array(abins)
+norm_anbins = np.tril(anbins, k = -1) + np.diagflat(np.diagonal(anbins))
+norm_anbins = np.log10(norm_anbins)
+norm_anbins[norm_anbins == -np.inf] = 0.0
+norm_anbins = norm_anbins / norm_anbins.max()
+# rgb(0, 123, 127)
+# (0.0, 0.4823529411764706, 0.4980392156862745)
+cdict = {'red':   [(0.0,  1.0, 1.0),
+                   (1.0,  0.0, 0.0)],
+         'green': [(0.0,  1.0, 1.0),
+                   (1.0,  0.4823529411764706, 0.4823529411764706)],
+         'blue':  [(0.0,  1.0, 1.0),
+                   (1.0,  0.4980392156862745, 0.4980392156862745)]}
+cmap = mpl.colors.LinearSegmentedColormap('emblpetrol', cdict)
+# sns.set_style('white')
+sns.set(font = 'Helvetica Neue LT Std')
+sns.set_context('poster', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
+    'grid.linewidth': 1.0, 'figure.figsize': [12, 12]})
+sns.set_style({'axes.facecolor': '#FFFFFF', 'figure.facecolor': '#FFFFFF'})
+
+fig = plt.figure()
+gs = gridspec.GridSpec(2, 2, height_ratios=[1, 4], width_ratios = [4, 1])
+ax0 = plt.subplot(gs[0])
+barplot = ax0.bar(range(len(refs_pprot_bins)), refs_pprot_bins, color = '#6EA945')
+plt.tick_params(axis = 'x', which = 'both', bottom = 'off', top = 'off', labelbottom = 'off')
+ax0.set_ylabel('Number of\npublications')
+ax1 = plt.subplot(gs[2])
+heatmap = ax1.pcolor(norm_anbins.T[::-1], cmap = cmap, color = '#FFFFFF')
+plt.tick_params(axis = 'x', which = 'both', bottom = 'off', top = 'off', labelbottom = 'off')
+plt.tick_params(axis = 'y', which = 'both', left = 'off', right = 'off', labelleft = 'off')
+plt.tight_layout()
+plt.savefig('refs-heatmap-2.pdf')
+plt.close()
+
