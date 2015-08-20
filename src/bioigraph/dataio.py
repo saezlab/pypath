@@ -1905,11 +1905,11 @@ def get_psite_phos(raw = True, organism = 'human'):
     data = curl(url, silent = False, compr = 'gz', encoding = 'iso-8859-1')
     cols = {
         'kinase': 1,
-        'kinase_org': 4,
-        'substrate': 7,
-        'substrate_org': 9,
-        'residue': 10,
-        'motif': 12
+        'kinase_org': 3,
+        'substrate': 6,
+        'substrate_org': 8,
+        'residue': 9,
+        'motif': 11
     }
     buff = StringIO()
     buff.write(data)
