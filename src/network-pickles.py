@@ -21,6 +21,20 @@ net = bioigraph.BioGraph(ncbi_tax_id = 9606)
 
 net.init_network()
 net.save_network(pfile = 'cache/default_network.pickle')
+net.load_resources(lst={'acsn': ugly['acsn']})
+net.save_network(pfile = 'cache/default_plus_acsn.pickle')
+
+net = bioigraph.BioGraph(ncbi_tax_id = 9606)
+net.init_network(exclude = ['intact'])
+net.save_network(pfile = 'cache/default_network_wo-intact.pickle')
+
+net.load_resources(lst={'acsn': ugly['acsn']})
+net.save_network(pfile = 'cache/default_plus_acsn_wo-intact.pickle')
+
+net = bioigraph.BioGraph(ncbi_tax_id = 9606)
+net.init_network(exclude = ['intact'])
+net.remove_htp()
+net.save_network(pfile = 'cache/default_network_wo-intact_ltp-only.pickle')
 
 net.load_resources(lst={'acsn': ugly['acsn']})
 net.save_network(pfile = 'cache/default_plus_acsn.pickle')

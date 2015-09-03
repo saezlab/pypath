@@ -25,11 +25,13 @@
 import sys
 import os
 import re
+import subprocess
 import cPickle as pickle
 import copy
 import igraph
 import louvain
 import cairo
+from datetime import date
 
 # stats and plotting modules #
 
@@ -52,6 +54,7 @@ import matplotlib.patches as mpatches
 import bioigraph
 from bioigraph import chembl
 from bioigraph.common import *
+from bioigraph import descriptions
 from bioigraph.data_formats import best, good, ugly, transcription
 import _sensitivity as sens
 from bioigraph import progress
@@ -206,9 +209,36 @@ plot.save()
 
 ## TikZ summary figure ##
 
+# the figure is based on the bioigraph.descriptions dict:
+d = descriptions
 
+# parameters of the figure
 tikzfname = 'resource_tree_tikz.tex'
+latex = '/usr/bin/xelatex'
+firstyear = min(flatList([[r['year']] for r in d.values() if 'year' in r] + \
+    [r['releases'] for r in d.values() if 'releases' in r]))
 
+lastyear = date.today().year
+years = range(lastyear - firstyear + 1)
+yearbarwidth = 0.4
+sepwidth = 0.04
+lineheight = [1.0] * len(years)
+labelbg = 'twilightblue'
+labelfg = 'teal'
+nodelabbg = 'teal'
+nodelabfg = 'white'
+dotcol = 'teal'
+linecol = 'teal'
+dataimportcol = 'mantis'
+dotsize = 3.0
+linewidth = 1.0
+rowbg = 'twilightblue'
+width = 17.0
+xoffset = 0.5
+dotlineopacity = 0.7
+horizontal = True # whether the timeline should be the horizontal axis
+
+# LaTeX preamble for XeLaTeX
 tikz = r'''\documentclass[a4paper,10pt]{article}
     \usepackage{fontspec}
     \usepackage{xunicode}
@@ -217,6 +247,7 @@ tikz = r'''\documentclass[a4paper,10pt]{article}
     \usepackage{xltxtra}
     \usepackage{microtype}
     \usepackage{fullpage}
+    \usepackage{rotating}
     \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
     \usepackage{color}
     \setmainfont{HelveticaNeueLTStd-Lt}
@@ -227,19 +258,126 @@ tikz = r'''\documentclass[a4paper,10pt]{article}
     \definecolor{mantis}{RGB}{110, 169, 69}
     \begin{document}
     \thispagestyle{empty}
+    \pgfdeclarelayer{background}
+    \pgfdeclarelayer{nodes}
+    \pgfdeclarelayer{lines}
+    \pgfsetlayers{background,lines,nodes}%s
     \begin{tikzpicture}
-'''
+    \begin{pgfonlayer}{background}
+''' % (r'''
+    \begin{turn}{-90}''' if horizontal else '')
 
-for i in xrange(11):
-    tikz += r'''        \fill[anchor = south west, fill = twilightblue] '''\
-        r'''(0.0, %f) rectangle (17.0, %f);
-        \node[anchor = west] at (0.33, %f) {\LARGE{\color{teal}%u}};
-''' % (float(i), i + 0.96, i + 0.50, 2005 + i)
+ordr = sorted([(lab, r['releases'] if 'releases' in r else [] + \
+            [r['year']] if 'year' in r else [], r['label'] if 'label' in r else lab, 
+            r['data_import'] if 'data_import' in r else []) \
+        for lab, r in d.iteritems() \
+        if 'year' in r or 'releases' in r], \
+    key = lambda x: min(x[1]))
 
-tikz += r'''\end{tikzpicture}
+# the background grid and year labels
+for i in years:
+    tikz += r'''        \fill[anchor = south west, fill = %s, 
+        inner sep = 0pt, outer sep = 0pt] '''\
+        r'''(%f, %f) rectangle (%f, %f);
+        \node[anchor = north west, rotate = 90, text width = %fcm, 
+            fill = %s, inner sep = 0pt, outer sep = 0pt, align = center, 
+            minimum size = %fcm] at (0.0, %f) {\small{\color{%s}%u}};
+        \fill[fill = red] (%f, %f) circle (0.0pt);
+''' % (
+    rowbg, # background of row
+    yearbarwidth + sepwidth, # left edge of row
+    sum(lineheight[:i]), # top edge of row
+    width, # right edge of the row
+    sum(lineheight[:i + 1]) - sepwidth, # bottom edge of row
+    lineheight[i] - sepwidth, # height of year label
+    labelbg, # background of label
+    yearbarwidth, # width of year label
+    sum(lineheight[:i]), # top of year label
+    labelfg, # text color of label
+    firstyear + i, # year
+    0.0, sum(lineheight[:i]) # red dot
+    )
+
+# new layer for nodes
+tikz += r'''    \end{pgfonlayer}
+    \begin{pgfonlayer}{nodes}
+    '''
+
+# horizontal distance between vertical columns
+xdist = (width - yearbarwidth - sepwidth - xoffset) / float(len(ordr))
+nodelabels = []
+
+# drawing vertical dots, labels and connecting lines:
+for i, r in enumerate(ordr):
+    coox = xdist * i + yearbarwidth + sepwidth + xdist / 2.0 + xoffset
+    ymax = max(r[1])
+    ydots = [y for y in r[1] if y != ymax]
+    ylaby = ymax - firstyear
+    cooylab = sum(lineheight[:ylaby]) + lineheight[ylaby] / 2.0
+    ydots = [sum(lineheight[:y - firstyear]) + lineheight[y - firstyear] / 2.0 for y in ydots]
+    tikz += r'''        \node[anchor = center, inner sep = 2pt, fill = %s, rotate = 90] 
+            (%s) at (%f, %f) 
+            {\footnotesize\color{%s} %s};
+    ''' % (
+        nodelabbg, # node color
+        r[0].lower(), # node name
+        coox, # node x coordinate
+        cooylab, # node y coordinate
+        nodelabfg, # node text color
+        r[0] # label text
+    )
+    nodelabels.append(r[0].lower())
+    for j, cooy in enumerate(ydots):
+        tikz += r'''        \node[circle, fill = %s, minimum size = %f, opacity = %f] 
+            (%s) at (%f, %f) {};
+        ''' % (
+            dotcol, # fill color for dot
+            dotsize, # size of the dot
+            dotlineopacity, # opacity of dot
+            '%s%u' % (r[0].lower(), j), # label
+            coox, # x coordinate
+            cooy # y coordinate
+        )
+    if len(r[1]) > 1:
+        tikz += r'''        \draw[draw = %s, line width = %fpt, opacity = %f] (%s%s);
+        ''' % (
+            linecol, 
+            linewidth,
+            dotlineopacity, 
+            '%s) -- (' % r[0].lower(), 
+            ') -- ('.join( \
+                ['%s%u' % (r[0].lower(), j) for j in xrange(len(ydots))])
+        )
+
+# new layer for crossing lines showing data transfers:
+tikz += r'''\end{pgfonlayer}
+    \begin{pgfonlayer}{lines}
+    '''
+
+# drawing data transfer lines:
+for r in ordr:
+    for s in r[3]:
+        if r[0].lower() in nodelabels and s.lower() in nodelabels:
+            tikz += r'''        \draw[-latex, draw = %s, line width = %fpt, opacity = %f] 
+                (%s) -- (%s);
+            ''' % (
+                dataimportcol,
+                linewidth,
+                dotlineopacity,
+                s.lower(),
+                r[0].lower()
+            )
+
+# closing layer, tikzpicture and LaTeX document:
+tikz += r'''    \end{pgfonlayer}
+    \end{tikzpicture}%s
     \end{document}
-'''
+''' % (r'''
+    \end{turn}''' if horizontal else '')
 
+# writing to file:
 with open(tikzfname, 'w') as f:
     f.write(tikz)
 
+# compiling with XeLaTeX:
+subprocess.call([latex, tikzfname])

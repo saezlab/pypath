@@ -66,6 +66,9 @@ net.init_network(pfile = 'cache/default_network_ltp.pickle')
 
 net.htp_stats()
 
+net.read_list_file(bioigraph.data_formats.cgc)
+net.read_list_file(bioigraph.data_formats.intogene_cancer)
+
 pubmeds = uniqList(flatList([[r.pmid for r in e['references']] for e in net.graph.es]))
 pubmeds = set(pubmeds) - net.htp[htp_threshold]['htrefs']
 ##
@@ -328,7 +331,18 @@ for i in xrange(0, bincount * binsize, binsize):
     refs_pprot_bins.append(sum(refs_per_protein[i:i + binsize]))
     prot_bins.append(set(ordr[i:i + binsize]))
 
-refs_int_bins = []
+refs_int_bins = np.array([len(uniqList(flatList([[r.pmid for r in e['references']] \
+    for e in net.graph.es if e.source in p or e.target in p]))) for p in prot_bins])
+int_bins = np.array([len([e \
+    for e in net.graph.es if e.source in p or e.target in p]) for p in prot_bins])
+refs_per_int = refs_int_bins / int_bins.astype(float)
+
+itg_bins = [len(set([net.graph.vs[p]['name'] for p in ps]) & set(net.lists['Intogene'])) \
+    for ps in prot_bins]
+
+cgc_bins = [len(set([net.graph.vs[p]['name'] for p in ps]) & \
+        set(net.lists['CancerGeneCensus'])) \
+    for ps in prot_bins]
 
 anbins = np.array(abins)
 norm_anbins = np.tril(anbins, k = -1) + np.diagflat(np.diagonal(anbins))
@@ -347,20 +361,53 @@ cmap = mpl.colors.LinearSegmentedColormap('emblpetrol', cdict)
 # sns.set_style('white')
 sns.set(font = 'Helvetica Neue LT Std')
 sns.set_context('poster', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
-    'grid.linewidth': 1.0, 'figure.figsize': [12, 12]})
+    'grid.linewidth': 1.0, 'figure.figsize': [10, 16]})
 sns.set_style({'axes.facecolor': '#FFFFFF', 'figure.facecolor': '#FFFFFF'})
 
 fig = plt.figure()
-gs = gridspec.GridSpec(2, 2, height_ratios=[1, 4], width_ratios = [4, 1])
+gs = gridspec.GridSpec(6, 2, height_ratios=[2, 8, 2, 2, 1, 1], width_ratios = [4, 1])
+#, wspace = 0.05, hspace = 0.05)
 ax0 = plt.subplot(gs[0])
-barplot = ax0.bar(range(len(refs_pprot_bins)), refs_pprot_bins, color = '#6EA945')
+barplot = ax0.bar(range(len(refs_int_bins)), refs_int_bins, color = '#6EA945')
 plt.tick_params(axis = 'x', which = 'both', bottom = 'off', top = 'off', labelbottom = 'off')
-ax0.set_ylabel('Number of\npublications')
+ax0.set_ylabel('Number of\npublications', fontsize = axis_lab_size * 0.33)
 ax1 = plt.subplot(gs[2])
 heatmap = ax1.pcolor(norm_anbins.T[::-1], cmap = cmap, color = '#FFFFFF')
 plt.tick_params(axis = 'x', which = 'both', bottom = 'off', top = 'off', labelbottom = 'off')
 plt.tick_params(axis = 'y', which = 'both', left = 'off', right = 'off', labelleft = 'off')
-plt.tight_layout()
+ax2 = plt.subplot(gs[3])
+barplot = ax2.barh(range(len(refs_int_bins)), list(reversed(refs_int_bins)), color = '#6EA945')
+plt.tick_params(axis = 'y', which = 'both', left = 'off', right = 'off', labelleft = 'off')
+plt.tick_params(axis = 'x', which = 'both', bottom = 'off', top = 'on', 
+    labelbottom = 'off', labeltop = 'on')
+ax2.set_xlabel('Number of\npublications', fontsize = axis_lab_size * 0.33)
+ax2.xaxis.set_label_position('top') 
+plt.setp(ax2.xaxis.get_majorticklabels(), rotation = -90)
+ax4 = plt.subplot(gs[4])
+barplot = ax4.bar(range(len(int_bins)), int_bins, color = '#6EA945')
+plt.tick_params(axis = 'x', which = 'both', bottom = 'off', top = 'off', labelbottom = 'off')
+ax4.set_ylabel('Number of\ninteractions', fontsize = axis_lab_size * 0.33)
+ax6 = plt.subplot(gs[6])
+barplot = ax6.bar(range(len(refs_per_int)), refs_per_int, color = '#6EA945')
+plt.tick_params(axis = 'x', which = 'both', bottom = 'off', top = 'off', labelbottom = 'off')
+ax6.set_ylabel('Reference per\ninteraction', fontsize = axis_lab_size * 0.33)
+ax8 = plt.subplot(gs[8])
+sctplot = ax8.scatter(np.array(range(len(itg_bins))) + 0.5, [0] * len(itg_bins), 
+    s = [r*4.7 for r in itg_bins],
+    color = '#FCCC06', alpha = 0.5, clip_on = False)
+plt.tick_params(axis = 'x', which = 'both', bottom = 'off', top = 'off', labelbottom = 'off')
+plt.tick_params(axis = 'y', which = 'both', left = 'off', right = 'off', labelleft = 'off')
+ax8.set_xlim([0.0, 50.0])
+ax8.set_ylabel('Intogene\ncancer drivers', fontsize = axis_lab_size * 0.33)
+ax10 = plt.subplot(gs[10])
+sctplot = ax10.scatter(np.array(range(len(cgc_bins))) + 0.5, [0] * len(cgc_bins), 
+    s = [r*4.7 for r in cgc_bins],
+    color = '#FCCC06', alpha = 0.5, clip_on = False)
+plt.tick_params(axis = 'x', which = 'both', bottom = 'off', top = 'off', labelbottom = 'off')
+plt.tick_params(axis = 'y', which = 'both', left = 'off', right = 'off', labelleft = 'off')
+ax10.set_xlim([0.0, 50.0])
+ax10.set_ylabel('CGC\ncancer drivers', fontsize = axis_lab_size * 0.33)
+plt.tight_layout(fig)
 plt.savefig('refs-heatmap-2.pdf')
 plt.close()
 

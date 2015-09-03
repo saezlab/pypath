@@ -48,7 +48,8 @@ axis_lab_size = 36
 
 net = bioigraph.BioGraph(9606)
 
-net.init_network(pfile = 'cache/default_plus_acsn.pickle')
+#net.init_network(pfile = 'cache/default_plus_acsn_wo-intact.pickle')
+net.init_network(pfile = 'cache/default_network_wo-intact_ltp-only.pickle')
 
 net.curation_tab(latex_hdr = False, fname = 'curation_stats_stripped.tex')
 
@@ -125,6 +126,76 @@ bp = plot.Barplot(x = d[0], y = d[1],
     ylab = 'Graph density', color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'],
     xlab = 'Pathway resources', order = vcount_ordr, desc = False, 
     y_break = (0.5, 0.1))
+
+# ecount - cce scatterplot:
+grp = {
+    'CancerCellMap': 'p',
+    'InnateDB': 'i',
+    'SPIKE': 'p',
+    'LMPID': 'm',
+    'DIP': 'i',
+    'HPRD': 'm',
+    'PDZBase': 'p',
+    'dbPTM': 'm',
+    'MatrixDB': 'i',
+    'DOMINO': 'm',
+    'Signor': 'p',
+    'Macrophage': 'p',
+    'NetPath': 'r',
+    'ELM': 'm',
+    'SignaLink2': 'p',
+    'NRF2ome': 'p',
+    'DEPOD': 'm',
+    'phosphoELM': 'm',
+    'MPPI': 'i',
+    'Guide2Pharmacology': 'p',
+    'TRIP': 'p',
+    'AlzPathway': 'r',
+    'PhosphoSite': 'm',
+    'CA1': 'p',
+    'NCI-PID': 'r',
+    'DeathDomain': 'p',
+    'ARN': 'p'
+}
+
+cl = {
+    'p': '#6ea945',
+    'm': '#007B7F',
+    'i': '#FCCC06',
+    'r': '#646567'
+}
+
+labs = {
+    'p': 'Pathway',
+    'm': 'PTM',
+    'r': 'Reaction',
+    'i': 'Interaction'
+}
+
+cs = net.curation_stats()
+fig, ax = plt.subplots()
+font_family = 'Helvetica Neue LT Std'
+sns.set(font = font_family)
+ax.set_yscale('log')
+ax.set_xscale('log')
+p = plt.scatter([sep[s].ecount() for s in sorted(sep.keys())], 
+    [cs[s]['corrected_curation_effort'] for s in sorted(sep.keys())], 
+    c = [cl[grp[s]] for s in sorted(sep.keys())], edgecolors = 'none')
+for g, c in cl.iteritems():
+    xxx = np.log10(np.array([sep[s].ecount() for s in sorted(sep.keys()) if grp[s] == g]))
+    m, b = np.polyfit(xxx, 
+        np.log10(np.array([cs[s]['corrected_curation_effort'] for s in sorted(sep.keys()) if grp[s] == g])), 1)
+    plt.plot([10**xx for xx in xxx], [10**y for y in m * xxx + b], '-', color = c, label = labs[g])
+
+handles, labels = ax.get_legend_handles_labels()
+ax.legend(handles, labels)
+plt.xlabel('Number of interactions')
+plt.ylabel('Corrected curation effort')
+ax.xaxis.label.set_size(axis_lab_size*0.66)
+ax.yaxis.label.set_size(axis_lab_size*0.66)
+fig.tight_layout()
+fig.savefig('ecount-cce.pdf')
+plt.close(fig)
 
 # vcount - ecount scatterplot:
 topdata = {

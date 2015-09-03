@@ -277,7 +277,8 @@ descriptions = {
             u'''
             In 2013, we extracted interaction data from BIND, BioGRID, DIP, HPRD, MINT, IntAct, and PDB to generate a high-quality binary literature dataset comprising ~11,000 protein-protein interactions that are binary and supported by at least two traceable pieces of evidence (publications and/or methods) (Rolland et al Cell 2014). Although this dataset does not result from a systematic investigation of the interactome search space and should thus be used with caution for any network topology analyses, it represents valuable interactions for targeted studies and is freely available to the research community through the search engine or via download. 
             '''
-        ]
+        ],
+        'emails': [('Michael_Calderwood@dfci.harvard.edu', 'Michael Calderwood')]
     },
     'ELM': {
         'year': 2014,
@@ -298,7 +299,8 @@ descriptions = {
                 'http://nar.oxfordjournals.org/content/42/D1/D259.long'
             ]
         },
-        'pubmeds': [22110040, 24214962]
+        'pubmeds': [22110040, 24214962],
+        'emails': [('feedback@elm.eu.org', 'ELM Team'), ('gibson@embl.de', 'Toby Gibson')]
     },
     'Guide2Pharmacology': {
         'year': 2015,
@@ -323,7 +325,8 @@ descriptions = {
             Presently, the resource describes the interactions between target proteins and 6064 distinct ligand entities (Table 1). Ligands are listed against targets by their action (e.g. activator, inhibitor), and also classified according to substance types and their status as approved drugs. Classes include metabolites (a general category for all biogenic, non-peptide, organic molecules including lipids, hormones and neurotransmitters), synthetic organic chemicals (e.g. small molecule drugs), natural products, mammalian endogenous peptides, synthetic and other peptides including toxins from non-mammalian organisms, antibodies, inorganic substances and other, not readily classifiable compounds. 
             The new database was constructed by integrating data from IUPHAR-DB and the published GRAC compendium. An overview of the curation process is depicted as an organizational flow chart in Figure 2. New information was added to the existing relational database behind IUPHAR-DB and new webpages were created to display the integrated information. For each new target, information on human, mouse and rat genes and proteins, including gene symbol, full name, location, gene ID, UniProt and Ensembl IDs was manually curated from HGNC, the Mouse Genome Database (MGD) at Mouse Genome Informatics (MGI), the Rat Genome Database (RGD), UniProt and Ensembl, respectively. In addition, ‘Other names’, target-specific fields such as ‘Principal transduction’, text from the ‘Overview’ and ‘Comments’ sections and reference citations (downloaded from PubMed; http://www.ncbi.nlm.nih.gov/pubmed) were captured from GRAC and uploaded into the database against a unique Object ID.
             '''
-        ]
+        ],
+        'emails': [('enquiries@guidetopharmacology.org', 'Guide to Pharmacology Team'), ('tony.harmar@ed.ac.uk', 'Tony Harmar')]
     },
     'SignaLink2': {
         'year': 2012,
@@ -353,7 +356,8 @@ descriptions = {
             SignaLink assigns proteins to signaling pathways using the full texts of pathway reviews (written by pathway experts). While most signaling resources consider 5–15 reviews per pathway, SignaLink uses a total of 170 review papers, i.e. more than 20 per pathway on average. Interactions were curated from a total of 941 articles (PubMed IDs are available at the website). We added a small number of proteins based on InParanoid ortholog clusters. For curation, we used a self-developed graphical tool and Perl/Python scripts. The current version of SignaLink was completed in May 2008 based on WormBase (version 191), FlyBase (2008.6), Ensembl (49), UniProt (87) and the publications listed on the website. 
             The curation protocol of SignaLink (Fig. 1A) contains several steps aimed specifically at reducing data and curation errors. We used reviews as a starting point, manually looked up interactions three times, and manually searched for interactions of known signaling proteins with no signaling interactions so far in the database. 
             '''
-        ]
+        ],
+        'emails': [('korcsmaros@gmail.com', 'Tamas Korcsmaros'), ('tamas.korcsmaros@tgac.ac.uk', 'Tamas Korcsmaros')]
     },
     'NRF2ome': {
         'year': 2013,
@@ -382,7 +386,8 @@ descriptions = {
             u'''
             From Korcsmaros 2010: ... we first listed signaling proteins and interactions from reviews and then added further signaling interactions of the listed proteins. We used reviews as a starting point, manually looked up interactions three times, and manually searched for interactions of known signaling proteins with no signaling interactions so far in the database.
             '''
-        ]
+        ],
+        'emails': [('korcsmaros@gmail.com', 'Tamas Korcsmaros'), ('tamas.korcsmaros@tgac.ac.uk', 'Tamas Korcsmaros')]
     },
     'ARN': {
         'year': 2014,
@@ -407,7 +412,8 @@ descriptions = {
             u'''
             From Korcsmaros 2010: ... we first listed signaling proteins and interactions from reviews and then added further signaling interactions of the listed proteins. We used reviews as a starting point, manually looked up interactions three times, and manually searched for interactions of known signaling proteins with no signaling interactions so far in the database.
             '''
-        ]
+        ],
+        'emails': [('korcsmaros@gmail.com', 'Tamas Korcsmaros'), ('tamas.korcsmaros@tgac.ac.uk', 'Tamas Korcsmaros')]
     },
     'HPRD': {
         'year': 2010,
@@ -428,7 +434,8 @@ descriptions = {
             The information about protein-protein interactions was cataloged after a critical reading of the published literature. Exhaustive searches were done based on keywords and medical subject headings (MeSH) by using Entrez. The type of experiments that served as the basis for establishing protein-protein interactions was also annotated. Experiments such as coimmunoprecipitation were designated in vivo, GST fusion and similar “pull-down” type of experiments were designated in vitro, and those identified by yeast two-hybrid were annotated as yeast two-hybrid.
             Posttranslational modifications were annotated based on the type of modification, site of modification, and the modified residue. In addition, the upstream enzymes that are responsible for modifications of these proteins were reported if described in the articles. The most commonly known and the alternative subcellular localization of the protein were based on the literature. The sites of expression of protein and/or mRNA were annotated based on published studies.
             '''
-        ]
+        ],
+        'emails': [('pandey@jhmi.edu', 'Akhilesh Pandey')]
     },
     'ACSN': {
         'year': 2015,
@@ -455,9 +462,11 @@ descriptions = {
             The map curator studies the body of literature dedicated to the biological process or molecular mechanism of interest. The initial sources of information are the major review articles from high-impact journals that represent the consensus view on the studied topic and also provide a list of original references. The map curator extracts information from review papers and represents it in the form of biochemical reactions in CellDesigner. This level of details reflects the ‘canonical’ mechanisms. Afterwards, the curator extends the search and analyses original papers from the list provided in the review articles and beyond. This information is used to enrich the map with details from the recent discoveries in the field. The rule for confident acceptance and inclusion of a biochemical reaction or a process is the presence of sufficient evidences from more than two studies, preferably from different scientific groups. The content of ACSN is also verified and compared with publicly available databases such as REACTOME, KEGG, WikiPathways, BioCarta, Cell Signalling and others to ensure comprehensive representation of consensus pathways and links on PMIDs of original articles confirmed annotated molecular interactions.
             ''',
             u'''
+            
             CellDesigner 3.5 version was used to enter biological facts from a carefully studied selection of papers (see the whole bibliography on the web site with Supplementary information). Whenever the details of a biological fact could not be naturally expressed with CellDesigner standard notations, it was fixed and some solution was proposed. For example, we added a notation (co‐factor) to describe all the components intervening in the transcription of genes mediated by the E2F family proteins. 
             '''
-        ]
+        ],
+        'emails': [('andrei.zinovyev@curie.fr', 'Andrei Zinovyev')]
     },
     'DOMINO': {
         'urls': {
@@ -491,7 +500,8 @@ descriptions = {
             'G. gallus',
             'O. cuniculus',
             'Plasmodium falciparum'
-        ]
+        ],
+        'emails': [('Cesareni@uniroma2.it', 'Gianni Cesareni')]
     },
     'DeathDomain': {
         'year': 2012,
@@ -515,6 +525,7 @@ descriptions = {
                 'http://deathdomain.org/'
             ]
         },
+        'emails': [('hyunho{at}ynu.ac.kr', 'Hyun Ho O')],
         'files': {
             'articles': [
                 'DeathDomain_Kwon2011.pdf'
@@ -562,6 +573,7 @@ descriptions = {
                 'http://www.trpchannel.org'
             ]
         },
+        'emails': [('jhjeon2@snu.ac.kr', 'Ju-Hong Jeon')],
         'size': {
             'nodes': 468,
             'edges': 744
@@ -613,6 +625,7 @@ descriptions = {
                 'http://www.cancer-systemsbiology.org/Papers/iet-sb2007.pdf'
             ]
         },
+        'emails': [('Edwin.Wang@cnrc-nrc.gc.ca', 'Edwin Wang')],
         'pubmeds': [17907678],
         'descriptions': [
             u'''
@@ -639,6 +652,7 @@ descriptions = {
             ],
             'webpages': []
         },
+        'emails': [('Edwin.Wang@cnrc-nrc.gc.ca', 'Edwin Wang')],
         'files': {
             'articles': [
                 'Cui2007.pdf'
@@ -692,6 +706,7 @@ descriptions = {
             ],
             'articles': []
         },
+        'emails': [('info@biocarta.com', 'BioCarta Scientific Advisory Board')],
         'taxons': [
             'human'
         ],
@@ -702,7 +717,10 @@ descriptions = {
         ],
         'notes': [
             u'''
-            This resource includes a huge number of pathways, each curated by experts form a few reviews. The data is not available for download from the original webpage, only from second hand, for example from NCI-PID, in NCI-XML format. However, these files doesn't contain any references, which makes problematic the use of the BioCarta dataset. Also, some pathways are reviewed long time ago, possibly outdated.
+            This resource includes a huge number of pathways, each curated by experts from a few reviews. The data is not available for download from the original webpage, only from second hand, for example from NCI-PID, in NCI-XML format. However, these files doesn't contain any references, which makes problematic the use of the BioCarta dataset. Also, some pathways are reviewed long time ago, possibly outdated.
+            ''',
+            '''
+            The Company and the website looks like was abandoned around 2003-2006.
             '''
         ]
     },
@@ -720,7 +738,7 @@ descriptions = {
             'nodes': 545,
             'edges': 1259
         },
-        'authors': ['Ma\'ayan Lab'],
+        'authors': ['Iyengar Lab'],
         'label': 'Ma\'ayan 2005',
         'color': '',
         'pubmeds': [16099987],
@@ -730,6 +748,7 @@ descriptions = {
             ],
             'webpages': []
         },
+        'emails': [('ravi.iyengar@mssm.edu', 'Ravi Iyengar')],
         'taxons': [
             'human',
             'mouse'
@@ -752,6 +771,8 @@ descriptions = {
                 'http://www.pathwaycommons.org/pc-snapshot/current-release/tab_delim_network/by_source/'
             ]
         },
+        'authors': ['Bader Lab'],
+        'emails': [('gary.bader@utoronto.ca', 'Gary Bader')],
         'descriptions': [
             u'''
             Manually curated data, unpublished. A team of M.Sc. and Ph.D. biologists at the Institute of Bioinformatics in Bangalore, India read original research papers and hand-entered the pathway data into our database. The quality of the Cancer Cell Map pathways is very high. Half of the pathways were reviewed by experts at Memorial Sloan-Kettering Cancer Center and were found to contain only a few errors, which were subsequently fixed.
@@ -759,7 +780,7 @@ descriptions = {
         ],
         'notes': [
             u'''
-            One of the first manually curated datasets, now only available from second hand, e.g. from PathwayCommons. Included in many other resources. Contains binary interactions with PubMed references.
+            One of the earliest manually curated datasets, now only available from second hand, e.g. from PathwayCommons. Included in many other resources. Contains binary interactions with PubMed references.
             '''
         ]
     },
@@ -779,6 +800,7 @@ descriptions = {
             ],
             'articles': []
         },
+        'emails': [('Edwin.Wang@cnrc-nrc.gc.ca', 'Edwin Wang')],
         'taxons': [
             'human',
             'mouse',
@@ -862,6 +884,8 @@ descriptions = {
         },
         'pubmeds': [22194470],
         'label': 'Li 2012',
+        'authors': ['Wang Lab'],
+        'emails': [('edwin.wang@cnrc-nrc.gc.ca', 'Edwin Wang')],
         'taxons': [
             'human'
         ],
@@ -883,6 +907,7 @@ descriptions = {
         'pubmeds': [24075989],
         'label': 'Zaman 2013',
         'authors': ['Wang Lab'],
+        'emails': [('edwin.wang@cnrc-nrc.gc.ca', 'Edwin Wang')],
         'contains': [
             'HumanSignalingNetwork',
             'Cui2007',
@@ -915,6 +940,7 @@ descriptions = {
             ]
         },
         'pubmeds': [23511713, 22647208],
+        'emails': [('ogishima@sysmedbio.org', 'Soichi Ogishima'), ('info@alzpathway.org', 'Soichi Ogishima')],
         'descriptions': [
             u'''
             We collected 123 review articles related to AD accessible from PubMed. We then manually curated these review articles, and have built an AD pathway map by using CellDesigner. Molecules are distinguished by the following types: proteins, complexes, simple molecules, genes, RNAs, ions, degraded products, and phenotypes. Gene symbols are pursuant to the HGNC symbols. Reactions are also distinguished by the following categories: state transition, transcription, translation, heterodimer association, dissociation, transport, unknown transition, and omitted transition. All the reactions have evidences to the references in PubMed ID using the MIRIAM scheme. All the references used for constructing the AlzPathway are listed in the ‘References for AlzPathway’. Cellular types are distinguished by the followings: neuron, astrocyte, and microglial cells. Cellular compartments are also distinguished by the followings: brain blood barrier, presynaptic, postsynaptic, and their inner cellular localizations.
@@ -944,6 +970,7 @@ descriptions = {
                 'http://mips.helmholtz-muenchen.de/proj/ppi/'
             ]
         },
+        'emails': [('p.pagel@wzw.tum.de', 'Philipp Pagel'), ('d.frishman@helmholtz-muenchen.de', 'Dmitrij Frishman')],
         'pubmeds': [15531608],
         'taxons': [
             'human',
@@ -973,6 +1000,7 @@ descriptions = {
             ]
         },
         'pubmeds': [24214996, 19920129],
+        'emails': [('d.frishman@helmholtz-muenchen.de', 'Dmitrij Frishman')],
         'descriptions': [
             u'''
             Annotation of the manual dataset was performed analogous to the annotation of protein–protein interactions and protein complexes in previous projects published by our group. Information about NIPs was extracted from scientific literature using only data from individual experiments but not from high-throughput experiments. Only mammalian proteins were considered. Data from high-throughput experiments were omitted in order to maintain the highest possible standard of reliability.
@@ -987,6 +1015,7 @@ descriptions = {
             ],
             'webpages': []
         },
+        'emails': [('tom.freeman@roslin.ed.ac.uk', 'Tom Freeman')],
         'pubmeds': [20470404],
         'descriptions': [
             u'''
@@ -1002,6 +1031,7 @@ descriptions = {
             'edges': None
         },
         'authors': ['Pandey Lab', 'IOB Bangalore'],
+        'emails': [('pandey@jhmi.edu', 'Akhilesh Pandey')],
         'label': 'NetPath',
         'color': '',
         'data_import': [
@@ -1041,6 +1071,9 @@ descriptions = {
                 'http://www.innatedb.com/'
             ]
         },
+        'authors': ['Brinkman Lab', 'Hancock Lab', 'Lynn Group'],
+        'emails': [('innatedb-mail@sfu.ca', 'InnateDB Team'), ('david.lynn@teagasc.ie', 'David Lynn')],
+        'license': 'http://innatedb.com/license.jsp',
         'pubmeds': [
             20727158,
             23180781,
@@ -1100,6 +1133,7 @@ descriptions = {
                 'http://www.cellsignal.com/common/content/content.jsp?id=science-pathways'
             ]
         },
+        'emails': [('info@cellsignal.com', 'Cell Signaling Technology')],
         'descriptions': [
             u'''
             On these resource pages you can find signaling pathway diagrams, research overviews, relevant antibody products, publications, and other research resources organized by topic. The pathway diagrams associated with these topics have been assembled by CST scientists and outside experts to provide succinct and current overviews of selected signaling pathways.

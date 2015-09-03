@@ -471,7 +471,7 @@ class BioGraph(object):
         self.__dict__ = other.__dict__
         self.ownlog.msg(1, "Reinitialized", 'INFO')
     
-    def init_network(self, pfile = False, save = False):
+    def init_network(self, lst = best, exclude = [], pfile = False, save = False):
         '''
         This is a lazy way to start the module, load data 
         and build the high confidence, literature curated
@@ -495,7 +495,7 @@ class BioGraph(object):
                     self.update_sources()
                     return None
         self.load_reflists()
-        self.load_resources()
+        self.load_resources(lst = lst, exclude = exclude)
         if save:
             sys.stdout.write('\t:: Saving igraph object to file `%s`...' % pfile)
             sys.stdout.flush()
@@ -561,7 +561,7 @@ class BioGraph(object):
         '''
         g = graph if graph is not None else self.graph
         gg = g if replace else copy.deepcopy(g)
-        cl = gg.components()
+        cl = gg.components(mode = 'WEAK')
         cl_sizes = cl.sizes()
         giant_component_index = cl_sizes.index(max(cl_sizes))
         in_giant = [x == giant_component_index for x in cl.membership]
@@ -2200,7 +2200,7 @@ class BioGraph(object):
         outf.write(out[:-1])
         outf.close()
     
-    def load_resources(self, lst = best):
+    def load_resources(self, lst = best, exclude = []):
         '''
         Loads multiple resources, and cleans up after. 
         Looks up ID types, and loads all ID conversion 
@@ -2211,14 +2211,15 @@ class BioGraph(object):
         self.load_reflists()
         ac_types = set([])
         for k, v in lst.iteritems():
-            if type(v.nameTypeA) is list:
-                ac_types = ac_types | set(v.nameTypeA)
-            else:
-                ac_types.add(v.nameTypeA)
-            if type(v.nameTypeB) is list:
-                ac_types = ac_types | set(v.nameTypeB)
-            else:
-                ac_types.add(v.nameTypeB)
+            if k not in exclude:
+                if type(v.nameTypeA) is list:
+                    ac_types = ac_types | set(v.nameTypeA)
+                else:
+                    ac_types.add(v.nameTypeA)
+                if type(v.nameTypeB) is list:
+                    ac_types = ac_types | set(v.nameTypeB)
+                else:
+                    ac_types.add(v.nameTypeB)
         table_loaded = set([])
         for ids in self.mapper.tables.keys():
             if ids[1] == 'uniprot':
@@ -2226,7 +2227,8 @@ class BioGraph(object):
         self.mapper.load_uniprot_mappings(list(ac_types - table_loaded & \
             set(self.mapper.name_types.keys())))
         for k, v in lst.iteritems():
-            self.load_resource(v, clean = False)
+            if k not in exclude:
+                self.load_resource(v, clean = False)
         sys.stdout.write('\n')
         self.clean_graph()
         self.update_sources()
@@ -4683,7 +4685,8 @@ class BioGraph(object):
                 'source_curation_effort': src_curation_effort,
                 'source_specific_curation_effort': src_only_curation_effort,
                 'shared_curation_effort': shared_curation_effort,
-                'refs_edges_ratio': ratio
+                'refs_edges_ratio': ratio,
+                'corrected_curation_effort': src_curation_effort * ratio
             }
         return result
     
@@ -4763,7 +4766,8 @@ class BioGraph(object):
             ('source_curation_effort', 'Curation effort'),
             ('shared_curation_effort', 'Shared curation effort'),
             ('source_specific_curation_effort', 'Specific curation effort'),
-            ('refs_edges_ratio', 'References-edges ratio')
+            ('refs_edges_ratio', 'References-edges ratio'),
+            ('corrected_curation_effort', 'Corrected curation effort')
         ]
         header_format = r'\rotatebox{90}{\footnotesize %s}'
         cs = self.curation_stats()
