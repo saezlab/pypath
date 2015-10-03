@@ -75,8 +75,11 @@ net = bioigraph.BioGraph(9606)
 #net.load_resources(lst={'acsn': ugly['acsn']})
 #net.save_network(pfile = 'cache/default_plus_acsn.pickle')
 #net.init_network(pfile = 'cache/default_plus_acsn.pickle')
+net.init_network(pfile = 'cache/default_network_wo-intact_ltp-only.pickle')
 
 net.genesymbol_labels()
+
+## ## ##
 
 sim = net.databases_similarity()
 
@@ -95,6 +98,40 @@ lo = g.layout_fruchterman_reingold(weights = 'weight', repulserad = g.vcount() *
 
 g.vs['ncount'] = [len([e for e in net.graph.es if v['name'] in e['sources']])**0.55 for v in g.vs]
 
+scale = [50, 100, 500, 1000, 5000]
+escale = [0.05, 0.1, 0.2, 0.5]
+
+g.add_vertices([str(i) for i in scale])
+g.add_vertices(['%.2f_%u' % (i, a) for i in escale for a in [0, 1]])
+g.add_edges([('%.2f_%u' % (i, 0), '%.2f_%u' % (i, 1)) for i in escale])
+
+xmax = max([c[0] for c in lo._coords])
+ymin = min([c[1] for c in lo._coords])
+xrng = xmax - min([c[0] for c in lo._coords])
+yrng = max([c[1] for c in lo._coords]) - ymin
+xleg = xmax + xrng * 0.2
+
+for i, s in enumerate(scale):
+    v = g.vs[g.vs['name'].index(str(s))]
+    v['ncount'] = s**0.55
+    lo._coords.append([xleg, ymin + i*1.25 + sum(scale[:i + 1])**0.55 * 0.065])
+
+g.es['label'] = ['' for _ in g.es]
+
+for i, s in enumerate(escale):
+    v1 = g.vs[g.vs['name'].index('%.2f_%u' % (s, 0))]
+    v2 = g.vs[g.vs['name'].index('%.2f_%u' % (s, 1))]
+    e = g.es[g.get_eid(v1.index, v2.index)]
+    e['weight'] = s
+    e['label'] = '%.2f' % s
+    ycoo =  ymin + yrng * 0.7 + i * 1.8
+    lo._coords.append([xleg - xrng * 0.07, ycoo])
+    lo._coords.append([xleg + xrng * 0.07, ycoo])
+    v1['ncount'] = 0.0
+    v2['ncount'] = 0.0
+    v1['name'] = ''
+    v2['name'] = ''
+
 sf = cairo.PDFSurface('resource_graph_edge_simpson.pdf', 1024, 1024)
 bbox = igraph.drawing.utils.BoundingBox(124, 124, 900, 900)
 
@@ -104,14 +141,19 @@ plot = igraph.plot(g, vertex_label = g.vs['name'],
     drawer_factory = DefaultGraphDrawerFFsupport, 
     vertex_size = g.vs['ncount'], 
     vertex_frame_width = 0, vertex_color = '#6EA945', 
-    vertex_label_color = '#777777FF',  vertex_label_family = 'Sentinel Book',
+    vertex_label_color = '#777777FF', vertex_label_family = 'Sentinel Book',
+    edge_label_color = '#777777FF', edge_label_family = 'Sentinel Book',
     vertex_label_size = 24,  vertex_label_dist = 1.4, 
+    edge_label_size = 24, 
+    edge_label = g.es['label'], 
     edge_width = map(lambda x: (x * 10.0)**1.8, g.es['weight']), 
     edge_color = '#007B7F55',
     edge_curved = False)
 
 plot.redraw()
 plot.save()
+
+## ## ##
 
 redges = [(s1, s2, bioigraph.common.simpson_index(
     [r.pmid for r in uniqList(flatList([[] if s1 not in e['refs_by_source'] \
@@ -120,41 +162,78 @@ redges = [(s1, s2, bioigraph.common.simpson_index(
     [r.pmid for r in uniqList(flatList([[] if s2 not in e['refs_by_source'] \
         else e['refs_by_source'][s2] \
         for e in net.graph.es]))]
-    )) for s1 in list(set(g.vs['name']) - set(['ACSN'])) \
-        for s2 in list(set(g.vs['name']) - set(['ACSN']))]
+    )) for s1 in list(set(net.sources) - set(['ACSN'])) \
+        for s2 in list(set(net.sources) - set(['ACSN']))]
 
 
-f = igraph.Graph.TupleList([e for e in redges if e[2] > 0.0545 and e[0] != e[1]], 
+g = igraph.Graph.TupleList([e for e in redges if e[2] > 0.0545 and e[0] != e[1]], 
     edge_attrs = ['weight'])
-f.simplify(combine_edges = 'mean')
+g.simplify(combine_edges = 'mean')
 
 
-flo = f.layout_fruchterman_reingold(weights = 'weight', repulserad = f.vcount() ** 2.8, 
-    maxiter = 1000, area = f.vcount() ** 2.3)
+lo = g.layout_fruchterman_reingold(weights = 'weight', repulserad = g.vcount() ** 2.8, 
+    maxiter = 1000, area = g.vcount() ** 2.3)
 
-f.vs['ncount'] = [len(uniqList(flatList([e['refs_by_source'][v['name']] \
+g.vs['ncount'] = [len(uniqList(flatList([e['refs_by_source'][v['name']] \
     for e in net.graph.es \
-    if v['name'] in e['refs_by_source']])))**0.48 for v in f.vs]
+    if v['name'] in e['refs_by_source']])))**0.48 for v in g.vs]
 
-sf = cairo.PDFSurface('resource_graph_refs_simpson.pdf', 1024, 1024)
+scale = [50, 100, 500, 1000, 2000]
+escale = [0.05, 0.1, 0.2, 0.5]
+
+g.add_vertices([str(i) for i in scale])
+g.add_vertices(['%.2f_%u' % (i, a) for i in escale for a in [0, 1]])
+g.add_edges([('%.2f_%u' % (i, 0), '%.2f_%u' % (i, 1)) for i in escale])
+
+xmax = max([c[0] for c in lo._coords])
+ymin = min([c[1] for c in lo._coords])
+xrng = xmax - min([c[0] for c in lo._coords])
+yrng = max([c[1] for c in lo._coords]) - ymin
+xleg = xmax + xrng * 0.2
+
+for i, s in enumerate(scale):
+    v = g.vs[g.vs['name'].index(str(s))]
+    v['ncount'] = s**0.48
+    lo._coords.append([xleg, ymin + i*1.25 + sum(scale[:i + 1])**0.48 * 0.065])
+
+g.es['label'] = ['' for _ in g.es]
+
+for i, s in enumerate(escale):
+    v1 = g.vs[g.vs['name'].index('%.2f_%u' % (s, 0))]
+    v2 = g.vs[g.vs['name'].index('%.2f_%u' % (s, 1))]
+    e = g.es[g.get_eid(v1.index, v2.index)]
+    e['weight'] = s
+    e['label'] = '%.2f' % s
+    ycoo =  ymin + yrng * 0.7 + i * 1.8
+    lo._coords.append([xleg - xrng * 0.07, ycoo])
+    lo._coords.append([xleg + xrng * 0.07, ycoo])
+    v1['ncount'] = 0.0
+    v2['ncount'] = 0.0
+    v1['name'] = ''
+    v2['name'] = ''
+
+sf = cairo.PDFSurface('resource_graph_refs_simpson-2.pdf', 1024, 1024)
 bbox = igraph.drawing.utils.BoundingBox(124, 124, 900, 900)
 
-plot = igraph.plot(f, vertex_label = f.vs['name'],
-    layout = flo, 
+plot = igraph.plot(g, vertex_label = g.vs['name'],
+    layout = lo, 
     bbox = bbox, target = sf, 
     drawer_factory = DefaultGraphDrawerFFsupport, 
-    vertex_size = f.vs['ncount'], 
+    vertex_size = g.vs['ncount'], 
     vertex_frame_width = 0, vertex_color = '#6EA945', 
     vertex_label_color = '#777777FF',  vertex_label_family = 'Sentinel Book',
+    edge_label_color = '#777777FF', edge_label_family = 'Sentinel Book',
     vertex_label_size = 24,  vertex_label_dist = 1.4, 
-    edge_width = map(lambda x: (x * 10.0)**1.8, f.es['weight']), 
+    edge_label_size = 24, 
+    edge_label = g.es['label'], 
+    edge_width = map(lambda x: (x * 10.0)**1.8, g.es['weight']), 
     edge_color = '#007B7F55',
     edge_curved = False)
 
 plot.redraw()
 plot.save()
 
-# ### #
+## ## ##
 
 cedges = [(s1, s2, sum([0.0 if s1 not in e['refs_by_source'] or \
     s2 not in e['refs_by_source'] \
@@ -167,13 +246,13 @@ cedges = [(s1, s2, sum([0.0 if s1 not in e['refs_by_source'] or \
 
 len([c for c in cedges if c[2] > 4])
 
-c = igraph.Graph.TupleList([e for e in cedges if e[2] > 5.9 and e[0] != e[1]], 
+g = igraph.Graph.TupleList([e for e in cedges if e[2] > 5.9 and e[0] != e[1]], 
     edge_attrs = ['weight'])
-c.simplify(combine_edges = 'mean')
+g.simplify(combine_edges = 'mean')
 
 
 citeffort = []
-for v in c.vs:
+for v in g.vs:
     allrefs = len(uniqList(flatList([[r.pmid for r in e1['refs_by_source'][v['name']]] \
         for e1 in net.graph.es \
         if v['name'] in e1['refs_by_source']])))
@@ -183,24 +262,60 @@ for v in c.vs:
     if v['name'] in e3['refs_by_source']])
     citeffort.append(allrefs/alledges*uniqcits)
 
-c.vs['ncount'] = citeffort
+g.vs['ncount'] = citeffort
 
+lo = g.layout_fruchterman_reingold(weights = 'weight', repulserad = g.vcount() ** 2.98, 
+    maxiter = 1000, area = g.vcount() ** 2.3)
 
-clo = c.layout_fruchterman_reingold(weights = 'weight', repulserad = c.vcount() ** 2.98, 
-    maxiter = 1000, area = c.vcount() ** 2.3)
+scale = [100, 1000, 5000, 10000, 20000]
+escale = [5.0, 7.5, 10.0, 15.0, 30.0]
 
-sf = cairo.PDFSurface('resource_graph_curation.pdf', 1024, 1024)
+g.add_vertices([str(i) for i in scale])
+g.add_vertices(['%.2f_%u' % (i, a) for i in escale for a in [0, 1]])
+g.add_edges([('%.2f_%u' % (i, 0), '%.2f_%u' % (i, 1)) for i in escale])
+
+xmax = max([c[0] for c in lo._coords])
+ymin = min([c[1] for c in lo._coords])
+xrng = xmax - min([c[0] for c in lo._coords])
+yrng = max([c[1] for c in lo._coords]) - ymin
+xleg = xmax + xrng * 0.2
+
+for i, s in enumerate(scale):
+    v = g.vs[g.vs['name'].index(str(s))]
+    v['ncount'] = s
+    lo._coords.append([xleg, ymin + i*0.22 + (sum(scale[:i + 1])*3)**0.55 * 0.016])
+
+g.es['label'] = ['' for _ in g.es]
+
+for i, s in enumerate(escale):
+    v1 = g.vs[g.vs['name'].index('%.2f_%u' % (s, 0))]
+    v2 = g.vs[g.vs['name'].index('%.2f_%u' % (s, 1))]
+    e = g.es[g.get_eid(v1.index, v2.index)]
+    e['weight'] = s
+    e['label'] = '%.2f' % s
+    ycoo =  ymin + yrng * 0.7 + i * 1.8
+    lo._coords.append([xleg - xrng * 0.07, ycoo])
+    lo._coords.append([xleg + xrng * 0.07, ycoo])
+    v1['ncount'] = 0.0
+    v2['ncount'] = 0.0
+    v1['name'] = ''
+    v2['name'] = ''
+
+sf = cairo.PDFSurface('resource_graph_curation-2.pdf', 1024, 1024)
 bbox = igraph.drawing.utils.BoundingBox(124, 124, 900, 900)
 
-plot = igraph.plot(c, vertex_label = c.vs['name'],
-    layout = clo, 
+plot = igraph.plot(g, vertex_label = g.vs['name'],
+    layout = lo, 
     bbox = bbox, target = sf, 
     drawer_factory = DefaultGraphDrawerFFsupport, 
-    vertex_size = map(lambda x: (x*3)**0.4, c.vs['ncount']), 
+    vertex_size = map(lambda x: (x*3)**0.4, g.vs['ncount']), 
     vertex_frame_width = 0, vertex_color = '#6EA945', 
     vertex_label_color = '#777777FF',  vertex_label_family = 'Sentinel Book',
+    edge_label_color = '#777777FF', edge_label_family = 'Sentinel Book',
     vertex_label_size = 24,  vertex_label_dist = 1.4, 
-    edge_width = map(lambda x: (x * 0.35)**1.3, c.es['weight']), 
+    edge_label_size = 24, 
+    edge_label = g.es['label'], 
+    edge_width = map(lambda x: (x * 0.35)**1.3, g.es['weight']), 
     edge_color = '#007B7F55',
     edge_curved = False)
 
@@ -210,6 +325,10 @@ plot.save()
 ## TikZ summary figure ##
 
 # the figure is based on the bioigraph.descriptions dict:
+import subprocess
+from datetime import date
+from bioigraph.descriptions import *
+from bioigraph.common import *
 d = descriptions
 
 # parameters of the figure
@@ -238,6 +357,21 @@ xoffset = 0.5
 dotlineopacity = 0.7
 horizontal = True # whether the timeline should be the horizontal axis
 
+# TikZ styles
+tikzstyles = r'''
+    \tikzstyle{omnipath}=[rectangle, anchor = center, inner sep = 2pt, fill = %s, 
+        rotate = 90, text = %s, draw = %s]
+    \tikzstyle{others}=[rectangle, anchor = center, inner sep = 2pt, fill = %s, 
+        rotate = 90, text = %s, draw = %s]
+''' % (
+        nodelabfg, 
+        nodelabbg,
+        nodelabbg,
+        nodelabbg,
+        nodelabfg,
+        nodelabbg
+    )
+
 # LaTeX preamble for XeLaTeX
 tikz = r'''\documentclass[a4paper,10pt]{article}
     \usepackage{fontspec}
@@ -246,7 +380,7 @@ tikz = r'''\documentclass[a4paper,10pt]{article}
     \setdefaultlanguage{english}
     \usepackage{xltxtra}
     \usepackage{microtype}
-    \usepackage{fullpage}
+    \usepackage[cm]{fullpage}
     \usepackage{rotating}
     \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
     \usepackage{color}
@@ -255,7 +389,7 @@ tikz = r'''\documentclass[a4paper,10pt]{article}
     \definecolor{zircon}{RGB}{228, 236, 236}
     \definecolor{teal}{RGB}{0, 123, 127}
     \definecolor{twilightblue}{RGB}{239, 244, 233}
-    \definecolor{mantis}{RGB}{110, 169, 69}
+    \definecolor{mantis}{RGB}{110, 169, 69}%s
     \begin{document}
     \thispagestyle{empty}
     \pgfdeclarelayer{background}
@@ -264,12 +398,14 @@ tikz = r'''\documentclass[a4paper,10pt]{article}
     \pgfsetlayers{background,lines,nodes}%s
     \begin{tikzpicture}
     \begin{pgfonlayer}{background}
-''' % (r'''
+''' % (tikzstyles, 
+    r'''
     \begin{turn}{-90}''' if horizontal else '')
 
 ordr = sorted([(lab, r['releases'] if 'releases' in r else [] + \
             [r['year']] if 'year' in r else [], r['label'] if 'label' in r else lab, 
-            r['data_import'] if 'data_import' in r else []) \
+            r['data_import'] if 'data_import' in r else [],
+            'omnipath' if 'omnipath' in r and r['omnipath'] else 'others') \
         for lab, r in d.iteritems() \
         if 'year' in r or 'releases' in r], \
     key = lambda x: min(x[1]))
@@ -315,18 +451,6 @@ for i, r in enumerate(ordr):
     ylaby = ymax - firstyear
     cooylab = sum(lineheight[:ylaby]) + lineheight[ylaby] / 2.0
     ydots = [sum(lineheight[:y - firstyear]) + lineheight[y - firstyear] / 2.0 for y in ydots]
-    tikz += r'''        \node[anchor = center, inner sep = 2pt, fill = %s, rotate = 90] 
-            (%s) at (%f, %f) 
-            {\footnotesize\color{%s} %s};
-    ''' % (
-        nodelabbg, # node color
-        r[0].lower(), # node name
-        coox, # node x coordinate
-        cooylab, # node y coordinate
-        nodelabfg, # node text color
-        r[0] # label text
-    )
-    nodelabels.append(r[0].lower())
     for j, cooy in enumerate(ydots):
         tikz += r'''        \node[circle, fill = %s, minimum size = %f, opacity = %f] 
             (%s) at (%f, %f) {};
@@ -338,6 +462,17 @@ for i, r in enumerate(ordr):
             coox, # x coordinate
             cooy # y coordinate
         )
+    tikz += r'''        \node[%s] 
+            (%s) at (%f, %f) 
+            {\footnotesize %s};
+    ''' % (
+        r[4], # node style
+        r[0].lower(), # node name
+        coox, # node x coordinate
+        cooylab, # node y coordinate
+        r[0] # label text
+    )
+    nodelabels.append(r[0].lower())
     if len(r[1]) > 1:
         tikz += r'''        \draw[draw = %s, line width = %fpt, opacity = %f] (%s%s);
         ''' % (

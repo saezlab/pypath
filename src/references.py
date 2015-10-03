@@ -160,6 +160,9 @@ for i in [50, 100]:
     ax.xaxis.label.set_size(axis_lab_size)
     ax.yaxis.label.set_size(axis_lab_size * 0.66)
     
+    if i == 50:
+        ax.set_ylim(1.8, 4)
+    
     ax.set_ylabel('Number of PubMed IDs (log)')
     ax.set_xlabel('Journals')
     nul = plt.setp(ax.xaxis.get_majorticklabels(), rotation=90)
@@ -200,9 +203,9 @@ def brp(data, **kwargs):
     plt.xticks(np.arange(0.35, len(years), 1.0), years)
 
 sns.set_context('paper', rc = {'patch.linewidth': 0.0, 'axes.labelsize': 18, 'axes.titlesize': 27,
-    'xtick.labelsize': 13, 'ytick.labelsize': 15, 'figure.figsize': [11.7, 17.3]})
-grid = sns.FacetGrid(points, col="database", hue="database", col_wrap=5, size=3.5, 
-    sharex = False, sharey = False, 
+    'xtick.labelsize': 13, 'ytick.labelsize': 15, 'figure.figsize': [9.7, 17.3]})
+grid = sns.FacetGrid(points, col="database", hue="database", col_wrap=5, size=2.5, 
+    sharex = False, sharey = False, aspect = 1.33, 
     col_order = [j[1] for j in sorted([(i.upper(), i) for i in points.database.unique()], key = lambda x: x[0])])
 grid.map(brp, 'year')
 foo = [plt.setp(xax.xaxis.get_majorticklabels(), rotation=90) for xax in grid.axes]
@@ -219,7 +222,7 @@ for xax in grid.axes:
 grid.set_ylabels('PubMed IDs')
 grid.set_xlabels('Years')
 grid.fig.tight_layout()
-grid.fig.savefig('references-by-db-year-new.pdf')
+grid.fig.savefig('references-by-db-year.pdf')
 
 # ## References by Database & Year # boxplot
 op_refs = uniqList(flatList([[rr.pmid for rr in e['references']] for e in net.graph.es]))
@@ -265,6 +268,123 @@ ax.yaxis.label.set_size(axis_lab_size)
 fig.tight_layout()
 fig.savefig('pubyear-boxplot.pdf')
 plt.close(fig)
+
+# ## References by Database & Year & number of refs # boxplot & barplot
+# this works if the boxplot code above has been run:
+boxplot_ordr = [l._text for l in ax.get_xticklabels()]
+
+fig = plt.figure()
+gs = gridspec.GridSpec(2, 1, height_ratios=[2, 8], width_ratios = [1])
+#, wspace = 0.05, hspace = 0.05)
+ax0 = plt.subplot(gs[0])
+# here comes the top barplot
+refc_by_db = points.database.value_counts()
+refc = [refc_by_db[s] if s != omnipath else len(pubmeds) for s in boxplot_ordr]
+barplot = ax0.bar(range(len(refc)), refc, 
+    color = ['#6EA945' if s == omnipath else '#007B7F' for s in boxplot_ordr])
+tick_loc = np.arange(len(boxplot_ordr)) + 0.3
+plt.xticks(tick_loc)
+ax0.set_xticklabels(boxplot_ordr, rotation = 90, fontsize = lab_size[0] * 0.66)
+ax0.set_yscale('log')
+ax0.set_xlim([-0.2, 27.8])
+ax0.set_xlabel('')
+ax0.set_ylabel('Number of\nPubMed IDs')
+
+# here the boxplot
+ax1 = plt.subplot(gs[1])
+sns.set(font = 'Helvetica Neue LT Std')
+sns.set_context('poster', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
+    'grid.linewidth': 1.0, 'figure.figsize': [12.8, 8.8]})
+ax1 = sns.boxplot('database', 'year', data = allpoints, 
+    palette = ['#6EA945' if i[0] == omnipath else '#007B7F' for i in  medpubyr], 
+    linewidth = 0.1, saturation = 0.66, order = [i[0] for i in medpubyr], 
+    ax = ax1)
+ax1.set_xlabel('Resources', weight = 'light', fontsize = 12, 
+        variant = 'normal', color = '#000000', stretch = 'normal')
+ax1.set_ylabel('Year', weight = 'light', fontsize = 12, 
+    variant = 'normal', color = '#000000', stretch = 'normal')
+plt.setp(ax1.xaxis.get_majorticklabels(), rotation = 90)
+for t in ax1.xaxis.get_major_ticks():
+    t.label.set_fontsize(lab_size[0])
+
+for t in ax1.yaxis.get_major_ticks():
+    t.label.set_fontsize(lab_size[1])
+
+ax1.set_xticklabels([''])
+
+ax1.xaxis.label.set_size(axis_lab_size)
+ax1.yaxis.label.set_size(axis_lab_size)
+
+fig.tight_layout()
+plt.savefig('refs-year-db.pdf')
+plt.close()
+
+# ## References by Database & Year & number of refs # boxplot & barplot
+# this works if the boxplot code above has been run:
+
+fig = plt.figure()
+gs = gridspec.GridSpec(2, 2, height_ratios=[2, 8], width_ratios = [2,8])
+#, wspace = 0.05, hspace = 0.05)
+# here comes the top barplot
+ax0 = plt.subplot(gs[1])
+refc_by_db = points.database.value_counts()
+refc = [refc_by_db[s] if s != omnipath else len(pubmeds) for s in boxplot_ordr]
+barplot = ax0.bar(range(len(refc)), refc, 
+    color = ['#6EA945' if s == omnipath else '#007B7F' for s in boxplot_ordr])
+tick_loc = np.arange(len(boxplot_ordr)) + 0.3
+plt.xticks(tick_loc)
+ax0.set_xticklabels(boxplot_ordr, rotation = 90, fontsize = lab_size[0] * 0.66)
+ax0.set_yscale('log')
+ax0.set_xlim([-0.2, 27.8])
+ax0.set_xlabel('')
+ax0.set_ylabel('Number of\nPubMed IDs')
+
+# the refs by year barplot
+ax2 = plt.subplot(gs[2])
+refc_by_y = points.year.value_counts()
+refc = [refc_by_y[y] if y in refc_by_y else 0 \
+    for y in xrange(min(refc_by_y.index) - 1,max(refc_by_y.index) + 1)]
+barplot = ax2.barh(np.arange(len(refc)) - 0.5, refc,
+    color = ['#007B7F'] * len(refc))
+ax2.set_xscale('log')
+ax2.set_ylim([1.0, len(refc) - 0.2])
+ax2.set_xlim([10000, 0])
+ax2.set_yticklabels([''])
+ax2.set_xlabel('Number of\nPubMed IDs')
+
+# here the boxplot
+ax1 = plt.subplot(gs[3])
+sns.set(font = 'Helvetica Neue LT Std')
+sns.set_context('poster', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
+    'grid.linewidth': 1.0, 'figure.figsize': [12.8, 8.8]})
+ax1 = sns.boxplot('database', 'year', data = allpoints, 
+    palette = ['#6EA945' if i[0] == omnipath else '#007B7F' for i in  medpubyr], 
+    linewidth = 0.1, saturation = 0.66, order = [i[0] for i in medpubyr], 
+    ax = ax1)
+ax1.set_xlabel('Resources', weight = 'light', fontsize = 12, 
+        variant = 'normal', color = '#000000', stretch = 'normal')
+ax1.set_ylabel('Year', weight = 'light', fontsize = 12, 
+    variant = 'normal', color = '#000000', stretch = 'normal')
+#tick_loc = np.arange(min(refc_by_y.index) - 1, max(refc_by_y.index) + 1)
+#ax1.set_yticks(tick_loc)
+#ax1.set_ylim([min(tick_loc) - 1, max(tick_loc) + 1])
+#ax1.set_yticklabels(['%u'%y for y in tick_loc], fontsize = lab_size[0]*0.3)
+plt.setp(ax1.xaxis.get_majorticklabels(), rotation = 90)
+for t in ax1.xaxis.get_major_ticks():
+    t.label.set_fontsize(lab_size[0])
+
+#for t in ax1.yaxis.get_major_ticks():
+#    #t.label.set_fontsize(lab_size[1])
+
+ax1.set_xticklabels([''])
+
+ax1.xaxis.label.set_size(axis_lab_size*0.66)
+ax1.yaxis.label.set_size(axis_lab_size*0.66)
+
+fig.tight_layout()
+plt.savefig('refs-year-db-y.pdf')
+plt.close()
+
 
 # ## # ## # ## # ## # ##
 # Rolland 2014 like visualization

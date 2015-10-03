@@ -3789,7 +3789,7 @@ class BioGraph(object):
         if trace:
             return trace
     
-    def load_phospho_dmi(self, source, trace = False, **kwargs):
+    def load_phospho_dmi(self, source, trace = False, return_raw = False, **kwargs):
         functions = {
             'Signor': 'load_signor_ptms',
             'MIMP': 'get_mimp',
@@ -3811,6 +3811,7 @@ class BioGraph(object):
         kin_ambig = {}
         sub_ambig = {}
         prg = Progress(len(data), 'Processing PTMs from %s'%source, 23)
+        raw = []
         for p in data:
             prg.step()
             if p['kinase'] is not None and len(p['kinase']) > 0:
@@ -3871,10 +3872,12 @@ class BioGraph(object):
                 for k in kinase_ups:
                     for s in substrate_ups:
                         nodes = self.get_node_pair(k, s[0])
-                        if nodes:
-                            e = self.graph.get_eid(nodes[0], nodes[1], 
-                                error = False)
-                            if type(e) is int and e > 0:
+                        if nodes or return_raw:
+                            e = None
+                            if nodes:
+                                e = self.graph.get_eid(nodes[0], nodes[1], 
+                                    error = False)
+                            if (type(e) is int and e > 0) or return_raw:
                                 res = intera.Residue(p['resnum'], p['resaa'], s[0], 
                                     isoform = s[1])
                                 if p['instance'] is None:
@@ -3903,13 +3906,18 @@ class BioGraph(object):
                                     dommot.pnetw_score = p['score']
                                 elif source == 'dbPTM':
                                     dommot.dbptm_sources = [p['source']]
-                                if self.graph.es[e]['ptm'] is None:
-                                    self.graph.es[e]['ptm'] = []
-                                self.graph.es[e]['ptm'].append(dommot)
+                                if type(e) is int and e > 0:
+                                    if self.graph.es[e]['ptm'] is None:
+                                        self.graph.es[e]['ptm'] = []
+                                    self.graph.es[e]['ptm'].append(dommot)
+                                if return_raw:
+                                    raw.append(dommot)
         prg.terminate()
         if trace:
             return {'non_matching': nomatch, 'kinase_ambiguousity': kin_ambig,
                 'substrate_ambiguousity': sub_ambig}
+        if return_raw:
+            return raw
     
     def load_depod_dmi(self):
         reres = re.compile(r'([A-Z][a-z]+)-([0-9]+)')

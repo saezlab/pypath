@@ -278,7 +278,10 @@ descriptions = {
             In 2013, we extracted interaction data from BIND, BioGRID, DIP, HPRD, MINT, IntAct, and PDB to generate a high-quality binary literature dataset comprising ~11,000 protein-protein interactions that are binary and supported by at least two traceable pieces of evidence (publications and/or methods) (Rolland et al Cell 2014). Although this dataset does not result from a systematic investigation of the interactome search space and should thus be used with caution for any network topology analyses, it represents valuable interactions for targeted studies and is freely available to the research community through the search engine or via download. 
             '''
         ],
-        'emails': [('Michael_Calderwood@dfci.harvard.edu', 'Michael Calderwood')]
+        'emails': [('Michael_Calderwood@dfci.harvard.edu', 'Michael Calderwood')],
+        'type': 'high-throughput',
+        'subtype': 'yeast 2 hybrid',
+        'omnipath': False
     },
     'ELM': {
         'year': 2014,
@@ -295,12 +298,39 @@ descriptions = {
                 'http://elm.eu.org/'
             ],
             'articles': [
-                'http://nar.oxfordjournals.org/content/40/D1/D242.long'
+                'http://nar.oxfordjournals.org/content/40/D1/D242.long',
                 'http://nar.oxfordjournals.org/content/42/D1/D259.long'
             ]
         },
         'pubmeds': [22110040, 24214962],
-        'emails': [('feedback@elm.eu.org', 'ELM Team'), ('gibson@embl.de', 'Toby Gibson')]
+        'emails': [('feedback@elm.eu.org', 'ELM Team'), ('gibson@embl.de', 'Toby Gibson')],
+        'type': 'literature curated',
+        'subtype': 'post-translational modifications',
+        'omnipath': True
+    },
+    'LMPID': {
+        'year': 2015,
+        'releases': [2015],
+        'size': {
+            'nodes': None,
+            'edges': None
+        },
+        'authors': ['Bose Institute'],
+        'label': 'LMPID',
+        'color': '',
+        'urls': {
+            'webpages': [
+                'http://bicresources.jcbose.ac.in/ssaha4/lmpid/index.php'
+            ],
+            'articles': [
+                'http://database.oxfordjournals.org/content/2015/bav014.long'
+            ]
+        },
+        'pubmeds': [25776024],
+        'emails': [('ssaha4@jcbose.ac.in', 'Sudipto Saha')],
+        'type': 'literature curated',
+        'subtype': 'post-translational modifications',
+        'omnipath': True
     },
     'Guide2Pharmacology': {
         'year': 2015,
@@ -326,11 +356,62 @@ descriptions = {
             The new database was constructed by integrating data from IUPHAR-DB and the published GRAC compendium. An overview of the curation process is depicted as an organizational flow chart in Figure 2. New information was added to the existing relational database behind IUPHAR-DB and new webpages were created to display the integrated information. For each new target, information on human, mouse and rat genes and proteins, including gene symbol, full name, location, gene ID, UniProt and Ensembl IDs was manually curated from HGNC, the Mouse Genome Database (MGD) at Mouse Genome Informatics (MGI), the Rat Genome Database (RGD), UniProt and Ensembl, respectively. In addition, ‘Other names’, target-specific fields such as ‘Principal transduction’, text from the ‘Overview’ and ‘Comments’ sections and reference citations (downloaded from PubMed; http://www.ncbi.nlm.nih.gov/pubmed) were captured from GRAC and uploaded into the database against a unique Object ID.
             '''
         ],
-        'emails': [('enquiries@guidetopharmacology.org', 'Guide to Pharmacology Team'), ('tony.harmar@ed.ac.uk', 'Tony Harmar')]
+        'emails': [('enquiries@guidetopharmacology.org', 'Guide to Pharmacology Team'), ('tony.harmar@ed.ac.uk', 'Tony Harmar')],
+        'type': 'literature curated',
+        'subtype': 'pathway',
+        'omnipath': True
+    },
+    'Signor': {
+        'year': 2015,
+        'releases': [2015],
+        'urls': {
+            'webpages': ['http://signor.uniroma2.it/'],
+            'articles': ['http://f1000research.com/posters/1098359']
+        },
+        'descriptions': [
+            u'''
+            SIGNOR, the SIGnaling Network Open Resource, organizes and stores in a structured format signaling information published in the scientific literature. The captured information is stored as binary causative relationships between biological entities and can be represented graphically as activity flow. The entire network can be freely downloaded and used to support logic modeling or to interpret high content datasets. The core of this project is a collection of more than 11000 manually-annotated causal relationships between proteins that participate in signal transduction. Each relationship is linked to the literature reporting the experimental evidence. In addition each node is annotated with the chemical inhibitors that modulate its activity. The signaling information is mapped to the human proteome even if the experimental evidence is based on experiments on mammalian model organisms.
+            '''
+        ],
+        'authors': ['Cesareni Group'],
+        'label': 'Signor',
+        'color': '',
+        'data_import': ['SignaLink2', 'PhosphoSite'],
+        'type': 'literature curated',
+        'subtype': 'pathway',
+        'omnipath': True,
+        'emails': [('perfetto@live.it', 'Livia Perfetto')],
+    },
+    'HuPho': {
+        'year': 2015,
+        'releases': [2012, 2015],
+        'urls': {
+            'webpages': ['http://hupho.uniroma2.it/'],
+            'articles': ['http://onlinelibrary.wiley.com/doi/10.1111/j.1742-4658.2012.08712.x/full']
+        },
+        'pubmeds': [22804825],
+        'descriptions': [
+            u'''
+            In order to offer a proteome-wide perspective of the phosphatase interactome, we have embarked on an extensive text-mining-assisted literature curation effort to extend phosphatase interaction information that was not yet covered by protein–protein interaction (PPI) databases. Interaction evidence captured by expert curators was annotated in the protein interaction database MINT according to the rapid curation standard. This data set was next integrated with protein interaction information from three additional major PPI databases, IntAct, BioGRID and DIP. These databases are part of the PSIMEx consortium and adopt a common data model and common controlled vocabularies, thus facilitating data integration. Duplicated entries were merged and redundant interactions have been removed.
+            As a result, from the HuPho website it is possible to explore experimental evidence from 718 scientific articles reporting 4600 experiments supporting protein interactions where at least one of the partners is a phosphatase. Since some interactions are supported by more than one piece of evidence, the actual number of non-redundant interactions is smaller, 2500 at the time of writing this paper. Moreover, 199 phosphatases have at least one reported ligand, while 53 have none. Interaction evidence is fairly evenly distributed in the four PSIMEx resources suggesting a substantial lack of overlap among the data curated by each database.
+            '''
+        ],
+        'notes': [
+            u'''
+            The database is dynamically updated, so is up to date at any given time. That's why it is marked as up to date in 2015, despite it has no new release after 2012.
+            '''
+        ],
+        'authors': ['Cesareni Group'],
+        'label': 'HuPho',
+        'color': '',
+        'type': 'high throughput and literature curated',
+        'subtype': 'post-translational modification',
+        'omnipath': False,
+        'emails': [('perfetto@live.it', 'Livia Perfetto')]
     },
     'SignaLink2': {
-        'year': 2012,
-        'releases': [2010, 2012],
+        'year': 2015,
+        'releases': [2010, 2012, 2015],
         'size': 0,
         'authors': ['NetBiol Group'],
         'label': 'SignaLink',
@@ -357,7 +438,10 @@ descriptions = {
             The curation protocol of SignaLink (Fig. 1A) contains several steps aimed specifically at reducing data and curation errors. We used reviews as a starting point, manually looked up interactions three times, and manually searched for interactions of known signaling proteins with no signaling interactions so far in the database. 
             '''
         ],
-        'emails': [('korcsmaros@gmail.com', 'Tamas Korcsmaros'), ('tamas.korcsmaros@tgac.ac.uk', 'Tamas Korcsmaros')]
+        'emails': [('korcsmaros@gmail.com', 'Tamas Korcsmaros'), ('tamas.korcsmaros@tgac.ac.uk', 'Tamas Korcsmaros')],
+        'type': 'literature curated',
+        'subtype': 'pathway',
+        'omnipath': True
     },
     'NRF2ome': {
         'year': 2013,
@@ -387,7 +471,10 @@ descriptions = {
             From Korcsmaros 2010: ... we first listed signaling proteins and interactions from reviews and then added further signaling interactions of the listed proteins. We used reviews as a starting point, manually looked up interactions three times, and manually searched for interactions of known signaling proteins with no signaling interactions so far in the database.
             '''
         ],
-        'emails': [('korcsmaros@gmail.com', 'Tamas Korcsmaros'), ('tamas.korcsmaros@tgac.ac.uk', 'Tamas Korcsmaros')]
+        'emails': [('korcsmaros@gmail.com', 'Tamas Korcsmaros'), ('tamas.korcsmaros@tgac.ac.uk', 'Tamas Korcsmaros')],
+        'type': 'literature curated',
+        'subtype': 'pathway',
+        'omnipath': True
     },
     'ARN': {
         'year': 2014,
@@ -413,7 +500,10 @@ descriptions = {
             From Korcsmaros 2010: ... we first listed signaling proteins and interactions from reviews and then added further signaling interactions of the listed proteins. We used reviews as a starting point, manually looked up interactions three times, and manually searched for interactions of known signaling proteins with no signaling interactions so far in the database.
             '''
         ],
-        'emails': [('korcsmaros@gmail.com', 'Tamas Korcsmaros'), ('tamas.korcsmaros@tgac.ac.uk', 'Tamas Korcsmaros')]
+        'emails': [('korcsmaros@gmail.com', 'Tamas Korcsmaros'), ('tamas.korcsmaros@tgac.ac.uk', 'Tamas Korcsmaros')],
+        'type': 'literature curated',
+        'subtype': 'pathway',
+        'omnipath': True
     },
     'HPRD': {
         'year': 2010,
@@ -435,7 +525,10 @@ descriptions = {
             Posttranslational modifications were annotated based on the type of modification, site of modification, and the modified residue. In addition, the upstream enzymes that are responsible for modifications of these proteins were reported if described in the articles. The most commonly known and the alternative subcellular localization of the protein were based on the literature. The sites of expression of protein and/or mRNA were annotated based on published studies.
             '''
         ],
-        'emails': [('pandey@jhmi.edu', 'Akhilesh Pandey')]
+        'emails': [('pandey@jhmi.edu', 'Akhilesh Pandey')],
+        'type': 'literature curated',
+        'subtype': 'post-translational modification',
+        'omnipath': True
     },
     'ACSN': {
         'year': 2015,
@@ -462,11 +555,13 @@ descriptions = {
             The map curator studies the body of literature dedicated to the biological process or molecular mechanism of interest. The initial sources of information are the major review articles from high-impact journals that represent the consensus view on the studied topic and also provide a list of original references. The map curator extracts information from review papers and represents it in the form of biochemical reactions in CellDesigner. This level of details reflects the ‘canonical’ mechanisms. Afterwards, the curator extends the search and analyses original papers from the list provided in the review articles and beyond. This information is used to enrich the map with details from the recent discoveries in the field. The rule for confident acceptance and inclusion of a biochemical reaction or a process is the presence of sufficient evidences from more than two studies, preferably from different scientific groups. The content of ACSN is also verified and compared with publicly available databases such as REACTOME, KEGG, WikiPathways, BioCarta, Cell Signalling and others to ensure comprehensive representation of consensus pathways and links on PMIDs of original articles confirmed annotated molecular interactions.
             ''',
             u'''
-            
             CellDesigner 3.5 version was used to enter biological facts from a carefully studied selection of papers (see the whole bibliography on the web site with Supplementary information). Whenever the details of a biological fact could not be naturally expressed with CellDesigner standard notations, it was fixed and some solution was proposed. For example, we added a notation (co‐factor) to describe all the components intervening in the transcription of genes mediated by the E2F family proteins. 
             '''
         ],
-        'emails': [('andrei.zinovyev@curie.fr', 'Andrei Zinovyev')]
+        'emails': [('andrei.zinovyev@curie.fr', 'Andrei Zinovyev')],
+        'type': 'literature curated',
+        'subtype': 'pathway',
+        'omnipath': True
     },
     'DOMINO': {
         'urls': {
@@ -501,7 +596,10 @@ descriptions = {
             'O. cuniculus',
             'Plasmodium falciparum'
         ],
-        'emails': [('Cesareni@uniroma2.it', 'Gianni Cesareni')]
+        'emails': [('Cesareni@uniroma2.it', 'Gianni Cesareni')],
+        'type': 'literature curated',
+        'subtype': 'post-translational modification',
+        'omnipath': True
     },
     'DeathDomain': {
         'year': 2012,
@@ -525,7 +623,7 @@ descriptions = {
                 'http://deathdomain.org/'
             ]
         },
-        'emails': [('hyunho{at}ynu.ac.kr', 'Hyun Ho O')],
+        'emails': [('hyunho@ynu.ac.kr', 'Hyun Ho O')],
         'files': {
             'articles': [
                 'DeathDomain_Kwon2011.pdf'
@@ -558,7 +656,10 @@ descriptions = {
             u'''
             Detailful dataset with many references. Sadly the data can be extracted only by parsing HTML. It doesn't mean more difficulty than parsing XML formats, just these are not intended to use for this purpose.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'pathway',
+        'omnipath': True
     },
     'TRIP': {
         'year': 2014,
@@ -607,7 +708,10 @@ descriptions = {
             u'''
             Good manually curated dataset focusing on TRP channel proteins, with ~800 binary interactions. The provided formats are not well suitable for bioinformatics use because of the non standard protein names, with greek letters and only human understandable formulas. Using HTML processing, and processing the data from 5-6 different tables, with couple hundreds of lines of code, one have a chance to compile a usable data table. 
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'pathway',
+        'omnipath': True
     },
     'Awan2007': {
         'year': 2007,
@@ -631,7 +735,10 @@ descriptions = {
             u'''
             To construct the human cellular signalling network, we manually curated signalling pathways from literature. The signalling data source for our pathways is the BioCarta database (http://www.biocarta.com/genes/allpathways.asp), which, so far, is the most comprehensive database for human cellular signalling pathways. Our curated pathway database recorded gene names and functions, cellular locations of each gene and relationships between genes such as activation, inhibition, translocation, enzyme digestion, gene transcription and translation, signal stimulation and so on. To ensure the accuracy and the consistency of the database, each referenced pathway was cross-checked by different researchers and finally all the documented pathways were checked by one researcher. In total, 164 signalling pathways were documented (supplementary Table 2). Furthermore, we merged the curated data with another literature-mined human cellular signalling network. As a result, the merged network contains nearly 1100 proteins (SupplementaryNetworkFile). To construct a signalling network, we considered relationships of proteins as links (activation or inactivation as directed links and physical interactions in protein complexes as neutral links) and proteins as nodes.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'pathway',
+        'omnipath': False
     },
     'Cui2007': {
         'year': 2007,
@@ -688,7 +795,10 @@ descriptions = {
             u'''
             Excellent signaling network with good topology for all those who doesn't mind to use data of unknown origin. Supposedly a manually curated network, but data files doesn't include article references. Merging CA1 network with CancerCellMap and BioCarta (also without references) makes the origin of the data untraceable.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'pathway',
+        'omnipath': False
     },
     'BioCarta': {
         'year': 2006,
@@ -722,14 +832,20 @@ descriptions = {
             '''
             The Company and the website looks like was abandoned around 2003-2006.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'pathway',
+        'omnipath': False
     },
     'TLR': {
         'urls': {
             'articles': [
                 'http://msb.embopress.org/content/2/1/2006.0015.long'
             ]
-        }
+        },
+        'type': 'literature curated',
+        'subtype': 'model',
+        'omnipath': False
     },
     'CA1': {
         'year': 2005,
@@ -762,7 +878,10 @@ descriptions = {
             u'''
             One of the earliest manually curated networks, available in easily accessible tabular format, including UniProt IDs and PubMed references.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'pathway',
+        'omnipath': True
     },
     'CancerCellMap': {
         'urls': {
@@ -782,7 +901,10 @@ descriptions = {
             u'''
             One of the earliest manually curated datasets, now only available from second hand, e.g. from PathwayCommons. Included in many other resources. Contains binary interactions with PubMed references.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'pathway',
+        'omnipath': True
     },
     'HSN': {
         'year': 2014,
@@ -828,7 +950,10 @@ descriptions = {
             u'''
             This network aims to merge multiple manually curated networks. Unfortunately a precise description of the sources and methods is missing. Also, the dataset doesn't include the references. Moreover, the data file misses header and key, so users can only guess about the meaning of columns and values.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'pathway',
+        'omnipath': False
     },
     'Ataxia': {
         'year': 2010,
@@ -843,6 +968,7 @@ descriptions = {
         'taxons': [
             'human'
         ],
+        'authors': ['Shaw Lab'],
         'descriptions': [
             u'''
             In order to expand the interaction dataset, we added relevant direct protein–protein interactions from currently available human protein–protein interaction networks (Rual et al., 2005; Stelzl et al., 2005). We also searched public databases, including BIND (Bader et al., 2003), DIP (Xenarios et al., 2002), HPRD (Peri et al., 2003), MINT (Zanzoni et al., 2002), and MIPS (Pagel et al., 2005), to identify literature-based binary interactions involving the 54 ataxia-associated baits and the 561 interacting prey proteins. We identified 4796 binary protein–protein interactions for our Y2H baits and prey proteins (Table S4) and incorporated them in the Y2H protein–protein interaction map (Figures 4A–4C).
@@ -852,7 +978,11 @@ descriptions = {
             u'''
             The Ataxia network doesn't contain original manual curation effort. The integrated data are very old. 
             '''
-        ]
+        ],
+        'type': 'high-throughput',
+        'subtype': 'interaction',
+        'omnipath': False,
+        'emails': [('Tong_Hao@dfci.harvard.edu', 'Tong Hao'), ('barabasi@gmail.com', 'Albert-Laszlo Barabasi')]
     },
     'Reactome': {
         'urls': {
@@ -873,7 +1003,11 @@ descriptions = {
             u'''
             No binary interactions can be exported programmatically from any format of the Reactome dataset. Reactome's curation method doesn't cover binary interactions, the inferred lists on the webpage are based on automatic expansion of complexes and reactions, and thus are unreliable. In lack of information, references cannot be assigned to interactions.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'reaction network',
+        'omnipath': False,
+        'emails': [('help@reactome.org', 'Reactome Team'), ('hhe@ebi.ac.uk', 'Henning Hermjakob')]
     },
     'Li2012': {
         'year': 2012,
@@ -894,7 +1028,10 @@ descriptions = {
             Human phosphotyrosine signaling network. 
             We manually collected the experimentally determined human TK–substrate interactions and substrate–SH2/PTB domain interactions from the literature (see Supplemental Materials), as well as the Phospho.ELM and PhosphoSitePlus databases. [71 references, 585 circuits]
             '''
-        ]
+        ],
+        'type': 'high-throughput',
+        'subtype': 'yeast 2 hybrid',
+        'omnipath': False
     },
     'Zaman2013': {
         'year': 2013,
@@ -921,7 +1058,10 @@ descriptions = {
             u'''
             The human signaling network (Version 4, containing more than 6,000 genes and more than 50,000 relations) includes our previous data obtained from manually curated signaling networks (Awan et al., 2007; Cui et al., 2007; Li et al., 2012) and by PID (http://pid.nci.nih.gov/) and our recent manual curations using the iHOP database (http://www.ihop-net.org/UniPub/iHOP/).
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'pathway',
+        'omnipath': False
     },
     'AlzPathway': {
         'year': 2012,
@@ -950,7 +1090,10 @@ descriptions = {
             u'''
             References can be fetched only from XML formats, not from the SIF file. Among approx. 150 protein-protein interactions, also contains interactions of many small molecules, denoted by pubchem IDs.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'pathway',
+        'omnipath': True
     },
     'MPPI': {
         'year': 2005,
@@ -985,7 +1128,10 @@ descriptions = {
             u'''
             This database contains hundreds of interactions curated manually from original papers. The format is perfect, with UniProt IDs, and PubMed references.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'interaction',
+        'omnipath': True
     },
     'Negatome': {
         'year': 2013,
@@ -1005,7 +1151,10 @@ descriptions = {
             u'''
             Annotation of the manual dataset was performed analogous to the annotation of protein–protein interactions and protein complexes in previous projects published by our group. Information about NIPs was extracted from scientific literature using only data from individual experiments but not from high-throughput experiments. Only mammalian proteins were considered. Data from high-throughput experiments were omitted in order to maintain the highest possible standard of reliability.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'negative',
+        'omnipath': True
     },
     'Macrophage': {
         'year': 2010,
@@ -1021,11 +1170,14 @@ descriptions = {
             u'''
             Ongoing analysis of macrophage-related datasets and an interest in consolidating our knowledge of a number of signalling pathways directed our choice of pathways to be mapped (see Figure 1). Public and propriety databases were initially used as resources for data mining, but ultimately all molecular interaction data was sourced from published literature. Manual curation of the literature was performed to firstly evaluate the quality of the evidence supporting an interaction and secondly, to extract the necessary and additional pieces of information required to 'understand' the pathway and construct an interaction diagram. We have drawn pathways based on our desire to model pathways active in a human macrophage and therefore all components have been depicted using standard human gene nomenclature (HGNC). However, our understanding of the pathway components and the interactions between them, have been drawn largely from a consensus view of literature knowledge. As such the pathways presented here are based on data derived from a range of different cellular systems and mammalian species (human and mouse).
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'pathway',
+        'omnipath': True
     },
     'NetPath': {
-        'year': 2011,
-        'releases': [2010, 2011],
+        'year': 2015,
+        'releases': [2010, 2011, 2012, 2013, 2014, 2015],
         'size': {
             'nodes': None,
             'edges': None
@@ -1041,13 +1193,29 @@ descriptions = {
         'urls': {
             'articles': [
                 'http://genomebiology.com/content/11/1/R3',
-                'http://database.oxfordjournals.org/content/2011/bar032.long'
+                'http://database.oxfordjournals.org/content/2011/bar032.long',
+                'http://database.oxfordjournals.org/content/2011/bar021.long',
+                'http://www.omicsonline.com/0974-276X/JPB-04-184.php',
+                'http://www.biomedcentral.com/1756-0500/4/408',
+                'http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3830942/',
+                'http://link.springer.com/article/10.1007/s12079-012-0168-0',
+                'http://www.hindawi.com/journals/jst/2012/376470/',
+                'http://link.springer.com/article/10.1007/s12079-012-0186-y',
+                'http://link.springer.com/article/10.1007/s12079-012-0181-3',
+                'http://link.springer.com/article/10.1007/s12079-013-0197-3',
+                'http://www.tandfonline.com/doi/full/10.3109/15419061.2013.791683',
+                'http://link.springer.com/article/10.1007/s12079-013-0200-z',
+                'http://database.oxfordjournals.org/content/2014/bau007.long',
+                'http://link.springer.com/article/10.1007/s12079-014-0224-z',
+                'http://www.hindawi.com/journals/jst/2014/962962/'
             ],
             'webpages': [
                 'http://netpath.org/'
             ]
         },
-        'pubmeds': [20067622, 21959865],
+        'pubmeds': [20067622, 21959865, 21742767, 21996254, 24255551, 22684822,
+            22649723, 23255051, 23161412, 23504413, 23631681, 23606317, 24573880,
+            24584707, 24829797],
         'descriptions': [
             u'''
             The initial annotation process of any signaling pathway involves gathering and reading of review articles to achieve a brief overview of the pathway. This process is followed by listing all the molecules that arereported to be involved in the pathway under annotation. Information regarding potential pathway authorities are also gathered at this initial stage. Pathway experts are involved in initial screening of the molecules listed to check for any obvious omissions. In the second phase, annotators manually perform extensive literature searches using search keys, which include all the alter native names of the molecules involved, the name of the pathway, the names of reactions, and so on. In addition, the iHOP resource is also used to perform advanced PubMed-based literature searches to collect the reactions that were reported to be implicated in a given pathway. The collected reactions are manually entered using the PathBuilder annotation interface, which is subjected to an internal review process involving PhD level scientists with expertise in the areas of molecular biology, immunology and biochemistry. However, there are instances where a molecule has been implicated in a pathway in a published report but the associated experimental evidence is either weak or differs from experiments carried out by other groups. For this purpose, we recruit several investigators as pathway authorities based on their expertise in individual signaling pathways. The review by pathway authorities occasionally leads to correction of errors or, more commonly, to inclusion of additional information. Finally, the pathway authorities help in assessing whether the work of all major laboratories has been incorporated for the given signaling pathway.
@@ -1057,7 +1225,10 @@ descriptions = {
             u'''
             Formats are unclear. The tab delimited format contains the pathway memberships of genes, PubMed references, but not the interaction partners! The Excel file is very weird, in fact it is not an excel table, and contains only a few rows from the tab file. The PSI-MI XML is much better. By writing a simple parser, a lot of details can be extracted.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'reaction network',
+        'omnipath': True
     },
     'InnateDB': {
         'year': 2015,
@@ -1079,7 +1250,7 @@ descriptions = {
             23180781,
             18766178
         ],
-        'releases': [2008, 2010, 2013],
+        'releases': [2008, 2010, 2013, 2014, 2015],
         'descriptions': [
             u'''
             To date, the InnateDB curation team has reviewed more than 1000 publications and curated more than 3500 innate immunity-relevant interactions, richly annotating them in terms of the experimental evidence and the context in which they occur.
@@ -1092,7 +1263,10 @@ descriptions = {
             u'''
             Probably the largest manually curated binary protein interaction dataset, developed by a dedicated full time team of curators. Formats are clear and accessible, comprising UniProt IDs, PubMed references, experimental evidences and mechanisms.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'interaction',
+        'omnipath': True
     },
     'CORUM': {
         'year': 2009,
@@ -1106,6 +1280,7 @@ descriptions = {
                 'http://mips.helmholtz-muenchen.de/genre/proj/corum'
             ]
         },
+        'emails': [('andreas.ruepp@helmholtz-muenchen.de', 'Andreas Ruepp')],
         'pubmeds': [19884131, 17965090],
         'taxons': [
             'human',
@@ -1117,10 +1292,14 @@ descriptions = {
             The CORUM database is a collection of experimentally verified mammalian protein complexes. Information is manually derived by critical reading of the scientific literature from expert annotators. Information about protein complexes includes protein complex names, subunits, literature references as well as the function of the complexes.
             In order to provide a high-quality dataset of mammalian protein complexes, all entries are manually created. Only protein complexes which have been isolated and characterized by reliable experimental evidence are included in CORUM. To be considered for CORUM, a protein complex has to be isolated as one molecule and must not be a construct derived from several experiments. Also, artificial constructs of subcomplexes are not taken into account. Since information from high-throughput experi ments contains a significant fraction of false-positive results, this type of data is excluded. References for relevant articles were mainly found in general review articles, cross-references to related protein complexes within analysed literature and comments on referenced articles in UniProt.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'complexes',
+        'omnipath': True
     },
     'CST': {
         'year': 2015,
+        'releases': [2005, 2015],
         'nodes': None,
         'edges': None,
         'authors': ['CST'],
@@ -1141,13 +1320,16 @@ descriptions = {
         ],
         'notes': [
             u'''
-            The pathway diagrams are based on good quality, manually curated data, probably from review articles. However, those are available only in graphical (PDF and InDesign) formats. There is no programmatic way to obtain the interactions and references, as it was confirmed by the authors, who I contacted by mail. Wang's HumanSignalingNetwork includes the data from this resource, which probably has been entered manually, but Wang's data doesn't have source annotations, despite it's compiled from multiple sources.
+            The pathway diagrams are based on good quality, manually curated data, probably from review articles. However, those are available only in graphical (PDF and InDesign) formats. There is no programmatic way to obtain the interactions and references, as it was confirmed by the authors, who I contacted by mail. Wang's HumanSignalingNetwork includes the data from this resource, which probably has been entered manually, but Wang's data doesn't have source annotations, despite it's compiled from multiple sources. The date of the beginning of this project is estimated using the Internet wayback machine.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'pathway',
+        'omnipath': False
     },
     'DIP': {
         'year': 2014,
-        'releases': [2000, 2011],
+        'releases': [2000, 2001, 2002, 2004, 2011, 2014],
         'size': {
             'nodes': None,
             'edges': None
@@ -1180,7 +1362,11 @@ descriptions = {
             u'''
             The 'core' dataset contains manually curated interactions from small-scale studies. Interactions are well annotated with PubMed IDs, evidences, and mechanism (binding, chemical reaction, etc). The format is esily accessible (MITAB).
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'interaction',
+        'omnipath': True,
+        'emails': [('david@mbi.ucla.edu', 'David Eisenberg')]
     },
     'DEPOD': {
         'year': 2014,
@@ -1189,7 +1375,7 @@ descriptions = {
             'nodes': None,
             'edges': None
         },
-        'authors': ['EMBL & EBI'],
+        'authors': ['EMBL & EMBL-EBI'],
         'label': 'DEPOD',
         'color': '',
         'urls': {
@@ -1214,7 +1400,11 @@ descriptions = {
             u'''
             Nice manually curated dataset with PubMed references, in easily accessible MITAB format with UniProt IDs, comprises 832 dephosphorylation reactions on protein substrates, and few hundreds on small molecules.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'post-translational modification',
+        'omnipath': True,
+        'emails': [('koehn@embl.de', 'Maja Kohn')]
     },
     'PhosphoPoint': {
         'year': 2008,
@@ -1240,11 +1430,15 @@ descriptions = {
             u'''
             It contains 400 manually curated interactions and much more from HTP methods. The manually curated set can not be distinguished in the data formats offered.
             '''
-        ]
+        ],
+        'type': 'literature curated and prediction',
+        'subtype': 'post-translational modification',
+        'omnipath': False,
+        'emails': [('cyhuang5@ym.edu.tw' , 'Chi-Ying F. Huang'), ('kmchao@csie.ntu.edu.tw', 'Kun-Mao Chao')]
     },
     'PANTHER': {
-        'year': 2009,
-        'releases': [2006, 2009],
+        'year': 2014,
+        'releases': [2000, 2001, 2002, 2003, 2005, 2006, 2010, 2011, 2012, 2014],
         'urls': {
             'articles': [
                 'http://link.springer.com/protocol/10.1007%2F978-1-60761-175-2_7#section=82252&page=1',
@@ -1260,7 +1454,11 @@ descriptions = {
             References are captured at three levels. First, each pathway as a whole requires a reference. For signaling pathways, at least three references, usually review papers, are required in order to provide a more objective view of the scope of the pathway. For metabolic pathways, a textbook reference is usually sufficient. Second, references are often associated to each molecule class in the pathway. Most of these references are OMIM records or review papers. Third, references are provided to support association of specific protein sequences with a particular molecule class, e.g., the SWISS-PROT sequence P53_HUMAN annotated as an instance of the molecule class ‘‘P53’’ appearing in the pathway class ‘‘P53 pathway’’. These are usually research papers that report the experimental evidence that a particular protein or gene participates in the reactions represented in the pathway diagram.
             There are three major properties that make this infrastructure differ from other pathway curation systems, such as from Reactome and EcoCyc. First, the pathway diagrams are drawn with CellDesigner software. There are two advantages to using CellDesigner. First, controlled graphical notations are used to draw the pathway diagram, and the software automatically creates a computational representation that is compatible with the SBML standard. Second, a pathway diagram can be viewed with an exact, one-to-one correspondence with the ontological representation of the pathways stored in the back-end. The second property is that the scope of the pathway is defined first based on literature, and pathway components (proteins, genes, RNAs) are treated as ontology terms, or molecule classes, rather than specific instances. This means that multiple proteins from the same organism or different organisms can potentially play the same given role in a pathway. The advantage is that the work flow is more similar to the thinking process of the biologists who are the users of our curation software module. The third major property is that the curation software is designed to be simple enough to be used directly by bench biologists after a brief training course. All other pathway databases we are aware of employ highly trained curators, who of course cannot be experts in all areas of biology. The current set of PANTHER pathways has been curated by more than 40 different external experts from the scientific community; they must only have demonstrated their expertise with publications in the relevant field.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'reaction network',
+        'omnipath': False,
+        'emails': [('feedback@pantherdb.org', 'Panther Team'), ('paul.thomas@sri.com', 'Paul Thomas')]
     },
     'PhosphoSite': {
         'year': 2015,
@@ -1295,7 +1493,11 @@ descriptions = {
             Information from nearly 13 000 papers and 600 different journals characterizing modification sites with LTP methods has been curated into PSP.
             Information is gathered from published literature and other sources. Published literature is searched semi-automatically with multiple intelligent search algorithms to identify reports that potentially identify phosphorylation sites in human, mouse or other species. Each identified report is then scanned by our highly trained curatorial staff (all with PhDs and extensive research experience in cell biology or related disciplines) to select only those papers that either identify new physiological phosphorylation sites or those that illuminate the biological function of the phosphorylation event. Records that are selected for inclusion into PhosphoSite are placed in the curatorial queue for processing. Note: while we gather records that describe both in vitro and in vivo phosphorylation events, we only finally submit records about in vitro sites when we have additional hard evidence that the site is also phosphorylated in vivo.
             '''
-        ]
+        ],
+        'type': 'literature curated and high throughput',
+        'subtype': 'post-translational modification',
+        'omnipath': True,
+        'emails': [('phornbeck@cellsignal.com', 'Paul Hornbeck'), ('EditorPhosphoSite@cellsignal.com', 'PhosphoSite Team')]
     },
     'SPIKE': {
         'year': 2012,
@@ -1309,6 +1511,7 @@ descriptions = {
                 'http://www.cs.tau.ac.il/~spike/'
             ]
         },
+        'authors': ['Shamir Group', 'Shiloh Group'],
         'pubmeds': [18289391, 21097778],
         'descriptions': [
             u'''
@@ -1317,7 +1520,11 @@ descriptions = {
             Each of the maps is constructed by a domain expert; typically the same expert will also be responsible later for keeping it up-to-date. The expert reads the relevant literature and identifies those interactions and regulations that are pertinent to the pathway.
             The regulations and interactions in the database are assigned quality values ranging from 1 to 4. In general, relationships (regulations and interactions) derived from highly focused biochemical studies are assigned high quality (2 or 1) while those derived from high-throughput experiments are assigned lower quality (4 or 3). The curator uses best judgment to assign a quality level. For example, relationships mentioned in two independent research reports, or cited repeatedly in reviews written by leading authorities will get quality 1. Relationships with cited concrete references and those imported en masse from external curated signaling DBs are initially assigned quality 2 but later can be changed to the highest quality after the curator has read and was convinced by the cited papers. Data imported from protein-protein interaction DBs and datasets are assigned quality 3 or 4, depending on the experimental technique.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'pathway',
+        'omnipath': True,
+        'emails': [('rshamir@tau.ac.il', 'Ron Shamir')]
     },
     'NCI-PID': {
         'year': 2012,
@@ -1356,7 +1563,11 @@ descriptions = {
             u'''
             From the NCI-XML interactions with references, directions and signs can be extracted. Complexes are ommited.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'reaction network',
+        'omnipath': True,
+        'emails': [('yanch@mail.nih.gov', 'Chunhua Yan')]
     },
     'WikiPathways': {
         'urls': {
@@ -1376,18 +1587,23 @@ descriptions = {
             u'''
             The data is not accessible. Interactions are available in BioPAX format, but without references.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'reaction network',
+        'omnipath': False,
+        'emails': [('thomaskelder@gmail.com', 'Thomas Kelder'), ('apico@gladstone.ucsf.edu', 'Alex Pico')]
     },
     'ConsensusPathDB': {
-        'year': 2014,
-        'releases': [2007, 2014],
+        'year': 2015,
+        'releases': [2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015],
         'urls': {
             'webpages': [
                 'http://cpdb.molgen.mpg.de/CPDB'
             ],
             'articles': [
-                'http://nar.oxfordjournals.org/content/41/D1/D793',
-                
+                'http://nar.oxfordjournals.org/content/37/suppl_1/D623.long',
+                'http://nar.oxfordjournals.org/content/39/suppl_1/D712.long',
+                'http://nar.oxfordjournals.org/content/41/D1/D793.long'
             ]
         },
         'taxons': [
@@ -1395,36 +1611,116 @@ descriptions = {
             'mouse',
             'yeast'
         ],
-        'pubmeds': [18940869, 23143270],
+        'pubmeds': [18940869, 23143270, 21071422],
         'descriptions': [
             '''
-            
+            Interaction data in ConsensusPathDB currently originates from 12 interaction databases and comprises physical interactions, biochemical reactions and gene regulations. Importantly, the source of physical entities and interactions is always recorded, which allows linking to the original data in the source database. 
+            In order to assess the content overlap of the source databases and to reduce redundancy, we have applied a method to merge identical physical entities and identify similar interactions. The method is straightforward and efficient for the integration of networks from any single species. Simple physical entities of the same type (genes, proteins, transcripts, metabolites) are compared on the basis of common database identifiers like UniProt, Ensembl, Entrez, ChEBI, etc. Since different databases tend to annotate physical entities with different identifier types (e.g. some databases annotate proteins with UniProt identifiers, others with Ensembl identifiers), we first translated the annotations to a uniform identifier type, which is a UniProt entry name in case of proteins, Ensembl gene ID in case of genes and transcripts, and KEGG/ChEBI ID in case of metabolites. Protein complexes are compared according to their individual protein composition. Simple physical entities with the same identifier, and complexes with the same composition, are merged in ConsensusPathDB. Information provided by the according source databases for the merged entities is stored in a complementary manner. 
+            Functional interactions of physical entities are also compared with each other. Here, we distinguish between primary and secondary interaction participants. Primary participants are substrates and products in case of biochemical reactions, interactors in case of physical interactions and target genes in case of gene regulation. All other participants, e.g. enzymes and interaction modifiers, are secondary participants. If the primary participants of two or more interactions match, these interactions are considered similar. Two similar interactions may have different stoichiometry, modification and/or localization of the participants. To allow for flexibility, similar interactions are marked as such in the database, but the decision whether they should be considered identical despite mismatching details is left to the user and depends on his specific problem. Moreover, ConsensusPathDB does not provide any additional quality control filters. All interactions provided by the different database sources are treated in the same way.
             '''
         ],
         'notes': [
             u'''
             ConsensusPathDB comprises data from 32 resources. The format is easy to use, tab delimited text file, with UniProtKB names and PubMed IDs. However, the dataset is extremely huge, and several databases containing HTP data is included.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'pathway',
+        'emails': [('kamburov@molgen.mpg.de', 'Atanas Kamburov')]
     },
     'KEGG': {
+        'year': 2015,
+        'releases': [2000, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015],
         'urls': {
             'webpages': [
                 'http://www.genome.jp/kegg/'
             ],
             'articles': [
-                ''
+                'http://nar.oxfordjournals.org/content/28/1/27.long'
             ]
         },
         'notes': [
             u'''
             From 2011, KEGG data is not freely available. The downloadable KGML files contain binary interactions, most of them between large complexes. No references available.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'reaction network',
+        'omnipath': False,
+        'emails': [('kanehisa@kuicr.kyoto-u.ac.jp', 'Minoru Kaneshia')]
+    },
+    'BioGRID': {
+        'year': 2015,
+        'releases': [2003, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015],
+        'label': 'BioGRID',
+        'authors': ['Tyers Lab'],
+        'urls': {
+            'webpages': [
+                'http://thebiogrid.org/'
+            ],
+            'articles': [
+                'http://genomebiology.biomedcentral.com/articles/10.1186/gb-2003-4-3-r23',
+                'http://nar.oxfordjournals.org/content/34/suppl_1/D535.long',
+                'http://nar.oxfordjournals.org/content/36/suppl_1/D637.long',
+                'http://nar.oxfordjournals.org/content/39/suppl_1/D698.long',
+                'http://nar.oxfordjournals.org/content/41/D1/D816.long',
+                'http://nar.oxfordjournals.org/content/43/D1/D470.long'
+            ]
+        },
+        'pubmeds': [25428363, 23203989, 21071413, 18000002, 16381927, 12620108],
+        'type': 'high throughput',
+        'subtype': 'interaction',
+        'omnipath': False,
+        'emails': [('biogridadmin@gmail.com', 'BioGRID Team'), ('md.tyers@umontreal.ca', 'Michael Tyers')]
+    },
+    'STRING': {
+        'year': 2015,
+        'releases': [2015, 2013, 2011, 2009, 2007, 2005, 2003, 2000],
+        'urls': {
+            'webpages': [
+                'http://string-db.org/'
+            ],
+            'articles': [
+                'http://nar.oxfordjournals.org/content/43/D1/D447.long',
+                'http://nar.oxfordjournals.org/content/41/D1/D808.long',
+                'http://nar.oxfordjournals.org/content/39/suppl_1/D561.long',
+                'http://nar.oxfordjournals.org/content/37/suppl_1/D412.long',
+                'http://nar.oxfordjournals.org/content/35/suppl_1/D358.long',
+                'http://nar.oxfordjournals.org/content/33/suppl_1/D433.long',
+                'http://nar.oxfordjournals.org/content/31/1/258.long',
+                'http://nar.oxfordjournals.org/content/28/18/3442.long'
+            ]
+        },
+        'pubmeds': [25352553, 23203871, 21045058, 18940858, 17098935,
+            15608232, 12519996, 10982861],
+        'authors': ['Bork Lab'],
+        'label': 'STRING',
+        'type': 'high-throughput and prediction',
+        'subtype': 'interaction',
+        'omnipath': False,
+        'emails': [('bork@embl.de', 'Peer Bork'), ('lars.juhl.jensen@cpr.ku.dk', 'Lars Juhl Jensen'), 
+            ('mering@imls.uzh.ch', 'Christian von Mering')]
+    },
+    'MINT': {
+        'year': 2012,
+        'releases': [2007, 2008, 2009, 2010, 2011, 2012],
+        'label': 'MINT',
+        'urls': {
+            'webpages': [
+                'http://mint.bio.uniroma2.it/mint/Welcome.do'
+            ],
+            'articles': [
+                'http://www.ncbi.nlm.nih.gov/pmc/articles/PMC1751541/'
+            ]
+        },
+        'type': 'literature curated and high-throughput',
+        'subtype': 'interaction',
+        'omnipath': False,
+        'emails': [('livia.perfetto@live.it', 'Livia Perfetto')]
     },
     'IntAct': {
         'year': 2015,
-        'releases': [2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015],
+        'releases': [2003, 2006, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015],
         'size': {
             'nodes': None,
             'edges': None
@@ -1435,6 +1731,7 @@ descriptions = {
         'data_import': ['InnateDB', 'MINT'],
         'urls': {
             'articles': [
+                'http://nar.oxfordjournals.org/content/42/D1/D358.long',
                 'http://nar.oxfordjournals.org/content/40/D1/D841.long',
                 'http://nar.oxfordjournals.org/content/38/suppl_1/D525.long',
                 'http://nar.oxfordjournals.org/content/35/suppl_1/D561.long',
@@ -1456,7 +1753,11 @@ descriptions = {
             u'''
             We can not draw a sharp distinction between low and high throughput methods, and I can agree, that this is not the only and best measure of quality considering experimental data. I see that IntAct came up with a good solution to estimate the confidence of interactions. The mi-score system gives a comprehensive way to synthetize information from multiple experiments, and weight interactions according to experimental methods, interaction type, and number of evidences.
             '''
-        ]
+        ],
+        'type': 'literature curated and high-throughput',
+        'subtype': 'interaction',
+        'omnipath': False,
+        'emails': [('orchard@ebi.ac.uk', 'Sandra Orchard'), ('hhe@ebi.ac.uk', 'Henning Hermjakob')]
     },
     'MatrixDB': {
         'year': 2015,
@@ -1490,42 +1791,92 @@ descriptions = {
             u'''
             Very nice! Note: The interactions imported from IMEX databases or any other database, are collected separately, in the PSICQUIC-extended dataset. The MatrixDB-core dataset is curated manually by the MatrixDB team.
             '''
-        ]
+        ],
+        'type': 'literature curated',
+        'subtype': 'interaction',
+        'omnipath': True,
+        'emails': [('matrixdb@ibcp.fr', 'MatrixDB Team'), ('sylvie.ricard-blum@ibcp.fr', 'Sylvie Ricard-Blum')]
     }
 }
 
 
 def gen_html():
     head = u'''<!DOCTYPE html>
-    <html>
+    <html lang="en">
         <head>
-            <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-            <meta http-equiv="Content-Language" content="en">
             <meta name="dc.language" content="en">
             <meta name="viewport" content="width=device-width, 
             initial-scale=1.0">
             <style type="text/css">
+                @font-face{
+                    font-family:'HelveticaNeueLT Pro';
+                    src:url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.eot');
+                    src:url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.eot?#iefix') format('embedded-opentype'),
+                        url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.otf') format('opentype'),
+                        local('☺'),
+                        url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.woff') format('woff'),
+                        url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.ttf') format('truetype'),
+                        url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.svg#HelveticaNeueLTPro-Lt') format('svg');
+                    font-weight:normal;
+                    font-style:normal
+                }
                 .quotebox {
-                    border-color: #7AADBD;
+                    border-color: #6FA6A9;
                     border-style: solid;
                     border-width: 1px 1px 1px 3px;
                     margin: 0.75em 1em;
                     padding: 0px 0.75em;
-                    background-color: #F6F9FC;
+                    background-color: #E4ECEC;
                     color: #444444;
                 }
                 body {
                     margin: 6ex 23.61% 18ex 14.59%;
                     width: 61.8%;
+                    color: #646567;
+                    font-family: "HelveticaNeueLT Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+                }
+                a:link, a:active, a:visited {
+                    color: #646567;
+                    text-decoration: dotted;
+                }
+                h1 {
+                    color: #6FA6A9;
+                }
+                h2.omnipath, a.omnipath:link, a.omnipath:active, a.omnipath:visited {
+                    color: #6EA945;
+                    text-decoration: none;
+                }
+                h2.base, a.base:link, a.base:active, a.base:visited {
+                    color: #646567;
+                    text-decoration: none;
                 }
             </style>
+            <title>Signaling Pathway Resources</title>
         </head>
         <body>
         '''
-    foot = u'''\t</body>\n
+    foot = u'''
+        <br>
+        <br>
+        <p> <a href="http://www.ebi.ac.uk/~denes">Denes Turei, 2015.</a> 
+            Comments: denes@ebi.ac.uk </p>
+        <p>
+            <a href="https://html5.validator.nu/">
+                <img 
+                     src="http://venturas.org/sites/venturas.org/files/valid_html5.png"
+                     alt="Valid HTML5!" />
+            </a>
+            <a href="http://jigsaw.w3.org/css-validator/check/referer">
+                <img 
+                     src="http://venturas.org/sites/venturas.org/files/valid_css3.png"
+                     alt="Valid CSS3!" />
+            </a>
+        </p>
+        \t</body>\n
     </html>\n'''
-    doc = u''
+    doc = u'<img src="http://www.ebi.ac.uk/miriam/static/main/img/EBI_logo.png" alt="EMBL-EBI"/>'
     doc += '\t<h1>Metadata about signaling pathway resources</h1>\n'
     doc += '\t<p>This collection was created during the construction '\
         'of OmniPath, a network of signaling pathways intending to '\
@@ -1534,17 +1885,22 @@ def gen_html():
         'about the curation protocols from the original articles. '\
         'URLs pointing to the articles and the webpages, and some '\
         'additional metadata is provided where available. Note: '\
-        'not all resources listed here were finally included in '\
+        'the green resources are included by default in '\
         'OmniPath.</p>\n'
     doc += '\t<h2>Contents</h2>\n'
     doc += '\t<ul>\n'
     for k, v in sorted(descriptions.items(), key = lambda x: x[0].lower()):
-        doc += '\t\t\t<li><a href="#%s">%s</a></li>\n' % \
-            (k, v['full_name'] if 'full_name' in v else v['label'] if 'label' in v else k)
+        doc += '\t\t\t<li><a href="#%s" class="%s">%s</a></li>\n' % \
+            (k, 'omnipath' if 'omnipath' in v and v['omnipath'] else 'base', 
+            v['full_name'] if 'full_name' in v else v['label'] if 'label' in v else k)
     doc += '\t</ul>\n'
     for k, v in sorted(descriptions.items(), key = lambda x: x[0].lower()):
-        doc += '\t\t<h2 id="%s">%s</h2>\n' % \
-            (k, v['full_name'] if 'full_name' in v else v['label'] if 'label' in v else k)
+        doc += '\t\t<br>\n\t\t<h2 id="%s" class="%s">%s</h2>\n' % \
+            (k, 'omnipath' if 'omnipath' in v and v['omnipath'] else 'base',
+            v['full_name'] if 'full_name' in v else v['label'] if 'label' in v else k)
+        doc += '\t\t\t<p><b>Category || Subcategory &gt;&gt;&gt;</b> %s || %s</p>\n' % \
+            (v['type'].capitalize() if 'type' in v else 'Undefined', 
+                v['subtype'].capitalize() if 'subtype' in v else 'Undefined')
         if 'year' in v:
             doc += '\t\t\t<h3>Last updated: %u<\h3>\n'%v['year']
         if 'releases' in v:
@@ -1552,6 +1908,10 @@ def gen_html():
                 ', '.join(['%u'%y for y in v['releases']])
         if 'authors' in v and v['authors'] is not None:
             doc += '\t\t\t<p><b>Created by </b>%s</p>\n' % ', '.join(v['authors'])
+        if 'emails' in v and v['emails'] is not None:
+            doc += '\t\t\t<p><b>Contact: </b></p>\n\n\t\t\t\t<ul>\n%s\n' % \
+                ''.join(['\t\t\t\t<li><a href="mailto:%s">%s &lt;%s&gt;</li>\n' % (em[0], em[1], em[0]) for em in v['emails']])
+            doc += '\t\t\t\t</ul>\n'
         for uk, uv in v['urls'].iteritems():
             if len(uv) > 0:
                 doc += '\t\t\t<h3>%s</h3>\n' % (uk.capitalize())
