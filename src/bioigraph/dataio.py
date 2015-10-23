@@ -54,6 +54,10 @@ from bioservices import WSDLService
 from contextlib import closing
 from fabric.network import connect, HostConnectionCache
 from fabric.state import env
+from xlrd import open_workbook
+from xlrd.biffh import XLRDError
+
+# from this module
 
 import data_formats
 import progress
@@ -388,6 +392,29 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
     # returns raw data, dict of file names and raw data in case of 
     # multiple file archives, or file object in case of large files:
     return res
+
+#!/usr/bin/python2
+
+#
+# thanks for http://stackoverflow.com/a/3239248/854988
+#
+
+def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
+    try:
+        book = open_workbook(xls_file, on_demand = True)
+        try:
+            sheet = book.sheet_by_name(sheet)
+        except XLRDError:
+            sheet = book.sheet_by_index(0)
+            table = [[str(c.value) for c in sheet.row(i)] for i in xrange(sheet.nrows)]
+            if csv_file:
+                with open(csv_file, 'w') as csv:
+                    csv.write('\n'.join(['\t'.join(r) for r in table]))
+            if return_table:
+                return table
+    except IOError:
+        sys.stdout.write('No such file: %s\n' % xls_file)
+    sys.stdout.flush()
 
 def read_table(cols, fileObject = None, data = None, sep = '\t', sep2 = None, rem = [], hdr = None):
     '''
@@ -2750,20 +2777,42 @@ def get_htri():
     return [map(x.split(';').__getitem__, (1, 3, 6)) \
         for x in data.split('\n') if len(x) > 0][1:]
 
+def get_oreganno_old(organism = 'Homo sapiens'):
+    nsep = re.compile(r'([-A-Za-z0-9]{3,})[\s/\(]*.*')
+    nrem = re.compile(r'[-/]')
+    result = []
+    url = data_formats.urls['oreganno_old']['url']
+    data = curl(url, silent = False)
+    data = [[xx.strip() for xx in x.split('\t')] for x in data.split('\n') if len(x) > 0][1:]
+    for l in data:
+        if l[0] == organism and \
+            l[10] == 'TRANSCRIPTION FACTOR BINDING SITE' and \
+            l[3] == 'POSITIVE OUTCOME' and \
+            not l[11].startswith('UNKNOWN') and not l[14].startswith('UNKNOWN'):
+            result.append([
+                l[14] if len(l[14]) < 3 else nrem.sub('', nsep.findall(l[14])[0]),
+                l[11] if len(l[11]) < 3 else nrem.sub('', nsep.findall(l[11])[0]), l[18]])
+    return result
+
 def get_oreganno(organism = 'Homo sapiens'):
     nsep = re.compile(r'([-A-Za-z0-9]{3,})[\s/\(]*.*')
     nrem = re.compile(r'[-/]')
     result = []
     url = data_formats.urls['oreganno']['url']
-    data = curl(url, silent = False)
-    data = [x.split('\t') for x in data.split('\n') if len(x) > 0][1:]
+    data = curl(url, silent = False, large = True)
+    null = data.readline()
+    del null
     for l in data:
-        if l[0] == organism and \
-            l[10].startswith('TRANSCRIPTION FACTOR BINDING SITE') and \
-            not l[11].startswith('UNKNOWN') and not l[14].startswith('UNKNOWN'):
-            result.append([
-                l[11] if len(l[11]) < 3 else nrem.sub('', nsep.findall(l[11])[0]),
-                l[14] if len(l[14]) < 3 else nrem.sub('', nsep.findall(l[14])[0]), l[18]])
+        if len(l) > 0:
+            l = [x.strip() for x in l.split('\t')]
+            if l[1] == organism and \
+                l[3] == 'TRANSCRIPTION FACTOR BINDING SITE' and \
+                l[2] == 'POSITIVE OUTCOME' and \
+                not l[4] == 'N/A' and not l[7] == 'N/A':
+                result.append([
+                    l[7] if len(l[7]) < 3 else nrem.sub('', nsep.findall(l[7])[0]),
+                    l[4] if len(l[4]) < 3 else nrem.sub('', nsep.findall(l[4])[0]), 
+                    l[11] if l[11] != 'N/A' else ''])
     return result
 
 def get_cpdb_ltp():

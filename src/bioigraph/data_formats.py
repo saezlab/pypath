@@ -334,10 +334,15 @@ urls = {
             '&iconss1.x=57&iconss1.y=48',
         'init_url': 'http://www.lbbc.ibb.unesp.br/htri/pagdown.jsp'
     },
-    'oreganno': {
-        'label': 'TF-target gene lists from ORegAnno',
+    'oreganno_old': {
+        'label': 'TF-target gene lists from ORegAnno, previous version',
         'url': 'http://www.oreganno.org/oregano/htdocs'\
             '/data/oreganno_UCSC_08Nov10.txt.gz'
+    },
+    'oreganno': {
+        'label': 'TF-target gene lists from ORegAnno',
+        'url': 'http://py-gi1.stanford.edu:8080/oregano/htdocs/'\
+            'downloads/ORegAnno_Combined_2015.09.16.tsv'
     },
     'cpdb': {
         'label': 'All human interactions from ConsensusPathDB',
@@ -1122,6 +1127,22 @@ transcription = {
                 sign = False,
                 ncbiTaxId = 9606,
                 inFile = 'get_oreganno', 
+                interactionType = 'TF',
+                references = 2, header = False,
+                extraEdgeAttrs = {},
+                extraNodeAttrsA = {},
+                extraNodeAttrsB = {})
+}
+
+transcription_deprecated = {
+    'oreganno_old': input_formats.ReadSettings(name = "ORegAnno", 
+                separator = None, nameColA = 0, 
+                nameColB = 1, nameTypeA = "genesymbol", nameTypeB = "genesymbol",
+                typeA = "protein", typeB = "protein", 
+                isDirected = True, 
+                sign = False,
+                ncbiTaxId = 9606,
+                inFile = 'get_oreganno_old', 
                 interactionType = 'TF',
                 references = 2, header = False,
                 extraEdgeAttrs = {},

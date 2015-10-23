@@ -1,10 +1,10 @@
 #!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+# -*coding: utf-8 -*-
 
 #
 #  This file is part of the `bioigraph` python module
 #
-#  Copyright (c) 2014-2015 - EMBL-EBI
+#  Copyright (c) 2014-2015 EMBL-EBI
 #
 #  File author(s): Dénes Türei (denes@ebi.ac.uk)
 #
@@ -22,242 +22,6 @@ import codecs
 import bs4
 
 __all__ = ['descriptions', 'gen_html', 'write_html']
-
-data = {
-    'CancerCellMap': {
-        'year': 2006,
-        'size': 0,
-        'authors': ['Bader Lab', 'Sander Group'],
-        'label': 'Cancer Cell Map',
-        'color': ''
-    },
-    'MatrixDB': {
-        'year': None,
-        'size': None,
-        'authors': None,
-        'label': None,
-        'color': None
-    },
-    'SPIKE': {
-        'year': 2012,
-        'releases': [2008, 2011],
-        'size': 0,
-        'authors': [''],
-        'label': 'SPIKE',
-        'color': '',
-        'data_import': ['KEGG', 'Reactome', 'HPRD', 'IntAct', 'NetPath', 'MINT', 'TFE', 'Rual2005', 'Ataxia']
-    },
-    'DIP': {
-        'year': 2014,
-        'size': 0,
-        'authors': ['UCLA', 'Eisenberg Group'],
-        'label': 'DIP',
-        'color': ''
-    },
-    'HPRD': {
-        'year': None,
-        'size': None,
-        'authors': None,
-        'label': None,
-        'color': None
-    },
-    'PDZBase': {
-        'year': None,
-        'size': None,
-        'authors': None,
-        'label': None,
-        'color': None
-    },
-    'dbPTM': {
-        'year': None,
-        'size': None,
-        'authors': None,
-        'label': None,
-        'color': None
-    },
-    'InnateDB': {
-        'year': 2014,
-        'size': 0,
-        'authors': ['Brinkman Lab', 'Hancock Lab'],
-        'label': 'InnateDB',
-        'color': ''
-    },
-    'ACSN': {
-        'year': 2015,
-        'size': 0,
-        'authors': ['Curie'],
-        'label': 'ACSN',
-        'color': ''
-    },
-    'DOMINO': {
-        'year': 2006,
-        'releases': [2006],
-        'size': 0,
-        'authors': ['Cesareni Group'],
-        'label': 'DOMINO',
-        'color': ''
-    },
-    'Signor': {
-        'year': 2015,
-        'size': 0,
-        'authors': ['Cesareni Group'],
-        'label': 'Signor',
-        'color': '',
-        'data_import': ['SignaLink2', 'PhosphoSite']
-    },
-    'Macrophage': {
-        'year': 2010,
-        'releases': [2006, 2010],
-        'size': 0,
-        'authors': ['Raza', 'Oda'],
-        'label': 'Macrophage',
-        'color': ''
-    },
-    'NetPath': {
-        'year': 2010,
-        'size': 0,
-        'authors': ['Pandey Lab', 'IOB Bangalore'],
-        'label': 'NetPath',
-        'color': '',
-        'data_import': ['CancerCellMap']
-    },
-    'ELM': {
-        'year': 2014,
-        'releases': [2003, 2008, 2009, 2012, 2013, 2014],
-        'size': 0,
-        'authors': 'ELM Consortium',
-        'label': 'ELM',
-        'color': ''
-    },
-    'SignaLink2': {
-        'year': 2012,
-        'size': 0,
-        'authors': ['NetBiol Group'],
-        'label': 'SignaLink',
-        'color': ''
-    },
-    'NRF2ome': {
-        'year': 2012,
-        'size': 0,
-        'authors': ['NetBiol Group'],
-        'label': 'NRF2ome',
-        'color': ''
-    },
-    'DEPOD': {
-        'year': 2014,
-        'size': 0,
-        'authors': ['EMBL & EBI'],
-        'label': 'DEPOD',
-        'color': ''
-    },
-    'MPPI': {
-        'year': 2005,
-        'size': 0,
-        'authors': ['MIPS Munich'],
-        'label': 'MPPI',
-        'color': ''
-    },
-    'Guide2Pharmacology': {
-        'year': None,
-        'size': None,
-        'authors': None,
-        'label': None,
-        'color': None
-    },
-    'IntAct': {
-        'year': 2015,
-        'size': 0,
-        'authors': ['EBI'],
-        'label': None,
-        'color': None,
-        'data_import': ['InnateDB']
-    },
-    'AlzPathway': {
-        'year': 2012,
-        'size': 0,
-        'authors': ['Tokyo Bioinf'],
-        'label': 'AlzPathway',
-        'color': ''
-    },
-    'PhosphoSite': {
-        'year': 2015,
-        'size': 0,
-        'authors': ['CST'],
-        'label': 'PhosphoSite',
-        'color': ''
-    },
-    'NCI-PID': {
-        'year': 2014,
-        'size': 0,
-        'authors': ['NCI'],
-        'label': 'NCI-PID',
-        'color': ''
-    },
-    'DeathDomain': {
-        'year': 2012,
-        'releases': [2011, 2012],
-        'size': 0,
-        'authors': [''],
-        'label': 'DeathDomain',
-        'color': ''
-    },
-    'ARN': {
-        'year': 2014,
-        'releases': [2014],
-        'size': 0,
-        'authors': ['NetBiol Group'],
-        'label': 'ARN',
-        'color': ''
-    },
-    'BioCarta': {
-        'year': 2006,
-        'releases': [2006],
-        'size': 0,
-        'authors': ['Community'],
-        'label': 'BioCarta',
-        'color': ''
-    },
-    'CA1': {
-        'year': 2005,
-        'releases': [2005],
-        'size': 0,
-        'authors': ['Ma\'ayan Lab'],
-        'label': 'Ma\'ayan 2005',
-        'color': ''
-    },
-    'Cui2007': {
-        'year': 2007,
-        'size': 0,
-        'authors': ['Wang Group'],
-        'label': 'Cui 2007',
-        'color': '',
-        'data_import': ['Awan2007', 'CancerCellMap']
-    },
-    'Awan2007': {
-        'year': 2007,
-        'size': 0,
-        'authors': ['Wang Group'],
-        'label': 'Awan 2007',
-        'color': '',
-        'data_import': ['BioCarta', 'CA1']
-    },
-    'CST': {
-        'year': None,
-        'size': 0,
-        'authors': ['CST'],
-        'label': 'CST pathways',
-        'color': ''
-    },
-    'HSN': {
-        'year': 2014,
-        'size': 0,
-        'authors': ['Wang Group'],
-        'label': 'HumanSignalingNetwork',
-        'color': '',
-        'data_import': ['Cui2007', 'BioCarta', 'CST', 'NCI-PID']
-    }
-}
-
 
 descriptions = {
     'Lit13': {
@@ -332,6 +96,33 @@ descriptions = {
         'subtype': 'post-translational modifications',
         'omnipath': True
     },
+    'PDZBase': {
+        'year': 2004,
+        'releases': [2004],
+        'authors': ['Weinstein Group'],
+        'urls': {
+            'webpages': [
+                'http://abc.med.cornell.edu/pdzbase'
+            ],
+            'articles': [
+                'http://bioinformatics.oxfordjournals.org/content/21/6/827.long'
+            ]
+        },
+        'pubmeds': [15513994],
+        'taxons': ['human'],
+        'color': None,
+        'label': 'PDZBase',
+        'descriptions': [
+            u'''
+            PDZBase is a database that aims to contain all known PDZ-domain-mediated protein-protein interactions. Currently, PDZBase contains approximately 300 such interactions, which have been manually extracted from &gt;200 articles.
+            PDZBase currently contains ∼300 interactions, all of which have been manually extracted from the literature, and have been independently verified by two curators. The extracted information comes from in vivo (co-immunoprecipitation) or in vitro experiments (GST-fusion or related pull-down experiments). Interactions identified solely from high throughput methods (e.g. yeast two-hybrid or mass spectrometry) were not included in PDZBase. Other prerequisites for inclusion in the database are: that knowledge of the binding sites on both interacting proteins must be available (for instance through a truncation or mutagenesis experiment); that interactions must be mediated directly by the PDZ-domain, and not by any other possible domain within the protein.
+            '''
+        ],
+        'emails': [('haw2002@med.cornell.edu', 'Harel Weinstein'), ('pdzbase@med.cornell.edu' , 'PDZBase Team')],
+        'type': 'literature curated',
+        'subtype': 'pathway',
+        'omnipath': True
+    },
     'Guide2Pharmacology': {
         'year': 2015,
         'releases': [2007, 2008, 2009, 2011, 2015],
@@ -359,6 +150,93 @@ descriptions = {
         'emails': [('enquiries@guidetopharmacology.org', 'Guide to Pharmacology Team'), ('tony.harmar@ed.ac.uk', 'Tony Harmar')],
         'type': 'literature curated',
         'subtype': 'pathway',
+        'omnipath': True
+    },
+    'phosphoELM': {
+        'year': 2010,
+        'releases': [2004, 2007, 2010],
+        'urls': {
+            'webpages': [
+                'http://phospho.elm.eu.org/'
+            ],
+            'articles': [
+                'http://www.biomedcentral.com/1471-2105/5/79',
+                'http://nar.oxfordjournals.org/content/36/suppl_1/D240.full',
+                'http://nar.oxfordjournals.org/content/39/suppl_1/D261'
+            ]
+        },
+        'pubmeds': [15212693, 17962309, 21062810],
+        'descriptions': [
+            u'''
+            Phospho.ELM http://phospho.elm.eu.org is a new resource containing experimentally verified phosphorylation sites manually curated from the literature and is developed as part of the ELM (Eukaryotic Linear Motif) resource. Phospho.ELM constitutes the largest searchable collection of phosphorylation sites available to the research community. The Phospho.ELM entries store information about substrate proteins with the exact positions of residues known to be phosphorylated by cellular kinases. Additional annotation includes literature references, subcellular compartment, tissue distribution, and information about the signaling pathways involved as well as links to the molecular interaction database MINT. Phospho.ELM version 2.0 contains 1703 phosphorylation site instances for 556 phosphorylated proteins. (Diella 2004)
+            ''',
+            u'''
+            Phospho.ELM is a manually curated database of eukaryotic phosphorylation sites. The resource includes data collected from published literature as well as high-throughput data sets. The current release of the Phospho.ELM data set (version 7.0, July 2007) contains 4078 phospho-protein sequences covering 12 025 phospho-serine, 2362 phospho-threonine and 2083 phospho-tyrosine sites with a total of 16 470 sites. 
+            For each phospho-site we report if the phosphorylation evidence has been identified by small-scale analysis (low throughput; LTP) that typically focus on one or a few proteins at a time or by large-scale experiments (high throughput; HTP), which mainly apply MS techniques. It is noteworthy that in our data set there is a small overlap between instances identified by LTP and HTP experiments. (Diella 2007)
+            ''',
+            u'''
+            The current release of the Phospho.ELM data set (version 9.0) contains more than 42 500 non-redundant instances of phosphorylated residues in more than 11 000 different protein sequences (3370 tyrosine, 31 754 serine and 7449 threonine residues). For each phosphosite we report whether the phosphorylation evidence has been identified by small-scale analyses (low-throughput, LTP) and/or by large-scale experiments (high-throughput, HTP), which mainly apply MS techniques. The majority of the protein instances from Phospho. ELM are vertebrate (mostly Homo sapiens (62%) and Mus musculus (16%)) though 22% are from other species, mainly Drosophila melanogaster (13%) and Caenorhabditis elegans (7%). In total, more than 300 different kinases have been annotated and a document providing additional information about all kinases annotated in Phospho.ELM can be found at http://phospho.elm.eu.org/kinases.html. (Dinkel 2010)
+            '''
+        ],
+        'emails': [('toby.gibson@embl.de', 'Toby Gibson')],
+        'type': 'Literature curated',
+        'subtype': 'PTM',
+        'omnipath': True
+    },
+    'DOMINO': {
+        'year': 2006,
+        'releases': [2006],
+        'authors': ['Cesareni Group'],
+        'urls': {
+            'webpages': [
+                'http://mint.bio.uniroma2.it/domino/search/searchWelcome.do'
+            ],
+            'articles': [
+                'http://nar.oxfordjournals.org/content/35/suppl_1/D557.long'
+            ]
+        },
+        'pubmeds': [17135199],
+        'taxons': ['human', 'Metazoa', 'yeast'],
+        'descriptions': [
+            u'''
+            DOMINO aims at annotating all the available information about domain-peptide and domain–domain interactions. The core of DOMINO, of July 24, 2006 consists of more than 3900 interactions extracted from peer-reviewed articles and annotated by expert biologists. A total of 717 manuscripts have been processed, thus covering a large fraction of the published information about domain–peptide interactions. The curation effort has focused on the following domains: SH3, SH2, 14-3-3, PDZ, PTB, WW, EVH, VHS, FHA, EH, FF, BRCT, Bromo, Chromo and GYF. However, interactions mediated by as many as 150 different domain families are stored in DOMINO.
+            The curation process follows the PSI-MI 2.5 standard but with special emphasis on the mapping of the interaction to specific protein domains of both participating proteins. This is achieved by paying special attention to the shortest protein fragment that was experimentally verified as sufficient for the interaction. Whenever the authors report only the name of the domain mediating the interaction (i.e. SH3, SH2...), without stating the coordinates of the experimental binding range, the curator may choose to enter the coordinates of the Pfam domain match in the protein sequence. Finally whenever the information is available, any mutation or post-translational modification affecting the interaction affinity is noted in the database.
+            '''
+        ],
+        'emails': [('giovanni.cesareni@uniroma2.it', 'Gianni Cesareni')],
+        'type': 'Literature curated',
+        'subtype': 'PTM',
+        'omnipath': True
+    },
+    'dbPTM': {
+        'year': 2012,
+        'releases': [2005, 2009, 2012],
+        'authors': ['ISBLab'],
+        'urls': {
+            'webpages': [
+                'http://dbptm.mbc.nctu.edu.tw/'
+            ],
+            'articles': [
+                'http://nar.oxfordjournals.org/content/41/D1/D295.long',
+                'http://www.biomedcentral.com/1756-0500/2/111',
+                'http://nar.oxfordjournals.org/content/34/suppl_1/D622.long'
+            ]
+        },
+        'pubmeds': [16381945, 19549291, 23193290],
+        'taxons': ['human'],
+        'descriptions': [
+            u'''
+            Due to the inaccessibility of database contents in several online PTM resources, a total 11 biological databases related to PTMs are integrated in dbPTM, including UniProtKB/SwissProt, version 9.0 of Phospho.ELM, PhosphoSitePlus, PHOSIDA, version 6.0 of O-GLYCBASE, dbOGAP, dbSNO, version 1.0 of UbiProt, PupDB, version 1.1 of SysPTM and release 9.0 of HPRD.
+            With the high throughput of MS-based methods in post-translational proteomics, this update also includes manually curated MS/MS-identified peptides associated with PTMs from research articles through a literature survey. First, a table list of PTM-related keywords is constructed by referring to the UniProtKB/SwissProt PTM list (http://www.uniprot.org/docs/ptmlist.txt) and the annotations of RESID (28). Then, all fields in the PubMed database are searched based on the keywords of the constructed table list. This is then followed by downloading the full text of the research articles. For the various experiments of proteomic identification, a text-mining system is developed to survey full-text literature that potentially describes the site-specific identification of modified sites. Approximately 800 original and review articles associated with MS/MS proteomics and protein modifications are retrieved from PubMed (July 2012). Next, the full-length articles are manually reviewed for precisely extracting the MS/MS peptides along with the modified sites. Furthermore, in order to determine the locations of PTMs on a full-length protein sequence, the experimentally verified MS/MS peptides are then mapped to UniProtKB protein entries based on its database identifier (ID) and sequence identity. In the process of data mapping, MS/MS peptides that cannot align exactly to a protein sequence are discarded. Finally, each mapped PTM site is attributed with a corresponding literature (PubMed ID).
+            ''',
+            u'''
+            Webpage was inaccessile on the 23rd of October 2015.
+            '''
+        ],
+        'emails': [('francis@saturn.yzu.edu.tw', 'Hsien-Da Huang'), 
+            ('bryan@mail.nctu.edu.tw', 'Hsien-Da Huang')],
+        'type': 'Literature curated',
+        'subtype': 'PTM',
         'omnipath': True
     },
     'Signor': {
@@ -434,7 +312,7 @@ descriptions = {
         'descriptions': [
             u'''
             In each of the three organisms, we first listed signaling proteins and interactions from reviews (and from WormBook in C.elegans) and then added further signaling interactions of the listed proteins. To identify additional interactions in C.elegans, we examined all interactions (except for transcription regulation) of the signaling proteins listed in WormBase and added only those to SignaLink that we could manually identify in the literature as an experimentally verified signaling interaction. For D.melanogaster, we added to SignaLink those genetic interactions from FlyBase that were also reported in at least one yeast-2-hybrid experiment. For humans, we manually checked the reliability and directions for the PPIs found with the search engines iHop and Chilibot. 
-            SignaLink assigns proteins to signaling pathways using the full texts of pathway reviews (written by pathway experts). While most signaling resources consider 5–15 reviews per pathway, SignaLink uses a total of 170 review papers, i.e. more than 20 per pathway on average. Interactions were curated from a total of 941 articles (PubMed IDs are available at the website). We added a small number of proteins based on InParanoid ortholog clusters. For curation, we used a self-developed graphical tool and Perl/Python scripts. The current version of SignaLink was completed in May 2008 based on WormBase (version 191), FlyBase (2008.6), Ensembl (49), UniProt (87) and the publications listed on the website. 
+            SignaLink assigns proteins to signaling pathways using the full texts of pathway reviews (written by pathway experts). While most signaling resources consider 5–15 reviews per pathway, SignaLink uses a total of 170 review papers, i.e. more than 20 per pathway on average. Interactions were curated from a total of 941 articles (PubMed IDs are available at the website). We added a small number of proteins based on InParanoid ortholog clusters. For curation, we used a self-developed graphical tool and Perl/Python scripts. The current version of SignaLink was completed in May 2008 based on WormBase (version 191), FlyBase (2008.6), Ensembl, UniProt and the publications listed on the website. 
             The curation protocol of SignaLink (Fig. 1A) contains several steps aimed specifically at reducing data and curation errors. We used reviews as a starting point, manually looked up interactions three times, and manually searched for interactions of known signaling proteins with no signaling interactions so far in the database. 
             '''
         ],
@@ -578,7 +456,7 @@ descriptions = {
             DOMINO is an open-access database comprising more than 3900 annotated experiments describing interactions mediated by protein-interaction domains. The curation effort aims at covering the interactions mediated by the following domains (SH3, SH2, 14-3-3, PDZ, PTB, WW, EVH, VHS, FHA, EH, FF, BRCT, Bromo, Chromo, GYF). However, interactions mediated by as many as 150 different domain families are stored in DOMINO.
             ''',
             u'''
-            The curation process follows the PSI-MI 2.5 standard but with special emphasis on the mapping of the interaction to specific protein domains of both participating proteins. This is achieved by paying special attention to the shortest protein fragment that was experimentally verified as sufficient for the interaction. Whenever the authors report only the name of the domain mediating the interaction (i.e. SH3, SH2 ...), without stating the coordinates of the experimental binding range, the curator may choose to enter the coordinates of the Pfam domain match in the protein sequence. Finally whenever the information is available, any mutation or post- translational modification affecting the interaction affinity is noted in the database.
+            The curation process follows the PSI-MI 2.5 standard but with special emphasis on the mapping of the interaction to specific protein domains of both participating proteins. This is achieved by paying special attention to the shortest protein fragment that was experimentally verified as sufficient for the interaction. Whenever the authors report only the name of the domain mediating the interaction (i.e. SH3, SH2 ...), without stating the coordinates of the experimental binding range, the curator may choose to enter the coordinates of the Pfam domain match in the protein sequence. Finally whenever the information is available, any mutation or posttranslational modification affecting the interaction affinity is noted in the database.
             '''
         ],
         'taxons': [
@@ -1393,7 +1271,7 @@ descriptions = {
         ],
         'descriptions': [
             u'''
-            DEPOD - the human DEPhOsphorylation Database (version 1.0) is a manually curated database collecting human active phosphatases, their experimentally verified protein and non-protein substrates and dephosphorylation site information, and pathways in which they are involved. It also provides links to popular kinase databases and protein-protein interaction databases for these phosphatases and substrates. DEPOD aims to be a valuable resource for studying human phosphatases and their substrate specificities and molecular mechanisms; phosphatase-targeted drug discovery and development; connecting phosphatases with kinases through their common substrates; completing the human phosphorylation/dephosphorylation network.
+            DEPOD the human DEPhOsphorylation Database (version 1.0) is a manually curated database collecting human active phosphatases, their experimentally verified protein and non-protein substrates and dephosphorylation site information, and pathways in which they are involved. It also provides links to popular kinase databases and protein-protein interaction databases for these phosphatases and substrates. DEPOD aims to be a valuable resource for studying human phosphatases and their substrate specificities and molecular mechanisms; phosphatase-targeted drug discovery and development; connecting phosphatases with kinases through their common substrates; completing the human phosphorylation/dephosphorylation network.
             '''
         ],
         'notes': [
@@ -1489,7 +1367,7 @@ descriptions = {
         ],
         'descriptions': [
             u'''
-            PSP integrates both low- and high-throughput (LTP and HTP) data sources into a single reliable and comprehensive resource. Nearly 10,000 journal articles , including both LTP and HTP reports, have been manually curated by expert scientists from over 480 different journals since 2001.
+            PSP integrates both lowand high-throughput (LTP and HTP) data sources into a single reliable and comprehensive resource. Nearly 10,000 journal articles , including both LTP and HTP reports, have been manually curated by expert scientists from over 480 different journals since 2001.
             Information from nearly 13 000 papers and 600 different journals characterizing modification sites with LTP methods has been curated into PSP.
             Information is gathered from published literature and other sources. Published literature is searched semi-automatically with multiple intelligent search algorithms to identify reports that potentially identify phosphorylation sites in human, mouse or other species. Each identified report is then scanned by our highly trained curatorial staff (all with PhDs and extensive research experience in cell biology or related disciplines) to select only those papers that either identify new physiological phosphorylation sites or those that illuminate the biological function of the phosphorylation event. Records that are selected for inclusion into PhosphoSite are placed in the curatorial queue for processing. Note: while we gather records that describe both in vitro and in vivo phosphorylation events, we only finally submit records about in vitro sites when we have additional hard evidence that the site is also phosphorylated in vivo.
             '''
@@ -1515,7 +1393,7 @@ descriptions = {
         'pubmeds': [18289391, 21097778],
         'descriptions': [
             u'''
-            SPIKE’s data on relationships between entities come from three sources: (i) Highly curated data submitted directly to SPIKE database by SPIKE curators and experts in various biomedical domains. (ii) Data imported from external signaling pathway databaes. At present, SPIKE database imports such data from Reactome, KEGG, NetPath and The Transcription Factor Encyclopedia (http://www.cisreg.ca/cgi-bin/tfe/home.pl). (iii) Data on protein–protein interactions (PPIs) imported either directly from wide-scale studies that recorded such interactions [to date,PPI data were imported from Stelzl et al., Rual et al. and Lim et al.] or from external PPI databases [IntAct and MINT (19)]. Relationship data coming from these different sources vary greatly in their quality and this is reflected by a quality level attribute, which is attached to each relationship in SPIKE database (Supplementary Data). Each relationship in SPIKE is linked to at least one PubMed reference that supports it.
+            SPIKE’s data on relationships between entities come from three sources: (i) Highly curated data submitted directly to SPIKE database by SPIKE curators and experts in various biomedical domains. (ii) Data imported from external signaling pathway databaes. At present, SPIKE database imports such data from Reactome, KEGG, NetPath and The Transcription Factor Encyclopedia (http://www.cisreg.ca/cgi-bin/tfe/home.pl). (iii) Data on protein–protein interactions (PPIs) imported either directly from wide-scale studies that recorded such interactions [to date,PPI data were imported from Stelzl et al., Rual et al. and Lim et al.] or from external PPI databases [IntAct and MINT]. Relationship data coming from these different sources vary greatly in their quality and this is reflected by a quality level attribute, which is attached to each relationship in SPIKE database (Supplementary Data). Each relationship in SPIKE is linked to at least one PubMed reference that supports it.
             As of August 2010, the SPIKE database contains 20 412 genes/proteins, 542 complexes (327 of high quality), 320 protein families (167 of high quality) and 39 small molecules. These entities are linked by 34 338 interactions (of which 2400 are of high quality) and 6074 regulations (4420 of high quality). These are associated with 5873 journal references in total.
             Each of the maps is constructed by a domain expert; typically the same expert will also be responsible later for keeping it up-to-date. The expert reads the relevant literature and identifies those interactions and regulations that are pertinent to the pathway.
             The regulations and interactions in the database are assigned quality values ranging from 1 to 4. In general, relationships (regulations and interactions) derived from highly focused biochemical studies are assigned high quality (2 or 1) while those derived from high-throughput experiments are assigned lower quality (4 or 3). The curator uses best judgment to assign a quality level. For example, relationships mentioned in two independent research reports, or cited repeatedly in reviews written by leading authorities will get quality 1. Relationships with cited concrete references and those imported en masse from external curated signaling DBs are initially assigned quality 2 but later can be changed to the highest quality after the curator has read and was convinced by the cited papers. Data imported from protein-protein interaction DBs and datasets are assigned quality 3 or 4, depending on the experimental technique.
@@ -1702,8 +1580,8 @@ descriptions = {
             ('mering@imls.uzh.ch', 'Christian von Mering')]
     },
     'MINT': {
-        'year': 2012,
-        'releases': [2007, 2008, 2009, 2010, 2011, 2012],
+        'year': 2015,
+        'releases': [2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015],
         'label': 'MINT',
         'urls': {
             'webpages': [
@@ -1744,7 +1622,7 @@ descriptions = {
         'pubmeds': [14681455, 17145710, 19850723, 22121220, 24234451],
         'descriptions': [
             u'''
-            The information within the IntAct database primarily consists of protein–protein interaction (PPI) data. The majority of the PPI data within the database is annotated to IMEx standards, as agreed by the IMEx consortium. All such records contain a full description of the experimental conditions in which the interaction was observed. This includes full details of the constructs used in each experiment, such as the presence and position of tags, the minimal binding region defined by deletion mutants and the effect of any point mutations, referenced to UniProtKB (2), the underlying protein sequence database. Protein interactions can be described down to the isoform level, or indeed to the post-translationally cleaved mature peptide level if such information is available in the publication, using the appropriate UniProtKB identifiers.
+            The information within the IntAct database primarily consists of protein–protein interaction (PPI) data. The majority of the PPI data within the database is annotated to IMEx standards, as agreed by the IMEx consortium. All such records contain a full description of the experimental conditions in which the interaction was observed. This includes full details of the constructs used in each experiment, such as the presence and position of tags, the minimal binding region defined by deletion mutants and the effect of any point mutations, referenced to UniProtKB, the underlying protein sequence database. Protein interactions can be described down to the isoform level, or indeed to the post-translationally cleaved mature peptide level if such information is available in the publication, using the appropriate UniProtKB identifiers.
             Each entry in IntAct is peer reviewed by a senior curator, and not released until accepted by that curator. Additional rule-based checks are run at the database level, and manually fixed when necessary. Finally, on release of the data, the original author of each publication is contacted and asked to comment on the representation of their data; again manual updates are made to the entry should the author highlight any errors.
             All binary interactions evidences in the IntAct database, including those generated by Spoke expansion of co-complex data, are clustered to produce a non-redundant set of protein pairs (R. C. Jimenez et al., manuscript in preparation). Each binary pair is then scored, using a simple addition of the cumulated value of a weighted score for the interaction detection method and the interaction type for each interaction evidence associated with that binary pair, as described using the PSI-MI CV terms. The scores are given in Table 1, all children of each given parent receives that score. Only experimental data is scored, inferred interactions, for example, would be excluded. Any low confidence data or data manually tagged by a curator for exclusion from the process, would not be scored. Isoforms and post-processed protein chains are regarded as distinct proteins for scoring purposes.
             '''
@@ -1781,10 +1659,10 @@ descriptions = {
             Protein data were imported from the UniProtKB/Swiss-Prot database (Bairoch et al., 2005) and identified by UniProtKB/SwissProt accession numbers. In order to list all the partners of a protein, interactions are associated by default to the accession number of the human protein. The actual source species used in experiments is indicated in the page reporting interaction data. Intracellular and membrane proteins were included to obtain a comprehensive network of the partners of extracellular molecules. Indeed, ECM proteins and GAGs bind to a number of membrane proteins or cell-associated proteoglycans and some of them interact with intracellular partners upon internalization (Dixelius et al., 2000). ECM proteins were identified by the UniProtKB/Swiss-Prot keyword ‘extracellular matrix’ and by the GO terms ‘extracellular matrix’, ‘proteinaceous extracellular matrix’ and their child terms. The proteins annotated with the GO terms ‘extracellular region’ and ‘extracellular space’, which are used for proteins found in biological fluids, were not included because circulating molecules do not directly contribute to the extracellular scaffold. Additionally, 96 proteins were manually (re-)annotated through literature curation. MatrixDB integrates 1378 interactions from the Human Protein Reference Database (HPRD, Prasad et al., 2009), 211 interactions from the Molecular INTeraction database (MINT, Chatr-Aryamontri et al., 2007), 46 interactions from the Database of Interacting Proteins (DIP, Salwinski et al., 2004), 232 interactions from IntAct (Kerrien et al., 2007a) and 839 from BioGRID (Breitkreutz et al., 2008) involving at least one extracellular biomolecule of mammalian origin. We added 283 interactions from manual literature curation and 65 interactions from protein and GAG array experiments.
             ''',
             u'''
-            Interaction data stored in MatrixDB are (i) experimentally determined in the laboratory using surface plasmon resonance (SPR) binding assays, including protein and glycosaminoglycan arrays probed by SPR imaging (11), (ii) extracted from the literature by manual curation and (iii) imported from other interaction databases belonging to the IMEx consortium [IntAct (12), DIP (13), MINT (14), BioGRID (15)], as well as from the Human Protein Reference Database (16). Imported data are restricted to interactions involving at least one extracellular protein.
+            Interaction data stored in MatrixDB are (i) experimentally determined in the laboratory using surface plasmon resonance (SPR) binding assays, including protein and glycosaminoglycan arrays probed by SPR imaging, (ii) extracted from the literature by manual curation and (iii) imported from other interaction databases belonging to the IMEx consortium [IntAct, DIP, MINT, BioGRID], as well as from the Human Protein Reference Database. Imported data are restricted to interactions involving at least one extracellular protein.
             ''',
             u'''
-            The content of MatrixDB has been updated with new interaction data manually curated by the MatrixDB team, and by importing interaction data from four interaction databases of the IMEx consortium via The Proteomics Standard Initiative Common QUery InterfaCe (PSICQUIC), a community standard for computational access to molecular-interaction data resources (25).  In the current release MatrixDB contains 904 interactions supported by 1244 experiments, which have been manually curated from 237 publications, compared to 490 interactions supported by 847 experiments in the previous version of the database (2). This is the MatrixDB ‘core’ data set.
+            The content of MatrixDB has been updated with new interaction data manually curated by the MatrixDB team, and by importing interaction data from four interaction databases of the IMEx consortium via The Proteomics Standard Initiative Common QUery InterfaCe (PSICQUIC), a community standard for computational access to molecular-interaction data resources.  In the current release MatrixDB contains 904 interactions supported by 1244 experiments, which have been manually curated from 237 publications, compared to 490 interactions supported by 847 experiments in the previous version of the database. This is the MatrixDB ‘core’ data set.
             '''
         ],
         'notes': [
@@ -1863,20 +1741,285 @@ def gen_html():
         <p> <a href="http://www.ebi.ac.uk/~denes">Denes Turei, 2015.</a> 
             Comments: denes@ebi.ac.uk </p>
         <p>
-            <a href="https://html5.validator.nu/">
+            <a href="https://validator.w3.org/check/referer">
                 <img 
-                     src="http://venturas.org/sites/venturas.org/files/valid_html5.png"
-                     alt="Valid HTML5!" />
+                    src="data:image/png;base64,
+                        iVBORw0KGgoAAAANSUhEUgAAAFAAAAAPCAIAAAD8q9/YAAAA6ElEQVRIieVXUQqEIBAdl74D57cD
+                        BB6mY3iojuFhgg7Qrx+eYD/eIjJF2rYVrI9B5KXjPGdUUlprqgkNEXnvnw7jJjBzg94y9OfddW4O
+                        1pz3cxHacSKi19Nh3I3qBXduXvc7N8PESMEUAqUlOjDBbw4WUwSfxXaGhZJl6GHpFgjmDHDy0/MP
+                        GftigjWwQ2s1heMgbH23fXfbZdMSrGnHCe2+k6sEQxgSm/JrpgSIMpvAkq/Yl/KlpWBUaWxBxrqN
+                        TCzmn7xnhUhTGjfraIaV1tp7X8k7zMzVP0t/j09JPx3GTWBmVdvf0hvVzH8tNHhSIAAAAABJRU5E
+                        rkJggg=="
+                     alt="Valid HTML5" />
             </a>
-            <a href="http://jigsaw.w3.org/css-validator/check/referer">
+            <a href="https://jigsaw.w3.org/css-validator/check/referer">
                 <img 
-                     src="http://venturas.org/sites/venturas.org/files/valid_css3.png"
-                     alt="Valid CSS3!" />
+                    src="data:image/png;base64,
+                        iVBORw0KGgoAAAANSUhEUgAAAFAAAAAPCAIAAAD8q9/YAAAA7ElEQVRIieWX0Q2EIAyGC2EBuoAD
+                        MIcrOIejOIcrOIcDuAAjmHvopWlaLycS9YHvwdQ/hPSnrUQXY4SWCACQc347jYdAxECRH5f67fap
+                        T/NWv89NrEMHAP7tNJ6mOcNBve9Tz+3N8T71pMjOJ7FmFqjH5BSQIkWl2AWlaMOEtA3ClTwCFZSy
+                        Dh17UIFdw8iDuOb52LDlVz3rv3acd5o3VXOrwFFfFHF2hv24+HHh3masUgp3KQCkeWOT55UidIXJ
+                        FT9JtDPM5i9X2Fbv7wAfKqW4GGPOuZF7GBGbu5aaM/xt6bfTeAhEdK39LX0ALc+PofdKE1EAAAAA
+                        SUVORK5CYII="
+                     alt="Valid CSS3" />
             </a>
         </p>
         \t</body>\n
     </html>\n'''
-    doc = u'<img src="http://www.ebi.ac.uk/miriam/static/main/img/EBI_logo.png" alt="EMBL-EBI"/>'
+    doc = u'''<img src="data:image/png;base64,
+        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" alt="EMBL-EBI"/>'''
     doc += '\t<h1>Metadata about signaling pathway resources</h1>\n'
     doc += '\t<p>This collection was created during the construction '\
         'of OmniPath, a network of signaling pathways intending to '\
