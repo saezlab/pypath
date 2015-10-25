@@ -64,6 +64,7 @@ import progress
 import common
 import intera
 import residues
+import mapping
 import seq as se
 
 CURSOR_UP_ONE = '\x1b[1A'
@@ -3522,3 +3523,38 @@ def load_macrophage():
     with open(fname, 'r') as f:
         data = f.read()
     data = data.replace('?', '').replace('->', ',')
+
+def kegg_pathways(mapper = None):
+    rehsa = re.compile(r'.*(hsa[0-9]+).*')
+    mapper = mapper if mapper is not None else mapping.Mapper()
+    hsa_list = []
+    interactions = []
+    htmllst = curl(data_formats.urls['kegg_pws']['list_url'], silent = True)
+    lstsoup = bs4.BeautifulSoup(htmllst)
+    for a in lstsoup.find_all('a', href = True):
+        m = rehsa.match(a['href'])
+        if m:
+            hsa_list.append(m.groups(0)[0])
+    prg = progress.Progress(len(hsa_list), 'Processing KEGG Pathways', 1, percent = False)
+    for hsa in hsa_list:
+        prg.step()
+        kgml = curl(data_formats.urls['kegg_pws']['kgml_url'] % hsa, silent = True)
+        kgmlsoup = bs4.BeautifulSoup(kgml)
+        entries = {}
+        for ent in kgmlsoup.find_all('entry'):
+            gr = ent.find('graphics')
+            if gr and 'name' in gr.attrs:
+                entries[ent.attrs['id']] = [n.strip() for n in gr.attrs['name']\
+                    .replace('...', '').split(',')]
+        uentries = dict([(eid, common.uniqList(common.flatList(
+            [mapper.map_name(gn, 'genesymbol', 'uniprot', strict = True) \
+                for gn in gns]))) for eid, gns in entries.iteritems()])
+        for rel in kgmlsoup.find_all('relation'):
+            st = rel.find('subtype')
+            if rel.attrs['entry1'] in uentries and rel.attrs['entry2'] in uentries and \
+                st and 'name' in st.attrs:
+                for u1 in uentries[rel.attrs['entry1']]:
+                    for u2 in uentries[rel.attrs['entry2']]:
+                        interactions.append((u1, u2, st.attrs['name']))
+    prg.terminate()
+    return common.uniqList(interactions)

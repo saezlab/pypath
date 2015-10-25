@@ -746,14 +746,14 @@ d = zip(*[(s,
         ) \
     for s, g in sep.iteritems()])
 sens.stacked_barplot(x = d[0], y = d[1:], 
-    names = ['positive', 'negative', 'unknown effect', 'unknown direction'],
+    names = ['Positive', 'Negative', 'Unknown effect', 'Unknown direction'],
     data = None, fname = 'dirs-signes-by-db-wo-op-o-st.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, 
     ylab = 'Interactions', 
     xlab = 'Pathway resources', order = vcount_ordr, desc = False)
 
 sens.stacked_barplot(x = d[0], y = d[1:], 
-    names = ['positive', 'negative', 'unknown effect', 'unknown direction'],
+    names = ['Positive', 'Negative', 'Unknown effect', 'Unknown direction'],
     data = None, fname = 'dirs-signes-by-db-wo-op-st.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, 
     ylab = 'Interactions', 

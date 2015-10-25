@@ -268,7 +268,7 @@ def boxplot(data, labels, xlab, ylab, fname, fontfamily = 'Helvetica Neue LT Std
 def stacked_barplot(x, y, data, fname, names, font_family = 'Helvetica Neue LT Std', 
     xlab = '', ylab = '', lab_angle = 90, lab_size = (18, 21), axis_lab_size = 36, 
     legend = True, 
-    colors = ['#007b7f', '#6ea945', '#fccc06', '#818284', '#da0025'], 
+    colors = ['#7AA0A1', '#C6909C', '#92C1D6', '#C5B26E', '#da0025'], 
     order = False, desc = True):
     if type(x) is list or type(x) is tuple:
         x = np.array(x)
@@ -309,6 +309,9 @@ def stacked_barplot(x, y, data, fname, names, font_family = 'Helvetica Neue LT S
     ax.set_ylabel(ylab)
     ax.set_xlabel(xlab)
     plt.setp(ax.xaxis.get_majorticklabels(), rotation = lab_angle)
+    if legend:
+        lhandles = [mpl.patches.Patch(color = colors[i], label = names[i]) for i in xrange(len(y))]
+    ax.legend(handles = lhandles)
     fig.tight_layout()
     fig.savefig(fname)
     plt.close(fig)

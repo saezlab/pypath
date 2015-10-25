@@ -254,6 +254,11 @@ urls = {
         'label': 'Human kinase-substrate relationships and phosphosites',
         'url': 'http://phosphonetworks.org/download/highResolutionNetwork.csv'
     },
+    'kegg_pws': {
+        'label': 'KEGG Pathways',
+        'list_url': 'http://www.genome.jp/kegg/pathway.html',
+        'kgml_url': 'http://www.kegg.jp/kegg-bin/download?entry=%s&format=kgml'
+    },
     'depod': {
         'label': 'Dephosphorylation substrates and sites',
         'urls': [

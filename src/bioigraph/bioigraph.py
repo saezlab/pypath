@@ -232,6 +232,7 @@ class Direction(object):
     
     def set_sign(self, direction, sign, source):
         if self.check_nodes(direction):
+            self.set_dir(direction, source)
             if sign == 'positive':
                 self.positive[direction] = True
                 if source not in self.positive_sources[direction]:
@@ -4813,7 +4814,34 @@ class BioGraph(object):
                 'htrefs': htrefs
             }
         self.htp = htdata
-
+    
+    def kegg_directions(self, graph = None):
+        g = graph if graph is not None else self.graph
+        keggd = dataio.kegg_pathways()
+        nodes = set(g.vs['name'])
+        keggdirs = 0
+        newdirs = 0
+        newsigns = 0
+        for k in keggd:
+            if k[2] == 'activation' or k[2] == 'inhibition':
+                if k[0] in nodes and k[1] in nodes:
+                    v1 = g.vs.find(name = k[0])
+                    v2 = g.vs.find(name = k[1])
+                    e = g.get_eid(v1, v2, error = False)
+                    if e != -1:
+                        keggdirs +=1
+                        if not g.es[e]['dirs'].get_dir((k[0], k[1])):
+                            newdirs += 1
+                        if k[2] == 'activation':
+                            if not g.es[e]['dirs'].get_sign((k[0], k[1]), 'positive'):
+                                newsigns += 1
+                            g.es[e]['dirs'].set_sign((k[0], k[1]), 'positive', 'KEGG')
+                        if k[2] == 'inhibition':
+                            if not g.es[e]['dirs'].get_sign((k[0], k[1]), 'negative'):
+                                newsigns += 1
+                            g.es[e]['dirs'].set_sign((k[0], k[1]), 'negative', 'KEGG')
+        sys.stdout.write('\t:: Directions and signs set for %u edges based on KEGG,'\
+            ' %u new directions, %u new signs.\n' % (keggdirs, newdirs, newsigns))
     
     def _disclaimer(self):
         sys.stdout.write(self.disclaimer)
