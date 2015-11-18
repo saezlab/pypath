@@ -43,6 +43,7 @@ import codecs
 import gzip
 import zipfile
 import tarfile
+import xlrd
 import bs4
 import xml.etree.ElementTree as ET
 import hashlib
@@ -324,7 +325,8 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
                     else:
                         results[m.name] = this_file.read()
                         this_file.close()
-            res.close()
+            if not large:
+                res.close()
         elif url.endswith('gz') or compr == 'gz':
             res = gzip.GzipFile(fileobj=result, mode='rb')
             if not large:
@@ -3558,3 +3560,82 @@ def kegg_pathways(mapper = None):
                         interactions.append((u1, u2, st.attrs['name']))
     prg.terminate()
     return common.uniqList(interactions)
+
+def signor_urls():
+    tsv_urls = []
+    url = data_formats.urls['signor']['list_url']
+    baseurl = data_formats.urls['signor']['base_url']
+    html = curl(url, silent = True)
+    soup = bs4.BeautifulSoup(html)
+    for td in soup.find_all('td', style = lambda x: x.startswith('border')):
+        pw = td.text.strip().split(':')[0]
+        tsv_url = baseurl % td.find('a').attrs['href']
+        tsv_urls.append((pw, tsv_url))
+    return tsv_urls
+
+def signor_interactions():
+    urls = signor_urls()
+    tbl = []
+    prg = progress.Progress(len(urls), 'Downloading Signor', 1, percent = False)
+    for pw, url in urls:
+        prg.step()
+        tsv = curl(url, silent = True)
+        tsv = [l.strip().split('\t') + [pw] for l in tsv.split('\n')[1:] if len(l) > 0]
+        tbl.extend(tsv)
+    prg.terminate()
+    return tbl
+
+def rolland_hi_ii_14():
+    fname = data_formats.urls['hiii14']['file']
+    with open(fname, 'r') as f:
+        null = f.readline()
+        data = [l.strip().split('\t') for l in f]
+    return data
+
+def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
+    '''
+    Generic function to read MS Excel XLS file, and convert one sheet
+    to CSV, or return as a list of lists
+    '''
+    try:
+        book = xlrd.open_workbook(xls_file, on_demand = True)
+        try:
+            sheet = book.sheet_by_name(sheet)
+        except XLRDError:
+            sheet = book.sheet_by_index(0)
+        table = [[str(c.value) for c in sheet.row(i)] for i in xrange(sheet.nrows)]
+        if csv_file:
+            with open(csv_file, 'w') as csv:
+                csv.write('\n'.join(['\t'.join(r) for r in table]))
+        if not return_table:
+            table = None
+        book.release_resources()
+        return table
+    except IOError:
+        sys.stdout.write('No such file: %s\n' % xls_file)
+    sys.stdout.flush()
+
+def get_kinases():
+    url = data_formats.urls['kinome']['url']
+    xlsf = curl(url, large = True, silent = False)
+    xlsname = xlsf.name
+    xlsf.close()
+    tbl = read_xls(xlsname)
+    genesymbols = [l[23] for l in tbl[1:] if len(l[23]) > 0]
+    return genesymbols
+
+def get_dgidb():
+    genesymbols = []
+    url = data_formats.urls['dgidb']['main_url']
+    html = curl(url, silent = False)
+    soup = bs4.BeautifulSoup(html)
+    cats = [o.attrs['value'] \
+        for o in soup.find('select', {'id': 'gene_categories'})\
+            .find_all('option')]
+    for cat in cats:
+        url = data_formats.urls['dgidb']['url'] % cat
+        html = curl(url)
+        soup = bs4.BeautifulSoup(html)
+        trs = soup.find('tbody').find_all('tr')
+        genesymbols.extend([tr.find('td').text.strip() for tr in trs])
+    return common.uniqList(genesymbols)

@@ -501,6 +501,7 @@ descriptions = {
                 'http://deathdomain.org/'
             ]
         },
+        'license': u'''Please cite the following paper when you use Death Domain database in your publications, which is very important to sustain our service: Kwon et al. 2012''',
         'emails': [('hyunho@ynu.ac.kr', 'Hyun Ho O')],
         'files': {
             'articles': [
@@ -942,8 +943,8 @@ descriptions = {
         'omnipath': False
     },
     'AlzPathway': {
-        'year': 2012,
-        'releases': [2012],
+        'year': 2015,
+        'releases': [2012, 2015],
         'size': 0,
         'authors': ['Tokyo Bioinf'],
         'label': 'AlzPathway',
@@ -951,7 +952,8 @@ descriptions = {
         'urls': {
             'articles': [
                 'http://www.biomedcentral.com/1752-0509/6/52',
-                'http://onlinelibrary.wiley.com/doi/10.1038/clpt.2013.37/epdf'
+                'http://onlinelibrary.wiley.com/doi/10.1038/clpt.2013.37/epdf',
+                r'http://link.springer.com/protocol/10.1007%2F978-1-4939-2627-5_25'
             ],
             'webpages': [
                 'http://alzpathway.org/AlzPathway.html'
@@ -959,6 +961,7 @@ descriptions = {
         },
         'pubmeds': [23511713, 22647208],
         'emails': [('ogishima@sysmedbio.org', 'Soichi Ogishima'), ('info@alzpathway.org', 'Soichi Ogishima')],
+        'license': u'''Licensed under a Creative Commons Attribution 3.0 Unported License. Cite Mizuno et al''',
         'descriptions': [
             u'''
             We collected 123 review articles related to AD accessible from PubMed. We then manually curated these review articles, and have built an AD pathway map by using CellDesigner. Molecules are distinguished by the following types: proteins, complexes, simple molecules, genes, RNAs, ions, degraded products, and phenotypes. Gene symbols are pursuant to the HGNC symbols. Reactions are also distinguished by the following categories: state transition, transcription, translation, heterodimer association, dissociation, transport, unknown transition, and omitted transition. All the reactions have evidences to the references in PubMed ID using the MIRIAM scheme. All the references used for constructing the AlzPathway are listed in the ‘References for AlzPathway’. Cellular types are distinguished by the followings: neuron, astrocyte, and microglial cells. Cellular compartments are also distinguished by the followings: brain blood barrier, presynaptic, postsynaptic, and their inner cellular localizations.
@@ -981,6 +984,7 @@ descriptions = {
             'edges': None
         },
         'authors': ['MIPS Munich'],
+        'license': u'''You are free to use the database as you please including full download of the dataset for your own analyses as long as you cite the source properly (Pagel et al. 2005).''',
         'label': 'MPPI',
         'color': '',
         'urls': {
@@ -1062,6 +1066,7 @@ descriptions = {
         },
         'authors': ['Pandey Lab', 'IOB Bangalore'],
         'emails': [('pandey@jhmi.edu', 'Akhilesh Pandey')],
+        'license': u'''The pathway data are freely available under an adaptive Creative Commons License which stipulates that the pathways may be used if adequate credit is given to the authors.''',
         'label': 'NetPath',
         'color': '',
         'data_import': [

@@ -53,6 +53,8 @@ def rgb256(rgb1):
 class Plot(object):
     
     def __init__(self, fname = None, font_family = 'Helvetica Neue LT Std', 
+        font_style = 'normal', font_weight = 'normal', font_variant = 'normal',
+        font_stretch = 'normal',
         palette = None, context = 'poster', lab_size = (9, 9), 
         axis_lab_size = 10.0, rc = {}):
         for k, v in locals().iteritems():
@@ -66,7 +68,14 @@ class Plot(object):
             self.rc['ytick.labelsize'] = self.lab_size[0]
         if 'ytick.labelsize' not in self.rc:
             self.rc['ytick.labelsize'] = self.lab_size[1]
+        self.rc['font.family'] = font_family
+        self.rc['font.style'] = font_style
+        self.rc['font.variant'] = font_variant
+        self.rc['font.weight'] = font_weight
+        self.rc['font.stretch'] = font_stretch
         self.palette = palette or self.embl_palette()
+        self.fp = mpl.font_manager.FontProperties(family = font_family, style = font_style,
+            variant = font_variant, weight = font_weight, stretch = font_stretch)
     
     def embl_palette(self, inFile = 'embl_colors'):
         cols = []
@@ -93,6 +102,8 @@ class Plot(object):
 class Barplot(Plot):
     
     def __init__(self, x, y, data = None, fname = None, font_family = 'Helvetica Neue LT Std', 
+        font_style = 'normal', font_weight = 'normal', font_variant = 'normal',
+        font_stretch = 'normal',
         xlab = '', ylab = '', axis_lab_size = 10.0, 
         lab_angle = 90, lab_size = (9, 9), color = '#007b7f', 
         order = False, desc = True, legend = None, fin = True, 
@@ -110,6 +121,8 @@ class Barplot(Plot):
         self.rc = self.rc or {'lines.linewidth': 1.0, 'patch.linewidth': 0.0, 
             'grid.linewidth': 1.0}
         super(Barplot, self).__init__(fname = fname, font_family = font_family, 
+            font_style = font_style, font_weight = font_weight, 
+            font_variant = font_variant, font_stretch = font_stretch,
             palette = palette, context = context, lab_size = self.lab_size, 
             axis_lab_size = self.axis_lab_size, rc = self.rc)
         self.color = self.color or self.palette[0][0]
@@ -192,7 +205,7 @@ class Barplot(Plot):
             if yt >= self.upper_y_min and yt <= self.upper_y_max])
     
     def seaborn_style(self, context = None, rc = None):
-        self.sns.set(font = self.font_family)
+        self.sns.set(font = self.font_family, rc = rc or self.rc)
         self.sns.set_context(context or self.context, rc = rc or self.rc)
     
     def labels(self):
@@ -233,10 +246,15 @@ def boxplot(data, labels, xlab, ylab, fname, fontfamily = 'Helvetica Neue LT Std
         tick.label.set_color(textcol)
     fig.savefig(fname)
 
-def stacked_barplot(x, y, data, fname, names, font_family = 'Helvetica Neue LT Std', 
+def stacked_barplot(x, y, data, fname, names, 
+    font_family = 'Helvetica Neue LT Std', font_style = 'normal',
+    font_weight = 'normal', font_variant = 'normal',
+    font_stretch = 'normal',
     xlab = '', ylab = '', lab_angle = 90, lab_size = 9, legend = True, 
     colors = ['#007b7f', '#6ea945', '#fccc06', '#818284', '#da0025'], 
     order = False, desc = True):
+    fp = mpl.font_manager.FontProperties(family = font_family, style = font_style,
+        variant = font_variant, weight = font_weight, stretch = font_stretch)
     if type(x) is list or type(x) is tuple:
         x = np.array(x)
     for i, yi in enumerate(y):
@@ -253,15 +271,23 @@ def stacked_barplot(x, y, data, fname, names, font_family = 'Helvetica Neue LT S
         ordr = x
     if desc:
         ordr = ordr[::-1]
+    rc = {}
+    rc['font.family'] = font_family
+    rc['font.style'] = font_style
+    rc['font.variant'] = font_variant
+    rc['font.weight'] = font_weight
+    rc['font.stretch'] = font_stretch
+    rc['lines.linewidth'] = 1.0
+    rc['patch.linewidth'] = 0.0
+    rc['grid.linewidth'] = 1.0
     fig, ax = plt.subplots()
     sns.set(font = font_family)
-    sns.set_context('talk', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
-        'grid.linewidth': 1.0})
+    sns.set_context('talk', rc = rc)
     for j in xrange(len(y), 0, -1):
         this_level = np.array([sum([y[jj][i] for jj in xrange(j)]) \
             for i in xrange(len(y[0]))])
         ax = sns.barplot(x, y = this_level, data = data, 
-            color = colors[j-1], order = ordr)
+            color = colors[j-1], order = ordr, fontproperties = fp)
     #ax = sns.barplot(x, y = y, data = data, color = color, x_order = ordr)
     #plt.bar(range(len(ordr)), [y[i] for i in ordr], align = 'center')
     #plt.xticks(list(ordr), [x[i] for i in ordr])

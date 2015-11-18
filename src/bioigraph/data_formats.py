@@ -459,6 +459,26 @@ urls = {
             'interactor=%s',
         'url': 'http://www.trpchannel.org/20141116.csv',
         'json': 'http://www.trpchannel.org/proteins/getjson'
+    },
+    'signor': {
+        'label': 'SIGNOR pathways',
+        'list_url': 'http://signor.uniroma2.it/download.jsp',
+        'base_url': 'http://signor.uniroma2.it/%s'
+    },
+    'hiii14': {
+        'label': 'Rolland et al 2014, Human Interactome II',
+        'file': os.path.join(ROOT, 'data', 'rolland2014_s2g.tab')
+    },
+    'kinome': {
+        'label': 'List of human kinases',
+        'url': 'http://kinase.com/static/colt/data/human/kinome/tables/Kincat_Hsap.08.02.xls'
+    },
+    'dgidb': {
+        'label': 'Druggable genes compiled from multiple resources',
+        'main_url': 'http://dgidb.genome.wustl.edu/search_categories',
+        'url': 'http://dgidb.genome.wustl.edu/druggable_gene_categories/%s?'\
+            'sources=BaderLabGenes,CarisMolecularIntelligence,FoundationOneGenes,GO,'\
+            'GuideToPharmacologyGenes,HopkinsGroom,MskImpact,RussLampel,dGene'
     }
 }
 
@@ -1019,9 +1039,21 @@ ugly = {
                 },
                 extraNodeAttrsA={},
                 extraNodeAttrsB={}),
-    'hi3': input_formats.ReadSettings(name="HI-III", 
-                separator = None, nameColA=1,
-                nameColB=3, nameTypeA="genesymbol", nameTypeB="genesymbol",
+    'hi2': input_formats.ReadSettings(name="HI-II", 
+                separator = None, nameColA = 2,
+                nameColB = 3, nameTypeA = "genesymbol", nameTypeB = "genesymbol",
+                typeA = "protein", typeB = "protein", 
+                isDirected = False, 
+                sign = False,
+                ncbiTaxId = 9606,
+                inFile = 'rolland_hi_ii_14', 
+                references = False, header = False,
+                extraEdgeAttrs = {'hi2_numof_screens': 4},
+                extraNodeAttrsA = {},
+                extraNodeAttrsB = {}),
+    'hi3': input_formats.ReadSettings(name = "HI-III", 
+                separator = None, nameColA = 1,
+                nameColB = 3, nameTypeA = "genesymbol", nameTypeB = "genesymbol",
                 typeA = "protein", typeB = "protein", 
                 isDirected = False, 
                 sign = False,
@@ -1031,9 +1063,9 @@ ugly = {
                 extraEdgeAttrs = {},
                 extraNodeAttrsA = {},
                 extraNodeAttrsB = {}),
-    'lit13': input_formats.ReadSettings(name="Lit-BM-13", 
-                separator = None, nameColA=1,
-                nameColB=3, nameTypeA="genesymbol", nameTypeB="genesymbol",
+    'lit13': input_formats.ReadSettings(name = "Lit-BM-13", 
+                separator = None, nameColA = 1,
+                nameColB = 3, nameTypeA = "genesymbol", nameTypeB = "genesymbol",
                 typeA = "protein", typeB = "protein", 
                 isDirected = False, 
                 sign = False,

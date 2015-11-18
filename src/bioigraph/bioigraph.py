@@ -343,7 +343,9 @@ class BioGraph(object):
     }
     
     def __init__(self, ncbi_tax_id = 9606, default_name_type = default_name_type,
-                 copy = None, mysql = (None, 'mapping'), name = 'unnamed', 
+                 copy = None, mysql = (None, 'mapping'), 
+                 chembl_mysql = (None, 'chembl'),
+                 name = 'unnamed', 
                  outdir = 'results', loglevel = 'INFO', loops = False):
         '''
         Currently only one organism molecular interaction networks
@@ -409,6 +411,7 @@ class BioGraph(object):
             self.failed_edges = []
             self.uniprot_mapped = []
             self.mysql_conf = mysql
+            self.set_chembl_mysql(chembl_mysql[1], chembl_mysql[0])
             # self.mysql = mysql.MysqlRunner(self.mysql_conf)
             self.unmapped = []
             self.name = name
@@ -465,10 +468,19 @@ class BioGraph(object):
         else:
             self.copy(copy)
     
+    def set_chembl_mysql(self, title, config_file = None):
+        '''
+        Sets the ChEMBL MySQL config according to
+        `title` section in `config_file` ini style config.
+            
+            title (str): section title in ini file
+            config_file (str, NoneType): config file name; 
+                if None, the `mysql_config/defaults.mysql`
+                will be used
+        '''
+        self.chembl_mysql = (config_file, title)
+    
     def copy(self,other):
-        '''
-        
-        '''
         self.__dict__ = other.__dict__
         self.ownlog.msg(1, "Reinitialized", 'INFO')
     
@@ -1247,13 +1259,13 @@ class BioGraph(object):
         # assigning source:
         self.add_list_eattr(edge, 'sources', source)
         # adding references:
-        if len(refs) > 0:
-            refs = [Reference(pmid) for pmid in refs]
-            self.add_list_eattr(edge, 'references', refs)
-            # updating references-by-source dict:
-            self.add_grouped_eattr(edge, 'refs_by_source', source, refs)
-            # updating refrences-by-type dict:
-            self.add_grouped_eattr(edge, 'refs_by_type', typ, refs)
+        # if len(refs) > 0:
+        refs = [Reference(pmid) for pmid in refs]
+        self.add_list_eattr(edge, 'references', refs)
+        # updating references-by-source dict:
+        self.add_grouped_eattr(edge, 'refs_by_source', source, refs)
+        # updating refrences-by-type dict:
+        self.add_grouped_eattr(edge, 'refs_by_type', typ, refs)
         # setting directions:
         if not g.es[edge]['dirs']:
             g.es[edge]['dirs'] = Direction(nameA,nameB)
@@ -1520,7 +1532,7 @@ class BioGraph(object):
             if self.edgeAttrs[attr] is list and type(e[attr]) in simpleTypes:
                 e[attr] = [e[attr]] if len(e[attr]) > 0 else []
     
-    def attach_network(self, edgeList=False, regulator=False):
+    def attach_network(self, edgeList = False, regulator = False):
         g = self.graph
         if not edgeList:
             if self.raw_data is not None:
@@ -1556,12 +1568,12 @@ class BioGraph(object):
         self.ownlog.msg(2,'New nodes have been created','INFO')
         self.update_vname()
         prg = Progress(
-            total=len(edgeList),name='Processing edges',interval=50)
+            total=len(edgeList), name='Processing edges', interval=50)
         for e in edgeList:
             aexists = self.node_exists(e["defaultNameA"])
             bexists = self.node_exists(e["defaultNameB"])
             if aexists and bexists:
-                edge = self.edge_exists(e["defaultNameA"],e["defaultNameB"])
+                edge = self.edge_exists(e["defaultNameA"], e["defaultNameB"])
                 if type(edge) is list:
                     edges.append(tuple(edge))
                 prg.step()
@@ -2748,10 +2760,11 @@ class BioGraph(object):
             f.write('\n\t</graph>\n</graphml>')
         prg.terminate()
     
-    def compounds_from_chembl(self,chembl_mysql,nodes=None,crit=None,andor="or",
-                              assay_types=['B','F'],relationship_types=['D','H'],
-                              multi_query=False,**kwargs):
-        self.chembl = chembl.Chembl(chembl_mysql,self.ncbi_tax_id,mapper=self.mapper)
+    def compounds_from_chembl(self, chembl_mysql = None, nodes=None, crit=None, andor="or",
+                              assay_types=['B','F'], relationship_types=['D','H'],
+                              multi_query=False, **kwargs):
+        chembl_mysql = chembl_mysql or self.chembl_mysql
+        self.chembl = chembl.Chembl(chembl_mysql, self.ncbi_tax_id,mapper=self.mapper)
         if nodes is None:
             if crit is None:
                 nodes = xrange(0,self.graph.vcount())
@@ -2763,7 +2776,7 @@ class BioGraph(object):
             if v.index in nodes and v['nameType'] == 'uniprot':
                 uniprots.append(v['name'])
         self.chembl.compounds_targets(uniprots,assay_types=assay_types,
-                            relationship_types=relationship_types)
+                            relationship_types=relationship_types, **kwargs)
         self.chembl.compounds_by_target()
         self.update_vname()
         self.graph.vs['compounds_chembl'] = [[] for _ in xrange(self.graph.vcount())]
@@ -4597,6 +4610,43 @@ class BioGraph(object):
             for uniprot in urec:
                 if uniprot in self.nodDct:
                     self.graph.vs[self.nodDct[uniprot]]['rec'] = True
+    
+    def set_kinases(self):
+        self.update_vname()
+        self.graph.vs['kin'] = [False for _ in self.graph.vs]
+        kinases = dataio.get_kinases()
+        for kin in kinases:
+            ukin = self.mapper.map_name(kin, 'genesymbol', 'uniprot')
+            for uniprot in ukin:
+                if uniprot in self.nodDct:
+                    self.graph.vs[self.nodDct[uniprot]]['kin'] = True
+    
+    def set_druggability(self):
+        self.update_vname()
+        self.graph.vs['dgb'] = [False for _ in self.graph.vs]
+        druggables = dataio.get_dgidb()
+        for dgb in druggables:
+            udgb = self.mapper.map_name(dgb, 'genesymbol', 'uniprot')
+            for uniprot in udgb:
+                if uniprot in self.nodDct:
+                    self.graph.vs[self.nodDct[uniprot]]['dgb'] = True
+    
+    def set_drugtargets(self, pchembl = 5.0):
+        '''
+        Creates a vertex attribute `dtg` with value *True* if
+        the protein has at least one compound binding with 
+        affinity higher than `pchembl`, otherwise *False*.
+        '''
+        self.update_vname()
+        self.graph.vs['dtg'] = [False for _ in self.graph.vs]
+        if 'compounds_data' not in self.graph.vs.attributes():
+            self.compounds_from_chembl(assay_types = ['B'], pchembl = True)
+        for v in self.graph.vs:
+            for d in v['compounds_data']:
+                pc = [float(p) for p in d['pchembl'] if len(p) > 0]
+                if len(pc) > 0:
+                    if max(pc) > pchembl:
+                        v['dtg'] = True
     
     def set_transcription_factors(self, classes = ['a', 'b', 'other']):
         self.update_vname()

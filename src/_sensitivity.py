@@ -41,7 +41,7 @@ def gdsc_chembls(infile = '/home/denes/Dokumentumok/gdsc/drugs_all_unif_manual_m
     result = {}
     with open(infile, 'r') as f:
         for l in f:
-            l = l.split('\t')
+            l = l.replace('"', '').split('\t')
             result[l[0]] = select_chembls(l)
     return result
 

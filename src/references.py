@@ -385,7 +385,6 @@ fig.tight_layout()
 plt.savefig('refs-year-db-y.pdf')
 plt.close()
 
-
 # ## # ## # ## # ## # ##
 # Rolland 2014 like visualization
 a = net.graph.get_adjacency()
@@ -430,10 +429,15 @@ fig.savefig('refs-heatmap.pdf')
 plt.close(fig)
 
 # Rolland 2014 like visualization
+hi2 = bioigraph.BioGraph(9606)
+hi2.init_network(lst = {'hi2': bioigraph.data_formats.ugly['hi2']})
 a = net.graph.get_adjacency()
+b = hi2.graph.get_adjacency()
 a = list(a)
+b = list(b)
 ordr = [j[0] for j in sorted([(i, sum(l)) for i, l in enumerate(a)], 
     key = lambda x: x[1], reverse = True)]
+
 refs_per_protein = [len(net.graph.vs[i]['references']) for i in ordr]
 an = np.array(a)
 # sorting by cols and rows

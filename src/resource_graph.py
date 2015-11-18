@@ -384,7 +384,7 @@ tikz = r'''\documentclass[a4paper,10pt]{article}
     \usepackage{rotating}
     \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
     \usepackage{color}
-    \setmainfont{HelveticaNeueLTStd-Lt}
+    \setmainfont{HelveticaNeueLTStd-Roman}
     \usepackage{tikz}
     \definecolor{zircon}{RGB}{228, 236, 236}
     \definecolor{teal}{RGB}{0, 123, 127}
@@ -483,6 +483,49 @@ for i, r in enumerate(ordr):
             ') -- ('.join( \
                 ['%s%u' % (r[0].lower(), j) for j in xrange(len(ydots))])
         )
+
+# legend
+tikz += r'''        \node[circle, anchor = south, minimum size = %f, 
+        opacity = %f, fill = %s] at (%f, %f) {};
+''' % (
+dotsize,
+dotlineopacity,
+dotcol,
+width - 1.5,
+0.5
+)
+tikz += r'''        \node[anchor = west, rotate = 90] at (%f, %f) {\color{teal} Release/update year};
+''' % (
+width - 1.5,
+1.2
+)
+
+tikz += r'''
+        \draw[-latex, draw = %s, line width = %fpt, opacity = %f] 
+        (%f, %f) -- (%f, %f);
+        \node[anchor = west, rotate = 90] at (%f, %f) {\color{teal} Data transfer};
+''' % (
+    dataimportcol,
+    linewidth,
+    dotlineopacity,
+    width - 0.9,
+    0.5,
+    width - 0.9,
+    1.0,
+    width - 0.9,
+    1.2
+)
+
+tikz += r'''        \node[others, anchor = west] at (%f, %f) {Other resource};
+''' % (
+width - 2.1,
+0.5
+)
+tikz += r'''        \node[omnipath, anchor = west] at (%f, %f) {Resource in OmniPath};
+''' % (
+width - 2.7,
+0.5
+)
 
 # new layer for crossing lines showing data transfers:
 tikz += r'''\end{pgfonlayer}
