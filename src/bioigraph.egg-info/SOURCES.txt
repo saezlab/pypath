@@ -49,7 +49,6 @@ src/bioigraph.egg-info/SOURCES.txt
 src/bioigraph.egg-info/dependency_links.txt
 src/bioigraph.egg-info/requires.txt
 src/bioigraph.egg-info/top_level.txt
-src/bioigraph/data/.~lock.signor_22052015.tab#
 src/bioigraph/data/LMPID_DATA_pubmed_ref.xml
 src/bioigraph/data/__init__.py
 src/bioigraph/data/alzpw-ppi.csv
@@ -82,6 +81,7 @@ src/bioigraph/data/nrf2ome.csv
 src/bioigraph/data/phosphopoint.csv
 src/bioigraph/data/phosphosite_human_hc.csv
 src/bioigraph/data/phosphosite_human_noref.csv
+src/bioigraph/data/rolland2014_s2g.tab
 src/bioigraph/data/sec_ac.txt
 src/bioigraph/data/signalink2-01-human-genesymbol.sif
 src/bioigraph/data/signalink2-01-human-uniprot.sif
@@ -100,5 +100,6 @@ src/bioigraph/data/uniprot-refseq-human-1.tab
 src/bioigraph/data/uniprot-refseq-human.tab
 src/bioigraph/data/uniprot3.tab
 src/bioigraph/data/vaquerizas2009-s3.txt
+src/bioigraph/mysql_config/.defaults.mysql.kate-swp
 src/bioigraph/mysql_config/defaults.mysql
 src/bioigraph/mysql_config/defaults.mysql~

@@ -25,6 +25,7 @@
 
 import re
 import sys
+from collections import Counter
 
 # from bioigraph:
 import common
@@ -642,9 +643,10 @@ class Complex(object):
         sources = sources if type(sources) is list else [sources]
         sources = set(sources)
         proteins = proteins if type(proteins) is list else list(proteins)
-        self.proteins = set(proteins)
         for key, val in locals().iteritems():
             setattr(self, key, val)
+        self.members = sorted(uniqList(self.proteins))
+        self.constitution = Counter(proteins)
     
     def __hash__(self):
         return hash(tuple(sorted(self.proteins)))
@@ -654,14 +656,6 @@ class Complex(object):
     
     def __eq__(self, other):
         return self.proteins == other.proteins
-    
-    def merge(self, other):
-        for p in self.proteins:
-            other.proteins.add(p)
-        other.synonyms.add(self.name)
-        other.synonyms.add(self.long_name)
-        other.synonyms = self.synonyms | other.synonyms
-        return other
 
 class Interface(object):
     

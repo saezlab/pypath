@@ -51,8 +51,13 @@ axis_lab_size = 36
 
 net = bioigraph.BioGraph(9606)
 
+#net.init_network(exclude = ['intact'])
+#net.third_source_directions()
+#net.remove_htp()
+#net.save_network('default_network_20151230.pickle')
+net.init_network('default_network_20151230.pickle')
 #net.init_network(pfile = 'cache/default_plus_acsn_wo-intact.pickle')
-net.init_network(pfile = 'cache/default_network_wo-intact_ltp-only.pickle')
+#net.init_network(pfile = 'cache/default_network_wo-intact_ltp-only.pickle')
 
 net.curation_tab(latex_hdr = False, fname = 'curation_stats_stripped.tex')
 
@@ -63,6 +68,7 @@ net.set_chembl_mysql('chembl_ebi')
 net.set_drugtargets()
 net.set_kinases()
 net.set_druggability()
+net.load_disgenet()
 net.load_corum()
 sens.in_complex(net)
 net.in_complex()
@@ -80,6 +86,26 @@ net.lists['kin'] = uniqList(flatList([net.mapper.map_name(kin, 'genesymbol', 'un
     for kin in dataio.get_kinases()]))
 net.lists['tfs'] = uniqList(flatList([net.mapper.map_name(tf, 'ensg', 'uniprot') \
     for tf in dataio.get_tfcensus()['ensg']]))
+net.lists['dis'] = uniqList(flatList([net.mapper.map_name(dis['genesymbol'], 'genesymbol', 'uniprot') \
+    for dis in dataio.get_disgenet()]))
+
+proteome = dataio.all_uniprots(swissprot = 'yes')
+
+contDisg = np.array([[len(proteome), net.graph.vcount()], [len(net.lists['dis']), len([1 for v in net.graph.vs if len(v['dis']) > 0])]])
+stats.fisher_exact(contDisg)
+
+contCanc = np.array([[len(proteome), net.graph.vcount()], [len(uniqList(net.lists['CancerGeneCensus'] + net.lists['Intogene'])), 
+    len(set(net.lists['CancerGeneCensus'] + net.lists['Intogene']) & set(net.graph.vs['name']))]])
+stats.fisher_exact(contCanc)
+
+contDgb = np.array([[len(proteome), net.graph.vcount()], [len(net.lists['dgb']), len([1 for v in net.graph.vs if v['dgb']])]])
+stats.fisher_exact(contDgb)
+
+contRec = np.array([[len(proteome), net.graph.vcount()], [len(net.lists['rec']), len([1 for v in net.graph.vs if v['rec']])]])
+stats.fisher_exact(contRec)
+
+contTf = np.array([[len(proteome), net.graph.vcount()], [len(net.lists['tfs']), len([1 for v in net.graph.vs if v['tf']])]])
+stats.fisher_exact(contTf)
 
 cdrivers_notcov = uniqList(flatList([net.mapper.map_name(n, 'uniprot', 'genesymbol') \
     for n in (set(net.lists['CancerGeneCensus']) | set(net.lists['Intogene'])) - \

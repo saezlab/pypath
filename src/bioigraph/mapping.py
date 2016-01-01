@@ -268,6 +268,7 @@ class Mapper(object):
     
     def __init__(self, ncbi_tax_id = 9606, mysql_conf = (None, 'mapping'), 
         log = None, cache = True, cachedir = 'cache'):
+        self.reup = re.compile(r'[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}')
         self.cache = cache
         self.cachedir = cachedir
         if self.cache and not os.path.exists(self.cachedir):
@@ -403,6 +404,7 @@ class Mapper(object):
             mappedNames = self.trembl_swissprot(mappedNames)
             if len(set(orig) - set(mappedNames)) > 0:
                 self.uniprot_mapped.append((orig, mappedNames))
+            mappedNames = [u for u in mappedNames if self.reup.match(u)]
         # print '\tmapped to %s' % str(mappedNames)
         return uniqList(mappedNames)
     

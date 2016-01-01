@@ -20,8 +20,12 @@ from bioigraph.data_formats import *
 from bioigraph import server
 
 net = bioigraph.BioGraph(ncbi_tax_id = 9606, loops = True)
+net = bioigraph.BioGraph(ncbi_tax_id = 9606)
+
 
 net.init_network()
+net.init_network(pfile = 'cache/default_network_wo-intact_ltp-only.pickle')
+
 net.load_resources(lst={'li2012': ugly['li2012']})
 net.load_resources(lst={'acsn': ugly['acsn']})
 net.load_resources(lst={'mimp': good['mimp']})
@@ -30,6 +34,7 @@ net.load_resources(lst={'psite_noref': good['psite_noref']})
 net.save_network(pfile = 'cache/default_plus_acsn_phospho.pickle')
 net.init_network(pfile = 'cache/default_plus_acsn_phospho.pickle')
 
+net.kegg_directions()
 
 net.load_ptms()
 # net.load_phospho_dmi('Li2012', trace = True)

@@ -35,6 +35,8 @@ except:
 import sys
 import os
 import re
+import itertools
+from collections import Counter
 import urllib
 import urllib2
 import httplib2
@@ -45,9 +47,11 @@ import zipfile
 import tarfile
 import xlrd
 import bs4
-import xml.etree.ElementTree as ET
+import xml.etree.cElementTree as ET
+from lxml import etree
 import hashlib
 import time
+import copy
 import struct
 import json
 import webbrowser
@@ -64,6 +68,7 @@ import data_formats
 import progress
 import common
 import intera
+import reaction
 import residues
 import mapping
 import seq as se
@@ -757,7 +762,7 @@ def get_complexportal(species=9606,zipped=True):
             msg = 'Could not get file: \n\t\t%s' % url
             errors.append(msg)
             continue
-        soup = bs4.BeautifulSoup(xml)
+        soup = bs4.BeautifulSoup(xml, 'html.parser')
         interactors_xml = soup.find_all('interactor')
         interactors = {}
         interactions = {}
@@ -1199,7 +1204,7 @@ def get_pisa(pdblist):
             msg = 'Could not download: \n\t\t%s' % url
             errors.append(msg)
             continue
-        soup = bs4.BeautifulSoup(data)
+        soup = bs4.BeautifulSoup(data, 'html.parser')
         unmapped_residues = []
         for pdb in soup.find_all('pdb_entry'):
             pdb_id = pdb.find('pdb_code').text.lower()
@@ -1862,7 +1867,7 @@ class ResidueMapper(object):
         url = data_formats.urls['pdb_align']['url'] + pdb
         data = urllib2.urlopen(url)
         mapper = {}
-        soup = bs4.BeautifulSoup(data.read())
+        soup = bs4.BeautifulSoup(data.read(), 'html.parser')
         for block in soup.find_all('block'):
             seg = block.find_all('segment')
             chain = seg[0]['intobjectid'].split('.')[1]
@@ -2140,12 +2145,12 @@ def get_ielm(ppi, id_type = 'UniProtKB_AC', mydomains = 'HMMS',
     if os.path.exists(cachefile) and cache:
         with open(cachefile, 'r') as f:
             data = f.read()
-        soup = bs4.BeautifulSoup(data)
+        soup = bs4.BeautifulSoup(data, 'html.parser')
         src = 'cache'
     else:
         data = curl(url, post = post, silent = False, cache = False, 
             req_headers = headers)
-        soup = bs4.BeautifulSoup(data)
+        soup = bs4.BeautifulSoup(data, 'html.parser')
         sessid = soup.find('input', {'name':'session_ID'})['value']
         src = 'iELM'
     if data is None:
@@ -2170,7 +2175,7 @@ def get_ielm(ppi, id_type = 'UniProtKB_AC', mydomains = 'HMMS',
         data = curl('http://i.elm.eu.org/wait_2/', post = post, cache = False, 
             req_headers = headers)
         if data is not None:
-            soup = bs4.BeautifulSoup(data)
+            soup = bs4.BeautifulSoup(data, 'html.parser')
         time.sleep(3)
         wait += 3
     if len(soup.find_all('table')) == 0:
@@ -2219,7 +2224,7 @@ def get_pepcyber(cache = None):
     url = data_formats.urls['pepcyber']['url']
     # this is huge, takes a few minutes! 
     data = curl(url, silent = False, timeout = 600)
-    soup = bs4.BeautifulSoup(data)
+    soup = bs4.BeautifulSoup(data, 'html.parser')
     rows = soup.find_all('table')[6].find_all('tr')
     result = []
     uniprots = {}
@@ -2263,7 +2268,7 @@ def pepcyber_uniprot(num):
     data = curl(url, cache = False)
     if data is None:
         return result
-    soup = bs4.BeautifulSoup(data)
+    soup = bs4.BeautifulSoup(data, 'html.parser')
     gname = None
     prev = ''
     for td in soup.find_all('td'):
@@ -2283,7 +2288,7 @@ def pepcyber_uniprot(num):
 def get_pdzbase():
     url = data_formats.urls['pdzbase']['url']
     data = curl(url, silent = False)
-    soup = bs4.BeautifulSoup(data)
+    soup = bs4.BeautifulSoup(data, 'html.parser')
     rows = soup.find_all('table')[3].find('table').find('table').find_all('tr')
     result = []
     for r in rows:
@@ -2380,7 +2385,7 @@ def get_elm_domains():
     result = {}
     url = data_formats.urls['ielm_domains']['url']
     data = curl(url, silent = False)
-    soup = bs4.BeautifulSoup(data)
+    soup = bs4.BeautifulSoup(data, 'html.parser')
     tbl = soup.find('table').find_all('td')
     rows = [tbl[x:x+4] for x in xxrange(0, len(tbl), 4)]
     for r in rows:
@@ -2449,7 +2454,7 @@ def get_phelm_kinases():
     result = {}
     url = data_formats.urls['p_elm_kin']['url']
     data = curl(url, silent = False)
-    soup = bs4.BeautifulSoup(data)
+    soup = bs4.BeautifulSoup(data, 'html.parser')
     for row in soup.find_all('table')[1].find_all('tr'):
         thisRow = [x.text for x in row.find_all('td')]
         if len(thisRow) > 2 and len(thisRow[2].strip()) > 0:
@@ -2903,7 +2908,7 @@ def netpath_names():
     result = {}
     url = data_formats.urls['netpath_names']['url']
     html = curl(url, silent = False)
-    soup = bs4.BeautifulSoup(html)
+    soup = bs4.BeautifulSoup(html, 'html.parser')
     for a in soup.find_all('a'):
         if a.attrs['href'].startswith('pathways'):
             num = repwnum.findall(a.attrs['href'])[0]
@@ -3032,7 +3037,7 @@ def get_hpmr():
     # Human Plasma Membrane Receptome
     # http://receptome.stanford.edu/HPMR/
     html = curl(data_formats.urls['hpmr']['url'], silent = False)
-    soup = bs4.BeautifulSoup(html)
+    soup = bs4.BeautifulSoup(html, 'html.parser')
     gnames = [gname for gname in [tr.find_all('td')[1].text \
         for tr in soup.find_all('tr', class_ = 'res_receptor_rec')] \
         if not gname.lower().startswith('similar')]
@@ -3216,7 +3221,7 @@ def load_lmpid(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
     result = []
     with open(os.path.join(common.ROOT, 'data', fname), 'r') as f:
         data = f.read()
-    soup = bs4.BeautifulSoup(data)
+    soup = bs4.BeautifulSoup(data, 'html.parser')
     uniprots = all_uniprots(organism = organism, swissprot = None)
     prg = progress.Progress(len(soup.find_all('record')), 'Processing data from LMPID', 21)
     for rec in soup.find_all('record'):
@@ -3360,14 +3365,14 @@ def take_a_trip(cachefile = 'trip.pickle'):
     # data = curl(url, silent = False)
     # jsn = json.loads(jsn, encoding = 'utf-8')
     mainhtml = curl(base_url)
-    mainsoup = bs4.BeautifulSoup(mainhtml)
+    mainsoup = bs4.BeautifulSoup(mainhtml, 'html.parser')
     trppages = common.flatList([[a.attrs['href'] for a in ul.find_all('a')] \
         for ul in mainsoup.find('div', id = 'trp_selector').find('ul').find_all('ul')])
     for trpp in trppages:
         trp = trpp.split('/')[-1]
         trpurl = show_url % trp
         trphtml = curl(trpurl, silent = False)
-        trpsoup = bs4.BeautifulSoup(trphtml)
+        trpsoup = bs4.BeautifulSoup(trphtml, 'html.parser')
         trp_uniprot = trip_find_uniprot(trpsoup)
         if trp_uniprot is None or len(trp_uniprot) < 6:
             print '\t\tcould not find uniprot for %s' % trp
@@ -3397,7 +3402,7 @@ def trip_process_table(tab, result, intrs, trp_uniprot):
 def trip_get_uniprot(syn):
     url = data_formats.urls['trip']['show'] % syn
     html = curl(url)
-    soup = bs4.BeautifulSoup(html)
+    soup = bs4.BeautifulSoup(html, 'html.parser')
     return trip_find_uniprot(soup)
 
 def trip_find_uniprot(soup):
@@ -3532,7 +3537,7 @@ def kegg_pathways(mapper = None):
     hsa_list = []
     interactions = []
     htmllst = curl(data_formats.urls['kegg_pws']['list_url'], silent = True)
-    lstsoup = bs4.BeautifulSoup(htmllst)
+    lstsoup = bs4.BeautifulSoup(htmllst, 'html.parser')
     for a in lstsoup.find_all('a', href = True):
         m = rehsa.match(a['href'])
         if m:
@@ -3541,7 +3546,7 @@ def kegg_pathways(mapper = None):
     for hsa in hsa_list:
         prg.step()
         kgml = curl(data_formats.urls['kegg_pws']['kgml_url'] % hsa, silent = True)
-        kgmlsoup = bs4.BeautifulSoup(kgml)
+        kgmlsoup = bs4.BeautifulSoup(kgml, 'html.parser')
         entries = {}
         for ent in kgmlsoup.find_all('entry'):
             gr = ent.find('graphics')
@@ -3566,7 +3571,7 @@ def signor_urls():
     url = data_formats.urls['signor']['list_url']
     baseurl = data_formats.urls['signor']['base_url']
     html = curl(url, silent = True)
-    soup = bs4.BeautifulSoup(html)
+    soup = bs4.BeautifulSoup(html, 'html.parser')
     for td in soup.find_all('td', style = lambda x: x.startswith('border')):
         pw = td.text.strip().split(':')[0]
         tsv_url = baseurl % td.find('a').attrs['href']
@@ -3628,14 +3633,918 @@ def get_dgidb():
     genesymbols = []
     url = data_formats.urls['dgidb']['main_url']
     html = curl(url, silent = False)
-    soup = bs4.BeautifulSoup(html)
+    soup = bs4.BeautifulSoup(html, 'html.parser')
     cats = [o.attrs['value'] \
         for o in soup.find('select', {'id': 'gene_categories'})\
             .find_all('option')]
     for cat in cats:
         url = data_formats.urls['dgidb']['url'] % cat
         html = curl(url)
-        soup = bs4.BeautifulSoup(html)
+        soup = bs4.BeautifulSoup(html, 'html.parser')
         trs = soup.find('tbody').find_all('tr')
         genesymbols.extend([tr.find('td').text.strip() for tr in trs])
     return common.uniqList(genesymbols)
+
+def reactome_sbml():
+    '''
+    Downloads Reactome human reactions in SBML format.
+    Returns gzip.GzipFile object.
+    '''
+    url = data_formats.urls['reactome']['sbml']
+    sbml = curl(url, silent = False, large = True)
+    return sbml
+
+def reactome_biopax(organism = 9606, cache = True):
+    '''
+    Downloads Reactome human reactions in SBML format.
+    Returns File object.
+    '''
+    organisms = {
+        9606: 'Homo_sapiens'
+    }
+    unzipped = 'cache/reactome_biopax_%s.owl' % organisms[organism]
+    if not os.path.exists(unzipped) or not cache:
+        url = data_formats.urls['reactome']['biopax_l3']
+        bpz = curl(url, silent = False, large = True, 
+            files_needed = ['%s.owl'%organisms[organism]]).values()[0]
+        with open(unzipped, 'w') as _unzipped:
+            while True:
+                chunk = bpz.read(4096)
+                if not chunk:
+                    break
+                _unzipped.write(chunk)
+        bpz.close()
+    _unzipped = open(unzipped, 'r')
+    return _unzipped
+
+def pid_biopax():
+    url = data_formats.urls['nci-pid']['biopax_l3']
+    return curl(url, silent = False, large = True)
+
+def panther_biopax():
+    url = data_formats.urls['panther']['biopax_l3']
+    return curl(url, silent = False, large = True).values()
+
+def acsn_biopax():
+    url = data_formats.urls['acsn']['biopax_l3']
+    return curl(url, silent = False, large = True)
+
+def reactome_bs():
+    sbml = reactome_sbml()
+    soup = bs4.BeautifulSoup(sbml.read(), 'html.parser')
+    return soup
+
+# Process Reactome BioPAX level 3
+
+def get_soup(elem):
+    return bs4.BeautifulSoup(etree.tostring(elem), 'html.parser')
+
+def _bp_collect_resources(elem, tag, restype = None):
+    rdfpref = '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+    rdfres = '%sresource' % rdfpref
+    return [x.get(rdfres).replace('#', '') for x in elem.iterfind(tag) \
+        if rdfres in x.attrib and \
+            (restype is None or x.get(rdfres).replace('#', '').startswith(restype))]
+
+def reactions_biopax(biopax_file, organism = 9606, protein_name_type = 'UniProt', clean = True):
+    cachefile = os.path.join('cache', '%s.processed.pickle' % os.path.split(biopax_file.name)[1])
+    if os.path.exists(cachefile):
+        sys.stdout.write('\t:: Loading already processed data\n')
+        sys.stdout.flush()
+        return pickle.load(open(cachefile, 'r'))
+    # string constants
+    bppref = '{http://www.biopax.org/release/biopax-level3.owl#}'
+    rdfpref = '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+    rdfid = '%sID' % rdfpref
+    rdfab = '%sabout' % rdfpref
+    rdfres = '%sresource' % rdfpref
+    bpprot = '%sProtein' % bppref
+    bpcplx = '%sComplex' % bppref
+    bpprre = '%sProteinReference' % bppref
+    bpreac = '%sBiochemicalReaction' % bppref
+    bpcata = '%sCatalysis' % bppref
+    bpctrl = '%sControl' % bppref
+    bpcoma = '%sComplexAssembly' % bppref
+    bppstp = '%sPathwayStep' % bppref
+    bpuxrf = '%sUnificationXref' % bppref
+    bpstoi = '%sStoichiometry' % bppref
+    bppubr = '%sPublicationXref' % bppref
+    bppath = '%sPathway' % bppref
+    bpfrfe = '%sFragmentFeature' % bppref
+    bpseqi = '%sSequenceInterval' % bppref
+    bpseqs = '%sSequenceSite' % bppref
+    bpmodf = '%sModificationFeature' % bppref
+    bpmodv = '%sSequenceModificationVocabulary' % bppref
+    bpmphe = '%smemberPhysicalEntity' % bppref
+    bperef = '%sentityReference' % bppref
+    bpxref = '%sxref' % bppref
+    bprelr = '%sRelationshipXref' % bppref
+    bpcsto = '%scomponentStoichiometry' % bppref
+    bpstoc = '%sstoichiometricCoefficient' % bppref
+    bpphye = '%sphysicalEntity' % bppref
+    bpcted = '%scontrolled' % bppref
+    bpcter = '%scontroller' % bppref
+    bpctyp = '%scontrolType' % bppref
+    bpleft = '%sleft' % bppref
+    bprgth = '%sright' % bppref
+    bpsprc = '%sstepProcess' % bppref
+    bpfeat = '%sfeature' % bppref
+    bpfelo = '%sfeatureLocation' % bppref
+    bpibeg = '%ssequenceIntervalBegin' % bppref
+    bpiend = '%ssequenceIntervalEnd' % bppref
+    bpseqp = '%ssequencePosition' % bppref
+    bpmoty = '%smodificationType' % bppref
+    bppcom = '%spathwayComponent' % bppref
+    bpterm = '%sterm' % bppref
+    bpdb = '%sdb' % bppref
+    bpid = '%sid' % bppref
+    upStr = 'UniProt'
+    modvoc = data_formats.reactome_modifications
+    # intermediate results
+    proteins = {}
+    proteinfamilies = {}
+    uniprots = {}
+    proteinreferences = {}
+    complexes = {}
+    complexvariations = {}
+    stoichiometries = {}
+    reactions = {}
+    complexassemblies = {}
+    catalyses = {}
+    controls = {}
+    pathways = {}
+    pathwaysteps = {}
+    publications = {}
+    fragmentfeatures = {}
+    sequenceintervals = {}
+    sequencesites = {}
+    modificationfeatures = {}
+    modificationvocabulary = {}
+    protein_name_type = protein_name_type.lower()
+    # processing the XML
+    bpf = reactome_biopax(organism = organism)
+    bp_filesize = 0
+    if type(biopax_file) is file:
+        bp_filesize = os.path.getsize(biopax_file.name)
+    elif type(biopax_file) is tarfile.ExFileObject:
+        bp_filesize = biopax_file.size
+    elif type(biopax_file) is gzip.GzipFile:
+        f = open(biopax_file.name, 'rb')
+        f.seek(-4, 2)
+        bp_filesize = struct.unpack('<I', f.read())[0]
+        f.close()
+    prg = progress.Progress(bp_filesize, 'Processing BioPAX XML', 1)
+    fpos = biopax_file.tell()
+    bp = etree.iterparse(biopax_file, events = ('end',))
+    used_elements = []
+    try:
+        for ev, elem in bp:
+            new_fpos = biopax_file.tell()
+            prg.step(new_fpos - fpos)
+            fpos = new_fpos
+            _id = elem.get(rdfid) if rdfid in elem.attrib else elem.get(rdfab)
+            # Protein
+            if elem.tag == bpprot:
+                entref = elem.find(bperef)
+                if entref is not None:
+                    proteins[_id] = {
+                        'protein': entref.get(rdfres).replace('#', ''),
+                        'seqfeatures': _bp_collect_resources(elem, bpfeat),
+                        'modfeatures': _bp_collect_resources(elem, bpfeat)
+                    }
+                else:
+                    proteinfamilies[_id] = _bp_collect_resources(elem, bpmphe)
+            # ProteinReference
+            elif elem.tag == bpprre:
+                proteinreferences[_id] = _bp_collect_resources(elem, bpxref)
+            # UnificationXref
+            elif elem.tag == bpuxrf or elem.tag == bprelr:
+                db = elem.find(bpdb)
+                if db is not None:
+                    if elem.find(bpdb).text.lower().startswith(protein_name_type):
+                        i = elem.find(bpid)
+                        if i is not None:
+                            uniprots[_id] = i.text
+            # Complex
+            elif elem.tag == bpcplx:
+                if elem.find(bpcsto) is not None:
+                    complexes[_id] = _bp_collect_resources(elem, bpcsto)
+                else:
+                    complexvariations[_id] = _bp_collect_resources(elem, bpmphe)
+            # Stoichiometry
+            elif elem.tag == bpstoi:
+                stoichiometries[_id] = (elem.find(bpphye).get(rdfres).replace('#', ''), int(float(elem.find(bpstoc).text)))
+            # BiochemicalReaction
+            elif elem.tag == bpreac:
+                reactions[_id] = {
+                    'refs': _bp_collect_resources(elem, bpxref),
+                    'left': _bp_collect_resources(elem, bpleft),
+                    'right': _bp_collect_resources(elem, bprgth)
+                }
+            # ComplexAssembly
+            elif elem.tag == bpcoma:
+                complexassemblies[_id] = {
+                    'refs': _bp_collect_resources(elem, bpxref),
+                    'left': _bp_collect_resources(elem, bpleft),
+                    'right': _bp_collect_resources(elem, bprgth)
+                }
+            # Catalysis
+            elif elem.tag == bpcata:
+                cter = elem.find(bpcter)
+                cted = elem.find(bpcted)
+                if cter is not None and cted is not None:
+                    typ = elem.find(bpctyp)
+                    catalyses[_id] = {
+                        'controller': cter.get(rdfres).replace('#', ''), 
+                        'controlled': cted.get(rdfres).replace('#', ''), 
+                        'type': '' if typ is None else typ.text}
+            # Control
+            elif elem.tag == bpctrl:
+                cter = elem.find(bpcter)
+                cted = elem.find(bpcted)
+                if cter is not None and cted is not None:
+                    typ = elem.find(bpctyp)
+                    controls[_id] = {
+                        'refs': _bp_collect_resources(elem, bpxref),
+                        'type': typ.text if typ is not None else '',
+                        'controller': cter.get(rdfres).replace('#', ''), 
+                        'controlled': cted.get(rdfres).replace('#', '')
+                    }
+            # PathwayStep
+            elif elem.tag == bppstp:
+                pathwaysteps[_id] = _bp_collect_resources(elem, bppstp)
+            # PublicationXref
+            elif elem.tag == bppubr:
+                pmid = elem.find(bpid)
+                if pmid is not None:
+                    publications[_id] = pmid.text
+            # FragmentFeature
+            elif elem.tag == bpfrfe:
+                fragmentfeatures[_id] = elem.find(bpfelo).get(rdfres).replace('#', '')
+            # SequenceInterval
+            elif elem.tag == bpseqi:
+                beg = elem.find(bpibeg)
+                end = elem.find(bpiend)
+                sequenceintervals[_id] = (beg.get(rdfres).replace('#', '') if beg is not None else None,
+                    elem.find(bpiend).get(rdfres).replace('#', '') if end is not None else None)
+            # SequenceSite
+            elif elem.tag == bpseqs:
+                seqp = elem.find(bpseqp)
+                if seqp is not None:
+                    sequencesites[_id] = int(seqp.text)
+            # ModificationFeature
+            elif elem.tag == bpmodf:
+                felo = elem.find(bpfelo)
+                moty = elem.find(bpmoty)
+                if felo is not None and moty is not None:
+                    modificationfeatures[_id] = (elem.find(bpfelo).get(rdfres).replace('#', ''), 
+                        elem.find(bpmoty).get(rdfres).replace('#', ''))
+            # SequenceModificationVocabulary
+            elif elem.tag == bpmodv:
+                term = elem.find(bpterm)
+                if term is not None:
+                    modificationvocabulary[_id] = term.text
+            # Pathway
+            elif elem.tag == bppath:
+                try:
+                    pathways[_id] = {
+                        'reactions': _bp_collect_resources(elem, bppcom),
+                        'pathways': _bp_collect_resources(elem, bppcom)
+                    }
+                except TypeError:
+                    print etree.tostring(elem)
+            if clean:
+                used_elements.append(elem)
+                if len(used_elements) > 800:
+                    for e in used_elements[:400]:
+                        e.clear()
+                    used_elements = used_elements[400:]
+    except etree.XMLSyntaxError as e:
+        sys.stdout.write('\n\tWARNING: XML processing error: %s\n' % str(e))
+        sys.stdout.flush()
+    prg.terminate()
+    del bp
+    biopax_file.close()
+    # # # # # # # # # # # # # # # # # #
+    # from intermediate to final results
+    prg = progress.Progress(len(proteins), 'Processing proteins', 11)
+    proteins_uniprots = {}
+    # return proteinreferences, uniprots
+    for pref, protein in proteins.iteritems():
+        prg.step()
+        if protein['protein'] in proteinreferences:
+            for prref in proteinreferences[protein['protein']]:
+                if prref in uniprots:
+                    proteins_uniprots[pref] = uniprots[prref]
+    prg.terminate()
+    prg = progress.Progress(len(proteins), 'Processing PTMs', 11)
+    proteins_modifications = {}
+    for pref, protein in proteins.iteritems():
+        prg.step()
+        for modf in protein['modfeatures']:
+            if modf in modificationfeatures:
+                if modificationfeatures[modf][0] in sequencesites:
+                    if modificationfeatures[modf][1] in modificationvocabulary:
+                        if modificationvocabulary[modificationfeatures[modf][1]] in modvoc:
+                            if pref not in proteins_modifications:
+                                proteins_modifications[pref] = set([])
+                            proteins_modifications[pref].add(
+                                (sequencesites[modificationfeatures[modf][0]], 
+                                modvoc[modificationvocabulary[modificationfeatures[modf][1]]][1],
+                                modvoc[modificationvocabulary[modificationfeatures[modf][1]]][0])
+                            )
+    prg.terminate()
+    # build a uniform dict to handle all protein based entities
+    # including complexes and variations/families
+    entity_uniprot = {}
+    prg = progress.Progress(len(proteins_uniprots), 'Processing proteins', 11)
+    for pref, protein in proteins_uniprots.iteritems():
+        prg.step()
+        entity_uniprot[pref] = [{
+            'members': [protein],
+            'ptms': {} if protein not in proteins_modifications \
+                else {protein: proteins_modifications[pref]}
+        }]
+    prg.terminate()
+    prg = progress.Progress(len(proteinfamilies), 'Processing protein families', 11)
+    for pfref, prefs in proteinfamilies.iteritems():
+        prg.step()
+        entity_uniprot[pfref] = []
+        for pref in prefs:
+            if pref in proteins_uniprots:
+                entity_uniprot[pfref].append({
+                    'members': [proteins_uniprots[pref]],
+                    'ptms': {} if pref not in proteins_modifications \
+                        else {proteins_uniprots[pref]: proteins_modifications[pref]}
+                })
+    prg.terminate()
+    # return entity_uniprot, complexes, proteins, proteinreferences, uniprots, proteinfamilies, proteins_uniprots, reactions, controls, catalyses, complexassemblies
+    del proteins
+    del proteinfamilies
+    del proteinreferences
+    prg = progress.Progress(len(complexes), 'Processing complexes', 11)
+    for cref, cplex in complexes.iteritems():
+        prg.step()
+        if cref not in entity_uniprot:
+            process_complex(0, cref, entity_uniprot, 
+                complexes, complexvariations, cplex, stoichiometries)
+    prg.terminate()
+    del complexes
+    del stoichiometries
+    del proteins_uniprots
+    #return entity_uniprot, proteins, proteinreferences, uniprots, complexes, stoichiometries
+    # # #
+    prg = progress.Progress(len(reactions) + len(complexassemblies), 'Processing reactions', 11)
+    reactions_uniprots = \
+        process_reactions(reactions, entity_uniprot, publications)
+    complexassemblies_uniprots = \
+        process_reactions(complexassemblies, entity_uniprot, publications)
+    del reactions
+    del complexassemblies
+    # # #
+    prg = progress.Progress(len(controls) + len(catalyses), 'Processing controls and catalyses', 11)
+    controls_uniprots = _process_controls(dict(controls.items() + catalyses.items()), entity_uniprot, 
+        dict(reactions_uniprots.items() + complexassemblies_uniprots.items()), publications)
+    for caref, ca in complexassemblies_uniprots.iteritems():
+        controls_uniprots[caref] = {
+            'type': 'BINDING',
+            'refs': [publications[r] for r in ca['refs'] if r in publications],
+            'controller': None,
+            'controlled': ca
+        }
+    del entity_uniprot
+    pickle.dump(controls_uniprots, open(cachefile, 'w'))
+    # return controls_uniprots, entity_uniprot, proteins, proteinreferences, uniprots, complexes, stoichiometries
+    return controls_uniprots
+
+#c_0_s_s_wnc4_re17
+#s_s_wnc4_s98
+#s_s_wnc4_re17
+
+def process_reactions(reactions, entity_uniprot, publications):
+    result = {}
+    for rref, rea in reactions.iteritems():
+        result[rref] = {
+            'refs': [publications[r] for r in rea['refs'] if r in publications],
+            'left': [entity_uniprot[l] for l in rea['left'] \
+                if l in entity_uniprot],
+            'right': [entity_uniprot[r] for r in rea['right'] \
+                if r in entity_uniprot]
+        }
+    return result
+
+def _process_controls(controls, entity_uniprot, reactions_uniprots, publications):
+    result = {}
+    for cref, ctrl in controls.iteritems():
+        result[cref] = {
+            'type': ctrl['type'],
+            'refs': [publications[r] for r in ctrl['refs'] if r in publications] \
+                if 'refs' in ctrl else [],
+            'controller': entity_uniprot[ctrl['controller']] \
+                if ctrl['controller'] in entity_uniprot else None,
+            'controlled': reactions_uniprots[ctrl['controlled']] \
+                if ctrl['controlled'] in reactions_uniprots else None
+        }
+    return result
+
+def process_complex(depth, cref, entity_uniprot, 
+    complexes, complexvariations, cplex, stoichiometries):
+    log = open('reactome.log', 'a')
+    tabs = '\t' * (depth + 1)
+    log.write('%sStarting processing %s, depth = %u\n' % (tabs[1:], cref, depth))
+    this_cplex = [{'members': [], 'ptms': {}}]
+    log.write('%sComplex %s have %u member entities\n' % (tabs, cref, len(cplex)))
+    for stoi in cplex:
+        if stoi in stoichiometries:
+            ref, num = stoichiometries[stoi]
+            log.write('%sNew member entity: %s, stoichiometric coeff: %u\n' % (tabs, ref, num))
+            if ref.startswith('Complex') \
+                and ref not in entity_uniprot:
+                if ref in complexes:
+                    log.write('%s%s is a complex with %u subentities, and hasn\'t been processed yet\n' % \
+                        (tabs, ref, len(complexes[ref])))
+                    process_complex(depth + 1, ref, entity_uniprot,
+                        complexes, complexvariations, complexes[ref], stoichiometries)
+                if ref in complexvariations:
+                    log.write('%s%s is a complex group with %u variations, and hasn\'t been processed yet\n' % \
+                        (tabs, ref, len(complexvariations[ref])))
+                    entity_uniprot[ref] = []
+                    for mref in complexvariations[ref]:
+                        if mref not in entity_uniprot and mref in complexes:
+                            log.write('%s%s is a complex with %u subentities, and hasn\'t been processed yet\n' % \
+                                (tabs, mref, len(complexes[mref])))
+                            process_complex(depth + 1, mref, entity_uniprot, 
+                                complexes, complexvariations, complexes[mref], stoichiometries)
+                        if mref in entity_uniprot:
+                            log.write('%s%s is now processed, adding it as an instance of %s\n' % \
+                                (tabs, mref, ref))
+                            entity_uniprot[ref].extend(
+                                entity_uniprot[mref]
+                            )
+            if ref in entity_uniprot:
+                log.write('%s%s is an already processed entity, with %u variants and %u members\n' % \
+                    (tabs, ref, len(entity_uniprot[ref]), 
+                    len(entity_uniprot[ref][0]['members']) if len(entity_uniprot[ref]) > 0 else 0))
+                log.write('%sNumber of variants after processing %s: %u x %u = %u\n' % \
+                    (tabs, ref, len(this_cplex), len(entity_uniprot[ref]), 
+                    len(this_cplex) * len(entity_uniprot[ref])))
+                this_cplex_new = []
+                for var in this_cplex:
+                    i = 0
+                    for new_member in entity_uniprot[ref]:
+                        var_new = copy.deepcopy(var)
+                        var_new['members'].extend(new_member['members'] * num)
+                        for u, ptm in new_member['ptms'].iteritems():
+                            if u not in var_new['ptms']:
+                                var_new['ptms'][u] = set([])
+                            var_new['ptms'][u] = var_new['ptms'][u] | new_member['ptms'][u]
+                        this_cplex_new.append(var_new)
+                        i += 1
+                this_cplex = this_cplex_new
+                log.write('%sNumber of variants after processing %s: %u\n' % \
+                    (tabs, ref, len(this_cplex)))
+                log.write('%sNumber of members in %s: %u\n' % (tabs, cref, len(this_cplex[0]['members']) if len(this_cplex) > 0 else 0))
+            else:
+                log.write('%sPermanently missing: %s\n' % (tabs, ref))
+    log.write('%sFinished processing %s, found %u variants with %u members\n' % \
+        (tabs[1:], cref, len(this_cplex), len(this_cplex[0]['members']) if len(this_cplex) > 0 else 0))
+    if cref not in entity_uniprot:
+        entity_uniprot[cref] = []
+    entity_uniprot[cref].extend(this_cplex)
+
+def reactome_interactions(cacheFile = None, **kwargs):
+    cacheFile = os.path.join('cache', 'reactome.interactions.pickle') \
+        if cacheFile is None else cacheFile
+    if os.path.exists(cacheFile):
+        interactions = pickle.load(open(cacheFile, 'rb'))
+    else:
+        while True:
+            sys.stdout.write('\nProcessing Reactome requires huge memory.\n'\
+                'Please hit `y` if you have at least 2G free memory,\n'\
+                'or `n` to omit Reactome.\n'\
+                'After processing once, it will be saved in \n'\
+                '%s, so next time can be loaded quickly.\n\n'\
+                'Process Reactome now? [y/n]\n' % cacheFile
+                    )
+            sys.stdout.flush()
+            answer = raw_input().lower()
+            if answer == 'y':
+                return get_interactions('reactome', **kwargs)
+            else:
+                return []
+
+def acsn_interactions(**kwargs):
+    return get_interactions('acsn', **kwargs)
+
+def pid_interactions(**kwargs):
+    return get_interactions('pid', **kwargs)
+
+def panther_interactions(**kwargs):
+    return get_interactions('panther', **kwargs)
+
+def get_interactions(source, mandatory_refs = True):
+    ctrls = get_controls(source)
+    return process_controls(ctrls, mandatory_refs)[0]
+
+def get_controls(source, protein_name_type = None):
+    name_types = {
+        'acsn': 'HGNC',
+        'reactome': 'UniProt',
+        'pid': 'UniProt',
+        'panther': 'UniProt'
+    }
+    if protein_name_type is None and source in name_types:
+        protein_name_type = name_types[source]
+    biopax = globals()['%s_biopax' % source]
+    bpfile = biopax()
+    if type(bpfile) is list:
+        result = {}
+        for bpf in bpfile:
+            result = dict(reactions_biopax(bpf, protein_name_type = protein_name_type).items() + \
+                result.items())
+    else:
+        result = reactions_biopax(bpfile, protein_name_type = protein_name_type)
+    return result
+
+def process_controls(controls, mandatory_refs = True):
+    interactions = set([])
+    ptms = []
+    regulations = []
+    prg = progress.Progress(len(controls), 'Processing interactions', 11)
+    for c in controls.values():
+        prg.step()
+        if len(c['refs']) > 0 or not mandatory_refs:
+            if c['controller'] is not None and len(c['controller']) > 0:
+                for ctr in c['controller']:
+                    if len(common.uniqList(ctr['members'])) == 1:
+                        this_ctr = ctr['members'][0].split('-')[0]
+                        ctd = c['controlled']
+                        if ctd is not None:
+                            #ctd['left'] is not None and ctd['right'] is not None:
+                            for leftInst in itertools.product(*ctd['left']):
+                                for rightInst in itertools.product(*ctd['right']):
+                                    lr = common.uniqList(
+                                        common.flatList(
+                                            [l['members'] for l in leftInst] + \
+                                            [r['members'] for r in rightInst]
+                                        )
+                                    )
+                                    if len(lr) == 1:
+                                        this_ctd = lr[0].split('-')[0]
+                                        interactions.add(
+                                            (this_ctr, this_ctd, c['type'], 
+                                            ';'.join(c['refs'] \
+                                                if len(c['refs']) > 0 \
+                                                else ctd['refs']), 'directed')
+                                        )
+                                    else:
+                                        modDiff = {}
+                                        ptmsLeft = set([(ptms[0], ptm) \
+                                            for l in leftInst \
+                                                for ptms in l['ptms'].items() \
+                                                    for ptm in ptms[1]])
+                                        ptmsRight = set([(ptms[0], ptm) \
+                                            for r in rightInst \
+                                                for ptms in r['ptms'].items() \
+                                                    for ptm in ptms[1]])
+                                        ptmsDiff = ptmsLeft ^ ptmsRight
+                                        diffUniProts = common.uniqList([ptm[0] for ptm in ptmsDiff])
+                                        if len(diffUniProts) == 1:
+                                            this_ctd = diffUniProts[0].split('-')[0]
+                                            interactions.add(
+                                                (this_ctr, this_ctd, c['type'], 
+                                                ';'.join(c['refs'] \
+                                                    if len(c['refs']) > 0 \
+                                                    else ctd['refs']), 'directed')
+                                            )
+                                        else:
+                                            lefts = [set(l['members']) for l in leftInst]
+                                            rights = [set(r['members']) for r in rightInst]
+                                            onlyLefts = [l for l in lefts if l not in rights]
+                                            onlyRights = [r for r in rights if r not in lefts]
+                                            diffs = []
+                                            for l in onlyLefts:
+                                                for r in onlyRights:
+                                                    diff = l ^ r
+                                                    if len(diff) == 1:
+                                                        diffs.append(list(diff))
+                                            diffs = common.uniqList(common.flatList(diffs))
+                                            if len(diffs) == 1:
+                                                this_ctd = diffs[0].split('-')[0]
+                                                interactions.add(
+                                                    (this_ctr, this_ctd, c['type'], 
+                                                    ';'.join(c['refs'] \
+                                                        if len(c['refs']) > 0 \
+                                                        else ctd['refs']), 'undirected')
+                                                )
+            # if the controller is unknown
+            # and the reaction has only 2 proteins
+            # these most probably bind each other
+            # to form a complex
+            else:
+                ctd = c['controlled']
+                if ctd is not None:
+                    for leftInst in itertools.product(*ctd['left']):
+                        for rightInst in itertools.product(*ctd['right']):
+                            lr = common.uniqList(
+                                common.flatList(
+                                    [l['members'] for l in leftInst] + \
+                                    [r['members'] for r in rightInst]
+                                )
+                            )
+                            if len(lr) == 2:
+                                interactions.add(
+                                    (lr[0].split('-')[0], lr[1].split('-')[0], c['type'], ';'.join(ctd['refs']))
+                                )
+    prg.terminate()
+    return list(interactions), ptms, regulations
+
+# Process Reactome SBML
+
+def _reactome_id(obj, attr):
+    return _reactome_extract_id(obj.attrs[attr])
+
+def _reactome_extract_id(value):
+    return int(value.split('_')[1])
+
+def _reactome_res(obj):
+    return _reactome_extract_res(obj.attrs['rdf:resource'])
+
+def _reactome_extract_res(value):
+    return value.split(':')[-1]
+
+def _reactome_reactions():
+    species = {}
+    compartments = {}
+    reactions = {}
+    soup = reactome_bs()
+    m = soup.find('model')
+    for cp in m.find('listofcompartments').find_all('compartment'):
+        compartments[_reactome_id(cp, 'id')] = cp.attrs['name']
+    for sp in m.find('listofspecies').find_all('species'):
+        cp = _reactome_id(sp, 'compartment')
+        si = _reactome_id(sp, 'id')
+        nm = sp.attrs['name']
+        ids = []
+        for i in sp.find('bqbiol:haspart').find_all('rdf:li'):
+            ids.append(_reactome_res(i))
+        ids = sorted(uniqList(ids))
+        species[si] = {
+            'name': nm,
+            'comp': cp,
+            'ids': ids
+        }
+    for rea in m.find('listofreactions').find_all('reaction'):
+        ri = _reactome_id(rea, 'id')
+        refs = []
+        for r in rea.find('bqbiol:isdescribedby').find_all('rdf:li'):
+            refs.append(_reactome_res(r))
+        refs = sorted(uniqList(refs))
+        reas = []
+        for r in rea.find('listofreactants').find_all('speciesreference'):
+            reas.append(_reactome_id(r, 'species'))
+        reas = sorted(uniqList(reas))
+        prds = []
+        for p in rea.find('listofproducts').find_all('speciesreference'):
+            prds.append(_reactome_id(p, 'species'))
+        prds = sorted(uniqList(prds))
+        note = rea.find('notes').text
+        reactions[ri] = {
+            'refs': refs,
+            'reas': reas,
+            'prds': prds,
+            'note': note
+        }
+    return compartments, species, reactions
+
+def _reactome_reactions_et():
+    sbmlPfx = '{http://www.sbml.org/sbml/level2/version4}'
+    compStr = '%scompartment' % sbmlPfx
+    reacStr = '%sreaction' % sbmlPfx
+    specStr = '%sspecies' % sbmlPfx
+    species = {}
+    compartments = {}
+    reactions = {}
+    sbmlfile = reactome_sbml()
+    ctx = etree.iterparse(sbmlfile, events = ('end',))
+    for ev, elem in ctx:
+        if elem.tag == compStr:
+            k, v = _reactome_compartment(elem)
+            compartments[k] = v
+        elif elem.tag == reacStr:
+            k, v = _reactome_reaction(elem)
+            reactions[k] = v
+        elif elem.tag == specStr:
+            k, v = _reactome_species(elem)
+            species[k] = v
+        elem.clear()
+        while elem.getprevious() is not None:
+            del elem.getparent()[0]
+    return compartments, species, reactions
+
+def _reactome_compartment(elem):
+    ci = _reactome_extract_id(elem.get('id'))
+    nm = elem.get('name')
+    return ci, nm
+
+def _reactome_species(elem):
+    bqBiolPfx = '{http://biomodels.net/biology-qualifiers/}'
+    rdfPfx = '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+    hasPartStr = '%shasPart' % bqBiolPfx
+    resStr = '%sresource' % rdfPfx
+    si = _reactome_extract_id(elem.get('id'))
+    cp = _reactome_extract_id(elem.get('compartment'))
+    nm = elem.get('name')
+    ids = sorted(uniqList(_reactome_collect_resources(elem, hasPartStr)))
+    return si, {
+        'name': nm,
+        'comp': cp,
+        'ids': ids
+    }
+
+def _reactome_reaction(elem):
+    bqBiolPfx = '{http://biomodels.net/biology-qualifiers/}'
+    rdfPfx = '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+    sbmlPfx = '{http://www.sbml.org/sbml/level2/version4}'
+    specStr = 'species'
+    spRefStr = '%sspeciesReference' % sbmlPfx
+    isDescStr = '%sisDescribedBy' % bqBiolPfx
+    resStr = '%sresource' % rdfPfx
+    lofReaStr = '%slistOfReactants' % sbmlPfx
+    lofPrdStr = '%slistOfProducts' % sbmlPfx
+    ri = _reactome_extract_id(elem.get('id'))
+    refs = _reactome_collect_resources(elem, isDescStr)
+    reas = _reactome_collect_species(elem, lofReaStr)
+    prds = _reactome_collect_species(elem, lofPrdStr)
+    note = elem.find('note').text # prefix?
+    return ri, {
+        'refs': refs,
+        'reas': reas,
+        'prds': prds,
+        'note': note
+    }
+
+def _reactome_collect_resources(elem, tag):
+    rdfPfx = '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+    resStr = '%sresource' % rdfPfx
+    liStr = '%sli' % rdfPfx
+    res = []
+    for i in  elem.find('.//%s' % tag).iterfind('.//%s' % liStr):
+        res.append(_reactome_extract_res(i.get(resStr)))
+    return res
+
+def _reactome_collect_species(elem, tag):
+    sbmlPfx = '{http://www.sbml.org/sbml/level2/version4}'
+    spRefStr = '%sspeciesReference' % sbmlPfx
+    specStr = 'species'
+    res = []
+    for sp in elem.find('.//%s' % tag).iterfind('.//%s' % spRefStr):
+        res.apped(_reactome_extract_id(sp.get(specStr)))
+    return res
+
+def signalink_interactions():
+    repar = re.compile(r'.*\(([a-z\s]+)\)')
+    notNeeded = set(['acsn', 'reactome'])
+    edgesFile = os.path.join(common.ROOT, 'data', 
+        data_formats.files['signalink']['edges'])
+    nodesFile = os.path.join(common.ROOT, 'data', 
+        data_formats.files['signalink']['nodes'])
+    nodes = {}
+    interactions = []
+    def _get_attr(attrs, attrName):
+        return _process_attr(attrs[attrName]) if attrName in attrs else ''
+    def _process_attr(attr):
+        m = repar.match(attr)
+        if m is not None:
+            return m.groups()[0]
+        else:
+            return attr
+    with open(nodesFile, 'r') as f:
+        for l in f:
+            if len(l) > 0:
+                l = l.split('\t')
+                _id = int(l[0])
+                uniprot = l[1].replace('uniprot:', '')
+                pathways = [pw.split(':')[-1] for pw in l[4].split('|') \
+                    if pw.split(':')[0] not in notNeeded]
+                nodes[_id] = [uniprot, pathways]
+    prg = progress.Progress(os.path.getsize(edgesFile), 'Reading file', 33)
+    with open(edgesFile, 'r') as f:
+        lPrev = None
+        for l in f:
+            prg.step(len(l))
+            l = l.strip().split('\t')
+            if lPrev is not None:
+                l = lPrev + l[1:]
+                lPrev = None
+            if len(l) == 13:
+                if l[-1] == '0':
+                    dbs = [_process_attr(db.split(':')[-1]) \
+                        for db in l[9].replace('"', '').split('|')]
+                    dbs = list(set(dbs) - notNeeded)
+                    if len(dbs) == 0:
+                        continue
+                    idSrc = int(l[1])
+                    idTgt = int(l[2])
+                    uniprotSrc = l[3].replace('uniprot:', '')
+                    uniprotTgt = l[4].replace('uniprot:', '')
+                    refs = [ref.split(':')[-1] for ref in l[7].split('|')]
+                    attrs = dict(tuple(attr.strip().split(':', 1)) for attr in l[8].\
+                        replace('"', '').split('|'))
+                    interactions.append([
+                        uniprotSrc,
+                        uniprotTgt,
+                        ';'.join(refs),
+                        ';'.join(dbs),
+                        _get_attr(attrs, 'effect'),
+                        _get_attr(attrs, 'is_direct'),
+                        _get_attr(attrs, 'is_directed'),
+                        _get_attr(attrs, 'molecular_background'),
+                        ';'.join(nodes[idSrc][1]),
+                        ';'.join(nodes[idTgt][1])
+                    ])
+            else:
+                lPrev = l
+    prg.terminate()
+    return interactions
+
+def get_laudanna_directions():
+    url = data_formats.urls['laudanna']['sigflow']
+    data = curl(url, silent = False)
+    data = data.split('\n')[1:]
+    directions = []
+    for l in data:
+        if len(l) > 0:
+            directions.append(l.split(' =')[0].split(' (pp) '))
+    return directions
+
+def get_laudanna_effects():
+    url = data_formats.urls['laudanna']['sigdir']
+    data = curl(url, silent = False)
+    data = data.split('\n')[1:]
+    effects = []
+    for l in data:
+        if len(l) > 0:
+            l = l.split(' = ')
+            effects.append(l[0].split(' (pp) ') + [l[1]])
+    return effects
+
+def get_acsn_effects():
+    negatives = set(['inhibits', 'INHIBITION', 'PHYSICAL_INHIBITION', 'UNKNOWN_INHIBITION'])
+    positives = set(['activates', 'PHYSICAL_STIMULATION'])
+    directed = set(['CATALYSIS', 'UNKNOWN_CATALYSIS'])
+    url = data_formats.urls['acsn']['sif']
+    data = curl(url, silent = False)
+    data = data.split('\n')
+    effects = []
+    for l in data:
+        l = l.replace('*', '').split('\t')
+        if len(l) == 3:
+            if l[1] in negatives:
+                effects.append([l[0], l[2], '-'])
+            elif l[1] in positives:
+                effects.append([l[0], l[2], '+'])
+            elif l[1] in directed:
+                effects.append([l[0], l[2], '*'])
+    return effects
+
+def get_wang_effects():
+    url = data_formats.urls['wang']['url']
+    data = curl(url, silent = False)
+    data = data.split('\n')
+    effects = []
+    nodes = {}
+    reading_nodes = False
+    reading_edges = False
+    for l in data:
+        if len(l.strip()) == 0:
+            reading_nodes = False
+            reading_edges = False
+        l = l.split(',')
+        if reading_nodes:
+            nodes[l[0]] = l[1]
+        if reading_edges:
+            effects.append([nodes[l[0]], nodes[l[1]], l[2]])
+        if l[0].startswith('Node'):
+            reading_nodes = True
+        if l[0].startswith('From'):
+            reading_nodes = False
+            reading_edges = True
+    return effects
+
+def biogrid_interactions(organism = 9606, htp_limit = 1):
+    organism = str(organism)
+    interactions = []
+    refc = []
+    url = data_formats.urls['biogrid']['url']
+    f = curl(url, silent = False, large = True).values()[0]
+    nul = f.readline()
+    for l in f:
+        l = l.split('\t')
+        if len(l) > 17:
+            if l[17].startswith('Low') and l[15] == organism and l[16] == organism:
+                interactions.append([l[7], l[8], l[14]])
+                refc.append(l[14])
+    refc = Counter(refc)
+    interactions = [i for i in interactions if refc[i[2]] <= htp_limit]
+    return interactions

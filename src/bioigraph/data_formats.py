@@ -231,23 +231,42 @@ urls = {
         'label': 'List of ELM classes',
         'url': 'http://elm.eu.org/elms/browse_elms.tsv'
     },
+    'dbptm_benchmark': {
+        'label': 'dbPTM is a PTM database compiled from multiple other dbs',
+        'urls': [
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/N-linked_Glycosylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/N6-succinyllysine.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/O-linked_Glycosylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Phosphorylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Phosphorylation_CDK1.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Phosphorylation_CK2.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Phosphorylation_MAPK1.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Phosphorylation_PKA.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Phosphorylation_PKC.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/S-nitrosylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Amidation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Hydroxylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Acetylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Methylation.tgz'
+        ]
+    },
     'dbptm': {
         'label': 'dbPTM is a PTM database compiled from multiple other dbs',
         'urls': [
-            'http://dbptm.mbc.nctu.edu.tw/Benchmark/N-linked.tgz',
-            'http://dbptm.mbc.nctu.edu.tw/Benchmark/O-linked.tgz',
-            'http://dbptm.mbc.nctu.edu.tw/Benchmark/C-linked.tgz',
-            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Phosphorylation.tgz',
-            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Acetylation.tgz',
-            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Methylation.tgz',
-            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Myristoylation.tgz',
-            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Palmitoylation.tgz',
-            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Prenylation.tgz',
-            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Carboxylation.tgz',
-            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Sulfation.tgz',
-            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Ubiquitylation.tgz',
-            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Sumoylation.tgz',
-            'http://dbptm.mbc.nctu.edu.tw/Benchmark/Nitrosylation.tgz'
+            'http://dbptm.mbc.nctu.edu.tw/download/N-linked.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/O-linked.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/C-linked.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Phosphorylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Acetylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Methylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Myristoylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Palmitoylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Prenylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Carboxylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Sulfation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Ubiquitylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Sumoylation.tgz',
+            'http://dbptm.mbc.nctu.edu.tw/download/Nitrosylation.tgz'
         ]
     },
     'phosnw': {
@@ -479,6 +498,45 @@ urls = {
         'url': 'http://dgidb.genome.wustl.edu/druggable_gene_categories/%s?'\
             'sources=BaderLabGenes,CarisMolecularIntelligence,FoundationOneGenes,GO,'\
             'GuideToPharmacologyGenes,HopkinsGroom,MskImpact,RussLampel,dGene'
+    },
+    'reactome': {
+        'label': 'The Reactome reaction network database',
+        'sbml': 'http://www.reactome.org/download/current/homo_sapiens.2.sbml.gz',
+        'biopax_l3': 'http://www.reactome.org/download/current/biopax.zip',
+        'biopax_l2': 'http://www.reactome.org/download/current/biopax2.zip'
+    },
+    'acsn': {
+        'label': 'Atlas of Cancer Signaling Networks',
+        'biopax_l3': 'https://acsn.curie.fr/files/acsn_v1.1.owl',
+        'sif': 'https://acsn.curie.fr/files/acsn_ppi.sif'
+    },
+    'nci-pid': {
+        'label': 'National Cancer Institute -- Pathway Interaction Database',
+        'biopax_l3': 'ftp://ftp1.nci.nih.gov/pub/PID/BioPAX_Level_3/NCI-Nature_Curated.bp3.owl.gz'
+    },
+    'panther': {
+        'label': 'PANTHER pathways',
+        'biopax_l3': 'ftp://ftp.pantherdb.org//pathway/current_release/BioPAX.tar.gz'
+    },
+    'laudanna': {
+        'label': 'Directionality and effect information inferred from multiple sources by Laudanna Lab',
+        'sigflow': 'http://dp.univr.it/~laudanna/LCTST/downloads/files/SignalingFlow.EA',
+        'sigdir': 'http://dp.univr.it/~laudanna/LCTST/downloads/files/SignalingDirection.EA'
+    },
+    'biogrid': {
+        'label': 'BioGRID version 2 tab format',
+        'url': 'http://thebiogrid.org/downloads/archives/Latest%20Release/BIOGRID-MV-Physical-LATEST.tab2.zip'
+    },
+    'wang': {
+        'label': 'Human Signaling Network compiled by Wang Group, version 6 (2014)',
+        'url': 'http://www.bri.nrc.ca/wang/cancerMap/HumanSignalingNetwork_v6.csv'
+    }
+}
+
+files = {
+    'signalink': {
+        'edges': 'signalink3_edges.tsv',
+        'nodes': 'signalink3_nodes.tsv'
     }
 }
 
@@ -656,10 +714,11 @@ refLists = [
                               os.path.join(ROOT, 'data','uniprot-all-human.tab'))
     ]
 
-best = {
-    'slk': input_formats.ReadSettings(name="SignaLink2", separator=",", nameColA=0, nameColB=1,
-                nameTypeA="uniprot", nameTypeB="uniprot",
-                typeA="protein", typeB="protein",isDirected=(7,['1','2']), 
+obsolate = {
+    'signalink2': input_formats.ReadSettings(name = "SignaLink2", separator = ",", 
+                nameColA = 0, nameColB = 1,
+                nameTypeA = "uniprot", nameTypeB = "uniprot",
+                typeA="protein", typeB="protein", isDirected=(7,['1','2']), 
                 sign=(6,'1','-1'),
                 inFile=os.path.join(ROOT, 'data', 'slk01human.csv'),references=(9,':'),ncbiTaxId=9606,
                 extraEdgeAttrs={
@@ -672,6 +731,59 @@ best = {
                 extraNodeAttrsB={
                     "slk_pathways": (5, ":"),
                     "gene_name": 3}),
+    'nci_pid': input_formats.ReadSettings(name="NCI-PID", 
+                separator="\t", nameColA=0, nameColB=1,
+                nameTypeA="uniprot", nameTypeB="uniprot",
+                typeA="protein", typeB="protein", isDirected=(2,['1','-1']), 
+                inFile=os.path.join(ROOT, 'data', 'nci-pid-strict.csv'),
+                references=(4, ";"),ncbiTaxId=9606,
+                extraEdgeAttrs={
+                    "pid_effect": 2,
+                    "pid_evidence": (5, ";"),
+                    "pid_pathways": (6, ";")},
+                extraNodeAttrsA={},
+                extraNodeAttrsB={}),
+    'signor': input_formats.ReadSettings(name="Signor", separator = None, 
+                nameColA = 2, nameColB = 6,
+                nameTypeA="uniprot", nameTypeB="uniprot",
+                positiveFilters = [(22, 'YES')], # only direct interactions
+                negativeFilters = [(9, 'transcriptional regulation'), 
+                    (1, 'PHENOTYPE'), (5, 'PHENOTYPE')], 
+                typeA="protein", typeB="protein", 
+                isDirected = (8, ['up-regulates', 'up-regulates activity', 
+                    'up-regulates quantity by stabilization',
+                    'down-regulates', 'down-regulates activity', 
+                    'down-regulates quantity by destabilization']), 
+                sign = (8, ['up-regulates', 'up-regulates activity', 
+                    'up-regulates quantity by stabilization'],
+                    ['down-regulates', 'down-regulates activity', 
+                    'down-regulates quantity by destabilization']), 
+                ncbiTaxId = {'col': 12, 'dict': {'9606;9606': 9606}},
+                inFile = 'signor_interactions', references=(21, ";"),header=False,
+                extraEdgeAttrs={
+                    "signor_mechanism": (9, ';')
+                    },
+                extraNodeAttrsA={},
+                extraNodeAttrsB={})
+}
+
+best = {
+    'signalink3': input_formats.ReadSettings(name="SignaLink3", separator = None, nameColA = 0, nameColB = 1,
+                nameTypeA="uniprot", nameTypeB="uniprot",
+                typeA="protein", typeB="protein", isDirected = (6, 'directed'), 
+                sign=(4, 'stimulation', 'inhibition'),
+                inFile = 'signalink_interactions', references = (2, ';'), ncbiTaxId = 9606,
+                extraEdgeAttrs={
+                    "netbiol_effect": 4, 
+                    "netbiol_is_direct": 5,
+                    "netbiol_is_directed": 6,
+                    "netbiol_mechanism": 7},
+                extraNodeAttrsA={
+                    "slk_pathways": (8, ";")
+                    },
+                extraNodeAttrsB={
+                    "slk_pathways": (9, ";")
+                    }),
     'ccmap': input_formats.ReadSettings(name="CancerCellMap", 
                 separator="\t", nameColA=3, nameColB=4,
                 nameTypeA="genesymbol", nameTypeB="genesymbol",
@@ -758,18 +870,6 @@ best = {
                 extraNodeAttrsB={
                     "ca1_location": 9,
                     "ca1_function": 8}),
-    'nci_pid': input_formats.ReadSettings(name="NCI-PID", 
-                separator="\t", nameColA=0, nameColB=1,
-                nameTypeA="uniprot", nameTypeB="uniprot",
-                typeA="protein", typeB="protein", isDirected=(2,['1','-1']), 
-                inFile=os.path.join(ROOT, 'data', 'nci-pid-strict.csv'),
-                references=(4, ";"),ncbiTaxId=9606,
-                extraEdgeAttrs={
-                    "pid_effect": 2,
-                    "pid_evidence": (5, ";"),
-                    "pid_pathways": (6, ";")},
-                extraNodeAttrsA={},
-                extraNodeAttrsB={}),
     'arn': input_formats.ReadSettings(name="ARN", separator=",", nameColA=0, nameColB=1,
                 nameTypeA="uniprot", nameTypeB="uniprot",
                 typeA="protein", typeB="protein", isDirected=(3,['1','2']), sign=(4,'1','-1'),
@@ -865,27 +965,6 @@ best = {
                     },
                 extraNodeAttrsA={},
                 extraNodeAttrsB={}),
-    'signor': input_formats.ReadSettings(name="Signor", separator="\t", 
-                nameColA = 2, nameColB = 6,
-                nameTypeA="uniprot", nameTypeB="uniprot",
-                positiveFilters = [(22, 'YES')], # only direct interactions
-                negativeFilters = [(9, 'transcriptional regulation')], # exclude TF-target interactions
-                typeA="protein", typeB="protein", 
-                isDirected = (8, ['up-regulates', 'up-regulates activity', 
-                    'up-regulates quantity by stabilization',
-                    'down-regulates', 'down-regulates activity', 
-                    'down-regulates quantity by destabilization']), 
-                sign = (8, ['up-regulates', 'up-regulates activity', 
-                    'up-regulates quantity by stabilization'],
-                    ['down-regulates', 'down-regulates activity', 
-                    'down-regulates quantity by destabilization']), 
-                ncbiTaxId=9606,
-                inFile=os.path.join(ROOT, 'data', 'signor_22052015.tab'),references=(21, ";"),header=True,
-                extraEdgeAttrs={
-                    "signor_mechanism": (9, ';')
-                    },
-                extraNodeAttrsA={},
-                extraNodeAttrsB={}),
     'pdz': input_formats.ReadSettings(name="PDZBase", separator = None, nameColA=1,
                 nameColB=4, nameTypeA="uniprot", nameTypeB="uniprot",
                 typeA = "protein", typeB = "protein", isDirected = 1, sign = False,
@@ -956,6 +1035,62 @@ best = {
                 inFile = 'trip_interactions', references = (2, ';'), header = False,
                 extraEdgeAttrs={'trip_methods': (3, ';')},
                 extraNodeAttrsA={},
+                extraNodeAttrsB={}),
+    'reactome': input_formats.ReadSettings(name = "Reactome", separator = None, nameColA = 0,
+                nameColB = 1, nameTypeA = "uniprot", nameTypeB = "uniprot",
+                typeA = "protein", typeB = "protein", 
+                isDirected = (4, 'directed'), sign = False,
+                ncbiTaxId = 9606, huge = True, 
+                inFile = 'reactome_interactions', references = (3, ';'), header = False,
+                extraEdgeAttrs={},
+                extraNodeAttrsA={},
+                extraNodeAttrsB={}),
+    'nci_pid': input_formats.ReadSettings(name = "NCI-PID", separator = None, nameColA = 0,
+                nameColB = 1, nameTypeA = "uniprot", nameTypeB = "uniprot",
+                typeA = "protein", typeB = "protein", 
+                isDirected = (4, 'directed'), sign = False,
+                ncbiTaxId = 9606,
+                inFile = 'pid_interactions', references = (3, ';'), header = False,
+                extraEdgeAttrs={},
+                extraNodeAttrsA={},
+                extraNodeAttrsB={}),
+    'acsn': input_formats.ReadSettings(name = "ACSN", separator = None, nameColA = 0,
+                nameColB = 1, nameTypeA = "genesymbol", nameTypeB = "genesymbol",
+                typeA = "protein", typeB = "protein", 
+                isDirected = (4, 'directed'), sign = False,
+                ncbiTaxId = 9606,
+                inFile = 'acsn_interactions', references = (3, ';'), header = False,
+                extraEdgeAttrs={},
+                extraNodeAttrsA={},
+                extraNodeAttrsB={}),
+    'biogrid': input_formats.ReadSettings(name="BioGRID", separator = None, nameColA = 0,
+                nameColB = 1, nameTypeA = "genesymbol", nameTypeB = "genesymbol",
+                typeA = "protein", typeB = "protein", isDirected = False, sign = False,
+                ncbiTaxId = 9606,
+                inFile = 'biogrid_interactions', references = (2, '|'), header = False,
+                extraEdgeAttrs={},
+                extraNodeAttrsA={},
+                extraNodeAttrsB={}),
+    'signor': input_formats.ReadSettings(name="Signor", separator="\t", 
+                nameColA = 2, nameColB = 6,
+                nameTypeA="uniprot", nameTypeB="uniprot",
+                positiveFilters = [(22, 'YES')], # only direct interactions
+                negativeFilters = [(9, 'transcriptional regulation')], # exclude TF-target interactions
+                typeA="protein", typeB="protein", 
+                isDirected = (8, ['up-regulates', 'up-regulates activity', 
+                    'up-regulates quantity by stabilization',
+                    'down-regulates', 'down-regulates activity', 
+                    'down-regulates quantity by destabilization']), 
+                sign = (8, ['up-regulates', 'up-regulates activity', 
+                    'up-regulates quantity by stabilization'],
+                    ['down-regulates', 'down-regulates activity', 
+                    'down-regulates quantity by destabilization']), 
+                ncbiTaxId=9606,
+                inFile=os.path.join(ROOT, 'data', 'signor_22052015.tab'),references=(21, ";"),header=True,
+                extraEdgeAttrs={
+                    "signor_mechanism": (9, ';')
+                    },
+                extraNodeAttrsA={},
                 extraNodeAttrsB={})
 }
 
@@ -1002,6 +1137,14 @@ good = {
 }
 
 ugly = {
+    'biogrid': input_formats.ReadSettings(name="BioGRID", separator = None, nameColA = 0,
+                nameColB = 1, nameTypeA = "genesymbol", nameTypeB = "genesymbol",
+                typeA = "protein", typeB = "protein", isDirected = False, sign = False,
+                ncbiTaxId = 9606,
+                inFile = 'biogrid_interactions', references = (2, '|'), header = False,
+                extraEdgeAttrs={},
+                extraNodeAttrsA={},
+                extraNodeAttrsB={}),
     'hsn': input_formats.ReadSettings(name="Wang", separator=",", 
                 nameColA = 0, nameColB = 2,
                 nameTypeA="entrez", nameTypeB="entrez",
@@ -1463,3 +1606,82 @@ aidan_list = input_formats.ReadList(name="aidan_list", separator=";", nameCol=0,
                 nameType="uniprot", typ="protein",
                 inFile=os.path.join(ROOT, 'data', 'aidan_list_uniprot'),
                 extraAttrs={})
+
+reactome_modifications = {
+    'phosphorylated': ('phosphorylation', 'X'),
+    'glycosylated': ('glycosylation', 'X'),
+    'acetylated': ('acetylated', 'X'),
+    'prenylated': ('prenylation', 'X'),
+    'ubiquitinated': ('ubiquitination', 'X'), 
+    'myristoylated': ('myristoylation', 'X'),
+    'hydroxylated': ('hydroxylation', 'X'),
+    'acetylated residue': ('acetylation', 'X'),
+    'palmitoylated residue': ('palmitoylation', 'X'),
+    'sumoylated lysine': ('sumoylation', 'K'),
+    'O-palmitoyl-L-threonine': ('palmitoylation', 'T'),
+    'acetylated L-serine': ('acetylation', 'S'),
+    'glycosylated residue': ('glycosylation', 'X'),
+    'methylated L-arginine': ('methylation', 'R'),
+    'ubiquitination': ('ubiquitination', 'X'),
+    'phosphorylated residue': ('phosphorylation', 'X'),
+    'O-phospho-L-threonine': ('phosphorylation', 'T'),
+    'O-glycosyl-L-threonine': ('glycosylation', 'T'),
+    'methylated L-lysine': ('methylation', 'K'),
+    'myristoylated residue': ('myristoylation', 'X'),
+    'N-myristoyl-glycine': ('myristoylation', 'G'),
+    'O-palmitoyl-L-serine': ('palmitoylation', 'S'),
+    'palmitoylated residue [residue=N]': ('palmitoylation', 'X'),
+    'N-acetylated L-lysine': ('acetylation', 'K'),
+    'O-glycosyl-L-serine': ('glycosylation', 'S'),
+    'N-acetyl-L-methionine': ('acetylation', 'M'),
+    'ubiquitinylated lysine': ('ubiquitination', 'K'),
+    'S-farnesyl-L-cysteine': ('farnesylation', 'C'),
+    'S-phospho-L-cysteine': ('phosphorylation', 'C'),
+    'hydroxylated proline': ('hydroxylation', 'P'),
+    'palmitoylated residue [residue=Y]': ('palmitoylation', 'Y'),
+    'O4\'-phospho-L-tyrosine': ('phosphorylation', 'Y'),
+    'O-phospho-L-serine': ('phosphorylation', 'S'),
+    'O-phospho-L-threonine': ('phosphorylation', 'T'),
+    '(2S,4R)-4-hydroxyproline': ('hydroxylation', 'P'),
+    '(2S,3S)-3-hydroxyproline': ('hydroxylation', 'P'),
+    'O5-galactosyl-L-hydroxylysine': ('galactosytlation', 'K'),
+    '(2S,5R)-5-hydroxylysine': ('hydroxylation', 'K'),
+    'O5-glucosylgalactosyl-L-hydroxylysine': ('glucosylgalactosylation', 'K'),
+    'N4-glycosyl-L-asparagine': ('glycosylation', 'N'),
+    'S-palmitoyl-L-cysteine': ('palmitoylation', 'C'),
+    'N-myristoylglycine': ('myristoylation', 'G'),
+    'half cystine': ('half cystine', 'C'),
+    'S-geranylgeranyl-L-cysteine': ('geranylation', 'C'),
+    'N6-acetyl-L-lysine': ('acetylation', 'K'),
+    'N\'-formyl-L-kynurenine': ('formylation', 'W'),
+    'Oxohistidine (from histidine)': ('oxo', 'H'),
+    'dihydroxyphenylalanine (Phe)': ('dihydroxylation', 'F'),
+    'glutamyl semialdehyde (Pro)': ('glutamylation', 'P'),
+    'monohydroxylated asparagine': ('hydroxylation', 'N'),
+    'monohydroxylated proline': ('hydroxylation', 'P'),
+    'ubiquitinylated lysine': ('ubiquitination', 'K'),
+    'N6,N6,N6-trimethyl-L-lysine': ('trimethylation', 'K'),
+    'N6,N6-dimethyl-L-lysine': ('dimethylation', 'K'),
+    'N6-myristoyl-L-lysine': ('myristoylation', 'K'),
+    'sumoylated lysine': ('sumoylation', 'K'),
+    'N6-methyl-L-lysine': ('methylation', 'K'),
+    'omega-N-methyl-L-arginine': ('methylation', 'R'),
+    'asymmetric dimethyl-L-arginine': ('dimethylation', 'R'),
+    'symmetric dimethyl-L-arginine': ('dimethylation', 'R'),
+    'O4\'-glucosyl-L-tyrosine': ('glycosylation', 'Y'),
+    'N6-biotinyl-L-lysine': ('biotinylation', 'K'),
+    'O-acetyl-L-serine': ('acetylation', 'S'),
+    '1-thioglycine': ('thiolation', 'G'),
+    'S-acetyl-L-cysteine': ('acetylation', 'C'),
+    'N-acetyl-L-alanine': ('acetylation', 'A'),
+    'S-methyl-L-cysteine': ('methylation', 'C'),
+    'L-gamma-carboxyglutamic acid': ('carboxylation', 'Z'),
+    '(2S,3R)-3-hydroxyaspartic acid': ('hydroxylation', 'D'),
+    'O-fucosyl-L-threonine': ('fucosylation', 'T'),
+    'O-fucosyl-L-serine': ('fucosylation', 'S'),
+    'O-palmitoleyl-L-serine': ('palmitoylation', 'S'),
+    '1-thioglycine (C-terminal)': ('thiolation', 'G'),
+    'neddylated lysine': ('neddylation', 'K'),
+    'N-palmitoyl-L-cysteine': ('palmitoylation', 'C'),
+    'S-farnesyl-L-cysteine': ('farnesylation', 'C')
+}

@@ -38,6 +38,12 @@ import threading
 from itertools import chain
 from collections import Counter
 import cPickle as pickle
+try:
+    import pygraphviz as graphviz
+except:
+    sys.stdout.write('\nModule `pygraphviz` not found.\n'\
+        'You don\'t need it unless you want to export dot files.\n')
+    sys.stdout.flush()
 
 # from this module:
 import logn
@@ -484,7 +490,8 @@ class BioGraph(object):
         self.__dict__ = other.__dict__
         self.ownlog.msg(1, "Reinitialized", 'INFO')
     
-    def init_network(self, lst = best, exclude = [], pfile = False, save = False):
+    def init_network(self, lst = best, exclude = [], 
+        cache_files = {}, pfile = False, save = False):
         '''
         This is a lazy way to start the module, load data 
         and build the high confidence, literature curated
@@ -621,19 +628,44 @@ class BioGraph(object):
                     self.graph.vs[e.target][eattr] = e[eattr]
     
     def filters(self, line, positiveFilters = [], negativeFilters = []):
+        for filtr in negativeFilters:
+            if ((type(filtr[1]) in simpleTypes and \
+                line[filtr[0]] == filtr[1]) or 
+                (type(filtr[1]) not in simpleTypes and \
+                line[filtr[0]] in filtr[1])):
+                    return True
         for filtr in positiveFilters:
             if not ((type(filtr[1]) in simpleTypes and \
-                line[filtr[0]] == filtr[1]) or \
-                line[filtr[0]] in filtr[1]):
-                    return True
-        for filtr in negativeFilters:
-            if (type(filtr[1]) in simpleTypes and \
-                line[filtr[0]] == filtr[1]) or \
-                line[filtr[0]] in filtr[1]:
+                line[filtr[0]] == filtr[1]) or 
+                (type(filtr[1]) not in simpleTypes and\
+                line[filtr[0]] in filtr[1])):
                     return True
         return False
     
-    def read_data_file(self, settings, keep_raw = False):
+    def lookup_cache(self, name, cache_files, int_cache, edges_cache):
+        infile = None
+        edgeListMapped = []
+        cache_file = cache_files[name] if name in cache_files else None
+        if cache_file is not None and os.path.exists(cache_file):
+            cache_type = cache_file.split('.')[-2]
+            if cache_type == 'interactions':
+                infile = self.read_from_cache(int_cache)
+            elif cache_type == 'edges':
+                edgeListMapped = self.read_from_cache(edges_cache)
+        elif os.path.exists(edges_cache):
+            edgeListMapped = self.read_from_cache(edges_cache)
+        else:
+            if os.path.exists(int_cache):
+                infile = self.read_from_cache(int_cache)
+        return infile, edgeListMapped
+    
+    def read_from_cache(self, cache_file):
+        sys.stdout.write('\t:: Reading from cache: %s\n'%cache_file)
+        sys.stdout.flush()
+        self.ownlog.msg(2, 'Data have been read from cache: %s'%cache_file)
+        return pickle.load(open(cache_file, 'rb'))
+    
+    def read_data_file(self, settings, keep_raw = False, cache_files = {}, cache = True):
         '''
         Interaction data with node and edge attributes can be read 
         from simple text based files. This function works not only
@@ -649,167 +681,197 @@ class BioGraph(object):
             To keep the raw data read by this function, in order for
             debugging purposes, or further use.
         '''
+        listLike = set([list, tuple])
         edgeList = []
         nodeList = []
-        inputFunc = self.get_function(settings.inFile)
-        if inputFunc is None and hasattr(dataio, settings.inFile):
-            inputFunc = getattr(dataio, settings.inFile)
-        if settings.__class__.__name__ != "ReadSettings":
-            self.ownlog.msg(2,("""No proper input file definition!\n\'settings\'
-                should be a \'ReadSettings\' instance\n"""), 'ERROR')
-            return None
-        # reading from remote or local file, or executing import function:
-        if settings.inFile.startswith('http') or \
-            settings.inFile.startswith('ftp'):
-            infile = dataio.curl(settings.inFile, silent = False)
-            infile = [x for x in infile.replace('\r', '').split('\n') if len(x) > 0]
-            self.ownlog.msg(2, "Retrieving data from%s ..." % settings.inFile)
-        # elif hasattr(dataio, settings.inFile):
-        elif inputFunc is not None:
-            infile = inputFunc(**settings.inputArgs)
-            self.ownlog.msg(2, "Retrieving data by dataio.%s() ..." % \
-                inputFunc.__name__)
-        elif os.path.isfile(settings.inFile):
-            infile = codecs.open(settings.inFile, encoding='utf-8', mode='r')
-            self.ownlog.msg(2, "%s opened..." % settings.inFile)
-        else:
-            self.ownlog.msg(2,"%s: No such file or dataio function! :(\n" % \
-            (settings.inFile), 'ERROR')
-            return None
-        # finding the largest referred column number, 
-        # to avoid references out of range
-        isDir = settings.isDirected
-        sign = settings.sign
-        refCol = settings.refs[0] if type(settings.refs) is tuple else settings.refs \
-            if type(settings.refs) is int else None
-        refSep = settings.refs[1] if type(settings.refs) is tuple else ';'
-        sigCol = None if type(sign) is not tuple else sign[0]
-        dirCol = None
-        dirVal = None
-        if type(isDir) is tuple:
-            dirCol = isDir[0]
-            dirVal = isDir[1]
-        elif type(sign) is tuple:
-            dirCol = sign[0]
-            dirVal = sign[1:]
-            dirVal = dirVal if type(dirVal[0]) in simpleTypes else flatList(dirVal)
-        maxCol = max(
-            [ 
-                settings.nameColA, 
-                settings.nameColB, 
-                self.get_max(settings.extraEdgeAttrs), 
-                self.get_max(settings.extraNodeAttrsA), 
-                self.get_max(settings.extraNodeAttrsB),
-                refCol,dirCol,sigCol
-            ])
-        # iterating lines from input file
-        lnum = 1
-        readError = 0
-        for line in infile:
-            if len(line) <= 1 or (lnum == 1 and settings.header):
-                # empty lines
-                # or header row
-                lnum += 1
-                continue
-            if type(line) is not list:
-                line = line.replace('\n','').replace('\r','').\
-                split(settings.separator)
-            else:
-                line = [x.replace('\n','').replace('\r','') \
-                    if type(x) in charTypes else x 
-                    for x in line]
-            # in case line has less fields than needed
-            if len(line) < maxCol:
-                self.ownlog.msg(2,(
-                    "Line #%u has less than %u fields! :(\n" % (lnum, maxCol)),
-                    'ERROR')
-                readError = 1
-                break
-            else:
-                # applying filters:
-                if self.filters(line, settings.positiveFilters, settings.negativeFilters):
-                    continue
-                # reading names and attributes:
-                if isDir:
-                    thisEdgeDir = True
+        edgeListMapped = []
+        infile = None
+        _name = settings.name.lower()
+        int_cache = os.path.join('cache', '%s.interactions.pickle' % _name)
+        edges_cache = os.path.join('cache', '%s.edges.pickle' % _name)
+        if cache:
+            infile, edgeListMapped = self.lookup_cache(_name, cache_files, int_cache, edges_cache)
+        if len(edgeListMapped) == 0:
+            if infile is None:
+                if settings.huge:
+                    sys.stdout.write('\n\tProcessing %s requires huge memory.\n'\
+                        '\tPlease hit `y` if you have at least 2G free memory,\n'\
+                        '\tor `n` to omit %s.\n'\
+                        '\tAfter processing once, it will be saved in \n'\
+                        '\t%s, so next time can be loaded quickly.\n\n'\
+                        '\tProcess %s now? [y/n]\n' % \
+                        (settings.name, settings.name, edges_cache, settings.name))
+                    sys.stdout.flush()
+                    while True:
+                        answer = raw_input().lower()
+                        if answer == 'n':
+                            return None
+                        elif answer == 'y':
+                            break
+                        else:
+                            sys.stdout.write('\n\tPlease answer `y` or `n`:\n\t')
+                            sys.stdout.flush()
+                inputFunc = self.get_function(settings.inFile)
+                if inputFunc is None and hasattr(dataio, settings.inFile):
+                    inputFunc = getattr(dataio, settings.inFile)
+                if settings.__class__.__name__ != "ReadSettings":
+                    self.ownlog.msg(2,("""No proper input file definition!\n\'settings\'
+                        should be a \'ReadSettings\' instance\n"""), 'ERROR')
+                    return None
+                # reading from remote or local file, or executing import function:
+                if settings.inFile.startswith('http') or \
+                    settings.inFile.startswith('ftp'):
+                    infile = dataio.curl(settings.inFile, silent = False)
+                    infile = [x for x in infile.replace('\r', '').split('\n') if len(x) > 0]
+                    self.ownlog.msg(2, "Retrieving data from%s ..." % settings.inFile)
+                # elif hasattr(dataio, settings.inFile):
+                elif inputFunc is not None:
+                    infile = inputFunc(**settings.inputArgs)
+                    self.ownlog.msg(2, "Retrieving data by dataio.%s() ..." % \
+                        inputFunc.__name__)
+                elif os.path.isfile(settings.inFile):
+                    infile = codecs.open(settings.inFile, encoding='utf-8', mode='r')
+                    self.ownlog.msg(2, "%s opened..." % settings.inFile)
                 else:
-                    thisEdgeDir = False if dirCol is None or dirVal is None else \
-                        True if line[dirCol] in dirVal else False
-                refs = []
-                if refCol is not None:
-                    refs = delEmpty(list(set(line[refCol].split(refSep))))
-                refs = dataio.only_pmids([r.strip() for r in refs])
-                if len(refs) == 0 and settings.must_have_references:
+                    self.ownlog.msg(2,"%s: No such file or dataio function! :(\n" % \
+                    (settings.inFile), 'ERROR')
+                    return None
+            # finding the largest referred column number, 
+            # to avoid references out of range
+            isDir = settings.isDirected
+            sign = settings.sign
+            refCol = settings.refs[0] if type(settings.refs) is tuple else settings.refs \
+                if type(settings.refs) is int else None
+            refSep = settings.refs[1] if type(settings.refs) is tuple else ';'
+            sigCol = None if type(sign) is not tuple else sign[0]
+            dirCol = None
+            dirVal = None
+            if type(isDir) is tuple:
+                dirCol = isDir[0]
+                dirVal = isDir[1]
+            elif type(sign) is tuple:
+                dirCol = sign[0]
+                dirVal = sign[1:]
+                dirVal = dirVal if type(dirVal[0]) in simpleTypes else flatList(dirVal)
+            maxCol = max(
+                [ 
+                    settings.nameColA, 
+                    settings.nameColB, 
+                    self.get_max(settings.extraEdgeAttrs), 
+                    self.get_max(settings.extraNodeAttrsA), 
+                    self.get_max(settings.extraNodeAttrsB),
+                    refCol,dirCol,sigCol
+                ])
+            # iterating lines from input file
+            lnum = 0
+            readError = 0
+            for line in infile:
+                lnum += 1
+                if len(line) <= 1 or (lnum == 1 and settings.header):
+                    # empty lines
+                    # or header row
                     continue
-                # to give an easy way:
-                if type(settings.ncbiTaxId) is int:
-                    taxA = settings.ncbiTaxId
-                    taxB = settings.ncbiTaxId
-                # to enable more sophisticated inputs:
-                if type(settings.ncbiTaxId) is dict:
-                    taxx = self.get_taxon(settings.ncbiTaxId, line)
-                    if type(taxx) is tuple:
-                        taxA = taxx[0]
-                        taxB = taxx[1]
+                if type(line) not in listLike:
+                    line = line.replace('\n','').replace('\r','').\
+                    split(settings.separator)
+                else:
+                    line = [x.replace('\n','').replace('\r','') \
+                        if type(x) in charTypes else x 
+                        for x in line]
+                # in case line has less fields than needed
+                if len(line) < maxCol:
+                    self.ownlog.msg(2,(
+                        "Line #%u has less than %u fields! :(\n" % (lnum, maxCol)),
+                        'ERROR')
+                    readError = 1
+                    break
+                else:
+                    # applying filters:
+                    if self.filters(line, settings.positiveFilters, settings.negativeFilters):
+                        continue
+                    # reading names and attributes:
+                    if isDir:
+                        thisEdgeDir = True
                     else:
-                        taxA = taxB = taxx
-                if taxA is None or taxB is None:
-                    continue
-                stim = False
-                inh = False
-                if type(sign) is tuple:
-                    if (type(sign[1]) is list \
-                        and line[sign[0]] in sign[1]) or \
-                        line[sign[0]] == sign[1]:
-                        stim = True
-                    elif (type(sign[2]) is list \
-                        and line[sign[0]] in sign[2]) or \
-                        line[sign[0]] == sign[2]:
-                        inh = True
-                newEdge = {
-                    "nameA": line[settings.nameColA], 
-                    "nameB": line[settings.nameColB], 
-                    "nameTypeA": settings.nameTypeA, 
-                    "nameTypeB": settings.nameTypeB, 
-                    "typeA": settings.typeA, 
-                    "typeB": settings.typeB, 
-                    "source": settings.name, 
-                    "isDirected": thisEdgeDir,
-                    "references": refs,
-                    "stim": stim,
-                    "inh": inh,
-                    "taxA": taxA,
-                    "taxB": taxB,
-                    "type": settings.intType}
-                #except:
-                    #self.ownlog.msg(2,("""Wrong name column indexes (%u and %u), 
-                        #or wrong separator (%s)? Line #%u\n""" 
-                        #% (
-                            #settings.nameColA, settings.nameColB, 
-                            #settings.separator, lnum)), 'ERROR')
-                    #readError = 1
-                    #break
-                # getting additional edge and node attributes
-                attrsEdge = self.get_attrs(line, settings.extraEdgeAttrs, lnum)
-                attrsNodeA = self.get_attrs(line, settings.extraNodeAttrsA, lnum)
-                attrsNodeB = self.get_attrs(line, settings.extraNodeAttrsB, lnum)
-                # merging dictionaries
-                nodeAttrs = {
-                    "attrsNodeA": attrsNodeA, 
-                    "attrsNodeB": attrsNodeB, 
-                    "attrsEdge": attrsEdge}
-                newEdge = dict(chain(newEdge.iteritems(), nodeAttrs.iteritems() ))
-            if readError != 0:
-                break
-            edgeList.append(newEdge)
-            lnum += 1
-        if type(infile) is file:
-            infile.close()
-        ### !!!! ##
-        edgeListMapped = self.map_list(edgeList)
-        self.ownlog.msg(2, "%u lines have been read from %s,'\
+                        thisEdgeDir = False if dirCol is None or dirVal is None else \
+                            True if line[dirCol] in dirVal else False
+                    refs = []
+                    if refCol is not None:
+                        refs = delEmpty(list(set(line[refCol].split(refSep))))
+                    refs = dataio.only_pmids([r.strip() for r in refs])
+                    if len(refs) == 0 and settings.must_have_references:
+                        continue
+                    # to give an easy way:
+                    if type(settings.ncbiTaxId) is int:
+                        taxA = settings.ncbiTaxId
+                        taxB = settings.ncbiTaxId
+                    # to enable more sophisticated inputs:
+                    if type(settings.ncbiTaxId) is dict:
+                        taxx = self.get_taxon(settings.ncbiTaxId, line)
+                        if type(taxx) is tuple:
+                            taxA = taxx[0]
+                            taxB = taxx[1]
+                        else:
+                            taxA = taxB = taxx
+                    if taxA is None or taxB is None:
+                        continue
+                    stim = False
+                    inh = False
+                    if type(sign) is tuple:
+                        if (type(sign[1]) is list \
+                            and line[sign[0]] in sign[1]) or \
+                            line[sign[0]] == sign[1]:
+                            stim = True
+                        elif (type(sign[2]) is list \
+                            and line[sign[0]] in sign[2]) or \
+                            line[sign[0]] == sign[2]:
+                            inh = True
+                    newEdge = {
+                        "nameA": line[settings.nameColA], 
+                        "nameB": line[settings.nameColB], 
+                        "nameTypeA": settings.nameTypeA, 
+                        "nameTypeB": settings.nameTypeB, 
+                        "typeA": settings.typeA, 
+                        "typeB": settings.typeB, 
+                        "source": settings.name, 
+                        "isDirected": thisEdgeDir,
+                        "references": refs,
+                        "stim": stim,
+                        "inh": inh,
+                        "taxA": taxA,
+                        "taxB": taxB,
+                        "type": settings.intType}
+                    #except:
+                        #self.ownlog.msg(2,("""Wrong name column indexes (%u and %u), 
+                            #or wrong separator (%s)? Line #%u\n""" 
+                            #% (
+                                #settings.nameColA, settings.nameColB, 
+                                #settings.separator, lnum)), 'ERROR')
+                        #readError = 1
+                        #break
+                    # getting additional edge and node attributes
+                    attrsEdge = self.get_attrs(line, settings.extraEdgeAttrs, lnum)
+                    attrsNodeA = self.get_attrs(line, settings.extraNodeAttrsA, lnum)
+                    attrsNodeB = self.get_attrs(line, settings.extraNodeAttrsB, lnum)
+                    # merging dictionaries
+                    nodeAttrs = {
+                        "attrsNodeA": attrsNodeA, 
+                        "attrsNodeB": attrsNodeB, 
+                        "attrsEdge": attrsEdge}
+                    newEdge = dict(chain(newEdge.iteritems(), nodeAttrs.iteritems() ))
+                if readError != 0:
+                    break
+                edgeList.append(newEdge)
+            if type(infile) is file:
+                infile.close()
+            ### !!!! ##
+            edgeListMapped = self.map_list(edgeList)
+            self.ownlog.msg(2, "%u lines have been read from %s,'\
             %u links after mapping" % \
             (lnum-1, settings.inFile, len(edgeListMapped)))
+            if cache:
+                pickle.dump(edgeListMapped, open(edges_cache, 'wb'))
+                self.ownlog.msg(2, 'Mapped edge list saved to %s'%edges_cache)
         if keep_raw:
             self.data[settings.name] = edgeListMapped
         self.raw_data = edgeListMapped
@@ -2213,7 +2275,7 @@ class BioGraph(object):
         outf.write(out[:-1])
         outf.close()
     
-    def load_resources(self, lst = best, exclude = []):
+    def load_resources(self, lst = best, exclude = [], cache_files = {}):
         '''
         Loads multiple resources, and cleans up after. 
         Looks up ID types, and loads all ID conversion 
@@ -2222,9 +2284,13 @@ class BioGraph(object):
         resources one by one.
         '''
         self.load_reflists()
-        ac_types = set([])
-        for k, v in lst.iteritems():
-            if k not in exclude:
+        huge = dict((k, v) for k, v in lst.iteritems() \
+            if v.huge and k not in exclude and v.name not in cache_files)
+        nothuge = dict((k, v) for k, v in lst.iteritems() \
+            if (not v.huge or v.name in cache_files) and k not in exclude)
+        for lst in [huge, nothuge]:
+            ac_types = set([])
+            for k, v in lst.iteritems():
                 if type(v.nameTypeA) is list:
                     ac_types = ac_types | set(v.nameTypeA)
                 else:
@@ -2233,15 +2299,14 @@ class BioGraph(object):
                     ac_types = ac_types | set(v.nameTypeB)
                 else:
                     ac_types.add(v.nameTypeB)
-        table_loaded = set([])
-        for ids in self.mapper.tables.keys():
-            if ids[1] == 'uniprot':
-                table_loaded.add(ids[0])
-        self.mapper.load_uniprot_mappings(list(ac_types - table_loaded & \
-            set(self.mapper.name_types.keys())))
-        for k, v in lst.iteritems():
-            if k not in exclude:
-                self.load_resource(v, clean = False)
+            table_loaded = set([])
+            for ids in self.mapper.tables.keys():
+                if ids[1] == 'uniprot':
+                    table_loaded.add(ids[0])
+            self.mapper.load_uniprot_mappings(list(ac_types - table_loaded & \
+                set(self.mapper.name_types.keys())))
+            for k, v in lst.iteritems():
+                self.load_resource(v, clean = False, cache_files = cache_files)
         sys.stdout.write('\n')
         self.clean_graph()
         self.update_sources()
@@ -2255,9 +2320,9 @@ class BioGraph(object):
     def load_mappings(self):
         self.mapper.load_mappings(maps=data_formats.mapList)
     
-    def load_resource(self, settings, clean = True):
+    def load_resource(self, settings, clean = True, cache_files = {}):
         sys.stdout.write(' » '+settings.name+'\n')
-        self.read_data_file(settings)
+        self.read_data_file(settings, cache_files = cache_files)
         self.attach_network()
         if clean:
             self.clean_graph()
@@ -4865,33 +4930,200 @@ class BioGraph(object):
             }
         self.htp = htdata
     
+    def third_source_directions(self, graph = None):
+        self.kegg_directions(graph = graph)
+        self.laudanna_effects(graph = graph)
+        self.laudanna_directions(graph = graph)
+        self.wang_effects(graph = graph)
+        self.acsn_effects(graph = graph)
+    
     def kegg_directions(self, graph = None):
-        g = graph if graph is not None else self.graph
         keggd = dataio.kegg_pathways()
+        self.process_directions(keggd, 'KEGG', stimulation = 'activation', 
+            inhibition = 'inhibition', graph = graph)
+    
+    def laudanna_directions(self, graph = None):
+        laud = dataio.get_laudanna_directions()
+        self.process_directions(laud, 'Laudanna_sigflow', dirs_only = True, 
+            id_type = 'genesymbol', graph = graph)
+    
+    def laudanna_effects(self, graph = None):
+        laud = dataio.get_laudanna_effects()
+        self.process_directions(laud, 'Laudanna_effects', stimulation = 'activation', 
+            inhibition = 'inhibition', directed = 'docking', 
+            id_type = 'genesymbol', graph = graph)
+    
+    def acsn_effects(self, graph = None):
+        acsnd = dataio.get_acsn_effects()
+        self.process_directions(acsnd, 'ACSN', stimulation = '+',
+            inhibition = '-', directed = '*',
+            id_type = 'genesymbol', graph = graph)
+    
+    def wang_effects(self, graph = None):
+        wangd = dataio.get_wang_effects()
+        self.process_directions(wangd, 'Wang', stimulation = '+', 
+            inhibition = '-', directed = '0', 
+            id_type = 'genesymbol', graph = graph)
+    
+    def process_directions(self, dirs, name, directed = None,
+        stimulation = None, inhibition = None, graph = None,
+        id_type = None, dirs_only = False):
+        g = graph if graph is not None else self.graph
         nodes = set(g.vs['name'])
-        keggdirs = 0
+        sourcedirs = 0
         newdirs = 0
         newsigns = 0
-        for k in keggd:
-            if k[2] == 'activation' or k[2] == 'inhibition':
-                if k[0] in nodes and k[1] in nodes:
-                    v1 = g.vs.find(name = k[0])
-                    v2 = g.vs.find(name = k[1])
-                    e = g.get_eid(v1, v2, error = False)
-                    if e != -1:
-                        keggdirs +=1
-                        if not g.es[e]['dirs'].get_dir((k[0], k[1])):
-                            newdirs += 1
-                        if k[2] == 'activation':
-                            if not g.es[e]['dirs'].get_sign((k[0], k[1]), 'positive'):
-                                newsigns += 1
-                            g.es[e]['dirs'].set_sign((k[0], k[1]), 'positive', 'KEGG')
-                        if k[2] == 'inhibition':
-                            if not g.es[e]['dirs'].get_sign((k[0], k[1]), 'negative'):
-                                newsigns += 1
-                            g.es[e]['dirs'].set_sign((k[0], k[1]), 'negative', 'KEGG')
-        sys.stdout.write('\t:: Directions and signs set for %u edges based on KEGG,'\
-            ' %u new directions, %u new signs.\n' % (keggdirs, newdirs, newsigns))
+        for k in dirs:
+            if dirs_only or k[2] == stimulation or k[2] == inhibition or k[2] == directed:
+                src = [k[0]] if id_type is None \
+                    else self.mapper.map_name(k[0], id_type, 'uniprot')
+                tgt = [k[1]] if id_type is None \
+                    else self.mapper.map_name(k[1], id_type, 'uniprot')
+                for s in src:
+                    for t in tgt:
+                        if s in nodes and t in nodes:
+                            v1 = g.vs.find(name = s)
+                            v2 = g.vs.find(name = t)
+                            e = g.get_eid(v1, v2, error = False)
+                            if e != -1:
+                                sourcedirs +=1
+                                if not g.es[e]['dirs'].get_dir((s, t)):
+                                    newdirs += 1
+                                if dirs_only or k[2] == directed:
+                                    g.es[e]['dirs'].set_dir((s, t), name)
+                                elif k[2] == stimulation:
+                                    if not g.es[e]['dirs'].get_sign((s, t), 'positive'):
+                                        newsigns += 1
+                                    g.es[e]['dirs'].set_sign((s, t), 'positive', name)
+                                elif k[2] == inhibition:
+                                    if not g.es[e]['dirs'].get_sign((s, t), 'negative'):
+                                        newsigns += 1
+                                    g.es[e]['dirs'].set_sign((s, t), 'negative', name)
+        sys.stdout.write('\t:: Directions and signs set for %u edges based on %s,'\
+            ' %u new directions, %u new signs.\n' % (sourcedirs, name, newdirs, newsigns))
+    
+    def export_dot(self, nodes = None, edges = None, directed = True, 
+        labels = 'genesymbol', edges_filter = lambda e: True, nodes_filter = lambda v: True,
+        node_shape = 'rect', edge_sources = None, dir_sources = None, graph = None,
+        return_object = False, save_dot = None, save_graphics = None, 
+        prog = 'neato', format = None):
+        '''
+        Builds a pygraphviz.AGraph() object with filtering the edges 
+        and vertices along arbitrary criteria.
+        Returns the Agraph object if requesred, or exports the dot
+        file, or saves the graphics.
+        
+        @nodes : list
+        List of vertex ids to be included.
+        @edges : list
+        List of edge ids to be included.
+        @directed : bool
+        Create a directed or undirected graph.
+        @labels : str
+        Name type to be used as id/label in the dot format.
+        @edges_filter : function
+        Function to filter edges, accepting igraph.Edge as argument.
+        @nodes_filter : function
+        Function to filter vertices, accepting igraph.Vertex as argument.
+        @node_shape : str
+        Graphviz node shape.
+        @edge_sources : list
+        Sources to be included.
+        @dir_sources : list
+        Direction and effect sources to be included.
+        @graph : igraph.Graph
+        The graph object to export.
+        @return_object : bool
+        Whether to return the pygraphviz.AGraph object.
+        @save_dot : str
+        Filename to export the dot file to.
+        @save_graphics : str
+        Filename to export the graphics, the extension defines the format.
+        @prog : str
+        The graphviz layout algorithm to use.
+        @format : str
+        The graphics format passed to pygraphviz.AGrapg().draw().
+        '''
+        stim_color = '#00CC00'
+        inh_color = '#CC0000'
+        dir_color = '#0000CC'
+        stim_head = 'normal'
+        inh_head = 'tee'
+        dir_head = 'diamond'
+        undir_head = 'none'
+        undir_color = '#CCCCCC'
+        g = self.graph if graph is None else graph
+        labels = 'name' if labels == 'uniprot' else 'label'
+        edge_sources = set(edge_sources)
+        dir_sources = set(dir_sources)
+        if labels == 'label' and g['label'] == g['name']:
+            self.genesymbol_labels()
+        nodes = dict((v.id, v[labels]) for v in g.vs)
+        dot = graphviz.AGraph(directed = directed)
+        dot.add_nodes_from(nodes.values())
+        dot.node_attr['shape'] = node_shape
+        for eid in edges:
+            s = g.es[eid].source
+            t = g.es[eid].target
+            sn = g.vs[s]['name']
+            tn = g.vs[t]['name']
+            sl = g.vs[s][labels]
+            tl = g.vs[t][labels]
+            d = g.es[eid]['dirs']
+            if directed:
+                if d.get_dir((sn, tn)):
+                    sdir = d.get_dir((sn, tn), sources = True)
+                    if dir_sources is None or len(sdir & dir_sources) > 0:
+                        attrs = {}
+                        sign = d.get_sign((sn, tn))
+                        ssign = d.get_sign((sn, tn), sources = True)
+                        if sign[0] and dir_sources is None or \
+                            dir_sources is not None and \
+                            len(ssign[0] & dir_sources) > 0:
+                            attrs['arrowhead'] = stim_head
+                            attrs['color'] = stim_color
+                        elif sign[1] and dir_sources is None or \
+                            dir_sources is not None and \
+                            len(ssign[1] & dir_sources) > 0:
+                            attrs['arrowhead'] = inh_head
+                            attrs['color'] = inh_color
+                        else:
+                            attrs['arrowhead'] = dir_head
+                            attrs['color'] = dir_color
+                        dot.add_edge(sl, tl, **attrs)
+                if d.get_dir((tn, sn)):
+                    sdir = d.get_dir((tn, sn), sources = True)
+                    if dir_sources is None or len(sdir & dir_sources) > 0:
+                        attrs = {}
+                        sign = d.get_sign((tn, sn))
+                        ssign = d.get_sign((tn, sn), sources = True)
+                        if sign[0] and dir_sources is None or \
+                            dir_sources is not None and \
+                            len(ssign[0] & dir_sources) > 0:
+                            attrs['arrowhead'] = stim_head
+                            attrs['color'] = stim_color
+                        elif sign[1] and dir_sources is None or \
+                            dir_sources is not None and \
+                            len(ssign[1] & dir_sources) > 0:
+                            attrs['arrowhead'] = inh_head
+                            attrs['color'] = inh_color
+                        else:
+                            attrs['arrowhead'] = dir_head
+                            attrs['color'] = dir_color
+                        dot.add_edge(tl, sl, **attrs)
+            if not directed or d.get_dir('undirected') and \
+                not d.get_dir((sn, tn)) and not d.get_dir((tn, sn)):
+                attrs = {}
+                attrs['arrowhead'] = undir_head
+                attrs['color'] = undir_color
+                dot.add_edge((sl, tl), **attrs)
+        if type(save_dot) in set([str, unicode]):
+            with open(save_dot) as f:
+                f.write(dot.to_string())
+        if type(save_graphics) in set([str, unicode]):
+            dot.draw(save_graphics, format = format, prog = prog)
+        if return_object:
+            return dot
     
     def _disclaimer(self):
         sys.stdout.write(self.disclaimer)

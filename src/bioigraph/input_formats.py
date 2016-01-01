@@ -129,7 +129,7 @@ class ReadSettings:
             extraNodeAttrsB = {}, header = False, taxonA = False, taxonB = False, 
             ncbiTaxId = False, interactionType = 'PPI', 
             positiveFilters = [], negativeFilters = [], inputArgs = {}, 
-            must_have_references = True):
+            must_have_references = True, huge = False):
         self.typeA = typeA
         self.typeB = typeB
         self.nameColA = nameColA
@@ -154,6 +154,7 @@ class ReadSettings:
         self.negativeFilters = negativeFilters
         self.inputArgs = inputArgs
         self.must_have_references = must_have_references and bool(references)
+        self.huge = huge
 
 class ReadList:
     
