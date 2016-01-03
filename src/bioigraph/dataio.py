@@ -3579,16 +3579,8 @@ def signor_urls():
     return tsv_urls
 
 def signor_interactions():
-    urls = signor_urls()
-    tbl = []
-    prg = progress.Progress(len(urls), 'Downloading Signor', 1, percent = False)
-    for pw, url in urls:
-        prg.step()
-        tsv = curl(url, silent = True)
-        tsv = [l.strip().split('\t') + [pw] for l in tsv.split('\n')[1:] if len(l) > 0]
-        tbl.extend(tsv)
-    prg.terminate()
-    return tbl
+    url = data_formats.urls['signor']['all_url']
+    return curl(url, silent = False, large = True)
 
 def rolland_hi_ii_14():
     fname = data_formats.urls['hiii14']['file']

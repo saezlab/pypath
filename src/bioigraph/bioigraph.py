@@ -457,12 +457,7 @@ class BioGraph(object):
                 '\tcredits for the original sources when you publish your\n'\
                 '\tresults. To find out more about data sources please\n'\
                 '\tlook at `bioigraph.descriptions` and\n'\
-                '\t`bioigraph.data_formats.urls`.\n'\
-                '\n'\
-                '\tNote: this module contains unpublished\n'\
-                '\tdata from the Signor database. Please\n'\
-                '\tconsider this before including Signor\n'\
-                '\tin your analysis.\n\n'
+                '\t`bioigraph.data_formats.urls`.\n\n'
             self.licence()
             self.ownlog.msg(1, "BioGraph has been initialized")
             self.ownlog.msg(1, "Beginning session '%s'" % self.session)
@@ -5006,7 +5001,9 @@ class BioGraph(object):
         labels = 'genesymbol', edges_filter = lambda e: True, nodes_filter = lambda v: True,
         node_shape = 'rect', edge_sources = None, dir_sources = None, graph = None,
         return_object = False, save_dot = None, save_graphics = None, 
-        prog = 'neato', format = None):
+        prog = 'neato', format = None, hide = False, node_colors = {},
+        label_font = None, hide_nodes = [], main_title = None,
+        splines = None):
         '''
         Builds a pygraphviz.AGraph() object with filtering the edges 
         and vertices along arbitrary criteria.
@@ -5043,6 +5040,27 @@ class BioGraph(object):
         The graphviz layout algorithm to use.
         @format : str
         The graphics format passed to pygraphviz.AGrapg().draw().
+        @hide : bool
+        Hide filtered edges instead of omit them.
+        @node_colors : dict
+        Override default node colors. Dict with vertex ids as keys and 
+        (background, font color) tuples as values.
+        @hide nodes : list
+        Nodes to hide. List of vertex ids.
+        @main_title : str
+        Main title of the figure.
+        Example:
+            import bioigraph
+            from bioigraph import data_formats
+            net = bioigraph.BioGraph()
+            net.init_network(pfile = 'cache/default.pickle')
+            #net.init_network({'arn': data_formats.best['arn']})
+            tgf = [v.index for v in net.graph.vs if 'TGF' in v['slk_pathways']]
+            dot = net.export_dot(nodes = tgf, save_graphics = 'tgf_slk.pdf', prog = 'dot',
+                main_title = 'TGF-beta pathway', return_object = True,
+                label_font = 'HelveticaNeueLTStd Med Cn', 
+                edge_sources = ['SignaLink3'], 
+                dir_sources = ['SignaLink3'], hide = True)
         '''
         stim_color = '#00CC00'
         inh_color = '#CC0000'
@@ -5054,14 +5072,47 @@ class BioGraph(object):
         undir_color = '#CCCCCC'
         g = self.graph if graph is None else graph
         labels = 'name' if labels == 'uniprot' else 'label'
-        edge_sources = set(edge_sources)
-        dir_sources = set(dir_sources)
-        if labels == 'label' and g['label'] == g['name']:
+        edge_sources = edge_sources if edge_sources is None else set(edge_sources)
+        dir_sources = dir_sources if dir_sources is None else set(dir_sources)
+        labels = 'name' if labels == 'uniprot' else labels
+        labels = 'label' if labels == 'genesymbol' else labels
+        if labels == 'label' and g.vs['label'] == g.vs['name']:
             self.genesymbol_labels()
-        nodes = dict((v.id, v[labels]) for v in g.vs)
+        if nodes is None and edges is not None:
+            nodes = [n for e in g.es for n in (e.source, e.target) if e.index in edges]
+        elif nodes is not None and edges is None:
+            edges = [e.index for e in g.es if e.source in nodes and e.target in nodes]
+        else:
+            edges = xrange(g.ecount())
+            nodes = xrange(g.vcount())
+        dNodes = dict((v.index, v[labels]) for v in g.vs if nodes is None or v.index in nodes)
+        hide_nodes = set(hide_nodes)
+        # graph
         dot = graphviz.AGraph(directed = directed)
-        dot.add_nodes_from(nodes.values())
+        if main_title is not None:
+            dot.graph_attr['label'] = main_title
+            dot.graph_attr['fontsize'] = 42.0
+            if label_font is not None:
+                dot.graph_attr['fontname'] = label_font
+        if splines is not None:
+            dot.graph_attr['splines'] = splines
+        # nodes
+        for vid, node in dNodes.iteritems():
+            attrs = {}
+            if vid in node_colors:
+                attrs['fillcolor'] = node_colors[vid][0]
+                attrs['fontcolor'] = node_colors[vid][1]
+            elif 'default' in node_colors:
+                attrs['fillcolor'] = node_colors['default'][0]
+                attrs['fontcolor'] = node_colors['default'][1]
+            if label_font is not None:
+                attrs['fontname'] = label_font
+            if vid in hide_nodes:
+                attrs['style'] = 'invis'
+            attrs['fontsize'] = 24.0
+            dot.add_node(node, **attrs)
         dot.node_attr['shape'] = node_shape
+        # edges
         for eid in edges:
             s = g.es[eid].source
             t = g.es[eid].target
@@ -5070,55 +5121,82 @@ class BioGraph(object):
             sl = g.vs[s][labels]
             tl = g.vs[t][labels]
             d = g.es[eid]['dirs']
-            if directed:
-                if d.get_dir((sn, tn)):
-                    sdir = d.get_dir((sn, tn), sources = True)
-                    if dir_sources is None or len(sdir & dir_sources) > 0:
-                        attrs = {}
-                        sign = d.get_sign((sn, tn))
-                        ssign = d.get_sign((sn, tn), sources = True)
-                        if sign[0] and dir_sources is None or \
-                            dir_sources is not None and \
-                            len(ssign[0] & dir_sources) > 0:
-                            attrs['arrowhead'] = stim_head
-                            attrs['color'] = stim_color
-                        elif sign[1] and dir_sources is None or \
-                            dir_sources is not None and \
-                            len(ssign[1] & dir_sources) > 0:
-                            attrs['arrowhead'] = inh_head
-                            attrs['color'] = inh_color
-                        else:
-                            attrs['arrowhead'] = dir_head
-                            attrs['color'] = dir_color
-                        dot.add_edge(sl, tl, **attrs)
-                if d.get_dir((tn, sn)):
-                    sdir = d.get_dir((tn, sn), sources = True)
-                    if dir_sources is None or len(sdir & dir_sources) > 0:
-                        attrs = {}
-                        sign = d.get_sign((tn, sn))
-                        ssign = d.get_sign((tn, sn), sources = True)
-                        if sign[0] and dir_sources is None or \
-                            dir_sources is not None and \
-                            len(ssign[0] & dir_sources) > 0:
-                            attrs['arrowhead'] = stim_head
-                            attrs['color'] = stim_color
-                        elif sign[1] and dir_sources is None or \
-                            dir_sources is not None and \
-                            len(ssign[1] & dir_sources) > 0:
-                            attrs['arrowhead'] = inh_head
-                            attrs['color'] = inh_color
-                        else:
-                            attrs['arrowhead'] = dir_head
-                            attrs['color'] = dir_color
-                        dot.add_edge(tl, sl, **attrs)
-            if not directed or d.get_dir('undirected') and \
-                not d.get_dir((sn, tn)) and not d.get_dir((tn, sn)):
-                attrs = {}
-                attrs['arrowhead'] = undir_head
-                attrs['color'] = undir_color
-                dot.add_edge((sl, tl), **attrs)
+            # this edge should be visible at all?
+            evis = edges_filter(g.es[eid]) and \
+                nodes_filter(g.vs[s]) and nodes_filter(g.vs[t]) and \
+                (edge_sources is None or \
+                    len(set(g.es[eid]['sources']) & edge_sources) > 0) and \
+                g.es[eid].source not in hide_nodes and g.es[eid].target not in hide_nodes
+            if evis or hide:
+                drawn_directed = False
+                if directed:
+                    if d.get_dir((sn, tn)):
+                        sdir = d.get_dir((sn, tn), sources = True)
+                        vis = (dir_sources is None or len(sdir & dir_sources) > 0) and evis
+                        if vis or hide:
+                            attrs = {}
+                            sign = d.get_sign((sn, tn))
+                            ssign = d.get_sign((sn, tn), sources = True)
+                            drawn_directed = True
+                            if vis and (sign[0] and dir_sources is None or \
+                                dir_sources is not None and \
+                                len(ssign[0] & dir_sources) > 0):
+                                attrs['arrowhead'] = stim_head
+                                attrs['color'] = stim_color
+                            elif vis and (sign[1] and dir_sources is None or \
+                                dir_sources is not None and \
+                                len(ssign[1] & dir_sources) > 0):
+                                attrs['arrowhead'] = inh_head
+                                attrs['color'] = inh_color
+                            elif vis:
+                                attrs['arrowhead'] = dir_head
+                                attrs['color'] = dir_color
+                            else:
+                                attrs['style'] = 'invis'
+                                drawn_directed = False
+                            dot.add_edge(sl, tl, **attrs)
+                    if d.get_dir((tn, sn)):
+                        sdir = d.get_dir((tn, sn), sources = True)
+                        vis = (dir_sources is None or len(sdir & dir_sources) > 0) and evis
+                        if vis or hide:
+                            attrs = {}
+                            sign = d.get_sign((tn, sn))
+                            ssign = d.get_sign((tn, sn), sources = True)
+                            drawn_directed = True
+                            if vis and (sign[0] and dir_sources is None or \
+                                dir_sources is not None and \
+                                len(ssign[0] & dir_sources) > 0):
+                                attrs['arrowhead'] = stim_head
+                                attrs['color'] = stim_color
+                            elif vis and (sign[1] and dir_sources is None or \
+                                dir_sources is not None and \
+                                len(ssign[1] & dir_sources) > 0):
+                                attrs['arrowhead'] = inh_head
+                                attrs['color'] = inh_color
+                            elif vis:
+                                attrs['arrowhead'] = dir_head
+                                attrs['color'] = dir_color
+                            else:
+                                attrs['style'] = 'invis'
+                                drawn_directed = False
+                            dot.add_edge(tl, sl, **attrs)
+                if not directed or d.get_dir('undirected'):
+                    attrs = {}
+                    attrs['arrowhead'] = undir_head
+                    attrs['color'] = undir_color
+                    if sl == 'CREB1' and tl == 'TP53':
+                        print dot.has_neighbor(sl, tl)
+                        print dot.get_edge(sl, tl).attr
+                    if (not evis and hide) or drawn_directed:
+                        attrs['style'] = 'invis'
+                    if dot.has_neighbor(sl, tl):
+                        if dot.get_edge(sl, tl).attr['style'] is not None and \
+                            'invis' in dot.get_edge(sl, tl).attr['style']:
+                            dot.delete_edge(sl, tl)
+                    if not dot.has_neighbor(sl, tl):
+                        dot.add_edge((sl, tl), **attrs)
         if type(save_dot) in set([str, unicode]):
-            with open(save_dot) as f:
+            with open(save_dot, 'w') as f:
                 f.write(dot.to_string())
         if type(save_graphics) in set([str, unicode]):
             dot.draw(save_graphics, format = format, prog = prog)

@@ -482,7 +482,8 @@ urls = {
     'signor': {
         'label': 'SIGNOR pathways',
         'list_url': 'http://signor.uniroma2.it/download.jsp',
-        'base_url': 'http://signor.uniroma2.it/%s'
+        'base_url': 'http://signor.uniroma2.it/%s',
+        'all_url': 'http://signor.uniroma2.it/DownloadServlet?action=all'
     },
     'hiii14': {
         'label': 'Rolland et al 2014, Human Interactome II',
@@ -743,8 +744,8 @@ obsolate = {
                     "pid_pathways": (6, ";")},
                 extraNodeAttrsA={},
                 extraNodeAttrsB={}),
-    'signor': input_formats.ReadSettings(name="Signor", separator = None, 
-                nameColA = 2, nameColB = 6,
+    'signor': input_formats.ReadSettings(name="Signor", separator = '\t', 
+                header = 1, nameColA = 2, nameColB = 6,
                 nameTypeA="uniprot", nameTypeB="uniprot",
                 positiveFilters = [(22, 'YES')], # only direct interactions
                 negativeFilters = [(9, 'transcriptional regulation'), 
@@ -759,7 +760,7 @@ obsolate = {
                     ['down-regulates', 'down-regulates activity', 
                     'down-regulates quantity by destabilization']), 
                 ncbiTaxId = {'col': 12, 'dict': {'9606;9606': 9606}},
-                inFile = 'signor_interactions', references=(21, ";"),header=False,
+                inFile = 'signor_interactions', references=(21, ";"),
                 extraEdgeAttrs={
                     "signor_mechanism": (9, ';')
                     },
@@ -1074,9 +1075,12 @@ best = {
     'signor': input_formats.ReadSettings(name="Signor", separator="\t", 
                 nameColA = 2, nameColB = 6,
                 nameTypeA="uniprot", nameTypeB="uniprot",
-                positiveFilters = [(22, 'YES')], # only direct interactions
-                negativeFilters = [(9, 'transcriptional regulation')], # exclude TF-target interactions
+                # only direct interactions
+                positiveFilters = [(22, 'YES')], 
+                # exclude TF-target interactions
+                negativeFilters = [(9, 'transcriptional regulation')], 
                 typeA="protein", typeB="protein", 
+                ncbiTaxId = {'col': 12, 'dict': {'9606;9606': 9606}},
                 isDirected = (8, ['up-regulates', 'up-regulates activity', 
                     'up-regulates quantity by stabilization',
                     'down-regulates', 'down-regulates activity', 
@@ -1085,8 +1089,7 @@ best = {
                     'up-regulates quantity by stabilization'],
                     ['down-regulates', 'down-regulates activity', 
                     'down-regulates quantity by destabilization']), 
-                ncbiTaxId=9606,
-                inFile=os.path.join(ROOT, 'data', 'signor_22052015.tab'),references=(21, ";"),header=True,
+                inFile = 'signor_interactions', references=(21, ";"), header=True,
                 extraEdgeAttrs={
                     "signor_mechanism": (9, ';')
                     },
