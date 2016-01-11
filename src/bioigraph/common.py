@@ -24,7 +24,7 @@ import textwrap
 __all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'uniqList', 'addToList', 
            'gen_session_id', 'sorensen_index', 'console', 'wcl', 'flatList', 
            'charTypes', 'delEmpty', '__version__', 'get_args', 
-           'something', 'rotate']
+           'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs']
 
 # get the location
 ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -185,3 +185,16 @@ def rotate(point, angle, center = (0.0, 0.0)):
         temp_point[0]*math.sin(angle) + temp_point[1]*math.cos(angle))
     temp_point = temp_point[0]+center[0] , temp_point[1]+center[1]
     return temp_point
+
+def cleanDict(dct):
+    for k, v in dct.items():
+        if v is None:
+            del dct[k]
+        else:
+            dct[k] = str(v)
+    return dct
+
+igraph_graphics_attrs = {
+    'vertex': ['size', ' color', 'frame_color', 'frame_width', 'shape', 'label', 'label_dist', 'label_color', 'label_size', 'label_angle'],
+    'edge': ['curved', 'color', 'width', 'arrow_size', 'arrow_width']
+}

@@ -20,6 +20,7 @@ import sys
 import os
 import itertools
 
+import math
 import numpy as np
 from numpy.random import randn
 import matplotlib as mpl
@@ -29,11 +30,13 @@ import scipy.cluster.hierarchy as hc
 import hcluster as hc2
 import matplotlib.gridspec as gridspec
 from matplotlib import ticker
+from scipy import stats
 
 from progress import Progress
 from common import uniqList, ROOT
 
 # color converting functions
+
 def rgb2hex(rgb):
     return '#%02x%02x%02x' % rgb
 
@@ -49,6 +52,69 @@ def rgb1(rgb256):
 def rgb256(rgb1):
     return rgb1 if any([i > 1.0 for i in rgb1]) \
         else tuple([x * 255.0 for x in rgb1])
+
+# other helper functions
+
+def rotate_labels(angles = (0, -90, -135, -180, -270, -315)):
+    i = 0
+    while True:
+        yield angles[i % len(angles)]
+        i += 1
+
+def move_labels(dist = (0, 10, 20, 30, 40, 50, 60, 70)):
+    i = 0
+    while True:
+        yield dist[i % len(dist)] if i < 20 else 20
+        i += 1
+
+def overlap(bbox1, bbox2):
+    return (bbox1._points[0][0] > bbox2._points[0][0] and \
+        bbox1._points[0][0] < bbox2._points[1][0] or \
+        bbox1._points[1][0] > bbox2._points[0][0] and \
+        bbox1._points[1][0] < bbox2._points[1][0] or \
+        bbox2._points[0][0] > bbox1._points[0][0] and \
+        bbox2._points[0][0] < bbox1._points[1][0] or \
+        bbox2._points[1][0] > bbox1._points[0][0] and \
+        bbox2._points[1][0] < bbox1._points[1][0]) and \
+        (bbox1._points[0][1] > bbox2._points[0][1] and \
+        bbox1._points[0][1] < bbox2._points[1][1] or \
+        bbox1._points[1][1] > bbox2._points[0][1] and \
+        bbox1._points[1][1] < bbox2._points[1][1] or \
+        bbox2._points[0][1] > bbox1._points[0][1] and \
+        bbox2._points[0][1] < bbox1._points[1][1] or \
+        bbox2._points[1][1] > bbox1._points[0][1] and \
+        bbox2._points[1][1] < bbox1._points[1][1])
+
+def get_moves(bbox1, bbox2):
+    xmove = 0
+    ymove = 0
+    if bbox1._points[0][0] > bbox2._points[0][0] and \
+        bbox1._points[0][0] < bbox2._points[1][0] or \
+        bbox1._points[1][0] > bbox2._points[0][0] and \
+        bbox1._points[1][0] < bbox2._points[1][0] or \
+        bbox2._points[0][0] > bbox1._points[0][0] and \
+        bbox2._points[0][0] < bbox1._points[1][0] or \
+        bbox2._points[1][0] > bbox1._points[0][0] and \
+        bbox2._points[1][0] < bbox1._points[1][0]:
+        if (bbox1._points[0][0] + bbox1._points[1][0]) / 2.0 < \
+            (bbox2._points[0][0] + bbox2._points[1][0]) / 2.0:
+            xmove = bbox1._points[1][0] - bbox2._points[0][0]
+        else:
+            xmove = bbox1._points[0][0] - bbox2._points[1][0]
+    if bbox1._points[0][1] > bbox2._points[0][1] and \
+        bbox1._points[0][1] < bbox2._points[1][1] or \
+        bbox1._points[1][1] > bbox2._points[0][1] and \
+        bbox1._points[1][1] < bbox2._points[1][1] or \
+        bbox2._points[0][1] > bbox1._points[0][1] and \
+        bbox2._points[0][1] < bbox1._points[1][1] or \
+        bbox2._points[1][1] > bbox1._points[0][1] and \
+        bbox2._points[1][1] < bbox1._points[1][1]:
+        if (bbox1._points[0][1] + bbox1._points[1][1]) / 2.0 < \
+            (bbox2._points[0][1] + bbox2._points[1][1]) / 2.0:
+            ymove = bbox1._points[1][1] - bbox2._points[0][1]
+        else:
+            ymove = bbox1._points[0][1] - bbox2._points[1][1]
+    return (xmove, ymove)
 
 class Plot(object):
     
@@ -182,7 +248,7 @@ class Barplot(Plot):
         self.ax2 = self.fig.add_subplot(self.gs[0])
         self.ax = self.fig.add_subplot(self.gs[1])
     
-    def _break_y_axis(self, **kwargs):
+    def __break_y_axis(self, **kwargs):
         self.ax2 = self.sns.barplot(self.x, y = self.y, data = None, 
             color = self.color, order = self.ordr, ax = self.ax2, 
             palette = self.palette, **kwargs)
@@ -204,6 +270,42 @@ class Barplot(Plot):
         self.ax2.set_yticks([yt for yt in self._originalYticks \
             if yt >= self.upper_y_min and yt <= self.upper_y_max])
     
+    def _break_y_axis(self, **kwargs):
+        self.ax2 = self.sns.barplot(self.x, y = self.y, data = None, 
+            color = self.color, order = self.ordr, ax = self.ax2, 
+            palette = self.palette, **kwargs)
+        self.ax2.yaxis.set_major_locator(
+            ticker.MaxNLocator(nbins = int(9/sum(self.y_break) + 1), steps = [1, 2, 5, 10]))
+        self._originalYticks = self.ax2.get_yticks()
+        ymin, ymax = self.ax.get_ylim()
+        yticks = [ytick for ytick in self.ax.get_yticks() if ytick > max(self.y)]
+        if len(yticks) > 0:
+            ymax = min(yticks)
+        else:
+            ymax = max(self.ax.get_yticks())
+        self.ax.set_ylim((ymin, ymax * self.y_break[0]))
+        self.ax2.set_ylim((ymax - ymax * self.y_break[1], ymax))
+        self.lower_y_min, self.lower_y_max = self.ax.get_ylim()
+        self.upper_y_min, self.upper_y_max = self.ax2.get_ylim()
+        plt.subplots_adjust(hspace = 0.08)
+        self.ax2.spines['bottom'].set_visible(False)
+        plt.setp(self.ax2.xaxis.get_majorticklabels(), visible = False)
+        self.ax.spines['top'].set_visible(False)
+        self.ax.set_yticks([yt for yt in self._originalYticks \
+            if yt >= self.lower_y_min and yt <= self.lower_y_max])
+        self.ax2.set_yticks([yt for yt in self._originalYticks \
+            if yt >= self.upper_y_min and yt <= self.upper_y_max])
+        # further adjusting of upper ylims:
+        yticks = [yt for yt in self.ax2.get_yticks() if yt > max(self.y)]
+        if len(yticks) > 0:
+            ymax = min(yticks)
+            self.ax.set_ylim((ymin, ymax * self.y_break[0]))
+            self.ax2.set_ylim((ymax - ymax * self.y_break[1], ymax))
+            self.lower_y_min, self.lower_y_max = self.ax.get_ylim()
+            self.upper_y_min, self.upper_y_max = self.ax2.get_ylim()
+            self.ax2.set_yticks([yt for yt in self._originalYticks \
+                if yt >= self.upper_y_min and yt <= self.upper_y_max])
+    
     def seaborn_style(self, context = None, rc = None):
         self.sns.set(font = self.font_family, rc = rc or self.rc)
         self.sns.set_context(context or self.context, rc = rc or self.rc)
@@ -217,7 +319,11 @@ class Barplot(Plot):
             for tick in self.ax2.yaxis.get_major_ticks():
                 tick.label.set_fontsize(self.lab_size[1])
         self.ax.set_ylabel(self.ylab)
+        self.ax.yaxis.get_label().set_fontproperties(self.fp)
+        self.ax.yaxis.get_label().set_fontsize(self.axis_lab_size)
         self.ax.set_xlabel(self.xlab)
+        self.ax.xaxis.get_label().set_fontproperties(self.fp)
+        self.ax.xaxis.get_label().set_fontsize(self.axis_lab_size)
         plt.setp(self.ax.xaxis.get_majorticklabels(), rotation = self.lab_angle)
         if type(self.legend) is dict:
             legend_patches = [mpatches.Patch(color = col, label = lab) \
@@ -299,3 +405,316 @@ def stacked_barplot(x, y, data, fname, names,
     ax.set_xlabel(xlab)
     plt.setp(ax.xaxis.get_majorticklabels(), rotation = lab_angle)
     self.finish(fig, fname)
+
+## ## ##
+
+class ScatterPlus(Plot):
+    
+    def __init__(self, x, y, sizes = None, labels = None, data = None,
+        xlog = False, ylog = False, xlim = None, ylim = None, 
+        xtickscale = None, ytickscale = None, legscale = None, 
+        fname = None, font_family = 'Helvetica Neue LT Std', 
+        font_style = 'normal', font_weight = 'normal', font_variant = 'normal',
+        font_stretch = 'normal', confi = True, 
+        xlab = '', ylab = '', axis_lab_size = 10.0, 
+        annotation_size = 9, size = 20.0, size_scaling = 0.8, 
+        lab_angle = 90, lab_size = (9, 9), color = '#007b7f', 
+        order = False, desc = True, legend = True, legtitle = None,
+        legstrip = (None, None), 
+        size_to_value = lambda x: x,
+        value_to_size = lambda x: x,
+        fin = True, 
+        rc = {}, palette = None, context = 'poster', **kwargs):
+        '''
+        y_break : tuple
+        If not None, the y-axis will have a break. 2 floats in the tuple, < 1.0, 
+        mean the lower and upper proportion of the plot shown. The part between
+        them will be hidden. E.g. y_break = (0.3, 0.1) shows the lower 30% and 
+        upper 10%, but 60% in the middle will be cut out.
+        '''
+        for k, v in locals().iteritems():
+            setattr(self, k, v)
+        self.sns = sns
+        self.rc = self.rc or {'lines.linewidth': 1.0, 'patch.linewidth': 0.0, 
+            'grid.linewidth': 1.0}
+        super(ScatterPlus, self).__init__(fname = fname, font_family = font_family, 
+            font_style = font_style, font_weight = font_weight, 
+            font_variant = font_variant, font_stretch = font_stretch,
+            palette = palette, context = context, lab_size = self.lab_size, 
+            axis_lab_size = self.axis_lab_size, rc = self.rc)
+        self.color = self.color or self.palette[0][0]
+        if type(self.color) is list:
+            self.palette = sns.color_palette(self.color)
+        elif self.color is not None:
+            self.palette = sns.color_palette([self.color] * len(self.x))
+        self.color = None
+        self.plot(**kwargs)
+    
+    def scale(self, scale = None, q = 1):
+        scale = [1, 2, 5] if scale is None else scale
+        def _scaler(scale, q):
+            while True:
+                for i in scale:
+                    yield i * q
+                q *= 10.0
+        _scale = _scaler(scale, q)
+        return _scale
+    
+    def plot(self, x = None, y = None, sizes = None, size = None,
+        labels = None, data = None, xlab = None, ylab = None, 
+        legtitle = None, size_scaling = None, **kwargs):
+        # optionally update the dataset at calling plot():
+        for attr in ['x', 'y', 'sizes', 'size', 'labels', 'data', 
+            'xlab', 'ylab', 'legtitle', 'size_scaling']:
+            if locals()[attr] is not None:
+                setattr(self, attr, locals()[attr])
+        # if x, y or sizes are data frame colnames, attempt to 
+        # get the variable labels by them:
+        if type(self.x) in [str, unicode] and self.xlab is None:
+            self.xlab = self.x.capitalize()
+        if type(self.y) in [str, unicode] and self.ylab is None:
+            self.ylab = self.y.capitalize()
+        if type(self.sizes) in [str, unicode] and self.legtitle is None:
+            self.legtitle = self.sizes.capitalize()
+        # get the 
+        if self.data is not None and type(self.x) in [str, unicode] \
+            and self.x in self.data:
+            self.x = list(self.data[self.x])
+        if self.data is not None and type(self.y) in [str, unicode] \
+            and self.y in self.data:
+            self.y = list(self.data[self.y])
+        if self.data is not None and type(self.sizes) in [str, unicode] \
+            and self.sizes in self.data:
+            self.sizes = list(self.data[self.sizes])
+        if self.data is not None and type(self.labels) in [str, unicode] \
+            and self.labels in self.data:
+            self.labels = list(self.data[self.labels])
+        if type(self.x) is list or type(self.x) is tuple:
+            self.x = np.array(self.x)
+        if type(self.y) is list or type(self.y) is tuple:
+            self.y = np.array(self.y)
+        if type(self.sizes) is list or type(self.sizes) is tuple:
+            self.sizes = np.array(self.sizes)
+        if type(self.labels) is list or type(self.labels) is tuple:
+            self.labels = np.array(self.labels)
+        self.seaborn_style()
+        self.fig, self.ax = plt.subplots()
+        if type(sizes) in [int, float]:
+            self.sizes = sizes
+        if self.sizes is not None and type(self.sizes) not in [int, float]:
+            self.rads = self.size * (self.sizes / float(max(self.sizes)))**self.size_scaling
+        if self.sizes is None:
+            self.rads = np.array([self.size] * len(self.x))
+        if self.ylog:
+            self.ax.set_yscale('symlog' if self.ylog == 'symlog' else 'log')
+        if self.xlog:
+            self.ax.set_xscale('symlog' if self.xlog == 'symlog' else 'log')
+        self.scatter = self.ax.scatter(self.x, self.y, \
+            s = self.rads if self.sizes is None \
+                else [np.pi * r**2 for r in self.rads], \
+            c = '#6ea945', alpha = 0.5, \
+            edgecolors = 'none')
+        if self.confi:
+            self._confidence_interval()
+        self.axes_limits()
+        self.set_ticklocs()
+        self.annotations()
+        self._legend()
+        self.axes_labels()
+        self.axes_limits()
+        self.axes_ticklabels()
+        self.axes_limits()
+        self.fig.tight_layout()
+        self.axes_limits()
+        self.remove_annotation_overlaps()
+        if self.fin:
+            self.finish()
+    
+    def annotations(self):
+        if self.labels is not None:
+            self.annots = []
+            dists = move_labels()
+            for label, xx, yy, yf, o in \
+                zip(self.labels, self.x, self.y, self.y_fit, self.rads):
+                dst = dists.next()
+                d = 1.0 if yy > 10**yf else -1.0
+                coo = ((-7 - dst) * d / 3.0, (21 + dst) * d)
+                self.annots.append(self.ax.annotate(
+                    label, 
+                    xy = (xx, yy), xytext = coo,
+                    xycoords = 'data',
+                    textcoords = 'offset points', ha = 'center', va = 'bottom', color = '#007B7F',
+                    arrowprops = dict(arrowstyle = '-', connectionstyle = 'arc,rad=.0',
+                        color = '#007B7F', edgecolor = '#007B7F', alpha = 1.0, 
+                        visible = True, linewidth = 0.2), 
+                ))
+            for ann in self.annots:
+                ann.set_fontsize(self.annotation_size)
+    
+    def set_ticklocs(self):
+        if self.xlog:
+            xscaler = self.scale(self.xtickscale)
+            self.xtickloc = []
+            while True:
+                tickloc = xscaler.next()
+                if tickloc >= self._xlim[0]:
+                    self.xtickloc.append(tickloc)
+                if tickloc > self._xlim[1]:
+                    break
+            self._xtickloc = self.ax.set_xticks(self.xtickloc)
+        if self.ylog:
+            yscaler = self.scale(self.ytickscale)
+            self.ytickloc = []
+            while True:
+                tickloc = yscaler.next()
+                if tickloc >= self._ylim[0]:
+                    self.ytickloc.append(tickloc)
+                if tickloc > self._ylim[1]:
+                    break
+            self._ytickloc = self.ax.set_yticks(self.ytickloc)
+    
+    def axes_limits(self, xlim = None, ylim = None):
+        xlim = xlim if xlim is not None else self.xlim \
+            if self.xlim is not None else self.ax.get_xlim()
+        ylim = ylim if ylim is not None else self.ylim \
+            if self.ylim is not None else self.ax.get_ylim()
+        if xlim is not None:
+            self._xlim = self.ax.set_xlim(xlim)
+        if ylim is not None:
+            self._ylim = self.ax.set_ylim(ylim)
+    
+    def seaborn_style(self, context = None, rc = None):
+        self.sns.set(font = self.font_family, rc = rc or self.rc)
+    
+    def axes_ticklabels(self):
+        if self.xlog:
+            self.xticklabs = []
+            for i, t in enumerate(list(self.ax.xaxis.get_major_locator().locs)):
+                tlab = str(int(t)) if t - int(t) == 0 or t >= 10.0 else str(t)
+                self.xticklabs.append(tlab[:-2] if tlab.endswith('.0') else tlab)
+            self._xticklabels = self.ax.set_xticklabels(self.xticklabs)
+        if self.ylog:
+            self.yticklabs = []
+            for i, t in enumerate(list(self.ax.yaxis.get_major_locator().locs)):
+                tlab = str(int(t)) if t - int(t) == 0 or t >= 10.0 else str(t)
+                self.yticklabs.append(tlab[:-2] if tlab.endswith('.0') else tlab)
+            self._yticklabels = self.ax.set_yticklabels(self.yticklabs)
+        for t in self.ax.xaxis.get_major_ticks():
+            t.label.set_fontsize(self.lab_size[0])
+        for t in self.ax.yaxis.get_major_ticks():
+            t.label.set_fontsize(self.lab_size[1])
+    
+    def _confidence_interval(self):
+        # the points:
+        self._x = np.array([i if not np.isinf(i) else 0.0 \
+                for i in np.log10(self.x)]) \
+            if self.xlog else self.x
+        self._y = np.array([i if not np.isinf(i) else 0.0 \
+                for i in np.log10(self.y)]) \
+            if self.ylog else self.y
+        # (log)linear fit with confidence and prediction interval:
+        (self.m, self.b), self.V = np.polyfit(self._x, self._y, 1, cov = True)
+        self.n = self._x.size
+        self.y_fit = np.polyval((self.m, self.b), self._x)
+        self.df = self.n - 2
+        self.t = stats.t.ppf(0.95, self.df)
+        self.resid = self._y - self.y_fit
+        self.chi2 = np.sum((self.resid / self.y_fit)**2)
+        self.chi2_red = self.chi2 / self.df
+        self.s_err = np.sqrt(np.sum(self.resid**2) / self.df)
+        self.x2 = np.linspace(np.min(self._x), np.max(self._x), 100)
+        self.y2 = np.linspace(np.min(self.y_fit), np.max(self.y_fit), 100)
+        # confidence interval
+        self.ci = self.t * self.s_err * np.sqrt(1 / self.n + \
+            (self.x2 - np.mean(self._x))**2 / np.sum((self._x - np.mean(self._x))**2))
+        # prediction interval
+        self.pi = self.t * self.s_err * np.sqrt(1 + 1 / self.n + \
+            (self.x2 - np.mean(self._x))**2 / np.sum((self._x - np.mean(self._x))**2))
+        # regression line
+        self.rline_x = [10**xx for xx in self._x] if self.xlog else self._x
+        self.rline_y = [10**yy for yy in self.y_fit] if self.ylog else self.y_fit
+        self.rline = self.ax.plot(self.rline_x, self.rline_y,
+            '-', color = '#B6B7B9', alpha = 0.5)
+        # confidence interval
+        self.ci_rfill_x = [10**xx for xx in self.x2] if self.xlog else self.x2
+        self.ci_rfill_y_upper = [10**yy for yy in (self.y2 + self.ci)] \
+            if self.ylog else self.y2 + self.ci
+        self.ci_rfill_y_lower = [10**yy for yy in (self.y2 - self.ci)] \
+            if self.ylog else self.y2 - self.ci
+        self.rfill = self.ax.fill_between(self.ci_rfill_x, 
+            self.ci_rfill_y_upper, 
+            self.ci_rfill_y_lower, 
+            color = '#B6B7B9', edgecolor = '', alpha = 0.2)
+        # prediction intreval
+        self.pi_y_upper = [10**yy for yy in (self.y2 + self.pi)] \
+            if self.ylog else self.y2 + self.pi
+        self.pi_y_lower = [10**yy for yy in (self.y2 - self.pi)] \
+            if self.ylog else self.y2 - self.pi
+        self.pilowerline = self.ax.plot(self.ci_rfill_x, 
+            self.pi_y_lower, 
+            '--', color = '#B6B7B9', linewidth = 0.5)
+        self.piupperline = self.ax.plot(self.ci_rfill_x, 
+            self.pi_y_upper, 
+            '--', color = '#B6B7B9', linewidth = 0.5)
+    
+    def _legend(self):
+        if self.sizes is not None and self.legend:
+            legtitle = '' if self.legtitle is None else self.legtitle
+            self.lhandles = []
+            self.llabels = []
+            self.legvalues = [self.size_to_value(i) for i in self.sizes]
+            self.leglower = 10**int(math.floor(math.log10(min(self.legvalues))))
+            self.legscaler = self.scale(self.legscale, q = self.leglower)
+            self.legsizes = []
+            while True:
+                legvalue = self.legscaler.next()
+                self.legsizes.append(legvalue)
+                if legvalue >= max(self.legvalues):
+                    break
+            self.legsizes = self.legsizes[self.legstrip[0]:\
+                -self.legstrip[1] if self.legstrip[1] is not None else None]
+            for s in self.legsizes:
+                self.lhandles.append(mpl.legend.Line2D(range(1), range(1), 
+                    color = 'none', marker = 'o', 
+                    markersize = self.size * (self.value_to_size(s) / \
+                        float(max(self.sizes)))**self.size_scaling, 
+                    markerfacecolor = '#6ea945', markeredgecolor = 'none', alpha = .5, 
+                    label = str(int(s)) if s - int(s) == 0 or s >= 10.0 else str(s)))
+                self.llabels.append(str(int(s)) if s - int(s) == 0 or s >= 10.0 else str(s))
+            self.leg = self.ax.legend(self.lhandles, self.llabels, loc = 4, 
+                title = legtitle, labelspacing = .9,
+                borderaxespad = .9)
+            self.leg.get_title().set_fontweight(self.font_weight)
+    
+    def axes_labels(self):
+        if self.xlab is not None:
+            self._xlab = self.ax.set_xlabel(self.xlab)
+            self.ax.xaxis.label.set_fontweight(self.font_weight)
+            self.ax.xaxis.label.set_size(self.axis_lab_size)
+        if self.ylab is not None:
+            self._ylab = self.ax.set_ylabel(self.ylab)
+            self.ax.yaxis.label.set_fontweight(self.font_weight)
+            self.ax.yaxis.label.set_size(self.axis_lab_size)
+    
+    def remove_annotation_overlaps(self):
+        if self.labels is not None:
+            self.fig.savefig(self.fname)
+            # self.ax.figure.canvas.draw()
+            steps = [0] * len(self.annots)
+            for i, a2 in enumerate(self.annots):
+                overlaps = False
+                for z in xrange(100):
+                    for a1 in self.annots[:i]:
+                        if overlap(a1.get_window_extent(), a2.get_window_extent()):
+                            # 'Overlapping labels: %s and %s' % (a1._text, a2._text)
+                            mv = get_moves(a1.get_window_extent(), a2.get_window_extent())
+                            if steps[i] % 2 == 0:
+                                a2.xyann = (a2.xyann[0] + mv[0] * 1.1 * (z / 2 + 1), a2.xyann[1])
+                            else:
+                                a2.xyann = (a2.xyann[0], a2.xyann[1] + mv[1] * 1.1* (z / 2 + 1))
+                            steps[i] += 1
+                        else:
+                            pass
+                            # 'OK, these do not overlap: %s and %s' % (a1._text, a2._text)
+                    if not overlaps:
+                        break

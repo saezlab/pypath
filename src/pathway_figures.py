@@ -20,22 +20,30 @@ font = 'HelveticaNeueLTStd Med Cn'
 net = bioigraph.BioGraph()
 net.init_network(pfile = 'cache/default_network.pickle')
 #net.init_network({'arn': data_formats.best['arn']})
-for pw in ['TGF', 'Notch', 'WNT']:
+for pw in ['TGF', 'Notch']:
     for db in ['SignaLink3', 'Signor', 'SPIKE', 'InnateDB', 'BioGRID', 'NetPath', 'MPPI', 'DIP', 'CA1',
         'Macrophage', 'PhosphoSite', 'CancerCellMap', 'HPRD']:
         print pw, db
         nodes = [v.index for v in net.graph.vs if pw in v['slk_pathways']]
         dot = net.export_dot(nodes = nodes, save_graphics = '%s_%s.pdf'%(pw, db), prog = 'dot',
             save_dot = '%s_%s.dot'%(pw, db),
-            main_title = '%s pathway in %s'%(pw, db), return_object = True,
-            label_font = font, 
+            graph_label = '%s pathway in %s'%(pw, db), return_object = True,
+            font = font, 
+            vertex_fontsize = 24.0,
+            graph_fontsize = 42.0,
+            vertex_shape = 'rect', 
+            auto_edges = 'DIRECTIONS',
             edge_sources = [db], 
             dir_sources = [db], hide = True)
     print pw, 'all'
     dot = net.export_dot(nodes = nodes, save_graphics = '%s_all.pdf'%pw, prog = 'dot',
             save_dot = '%s_%s.dot'%(pw, 'all'),
-            main_title = '%s pathway in OmniPath'%pw, return_object = True,
-            label_font = font)
+            graph_label = '%s pathway in OmniPath'%pw, return_object = True,
+            font = font, 
+            vertex_fontsize = 24.0,
+            graph_fontsize = 42.0,
+            vertex_shape = 'rect',
+            auto_edges = 'DIRECTIONS')
 
 for pw in ['TGF', 'Notch', 'WNT']:
     for db in ['SignaLink3', 'Signor', 'SPIKE', 'InnateDB', 'BioGRID', 'NetPath', 'MPPI', 'DIP', 'CA1',

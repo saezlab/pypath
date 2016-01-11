@@ -2986,9 +2986,15 @@ def get_pubmeds(pmids):
         prg.step()
         post = {'id': ','.join(pmids[offset:offset+100]), 'retmode': 'json', 'db': 'pubmed'}
         hdr = ['X-HTTP-Method-Override:GET']
-        res = curl(url, silent = False, cache = cache, post = post, req_headers = hdr)
-        data = dict([(k,v) for k,v in json.loads(res)['result'].iteritems()] + \
-            [(k,v) for k,v in data.iteritems()])
+        for i in xrange(3):
+            try:
+                res = curl(url, silent = False, cache = cache, post = post, req_headers = hdr)
+                data = dict([(k,v) for k,v in json.loads(res)['result'].iteritems()] + \
+                    [(k,v) for k,v in data.iteritems()])
+                break
+            except ValueError:
+                sys.stdout.write('\t:: Error in JSON, retry %u\n'%i)
+                sys.stdout.flush()
     prg.terminate()
     return data
 
@@ -4482,22 +4488,26 @@ def get_laudanna_effects():
     return effects
 
 def get_acsn_effects():
-    negatives = set(['inhibits', 'INHIBITION', 'PHYSICAL_INHIBITION', 'UNKNOWN_INHIBITION'])
-    positives = set(['activates', 'PHYSICAL_STIMULATION'])
-    directed = set(['CATALYSIS', 'UNKNOWN_CATALYSIS'])
-    url = data_formats.urls['acsn']['sif']
-    data = curl(url, silent = False)
-    data = data.split('\n')
+    negatives = set(['NEGATIVE_INFLUENCE', 'UNKNOWN_NEGATIVE_INFLUENCE'])
+    positives = set(['TRIGGER', 'POSITIVE_INFLUENCE', 'UNKNOWN_POSITIVE_INFLUENCE'])
+    directed = set([
+            'UNKNOWN_TRANSITION', 'INTERACTION_TYPE', 'KNOWN_TRANSITION_OMITTED', 
+            'INHIBITION', 'UNKNOWN_POSITIVE_INFLUENCE', 'PROTEIN_INTERACTION',
+            'UNKNOWN_CATALYSIS', 'POSITIVE_INFLUENCE', 'STATE_TRANSITION', 
+            'TRANSLATION', 'UNKNOWN_NEGATIVE_INFLUENCE', 'NEGATIVE_INFLUENCE', 
+            'MODULATION', 'TRANSCRIPTION', 'COMPLEX_EXPANSION', 'TRIGGER', 'CATALYSIS',
+            'PHYSICAL_STIMULATION', 'UNKNOWN_INHIBITION', 'TRANSPORT'])
+    data = acsn_ppi()
     effects = []
     for l in data:
-        l = l.replace('*', '').split('\t')
-        if len(l) == 3:
-            if l[1] in negatives:
-                effects.append([l[0], l[2], '-'])
-            elif l[1] in positives:
-                effects.append([l[0], l[2], '+'])
-            elif l[1] in directed:
-                effects.append([l[0], l[2], '*'])
+        if len(l) == 4:
+            eff = set(l[2].split(';'))
+            if len(eff & negatives) > 0:
+                effects.append([l[0], l[1], '-'])
+            elif len(eff & positives) > 0:
+                effects.append([l[0], l[1], '+'])
+            elif len(eff & directed) > 0:
+                effects.append([l[0], l[1], '*'])
     return effects
 
 def get_wang_effects():
@@ -4540,3 +4550,56 @@ def biogrid_interactions(organism = 9606, htp_limit = 1):
     refc = Counter(refc)
     interactions = [i for i in interactions if refc[i[2]] <= htp_limit]
     return interactions
+
+def acsn_ppi(keep_in_complex_interactios = True):
+    nfname = data_formats.files['acsn']['names']
+    pfname = data_formats.files['acsn']['ppi']
+    names = {}
+    interactions = []
+    with open(nfname, 'r') as f:
+        for l in f:
+            l = l.strip().split('\t')
+            names[l[0]] = l[2:]
+    with open(pfname, 'r') as f:
+        nul = f.readline()
+        for l in f:
+            l = l.strip().split('\t')
+            if l[0] in names:
+                for a in names[l[0]]:
+                    if l[2] in names:
+                        for b in names[l[2]]:
+                            if keep_in_complex_interactios:
+                                if 'PROTEIN_INTERACTION' in l[1]:
+                                    l[1].replace('COMPLEX_EXPANSION', 
+                                        'IN_COMPLEX_INTERACTION')
+                            interactions.append([a, b, l[1], l[3]])
+    return interactions
+
+def get_graphviz_attrs():
+    url = data_formats.urls['graphviz']['url']
+    html = curl(url)
+    soup = bs4.BeautifulSoup(html)
+    vertex_attrs = {}
+    edge_attrs = {}
+    graph_attrs = {}
+    for tbl in soup.find_all('table'):
+        if tbl.find('tr').text.startswith('Name'):
+            for r in tbl.find_all('tr'):
+                r = r.find_all('td')
+                if len(r) > 0:
+                    usedby = r[1].text
+                    this_attr = {
+                            'type': r[2].text.strip(),
+                            'default': r[3].text.strip(),
+                            'min': r[4].text.strip(),
+                            'notes': r[5].text.strip()
+                        }
+                    attr_name = r[0].text.strip()
+                    if 'N' in usedby:
+                        vertex_attrs[attr_name] = this_attr
+                    if 'E' in usedby:
+                        edge_attrs[attr_name] = this_attr
+                    if 'G' in usedby:
+                        graph_attrs[attr_name] = this_attr
+            break
+    return graph_attrs, vertex_attrs, edge_attrs

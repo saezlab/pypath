@@ -19,6 +19,8 @@ import cairo
 import math
 import igraph
 import os
+import sys
+import time
 
 from common import *
 from ig_drawing import *
@@ -33,6 +35,7 @@ class Plot(object):
         title_font_family = None, title_font_size = None, 
         title_color = '#646567', size = None, 
         layout = "fruchterman_reingold", 
+        layout_param = None,
         vertex_label = None, vertex_size = None,
         vertex_label_size = 'degree_label_size', edge_width = None, 
         vertex_color = '#6EA945', vertex_label_color = '#007B7F', vertex_alpha = 'AA', 
@@ -55,7 +58,6 @@ class Plot(object):
             'edge_label_color': 'FF'
         }
         self.default_vertex_label_size = 6.0
-        self.layout_param = kwargs if len(kwargs) != 0 else {}
         self.plots = []
         self.session = gen_session_id()
         self.loglevel = 'INFO'
@@ -90,6 +92,10 @@ class Plot(object):
             'edge_width': 0.051,
             'vertex_label_dist': 1.0,
             'edge_label_size': 1.0
+        }
+        self.layout_defaults = {
+            'fruchterman_reingold': {'repulserad': self.graph.vcount() ** 2.8, 
+            'maxiter': 1000, 'area': self.graph.vcount() ** 2.3}
         }
         self.update_page()
         self.update_graph(graph)
@@ -140,8 +146,15 @@ class Plot(object):
     def update_layout(self, layout = None, param = None):
         g = self.graph
         if self.layout_update_needed(layout, param):
-            self.ownlog.msg(2,("""Calculating %s layout... (numof nodes/edges: %u/%u)""" % 
-                (self.layout, g.vcount(), g.ecount())), 'INFO')
+            start_time = time.time()
+            self.layout_param = self.layout_param if self.layout_param is not None \
+                else self.layout_defaults[self.layout] if self.layout in self.layout_defaults \
+                else {}
+            msg = """Calculating %s layout... (numof nodes/edges: %u/%u)""" % \
+                (self.layout, g.vcount(), g.ecount())
+            sys.stdout.write('\t::%s'%msg)
+            sys.stdout.flush()
+            self.ownlog.msg(2, msg, 'INFO')
             if self.grouping is not None:
                 if self.layout in ["intergroup", "modular_fr", "modular_circle"]:
                     f = getattr(gr_plot, "layout_%s"%self.layout)
@@ -156,9 +169,13 @@ class Plot(object):
                     self.colorize(what = 'vertex', coldef = self.grouping)
             self.layout = self.layout if layout is None else layout
             self.layout_param = self.layout_param if param is None else param
-            self.fruchterman_reingold_low_overlap()
             self.layout_data = g.layout(self.layout, **self.layout_param)
-            g.layout = igraph.Layout(self.layout_data)
+            self.layout_data = igraph.Layout(self.layout_data)
+            time_elapsed = time.time() - start_time
+            m, s = divmod(time_elapsed, 60)
+            time_elapsed_str = "%02d min %02d sec" % (m, s)
+            sys.stdout.write(' Done in %s. \n'%time_elapsed_str)
+            sys.stdout.flush()
     
     def update_filename(self):
         if self.name is None:
@@ -174,21 +191,9 @@ class Plot(object):
         return not hasattr(self, "layout") or \
             (layout is not None and self.layout != layout) or \
             not hasattr(self, "layout_data") or \
-            len(self.layout_data) != g.vcount() or \
+            len(self.layout_data) != self.graph.vcount() or \
             not hasattr(self, "layout_param") or \
             (param is not None and self.layout_param != param)
-    
-    def fruchterman_reingold_low_overlap(self):
-        '''
-        These parameters results a fruchterman-reingold layout 
-        with very low overlap even with big networks.
-        '''
-        self.fr_defaults = {'repulserad': self.graph.vcount() ** 2.8, 
-            'maxiter': 1000, 'area': self.graph.vcount() ** 2.3}
-        if self.layout == 'fruchterman_reingold':
-            for k, v in self.fr_defaults.iteritems():
-                if k not in self.layout_param:
-                    self.layout_param[k] = v
     
     def colorize(self, what = 'vertex', coldef = None, 
         alpha = None, attr = None, palette = None):
@@ -251,13 +256,16 @@ class Plot(object):
             halign = igraph.drawing.text.TextDrawer.CENTER)
         title_drawer.draw_at(0, 40, width = self.bbox.width)
     
-    def draw(self, **kwargs):
+    def draw(self, return_data = False, **kwargs):
         if not self._has_graph():
             return None
         self.update_filename()
         g = self.graph
-        self.ownlog.msg(2,("""Plotting %s to file %s...""" % 
-            (self.graphix_format, self.nextfile)), 'INFO')
+        msg = """Plotting %s to file %s...""" % \
+            (self.graphix_format, self.nextfile)
+        sys.stdout.write('\t::%s'%msg)
+        sys.stdout.flush()
+        self.ownlog.msg(2,msg, 'INFO')
         if self.graphix_format == "pdf":
             sf = cairo.PDFSurface(self.nextfile, self.dimensions[0], self.dimensions[1])
         else:
@@ -296,13 +304,16 @@ class Plot(object):
         if self.title_text is not None:
             self.make_title()
         self.plots[-1].save()
+        sys.stdout.write('Ready.\n')
+        sys.stdout.flush()
         self.ownlog.msg(2, ("""Plot saved to %s""" % self.nextfile), 'INFO')
-        return (self.plots[-1], g, self.layout_data, sf, self.bbox,
-                    DefaultGraphDrawerFFsupport, self.vertex_size,
-                    self.vertex_frame_width, self.vertex_label,
-                    self.vertex_label_size, self.edge_width,
-                    self.edge_curved, self.edge_arrow_size,
-                    self.edge_arrow_width, self.kwargs)
+        if return_data:
+            return (self.plots[-1], g, self.layout_data, sf, self.bbox,
+                        DefaultGraphDrawerFFsupport, self.vertex_size,
+                        self.vertex_frame_width, self.vertex_label,
+                        self.vertex_label_size, self.edge_width,
+                        self.edge_curved, self.edge_arrow_size,
+                        self.edge_arrow_width, self.kwargs)
 
 class InterSet(object):
     

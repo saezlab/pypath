@@ -66,7 +66,7 @@ from gr_plot import *
 from progress import *
 from data_formats import *
 
-__all__ = ['BioGraph', 'Direction', 'Reference', '__version__', 'a']
+__all__ = ['BioGraph', 'Direction', 'Reference', '__version__', 'a', 'AttrHelper']
 
 class Reference(object):
     
@@ -335,6 +335,55 @@ class Direction(object):
             self.negative_sources[self.reverse] = \
                 uniqList(self.negative_sources[self.reverse] + \
                 other.negative_sources[self.reverse])
+
+class AttrHelper(object):
+    
+    def __init__(self, value, name = None, defaults = {}):
+        self.name = name
+        self.value = value
+        self.defaults = defaults
+        if type(self.value) is dict:
+            self.id_type = type(self.value.keys()[0])
+    
+    def __call__(self, instance, thisDir = None,
+        thisSign = None, thisDirSources = None, thisSources = None):
+        _thisDir = 'directed' if type(thisDir) is tuple else thisDir
+        # user supplied callback function:
+        if hasattr(self.value, '__call__'):
+            return self.value(instance)
+        # special cases #1: by direction/effect
+        elif self.value == 'DIRECTIONS' and self.defaults is not None and \
+            self.name is not None and self.name in self.defaults:
+            if _thisDir in self.defaults[self.name]:
+                if thisSign in self.defaults[self.name][_thisDir]:
+                    return self.defaults[self.name][_thisDir][thisSign]
+        # special cases #2: by source category
+        elif self.value == 'RESOURCE_CATEGORIES':
+            for resource_type in ['pathway', 'ptm', 'reaction', 'interaction']:
+                if len(getattr(data_formats, '%s_resources'%resource_type) & \
+                    thisSources) > 0:
+                    if self.name in self.defaults and \
+                        resource_type in self.defaults[self.name]:
+                        return self.defaults[self.name][resource_type]
+            print 'No category for %s' % thisSources
+        # if value is constant:
+        elif type(self.value) in simpleTypes:
+            return self.value
+        # if a dictionary given to map some igraph attribute to values:
+        elif type(self.value) is dict and self.attr_name is not None:
+            if hasattr(instance, self.value['_name']):
+                key_attr = getattr(instance, self.value['_name'])
+            elif self.value['_name'] in instance.attributes():
+                key_attr = instance[self.value['_name']]
+            if key_attr in self.value:
+                    return self.value[key_attr]
+        # if default value has been given for this attribute:
+        elif self.name is not None and self.defaults is not None and \
+            self.name in self.defaults:
+            return self.defaults[self.name]
+        # ultimately, return None
+        else:
+            return None
 
 class BioGraph(object):
     
@@ -624,17 +673,26 @@ class BioGraph(object):
     
     def filters(self, line, positiveFilters = [], negativeFilters = []):
         for filtr in negativeFilters:
-            if ((type(filtr[1]) in simpleTypes and \
-                line[filtr[0]] == filtr[1]) or 
-                (type(filtr[1]) not in simpleTypes and \
-                line[filtr[0]] in filtr[1])):
-                    return True
+            # print 'Negative filter:'
+            sep = filtr[2] if len(filtr) > 2 else None
+            thisVal = set(line[filtr[0]].split(sep))
+            filtrVal = set(filtr[1] if type(filtr[1]) is list else [filtr[1]])
+            # print '\tthisVal: ', thisVal
+            # print '\tfiltrVal: ', filtrVal
+            if len(thisVal & filtrVal) > 0:
+                # print '\tNegative filter matched, filter = True (skip this record)'
+                return True
         for filtr in positiveFilters:
-            if not ((type(filtr[1]) in simpleTypes and \
-                line[filtr[0]] == filtr[1]) or 
-                (type(filtr[1]) not in simpleTypes and\
-                line[filtr[0]] in filtr[1])):
-                    return True
+            # print 'Positive filter:'
+            sep = filtr[2] if len(filtr) > 2 else None
+            thisVal = set(line[filtr[0]].split(sep))
+            filtrVal = set(filtr[1] if type(filtr[1]) is list else [filtr[1]])
+            # print '\tthisVal: ', thisVal
+            # print '\tfiltrVal: ', filtrVal
+            if len(thisVal & filtrVal) == 0:
+                # print '\tPositive filter matched, filter = True (skip this record)'
+                return True
+        # print '\tNo filter matched, filter = False (process this record)'
         return False
     
     def lookup_cache(self, name, cache_files, int_cache, edges_cache):
@@ -659,6 +717,26 @@ class BioGraph(object):
         sys.stdout.flush()
         self.ownlog.msg(2, 'Data have been read from cache: %s'%cache_file)
         return pickle.load(open(cache_file, 'rb'))
+    
+    def process_sign(self, signData, signDef):
+        stim = False
+        inh = False
+        signSep = signDef[3] if len(signDef) > 3 else None
+        signData = set(str(signData).split(signSep))
+        pos = set(signDef[1] if type(signDef[1]) is list else [signDef[1]])
+        neg = set(signDef[2] if type(signDef[2]) is list else [signDef[2]])
+        if len(signData & pos) > 0:
+            stim = True
+        elif len(signData & neg) > 0:
+            inh = True
+        return stim, inh
+    
+    def process_direction(self, line, dirCol, dirVal, dirSep):
+        if dirCol is None or dirVal is None:
+            return False
+        else:
+            thisDir = set(line[dirCol].split(dirSep))
+            return len(thisDir & dirVal) > 0
     
     def read_data_file(self, settings, keep_raw = False, cache_files = {}, cache = True):
         '''
@@ -685,7 +763,8 @@ class BioGraph(object):
         int_cache = os.path.join('cache', '%s.interactions.pickle' % _name)
         edges_cache = os.path.join('cache', '%s.edges.pickle' % _name)
         if cache:
-            infile, edgeListMapped = self.lookup_cache(_name, cache_files, int_cache, edges_cache)
+            infile, edgeListMapped = self.lookup_cache(_name, 
+                cache_files, int_cache, edges_cache)
         if len(edgeListMapped) == 0:
             if infile is None:
                 if settings.huge:
@@ -741,13 +820,17 @@ class BioGraph(object):
             sigCol = None if type(sign) is not tuple else sign[0]
             dirCol = None
             dirVal = None
+            dirSep = None
             if type(isDir) is tuple:
                 dirCol = isDir[0]
                 dirVal = isDir[1]
+                dirSep = isDir[2] if len(isDir) > 2 else None
             elif type(sign) is tuple:
                 dirCol = sign[0]
-                dirVal = sign[1:]
+                dirVal = sign[1:3]
                 dirVal = dirVal if type(dirVal[0]) in simpleTypes else flatList(dirVal)
+                dirSep = sign[3] if len(sign) > 3 else None
+            dirVal = set(dirVal if type(dirVal) is list else [dirVal])
             maxCol = max(
                 [ 
                     settings.nameColA, 
@@ -759,6 +842,9 @@ class BioGraph(object):
                 ])
             # iterating lines from input file
             lnum = 0
+            lFiltered = 0
+            rFiltered = 0
+            tFiltered = 0
             readError = 0
             for line in infile:
                 lnum += 1
@@ -782,19 +868,22 @@ class BioGraph(object):
                     break
                 else:
                     # applying filters:
-                    if self.filters(line, settings.positiveFilters, settings.negativeFilters):
+                    if self.filters(line, settings.positiveFilters,
+                        settings.negativeFilters):
+                        lFiltered += 1
                         continue
                     # reading names and attributes:
-                    if isDir:
+                    if isDir and type(isDir) is not tuple:
                         thisEdgeDir = True
                     else:
-                        thisEdgeDir = False if dirCol is None or dirVal is None else \
-                            True if line[dirCol] in dirVal else False
+                        thisEdgeDir = self.process_direction(line, dirCol, 
+                            dirVal, dirSep)
                     refs = []
                     if refCol is not None:
                         refs = delEmpty(list(set(line[refCol].split(refSep))))
                     refs = dataio.only_pmids([r.strip() for r in refs])
                     if len(refs) == 0 and settings.must_have_references:
+                        rFiltered += 1
                         continue
                     # to give an easy way:
                     if type(settings.ncbiTaxId) is int:
@@ -809,18 +898,12 @@ class BioGraph(object):
                         else:
                             taxA = taxB = taxx
                     if taxA is None or taxB is None:
+                        tFiltered += 1
                         continue
                     stim = False
                     inh = False
                     if type(sign) is tuple:
-                        if (type(sign[1]) is list \
-                            and line[sign[0]] in sign[1]) or \
-                            line[sign[0]] == sign[1]:
-                            stim = True
-                        elif (type(sign[2]) is list \
-                            and line[sign[0]] in sign[2]) or \
-                            line[sign[0]] == sign[2]:
-                            inh = True
+                        stim, inh = self.process_sign(line[sign[0]], sign)
                     newEdge = {
                         "nameA": line[settings.nameColA], 
                         "nameB": line[settings.nameColB], 
@@ -861,9 +944,13 @@ class BioGraph(object):
                 infile.close()
             ### !!!! ##
             edgeListMapped = self.map_list(edgeList)
-            self.ownlog.msg(2, "%u lines have been read from %s,'\
-            %u links after mapping" % \
-            (lnum-1, settings.inFile, len(edgeListMapped)))
+            self.ownlog.msg(2, "%u lines have been read from %s,"\
+            "%u links after mapping; \n\t\t"\
+            "%u lines filtered by filters;\n\t\t"\
+            "%u lines filtered because lack of references;\n\t\t"\
+            "%u lines filtered by taxon filters." % \
+            (lnum-1, settings.inFile, len(edgeListMapped), 
+                lFiltered, rFiltered, tFiltered))
             if cache:
                 pickle.dump(edgeListMapped, open(edges_cache, 'wb'))
                 self.ownlog.msg(2, 'Mapped edge list saved to %s'%edges_cache)
@@ -1865,8 +1952,8 @@ class BioGraph(object):
                 return False
         return True
     
-    def get_sub(self, crit, andor="or"):
-        g = self.graph
+    def get_sub(self, crit, andor="or", graph = None):
+        g = self.graph if graph is None else graph
         keepV = []
         delE = []
         if andor == "and":
@@ -1908,9 +1995,10 @@ class BioGraph(object):
                 inv.append(e.index)
         return inv
     
-    def get_network(self, crit, andor="or"):
-        sub = self.get_sub(crit,andor=andor)
-        new = self.graph.copy()
+    def get_network(self, crit, andor="or", graph = None):
+        g = self.graph if graph is None else graph
+        sub = self.get_sub(crit, andor = andor, graph = g)
+        new = g.copy()
         new.delete_edges(sub["edges"])
         return new.induced_subgraph(sub["nodes"])
     
@@ -4999,11 +5087,11 @@ class BioGraph(object):
     
     def export_dot(self, nodes = None, edges = None, directed = True, 
         labels = 'genesymbol', edges_filter = lambda e: True, nodes_filter = lambda v: True,
-        node_shape = 'rect', edge_sources = None, dir_sources = None, graph = None,
+        edge_sources = None, dir_sources = None, graph = None,
         return_object = False, save_dot = None, save_graphics = None, 
-        prog = 'neato', format = None, hide = False, node_colors = {},
-        label_font = None, hide_nodes = [], main_title = None,
-        splines = None):
+        prog = 'neato', format = None, hide = False, 
+        font = None, auto_edges = False, hide_nodes = [], 
+        defaults = {}, **kwargs):
         '''
         Builds a pygraphviz.AGraph() object with filtering the edges 
         and vertices along arbitrary criteria.
@@ -5022,8 +5110,6 @@ class BioGraph(object):
         Function to filter edges, accepting igraph.Edge as argument.
         @nodes_filter : function
         Function to filter vertices, accepting igraph.Vertex as argument.
-        @node_shape : str
-        Graphviz node shape.
         @edge_sources : list
         Sources to be included.
         @dir_sources : list
@@ -5042,13 +5128,30 @@ class BioGraph(object):
         The graphics format passed to pygraphviz.AGrapg().draw().
         @hide : bool
         Hide filtered edges instead of omit them.
-        @node_colors : dict
-        Override default node colors. Dict with vertex ids as keys and 
-        (background, font color) tuples as values.
         @hide nodes : list
         Nodes to hide. List of vertex ids.
-        @main_title : str
-        Main title of the figure.
+        @auto_edges : str
+        Automatic, built-in style for edges. 
+        'DIRECTIONS' or 'RESOURCE_CATEGORIES' are supported.
+        @font : str
+        Font to use for labels. 
+        For using more than one fonts refer to graphviz attributes with constant values 
+        or define callbacks or mapping dictionaries.
+        @defaults : dict
+        Default values for graphviz attributes, labeled with the entity, e.g.
+        `{'edge_penwidth': 0.2}`.
+        @**kwargs : constant, callable or dict
+        Graphviz attributes, labeled by the target entity. E.g. `edge_penwidth`,
+        'vertex_shape` or `graph_label`. 
+        If the value is constant, this value will be used.
+        If the value is dict, and has `_name` as key, for every instance of the
+        given entity, the value of the attribute defined by `_name` will be looked
+        up in the dict, and the corresponding value will be given to the graphviz
+        attribute. If the key `_name` is missing from the dict, igraph vertex and
+        edge indices will be looked up among the keys.
+        If the value is callable, it will be called with the current instance of
+        the entity and the returned value will be used for the graphviz attribute.
+        E.g. `edge_arrowhead(edge)` or `vertex_fillcolor(vertex)`
         Example:
             import bioigraph
             from bioigraph import data_formats
@@ -5062,14 +5165,41 @@ class BioGraph(object):
                 edge_sources = ['SignaLink3'], 
                 dir_sources = ['SignaLink3'], hide = True)
         '''
-        stim_color = '#00CC00'
-        inh_color = '#CC0000'
-        dir_color = '#0000CC'
-        stim_head = 'normal'
-        inh_head = 'tee'
-        dir_head = 'diamond'
-        undir_head = 'none'
-        undir_color = '#CCCCCC'
+        _attrs = {}
+        _custom_attrs = kwargs
+        graph_attrs, vertex_attrs, edge_attrs = dataio.get_graphviz_attrs()
+        _defaults = {
+            'edge_color': {
+                'undirected': {
+                    'unknown': '#CCCCCC'
+                },
+                'directed': {
+                    'stimulation': '#00CC00',
+                    'inhibition': '#CC0000',
+                    'unknown': '#0000CC'
+                },
+                'pathway': '#7AA0A177',
+                'ptm': '#C6909C77',
+                'reaction': '#C5B26E77',
+                'interaction': '#9D8BB777'
+            },
+            'edge_arrowhead': {
+                'undirected': {
+                    'unknown': 'none'
+                },
+                'directed': {
+                    'stimulation': 'normal',
+                    'inhibition': 'tee',
+                    'unknown': 'diamond'
+                }
+            },
+            'vertex_fillcolor': '#AAAAAA',
+            'vertex_fontcolor': '#000000'
+        }
+        #
+        for k, v in defaults.iteritems():
+            _defaults[k] = v
+        #
         g = self.graph if graph is None else graph
         labels = 'name' if labels == 'uniprot' else 'label'
         edge_sources = edge_sources if edge_sources is None else set(edge_sources)
@@ -5085,34 +5215,59 @@ class BioGraph(object):
         else:
             edges = xrange(g.ecount())
             nodes = xrange(g.vcount())
-        dNodes = dict((v.index, v[labels]) for v in g.vs if nodes is None or v.index in nodes)
+        dNodes = dict((v.index, v[labels]) for v in g.vs \
+            if nodes is None or v.index in nodes)
         hide_nodes = set(hide_nodes)
+        if font is not None:
+            _custom_attrs['graph_fontname'] = font
+            _custom_attrs['vertex_fontname'] = font
+            _custom_attrs['edge_fontname'] = font
+        # attribute callbacks
+        for entity in ['graph', 'vertex', 'edge']:
+            callbacks_dict = '%s_callbacks' % entity
+            _attrs[callbacks_dict] = {}
+            callbacks = _attrs[callbacks_dict]
+            if entity == 'edge':
+                if (auto_edges == 'RESOURCE_CATEGORIES' or \
+                    auto_edges == 'DIRECTIONS') \
+                    and 'edge_color' not in _custom_attrs \
+                    and 'edge_arrowhead' not in _custom_attrs:
+                    callbacks['color'] = \
+                        AttrHelper(auto_edges, 'edge_color', _defaults)
+                    if auto_edges == 'DIRECTIONS':
+                        callbacks['arrowhead'] = \
+                            AttrHelper(auto_edges, 'edge_arrowhead', _defaults)
+                    else:
+                        callbacks['arrowhead'] = \
+                            AttrHelper('none', 'edge_arrowhead', _defaults)
+            for attr in locals()['%s_attrs'%entity].keys():
+                callback_name = '%s_%s' % (entity, attr)
+                if callback_name in _custom_attrs:
+                    callback_value = _custom_attrs[callback_name]
+                    if type(callback_value) is dict:
+                        if '_name' not in callback_value:
+                            callback_value['_name'] = 'index'
+                    callbacks[attr] = AttrHelper(value = callback_value, 
+                        name = attr, defaults = _defaults)
         # graph
         dot = graphviz.AGraph(directed = directed)
-        if main_title is not None:
-            dot.graph_attr['label'] = main_title
-            dot.graph_attr['fontsize'] = 42.0
-            if label_font is not None:
-                dot.graph_attr['fontname'] = label_font
-        if splines is not None:
-            dot.graph_attr['splines'] = splines
-        # nodes
+        attrs = {}
+        for gattr, fun in _attrs['graph_callbacks'].iteritems():
+            attrs[gattr] = fun(g)
+        attrs = cleanDict(attrs)
+        for gattr, value in attrs.iteritems():
+            dot.graph_attr[gattr] = value
+        # vertices
         for vid, node in dNodes.iteritems():
             attrs = {}
-            if vid in node_colors:
-                attrs['fillcolor'] = node_colors[vid][0]
-                attrs['fontcolor'] = node_colors[vid][1]
-            elif 'default' in node_colors:
-                attrs['fillcolor'] = node_colors['default'][0]
-                attrs['fontcolor'] = node_colors['default'][1]
-            if label_font is not None:
-                attrs['fontname'] = label_font
+            for vattr, fun in _attrs['vertex_callbacks'].iteritems():
+                attrs[vattr] = fun(g.vs[vid])
             if vid in hide_nodes:
                 attrs['style'] = 'invis'
-            attrs['fontsize'] = 24.0
+            attrs = cleanDict(attrs)
             dot.add_node(node, **attrs)
-        dot.node_attr['shape'] = node_shape
         # edges
+        edge_callbacks = _attrs['edge_callbacks']
         for eid in edges:
             s = g.es[eid].source
             t = g.es[eid].target
@@ -5129,9 +5284,13 @@ class BioGraph(object):
                 g.es[eid].source not in hide_nodes and g.es[eid].target not in hide_nodes
             if evis or hide:
                 drawn_directed = False
+                thisSign = 'unknown'
+                thisDir = 'undirected'
+                thisSources = set([])
                 if directed:
                     if d.get_dir((sn, tn)):
                         sdir = d.get_dir((sn, tn), sources = True)
+                        thisDir = (sn, tn)
                         vis = (dir_sources is None or len(sdir & dir_sources) > 0) and evis
                         if vis or hide:
                             attrs = {}
@@ -5141,22 +5300,35 @@ class BioGraph(object):
                             if vis and (sign[0] and dir_sources is None or \
                                 dir_sources is not None and \
                                 len(ssign[0] & dir_sources) > 0):
-                                attrs['arrowhead'] = stim_head
-                                attrs['color'] = stim_color
+                                thisSign = 'stimulation'
+                                thisSources = ssign[0] if dir_sources is None else \
+                                    ssign[0] & dir_sources
+                                for eattr, fun in edge_callbacks.iteritems():
+                                    attrs[eattr] = fun(g.es[eid], 
+                                        thisDir, thisSign, thisDirSources, set(g.es[eid]['sources']))
                             elif vis and (sign[1] and dir_sources is None or \
                                 dir_sources is not None and \
                                 len(ssign[1] & dir_sources) > 0):
-                                attrs['arrowhead'] = inh_head
-                                attrs['color'] = inh_color
+                                thisSign = 'inhibition'
+                                thisSoures = ssign[1] if dir_sources is None else \
+                                    ssign[1] & dir_sources
+                                for eattr, fun in edge_callbacks.iteritems():
+                                    attrs[eattr] = fun(g.es[eid], 
+                                        thisDir, thisSign, thisSources, set(g.es[eid]['sources']))
                             elif vis:
-                                attrs['arrowhead'] = dir_head
-                                attrs['color'] = dir_color
+                                thisSign = 'unknown'
+                                thisSources = sdir
+                                for eattr, fun in edge_callbacks.iteritems():
+                                    attrs[eattr] = fun(g.es[eid], 
+                                        thisDir, thisSign, thisSources, set(g.es[eid]['sources']))
                             else:
                                 attrs['style'] = 'invis'
                                 drawn_directed = False
+                            attrs = cleanDict(attrs)
                             dot.add_edge(sl, tl, **attrs)
                     if d.get_dir((tn, sn)):
                         sdir = d.get_dir((tn, sn), sources = True)
+                        thisDir = (tn, sn)
                         vis = (dir_sources is None or len(sdir & dir_sources) > 0) and evis
                         if vis or hide:
                             attrs = {}
@@ -5166,27 +5338,40 @@ class BioGraph(object):
                             if vis and (sign[0] and dir_sources is None or \
                                 dir_sources is not None and \
                                 len(ssign[0] & dir_sources) > 0):
-                                attrs['arrowhead'] = stim_head
-                                attrs['color'] = stim_color
+                                thisSign = 'stimulation'
+                                thisSources = ssign[0] if dir_sources is None else \
+                                    ssign[0] & dir_sources
+                                for eattr, fun in edge_callbacks.iteritems():
+                                    attrs[eattr] = fun(g.es[eid], 
+                                        thisDir, thisSign, thisSources, set(g.es[eid]['sources']))
                             elif vis and (sign[1] and dir_sources is None or \
                                 dir_sources is not None and \
                                 len(ssign[1] & dir_sources) > 0):
-                                attrs['arrowhead'] = inh_head
-                                attrs['color'] = inh_color
+                                thisSign = 'inhibition'
+                                thisSources = ssign[1] if dir_sources is None else \
+                                    ssign[1] & dir_sources
+                                for eattr, fun in edge_callbacks.iteritems():
+                                    attrs[eattr] = fun(g.es[eid], 
+                                        thisDir, thisSign, thisSources, set(g.es[eid]['sources']))
                             elif vis:
-                                attrs['arrowhead'] = dir_head
-                                attrs['color'] = dir_color
+                                thisSign = 'unknown'
+                                thisSources = sdir
+                                for eattr, fun in edge_callbacks.iteritems():
+                                    attrs[eattr] = fun(g.es[eid], 
+                                        thisDir, thisSign, thisSources, set(g.es[eid]['sources']))
                             else:
                                 attrs['style'] = 'invis'
                                 drawn_directed = False
+                            attrs = cleanDict(attrs)
                             dot.add_edge(tl, sl, **attrs)
                 if not directed or d.get_dir('undirected'):
                     attrs = {}
-                    attrs['arrowhead'] = undir_head
-                    attrs['color'] = undir_color
-                    if sl == 'CREB1' and tl == 'TP53':
-                        print dot.has_neighbor(sl, tl)
-                        print dot.get_edge(sl, tl).attr
+                    thisDir = 'undirected'
+                    thisSign = 'unknown'
+                    thisSources = d.get_dir('undirected', sources = True)
+                    for eattr, fun in edge_callbacks.iteritems():
+                        attrs[eattr] = fun(g.es[eid], thisDir, thisSign, 
+                            thisSources, set(g.es[eid]['sources']))
                     if (not evis and hide) or drawn_directed:
                         attrs['style'] = 'invis'
                     if dot.has_neighbor(sl, tl):
@@ -5194,6 +5379,7 @@ class BioGraph(object):
                             'invis' in dot.get_edge(sl, tl).attr['style']:
                             dot.delete_edge(sl, tl)
                     if not dot.has_neighbor(sl, tl):
+                        attrs = cleanDict(attrs)
                         dot.add_edge((sl, tl), **attrs)
         if type(save_dot) in set([str, unicode]):
             with open(save_dot, 'w') as f:
