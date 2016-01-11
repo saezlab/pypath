@@ -5014,16 +5014,48 @@ class BioGraph(object):
         self.htp = htdata
     
     def third_source_directions(self, graph = None):
+        '''
+        This method calls a series of methods to get
+        additional direction & effect information
+        from sources having no literature curated references,
+        but giving sufficient evidence about the directionality
+        for interactions already supported by literature 
+        evidences from other sources.
+        '''
         self.kegg_directions(graph = graph)
         self.laudanna_effects(graph = graph)
         self.laudanna_directions(graph = graph)
         self.wang_effects(graph = graph)
         self.acsn_effects(graph = graph)
+        self.phosphosite_directions(graph = graph)
+        self.phosphopoint_directions(graph = graph)
+        self.phosphonetworks_directions(graph = graph)
+        self.mimp_directions(graph = graph)
     
     def kegg_directions(self, graph = None):
         keggd = dataio.kegg_pathways()
         self.process_directions(keggd, 'KEGG', stimulation = 'activation', 
             inhibition = 'inhibition', graph = graph)
+    
+    def phosphosite_directions(self, graph = None):
+        psite = dataio.phosphosite_directions()
+        self.process_directions(psite, 'PhosphoSite_dir', dirs_only = True, 
+            id_type = 'uniprot', graph = graph)
+    
+    def phosphopoint_directions(self, graph = None):
+        ppoint = dataio.phosphopoint_directions()
+        self.process_directions(ppoint, 'PhosphoPoint', dirs_only = True, 
+            id_type = 'genesymbol', graph = graph)
+    
+    def phosphonetworks_directions(self, graph = None):
+        pnet = dataio.pnetworks_interactions()
+        self.process_directions(pnet, 'PhosphoNetworks', dirs_only = True, 
+            id_type = 'genesymbol', graph = graph)
+    
+    def mimp_directions(self, graph = None):
+        mimp = dataio.mimp_interactions()
+        self.process_directions(mimp, 'MIMP', dirs_only = True, 
+            id_type = 'genesymbol', graph = graph)
     
     def laudanna_directions(self, graph = None):
         laud = dataio.get_laudanna_directions()

@@ -2681,6 +2681,16 @@ def mimp_interactions():
         result.append([m['kinase'], m['substrate']])
     return result
 
+def phosphopoint_directions():
+    directions = []
+    fname = data_formats.files['phosphopoint']['data']
+    with open(fname, 'r') as f:
+        nul = f.readline()
+        for l in f:
+            l = l.split(';')
+            directions.append([l[0], l[2]])
+    return directions
+
 def get_isoforms(organism = 'Homo sapiens'):
     reorg = re.compile(r'OS=([A-Z][a-z]+\s[a-z]+)')
     result = {}
@@ -4603,3 +4613,141 @@ def get_graphviz_attrs():
                         graph_attrs[attr_name] = this_attr
             break
     return graph_attrs, vertex_attrs, edge_attrs
+
+def get_phosphosite(cache = True):
+    curated_cache = data_formats.files['phosphosite']['curated']
+    noref_cache = data_formats.files['phosphosite']['noref']
+    if cache and os.path.exists(curated_cache) and os.path.exists(noref_cache):
+        return (
+            pickle.load(open(curated_cache, 'rb')),
+            pickle.load(open(noref_cache, 'rb'))
+        )
+    result_curated = []
+    result_noref = []
+    url = data_formats.urls['psite_bp']['url']
+    bpax = curl(url, silent = False, large = True)
+    parsed = 'data/phosphosite.csv'
+    xml = ET.parse(bpax)
+    xmlroot = xml.getroot()
+    bpprefix = '{http://www.biopax.org/release/biopax-level3.owl#}'
+    rdfprefix = '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+    proteins = {}
+    for p in xmlroot.iter(bpprefix+'ProteinReference'):
+        psid = p.attrib[rdfprefix+'ID']
+        db = p.find(bpprefix+'xref').find(bpprefix+'UnificationXref').find(bpprefix+'db').text
+        up = p.find(bpprefix+'xref').find(bpprefix+'UnificationXref').find(bpprefix+'id').text
+        tax = ''
+        if p.find(bpprefix+'organism') is not None:
+            tmp = p.find(bpprefix+'organism')
+            if rdfprefix+'resource' in tmp.attrib:
+                tax = tmp.attrib[rdfprefix+'resource'].split('_')[1]
+        if db == 'UniProtKB':
+            up = up[0:6]
+        proteins[psid] = {'id': up, 'db': db, 'species': tax, 'psid': psid}
+    evidences = {}
+    for p in xmlroot.iter(bpprefix+'EvidenceCodeVocabulary'):
+        evid = p.attrib[rdfprefix+'ID'].split('_')[1]
+        evname = p.find(bpprefix+'term').text
+        evidences[evid] = evname
+    ev_short = {'0113': 'WB', '0427': 'MS', '0074': 'MA', '0421': 'AB'}
+    nosrc = []
+    notgt = []
+    norefs = []
+    noev = []
+    noth = []
+    edges = []
+    for c in xmlroot.findall(bpprefix+'Catalysis'):
+        if rdfprefix+'resource' in c.find(bpprefix+'controller').attrib:
+            src = 'po_'+c.find(bpprefix+'controller').attrib[rdfprefix+'resource'].split('_')[1]
+        else:
+            srcProt =  c.find(bpprefix+'controller').find(bpprefix+'Protein')
+            if srcProt is not None:
+                src = 'po_'+srcProt.attrib[rdfprefix+'ID'].split('_')[1]
+            else:
+                nosrc.append(c)
+        tgtProt = c.find(bpprefix+'controlled').iter(bpprefix+'ProteinReference')
+        tgt = next(tgtProt, None)
+        if tgt is not None:
+            tgt = tgt.attrib[rdfprefix+'ID']
+        else:
+            tgtProt = c.find(bpprefix+'controlled').iter(bpprefix+'entityReference')
+            tgt = next(tgtProt, None)
+            if tgt is not None:
+                if rdfprefix+'resource' in tgt.attrib:
+                    tgt = tgt.attrib[rdfprefix+'resource'][1:]
+            else:
+                tgtProt = c.find(bpprefix+'controlled').iter(bpprefix+'left')
+                tgt = next(tgtProt, None)
+                if tgt is not None:
+                    if rdfprefix+'resource' in tgt.attrib:
+                        tgt = 'po_'+tgt.attrib[rdfprefix+'resource'].split('_')[1]
+                else:
+                    notgt.append(c)
+        refs = c.iter(bpprefix+'PublicationXref')
+        pmids = []
+        for r in refs:
+            pm = r.attrib[rdfprefix+'ID'].split('_')
+            if pm[0] == 'pmid':
+                pmids.append(pm[1])
+        refs = c.iter(bpprefix+'evidence')
+        for r in refs:
+            rrefs = r.iter(bpprefix+'xref')
+            for rr in rrefs:
+                if rdfprefix+'resource' in rr.attrib:
+                    pm = rr.attrib[rdfprefix+'resource'].split('_')
+                    if pm[0] == 'pubmed':
+                        pmids.append(pm[1])
+        evs = []
+        for e in c.iter(bpprefix+'evidenceCode'):
+            if rdfprefix+'resource' in e.attrib:
+                evs.append(ev_short[e.attrib[rdfprefix+'resource'].split('_')[1]])
+            else:
+                ev = e.find(bpprefix+'EvidenceCodeVocabulary')
+                evs.append(ev_short[ev.attrib[rdfprefix+'ID'].split('_')[1]])
+        for e in c.iter(bpprefix+'evidence'):
+            if rdfprefix+'resource' in e.attrib:
+                ev = e.attrib[rdfprefix+'resource'].split('_')
+                if len(ev) == 4:
+                    if len(ev[3]) == 4:
+                        evs.append(ev_short[ev[3]])
+        if (src is not None and tgt is not None and src in proteins and tgt in proteins and 
+                proteins[src]['id'] is not None and proteins[tgt]['id'] is not None):
+            edges.append({'src': proteins[src], 'tgt': proteins[tgt], 'pmids': list(set(pmids)), 
+                        'evs': list(set(evs))})
+            if len(evs) == 0:
+                noev.append(c)
+            if len(pmids) == 0:
+                norefs.append(c)
+            if len(evs) == 0 and len(pmids) == 0:
+                noth.append(c)
+    for e in edges:
+        this_iaction = [e['src']['id'], e['tgt']['id'], e['src']['species'], \
+            e['tgt']['species'], ';'.join(e['evs']), ';'.join(e['pmids'])]
+        if len(this_iaction[-1]) > 0:
+            result_curated.append(this_iaction)
+        else:
+            result_noref.append(this_iaction)
+    pickle.dump(result_curated, open(curated_cache, 'wb'))
+    pickle.dump(result_noref, open(noref_cache, 'wb'))
+    return result_curated, result_noref
+
+def get_phosphosite_curated():
+    curated_cache = data_formats.files['phosphosite']['curated']
+    if not os.path.exists(curated_cache):
+        curated, noref = get_phosphosite()
+        return curated
+    else:
+        return pickle.load(open(cureted_cache, 'rb'))
+
+def get_phosphosite_noref():
+    noref_cache = data_formats.files['phosphosite']['noref']
+    if not os.path.exists(noref_cache):
+        noref, noref = get_phosphosite()
+        return noref
+    else:
+        return pickle.load(open(noref_cache, 'rb'))
+
+def phosphosite_directions(organism = 'human'):
+    curated, noref = get_phosphosite()
+    return [i[:2] for i in curated + noref \
+        if i[2] == organism and i[3] == organism]

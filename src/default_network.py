@@ -14,9 +14,18 @@
 #
 
 import bioigraph
+from bioigraph import data_formats
 
 net = bioigraph.BioGraph()
 net.init_network(exclude = ['intact', 'acsn', 'reactome', 'nci-pid'])
+net.save_network('cache/default_network_raw.pickle')
 net.remove_htp()
 net.third_source_directions()
-net.save_network('cache/default_network_raw.pickle')
+net.save_network('cache/default_network.pickle')
+
+net = bioigraph.BioGraph()
+net.init_network(pfile = 'cache/default_network_raw.pickle')
+net.load_resources(data_formats.ptm_misc)
+net.third_source_directions()
+net.load_ptms()
+net.save_network('cache/default_network_extra_ptms.pickle')

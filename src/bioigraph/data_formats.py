@@ -549,6 +549,13 @@ files = {
     'acsn': {
         'names': os.path.join(ROOT, 'data', 'acsn_names.gmt'),
         'ppi': os.path.join(ROOT, 'data', 'acsn_ppi.txt')
+    },
+    'phosphopoint': {
+        'data': os.path.join(ROOT, 'data', 'phosphopoint.csv')
+    },
+    'phosphosite': {
+        'curated': os.path.join('cache', 'phosphosite_curated.pickle'),
+        'noref': os.path.join('cache', 'phosphosite_noref.pickle')
     }
 }
 
@@ -1088,15 +1095,15 @@ These supply large sets of directed interactions.
 '''
 ptm = {
     'psite': input_formats.ReadSettings(name="PhosphoSite", 
-        separator="\t", nameColA=0, nameColB=1,
-        nameTypeA="uniprot", nameTypeB="uniprot",
-        typeA="protein", typeB="protein", isDirected=True, sign=False,
-        inFile=os.path.join(ROOT, 'data', 'phosphosite_human_hc.csv'),
-        references=(5, ";"),ncbiTaxId=9606,
-        extraEdgeAttrs={
+        separator = None, nameColA = 0, nameColB = 1,
+        nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA = "protein", typeB="protein", isDirected = True, sign = False,
+        inFile = 'get_phosphosite_curated',
+        references = (5, ";"), ncbiTaxId = 9606,
+        extraEdgeAttrs = {
             "psite_evidences": (4, ";")},
-        extraNodeAttrsA={},
-        extraNodeAttrsB={}),
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {}),
     'depod': input_formats.ReadSettings(name="DEPOD", 
         separator=";", nameColA=0, nameColB=1,
         nameTypeA="uniprot", nameTypeB="uniprot",
@@ -1182,13 +1189,13 @@ references.
 '''
 ptm_misc = {
     'psite_noref': input_formats.ReadSettings(name="PhosphoSite_noref", 
-        separator="\t", 
+        separator = None, 
         nameColA=0, nameColB=1, nameTypeA="uniprot", nameTypeB="uniprot",
         typeA="protein", typeB="protein", isDirected=True, 
         sign=False, ncbiTaxId=9606,
-        inFile=os.path.join(ROOT, 'data', 'phosphosite_human_noref.csv'),
-        references=False,
-        extraEdgeAttrs={
+        inFile = 'get_phosphosite_noref',
+        references = False,
+        extraEdgeAttrs = {
             "psite_evidences": (4, ";")},
         extraNodeAttrsA={},
         extraNodeAttrsB={}),

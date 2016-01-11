@@ -40,6 +40,7 @@ src/bioigraph/pdb.py
 src/bioigraph/plot.py
 src/bioigraph/progress.py
 src/bioigraph/proteomicsdb.py
+src/bioigraph/reaction.py
 src/bioigraph/residues.py
 src/bioigraph/seq.py
 src/bioigraph/server.py
@@ -51,6 +52,8 @@ src/bioigraph.egg-info/requires.txt
 src/bioigraph.egg-info/top_level.txt
 src/bioigraph/data/LMPID_DATA_pubmed_ref.xml
 src/bioigraph/data/__init__.py
+src/bioigraph/data/acsn_names.gmt
+src/bioigraph/data/acsn_ppi.txt
 src/bioigraph/data/alzpw-ppi.csv
 src/bioigraph/data/arn.csv
 src/bioigraph/data/arn_014.csv
@@ -79,13 +82,17 @@ src/bioigraph/data/nci-pid-strict.csv
 src/bioigraph/data/netpath_refs.csv
 src/bioigraph/data/nrf2ome.csv
 src/bioigraph/data/phosphopoint.csv
+src/bioigraph/data/phosphosite_curated.pickle
 src/bioigraph/data/phosphosite_human_hc.csv
 src/bioigraph/data/phosphosite_human_noref.csv
+src/bioigraph/data/phosphosite_noref.pickle
 src/bioigraph/data/rolland2014_s2g.tab
 src/bioigraph/data/sec_ac.txt
 src/bioigraph/data/signalink2-01-human-genesymbol.sif
 src/bioigraph/data/signalink2-01-human-uniprot.sif
 src/bioigraph/data/signalink2-01-human.sif
+src/bioigraph/data/signalink3_edges.tsv
+src/bioigraph/data/signalink3_nodes.tsv
 src/bioigraph/data/signor_22052015.tab
 src/bioigraph/data/signor_ppi.tsv
 src/bioigraph/data/slk01human.csv
