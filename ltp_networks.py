@@ -15,12 +15,12 @@
 
 from collections import Counter, OrderedDict
 from itertools import groupby
-import bioigraph
+import pypath
 import copy
 from itertools import chain
-from bioigraph.data_formats import best, good, ugly, transcription
-from bioigraph import dataio
-from bioigraph.common import uniqList, flatList
+from pypath.data_formats import best, good, ugly, transcription
+from pypath import dataio
+from pypath.common import uniqList, flatList
 
 import _sensitivity as sens
 
@@ -119,7 +119,7 @@ def rgb256(rgb1):
 mysql_gelati = (None,'mapping_gelati')
 mysql_chembl = (None,'chembl_ebi')
 
-net = bioigraph.BioGraph(9606, mysql=mysql_gelati, name="demo")
+net = pypath.Pypath(9606, mysql=mysql_gelati, name="demo")
 
 #net.load_resources({'netpath': best['slk']})
 #net.load_resources(lst={'ccmap': best['ccmap2']})

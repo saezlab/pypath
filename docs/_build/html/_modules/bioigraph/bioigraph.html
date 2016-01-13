@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>bioigraph.bioigraph &mdash; bioigraph 0.1.1 documentation</title>
+    <title>pypath.pypath &mdash; pypath 0.1.1 documentation</title>
     
     <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="bioigraph 0.1.1 documentation" href="../../index.html" />
+    <link rel="top" title="pypath 0.1.1 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body role="document">
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">bioigraph 0.1.1 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.1.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -46,12 +46,12 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <h1>Source code for bioigraph.bioigraph</h1><div class="highlight"><pre>
+  <h1>Source code for pypath.pypath</h1><div class="highlight"><pre>
 <span class="c">#!/usr/bin/env python2</span>
 <span class="c"># -*- coding: utf-8 -*-</span>
 
 <span class="c">#</span>
-<span class="c">#  This file is part of the `bioigraph` python module</span>
+<span class="c">#  This file is part of the `pypath` python module</span>
 <span class="c">#</span>
 <span class="c">#  Copyright (c) 2014-2015 - EMBL-EBI</span>
 <span class="c">#</span>
@@ -367,7 +367,7 @@
                 <span class="n">uniqList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span> <span class="o">+</span> \
                 <span class="n">other</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">])</span>
 
-<div class="viewcode-block" id="BioGraph"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph">[docs]</a><span class="k">class</span> <span class="nc">BioGraph</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph">[docs]</a><span class="k">class</span> <span class="nc">BioGraph</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     
     <span class="c">###</span>
     <span class="c">### main network object</span>
@@ -474,14 +474,14 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">copy</span><span class="p">)</span>
     
-<div class="viewcode-block" id="BioGraph.copy"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">other</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.copy"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">other</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        </span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">__dict__</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;Reinitialized&quot;</span><span class="p">,</span> <span class="s">&#39;INFO&#39;</span><span class="p">)</span>
     </div>
-<div class="viewcode-block" id="BioGraph.init_network"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.init_network">[docs]</a>    <span class="k">def</span> <span class="nf">init_network</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.init_network"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.init_network">[docs]</a>    <span class="k">def</span> <span class="nf">init_network</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        This is a lazy way to start the module, load data </span>
 <span class="sd">        and build the high confidence, literature curated</span>
@@ -535,7 +535,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">None</span>
     
-<div class="viewcode-block" id="BioGraph.get_giant"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.get_giant">[docs]</a>    <span class="k">def</span> <span class="nf">get_giant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replace</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.get_giant"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.get_giant">[docs]</a>    <span class="k">def</span> <span class="nf">get_giant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replace</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the giant component of the graph, or </span>
 <span class="sd">        replaces the igraph object with only the giant </span>
@@ -555,7 +555,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">replace</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">gg</span>
     </div>
-<div class="viewcode-block" id="BioGraph.update_vname"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.update_vname">[docs]</a>    <span class="k">def</span> <span class="nf">update_vname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.update_vname"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.update_vname">[docs]</a>    <span class="k">def</span> <span class="nf">update_vname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        For fast lookup of node names and indexes, these are </span>
 <span class="sd">        hold in a list and a dict as well. However, every time</span>
@@ -567,14 +567,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">],</span> 
             <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">())))</span>
     </div>
-<div class="viewcode-block" id="BioGraph.update_vindex"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.update_vindex">[docs]</a>    <span class="k">def</span> <span class="nf">update_vindex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.update_vindex"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.update_vindex">[docs]</a>    <span class="k">def</span> <span class="nf">update_vindex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        See update_vname().</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nodNam</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()),</span> 
             <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]))</span>
     </div>
-<div class="viewcode-block" id="BioGraph.vertex_pathways"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.vertex_pathways">[docs]</a>    <span class="k">def</span> <span class="nf">vertex_pathways</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.vertex_pathways"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.vertex_pathways">[docs]</a>    <span class="k">def</span> <span class="nf">vertex_pathways</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Some resources assignes interactions some others </span>
 <span class="sd">        proteins to pathways.</span>
@@ -589,7 +589,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">][</span><span class="n">eattr</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="n">eattr</span><span class="p">]</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">target</span><span class="p">][</span><span class="n">eattr</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="n">eattr</span><span class="p">]</span>
     </div>
-<div class="viewcode-block" id="BioGraph.read_data_file"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.read_data_file">[docs]</a>    <span class="k">def</span> <span class="nf">read_data_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">keep_raw</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.read_data_file"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.read_data_file">[docs]</a>    <span class="k">def</span> <span class="nf">read_data_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">keep_raw</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Interaction data with node and edge attributes can be read </span>
 <span class="sd">        from simple text based files. This function works not only</span>
@@ -814,7 +814,7 @@
                 <span class="p">(</span><span class="n">lnum</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">itemListMapped</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">itemListMapped</span>
     
-<div class="viewcode-block" id="BioGraph.map_list"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.map_list">[docs]</a>    <span class="k">def</span> <span class="nf">map_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">lst</span><span class="p">,</span><span class="n">singleList</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.map_list"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.map_list">[docs]</a>    <span class="k">def</span> <span class="nf">map_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">lst</span><span class="p">,</span><span class="n">singleList</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Only a wrapper for map_edge()</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -943,7 +943,7 @@
                 <span class="n">uniqLst</span><span class="p">[</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merge_attrs</span><span class="p">(</span><span class="n">uniqLst</span><span class="p">[</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">uniqLst</span>
     
-<div class="viewcode-block" id="BioGraph.map_network"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.map_network">[docs]</a>    <span class="k">def</span> <span class="nf">map_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;trembl&#39;</span><span class="p">,</span> <span class="s">&#39;swissprot&#39;</span><span class="p">)):</span>
+<div class="viewcode-block" id="BioGraph.map_network"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.map_network">[docs]</a>    <span class="k">def</span> <span class="nf">map_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;trembl&#39;</span><span class="p">,</span> <span class="s">&#39;swissprot&#39;</span><span class="p">)):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        This function is not needed any more, will be removed soon.</span>
 <span class="sd">        </span>
@@ -1043,7 +1043,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,(</span><span class="s">&quot;Num of edges: </span><span class="si">%u</span><span class="s">, num of vertices: </span><span class="si">%u</span><span class="s">&quot;</span> <span class="o">%</span>
             <span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">ecount</span><span class="p">(),</span><span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">())),</span> <span class="s">&#39;INFO&#39;</span><span class="p">)</span>
     </div>
-<div class="viewcode-block" id="BioGraph.delete_by_taxon"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.delete_by_taxon">[docs]</a>    <span class="k">def</span> <span class="nf">delete_by_taxon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tax</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.delete_by_taxon"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.delete_by_taxon">[docs]</a>    <span class="k">def</span> <span class="nf">delete_by_taxon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tax</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Removes the proteins of all organisms which are not listed.</span>
 <span class="sd">        </span>
@@ -1060,7 +1060,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">update_vname</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_db_dict</span><span class="p">()</span>
     </div>
-<div class="viewcode-block" id="BioGraph.delete_unknown"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.delete_unknown">[docs]</a>    <span class="k">def</span> <span class="nf">delete_unknown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tax</span><span class="p">,</span> <span class="n">typ</span> <span class="o">=</span> <span class="s">&#39;protein&#39;</span><span class="p">,</span> <span class="n">defaultNameType</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.delete_unknown"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.delete_unknown">[docs]</a>    <span class="k">def</span> <span class="nf">delete_unknown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tax</span><span class="p">,</span> <span class="n">typ</span> <span class="o">=</span> <span class="s">&#39;protein&#39;</span><span class="p">,</span> <span class="n">defaultNameType</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Removes those proteins which are not in the list of all default</span>
 <span class="sd">        IDs of the organisms. By default, it means to remove all protein </span>
@@ -1125,7 +1125,7 @@
     <span class="c">### functions to integrate new data into the main igraph network object</span>
     <span class="c">###</span>
     
-<div class="viewcode-block" id="BioGraph.count_sol"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.count_sol">[docs]</a>    <span class="k">def</span> <span class="nf">count_sol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.count_sol"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.count_sol">[docs]</a>    <span class="k">def</span> <span class="nf">count_sol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Counts nodes with zero degree.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -1135,7 +1135,7 @@
                 <span class="n">s</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">s</span>
     </div>
-<div class="viewcode-block" id="BioGraph.add_update_vertex"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.add_update_vertex">[docs]</a>    <span class="k">def</span> <span class="nf">add_update_vertex</span><span class="p">(</span>
+<div class="viewcode-block" id="BioGraph.add_update_vertex"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.add_update_vertex">[docs]</a>    <span class="k">def</span> <span class="nf">add_update_vertex</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">defAttrs</span><span class="p">,</span> <span class="n">originalName</span><span class="p">,</span> 
             <span class="n">originalNameType</span><span class="p">,</span> <span class="n">extraAttrs</span><span class="o">=</span><span class="p">{},</span> <span class="n">add</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -1312,7 +1312,7 @@
     <span class="k">def</span> <span class="nf">new_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add_vertices</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">nodes</span><span class="p">))</span>
     
-<div class="viewcode-block" id="BioGraph.edge_exists"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.edge_exists">[docs]</a>    <span class="k">def</span> <span class="nf">edge_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nameA</span><span class="p">,</span> <span class="n">nameB</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.edge_exists"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.edge_exists">[docs]</a>    <span class="k">def</span> <span class="nf">edge_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nameA</span><span class="p">,</span> <span class="n">nameB</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns a tuple of vertice indices if edge doesn&#39;t exists, </span>
 <span class="sd">        otherwise edge id. Not sensitive to direction.</span>
@@ -1339,7 +1339,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">update_vname</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodInd</span>
     
-<div class="viewcode-block" id="BioGraph.get_edge"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.get_edge">[docs]</a>    <span class="k">def</span> <span class="nf">get_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">nodes</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.get_edge"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.get_edge">[docs]</a>    <span class="k">def</span> <span class="nf">get_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">nodes</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the edge id only if there is an edge from nodes[0] to nodes[1],</span>
 <span class="sd">        returns False if edge exists in opposite direction, or no edge exists </span>
@@ -1353,7 +1353,7 @@
         <span class="k">except</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">False</span>
     </div>
-<div class="viewcode-block" id="BioGraph.straight_between"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.straight_between">[docs]</a>    <span class="k">def</span> <span class="nf">straight_between</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">nameA</span><span class="p">,</span><span class="n">nameB</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.straight_between"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.straight_between">[docs]</a>    <span class="k">def</span> <span class="nf">straight_between</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">nameA</span><span class="p">,</span><span class="n">nameB</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        This does actually the same as get_edge(), but by names</span>
 <span class="sd">        instead of vertex ids.</span>
@@ -1368,7 +1368,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">nodes</span>
     </div>
-<div class="viewcode-block" id="BioGraph.all_between"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.all_between">[docs]</a>    <span class="k">def</span> <span class="nf">all_between</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nameA</span><span class="p">,</span> <span class="n">nameB</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.all_between"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.all_between">[docs]</a>    <span class="k">def</span> <span class="nf">all_between</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nameA</span><span class="p">,</span> <span class="n">nameB</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns all edges between two given vertex names. Similar to </span>
 <span class="sd">        straight_between(), but checks both directions, and returns </span>
@@ -1928,7 +1928,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">v</span><span class="p">[</span><span class="s">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     
-<div class="viewcode-block" id="BioGraph.network_stats"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.network_stats">[docs]</a>    <span class="k">def</span> <span class="nf">network_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.network_stats"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.network_stats">[docs]</a>    <span class="k">def</span> <span class="nf">network_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Calculates basic statistics for the whole network </span>
 <span class="sd">        and each of sources. Writes the results in a tab file.</span>
@@ -2222,7 +2222,7 @@
         <span class="n">outf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">outf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     
-<div class="viewcode-block" id="BioGraph.load_resources"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.load_resources">[docs]</a>    <span class="k">def</span> <span class="nf">load_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span> <span class="o">=</span> <span class="n">best</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.load_resources"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.load_resources">[docs]</a>    <span class="k">def</span> <span class="nf">load_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span> <span class="o">=</span> <span class="n">best</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Loads multiple resources, and cleans up after. </span>
 <span class="sd">        Looks up ID types, and loads all ID conversion </span>
@@ -2834,7 +2834,7 @@
         <span class="k">with</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">encoding</span><span class="o">=</span><span class="s">&#39;utf-8&#39;</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
     
-<div class="viewcode-block" id="BioGraph.network_filter"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.network_filter">[docs]</a>    <span class="k">def</span> <span class="nf">network_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">2.0</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.network_filter"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.network_filter">[docs]</a>    <span class="k">def</span> <span class="nf">network_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">2.0</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        This function aims to cut the number of edges in the network, </span>
 <span class="sd">        without loosing nodes, to make the network less connected, </span>
@@ -2866,7 +2866,7 @@
             <span class="n">prg</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
         <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
     </div>
-<div class="viewcode-block" id="BioGraph.shortest_path_dist"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.shortest_path_dist">[docs]</a>    <span class="k">def</span> <span class="nf">shortest_path_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">subset</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">outfile</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.shortest_path_dist"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.shortest_path_dist">[docs]</a>    <span class="k">def</span> <span class="nf">shortest_path_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">subset</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">outfile</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        subset is a tuple of two lists if you wish to look for</span>
 <span class="sd">        paths between elements of two groups, or a list if you </span>
@@ -3349,7 +3349,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">e</span><span class="p">][</span><span class="s">&#39;ptm&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">dmi_list</span>
         <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
     
-<div class="viewcode-block" id="BioGraph.load_ddi"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.load_ddi">[docs]</a>    <span class="k">def</span> <span class="nf">load_ddi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ddi</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.load_ddi"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.load_ddi">[docs]</a>    <span class="k">def</span> <span class="nf">load_ddi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ddi</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        ddi is either a list of intera.DomainDomain objects, </span>
 <span class="sd">        or a function resulting this list</span>
@@ -3377,7 +3377,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">e</span><span class="p">][</span><span class="s">&#39;ddi&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dd</span><span class="p">)</span>
         <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
     </div>
-<div class="viewcode-block" id="BioGraph.load_dmi"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.load_dmi">[docs]</a>    <span class="k">def</span> <span class="nf">load_dmi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dmi</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.load_dmi"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.load_dmi">[docs]</a>    <span class="k">def</span> <span class="nf">load_dmi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dmi</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        dmi is either a list of intera.DomainMotif objects, </span>
 <span class="sd">        or a function resulting this list</span>
@@ -4079,7 +4079,7 @@
             <span class="n">result</span><span class="p">[</span><span class="n">db</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">bool</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">isDirected</span><span class="p">),</span> <span class="nb">bool</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">sign</span><span class="p">)]</span>
         <span class="k">return</span> <span class="n">result</span>
     
-<div class="viewcode-block" id="BioGraph.basic_stats"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.basic_stats">[docs]</a>    <span class="k">def</span> <span class="nf">basic_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">latex</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.basic_stats"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.basic_stats">[docs]</a>    <span class="k">def</span> <span class="nf">basic_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">latex</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns basic numbers about the network resources, e.g. edge and </span>
 <span class="sd">        node counts. </span>
@@ -4139,7 +4139,7 @@
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">:: Output written to file `</span><span class="si">%s</span><span class="s">`</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">%</span><span class="n">outf</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
     </div>
-<div class="viewcode-block" id="BioGraph.source_network"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.source_network">[docs]</a>    <span class="k">def</span> <span class="nf">source_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">font</span> <span class="o">=</span> <span class="s">&#39;HelveticaNeueLTStd&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.source_network"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.source_network">[docs]</a>    <span class="k">def</span> <span class="nf">source_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">font</span> <span class="o">=</span> <span class="s">&#39;HelveticaNeueLTStd&#39;</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        For EMBL branding, use Helvetica Neue Linotype Standard light</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -4203,7 +4203,7 @@
     <span class="c"># Load data from GDSC</span>
     <span class="c">#</span>
     </div>
-<div class="viewcode-block" id="BioGraph.load_mutations"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.load_mutations">[docs]</a>    <span class="k">def</span> <span class="nf">load_mutations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">gdsc_datadir</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> 
+<div class="viewcode-block" id="BioGraph.load_mutations"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.load_mutations">[docs]</a>    <span class="k">def</span> <span class="nf">load_mutations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">gdsc_datadir</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> 
             <span class="n">mutation_file</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Mutations are listed in vertex attributes. Mutation() objects </span>
@@ -4237,7 +4237,7 @@
         <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">None</span>
     </div>
-<div class="viewcode-block" id="BioGraph.load_expression"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.load_expression">[docs]</a>    <span class="k">def</span> <span class="nf">load_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.load_expression"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.load_expression">[docs]</a>    <span class="k">def</span> <span class="nf">load_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Expression data can be loaded into vertex attributes, </span>
 <span class="sd">        or into a pandas DataFrame – the latter offers faster </span>
@@ -4267,7 +4267,7 @@
                                 <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">up</span><span class="p">]][</span><span class="s">&#39;exp&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
         <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
     </div>
-<div class="viewcode-block" id="BioGraph.edges_expression"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.edges_expression">[docs]</a>    <span class="k">def</span> <span class="nf">edges_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.edges_expression"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.edges_expression">[docs]</a>    <span class="k">def</span> <span class="nf">edges_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Executes function `func` for each pairs of connected proteins in the </span>
 <span class="sd">        network, for every expression dataset. By default, `func` simply</span>
@@ -4297,7 +4297,7 @@
     <span class="c"># Find and remove edges where mutations disrupt PTMs</span>
     <span class="c">#</span>
     </div>
-<div class="viewcode-block" id="BioGraph.mutated_edges"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.mutated_edges">[docs]</a>    <span class="k">def</span> <span class="nf">mutated_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">):</span>
+<div class="viewcode-block" id="BioGraph.mutated_edges"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.mutated_edges">[docs]</a>    <span class="k">def</span> <span class="nf">mutated_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Compares the mutated residues and the modified residues in PTMs.</span>
 <span class="sd">        Interactions are marked as mutated if the target residue in the </span>
@@ -4337,7 +4337,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">go</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">go</span><span class="p">[</span><span class="n">organism</span><span class="p">]</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">GO</span><span class="p">(</span><span class="n">organism</span><span class="p">)</span>
     
-<div class="viewcode-block" id="BioGraph.find_all_paths"><a class="viewcode-back" href="../../index.html#bioigraph.bioigraph.BioGraph.find_all_paths">[docs]</a>    <span class="k">def</span> <span class="nf">find_all_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s">&#39;OUT&#39;</span><span class="p">,</span> 
+<div class="viewcode-block" id="BioGraph.find_all_paths"><a class="viewcode-back" href="../../index.html#pypath.pypath.BioGraph.find_all_paths">[docs]</a>    <span class="k">def</span> <span class="nf">find_all_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s">&#39;OUT&#39;</span><span class="p">,</span> 
             <span class="n">maxlen</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Finds all paths up to length `maxlen` between groups of</span>
@@ -4421,7 +4421,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">bioigraph 0.1.1 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.1.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

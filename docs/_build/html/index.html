@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to bioigraph’s documentation! &mdash; bioigraph 0.1.1 documentation</title>
+    <title>Welcome to pypath’s documentation! &mdash; pypath 0.1.1 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -23,8 +23,8 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="bioigraph 0.1.1 documentation" href="#" />
-    <link rel="next" title="Welcome to bioigraph’s documentation!" href="" /> 
+    <link rel="top" title="pypath 0.1.1 documentation" href="#" />
+    <link rel="next" title="Welcome to pypath’s documentation!" href="" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -37,9 +37,9 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="#" title="Welcome to bioigraph’s documentation!"
+          <a href="#" title="Welcome to pypath’s documentation!"
              accesskey="N">next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">bioigraph 0.1.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="#">pypath 0.1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -48,12 +48,12 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="welcome-to-bioigraph-s-documentation">
-<h1>Welcome to bioigraph&#8217;s documentation!<a class="headerlink" href="#welcome-to-bioigraph-s-documentation" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="welcome-to-pypath-s-documentation">
+<h1>Welcome to pypath&#8217;s documentation!<a class="headerlink" href="#welcome-to-pypath-s-documentation" title="Permalink to this headline">¶</a></h1>
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="">Welcome to bioigraph&#8217;s documentation!</a><ul class="simple">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Welcome to pypath&#8217;s documentation!</a><ul class="simple">
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#examples">Examples</a><ul>
@@ -61,7 +61,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#example-2-using-the-mapper-class-for-translating-ids">Example 2: using the Mapper class for translating IDs</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#module-bioigraph.bioigraph">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#module-pypath.pypath">Reference</a></li>
 </ul>
 </div>
 </div>
@@ -70,10 +70,10 @@
 <div class="section" id="example-1-building-the-network">
 <h2>Example 1: building the network<a class="headerlink" href="#example-1-building-the-network" title="Permalink to this headline">¶</a></h2>
 <p>Import the module and create an instance. MySQL settings are stored by default in mysql_config/defaults.mysql, now you don&#8217;t need to modify it:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">bioigraph</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pypath</span>
 <span class="n">mysql_gelati</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="s">&#39;mapping_gelati&#39;</span><span class="p">)</span>
 <span class="n">mysql_chembl</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="s">&#39;chembl_ebi&#39;</span><span class="p">)</span>
-<span class="n">net</span> <span class="o">=</span> <span class="n">bioigraph</span><span class="o">.</span><span class="n">BioGraph</span><span class="p">(</span><span class="mi">9606</span><span class="p">,</span> <span class="n">mysql</span> <span class="o">=</span> <span class="n">mysql_gelati</span><span class="p">)</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">pypath</span><span class="o">.</span><span class="n">BioGraph</span><span class="p">(</span><span class="mi">9606</span><span class="p">,</span> <span class="n">mysql</span> <span class="o">=</span> <span class="n">mysql_gelati</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The tables for ID conversions, and the network of the selected manually curated pathway databases can be initialized this way:</p>
@@ -81,14 +81,14 @@
 </pre></div>
 </div>
 <p>Resources without references for each interaction are available separately. For example, to build a comprehensive phosphonetwork, you might want to load interactions from high-throughput data in PhosphoSite, kinase-substrate relationships from PhosphoNetworks and MIMP. This is the way to do it:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">bioigraph.data_formats</span> <span class="kn">import</span> <span class="n">good</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pypath.data_formats</span> <span class="kn">import</span> <span class="n">good</span>
 <span class="n">net</span><span class="o">.</span><span class="n">load_resources</span><span class="p">(</span><span class="n">lst</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;mimp&#39;</span><span class="p">:</span> <span class="n">good</span><span class="p">[</span><span class="s">&#39;mimp&#39;</span><span class="p">]})</span>
 <span class="n">net</span><span class="o">.</span><span class="n">load_resources</span><span class="p">(</span><span class="n">lst</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;pnetworks&#39;</span><span class="p">:</span> <span class="n">good</span><span class="p">[</span><span class="s">&#39;pnetworks&#39;</span><span class="p">]})</span>
 <span class="n">net</span><span class="o">.</span><span class="n">load_resources</span><span class="p">(</span><span class="n">lst</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;psite_noref&#39;</span><span class="p">:</span> <span class="n">good</span><span class="p">[</span><span class="s">&#39;psite_noref&#39;</span><span class="p">]})</span>
 </pre></div>
 </div>
 <p>In case you have your own interaction data, and you wish to merge this into the network, you first need to define its format, and then call the load_resource() function. In this simple example, the proteins are noted by Gene Symbols, their names are in columns #0 and #1, while from column #2 an edge attribute named &#8216;score&#8217; will be read. The file is tab separated, and the file name is &#8216;mylist.sif&#8217;. (This won&#8217;t work unless you really have a file like this.)</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">mylist</span> <span class="o">=</span> <span class="n">bioigraph</span><span class="o">.</span><span class="n">input_formats</span><span class="o">.</span><span class="n">ReadSettings</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;mylist&quot;</span><span class="p">,</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">mylist</span> <span class="o">=</span> <span class="n">pypath</span><span class="o">.</span><span class="n">input_formats</span><span class="o">.</span><span class="n">ReadSettings</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;mylist&quot;</span><span class="p">,</span>
     <span class="n">separator</span> <span class="o">=</span> <span class="s">&quot;</span><span class="se">\t</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">nameColA</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">nameColB</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">nameTypeA</span> <span class="o">=</span> <span class="s">&quot;genesymbol&quot;</span><span class="p">,</span> <span class="n">nameTypeB</span> <span class="o">=</span> <span class="s">&quot;genesymbol&quot;</span><span class="p">,</span>
     <span class="n">isDirected</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">inFile</span> <span class="o">=</span> <span class="s">&#39;mylist.sif&#39;</span><span class="p">,</span>
@@ -168,8 +168,8 @@ And while the tunnel is open, run the command above with mysql settings pointing
 </div>
 <div class="section" id="example-2-using-the-mapper-class-for-translating-ids">
 <h2>Example 2: using the Mapper class for translating IDs<a class="headerlink" href="#example-2-using-the-mapper-class-for-translating-ids" title="Permalink to this headline">¶</a></h2>
-<p>The mapping submodule of bioigraph can be used for ID conversion. Here is a basic example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">bioigraph</span> <span class="kn">import</span> <span class="n">mapping</span>
+<p>The mapping submodule of pypath can be used for ID conversion. Here is a basic example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pypath</span> <span class="kn">import</span> <span class="n">mapping</span>
 <span class="n">m</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">Mapper</span><span class="p">(</span><span class="mi">9606</span><span class="p">,</span> <span class="n">mysql_conf</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="s">&#39;mapping_gelati&#39;</span><span class="p">))</span>
 <span class="n">m</span><span class="o">.</span><span class="n">load_mappings</span><span class="p">()</span>
 <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
@@ -180,14 +180,14 @@ And while the tunnel is open, run the command above with mysql settings pointing
 </div>
 </div>
 </div>
-<div class="section" id="module-bioigraph.bioigraph">
-<span id="reference"></span><h1>Reference<a class="headerlink" href="#module-bioigraph.bioigraph" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-pypath.pypath">
+<span id="reference"></span><h1>Reference<a class="headerlink" href="#module-pypath.pypath" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
-<dt id="bioigraph.bioigraph.BioGraph">
-<em class="property">class </em><code class="descclassname">bioigraph.bioigraph.</code><code class="descname">BioGraph</code><span class="sig-paren">(</span><em>ncbi_tax_id=9606</em>, <em>default_name_type={'protein': 'uniprot'</em>, <em>'drug': 'chembl'</em>, <em>'mirna': 'mirbase'}</em>, <em>copy=None</em>, <em>mysql=(None</em>, <em>'mapping')</em>, <em>name='unnamed'</em>, <em>outdir='results'</em>, <em>loglevel='INFO'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph">
+<em class="property">class </em><code class="descclassname">pypath.pypath.</code><code class="descname">BioGraph</code><span class="sig-paren">(</span><em>ncbi_tax_id=9606</em>, <em>default_name_type={'protein': 'uniprot'</em>, <em>'drug': 'chembl'</em>, <em>'mirna': 'mirbase'}</em>, <em>copy=None</em>, <em>mysql=(None</em>, <em>'mapping')</em>, <em>name='unnamed'</em>, <em>outdir='results'</em>, <em>loglevel='INFO'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.add_update_vertex">
-<code class="descname">add_update_vertex</code><span class="sig-paren">(</span><em>defAttrs</em>, <em>originalName</em>, <em>originalNameType</em>, <em>extraAttrs={}</em>, <em>add=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.add_update_vertex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.add_update_vertex" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.add_update_vertex">
+<code class="descname">add_update_vertex</code><span class="sig-paren">(</span><em>defAttrs</em>, <em>originalName</em>, <em>originalNameType</em>, <em>extraAttrs={}</em>, <em>add=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.add_update_vertex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.add_update_vertex" title="Permalink to this definition">¶</a></dt>
 <dd><p>Updates the attributes of one node in the network.
 Optionally it creates a new node and sets the attributes,
 but it is not efficient as igraph needs to reindex vertices 
@@ -196,8 +196,8 @@ edges in batch.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.all_between">
-<code class="descname">all_between</code><span class="sig-paren">(</span><em>nameA</em>, <em>nameB</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.all_between"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.all_between" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.all_between">
+<code class="descname">all_between</code><span class="sig-paren">(</span><em>nameA</em>, <em>nameB</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.all_between"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.all_between" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns all edges between two given vertex names. Similar to 
 straight_between(), but checks both directions, and returns 
 list of edge ids in [undirected, straight, reveresed] format,
@@ -205,8 +205,8 @@ for both nameA -&gt; nameB and nameB -&gt; nameA edges.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.basic_stats">
-<code class="descname">basic_stats</code><span class="sig-paren">(</span><em>latex=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.basic_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.basic_stats" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.basic_stats">
+<code class="descname">basic_stats</code><span class="sig-paren">(</span><em>latex=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.basic_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.basic_stats" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns basic numbers about the network resources, e.g. edge and 
 node counts.</p>
 <dl class="docutils">
@@ -218,19 +218,19 @@ latex stats.tex</dd>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.copy">
-<code class="descname">copy</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.copy" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.copy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.count_sol">
-<code class="descname">count_sol</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.count_sol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.count_sol" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.count_sol">
+<code class="descname">count_sol</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.count_sol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.count_sol" title="Permalink to this definition">¶</a></dt>
 <dd><p>Counts nodes with zero degree.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.delete_by_taxon">
-<code class="descname">delete_by_taxon</code><span class="sig-paren">(</span><em>tax</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.delete_by_taxon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.delete_by_taxon" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.delete_by_taxon">
+<code class="descname">delete_by_taxon</code><span class="sig-paren">(</span><em>tax</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.delete_by_taxon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.delete_by_taxon" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes the proteins of all organisms which are not listed.</p>
 <dl class="docutils">
 <dt>&#64;tax <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
@@ -240,8 +240,8 @@ E.g. [7227, 9606]</dd>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.delete_unknown">
-<code class="descname">delete_unknown</code><span class="sig-paren">(</span><em>tax</em>, <em>typ='protein'</em>, <em>defaultNameType=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.delete_unknown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.delete_unknown" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.delete_unknown">
+<code class="descname">delete_unknown</code><span class="sig-paren">(</span><em>tax</em>, <em>typ='protein'</em>, <em>defaultNameType=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.delete_unknown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.delete_unknown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes those proteins which are not in the list of all default
 IDs of the organisms. By default, it means to remove all protein 
 nodes not having a human SwissProt ID.</p>
@@ -258,15 +258,15 @@ For proteins it&#8217;s &#8216;uniprot&#8217; by default.</dd>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.edge_exists">
-<code class="descname">edge_exists</code><span class="sig-paren">(</span><em>nameA</em>, <em>nameB</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.edge_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.edge_exists" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.edge_exists">
+<code class="descname">edge_exists</code><span class="sig-paren">(</span><em>nameA</em>, <em>nameB</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.edge_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.edge_exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a tuple of vertice indices if edge doesn&#8217;t exists, 
 otherwise edge id. Not sensitive to direction.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.edges_expression">
-<code class="descname">edges_expression</code><span class="sig-paren">(</span><em>func=&lt;function &lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.edges_expression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.edges_expression" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.edges_expression">
+<code class="descname">edges_expression</code><span class="sig-paren">(</span><em>func=&lt;function &lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.edges_expression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.edges_expression" title="Permalink to this definition">¶</a></dt>
 <dd><p>Executes function <cite>func</cite> for each pairs of connected proteins in the 
 network, for every expression dataset. By default, <cite>func</cite> simply
 gives the product the (normalized) expression values.</p>
@@ -278,8 +278,8 @@ return one vector of the same length.</dd>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.find_all_paths">
-<code class="descname">find_all_paths</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>mode='OUT'</em>, <em>maxlen=None</em>, <em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.find_all_paths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.find_all_paths" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.find_all_paths">
+<code class="descname">find_all_paths</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>mode='OUT'</em>, <em>maxlen=None</em>, <em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.find_all_paths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.find_all_paths" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds all paths up to length <cite>maxlen</cite> between groups of
 vertices. This function is needed only becaues igraph`s
 get_all_shortest_paths() finds only the shortest, not any
@@ -300,8 +300,8 @@ the longest path may consist of 3 edges and 4 nodes.</dd>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.get_edge">
-<code class="descname">get_edge</code><span class="sig-paren">(</span><em>nodes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.get_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.get_edge" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.get_edge">
+<code class="descname">get_edge</code><span class="sig-paren">(</span><em>nodes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.get_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.get_edge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the edge id only if there is an edge from nodes[0] to nodes[1],
 returns False if edge exists in opposite direction, or no edge exists 
 between the two vertices, or any of the vertice ids doesn&#8217;t exist.
@@ -309,46 +309,46 @@ To find edges without regarding their direction, see edge_exists().</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.get_giant">
-<code class="descname">get_giant</code><span class="sig-paren">(</span><em>replace=False</em>, <em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.get_giant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.get_giant" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.get_giant">
+<code class="descname">get_giant</code><span class="sig-paren">(</span><em>replace=False</em>, <em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.get_giant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.get_giant" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the giant component of the graph, or 
 replaces the igraph object with only the giant 
 component.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.init_network">
-<code class="descname">init_network</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.init_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.init_network" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.init_network">
+<code class="descname">init_network</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.init_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.init_network" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is a lazy way to start the module, load data 
 and build the high confidence, literature curated
 part of the signaling network.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.load_ddi">
-<code class="descname">load_ddi</code><span class="sig-paren">(</span><em>ddi</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.load_ddi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.load_ddi" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.load_ddi">
+<code class="descname">load_ddi</code><span class="sig-paren">(</span><em>ddi</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.load_ddi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.load_ddi" title="Permalink to this definition">¶</a></dt>
 <dd><p>ddi is either a list of intera.DomainDomain objects, 
 or a function resulting this list</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.load_dmi">
-<code class="descname">load_dmi</code><span class="sig-paren">(</span><em>dmi</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.load_dmi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.load_dmi" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.load_dmi">
+<code class="descname">load_dmi</code><span class="sig-paren">(</span><em>dmi</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.load_dmi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.load_dmi" title="Permalink to this definition">¶</a></dt>
 <dd><p>dmi is either a list of intera.DomainMotif objects, 
 or a function resulting this list</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.load_expression">
-<code class="descname">load_expression</code><span class="sig-paren">(</span><em>array=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.load_expression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.load_expression" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.load_expression">
+<code class="descname">load_expression</code><span class="sig-paren">(</span><em>array=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.load_expression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.load_expression" title="Permalink to this definition">¶</a></dt>
 <dd><p>Expression data can be loaded into vertex attributes, 
 or into a pandas DataFrame – the latter offers faster 
 ways to process and use these huge matrices.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.load_mutations">
-<code class="descname">load_mutations</code><span class="sig-paren">(</span><em>attributes=None</em>, <em>gdsc_datadir=None</em>, <em>mutation_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.load_mutations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.load_mutations" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.load_mutations">
+<code class="descname">load_mutations</code><span class="sig-paren">(</span><em>attributes=None</em>, <em>gdsc_datadir=None</em>, <em>mutation_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.load_mutations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.load_mutations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mutations are listed in vertex attributes. Mutation() objects 
 offers methods to identify residues and look up in Ptm(), Motif() 
 and Domain() objects, to check if those residues are 
@@ -356,8 +356,8 @@ modified, or are in some short motif or domain.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.load_resources">
-<code class="descname">load_resources</code><span class="sig-paren">(</span><em>lst={'netpath': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad170&gt;</em>, <em>'domino': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad758&gt;</em>, <em>'alz': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad4d0&gt;</em>, <em>'intact': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad5a8&gt;</em>, <em>'arn': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad320&gt;</em>, <em>'death': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad5f0&gt;</em>, <em>'elm': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad710&gt;</em>, <em>'ca1': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad200&gt;</em>, <em>'depod': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad518&gt;</em>, <em>'ccmap2': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f2409df80&gt;</em>, <em>'spike': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad050&gt;</em>, <em>'nci_pid': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad290&gt;</em>, <em>'dbptm': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad7a0&gt;</em>, <em>'phelm': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad6c8&gt;</em>, <em>'innatedb': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad488&gt;</em>, <em>'matrixdb': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad560&gt;</em>, <em>'mppi': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad098&gt;</em>, <em>'nrf2': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad3b0&gt;</em>, <em>'signor': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad638&gt;</em>, <em>'macrophage': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad440&gt;</em>, <em>'pdz': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad680&gt;</em>, <em>'dip': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad128&gt;</em>, <em>'slk': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f2409dab8&gt;</em>, <em>'psite': &lt;bioigraph.input_formats.ReadSettings instance at 0x7f0f240ad0e0&gt;}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.load_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.load_resources" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.load_resources">
+<code class="descname">load_resources</code><span class="sig-paren">(</span><em>lst={'netpath': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad170&gt;</em>, <em>'domino': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad758&gt;</em>, <em>'alz': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad4d0&gt;</em>, <em>'intact': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad5a8&gt;</em>, <em>'arn': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad320&gt;</em>, <em>'death': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad5f0&gt;</em>, <em>'elm': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad710&gt;</em>, <em>'ca1': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad200&gt;</em>, <em>'depod': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad518&gt;</em>, <em>'ccmap2': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f2409df80&gt;</em>, <em>'spike': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad050&gt;</em>, <em>'nci_pid': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad290&gt;</em>, <em>'dbptm': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad7a0&gt;</em>, <em>'phelm': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad6c8&gt;</em>, <em>'innatedb': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad488&gt;</em>, <em>'matrixdb': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad560&gt;</em>, <em>'mppi': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad098&gt;</em>, <em>'nrf2': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad3b0&gt;</em>, <em>'signor': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad638&gt;</em>, <em>'macrophage': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad440&gt;</em>, <em>'pdz': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad680&gt;</em>, <em>'dip': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad128&gt;</em>, <em>'slk': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f2409dab8&gt;</em>, <em>'psite': &lt;pypath.input_formats.ReadSettings instance at 0x7f0f240ad0e0&gt;}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.load_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.load_resources" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads multiple resources, and cleans up after. 
 Looks up ID types, and loads all ID conversion 
 tables from UniProt if necessary. This is much
@@ -366,44 +366,44 @@ resources one by one.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.map_list">
-<code class="descname">map_list</code><span class="sig-paren">(</span><em>lst</em>, <em>singleList=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.map_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.map_list" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.map_list">
+<code class="descname">map_list</code><span class="sig-paren">(</span><em>lst</em>, <em>singleList=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.map_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.map_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Only a wrapper for map_edge()</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.map_network">
-<code class="descname">map_network</code><span class="sig-paren">(</span><em>mapping=('trembl'</em>, <em>'swissprot')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.map_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.map_network" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.map_network">
+<code class="descname">map_network</code><span class="sig-paren">(</span><em>mapping=('trembl'</em>, <em>'swissprot')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.map_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.map_network" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function is not needed any more, will be removed soon.</p>
 <p>In the whole network changes every uniprot id to primary.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.mutated_edges">
-<code class="descname">mutated_edges</code><span class="sig-paren">(</span><em>sample</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.mutated_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.mutated_edges" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.mutated_edges">
+<code class="descname">mutated_edges</code><span class="sig-paren">(</span><em>sample</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.mutated_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.mutated_edges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compares the mutated residues and the modified residues in PTMs.
 Interactions are marked as mutated if the target residue in the 
 underlying PTM is mutated.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.network_filter">
-<code class="descname">network_filter</code><span class="sig-paren">(</span><em>p=2.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.network_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.network_filter" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.network_filter">
+<code class="descname">network_filter</code><span class="sig-paren">(</span><em>p=2.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.network_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.network_filter" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function aims to cut the number of edges in the network, 
 without loosing nodes, to make the network less connected, 
 less hairball-like, more usable for analysis.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.network_stats">
-<code class="descname">network_stats</code><span class="sig-paren">(</span><em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.network_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.network_stats" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.network_stats">
+<code class="descname">network_stats</code><span class="sig-paren">(</span><em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.network_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.network_stats" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates basic statistics for the whole network 
 and each of sources. Writes the results in a tab file.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.read_data_file">
-<code class="descname">read_data_file</code><span class="sig-paren">(</span><em>settings</em>, <em>keep_raw=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.read_data_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.read_data_file" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.read_data_file">
+<code class="descname">read_data_file</code><span class="sig-paren">(</span><em>settings</em>, <em>keep_raw=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.read_data_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.read_data_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Interaction data with node and edge attributes can be read 
 from simple text based files. This function works not only
 with files, but with lists as well. Any other function can 
@@ -421,35 +421,35 @@ debugging purposes, or further use.</dd>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.shortest_path_dist">
-<code class="descname">shortest_path_dist</code><span class="sig-paren">(</span><em>graph=None</em>, <em>subset=None</em>, <em>outfile=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.shortest_path_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.shortest_path_dist" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.shortest_path_dist">
+<code class="descname">shortest_path_dist</code><span class="sig-paren">(</span><em>graph=None</em>, <em>subset=None</em>, <em>outfile=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.shortest_path_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.shortest_path_dist" title="Permalink to this definition">¶</a></dt>
 <dd><p>subset is a tuple of two lists if you wish to look for
 paths between elements of two groups, or a list if you 
 wish to look for shortest paths within this group</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.source_network">
-<code class="descname">source_network</code><span class="sig-paren">(</span><em>font='HelveticaNeueLTStd'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.source_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.source_network" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.source_network">
+<code class="descname">source_network</code><span class="sig-paren">(</span><em>font='HelveticaNeueLTStd'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.source_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.source_network" title="Permalink to this definition">¶</a></dt>
 <dd><p>For EMBL branding, use Helvetica Neue Linotype Standard light</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.straight_between">
-<code class="descname">straight_between</code><span class="sig-paren">(</span><em>nameA</em>, <em>nameB</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.straight_between"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.straight_between" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.straight_between">
+<code class="descname">straight_between</code><span class="sig-paren">(</span><em>nameA</em>, <em>nameB</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.straight_between"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.straight_between" title="Permalink to this definition">¶</a></dt>
 <dd><p>This does actually the same as get_edge(), but by names
 instead of vertex ids.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.update_vindex">
-<code class="descname">update_vindex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.update_vindex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.update_vindex" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.update_vindex">
+<code class="descname">update_vindex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.update_vindex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.update_vindex" title="Permalink to this definition">¶</a></dt>
 <dd><p>See update_vname().</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.update_vname">
-<code class="descname">update_vname</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.update_vname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.update_vname" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.update_vname">
+<code class="descname">update_vname</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.update_vname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.update_vname" title="Permalink to this definition">¶</a></dt>
 <dd><p>For fast lookup of node names and indexes, these are 
 hold in a list and a dict as well. However, every time
 new nodes are added, these should be updated. This 
@@ -458,8 +458,8 @@ affecting node indices.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.bioigraph.BioGraph.vertex_pathways">
-<code class="descname">vertex_pathways</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/bioigraph.html#BioGraph.vertex_pathways"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.bioigraph.BioGraph.vertex_pathways" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.pypath.BioGraph.vertex_pathways">
+<code class="descname">vertex_pathways</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/pypath.html#BioGraph.vertex_pathways"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.pypath.BioGraph.vertex_pathways" title="Permalink to this definition">¶</a></dt>
 <dd><p>Some resources assignes interactions some others 
 proteins to pathways.
 This function converts pathway annotations from 
@@ -468,47 +468,47 @@ edge attributes to vertex attributes.</p>
 
 </dd></dl>
 
-<span class="target" id="module-bioigraph.intera"></span><dl class="class">
-<dt id="bioigraph.intera.Residue">
-<em class="property">class </em><code class="descclassname">bioigraph.intera.</code><code class="descname">Residue</code><span class="sig-paren">(</span><em>number</em>, <em>name</em>, <em>identifier</em>, <em>id_type='uniprot'</em>, <em>isoform=1</em>, <em>mutated=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/intera.html#Residue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.Residue" title="Permalink to this definition">¶</a></dt>
+<span class="target" id="module-pypath.intera"></span><dl class="class">
+<dt id="pypath.intera.Residue">
+<em class="property">class </em><code class="descclassname">pypath.intera.</code><code class="descname">Residue</code><span class="sig-paren">(</span><em>number</em>, <em>name</em>, <em>identifier</em>, <em>id_type='uniprot'</em>, <em>isoform=1</em>, <em>mutated=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/intera.html#Residue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.intera.Residue" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
-<dt id="bioigraph.intera.Mutation">
-<em class="property">class </em><code class="descclassname">bioigraph.intera.</code><code class="descname">Mutation</code><span class="sig-paren">(</span><em>original</em>, <em>mutated</em>, <em>sample</em>, <em>properties={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/intera.html#Mutation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.Mutation" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.intera.Mutation">
+<em class="property">class </em><code class="descclassname">pypath.intera.</code><code class="descname">Mutation</code><span class="sig-paren">(</span><em>original</em>, <em>mutated</em>, <em>sample</em>, <em>properties={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/intera.html#Mutation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.intera.Mutation" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
-<dt id="bioigraph.intera.Motif">
-<em class="property">class </em><code class="descclassname">bioigraph.intera.</code><code class="descname">Motif</code><span class="sig-paren">(</span><em>protein</em>, <em>start</em>, <em>end</em>, <em>id_type='uniprot'</em>, <em>regex=None</em>, <em>instance=None</em>, <em>isoform=1</em>, <em>motif_name=None</em>, <em>prob=None</em>, <em>elm=None</em>, <em>description=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/intera.html#Motif"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.Motif" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.intera.Motif">
+<em class="property">class </em><code class="descclassname">pypath.intera.</code><code class="descname">Motif</code><span class="sig-paren">(</span><em>protein</em>, <em>start</em>, <em>end</em>, <em>id_type='uniprot'</em>, <em>regex=None</em>, <em>instance=None</em>, <em>isoform=1</em>, <em>motif_name=None</em>, <em>prob=None</em>, <em>elm=None</em>, <em>description=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/intera.html#Motif"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.intera.Motif" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
-<dt id="bioigraph.intera.Ptm">
-<em class="property">class </em><code class="descclassname">bioigraph.intera.</code><code class="descname">Ptm</code><span class="sig-paren">(</span><em>protein</em>, <em>id_type='uniprot'</em>, <em>typ='unknown'</em>, <em>motif=None</em>, <em>residue=None</em>, <em>source=None</em>, <em>isoform=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/intera.html#Ptm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.Ptm" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.intera.Ptm">
+<em class="property">class </em><code class="descclassname">pypath.intera.</code><code class="descname">Ptm</code><span class="sig-paren">(</span><em>protein</em>, <em>id_type='uniprot'</em>, <em>typ='unknown'</em>, <em>motif=None</em>, <em>residue=None</em>, <em>source=None</em>, <em>isoform=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/intera.html#Ptm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.intera.Ptm" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
-<dt id="bioigraph.intera.Domain">
-<em class="property">class </em><code class="descclassname">bioigraph.intera.</code><code class="descname">Domain</code><span class="sig-paren">(</span><em>protein</em>, <em>id_type='uniprot'</em>, <em>domain=None</em>, <em>domain_id_type='pfam'</em>, <em>start=None</em>, <em>end=None</em>, <em>isoform=1</em>, <em>chains={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/intera.html#Domain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.Domain" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.intera.Domain">
+<em class="property">class </em><code class="descclassname">pypath.intera.</code><code class="descname">Domain</code><span class="sig-paren">(</span><em>protein</em>, <em>id_type='uniprot'</em>, <em>domain=None</em>, <em>domain_id_type='pfam'</em>, <em>start=None</em>, <em>end=None</em>, <em>isoform=1</em>, <em>chains={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/intera.html#Domain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.intera.Domain" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
-<dt id="bioigraph.intera.DomainMotif">
-<em class="property">class </em><code class="descclassname">bioigraph.intera.</code><code class="descname">DomainMotif</code><span class="sig-paren">(</span><em>domain</em>, <em>ptm</em>, <em>sources=None</em>, <em>refs=None</em>, <em>pdbs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/intera.html#DomainMotif"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.DomainMotif" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.intera.DomainMotif">
+<em class="property">class </em><code class="descclassname">pypath.intera.</code><code class="descname">DomainMotif</code><span class="sig-paren">(</span><em>domain</em>, <em>ptm</em>, <em>sources=None</em>, <em>refs=None</em>, <em>pdbs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/intera.html#DomainMotif"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.intera.DomainMotif" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
-<dt id="bioigraph.intera.DomainDomain">
-<em class="property">class </em><code class="descclassname">bioigraph.intera.</code><code class="descname">DomainDomain</code><span class="sig-paren">(</span><em>domain_a</em>, <em>domain_b</em>, <em>pdbs=None</em>, <em>sources=None</em>, <em>refs=None</em>, <em>contact_residues=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/intera.html#DomainDomain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.DomainDomain" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.intera.DomainDomain">
+<em class="property">class </em><code class="descclassname">pypath.intera.</code><code class="descname">DomainDomain</code><span class="sig-paren">(</span><em>domain_a</em>, <em>domain_b</em>, <em>pdbs=None</em>, <em>sources=None</em>, <em>refs=None</em>, <em>contact_residues=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/intera.html#DomainDomain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.intera.DomainDomain" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
-<dt id="bioigraph.intera.Interface">
-<em class="property">class </em><code class="descclassname">bioigraph.intera.</code><code class="descname">Interface</code><span class="sig-paren">(</span><em>id_a</em>, <em>id_b</em>, <em>source</em>, <em>id_type='uniprot'</em>, <em>pdb=None</em>, <em>css=None</em>, <em>stab_en=None</em>, <em>solv_en=None</em>, <em>area=None</em>, <em>isoform_a=1</em>, <em>isoform_b=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/intera.html#Interface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.Interface" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.intera.Interface">
+<em class="property">class </em><code class="descclassname">pypath.intera.</code><code class="descname">Interface</code><span class="sig-paren">(</span><em>id_a</em>, <em>id_b</em>, <em>source</em>, <em>id_type='uniprot'</em>, <em>pdb=None</em>, <em>css=None</em>, <em>stab_en=None</em>, <em>solv_en=None</em>, <em>area=None</em>, <em>isoform_a=1</em>, <em>isoform_b=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/intera.html#Interface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.intera.Interface" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="bioigraph.intera.Interface.add_residues">
-<code class="descname">add_residues</code><span class="sig-paren">(</span><em>res_a</em>, <em>res_b</em>, <em>typ='undefined'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/intera.html#Interface.add_residues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.Interface.add_residues" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.intera.Interface.add_residues">
+<code class="descname">add_residues</code><span class="sig-paren">(</span><em>res_a</em>, <em>res_b</em>, <em>typ='undefined'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/intera.html#Interface.add_residues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.intera.Interface.add_residues" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds one pair of residues of type <a href="#id1"><span class="problematic" id="id2">`</span></a>typ&#8217;, 
 where <a href="#id3"><span class="problematic" id="id4">`</span></a>res_a&#8217; and <a href="#id5"><span class="problematic" id="id6">`</span></a>res_b&#8217; are tuples of 
 residue number in sequence and residue type,
@@ -517,37 +517,37 @@ e.g. (124, &#8216;S&#8217;) &#8211; (means Serine #124)
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.intera.Interface.bond_types">
-<code class="descname">bond_types</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/intera.html#Interface.bond_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.Interface.bond_types" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.intera.Interface.bond_types">
+<code class="descname">bond_types</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/intera.html#Interface.bond_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.intera.Interface.bond_types" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the bond types present in this interface</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.intera.Interface.get_bonds">
-<code class="descname">get_bonds</code><span class="sig-paren">(</span><em>typ=None</em>, <em>mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/intera.html#Interface.get_bonds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.Interface.get_bonds" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.intera.Interface.get_bonds">
+<code class="descname">get_bonds</code><span class="sig-paren">(</span><em>typ=None</em>, <em>mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/intera.html#Interface.get_bonds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.intera.Interface.get_bonds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gives a generator to iterate throught bonds in 
 this interface. If no type given, bonds of all types 
 returned.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.intera.Interface.numof_residues">
-<code class="descname">numof_residues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/intera.html#Interface.numof_residues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.intera.Interface.numof_residues" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.intera.Interface.numof_residues">
+<code class="descname">numof_residues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/intera.html#Interface.numof_residues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.intera.Interface.numof_residues" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the number of residue pairs by bound type</p>
 </dd></dl>
 
 </dd></dl>
 
-<span class="target" id="module-bioigraph.mapping"></span><dl class="class">
-<dt id="bioigraph.mapping.MappingTable">
-<em class="property">class </em><code class="descclassname">bioigraph.mapping.</code><code class="descname">MappingTable</code><span class="sig-paren">(</span><em>one</em>, <em>two</em>, <em>typ</em>, <em>source</em>, <em>param</em>, <em>ncbi_tax_id</em>, <em>mysql=None</em>, <em>log=None</em>, <em>cache=True</em>, <em>cachedir='cache'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/mapping.html#MappingTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.mapping.MappingTable" title="Permalink to this definition">¶</a></dt>
+<span class="target" id="module-pypath.mapping"></span><dl class="class">
+<dt id="pypath.mapping.MappingTable">
+<em class="property">class </em><code class="descclassname">pypath.mapping.</code><code class="descname">MappingTable</code><span class="sig-paren">(</span><em>one</em>, <em>two</em>, <em>typ</em>, <em>source</em>, <em>param</em>, <em>ncbi_tax_id</em>, <em>mysql=None</em>, <em>log=None</em>, <em>cache=True</em>, <em>cachedir='cache'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/mapping.html#MappingTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.mapping.MappingTable" title="Permalink to this definition">¶</a></dt>
 <dd><p>To initialize ID conversion tables for the first time
 data is downloaded from UniProt and read to dictionaries.
 It takes a couple of seconds. Data is saved to pickle 
 dumps, this way after tables load much faster.</p>
 <dl class="method">
-<dt id="bioigraph.mapping.MappingTable.read_mapping_uniprot">
-<code class="descname">read_mapping_uniprot</code><span class="sig-paren">(</span><em>param</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/mapping.html#MappingTable.read_mapping_uniprot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.mapping.MappingTable.read_mapping_uniprot" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.mapping.MappingTable.read_mapping_uniprot">
+<code class="descname">read_mapping_uniprot</code><span class="sig-paren">(</span><em>param</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/mapping.html#MappingTable.read_mapping_uniprot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.mapping.MappingTable.read_mapping_uniprot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Downloads ID mappings directly from UniProt.
 See the names of possible identifiers here:
 <a class="reference external" href="http://www.uniprot.org/help/programmatic_access">http://www.uniprot.org/help/programmatic_access</a></p>
@@ -557,11 +557,11 @@ See the names of possible identifiers here:
 </dd></dl>
 
 <dl class="class">
-<dt id="bioigraph.mapping.Mapper">
-<em class="property">class </em><code class="descclassname">bioigraph.mapping.</code><code class="descname">Mapper</code><span class="sig-paren">(</span><em>ncbi_tax_id=9606</em>, <em>mysql_conf=(None</em>, <em>'mapping')</em>, <em>log=None</em>, <em>cache=True</em>, <em>cachedir='cache'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/mapping.html#Mapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.mapping.Mapper" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.mapping.Mapper">
+<em class="property">class </em><code class="descclassname">pypath.mapping.</code><code class="descname">Mapper</code><span class="sig-paren">(</span><em>ncbi_tax_id=9606</em>, <em>mysql_conf=(None</em>, <em>'mapping')</em>, <em>log=None</em>, <em>cache=True</em>, <em>cachedir='cache'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/mapping.html#Mapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.mapping.Mapper" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="bioigraph.mapping.Mapper.load_mappings">
-<code class="descname">load_mappings</code><span class="sig-paren">(</span><em>maps=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/mapping.html#Mapper.load_mappings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.mapping.Mapper.load_mappings" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.mapping.Mapper.load_mappings">
+<code class="descname">load_mappings</code><span class="sig-paren">(</span><em>maps=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/mapping.html#Mapper.load_mappings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.mapping.Mapper.load_mappings" title="Permalink to this definition">¶</a></dt>
 <dd><p>mapList is a list of mappings to load;
 elements of mapList are dicts containing the 
 id names, molecule type, and preferred source
@@ -571,14 +571,14 @@ by default those are loaded from pickle files</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.mapping.Mapper.load_uniprot_mapping">
-<code class="descname">load_uniprot_mapping</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/mapping.html#Mapper.load_uniprot_mapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.mapping.Mapper.load_uniprot_mapping" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.mapping.Mapper.load_uniprot_mapping">
+<code class="descname">load_uniprot_mapping</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/mapping.html#Mapper.load_uniprot_mapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.mapping.Mapper.load_uniprot_mapping" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is a wrapper to load a ... mapping table.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.mapping.Mapper.map_name">
-<code class="descname">map_name</code><span class="sig-paren">(</span><em>name</em>, <em>nameType</em>, <em>targetNameType</em>, <em>strict=False</em>, <em>silent=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/mapping.html#Mapper.map_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.mapping.Mapper.map_name" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.mapping.Mapper.map_name">
+<code class="descname">map_name</code><span class="sig-paren">(</span><em>name</em>, <em>nameType</em>, <em>targetNameType</em>, <em>strict=False</em>, <em>silent=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/mapping.html#Mapper.map_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.mapping.Mapper.map_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function should be used to convert individual IDs.
 It takes care about everything, you don&#8217;t need to think
 on the details. How does it work: looks up dictionaries 
@@ -618,22 +618,22 @@ and load the table before calling Mapper.map_name().</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.mapping.Mapper.primary_uniprot">
-<code class="descname">primary_uniprot</code><span class="sig-paren">(</span><em>lst</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/mapping.html#Mapper.primary_uniprot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.mapping.Mapper.primary_uniprot" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.mapping.Mapper.primary_uniprot">
+<code class="descname">primary_uniprot</code><span class="sig-paren">(</span><em>lst</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/mapping.html#Mapper.primary_uniprot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.mapping.Mapper.primary_uniprot" title="Permalink to this definition">¶</a></dt>
 <dd><p>For a list of UniProt IDs returns the list of primary ids.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.mapping.Mapper.trembl_swissprot">
-<code class="descname">trembl_swissprot</code><span class="sig-paren">(</span><em>lst</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/mapping.html#Mapper.trembl_swissprot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.mapping.Mapper.trembl_swissprot" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.mapping.Mapper.trembl_swissprot">
+<code class="descname">trembl_swissprot</code><span class="sig-paren">(</span><em>lst</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/mapping.html#Mapper.trembl_swissprot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.mapping.Mapper.trembl_swissprot" title="Permalink to this definition">¶</a></dt>
 <dd><p>For a list of Trembl and Swissprot IDs, returns possibly
 only Swissprot, mapping from Trembl to gene names, and 
 then back to Swissprot.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bioigraph.mapping.Mapper.which_table">
-<code class="descname">which_table</code><span class="sig-paren">(</span><em>nameType</em>, <em>targetNameType</em>, <em>load=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/mapping.html#Mapper.which_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.mapping.Mapper.which_table" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.mapping.Mapper.which_table">
+<code class="descname">which_table</code><span class="sig-paren">(</span><em>nameType</em>, <em>targetNameType</em>, <em>load=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/mapping.html#Mapper.which_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.mapping.Mapper.which_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the table which is suitable to convert an ID of 
 nameType to targetNameType. If no such table have been loaded
 yet, it attempts to load from UniProt.</p>
@@ -641,24 +641,24 @@ yet, it attempts to load from UniProt.</p>
 
 </dd></dl>
 
-<span class="target" id="module-bioigraph.moduland"></span><span class="target" id="module-bioigraph.gdsc"></span><span class="target" id="module-bioigraph.dataio"></span><dl class="class">
-<dt id="bioigraph.dataio.ResidueMapper">
-<em class="property">class </em><code class="descclassname">bioigraph.dataio.</code><code class="descname">ResidueMapper</code><a class="reference internal" href="_modules/bioigraph/dataio.html#ResidueMapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.dataio.ResidueMapper" title="Permalink to this definition">¶</a></dt>
+<span class="target" id="module-pypath.moduland"></span><span class="target" id="module-pypath.gdsc"></span><span class="target" id="module-pypath.dataio"></span><dl class="class">
+<dt id="pypath.dataio.ResidueMapper">
+<em class="property">class </em><code class="descclassname">pypath.dataio.</code><code class="descname">ResidueMapper</code><a class="reference internal" href="_modules/pypath/dataio.html#ResidueMapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.dataio.ResidueMapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class stores and serves the PDB &#8211;&gt; UniProt 
 residue level mapping. Attempts to download the 
 mapping, and stores it for further use. Converts 
 PDB residue numbers to the corresponding UniProt ones.</p>
 <dl class="method">
-<dt id="bioigraph.dataio.ResidueMapper.clean">
-<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/dataio.html#ResidueMapper.clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.dataio.ResidueMapper.clean" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.dataio.ResidueMapper.clean">
+<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/dataio.html#ResidueMapper.clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.dataio.ResidueMapper.clean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes cached mappings, freeing up memory.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="function">
-<dt id="bioigraph.dataio.get_complexportal">
-<code class="descclassname">bioigraph.dataio.</code><code class="descname">get_complexportal</code><span class="sig-paren">(</span><em>species=9606</em>, <em>zipped=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/dataio.html#get_complexportal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.dataio.get_complexportal" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.dataio.get_complexportal">
+<code class="descclassname">pypath.dataio.</code><code class="descname">get_complexportal</code><span class="sig-paren">(</span><em>species=9606</em>, <em>zipped=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/dataio.html#get_complexportal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.dataio.get_complexportal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Complex dataset from IntAct.
 See more:
 <a class="reference external" href="http://www.ebi.ac.uk/intact/complex/">http://www.ebi.ac.uk/intact/complex/</a>
@@ -666,8 +666,8 @@ See more:
 </dd></dl>
 
 <dl class="function">
-<dt id="bioigraph.dataio.get_domino_ptms">
-<code class="descclassname">bioigraph.dataio.</code><code class="descname">get_domino_ptms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/dataio.html#get_domino_ptms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.dataio.get_domino_ptms" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.dataio.get_domino_ptms">
+<code class="descclassname">pypath.dataio.</code><code class="descname">get_domino_ptms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/dataio.html#get_domino_ptms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.dataio.get_domino_ptms" title="Permalink to this definition">¶</a></dt>
 <dd><p>The table comes from dataio.get_domino(), having the following fields:
 header = [&#8216;uniprot-A&#8217;, &#8216;uniprot-B&#8217;, &#8216;isoform-A&#8217;, &#8216;isoform-B&#8217;, #3
 &#8216;exp. method&#8217;, &#8216;references&#8217;, &#8216;taxon-A&#8217;, &#8216;taxon-B&#8217;, #7
@@ -680,8 +680,8 @@ header = [&#8216;uniprot-A&#8217;, &#8216;uniprot-B&#8217;, &#8216;isoform-A&#82
 </dd></dl>
 
 <dl class="function">
-<dt id="bioigraph.dataio.get_i3d">
-<code class="descclassname">bioigraph.dataio.</code><code class="descname">get_i3d</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/dataio.html#get_i3d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.dataio.get_i3d" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.dataio.get_i3d">
+<code class="descclassname">pypath.dataio.</code><code class="descname">get_i3d</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/dataio.html#get_i3d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.dataio.get_i3d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Interaction3D contains residue numbers in given chains in 
 given PDB stuctures, so we need to add an offset to get the residue 
 numbers valid for UniProt sequences. Offsets can be obtained from
@@ -689,8 +689,8 @@ Instruct, or from the Pfam PDB-chain-UniProt mapping table.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="bioigraph.dataio.get_instruct">
-<code class="descclassname">bioigraph.dataio.</code><code class="descname">get_instruct</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/dataio.html#get_instruct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.dataio.get_instruct" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.dataio.get_instruct">
+<code class="descclassname">pypath.dataio.</code><code class="descname">get_instruct</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/dataio.html#get_instruct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.dataio.get_instruct" title="Permalink to this definition">¶</a></dt>
 <dd><p>Instruct contains residue numbers in UniProt sequences, it means
 no further calculations of offsets in chains of PDB structures needed.
 Chains are not given, only a set of PDB structures supporting the 
@@ -698,29 +698,29 @@ domain-domain // protein-protein interaction.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="bioigraph.dataio.get_instruct_offsets">
-<code class="descclassname">bioigraph.dataio.</code><code class="descname">get_instruct_offsets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/dataio.html#get_instruct_offsets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.dataio.get_instruct_offsets" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.dataio.get_instruct_offsets">
+<code class="descclassname">pypath.dataio.</code><code class="descname">get_instruct_offsets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/dataio.html#get_instruct_offsets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.dataio.get_instruct_offsets" title="Permalink to this definition">¶</a></dt>
 <dd><p>These offsets should be understood as from UniProt to PDB.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="bioigraph.dataio.get_switches_elm">
-<code class="descclassname">bioigraph.dataio.</code><code class="descname">get_switches_elm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/dataio.html#get_switches_elm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.dataio.get_switches_elm" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.dataio.get_switches_elm">
+<code class="descclassname">pypath.dataio.</code><code class="descname">get_switches_elm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/dataio.html#get_switches_elm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.dataio.get_switches_elm" title="Permalink to this definition">¶</a></dt>
 <dd><p>switches.elm is a resource containing functional switches in molecular regulation,
 in domain-motif level resolution, classified into categories according to their
 mechanism.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="bioigraph.dataio.read_complexes_havugimana">
-<code class="descclassname">bioigraph.dataio.</code><code class="descname">read_complexes_havugimana</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/dataio.html#read_complexes_havugimana"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.dataio.read_complexes_havugimana" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.dataio.read_complexes_havugimana">
+<code class="descclassname">pypath.dataio.</code><code class="descname">read_complexes_havugimana</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/dataio.html#read_complexes_havugimana"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.dataio.read_complexes_havugimana" title="Permalink to this definition">¶</a></dt>
 <dd><p>Supplement Table S3/1 from Havugimana 2012
 Cell. 150(5): 1068–1081.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="bioigraph.dataio.read_table">
-<code class="descclassname">bioigraph.dataio.</code><code class="descname">read_table</code><span class="sig-paren">(</span><em>fileObject</em>, <em>cols</em>, <em>sep='\t'</em>, <em>sep2=None</em>, <em>rem=[]</em>, <em>hdr=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bioigraph/dataio.html#read_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bioigraph.dataio.read_table" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.dataio.read_table">
+<code class="descclassname">pypath.dataio.</code><code class="descname">read_table</code><span class="sig-paren">(</span><em>fileObject</em>, <em>cols</em>, <em>sep='\t'</em>, <em>sep2=None</em>, <em>rem=[]</em>, <em>hdr=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/dataio.html#read_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.dataio.read_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic function to read data tables.</p>
 <dl class="docutils">
 <dt>fileObject <span class="classifier-delimiter">:</span> <span class="classifier">file-like</span></dt>
@@ -740,7 +740,7 @@ E.g. {2: &#8216;,&#8217;, 3: &#8216;|&#8217;}</dd>
 </dl>
 </dd></dl>
 
-<span class="target" id="module-bioigraph.chembl"></span><span class="target" id="module-bioigraph.unichem"></span><span class="target" id="module-bioigraph.seq"></span><span class="target" id="module-bioigraph.mysql"></span><span class="target" id="module-bioigraph.mysql_connect"></span><span class="target" id="module-bioigraph.seq"></span></div>
+<span class="target" id="module-pypath.chembl"></span><span class="target" id="module-pypath.unichem"></span><span class="target" id="module-pypath.seq"></span><span class="target" id="module-pypath.mysql"></span><span class="target" id="module-pypath.mysql_connect"></span><span class="target" id="module-pypath.seq"></span></div>
 
 
           </div>
@@ -750,18 +750,18 @@ E.g. {2: &#8216;,&#8217;, 3: &#8216;|&#8217;}</dd>
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Welcome to bioigraph&#8217;s documentation!</a></li>
+<li><a class="reference internal" href="#">Welcome to pypath&#8217;s documentation!</a></li>
 <li><a class="reference internal" href="#examples">Examples</a><ul>
 <li><a class="reference internal" href="#example-1-building-the-network">Example 1: building the network</a></li>
 <li><a class="reference internal" href="#example-2-using-the-mapper-class-for-translating-ids">Example 2: using the Mapper class for translating IDs</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-bioigraph.bioigraph">Reference</a></li>
+<li><a class="reference internal" href="#module-pypath.pypath">Reference</a></li>
 </ul>
 
   <h4>Next topic</h4>
   <p class="topless"><a href=""
-                        title="next chapter">Welcome to bioigraph&#8217;s documentation!</a></p>
+                        title="next chapter">Welcome to pypath&#8217;s documentation!</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -796,9 +796,9 @@ E.g. {2: &#8216;,&#8217;, 3: &#8216;|&#8217;}</dd>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="#" title="Welcome to bioigraph’s documentation!"
+          <a href="#" title="Welcome to pypath’s documentation!"
              >next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">bioigraph 0.1.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="#">pypath 0.1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

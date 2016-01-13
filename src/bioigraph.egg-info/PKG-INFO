@@ -1,12 +1,12 @@
 Metadata-Version: 1.1
-Name: bioigraph
+Name: pypath
 Version: 0.1.51
 Summary: Work with molecular networks in Python igraph
-Home-page: ['http://157.181.231.40/~denes/bioigraph']
+Home-page: ['http://157.181.231.40/~denes/pypath']
 Author: Dénes Türei
 Author-email: denes@ebi.ac.uk
 License: LGPL
-Download-URL: ['http://157.181.231.40/~denes/bioigraph']
+Download-URL: ['http://157.181.231.40/~denes/pypath']
 Description: Bioigraph
         #########
         
@@ -14,14 +14,14 @@ Description: Bioigraph
         :note: Bioigraph supported only in Python 2.7, and no version 3.x is available currently.
         
         :contributions: denes@ebi.ac.uk
-        :issues: https://github.com/seazlab/bioigraph/issues
+        :issues: https://github.com/seazlab/pypath/issues
         
         **Bioigraph** is a Python package built around igraph to work with molecular network representations e.g. protein, miRNA and drug compound interaction networks.
         
         Webservice
         ==========
         
-        I run and update time to time the bioigraph webservice on my virtual machine on EBI infrastructure, serving the OmniPath data with additional kinase-substrate interactions and PTMs. The current IP address of the VM is 172.22.71.26, but this might eventually change (given by the Systems, every time when I reboot the VM after upgrades). The webservice is set up to listen on port 33333. It serves data in REST style, by HTTP protocol (browser, wget, curl or anything can make requests). This host is accessible only on the EBI internal network. From outside you can use SSH tunnel of course. The webservice currently recognizes 4 types of queries: ``interactions``, ``ptms``, ``about`` and ``info``. 
+        I run and update time to time the pypath webservice on my virtual machine on EBI infrastructure, serving the OmniPath data with additional kinase-substrate interactions and PTMs. The current IP address of the VM is 172.22.71.26, but this might eventually change (given by the Systems, every time when I reboot the VM after upgrades). The webservice is set up to listen on port 33333. It serves data in REST style, by HTTP protocol (browser, wget, curl or anything can make requests). This host is accessible only on the EBI internal network. From outside you can use SSH tunnel of course. The webservice currently recognizes 4 types of queries: ``interactions``, ``ptms``, ``about`` and ``info``. 
         
         A request without any parameter, gives some basic numbers about the actual loaded dataset:
         
@@ -73,7 +73,7 @@ Description: Bioigraph
         
         .. code:: bash
             
-            pip2 install git+https://github.com/saezlab/bioigraph.git
+            pip2 install git+https://github.com/saezlab/pypath.git
         
         With pip
         --------
@@ -82,7 +82,7 @@ Description: Bioigraph
         
         .. code:: bash
             
-            pip2 install bioigraph-x.y.z.tar.gz
+            pip2 install pypath-x.y.z.tar.gz
         
         Build source distribution
         -------------------------

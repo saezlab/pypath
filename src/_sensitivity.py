@@ -34,8 +34,8 @@ import scipy.cluster.hierarchy as hc
 import hcluster as hc2
 import matplotlib.gridspec as gridspec
 
-from bioigraph.progress import Progress
-from bioigraph.common import uniqList
+from pypath.progress import Progress
+from pypath.common import uniqList
 
 def gdsc_chembls(infile = '/home/denes/Dokumentumok/gdsc/drugs_all_unif_manual_mapped2.tsv'):
     result = {}

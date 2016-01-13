@@ -17,11 +17,11 @@ import igraph
 import cairo
 import math
 
-from bioigraph.ig_drawing import DefaultGraphDrawerFFsupport
-from bioigraph.bioigraph import BioGraph
-from bioigraph.data_formats import best
+from pypath.ig_drawing import DefaultGraphDrawerFFsupport
+from pypath.pypath import Pypath
+from pypath.data_formats import best
 
-net = BioGraph()
+net = Pypath()
 net.load_resources({'arn': best['arn']})
 net.genesymbol_labels()
 

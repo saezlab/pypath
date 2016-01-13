@@ -49,18 +49,18 @@ import scipy.cluster.hierarchy as hc
 import hcluster as hc2
 import matplotlib.patches as mpatches
 
-# from bioigraph #
+# from pypath #
 
-import bioigraph
-from bioigraph import chembl
-from bioigraph.common import *
-from bioigraph import descriptions
-from bioigraph.data_formats import best, good, ugly, transcription
+import pypath
+from pypath import chembl
+from pypath.common import *
+from pypath import descriptions
+from pypath.data_formats import best, good, ugly, transcription
 import _sensitivity as sens
-from bioigraph import progress
-from bioigraph.ig_drawing import DefaultGraphDrawerFFsupport
+from pypath import progress
+from pypath.ig_drawing import DefaultGraphDrawerFFsupport
 
-net = bioigraph.BioGraph(9606)
+net = pypath.Pypath(9606)
 
 #net.init_network(pfile = 'cache/default_network.pickle')
 #net.init_network(pfile = 'cache/plus_phospho.pickle')
@@ -155,7 +155,7 @@ plot.save()
 
 ## ## ##
 
-redges = [(s1, s2, bioigraph.common.simpson_index(
+redges = [(s1, s2, pypath.common.simpson_index(
     [r.pmid for r in uniqList(flatList([[] if s1 not in e['refs_by_source'] \
         else e['refs_by_source'][s1] \
         for e in net.graph.es]))], 
@@ -324,11 +324,11 @@ plot.save()
 
 ## TikZ summary figure ##
 
-# the figure is based on the bioigraph.descriptions dict:
+# the figure is based on the pypath.descriptions dict:
 import subprocess
 from datetime import date
-from bioigraph.descriptions import *
-from bioigraph.common import *
+from pypath.descriptions import *
+from pypath.common import *
 d = descriptions
 
 # parameters of the figure

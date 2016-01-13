@@ -1,5 +1,5 @@
-from bioigraph import dataio
-from bioigraph import data_formats
+from pypath import dataio
+from pypath import data_formats
 import bs4
 
 lst = []

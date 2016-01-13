@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-#  This file is part of the `bioigraph` python module
+#  This file is part of the `pypath` python module
 #
 #  Copyright (c) 2014-2015 - EMBL-EBI
 #
@@ -21,7 +21,7 @@
 
 #
 
-#     This script attempts to install the bioigraph module with all its
+#     This script attempts to install the pypath module with all its
 #     dependencies on Mac OS X systems. If everything goes well it does
 #     not need user intervention. This is how it works:
 # 
@@ -32,13 +32,13 @@
 #     4: Installs Python 2.7 (py27) and pycairo (py27-cairo) by port
 #     5: Installs igraph and other dependencies by easy_install into the
 #        local python package dir
-#     4: Finally does the same with bioigraph
+#     4: Finally does the same with pypath
 # 
 #     If you already have Python 2.7 installed, you can load all the 
 #     newly installed packages until the local dir is in your $PYTHONPATH.
 #     The script attempts to add the path permanently by appending it to
 #     ~/.bashrc. 
-#     If you have Python <= 2.6 installed, bioigraph most probably won't
+#     If you have Python <= 2.6 installed, pypath most probably won't
 #     work under that version. Although as Python 2.7 is installed by
 #     port, that will be available on your system.
 # 
@@ -48,7 +48,7 @@
 #     disk space saving methods might be possible.
 
 PYVER=`python --version | sed 's/.*\([0-9]\.[0-9]\).*/\1/p'`
-BIOIGRAPHSRC="http://www.ebi.ac.uk/~denes/54b510889336eb2591d8beff/bioigraph-0.1.25.tar.gz"
+BIOIGRAPHSRC="http://www.ebi.ac.uk/~denes/54b510889336eb2591d8beff/pypath-0.1.25.tar.gz"
 BUILDDIR="$HOME/build"
 LOCAL="$HOME/local"
 LOCALBIN="$LOCAL/bin"
@@ -64,7 +64,7 @@ mkdir -p $BUILDDIR
 
 cd $BUILDDIR
 
-echo -en "\n\n## paths modified by bioigraph installer ##\n\n" >> ~/.bash_profile
+echo -en "\n\n## paths modified by pypath installer ##\n\n" >> ~/.bash_profile
 
 cat >> ~/.bash_profile <<- EOF
 if [ -d $LOCALBIN ]; then
@@ -72,7 +72,7 @@ if [ -d $LOCALBIN ]; then
 fi
 EOF
 
-curl -L $BIOIGRAPHSRC > bioigraph.tar.gz
+curl -L $BIOIGRAPHSRC > pypath.tar.gz
 curl -L https://distfiles.macports.org/MacPorts/MacPorts-$MACPORTSVER.tar.bz2 > macports.tar.bz2
 tar -vxjf macports.tar.bz2
 mv MacPorts-* macports
@@ -100,7 +100,7 @@ easy_install-2.7 --install-dir=$PY27DIR ipython
 easy_install-2.7 --install-dir=$PY27DIR igraph
 easy_install-2.7 --install-dir=$PY27DIR pandas
 easy_install-2.7 --install-dir=$PY27DIR requests-cache
-easy_install-2.7 --install-dir=$PY27DIR bioigraph.tar.gz
+easy_install-2.7 --install-dir=$PY27DIR pypath.tar.gz
 
 cat >> ~/.bash_profile <<- EOF
 if [ -d $PY27DIR ]; then
@@ -114,7 +114,7 @@ if [ -d $DYLDLIB ]; then
 fi
 EOF
 
-echo -en "\n\n## end: paths modified by bioigraph installer ##\n\n" >> ~/.bash_profile
+echo -en "\n\n## end: paths modified by pypath installer ##\n\n" >> ~/.bash_profile
 
 cd $HOME
 

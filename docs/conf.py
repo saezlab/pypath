@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# bioigraph documentation build configuration file, created by
+# pypath documentation build configuration file, created by
 # sphinx-quickstart2 on Mon Mar  2 12:43:52 2015.
 #
 # This file is execfile()d with the current directory set to its
@@ -46,7 +46,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'bioigraph'
+project = u'pypath'
 copyright = u'2015, Dénes Türei'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -179,7 +179,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'bioigraphdoc'
+htmlhelp_basename = 'pypathdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -199,7 +199,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'bioigraph.tex', u'bioigraph Documentation',
+  ('index', 'pypath.tex', u'pypath Documentation',
    u'Dénes Türei', 'manual'),
 ]
 
@@ -229,7 +229,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'bioigraph', u'bioigraph Documentation',
+    ('index', 'pypath', u'pypath Documentation',
      [u'Dénes Türei'], 1)
 ]
 
@@ -243,8 +243,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'bioigraph', u'bioigraph Documentation',
-   u'Dénes Türei', 'bioigraph', 
+  ('index', 'pypath', u'pypath Documentation',
+   u'Dénes Türei', 'pypath', 
    'Using igraph to analyse molecular interaction networks.',
    'Science'),
 ]

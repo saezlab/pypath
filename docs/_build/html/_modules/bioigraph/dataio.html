@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>bioigraph.dataio &mdash; bioigraph 0.1.1 documentation</title>
+    <title>pypath.dataio &mdash; pypath 0.1.1 documentation</title>
     
     <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="bioigraph 0.1.1 documentation" href="../../index.html" />
+    <link rel="top" title="pypath 0.1.1 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body role="document">
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">bioigraph 0.1.1 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.1.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -46,12 +46,12 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <h1>Source code for bioigraph.dataio</h1><div class="highlight"><pre>
+  <h1>Source code for pypath.dataio</h1><div class="highlight"><pre>
 <span class="c">#!/usr/bin/env python2</span>
 <span class="c"># -*- coding: utf-8 -*-</span>
 
 <span class="c">#</span>
-<span class="c">#  This file is part of the `bioigraph` python module</span>
+<span class="c">#  This file is part of the `pypath` python module</span>
 <span class="c">#</span>
 <span class="c">#  Copyright (c) 2014-2015 - EMBL-EBI</span>
 <span class="c">#</span>
@@ -339,7 +339,7 @@
     <span class="c"># multiple file archives, or file object in case of large files:</span>
     <span class="k">return</span> <span class="n">res</span>
 
-<div class="viewcode-block" id="read_table"><a class="viewcode-back" href="../../index.html#bioigraph.dataio.read_table">[docs]</a><span class="k">def</span> <span class="nf">read_table</span><span class="p">(</span><span class="n">fileObject</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">sep2</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">rem</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">hdr</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="read_table"><a class="viewcode-back" href="../../index.html#pypath.dataio.read_table">[docs]</a><span class="k">def</span> <span class="nf">read_table</span><span class="p">(</span><span class="n">fileObject</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">sep2</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">rem</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">hdr</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Generic function to read data tables.</span>
 <span class="sd">    </span>
@@ -632,7 +632,7 @@
     <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">complexes</span><span class="p">,</span><span class="n">members</span>
 
-<div class="viewcode-block" id="get_complexportal"><a class="viewcode-back" href="../../index.html#bioigraph.dataio.get_complexportal">[docs]</a><span class="k">def</span> <span class="nf">get_complexportal</span><span class="p">(</span><span class="n">species</span><span class="o">=</span><span class="mi">9606</span><span class="p">,</span><span class="n">zipped</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="get_complexportal"><a class="viewcode-back" href="../../index.html#pypath.dataio.get_complexportal">[docs]</a><span class="k">def</span> <span class="nf">get_complexportal</span><span class="p">(</span><span class="n">species</span><span class="o">=</span><span class="mi">9606</span><span class="p">,</span><span class="n">zipped</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Complex dataset from IntAct.</span>
 <span class="sd">    See more:</span>
@@ -725,7 +725,7 @@
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">complexes</span>
 </div>
-<div class="viewcode-block" id="read_complexes_havugimana"><a class="viewcode-back" href="../../index.html#bioigraph.dataio.read_complexes_havugimana">[docs]</a><span class="k">def</span> <span class="nf">read_complexes_havugimana</span><span class="p">():</span>
+<div class="viewcode-block" id="read_complexes_havugimana"><a class="viewcode-back" href="../../index.html#pypath.dataio.read_complexes_havugimana">[docs]</a><span class="k">def</span> <span class="nf">read_complexes_havugimana</span><span class="p">():</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Supplement Table S3/1 from Havugimana 2012</span>
 <span class="sd">    Cell. 150(5): 1068–1081.</span>
@@ -861,7 +861,7 @@
     <span class="n">domi</span> <span class="o">=</span> <span class="n">get_domino_ptms</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">domi</span><span class="p">[</span><span class="s">&#39;ddi&#39;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="get_domino_ptms"><a class="viewcode-back" href="../../index.html#bioigraph.dataio.get_domino_ptms">[docs]</a><span class="k">def</span> <span class="nf">get_domino_ptms</span><span class="p">():</span>
+<div class="viewcode-block" id="get_domino_ptms"><a class="viewcode-back" href="../../index.html#pypath.dataio.get_domino_ptms">[docs]</a><span class="k">def</span> <span class="nf">get_domino_ptms</span><span class="p">():</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    The table comes from dataio.get_domino(), having the following fields:</span>
 <span class="sd">    header = [&#39;uniprot-A&#39;, &#39;uniprot-B&#39;, &#39;isoform-A&#39;, &#39;isoform-B&#39;, #3</span>
@@ -1495,7 +1495,7 @@
     <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">dmi2</span>
 
-<div class="viewcode-block" id="get_instruct"><a class="viewcode-back" href="../../index.html#bioigraph.dataio.get_instruct">[docs]</a><span class="k">def</span> <span class="nf">get_instruct</span><span class="p">():</span>
+<div class="viewcode-block" id="get_instruct"><a class="viewcode-back" href="../../index.html#pypath.dataio.get_instruct">[docs]</a><span class="k">def</span> <span class="nf">get_instruct</span><span class="p">():</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Instruct contains residue numbers in UniProt sequences, it means</span>
 <span class="sd">    no further calculations of offsets in chains of PDB structures needed.</span>
@@ -1537,7 +1537,7 @@
                     <span class="p">})</span>
     <span class="k">return</span> <span class="n">instruct</span>
 </div>
-<div class="viewcode-block" id="get_instruct_offsets"><a class="viewcode-back" href="../../index.html#bioigraph.dataio.get_instruct_offsets">[docs]</a><span class="k">def</span> <span class="nf">get_instruct_offsets</span><span class="p">():</span>
+<div class="viewcode-block" id="get_instruct_offsets"><a class="viewcode-back" href="../../index.html#pypath.dataio.get_instruct_offsets">[docs]</a><span class="k">def</span> <span class="nf">get_instruct_offsets</span><span class="p">():</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    These offsets should be understood as from UniProt to PDB.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
@@ -1561,7 +1561,7 @@
                 <span class="k">print</span> <span class="n">l</span>
     <span class="k">return</span> <span class="n">offsets</span>
 </div>
-<div class="viewcode-block" id="get_i3d"><a class="viewcode-back" href="../../index.html#bioigraph.dataio.get_i3d">[docs]</a><span class="k">def</span> <span class="nf">get_i3d</span><span class="p">():</span>
+<div class="viewcode-block" id="get_i3d"><a class="viewcode-back" href="../../index.html#pypath.dataio.get_i3d">[docs]</a><span class="k">def</span> <span class="nf">get_i3d</span><span class="p">():</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Interaction3D contains residue numbers in given chains in </span>
 <span class="sd">    given PDB stuctures, so we need to add an offset to get the residue </span>
@@ -1611,7 +1611,7 @@
     <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">i3d</span>
 </div>
-<div class="viewcode-block" id="get_switches_elm"><a class="viewcode-back" href="../../index.html#bioigraph.dataio.get_switches_elm">[docs]</a><span class="k">def</span> <span class="nf">get_switches_elm</span><span class="p">():</span>
+<div class="viewcode-block" id="get_switches_elm"><a class="viewcode-back" href="../../index.html#pypath.dataio.get_switches_elm">[docs]</a><span class="k">def</span> <span class="nf">get_switches_elm</span><span class="p">():</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    switches.elm is a resource containing functional switches in molecular regulation,</span>
 <span class="sd">    in domain-motif level resolution, classified into categories according to their</span>
@@ -1763,7 +1763,7 @@
     
     <span class="k">return</span> <span class="n">mapper</span>
 
-<div class="viewcode-block" id="ResidueMapper"><a class="viewcode-back" href="../../index.html#bioigraph.dataio.ResidueMapper">[docs]</a><span class="k">class</span> <span class="nc">ResidueMapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="ResidueMapper"><a class="viewcode-back" href="../../index.html#pypath.dataio.ResidueMapper">[docs]</a><span class="k">class</span> <span class="nc">ResidueMapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class stores and serves the PDB --&gt; UniProt </span>
@@ -1821,7 +1821,7 @@
                         <span class="k">return</span> <span class="n">residue</span>
         <span class="k">return</span> <span class="bp">None</span>
     
-<div class="viewcode-block" id="ResidueMapper.clean"><a class="viewcode-back" href="../../index.html#bioigraph.dataio.ResidueMapper.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ResidueMapper.clean"><a class="viewcode-back" href="../../index.html#pypath.dataio.ResidueMapper.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Removes cached mappings, freeing up memory.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -2861,7 +2861,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">bioigraph 0.1.1 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.1.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

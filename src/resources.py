@@ -13,10 +13,10 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
-import bioigraph
-from bioigraph import chembl
-from bioigraph.common import *
-from bioigraph.data_formats import *
+import pypath
+from pypath import chembl
+from pypath.common import *
+from pypath.data_formats import *
 
 import numpy as np
 from numpy.random import randn
@@ -76,7 +76,7 @@ def rgb1(self, rgb256):
 mysql_gelati = (None,'mapping_gelati')
 mysql_chembl = (None,'chembl_ebi')
 
-net = bioigraph.BioGraph(9606, mysql=mysql_gelati, name="demo")
+net = pypath.Pypath(9606, mysql=mysql_gelati, name="demo")
 
 net.init_network(pfile = 'cache/plus_phospho.pickle')
 net.load_resources(lst={'acsn': ugly['acsn']})

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>bioigraph.intera &mdash; bioigraph 0.1.1 documentation</title>
+    <title>pypath.intera &mdash; pypath 0.1.1 documentation</title>
     
     <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="bioigraph 0.1.1 documentation" href="../../index.html" />
+    <link rel="top" title="pypath 0.1.1 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body role="document">
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">bioigraph 0.1.1 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.1.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -46,12 +46,12 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <h1>Source code for bioigraph.intera</h1><div class="highlight"><pre>
+  <h1>Source code for pypath.intera</h1><div class="highlight"><pre>
 <span class="c">#!/usr/bin/env python2</span>
 <span class="c"># -*- coding: utf-8 -*-</span>
 
 <span class="c">#</span>
-<span class="c">#  This file is part of the `bioigraph` python module</span>
+<span class="c">#  This file is part of the `pypath` python module</span>
 <span class="c">#</span>
 <span class="c">#  Copyright (c) 2014-2015 - EMBL-EBI</span>
 <span class="c">#</span>
@@ -75,13 +75,13 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="c"># from bioigraph:</span>
+<span class="c"># from pypath:</span>
 <span class="kn">import</span> <span class="nn">common</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Residue&#39;</span><span class="p">,</span> <span class="s">&#39;Ptm&#39;</span><span class="p">,</span> <span class="s">&#39;Motif&#39;</span><span class="p">,</span> <span class="s">&#39;Domain&#39;</span><span class="p">,</span> 
     <span class="s">&#39;DomainDomain&#39;</span><span class="p">,</span> <span class="s">&#39;DomainMotif&#39;</span><span class="p">,</span> <span class="s">&#39;Interface&#39;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="Residue"><a class="viewcode-back" href="../../index.html#bioigraph.intera.Residue">[docs]</a><span class="k">class</span> <span class="nc">Residue</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Residue"><a class="viewcode-back" href="../../index.html#pypath.intera.Residue">[docs]</a><span class="k">class</span> <span class="nc">Residue</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">id_type</span><span class="o">=</span><span class="s">&#39;uniprot&#39;</span><span class="p">,</span> 
             <span class="n">isoform</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mutated</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
@@ -111,7 +111,7 @@
     <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">:</span><span class="si">%u</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="Mutation"><a class="viewcode-back" href="../../index.html#bioigraph.intera.Mutation">[docs]</a><span class="k">class</span> <span class="nc">Mutation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Mutation"><a class="viewcode-back" href="../../index.html#pypath.intera.Mutation">[docs]</a><span class="k">class</span> <span class="nc">Mutation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">original</span><span class="p">,</span> <span class="n">mutated</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">properties</span> <span class="o">=</span> <span class="p">{}):</span>
         <span class="k">if</span> <span class="n">original</span><span class="o">.</span><span class="n">protein</span> <span class="o">==</span> <span class="n">mutated</span><span class="o">.</span><span class="n">protein</span> <span class="ow">and</span> \
@@ -159,7 +159,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">False</span>
 </div>
-<div class="viewcode-block" id="Ptm"><a class="viewcode-back" href="../../index.html#bioigraph.intera.Ptm">[docs]</a><span class="k">class</span> <span class="nc">Ptm</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Ptm"><a class="viewcode-back" href="../../index.html#pypath.intera.Ptm">[docs]</a><span class="k">class</span> <span class="nc">Ptm</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein</span><span class="p">,</span> <span class="n">id_type</span> <span class="o">=</span> <span class="s">&#39;uniprot&#39;</span><span class="p">,</span> <span class="n">typ</span> <span class="o">=</span> <span class="s">&#39;unknown&#39;</span><span class="p">,</span> 
             <span class="n">motif</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">residue</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">source</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">isoform</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
@@ -238,7 +238,7 @@
                 <span class="n">other</span><span class="o">.</span><span class="n">typ</span> <span class="o">!=</span> <span class="s">&#39;unknown&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">typ</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">typ</span>
 </div>
-<div class="viewcode-block" id="Motif"><a class="viewcode-back" href="../../index.html#bioigraph.intera.Motif">[docs]</a><span class="k">class</span> <span class="nc">Motif</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Motif"><a class="viewcode-back" href="../../index.html#pypath.intera.Motif">[docs]</a><span class="k">class</span> <span class="nc">Motif</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">id_type</span> <span class="o">=</span> <span class="s">&#39;uniprot&#39;</span><span class="p">,</span> <span class="n">regex</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> 
         <span class="n">instance</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">isoform</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">motif_name</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">prob</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">elm</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
@@ -316,7 +316,7 @@
                 <span class="s">&#39;unknown&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">regex</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">regex</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span>
                 <span class="s">&#39;unknown&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="Domain"><a class="viewcode-back" href="../../index.html#bioigraph.intera.Domain">[docs]</a><span class="k">class</span> <span class="nc">Domain</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Domain"><a class="viewcode-back" href="../../index.html#pypath.intera.Domain">[docs]</a><span class="k">class</span> <span class="nc">Domain</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein</span><span class="p">,</span> <span class="n">id_type</span> <span class="o">=</span> <span class="s">&#39;uniprot&#39;</span><span class="p">,</span> <span class="n">domain</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> 
         <span class="n">domain_id_type</span> <span class="o">=</span> <span class="s">&#39;pfam&#39;</span><span class="p">,</span> <span class="n">start</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">isoform</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> 
@@ -423,7 +423,7 @@
                 <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">domain</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">domain</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">domain</span>
 </div>
-<div class="viewcode-block" id="DomainDomain"><a class="viewcode-back" href="../../index.html#bioigraph.intera.DomainDomain">[docs]</a><span class="k">class</span> <span class="nc">DomainDomain</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="DomainDomain"><a class="viewcode-back" href="../../index.html#pypath.intera.DomainDomain">[docs]</a><span class="k">class</span> <span class="nc">DomainDomain</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain_a</span><span class="p">,</span> <span class="n">domain_b</span><span class="p">,</span> <span class="n">pdbs</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> 
         <span class="n">sources</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">refs</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">contact_residues</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
@@ -475,7 +475,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">__str__</span><span class="p">(),</span> <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">),</span> 
                 <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">refs</span><span class="p">),</span> <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdbs</span><span class="p">))</span>
 </div>
-<div class="viewcode-block" id="DomainMotif"><a class="viewcode-back" href="../../index.html#bioigraph.intera.DomainMotif">[docs]</a><span class="k">class</span> <span class="nc">DomainMotif</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="DomainMotif"><a class="viewcode-back" href="../../index.html#pypath.intera.DomainMotif">[docs]</a><span class="k">class</span> <span class="nc">DomainMotif</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">ptm</span><span class="p">,</span> <span class="n">sources</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">refs</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">pdbs</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ptm</span> <span class="o">=</span> <span class="n">ptm</span>
@@ -591,7 +591,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">add_sources</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_refs</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">refs</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Interface"><a class="viewcode-back" href="../../index.html#bioigraph.intera.Interface">[docs]</a><span class="k">class</span> <span class="nc">Interface</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Interface"><a class="viewcode-back" href="../../index.html#pypath.intera.Interface">[docs]</a><span class="k">class</span> <span class="nc">Interface</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_a</span><span class="p">,</span> <span class="n">id_b</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">id_type</span><span class="o">=</span><span class="s">&#39;uniprot&#39;</span><span class="p">,</span> <span class="n">pdb</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> 
                  <span class="n">css</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">stab_en</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">solv_en</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">area</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> 
@@ -617,7 +617,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">solv_en</span> <span class="o">=</span> <span class="n">solv_en</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">css</span> <span class="o">=</span> <span class="n">css</span>
     
-<div class="viewcode-block" id="Interface.add_residues"><a class="viewcode-back" href="../../index.html#bioigraph.intera.Interface.add_residues">[docs]</a>    <span class="k">def</span> <span class="nf">add_residues</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res_a</span><span class="p">,</span> <span class="n">res_b</span><span class="p">,</span> <span class="n">typ</span> <span class="o">=</span> <span class="s">&#39;undefined&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="Interface.add_residues"><a class="viewcode-back" href="../../index.html#pypath.intera.Interface.add_residues">[docs]</a>    <span class="k">def</span> <span class="nf">add_residues</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res_a</span><span class="p">,</span> <span class="n">res_b</span><span class="p">,</span> <span class="n">typ</span> <span class="o">=</span> <span class="s">&#39;undefined&#39;</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Adds one pair of residues of type `typ&#39;, </span>
 <span class="sd">        where `res_a&#39; and `res_b&#39; are tuples of </span>
@@ -640,7 +640,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">typ</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">id_b</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">Residue</span><span class="p">(</span><span class="n">res_b</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">res_b</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">res_b</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">id_type</span><span class="p">))</span>
     </div>
-<div class="viewcode-block" id="Interface.numof_residues"><a class="viewcode-back" href="../../index.html#bioigraph.intera.Interface.numof_residues">[docs]</a>    <span class="k">def</span> <span class="nf">numof_residues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Interface.numof_residues"><a class="viewcode-back" href="../../index.html#pypath.intera.Interface.numof_residues">[docs]</a>    <span class="k">def</span> <span class="nf">numof_residues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the number of residue pairs by bound type</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -649,7 +649,7 @@
             <span class="n">nbonds</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">id_a</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">nbonds</span>
     </div>
-<div class="viewcode-block" id="Interface.bond_types"><a class="viewcode-back" href="../../index.html#bioigraph.intera.Interface.bond_types">[docs]</a>    <span class="k">def</span> <span class="nf">bond_types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Interface.bond_types"><a class="viewcode-back" href="../../index.html#pypath.intera.Interface.bond_types">[docs]</a>    <span class="k">def</span> <span class="nf">bond_types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the bond types present in this interface</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -659,7 +659,7 @@
                 <span class="n">types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">types</span>
     </div>
-<div class="viewcode-block" id="Interface.get_bonds"><a class="viewcode-back" href="../../index.html#bioigraph.intera.Interface.get_bonds">[docs]</a>    <span class="k">def</span> <span class="nf">get_bonds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Interface.get_bonds"><a class="viewcode-back" href="../../index.html#pypath.intera.Interface.get_bonds">[docs]</a>    <span class="k">def</span> <span class="nf">get_bonds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Gives a generator to iterate throught bonds in </span>
 <span class="sd">        this interface. If no type given, bonds of all types </span>
@@ -747,7 +747,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">bioigraph 0.1.1 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.1.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

@@ -50,21 +50,21 @@ import hcluster as hc2
 import matplotlib.patches as mpatches
 from matplotlib import gridspec
 
-# from bioigraph #
+# from pypath #
 
-import bioigraph
-from bioigraph import chembl
-from bioigraph.common import *
-from bioigraph.data_formats import best, good, ugly, transcription
+import pypath
+from pypath import chembl
+from pypath.common import *
+from pypath.data_formats import best, good, ugly, transcription
 import _sensitivity as sens
-from bioigraph import progress
-from bioigraph import dataio
-from bioigraph.ig_drawing import DefaultGraphDrawerFFsupport
-from bioigraph import plot
+from pypath import progress
+from pypath import dataio
+from pypath.ig_drawing import DefaultGraphDrawerFFsupport
+from pypath import plot
 
 omnipath = 'OmniPath'
 
-net = bioigraph.BioGraph(9606)
+net = pypath.Pypath(9606)
 
 #net.init_network(pfile = 'cache/plus_phospho.pickle')
 #net.init_network()
@@ -96,8 +96,8 @@ net.load_corum()
 sens.in_complex(net)
 net.in_complex()
 net.load_ptms()
-net.read_list_file(bioigraph.data_formats.cgc)
-net.read_list_file(bioigraph.data_formats.intogene_cancer)
+net.read_list_file(pypath.data_formats.cgc)
+net.read_list_file(pypath.data_formats.intogene_cancer)
 # net.load_comppi()
 sep = net.separate()
 

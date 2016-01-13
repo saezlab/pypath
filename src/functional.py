@@ -44,20 +44,20 @@ import scipy.cluster.hierarchy as hc
 import hcluster as hc2
 import matplotlib.patches as mpatches
 
-# from bioigraph #
+# from pypath #
 
-import bioigraph
-from bioigraph import chembl
-from bioigraph.common import *
-from bioigraph.data_formats import best, good, ugly, transcription
+import pypath
+from pypath import chembl
+from pypath.common import *
+from pypath.data_formats import best, good, ugly, transcription
 import _sensitivity as sens
-from bioigraph import progress
-from bioigraph import dataio
-from bioigraph import go, gsea
-from bioigraph.ig_drawing import DefaultGraphDrawerFFsupport
+from pypath import progress
+from pypath import dataio
+from pypath import go, gsea
+from pypath.ig_drawing import DefaultGraphDrawerFFsupport
 
 
-net = bioigraph.BioGraph(9606)
+net = pypath.Pypath(9606)
 net.init_network(pfile = 'cache/default_plus_acsn.pickle')
 net.genesymbol_labels()
 

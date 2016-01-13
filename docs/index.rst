@@ -1,9 +1,9 @@
-.. bioigraph documentation master file, created by
+.. pypath documentation master file, created by
    sphinx-quickstart2 on Mon Mar  2 12:43:52 2015.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to bioigraph's documentation!
+Welcome to pypath's documentation!
 =====================================
 
 Contents:
@@ -23,10 +23,10 @@ Import the module and create an instance. MySQL settings are stored by default i
 
 .. code-block:: python
 
-    import bioigraph
+    import pypath
     mysql_gelati = (None, 'mapping_gelati')
     mysql_chembl = (None, 'chembl_ebi')
-    net = bioigraph.BioGraph(9606, mysql = mysql_gelati)
+    net = pypath.BioGraph(9606, mysql = mysql_gelati)
 
 The tables for ID conversions, and the network of the selected manually curated pathway databases can be initialized this way:
 
@@ -38,7 +38,7 @@ Resources without references for each interaction are available separately. For 
 
 .. code-block:: python
 
-    from bioigraph.data_formats import good
+    from pypath.data_formats import good
     net.load_resources(lst = {'mimp': good['mimp']})
     net.load_resources(lst = {'pnetworks': good['pnetworks']})
     net.load_resources(lst = {'psite_noref': good['psite_noref']})
@@ -47,7 +47,7 @@ In case you have your own interaction data, and you wish to merge this into the 
 
 .. code-block:: python
 
-    mylist = bioigraph.input_formats.ReadSettings(name = "mylist", 
+    mylist = pypath.input_formats.ReadSettings(name = "mylist", 
         separator = "\t", nameColA = 0, nameColB = 1,
         nameTypeA = "genesymbol", nameTypeB = "genesymbol",
         isDirected = False, inFile = 'mylist.sif', 
@@ -153,11 +153,11 @@ PTMs are stored in objects. This example shows how to access the type of modific
 Example 2: using the Mapper class for translating IDs
 +++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-The mapping submodule of bioigraph can be used for ID conversion. Here is a basic example:
+The mapping submodule of pypath can be used for ID conversion. Here is a basic example:
 
 .. code-block:: python
 
-    from bioigraph import mapping
+    from pypath import mapping
     m = mapping.Mapper(9606, mysql_conf = (None, 'mapping_gelati'))
     m.load_mappings()
     result = {}
@@ -168,68 +168,68 @@ The mapping submodule of bioigraph can be used for ID conversion. Here is a basi
 Reference
 =========
 
-.. automodule:: bioigraph.bioigraph
+.. automodule:: pypath.pypath
    :members:
 
-.. autoclass:: bioigraph.bioigraph.BioGraph
+.. autoclass:: pypath.pypath.BioGraph
    :members:
 
-.. automodule:: bioigraph.intera
+.. automodule:: pypath.intera
    :members:
 
-.. autoclass:: bioigraph.intera.Residue
+.. autoclass:: pypath.intera.Residue
    :members:
 
-.. autoclass:: bioigraph.intera.Mutation
+.. autoclass:: pypath.intera.Mutation
    :members:
 
-.. autoclass:: bioigraph.intera.Motif
+.. autoclass:: pypath.intera.Motif
    :members:
 
-.. autoclass:: bioigraph.intera.Ptm
+.. autoclass:: pypath.intera.Ptm
    :members:
 
-.. autoclass:: bioigraph.intera.Domain
+.. autoclass:: pypath.intera.Domain
    :members:
 
-.. autoclass:: bioigraph.intera.DomainMotif
+.. autoclass:: pypath.intera.DomainMotif
    :members:
 
-.. autoclass:: bioigraph.intera.DomainDomain
+.. autoclass:: pypath.intera.DomainDomain
    :members:
 
-.. autoclass:: bioigraph.intera.Interface
+.. autoclass:: pypath.intera.Interface
    :members:
 
-.. automodule:: bioigraph.mapping
+.. automodule:: pypath.mapping
    :members:
 
-.. autoclass:: bioigraph.mapping.Mapper
+.. autoclass:: pypath.mapping.Mapper
    :members:
 
-.. automodule:: bioigraph.moduland
+.. automodule:: pypath.moduland
    :members:
 
-.. automodule:: bioigraph.gdsc
+.. automodule:: pypath.gdsc
    :members:
 
-.. automodule:: bioigraph.dataio
+.. automodule:: pypath.dataio
    :members:
 
-.. automodule:: bioigraph.chembl
+.. automodule:: pypath.chembl
    :members:
 
-.. automodule:: bioigraph.unichem
+.. automodule:: pypath.unichem
    :members:
 
-.. automodule:: bioigraph.seq
+.. automodule:: pypath.seq
    :members:
 
-.. automodule:: bioigraph.mysql
+.. automodule:: pypath.mysql
    :members:
 
-.. automodule:: bioigraph.mysql_connect
+.. automodule:: pypath.mysql_connect
    :members:
 
-.. automodule:: bioigraph.seq
+.. automodule:: pypath.seq
    :members:

@@ -36,13 +36,13 @@ import matplotlib.patches as mpatches
 import _sensitivity as sens
 from scipy import stats
 
-# from bioigraph #
+# from pypath #
 
-import bioigraph
-from bioigraph.common import *
-from bioigraph.data_formats import best
-from bioigraph import dataio
-from bioigraph import plot
+import pypath
+from pypath.common import *
+from pypath.data_formats import best
+from pypath import dataio
+from pypath import plot
 
 # functions
 
@@ -116,7 +116,7 @@ fisherFile = 'fisher_tests'
 fontW = 'medium'
 
 console(':: Creating new network object')
-net = bioigraph.BioGraph(9606)
+net = pypath.Pypath(9606)
 
 # see `default_network.py` for the initialization of this default network
 console(':: Loading network')
@@ -141,8 +141,8 @@ net.load_corum()
 sens.in_complex(net)
 net.in_complex()
 net.load_ptms()
-net.read_list_file(bioigraph.data_formats.cgc)
-net.read_list_file(bioigraph.data_formats.intogene_cancer)
+net.read_list_file(pypath.data_formats.cgc)
+net.read_list_file(pypath.data_formats.intogene_cancer)
 
 # generating individual networks for all resorces
 console(':: Separating original resources')
@@ -273,6 +273,10 @@ topdata = {
 'Number of cancer drivers': [len(set(sep[s].vs['name']) & \
         (set(net.lists['Intogene']) | set(net.lists['CancerGeneCensus']))) \
     for s in net.sources],
+'Complexes': [len(sens.complexes_in_network(g)) \
+    for s, g in sep.iteritems()],
+'PTMs': [len([1 for e in g.es if len(e['ptm']) != 0]) \
+    for s, g in sep.iteritems()],
 'Database': net.sources
 }
 topdf = pd.DataFrame(topdata, index = net.sources)
@@ -281,7 +285,7 @@ topdf = pd.DataFrame(topdata, index = net.sources)
 topdf.sort(columns = ['Proteins'], inplace = True)
 
 #import pandas as pd
-#from bioigraph import plot
+#from pypath import plot
 #import cPickle as pickle
 
 #topdf = pickle.load(open('cache/topdf.pickle', 'rb'))
@@ -345,6 +349,22 @@ sp = plot.ScatterPlus('Number of receptors',
         lab_angle = 90, lab_size = (11.8, 13.86), color = '#007b7f', 
         order = False, desc = True, legend = True, legtitle = 'Total number\nof proteins',
         legstrip = (1,1),
+        fin = True)
+
+sp = plot.ScatterPlus('Complexes', 
+        'PTMs', sizes = 'Interactions', 
+        labels = 'Database', data = topdf,
+        xlog = 'symlog', ylog = 'symlog',
+        # xlim = [-50.0, 680.0], ylim = [-400.0, 3100.0],
+        xlim = [1.8, 1200.0], ylim = [0.8, 10000.0],
+        fname = 'comp-ptm.pdf', font_family = 'Helvetica Neue LT Std', 
+        font_style = 'normal', font_weight = 'medium', font_variant = 'normal',
+        font_stretch = 'normal', confi = True, 
+        xlab = 'Number of complexes', ylab = 'Number of PTMs', 
+        axis_lab_size = 23.76, annotation_size = 8.0, size = 20.0, size_scaling = 0.66,
+        lab_angle = 90, lab_size = (11.8, 13.86), color = '#007b7f', 
+        order = False, desc = True, legend = True, legtitle = 'Total number\nof interactions',
+        legstrip = (1,1), legloc = 2, 
         fin = True)
 
 # transitivity barplot

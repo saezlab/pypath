@@ -13,11 +13,11 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
-import bioigraph
-from bioigraph import data_formats
+import pypath
+from pypath import data_formats
 
 font = 'HelveticaNeueLTStd Med Cn'
-net = bioigraph.BioGraph()
+net = pypath.Pypath()
 net.init_network(pfile = 'cache/default_network.pickle')
 #net.init_network({'arn': data_formats.best['arn']})
 for pw in ['TGF', 'Notch']:

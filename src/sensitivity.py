@@ -17,12 +17,12 @@ import re
 import random
 import sys
 
-import bioigraph
+import pypath
 import copy
 from itertools import chain
-from bioigraph.data_formats import best, good, ugly, transcription
-from bioigraph import dataio
-from bioigraph.progress import Progress
+from pypath.data_formats import best, good, ugly, transcription
+from pypath import dataio
+from pypath.progress import Progress
 
 def gdsc_chembls(infile = '/home/denes/Dokumentumok/gdsc/drugs_chembl_pubchem.list'):
     result = {}
@@ -205,7 +205,7 @@ mysql_chembl = (None,'chembl_ebi')
 
 # 888888888888888888888888888 #
 
-net = bioigraph.BioGraph(9606, mysql=mysql_gelati, name="demo")
+net = pypath.Pypath(9606, mysql=mysql_gelati, name="demo")
 
 net.init_network(pfile = 'cache/plus_phospho.pickle')
 #net.init_network()

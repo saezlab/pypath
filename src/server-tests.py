@@ -13,14 +13,14 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
-import bioigraph
-from bioigraph import chembl
-from bioigraph.common import *
-from bioigraph.data_formats import *
-from bioigraph import server
+import pypath
+from pypath import chembl
+from pypath.common import *
+from pypath.data_formats import *
+from pypath import server
 
-net = bioigraph.BioGraph(ncbi_tax_id = 9606, loops = True)
-net = bioigraph.BioGraph(ncbi_tax_id = 9606)
+net = pypath.Pypath(ncbi_tax_id = 9606, loops = True)
+net = pypath.Pypath(ncbi_tax_id = 9606)
 
 
 net.init_network()
@@ -39,7 +39,7 @@ net.kegg_directions()
 net.load_ptms()
 # net.load_phospho_dmi('Li2012', trace = True)
 
-#from bioigraph.data_formats import best
+#from pypath.data_formats import best
 #net.read_data_file(best['hprd'], keep_raw = True)
 # net.load_resources(lst = {'signor': best['signor']})
 
@@ -50,7 +50,7 @@ net.load_ptms()
 #len(tr['substrate_ambiguousity'])
 #len([x for x in tr['substrate_ambiguousity'].values() if len(x) == 0])
 #len([x for x in tr['substrate_ambiguousity'].values() if len(x) != 0])
-#from bioigraph import dataio
+#from pypath import dataio
 #import igraph
 #h = dataio.get_hprd_ptms()
 #hh = dataio.get_hprd_ptms()

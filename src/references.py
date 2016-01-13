@@ -41,15 +41,15 @@ import scipy.cluster.hierarchy as hc
 import hcluster as hc2
 import matplotlib.patches as mpatches
 
-# from bioigraph #
+# from pypath #
 
-import bioigraph
-from bioigraph import chembl
-from bioigraph.common import *
+import pypath
+from pypath import chembl
+from pypath.common import *
 import _sensitivity as sens
-from bioigraph.common import *
-from bioigraph import dataio
-from bioigraph import plot
+from pypath.common import *
+from pypath import dataio
+from pypath import plot
 
 # constants
 omnipath = 'OmniPath'
@@ -58,7 +58,7 @@ axis_lab_size = 36
 htp_threshold = 50
 fontW = 'medium'
 
-net = bioigraph.BioGraph(9606)
+net = pypath.Pypath(9606)
 
 console(':: Loading network')
 
@@ -466,8 +466,8 @@ if rolland:
     plt.close(fig)
 
     # Rolland 2014 like visualization
-    hi2 = bioigraph.BioGraph(9606)
-    hi2.init_network(lst = {'hi2': bioigraph.data_formats.ugly['hi2']})
+    hi2 = pypath.Pypath(9606)
+    hi2.init_network(lst = {'hi2': pypath.data_formats.ugly['hi2']})
     a = net.graph.get_adjacency()
     b = hi2.graph.get_adjacency()
     a = list(a)

@@ -13,25 +13,25 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
-import bioigraph
-from bioigraph.common import *
-from bioigraph.data_formats import *
+import pypath
+from pypath.common import *
+from pypath.data_formats import *
 
-net = bioigraph.BioGraph(ncbi_tax_id = 9606)
+net = pypath.Pypath(ncbi_tax_id = 9606)
 
 net.init_network()
 net.save_network(pfile = 'cache/default_network.pickle')
 net.load_resources(lst={'acsn': ugly['acsn']})
 net.save_network(pfile = 'cache/default_plus_acsn.pickle')
 
-net = bioigraph.BioGraph(ncbi_tax_id = 9606)
+net = pypath.Pypath(ncbi_tax_id = 9606)
 net.init_network(exclude = ['intact'])
 net.save_network(pfile = 'cache/default_network_wo-intact.pickle')
 
 net.load_resources(lst={'acsn': ugly['acsn']})
 net.save_network(pfile = 'cache/default_plus_acsn_wo-intact.pickle')
 
-net = bioigraph.BioGraph(ncbi_tax_id = 9606)
+net = pypath.Pypath(ncbi_tax_id = 9606)
 net.init_network(exclude = ['intact'])
 net.remove_htp()
 net.save_network(pfile = 'cache/default_network_wo-intact_ltp-only.pickle')

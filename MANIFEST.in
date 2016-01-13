@@ -1,7 +1,7 @@
 include HISTORY.rst
-recursive-include src/bioigraph *.py
-recursive-include src/bioigraph/data *
-recursive-include src/bioigraph/mysql_config *
+recursive-include src/pypath *.py
+recursive-include src/pypath/data *
+recursive-include src/pypath/mysql_config *
 include src/log
 include src/results
-include src/bioigraph/__version__
+include src/pypath/__version__

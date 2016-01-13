@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 import glob
 import imp
 
-common = imp.load_source('common', os.path.join('src', 'bioigraph', 'common.py'))
+common = imp.load_source('common', os.path.join('src', 'pypath', 'common.py'))
 __version__ = common.__version__
 
 def which(exe):
@@ -78,8 +78,8 @@ metainfo = {
     },
     'version': __version__,
     'license': 'LGPL',
-    'download_url': ['http://157.181.231.40/~denes/bioigraph'],
-    'url': ['http://157.181.231.40/~denes/bioigraph'],
+    'download_url': ['http://157.181.231.40/~denes/pypath'],
+    'url': ['http://157.181.231.40/~denes/pypath'],
     'description': 'Work with molecular networks in Python igraph',
     'platforms': ['Linux', 'Unix', 'MacOSX', 'Windows'],
     'keywords': ['graph', 'network', 'protein', 'mRNA', 'DNA', 'signaling',
@@ -104,49 +104,49 @@ metainfo = {
 }
 
 #package_data = [
-    #'bioigraph/data/alzpw-ppi.csv', 
-    #'bioigraph/data/arn_014.csv', 
-    #'bioigraph/data/arn.csv', 
-    #'bioigraph/data/arn_lr01.csv', 
-    #'bioigraph/data/ca1.csv', 
-    #'bioigraph/data/cancer_gene_census.csv', 
-    #'bioigraph/data/cell-map-edge-attributes.txt', 
-    #'bioigraph/data/dd_refs.csv', 
-    #'bioigraph/data/depod-refs.csv', 
-    #'bioigraph/data/dip_human_core_processed.csv', 
-    #'bioigraph/data/entrez_uniprot.csv', 
-    #'bioigraph/data/gdsc.sif', 
-    #'bioigraph/data/gold_standard.csv', 
-    #'bioigraph/data/gold_standard.xlsx', 
-    #'bioigraph/data/innatedb.csv', 
-    #'bioigraph/data/intact_filtered.csv', 
-    #'bioigraph/data/krishnadev_atg_1.tab', 
-    #'bioigraph/data/krishnadev_atg.tab', 
-    #'bioigraph/data/krishnadev_vegeredmeny.csv', 
-    #'bioigraph/data/kshirsagar_atg_1.tab', 
-    #'bioigraph/data/kshirsagar_atg.tab', 
-    #'bioigraph/data/kshirsagar_vegeredmeny.csv', 
-    #'bioigraph/data/macrophage-strict.csv', 
-    #'bioigraph/data/matrixdb_core.csv', 
-    #'bioigraph/data/mppi_human_rep.csv', 
-    #'bioigraph/data/nci-pid-strict.csv', 
-    #'bioigraph/data/netpath_refs.csv', 
-    #'bioigraph/data/nrf2ome.csv', 
-    #'bioigraph/data/phosphopoint.csv', 
-    #'bioigraph/data/phosphosite_human_hc.csv', 
-    #'bioigraph/data/phosphosite_human_noref.csv', 
-    #'bioigraph/data/salmonella_atg.tar.gz', 
-    #'bioigraph/data/sec_ac.txt', 
-    #'bioigraph/data/shlecker_atg_1.tab', 
-    #'bioigraph/data/shlecker_vegeredmeny.csv', 
-    #'bioigraph/data/signor_ppi.tsv', 
-    #'bioigraph/data/slk01human.csv', 
-    #'bioigraph/data/spike_hc.csv', 
-    #'bioigraph/data/swissprot2.csv', 
-    #'bioigraph/data/swissprot-gsymbol-name.csv', 
-    #'bioigraph/data/trembl2.csv', 
-    #'bioigraph/data/uniprot-all-human.tab',
-    #'bioigraph/data/intogene_cancerdrivers.tsv'
+    #'pypath/data/alzpw-ppi.csv', 
+    #'pypath/data/arn_014.csv', 
+    #'pypath/data/arn.csv', 
+    #'pypath/data/arn_lr01.csv', 
+    #'pypath/data/ca1.csv', 
+    #'pypath/data/cancer_gene_census.csv', 
+    #'pypath/data/cell-map-edge-attributes.txt', 
+    #'pypath/data/dd_refs.csv', 
+    #'pypath/data/depod-refs.csv', 
+    #'pypath/data/dip_human_core_processed.csv', 
+    #'pypath/data/entrez_uniprot.csv', 
+    #'pypath/data/gdsc.sif', 
+    #'pypath/data/gold_standard.csv', 
+    #'pypath/data/gold_standard.xlsx', 
+    #'pypath/data/innatedb.csv', 
+    #'pypath/data/intact_filtered.csv', 
+    #'pypath/data/krishnadev_atg_1.tab', 
+    #'pypath/data/krishnadev_atg.tab', 
+    #'pypath/data/krishnadev_vegeredmeny.csv', 
+    #'pypath/data/kshirsagar_atg_1.tab', 
+    #'pypath/data/kshirsagar_atg.tab', 
+    #'pypath/data/kshirsagar_vegeredmeny.csv', 
+    #'pypath/data/macrophage-strict.csv', 
+    #'pypath/data/matrixdb_core.csv', 
+    #'pypath/data/mppi_human_rep.csv', 
+    #'pypath/data/nci-pid-strict.csv', 
+    #'pypath/data/netpath_refs.csv', 
+    #'pypath/data/nrf2ome.csv', 
+    #'pypath/data/phosphopoint.csv', 
+    #'pypath/data/phosphosite_human_hc.csv', 
+    #'pypath/data/phosphosite_human_noref.csv', 
+    #'pypath/data/salmonella_atg.tar.gz', 
+    #'pypath/data/sec_ac.txt', 
+    #'pypath/data/shlecker_atg_1.tab', 
+    #'pypath/data/shlecker_vegeredmeny.csv', 
+    #'pypath/data/signor_ppi.tsv', 
+    #'pypath/data/slk01human.csv', 
+    #'pypath/data/spike_hc.csv', 
+    #'pypath/data/swissprot2.csv', 
+    #'pypath/data/swissprot-gsymbol-name.csv', 
+    #'pypath/data/trembl2.csv', 
+    #'pypath/data/uniprot-all-human.tab',
+    #'pypath/data/intogene_cancerdrivers.tsv'
 #]
 
 with open('README.rst') as f:
@@ -169,7 +169,7 @@ deps = ['python-igraph', 'pandas', 'bioservices', 'beautifulsoup4', 'pymysql',
 #deps.append(mysql)
 
 setup(
-    name = 'bioigraph',
+    name = 'pypath',
     version = __version__,
     maintainer = metainfo['authors']['Türei'][0],
     maintainer_email = metainfo['authors']['Türei'][1],
@@ -185,7 +185,7 @@ setup(
     classifiers = metainfo['classifiers'],
     # package installation
     package_dir = {'':'src'},
-    packages = list(set(find_packages() + ['bioigraph', 'bioigraph.data'])),
+    packages = list(set(find_packages() + ['pypath', 'pypath.data'])),
     include_package_data = True,
     install_requires = deps
 )
