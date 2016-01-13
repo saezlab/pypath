@@ -1,18 +1,18 @@
-Bioigraph
+pypath
 #########
 
 
-:note: Bioigraph supported only in Python 2.7, and no version 3.x is available currently.
+:note: pypath supported only in Python 2.7, and no version 3.x is available currently.
 
 :contributions: denes@ebi.ac.uk
-:issues: https://github.com/seazlab/bioigraph/issues
+:issues: https://github.com/seazlab/pypath/issues
 
-**Bioigraph** is a Python package built around igraph to work with molecular network representations e.g. protein, miRNA and drug compound interaction networks.
+**pypath** is a Python package built around igraph to work with molecular network representations e.g. protein, miRNA and drug compound interaction networks.
 
 Webservice
 ==========
 
-I run and update time to time the bioigraph webservice on my virtual machine on EBI infrastructure, serving the OmniPath data with additional kinase-substrate interactions and PTMs. The current IP address of the VM is 172.22.71.26, but this might eventually change (given by the Systems, every time when I reboot the VM after upgrades). The webservice is set up to listen on port 33333. It serves data in REST style, by HTTP protocol (browser, wget, curl or anything can make requests). This host is accessible only on the EBI internal network. From outside you can use SSH tunnel of course. The webservice currently recognizes 4 types of queries: ``interactions``, ``ptms``, ``about`` and ``info``. 
+I run and update time to time the pypath webservice on my virtual machine on EBI infrastructure, serving the OmniPath data with additional kinase-substrate interactions and PTMs. The current IP address of the VM is 172.22.71.26, but this might eventually change (given by the Systems, every time when I reboot the VM after upgrades). The webservice is set up to listen on port 33333. It serves data in REST style, by HTTP protocol (browser, wget, curl or anything can make requests). This host is accessible only on the EBI internal network. From outside you can use SSH tunnel of course. The webservice currently recognizes 4 types of queries: ``interactions``, ``ptms``, ``about`` and ``info``. 
 
 A request without any parameter, gives some basic numbers about the actual loaded dataset:
 
@@ -64,7 +64,7 @@ Directly from git
 
 .. code:: bash
     
-    pip2 install git+https://github.com/saezlab/bioigraph.git
+    pip2 install git+https://github.com/saezlab/pypath.git
 
 With pip
 --------
@@ -73,7 +73,7 @@ Download the package from /dist, and install with pip:
 
 .. code:: bash
     
-    pip2 install bioigraph-x.y.z.tar.gz
+    pip2 install pypath-x.y.z.tar.gz
 
 Build source distribution
 -------------------------
@@ -87,7 +87,7 @@ Clone the git repo, and run setup.py:
 Features
 ========
 
-The primary aim of **Bioigraph** is to build up networks from multiple sources on one igraph object. **Bioigraph** handles ambiguous ID conversion, reads custom edge and node attributes from text files and **MySQL**.
+The primary aim of **pypath** is to build up networks from multiple sources on one igraph object. **pypath** handles ambiguous ID conversion, reads custom edge and node attributes from text files and **MySQL**.
 
 Submodules perform various features, e.g. graph visualization, working with drug compound data, searching drug targets and compounds in **ChEMBL**. 
 
@@ -99,7 +99,7 @@ The ID conversion module ``mapping`` can be used independently. It has the featu
 Pathways
 --------
 
-**Bioigraph** includes data and predefined format descriptions for more than 25  high quality, literature curated databases. The inut formats are defined in the ``data_formats`` module. For some resources data downloaded on the fly, where it is not possible, data is redistributed with the module. Descriptions and comprehensive information about the resources is available in the ``descriptions`` module. 
+**pypath** includes data and predefined format descriptions for more than 25  high quality, literature curated databases. The inut formats are defined in the ``data_formats`` module. For some resources data downloaded on the fly, where it is not possible, data is redistributed with the module. Descriptions and comprehensive information about the resources is available in the ``descriptions`` module. 
 
 Structural features
 -------------------
