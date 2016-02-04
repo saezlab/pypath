@@ -10,3 +10,7 @@ pyasn1
 twisted
 fisher
 statsmodels
+pygraphviz
+fabric
+pycurl
+lxml

@@ -89,27 +89,118 @@ pickle.dump(pmdata, open('cache/pubmed2.pickle', 'wb'))
 pmdata = dict(i for i in pmdata.items() if i[0] in pubmeds)
 
 points = []
+earliest = []
 for e in net.graph.es:
     for s, rs in e['refs_by_source'].iteritems():
-        for r in rs:
-            if r.pmid not in net.htp[htp_threshold]['htrefs'] and r.pmid in pmdata and 'pubdate' in pmdata[r.pmid]:
-                points.append((s, r.pmid, int(pmdata[r.pmid]['pubdate'][:4]), 
-                    pmdata[r.pmid]['source']))
+        pms = [r.pmid for r in rs if r.pmid not in net.htp[htp_threshold]['htrefs'] and r.pmid in pmdata and 'pubdate' in pmdata[r.pmid]]
+        if len(pms) > 0:
+            yrs = [int(pmdata[pm]['pubdate'][:4]) for pm in pms]
+            earliest.append((s, 0, min(yrs), '', e.index))
+            for pm in pms:
+                points.append((s, pm, int(pmdata[pm]['pubdate'][:4]), 
+                    pmdata[pm]['source'], e.index))
 
 points = uniqList(points)
+earliest = uniqList(earliest)
 
 points = pd.DataFrame.from_records(points)
-points.columns = ['database', 'pmid', 'year', 'journal']
+earliest = pd.DataFrame.from_records(earliest)
+points.columns = ['database', 'pmid', 'year', 'journal', 'eid']
+earliest.columns = ['database', 'none', 'year', 'none', 'eid']
 
 # ## References by Year
 console(':: Plotting references by year')
-ordr = sorted(uniqList(list(points.year)))
+ordr = np.array(sorted(uniqList(list(earliest.year))))
+fig, ax = plt.subplots()
+
+all_cnt = points.year.value_counts()
+
+sns.set(font = 'Helvetica Neue LT Std')
+sns.set_context('poster', rc = {'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
+    'grid.linewidth': 1.0})
+allbar = ax.bar(left = ordr, height = [all_cnt[y] for y in sorted(all_cnt.keys())], 
+    width = 0.8, color = '#007b7f', edgecolor = None, label = 'All references')
+
+for tick in ax.xaxis.get_major_ticks():
+    tick.label.set_fontsize(7)
+    tick.label.set_fontweight(fontW)
+
+for tick in ax.yaxis.get_major_ticks():
+    tick.label.set_fontweight(fontW)
+
+ylab = ax.set_ylabel('Number of PubMed IDs', fontweight = fontW)
+xlab = ax.set_xlabel('Years', fontweight = fontW)
+pl = plt.setp(ax.xaxis.get_majorticklabels(), rotation = 70)
+for t in ax.xaxis.get_major_ticks():
+    t.label.set_fontsize(lab_size[0])
+
+for t in ax.yaxis.get_major_ticks():
+    t.label.set_fontsize(lab_size[1])
+
+xticks = ax.xaxis.set_ticks(np.arange(min(ordr), max(ordr) + 1))
+ax.xaxis.label.set_size(axis_lab_size)
+ax.yaxis.label.set_size(axis_lab_size)
+ax.xaxis.grid(False)
+
+xlim = ax.set_xlim([min(ordr), max(ordr) + 1.2])
+
+fig.tight_layout()
+fig.savefig('references-by-year.pdf')
+
+# ## References by Year, earliest
+console(':: Plotting first references by year')
+ordr = np.array(sorted(uniqList(list(earliest.year))))
+fig, ax = plt.subplots()
+
+ear_cnt = earliest.year.value_counts()
+
+sns.set(font = 'Helvetica Neue LT Std')
+sns.set_context('poster', rc = {'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
+    'grid.linewidth': 1.0})
+firstbar = ax.bar(left = ordr, height = [ear_cnt[y] for y in sorted(ear_cnt.keys())], 
+    width = 0.8, color = '#007b7f', edgecolor = None, label = 'Earliest reference')
+
+for tick in ax.xaxis.get_major_ticks():
+    tick.label.set_fontsize(7)
+    tick.label.set_fontweight(fontW)
+
+for tick in ax.yaxis.get_major_ticks():
+    tick.label.set_fontweight(fontW)
+
+ylab = ax.set_ylabel('Number of PubMed IDs', fontweight = fontW)
+xlab = ax.set_xlabel('Years', fontweight = fontW)
+pl = plt.setp(ax.xaxis.get_majorticklabels(), rotation = 70)
+for t in ax.xaxis.get_major_ticks():
+    t.label.set_fontsize(lab_size[0])
+
+for t in ax.yaxis.get_major_ticks():
+    t.label.set_fontsize(lab_size[1])
+
+xticks = ax.xaxis.set_ticks(np.arange(min(ordr), max(ordr) + 1))
+ax.xaxis.label.set_size(axis_lab_size)
+ax.yaxis.label.set_size(axis_lab_size)
+ax.xaxis.grid(False)
+
+xlim = ax.set_xlim([min(ordr), max(ordr) + 1.2])
+
+fig.tight_layout()
+fig.savefig('references-by-year-first.pdf')
+
+# ## All and earliest refs by year
+
+console(':: Plotting first references by year')
+ordr = np.array(sorted(uniqList(list(earliest.year))))
 fig, ax = plt.subplots()
 sns.set(font = 'Helvetica Neue LT Std')
-sns.set_context('poster', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
+sns.set_context('poster', rc = {'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
     'grid.linewidth': 1.0})
-ax = sns.countplot(data = points, x = 'year', color = '#007b7f', order = ordr)
-sns.set_context('poster', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
+ear_cnt = earliest.year.value_counts()
+all_cnt = points.year.value_counts()
+allbar = ax.bar(left = ordr, height = [all_cnt[y] for y in sorted(all_cnt.keys())], 
+    width = 0.4, color = '#7AA0A1', edgecolor = None, label = 'All refrences')
+firstbar = ax.bar(left = ordr + 0.4, height = [ear_cnt[y] for y in sorted(ear_cnt.keys())], 
+    width = 0.4, color = '#C6909C', edgecolor = None, label = 'Earliest reference')
+sns.set_context('poster', rc = {'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
     'grid.linewidth': 1.0, 'font.weight': fontW})
 
 for tick in ax.xaxis.get_major_ticks():
@@ -121,18 +212,69 @@ for tick in ax.yaxis.get_major_ticks():
 
 ylab = ax.set_ylabel('Number of PubMed IDs', fontweight = fontW)
 xlab = ax.set_xlabel('Years', fontweight = fontW)
-pl = plt.setp(ax.xaxis.get_majorticklabels(), rotation=70)
+pl = plt.setp(ax.xaxis.get_majorticklabels(), rotation = 70)
 for t in ax.xaxis.get_major_ticks():
     t.label.set_fontsize(lab_size[0])
 
 for t in ax.yaxis.get_major_ticks():
     t.label.set_fontsize(lab_size[1])
 
+xticks = ax.xaxis.set_ticks(np.arange(min(ordr), max(ordr) + 1))
 ax.xaxis.label.set_size(axis_lab_size)
 ax.yaxis.label.set_size(axis_lab_size)
+ax.xaxis.grid(False)
+
+leg = ax.legend(loc = 2)
+nul = [t.set_fontsize(lab_size[0]) for t in leg.get_texts()]
+nul = [t.set_fontweight(fontW) for t in leg.get_texts()]
+
+xlim = ax.set_xlim([min(ordr), max(ordr) + 1.0])
 
 fig.tight_layout()
-fig.savefig('references-by-year.pdf')
+fig.savefig('references-by-year-2.pdf')
+
+# ## Ratio of earliest refs by year
+
+console(':: Plotting ratio of first references by year')
+ordr = np.array(sorted(uniqList(list(earliest.year))))
+fig, ax = plt.subplots()
+
+ear_cnt = earliest.year.value_counts()
+
+sns.set(font = 'Helvetica Neue LT Std')
+sns.set_context('poster', rc = {'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
+    'grid.linewidth': 1.0})
+firstbar = ax.bar(left = ordr, height = [ear_cnt[y]/float(all_cnt[y])*100.0 \
+            if all_cnt[y] > 0 else 100.0 \
+        for y in sorted(all_cnt.keys())], 
+    width = 0.8, color = '#007b7f', edgecolor = None, label = 'Earliest reference')
+
+for tick in ax.xaxis.get_major_ticks():
+    tick.label.set_fontsize(7)
+    tick.label.set_fontweight(fontW)
+
+for tick in ax.yaxis.get_major_ticks():
+    tick.label.set_fontweight(fontW)
+
+ylab = ax.set_ylabel('Percentage of references\nadding new interaction', fontweight = fontW)
+xlab = ax.set_xlabel('Years', fontweight = fontW)
+pl = plt.setp(ax.xaxis.get_majorticklabels(), rotation = 70)
+for t in ax.xaxis.get_major_ticks():
+    t.label.set_fontsize(lab_size[0])
+
+for t in ax.yaxis.get_major_ticks():
+    t.label.set_fontsize(lab_size[1])
+
+xticks = ax.xaxis.set_ticks(np.arange(min(ordr), max(ordr) + 1))
+ax.xaxis.label.set_size(axis_lab_size)
+ax.yaxis.label.set_size(axis_lab_size)
+ax.xaxis.grid(False)
+
+xlim = ax.set_xlim([min(ordr), max(ordr) + 1.2])
+
+fig.tight_layout()
+fig.savefig('references-by-year-first-pct.pdf')
+
 
 # ## References by Database
 console(':: Plotting references by database')
@@ -171,6 +313,9 @@ for i in [50, 100]:
     ax.xaxis.label.set_fontweight(fontW)
     ax.yaxis.label.set_size(axis_lab_size * 0.66)
     ax.yaxis.label.set_fontweight(fontW)
+    ax.xaxis.grid(False)
+    nul = [tl.set_fontweight(fontW) for tl in ax.get_xticklabels()]
+    nul = [tl.set_fontweight(fontW) for tl in ax.get_yticklabels()]
     
     if i == 50:
         ylim = ax.set_ylim(1.8, 4)
@@ -277,14 +422,18 @@ ylab = ax.set_ylabel('Year', weight = 'light', fontsize = 12,
 p = plt.setp(ax.xaxis.get_majorticklabels(), rotation = 90)
 for t in ax.xaxis.get_major_ticks():
     t.label.set_fontsize(lab_size[0])
+    t.label.set_fontweight(fontW)
 
 for t in ax.yaxis.get_major_ticks():
     t.label.set_fontsize(lab_size[1])
+    t.label.set_fontweight(fontW)
 
 ax.xaxis.label.set_size(axis_lab_size)
 ax.yaxis.label.set_size(axis_lab_size)
 ax.xaxis.label.set_fontweight(fontW)
 ax.yaxis.label.set_fontweight(fontW)
+
+ax.set_ylim([min(allpoints.year), max(allpoints.year)])
 
 fig.tight_layout()
 fig.savefig('pubyear-boxplot.pdf')
@@ -312,6 +461,7 @@ ax0.set_yscale('log')
 xlim = ax0.set_xlim([-0.2, 27.8])
 xlab = ax0.set_xlabel('')
 ylab = ax0.set_ylabel('Number of\nPubMed IDs')
+ax0.xaxis.grid(False)
 
 # here the boxplot
 ax1 = plt.subplot(gs[1])
@@ -340,6 +490,10 @@ ax1.yaxis.label.set_size(axis_lab_size)
 ax1.xaxis.label.set_fontweight(fontW)
 ax1.yaxis.label.set_fontweight(fontW)
 ax0.yaxis.label.set_fontweight(fontW)
+nul = [t.set_fontweight(fontW) for t in ax0.get_yticklabels()]
+nul = [t.set_fontweight(fontW) for t in ax1.get_yticklabels()]
+nul = [t.set_fontweight(fontW) for t in ax0.get_xticklabels()]
+ax1.set_ylim([min(allpoints.year), max(allpoints.year)])
 
 fig.tight_layout()
 plt.savefig('refs-year-db.pdf')
@@ -411,10 +565,213 @@ ax1.xaxis.label.set_fontweight(fontW)
 ax1.yaxis.label.set_fontweight(fontW)
 ax2.xaxis.label.set_fontweight(fontW)
 ax0.yaxis.label.set_fontweight(fontW)
+nul = [t.set_fontweight(fontW) for t in ax0.get_yticklabels()]
+nul = [t.set_fontweight(fontW) for t in ax1.get_yticklabels()]
+nul = [t.set_fontweight(fontW) for t in ax0.get_xticklabels()]
+nul = [t.set_fontweight(fontW) for t in ax2.get_xticklabels()]
+ax1.set_ylim([min(allpoints.year), max(allpoints.year)])
+ax0.xaxis.grid(False)
 
 fig.tight_layout()
 plt.savefig('refs-year-db-y.pdf')
 plt.close()
+
+# ## References by Database & Year & number of refs # boxplot & barplot
+# this works if the boxplot code above has been run:
+console(':: Plotting references by databas & year boxplot')
+
+fig = plt.figure()
+gs = gridspec.GridSpec(2, 3, height_ratios=[2, 8], width_ratios = [0.7, 1.5, 8])
+#, wspace = 0.05, hspace = 0.05)
+# here comes the top barplot
+ax0 = plt.subplot(gs[2])
+refc_by_db = points.database.value_counts()
+refc = [refc_by_db[s] if s != omnipath else len(pubmeds) for s in boxplot_ordr]
+barplot = ax0.bar(range(len(refc)), refc, 
+    color = ['#6EA945' if s == omnipath else '#007B7F' for s in boxplot_ordr])
+tick_loc = np.arange(len(boxplot_ordr)) + 0.4
+xticks = plt.xticks(tick_loc)
+xticklabels = ax0.set_xticklabels(boxplot_ordr, rotation = 90, fontsize = lab_size[0] * 0.66)
+ax0.set_yscale('log')
+ylim = ax0.set_xlim([-0.2, 27.8])
+xlab = ax0.set_xlabel('')
+xlab = ax0.set_xlabel('Number of PubMed IDs')
+ax0.xaxis.set_label_position('top')
+
+# the refs by year barplot
+ax2 = plt.subplot(gs[4])
+refc_by_y = points.year.value_counts()
+refc = [refc_by_y[y] if y in refc_by_y else 0 \
+    for y in xrange(min(refc_by_y.index) - 1,max(refc_by_y.index) + 1)]
+barplot = ax2.barh(np.arange(len(refc)) - 0.5, refc,
+    color = ['#007B7F'] * len(refc))
+ax2.set_xscale('log')
+ylim = ax2.set_ylim([1.0, len(refc) - 0.2])
+xlim = ax2.set_xlim([10000, 0])
+xticklabs = ax2.set_yticklabels([''])
+ylab = ax2.set_ylabel('Number of PubMed IDs')
+ax2.yaxis.set_label_position('left')
+
+# refs adding new interaction by year barplot
+ax3 = plt.subplot(gs[3])
+refc_by_y = points.year.value_counts()
+newr_by_y = earliest.year.value_counts()
+refc = [newr_by_y[y]/float(refc_by_y[y])*100.0 \
+        if y in refc_by_y else (100.0 if y > min(refc_by_y.index) else 0.0) \
+    for y in xrange(min(refc_by_y.index) - 1, max(refc_by_y.index) + 1)]
+barplot = ax3.barh(np.arange(len(refc)) - 0.5, refc,
+    color = ['#007B7F'] * len(refc))
+ylim = ax3.set_ylim([1.0, len(refc) - 0.2])
+xticklabs = ax3.set_yticklabels([''])
+ylab = ax3.set_ylabel('%s of PubMed IDs\nadding new interactions'%r'%')
+ax3.yaxis.set_label_position('left')
+ax3.set_xlim(ax3.get_xlim()[::-1])
+
+# here the boxplot
+ax1 = plt.subplot(gs[5])
+sns.set(font = 'Helvetica Neue LT Std')
+sns.set_context('poster', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
+    'grid.linewidth': 1.0, 'figure.figsize': [12.8, 8.8]})
+ax1 = sns.boxplot('database', 'year', data = allpoints, 
+    palette = ['#6EA945' if i[0] == omnipath else '#007B7F' for i in  medpubyr], 
+    linewidth = 0.1, saturation = 0.66, order = [i[0] for i in medpubyr], 
+    ax = ax1)
+xlab = ax1.set_xlabel('Resources', weight = fontW, fontsize = 12, 
+        variant = 'normal', color = '#000000', stretch = 'normal')
+ylab = ax1.set_ylabel('Year', weight = fontW, fontsize = 12, 
+    variant = 'normal', color = '#000000', stretch = 'normal')
+#tick_loc = np.arange(min(refc_by_y.index) - 1, max(refc_by_y.index) + 1)
+#ax1.set_yticks(tick_loc)
+#ax1.set_ylim([min(tick_loc) - 1, max(tick_loc) + 1])
+#ax1.set_yticklabels(['%u'%y for y in tick_loc], fontsize = lab_size[0]*0.3)
+p = plt.setp(ax1.xaxis.get_majorticklabels(), rotation = 90)
+for t in ax1.xaxis.get_major_ticks():
+    t.label.set_fontsize(lab_size[0])
+
+#for t in ax1.yaxis.get_major_ticks():
+#    #t.label.set_fontsize(lab_size[1])
+
+## left top
+
+ax4 = plt.subplot(gs[0,:2])
+sns.set(font = 'Helvetica Neue LT Std')
+sns.set_context('poster', rc={'lines.linewidth': 2.0, 'patch.linewidth': 0.0,
+    'grid.linewidth': 1.0, 'figure.figsize': [12.8, 8.8]})
+ax4.plot(np.unique(points.year), [ecountByYear[y] for y in np.unique(points.year)], marker = '.', color = '#6EA945', 
+    label = 'Interactions', alpha = 0.4)
+ax4.plot(np.unique(points.year), [vcountByYear[y] for y in np.unique(points.year)], marker = '.', color = '#007B7F', 
+    label = 'Proteins', alpha = 0.4)
+ax4.plot(np.unique(points.year), [ccountByYear[y] for y in np.unique(points.year)], marker = '.', color = '#FCCC06', 
+    label = 'Curation effort', alpha = 0.4)
+xlab = ax4.set_xlabel('Year', weight = fontW, fontsize = axis_lab_size * 0.45, 
+        variant = 'normal', color = '#000000', stretch = 'normal')
+nul = [tl.set_fontsize(lab_size[0]) for tl in ax4.get_xticklabels()]
+nul = [tl.set_fontsize(lab_size[0]) for tl in ax4.get_yticklabels()]
+nul = [tl.set_fontweight(fontW) for tl in ax4.get_xticklabels()]
+nul = [tl.set_fontweight(fontW) for tl in ax4.get_yticklabels()]
+leg = ax4.legend(loc = 2)
+nul = [t.set_fontsize(lab_size[0]*0.45) for t in leg.get_texts()]
+nul = [t.set_fontweight(fontW) for t in leg.get_texts()]
+ax4.set_xlim([min(points.year), 2014])
+
+##
+
+xticklabs = ax1.set_xticklabels([''])
+ax1.xaxis.label.set_size(axis_lab_size*0.45)
+ax1.yaxis.label.set_size(axis_lab_size*0.45)
+ax1.xaxis.label.set_fontweight(fontW)
+ax1.yaxis.label.set_fontweight(fontW)
+ax2.yaxis.label.set_fontweight(fontW)
+ax3.yaxis.label.set_fontweight(fontW)
+ax3.yaxis.label.set_size(axis_lab_size*0.45)
+ax0.xaxis.label.set_fontweight(fontW)
+ax1.yaxis.set_label_position('right')
+nul = [t.set_fontweight(fontW) for t in ax0.get_yticklabels()]
+nul = [t.set_fontweight(fontW) for t in ax1.get_yticklabels()]
+nul = [t.set_fontweight(fontW) for t in ax0.get_xticklabels()]
+nul = [t.set_fontweight(fontW) for t in ax2.get_xticklabels()]
+nul = [t.set_fontweight(fontW) for t in ax3.get_xticklabels()]
+nul = [t.set_rotation(90) for t in ax3.get_xticklabels()]
+nul = [t.set_rotation(90) for t in ax4.get_xticklabels()]
+nul = [t.set_fontsize(lab_size[0]*0.66) for t in ax3.get_xticklabels()]
+nul = [t.set_fontsize(lab_size[0]*0.66) for t in ax4.get_xticklabels()]
+nul = [t.set_fontsize(lab_size[0]*0.66) for t in ax4.get_yticklabels()]
+ax1.set_ylim([min(allpoints.year), max(allpoints.year)])
+ax0.xaxis.grid(False)
+ax2.yaxis.grid(False)
+ax4.xaxis.grid(False)
+ax3.set_xticks([0, 25, 50, 75, 100])
+
+fig.tight_layout()
+plt.savefig('refs-year-db-y-4.pdf')
+plt.close()
+
+# ##
+
+numCurated = dict((y, 0) for y in np.unique(points.year))
+allByYear = dict((y, 0) for y in np.unique(points.year))
+
+for y in np.unique(points.year):
+    ydata = points[points.year==y]
+    for e in np.unique(ydata.eid):
+        edata = ydata[ydata.eid==e]
+        if edata.shape[1] > 1:
+            ndb = len(np.unique(edata.database))
+            allByYear[y] += ((ndb - 1)**2)/2.0
+            for pm in np.unique(edata.pmid):
+                pmdata = edata[edata.pmid==pm]
+                if pmdata.shape[1] > 1:
+                    ndb = len(np.unique(pmdata.database))
+                    numCurated[y] += ((ndb - 1)**2)/2.0
+
+ratioCurated = dict((y, numCurated[y]/total) if total > 0.0 else (y, 0.0) for y, total in allByYear.iteritems())
+
+firstYearsEdges = dict(points.groupby(['eid']).year.min())
+
+ecountByYear = dict((y, len([_ for fy in firstYearsEdges.values() if fy <= y])) for y in np.unique(points.year))
+
+vcountByYear = dict((y, len(set([p for e, fy in firstYearsEdges.iteritems() if fy <= y \
+        for p in [net.graph.es[e].source, net.graph.es[e].target]]))) \
+    for y in np.unique(points.year))
+
+ccountByYear = dict((y, points[points.year==y].shape[0]) for y in np.unique(points.year))
+
+fig, ax = plt.subplots()
+sns.set(font = 'Helvetica Neue LT Std')
+sns.set_context('poster', rc={'lines.linewidth': 2.0, 'patch.linewidth': 0.0,
+    'grid.linewidth': 1.0, 'figure.figsize': [12.8, 8.8]})
+ax.plot(np.unique(points.year), [ecountByYear[y] for y in np.unique(points.year)], marker = '.', color = '#6EA945', 
+    label = 'Interactions')
+ax.plot(np.unique(points.year), [vcountByYear[y] for y in np.unique(points.year)], marker = '.', color = '#007B7F', 
+    label = 'Proteins')
+ax.plot(np.unique(points.year), [ccountByYear[y] for y in np.unique(points.year)], marker = '.', color = '#FCCC06', 
+    label = 'Curation effort')
+xlab = ax.set_xlabel('Year', weight = fontW, fontsize = axis_lab_size * 0.66, 
+        variant = 'normal', color = '#000000', stretch = 'normal')
+ylab = ax.set_ylabel('Number of\nproteins or interactions', weight = fontW, fontsize = axis_lab_size * 0.66, 
+    variant = 'normal', color = '#000000', stretch = 'normal')
+nul = [tl.set_fontsize(lab_size[0]) for tl in ax.get_xticklabels()]
+nul = [tl.set_fontsize(lab_size[0]) for tl in ax.get_yticklabels()]
+nul = [tl.set_fontweight(fontW) for tl in ax.get_xticklabels()]
+nul = [tl.set_fontweight(fontW) for tl in ax.get_yticklabels()]
+leg = ax.legend(loc = 2)
+nul = [t.set_fontsize(lab_size[0]) for t in leg.get_texts()]
+nul = [t.set_fontweight(fontW) for t in leg.get_texts()]
+ax.set_xlim([min(points.year), 2014])
+fig.tight_layout()
+plt.savefig('ecount-by-year.pdf')
+plt.close()
+
+numNew = dict((y, 0) for y in np.unique(points.year))
+allEByYear = dict((y, 0) for y in np.unique(points.year))
+for e in np.unique(points.eid):
+    edata = points[points.eid==e]
+    for i, r in edata.iterrows():
+        if r['year'] == firstYearsEdges[e]:
+            numNew[r['year']] += 1
+        allEByYear[r['year']] += 1
+
+ratioNew = dict((y, numNew[y]/float(total)) if total > 0.0 else (y, 0.0) for y, total in allEByYear.iteritems())
 
 # run this only manually:
 rolland = False

@@ -19,12 +19,14 @@ from pypath.common import *
 from pypath.data_formats import *
 from pypath import server
 
-net = pypath.Pypath(ncbi_tax_id = 9606, loops = True)
-net = pypath.Pypath(ncbi_tax_id = 9606)
+net = pypath.PyPath(ncbi_tax_id = 9606, loops = True)
+net = pypath.PyPath(ncbi_tax_id = 9606)
+
+server.Rest(net, 33333)
 
 
 net.init_network()
-net.init_network(pfile = 'cache/default_network_wo-intact_ltp-only.pickle')
+net.init_network(pfile = 'cache/default_network.pickle')
 
 net.load_resources(lst={'li2012': ugly['li2012']})
 net.load_resources(lst={'acsn': ugly['acsn']})

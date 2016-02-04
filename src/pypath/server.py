@@ -21,30 +21,33 @@ import urllib
 import json
 from common import *
 import descriptions
+import _html
 
 class Rest(object):
     
-    def __init__(self, biograph, port):
+    def __init__(self, pypath, port):
         self.port = port
-        self.site = server.Site(RestResource(biograph))
+        self.site = server.Site(RestResource(pypath))
         reactor.listenTCP(self.port, self.site)
         reactor.run()
 
 class RestResource(resource.Resource):
     
-    def __init__(self, biograph):
-        self.b = biograph
-        self.g = biograph.graph
+    def __init__(self, pypath):
+        self.p = pypath
+        self.g = pypath.graph
         self.isLeaf = True
-        self.htmls = ['info']
+        self.htmls = ['info', '']
     
     def render_GET(self, request):
-        html = len(request.postpath) > 0 and request.postpath[0] in self.htmls
+        html = len(request.postpath) == 0 or request.postpath[0] in self.htmls
         self.set_defaults(request, html = html)
         if len(request.postpath) > 0 and hasattr(self, request.postpath[0]):
             toCall = getattr(self, request.postpath[0])
             if hasattr(toCall, '__call__'):
-                return unicode(toCall(request)).encode('utf-8')
+                response = toCall(request)
+                return response.encode('utf-8') \
+                    if type(response) is unicode else response
         elif len(request.postpath) == 0:
             return self.root(request)
         # return str(request.__dict__)
@@ -77,9 +80,12 @@ class RestResource(resource.Resource):
         return descriptions.gen_html()
     
     def root(self, req):
+        return _html.main_page()
+    
+    def network(self, req):
         hdr = ['nodes', 'edges', 'is_directed', 'sources']
         val = [self.g.vcount(), self.g.ecount(), 
-            int(self.g.is_directed()), self.b.sources]
+            int(self.g.is_directed()), self.p.sources]
         if req.args['format'] == 'json':
             return json.dumps(dict(zip(hdr, val)))
         else:
@@ -133,7 +139,7 @@ class RestResource(resource.Resource):
     
     def _get_eids(self, req):
         names = None if len(req.postpath) <= 1 else req.postpath[1].split(',')
-        ids = range(0, self.g.vcount()) if names is None else self.b.names2vids(names)
+        ids = range(0, self.g.vcount()) if names is None else self.p.names2vids(names)
         ids = set(ids) 
         elist = set(range(0, self.g.ecount())) if names is None else set([])
         if names is not None:
@@ -174,6 +180,22 @@ class RestResource(resource.Resource):
                         if 'references' in hdr:
                             thisPtm.append(ptm.refs)
                         res.append(thisPtm)
+        if req.args['format'] == 'json':
+            return json.dumps([dict(zip(hdr, r)) for r in res])
+        else:
+            return self._table_output(res, hdr, req)
+    
+    def resources(self, req):
+        hdr = ['database', 'proteins', 'interactions', 'directions', 'stimulations', 'inhibitions', 'signs']
+        res = [[s, len([_ for v in self.g.vs if s in v['sources']]), 
+            len([_ for e in self.g.es if s in e['sources']]), 
+            sum([s in e['dirs'].sources[d] for e in self.g.es for d in e['dirs'].which_dirs()]),
+            sum([s in e['dirs'].positive_sources[d] for e in self.g.es for d in e['dirs'].which_dirs()]),
+            sum([s in e['dirs'].negative_sources[d] for e in self.g.es for d in e['dirs'].which_dirs()]),
+            sum([s in sg for e in self.g.es for d in e['dirs'].which_dirs() \
+                for sg in [e['dirs'].positive_sources[d], e['dirs'].negative_sources]]),
+            ]
+            for s in self.p.sources]
         if req.args['format'] == 'json':
             return json.dumps([dict(zip(hdr, r)) for r in res])
         else:

@@ -1,9 +1,10 @@
+
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 # try:
 import __main__ as ext
-from pypath import BioGraph
+from pypath import PyPath
 from descriptions import *
 from common import __version__ as __version__
 

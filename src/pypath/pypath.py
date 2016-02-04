@@ -66,7 +66,7 @@ from gr_plot import *
 from progress import *
 from data_formats import *
 
-__all__ = ['BioGraph', 'Direction', 'Reference', '__version__', 'a', 'AttrHelper']
+__all__ = ['PyPath', 'Direction', 'Reference', '__version__', 'a', 'AttrHelper']
 
 class Reference(object):
     
@@ -311,6 +311,39 @@ class Direction(object):
         return [k[1] for k, v in self.sources.iteritems() \
             if k != 'undirected' and source in v]
     
+    def sources_straight(self):
+        return self.sources[self.straight]
+    
+    def sources_reverse(self):
+        return self.sources[self.reverse]
+    
+    def sources_undirected(self):
+        return self.sources['undirected']
+    
+    def positive_straight(self):
+        return self.positive[self.straight]
+    
+    def positive_reverse(self):
+        return self.positive[self.reverese]
+    
+    def negative_straight(self):
+        return self.negative[self.straight]
+    
+    def negative_reverse(self):
+        return self.negative[self.reverese]
+    
+    def negative_sources_straight(self):
+        return self.negative_sources[self.straight]
+    
+    def negative_sources_reverse(self):
+        return self.negative_sources[self.reverse]
+    
+    def positive_sources_straight(self):
+        return self.positive_sources[self.straight]
+    
+    def positive_sources_reverse(self):
+        return self.positive_sources[self.reverse]
+    
     def merge(self,other):
         if other.__class__.__name__ == 'Direction' and self.check_nodes(other.nodes):
             self.dirs[self.straight] = self.dirs[self.straight] or \
@@ -385,7 +418,7 @@ class AttrHelper(object):
         else:
             return None
 
-class BioGraph(object):
+class PyPath(object):
     
     ###
     ### main network object

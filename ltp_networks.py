@@ -119,7 +119,7 @@ def rgb256(rgb1):
 mysql_gelati = (None,'mapping_gelati')
 mysql_chembl = (None,'chembl_ebi')
 
-net = pypath.Pypath(9606, mysql=mysql_gelati, name="demo")
+net = pypath.PyPath(9606, mysql=mysql_gelati, name="demo")
 
 #net.load_resources({'netpath': best['slk']})
 #net.load_resources(lst={'ccmap': best['ccmap2']})

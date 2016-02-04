@@ -35,6 +35,7 @@ import seaborn as sns
 import matplotlib.patches as mpatches
 import _sensitivity as sens
 from scipy import stats
+from scipy.cluster import hierarchy as hc
 
 # from pypath #
 
@@ -116,7 +117,7 @@ fisherFile = 'fisher_tests'
 fontW = 'medium'
 
 console(':: Creating new network object')
-net = pypath.Pypath(9606)
+net = pypath.PyPath(9606)
 
 # see `default_network.py` for the initialization of this default network
 console(':: Loading network')
@@ -549,14 +550,16 @@ lhandles = [mpl.patches.Patch(color=c['rec'], label='Receptors (all: %s)' %\
     mpl.patches.Patch(color=c['dgb'], label='Druggable proteins (all: %s)' %\
         locale.format('%d', len(net.lists['dgb']), grouping = True))]
 leg = ax.legend(handles = lhandles)
+nul = [t.set_fontsize(lab_size[0] * 0.7) for t in leg.texts]
+nul = [t.set_fontsize(lab_size[0] * 0.7) for t in ax.get_yticklabels()]
 xlim = ax.set_xlim(-0.5, float(len(net.sources)) + 1.0)
-ylab = ax.set_ylabel(r'% of proteins covered', fontsize = axis_lab_size * 0.56)
-xlab = ax.set_xlabel('Pathway resources', fontsize = axis_lab_size * 0.56)
+ylab = ax.set_ylabel(r'% of proteins covered', fontsize = axis_lab_size * 0.45)
+xlab = ax.set_xlabel('Pathway resources', fontsize = axis_lab_size * 0.45)
 xticks = ax.set_xticks(x + 2 * w)
 xticklabs = ax.set_xticklabels(d['Database'], rotation = 90, fontsize = lab_size[0] * 0.6)
 ax.xaxis.label.set_fontweight('medium')
 ax.yaxis.label.set_fontweight('medium')
-
+ax.xaxis.grid(False)
 
 plt.tight_layout()
 
@@ -805,7 +808,7 @@ d = dict(zip(['Database', 'All', 'In_network'],
     [list(dd) for dd in d]))
 d = pd.DataFrame(d, index = d['Database'])
 
-d = d.sort(columns = 'All', ascending = False)
+d = d.sort_values(by = 'All', ascending = False)
 
 console(':: Plotting PTM database statistics')
 fig, ax = plt.subplots()
@@ -823,17 +826,449 @@ rectsn = ax.bar(x + w, d['In_network'], w, color = c['inn'], edgecolor = 'none')
 lhandles = [mpl.patches.Patch(color=c['all'], label='All PTMs'), 
     mpl.patches.Patch(color=c['inn'], label='Mapped on OmniPath')]
 leg = ax.legend(handles = lhandles)
-xlim = ax.set_xlim(-0.5, 9.5)
+xlim = ax.set_xlim(-0.5, 9.25)
 ylab = ax.set_ylabel('PTMs', fontsize = axis_lab_size * 0.66, fontweight = fontW)
 xlab = ax.set_xlabel('PTM resources', fontsize = axis_lab_size * 0.66, fontweight = fontW)
 xticks = ax.set_xticks(x + w)
 xticklabs = ax.set_xticklabels(d['Database'], rotation = 90, fontsize = lab_size[0] * 0.66)
+nul = [t.set_fontsize(lab_size[0]*0.77) for t in ax.get_yticklabels()]
+nul = [t.set_fontsize(lab_size[0]*0.77) for t in leg.texts]
+ax.xaxis.grid(False)
 
 plt.tight_layout()
 
 fig.savefig('ptms-by-ptmdb.pdf')
 
 plt.close()
+
+## Inconsistency
+
+directed_sources = set([])
+signed_sources = set([])
+dircounts = dict((s, 0) for s in net.sources)
+sigcounts = dict((s, 0) for s in net.sources)
+
+for e in net.graph.es:
+    d = e['dirs']
+    directed_sources = directed_sources | d.sources[d.straight] | d.sources[d.reverse]
+    for s in net.sources:
+        if s in d.sources[d.straight]:
+            dircounts[s] += 1
+        if s in d.sources[d.reverse]:
+            dircounts[s] += 1
+        if s in d.positive_sources[d.straight]:
+            sigcounts[s] += 1
+        if s in d.negative_sources[d.straight]:
+            sigcounts[s] += 1
+        if s in d.positive_sources[d.reverse]:
+            sigcounts[s] += 1
+        if s in d.negative_sources[d.reverse]:
+            sigcounts[s] += 1
+    signed_sources = signed_sources | d.positive_sources[d.straight] | \
+        d.positive_sources[d.reverse] | d.negative_sources[d.straight] | \
+        d.negative_sources[d.reverse]
+
+dirInc = {}
+sigInc = {}
+for s1 in net.sources:
+    for s2 in net.sources:
+        dirInconsistent = set([])
+        sigInconsistent = set([])
+        for e in net.graph.es:
+            d = e['dirs']
+            o = d.get_dir(d.straight, sources = True)
+            i = d.get_dir(d.reverse, sources = True)
+            po = d.positive_sources[d.straight]
+            no = d.negative_sources[d.straight]
+            pi = d.positive_sources[d.reverse]
+            ni = d.negative_sources[d.reverse]
+            if s1 in o and s2 in i and s1 not in i and s2 not in o or \
+                s1 in i and s2 in o and s1 not in o and s2 not in i:
+                dirInconsistent.add(e.index)
+            if s1 in po and s2 in no and s1 not in no and s2 not in po or \
+                s1 in no and s2 in po and s1 not in po and s2 not in no or \
+                s1 in pi and s2 in ni and s1 not in ni and s2 not in pi or \
+                s1 in ni and s2 in pi and s1 not in pi and s2 not in ni:
+                sigInconsistent.add(e.index)
+        dirInc[(s1, s2)] = dirInconsistent
+        sigInc[(s1, s2)] = sigInconsistent
+
+ol = net.sources_overlap()
+
+d = zip(*[('%s-%s'%s, len(inc)) for s, inc in dirInc.iteritems() \
+    if s[0] <= s[1] and s[0] in directed_sources and s[1] in directed_sources and len(inc) > 0])
+bp = plot.Barplot(x = d[0], y = d[1], 
+    data = None, fname = 'direction-inconsistency-by-db.pdf', lab_size = (lab_size[0] * 0.7, lab_size[1] * 0.7), 
+    axis_lab_size = axis_lab_size * 0.7, font_weight = fontW,
+    ylab = 'Interactions with\ninconsistent direction', color = ['#007B7F'] * len(d[1]),
+    xlab = 'Pairs of pathway resources', order = 'y')
+
+d = zip(*[('%s-%s'%s, len(inc) / float(dircounts[s[0]] * dircounts[s[1]])) for s, inc in dirInc.iteritems() \
+    if s[0] <= s[1] and s[0] in directed_sources and s[1] in directed_sources and len(inc) > 0])
+bp = plot.Barplot(x = d[0], y = d[1], 
+    data = None, fname = 'direction-inconsistency-by-db-rel-a.pdf', lab_size = (lab_size[0] * 0.7, lab_size[1] * 0.7), 
+    axis_lab_size = axis_lab_size * 0.7, font_weight = fontW,
+    ylab = 'Ratio of interactions\nwith inconsistent direction', color = ['#007B7F'] * len(d[1]),
+    xlab = 'Pairs of pathway resources', order = 'y')
+
+d = zip(*[('%s-%s'%s, len(inc) / float(ol['overlap']['edges'][s])) for s, inc in dirInc.iteritems() \
+    if s[0] <= s[1] and s[0] in directed_sources and s[1] in directed_sources and len(inc) > 0])
+bp = plot.Barplot(x = d[0], y = d[1], 
+    data = None, fname = 'direction-inconsistency-by-db-rel-b.pdf', lab_size = (lab_size[0] * 0.7, lab_size[1] * 0.7), 
+    axis_lab_size = axis_lab_size * 0.7, font_weight = fontW,
+    ylab = 'Ratio of interactions\nwith inconsistent direction', color = ['#007B7F'] * len(d[1]),
+    xlab = 'Pairs of pathway resources', order = 'y')
+
+## ##
+
+d = zip(*[('%s-%s'%s, len(inc)) for s, inc in sigInc.iteritems() \
+    if s[0] <= s[1] and s[0] in signed_sources and s[1] in signed_sources and len(inc) > 0])
+bp = plot.Barplot(x = d[0], y = d[1], 
+    data = None, fname = 'sign-inconsistency-by-db.pdf', lab_size = (lab_size[0] * 0.7, lab_size[1] * 0.7), 
+    axis_lab_size = axis_lab_size * 0.7, font_weight = fontW,
+    ylab = 'Interactions with\ninconsistent sign', color = ['#007B7F'] * len(d[1]),
+    xlab = 'Pairs of pathway resources', order = 'y')
+
+d = zip(*[('%s-%s'%s, len(inc) / float(sigcounts[s[0]] * sigcounts[s[1]])) for s, inc in sigInc.iteritems() \
+    if s[0] <= s[1] and s[0] in signed_sources and s[1] in signed_sources and len(inc) > 0])
+bp = plot.Barplot(x = d[0], y = d[1], 
+    data = None, fname = 'sign-inconsistency-by-db-rel-a.pdf', lab_size = (lab_size[0] * 0.7, lab_size[1] * 0.7), 
+    axis_lab_size = axis_lab_size * 0.7, font_weight = fontW,
+    ylab = 'Ratio of interactions\nwith inconsistent sign', color = ['#007B7F'] * len(d[1]),
+    xlab = 'Pairs of pathway resources', order = 'y')
+
+d = zip(*[('%s-%s'%s, len(inc) / float(ol['overlap']['edges'][s])) for s, inc in sigInc.iteritems() \
+    if s[0] <= s[1] and s[0] in signed_sources and s[1] in signed_sources and len(inc) > 0])
+bp = plot.Barplot(x = d[0], y = d[1], 
+    data = None, fname = 'sign-inconsistency-by-db-rel-b.pdf', lab_size = (lab_size[0] * 0.7, lab_size[1] * 0.7), 
+    axis_lab_size = axis_lab_size * 0.7, font_weight = fontW,
+    ylab = 'Ratio of interactions\nwith inconsistent sign', color = ['#007B7F'] * len(d[1]),
+    xlab = 'Pairs of pathway resources', order = 'y')
+
+##
+
+
+## ## ##
+
+di_edges = [(s[0], s[1], len(inc)) for s, inc in dirInc.iteritems() \
+    if s[0] < s[1] and s[0] in directed_sources and s[1] in directed_sources and len(inc) > 0]
+
+rdi_edges = [(s[0], s[1], len(inc) / float(dircounts[s[0]] * dircounts[s[1]])) for s, inc in dirInc.iteritems() \
+    if s[0] < s[1] and s[0] in directed_sources and s[1] in directed_sources and len(inc) > 0]
+
+si_edges = [(s[0], s[1], len(inc)) for s, inc in sigInc.iteritems() \
+    if s[0] < s[1] and s[0] in signed_sources and s[1] in signed_sources and len(inc) > 0]
+
+rsi_edges = [(s[0], s[1], len(inc) / float(sigcounts[s[0]] * sigcounts[s[1]])) for s, inc in sigInc.iteritems() \
+    if s[0] < s[1] and s[0] in signed_sources and s[1] in signed_sources and len(inc) > 0]
+
+for edges, name in [(di_edges, 'incons-dir-abs'), (rdi_edges, 'incons-dir-rel'), (si_edges, 'incons-sig-abs'), (rsi_edges, 'incons-sig-rel')]:
+    
+    g = igraph.Graph.TupleList(edges, edge_attrs = ['weight'])
+    
+    lo = g.layout_fruchterman_reingold(weights = 'weight', repulserad = g.vcount() ** 2.8, 
+        maxiter = 1000, area = g.vcount() ** 2.3)
+    
+    g.vs['ncount'] = [len(uniqList(flatList([e['refs_by_source'][v['name']] \
+        for e in net.graph.es \
+        if v['name'] in e['refs_by_source']])))**0.48 for v in g.vs]
+    
+    g.es['label'] = ['' for _ in g.es]
+    
+    sf = cairo.PDFSurface('%s.pdf'%name, 1024, 1024)
+    bbox = igraph.drawing.utils.BoundingBox(124, 124, 900, 900)
+    
+    plot = igraph.plot(g, vertex_label = g.vs['name'],
+        layout = lo, 
+        bbox = bbox, target = sf, 
+        drawer_factory = DefaultGraphDrawerFFsupport, 
+        vertex_size = g.vs['ncount'], 
+        vertex_frame_width = 0, vertex_color = '#6EA945', 
+        vertex_label_color = '#777777FF',  vertex_label_family = 'Sentinel Book',
+        edge_label_color = '#777777FF', edge_label_family = 'Sentinel Book',
+        vertex_label_size = 24,  vertex_label_dist = 1.4, 
+        edge_label_size = 24, 
+        edge_label = g.es['label'], 
+        edge_width = map(lambda x: (x * 10**np.floor(np.log10(min(g.es['weight']))))**1.8, g.es['weight']), 
+        edge_color = '#007B7F55',
+        edge_curved = False)
+    
+    plot.redraw()
+    plot.save()
+
+## ## ## inconsistency part 2
+
+incod = dict(((s1, s2), {'total': 0, 'minor': 0, 'major': 0}) \
+    for s1 in net.sources for s2 in net.sources)
+
+incos = dict(((s1, s2), {'total': 0, 'minor': 0, 'major': 0}) \
+    for s1 in net.sources for s2 in net.sources)
+
+incode = dict(((s1, s2), {'total': set([]), 'minor': set([]), 'major': set([])}) \
+    for s1 in net.sources for s2 in net.sources)
+
+incose = dict(((s1, s2), {'total': set([]), 'minor': set([]), 'major': set([])}) \
+    for s1 in net.sources for s2 in net.sources)
+
+cond = dict(((s1, s2), {'total': 0, 'minor': 0, 'major': 0}) \
+    for s1 in net.sources for s2 in net.sources)
+
+cons = dict(((s1, s2), {'total': 0, 'minor': 0, 'major': 0}) \
+    for s1 in net.sources for s2 in net.sources)
+
+conde = dict(((s1, s2), {'total': set([]), 'minor': set([]), 'major': set([])}) \
+    for s1 in net.sources for s2 in net.sources)
+
+conse = dict(((s1, s2), {'total': set([]), 'minor': set([]), 'major': set([])}) \
+    for s1 in net.sources for s2 in net.sources)
+
+prg = progress.Progress(len(net.sources)**2, 'Counting inconsistency', 1)
+for s1 in net.sources:
+    for s2 in net.sources:
+        prg.step()
+        for e in net.graph.es:
+            d = e['dirs']
+            if s1 not in d.sources_straight() & d.sources_reverse() and \
+                s2 not in d.sources_straight() & d.sources_reverse() and \
+                s1 in d.sources_straight() ^ d.sources_reverse() and \
+                s2 in d.sources_straight() ^ d.sources_reverse():
+                incod[(s1, s2)]['total'] += 1
+                incode[(s1, s2)]['total'].add(e.index)
+                if s1 in d.sources_straight() and s1 != s2:
+                    if len(d.sources_straight()) > len(d.sources_reverse()):
+                        incod[(s1, s2)]['major'] += 1
+                        incod[(s2, s1)]['minor'] += 1
+                        incode[(s1, s2)]['major'].add(e.index)
+                        incode[(s2, s1)]['minor'].add(e.index)
+                    elif len(d.sources_straight()) < len(d.sources_reverse()):
+                        incod[(s1, s2)]['minor'] += 1
+                        incod[(s2, s1)]['major'] += 1
+                        incode[(s1, s2)]['minor'].add(e.index)
+                        incode[(s2, s1)]['major'].add(e.index)
+            if s1 in d.positive_sources_straight() and \
+                s2 in d.negative_sources_straight() or \
+                s1 in d.negative_sources_straight() and \
+                s2 in d.positive_sources_straight():
+                incos[(s1, s2)]['total'] += 1
+                incose[(s1, s2)]['total'].add(e.index)
+                if s1 in d.positive_sources_straight():
+                    if len(d.positive_sources_straight()) > \
+                        len(d.negative_sources_straight()):
+                        incos[(s1, s2)]['major'] += 1
+                        incos[(s2, s1)]['minor'] += 1
+                        incose[(s1, s2)]['major'].add(e.index)
+                        incose[(s2, s1)]['minor'].add(e.index)
+                    elif len(d.positive_sources_straight()) < \
+                        len(d.negative_sources_straight()):
+                        incos[(s1, s2)]['minor'] += 1
+                        incos[(s2, s1)]['major'] += 1
+                        incose[(s1, s2)]['minor'].add(e.index)
+                        incose[(s2, s1)]['major'].add(e.index)
+            if s1 in d.positive_sources_reverse() and \
+                s2 in d.negative_sources_reverse() or \
+                s1 in d.negative_sources_reverse() and \
+                s2 in d.positive_sources_reverse():
+                incos[(s1, s2)]['total'] += 1
+                incose[(s1, s2)]['total'].add(e.index)
+                if s1 in d.positive_sources_reverse():
+                    if len(d.positive_sources_reverse()) > \
+                        len(d.negative_sources_reverse()):
+                        incos[(s1, s2)]['major'] += 1
+                        incos[(s2, s1)]['minor'] += 1
+                        incose[(s1, s2)]['major'].add(e.index)
+                        incose[(s2, s1)]['minor'].add(e.index)
+                    elif len(d.positive_sources_reverse()) < \
+                        len(d.negative_sources_reverse()):
+                        incos[(s1, s2)]['minor'] += 1
+                        incos[(s2, s1)]['major'] += 1
+                        incose[(s1, s2)]['minor'].add(e.index)
+                        incose[(s2, s1)]['major'].add(e.index)
+
+prg.terminate()
+
+prg = progress.Progress(len(net.sources)**2, 'Counting consistency', 1)
+for s1 in net.sources:
+    for s2 in net.sources:
+        prg.step()
+        s12 = set([s1, s2])
+        for e in net.graph.es:
+            d = e['dirs']
+            if s12 <= d.sources_straight():
+                cond[(s1, s2)]['total'] += 1
+                conde[(s1, s2)]['total'].add(e.index)
+                if len(d.sources_straight()) > len(d.sources_reverse()) and \
+                    len(s12 & d.sources_reverse()) == 0:
+                    cond[(s1, s2)]['major'] += 1
+                    conde[(s1, s2)]['major'].add(e.index)
+                elif len(d.sources_straight()) < len(d.sources_reverse()) and \
+                    len(s12 & d.sources_reverse()) == 0:
+                    cond[(s1, s2)]['minor'] += 1
+                    conde[(s1, s2)]['minor'].add(e.index)
+            if s12 <= d.sources_reverse():
+                cond[(s1, s2)]['total'] += 1
+                conde[(s1, s2)]['total'].add(e.index)
+                if len(d.sources_reverse()) > len(d.sources_straight()) and \
+                    len(s12 & d.sources_straight()) == 0:
+                    cond[(s1, s2)]['major'] += 1
+                    conde[(s1, s2)]['major'].add(e.index)
+                elif len(d.sources_reverse()) < len(d.sources_straight()) and \
+                    len(s12 & d.sources_straight()) == 0:
+                    cond[(s1, s2)]['minor'] += 1
+                    conde[(s1, s2)]['minor'].add(e.index)
+            if s12 <= d.positive_sources_straight():
+                cons[(s1, s2)]['total'] += 1
+                conse[(s1, s2)]['total'].add(e.index)
+                if len(d.positive_sources_straight()) > len(d.positive_sources_reverse()) and \
+                    len(s12 & d.positive_sources_reverse()) == 0:
+                    cons[(s1, s2)]['major'] += 1
+                    conse[(s1, s2)]['major'].add(e.index)
+                elif len(d.positive_sources_straight()) < len(d.positive_sources_reverse()) and \
+                    len(s12 & d.positive_sources_reverse()) == 0:
+                    cons[(s1, s2)]['minor'] += 1
+                    conse[(s1, s2)]['minor'].add(e.index)
+            if s12 <= d.negative_sources_straight():
+                cons[(s1, s2)]['total'] += 1
+                conse[(s1, s2)]['total'].add(e.index)
+                if len(d.negative_sources_straight()) > len(d.negative_sources_reverse()) and \
+                    len(s12 & d.negative_sources_reverse()) == 0:
+                    cons[(s1, s2)]['major'] += 1
+                    conse[(s1, s2)]['major'].add(e.index)
+                elif len(d.negative_sources_straight()) < len(d.negative_sources_reverse()) and \
+                    len(s12 & d.negative_sources_reverse()) == 0:
+                    cons[(s1, s2)]['minor'] += 1
+                    conse[(s1, s2)]['minor'].add(e.index)
+            if s12 <= d.positive_sources_reverse():
+                cons[(s1, s2)]['total'] += 1
+                conse[(s1, s2)]['total'].add(e.index)
+                if len(d.positive_sources_reverse()) > len(d.positive_sources_straight()) and \
+                    len(s12 & d.positive_sources_straight()) == 0:
+                    cons[(s1, s2)]['major'] += 1
+                    conse[(s1, s2)]['major'].add(e.index)
+                elif len(d.positive_sources_reverse()) < len(d.positive_sources_straight()) and \
+                    len(s12 & d.positive_sources_straight()) == 0:
+                    cons[(s1, s2)]['minor'] += 1
+                    conse[(s1, s2)]['minor'].add(e.index)
+            if s12 <= d.negative_sources_reverse():
+                cons[(s1, s2)]['total'] += 1
+                conse[(s1, s2)]['total'].add(e.index)
+                if len(d.negative_sources_reverse()) > len(d.negative_sources_straight()) and \
+                    len(s12 & d.negative_sources_straight()) == 0:
+                    cons[(s1, s2)]['major'] += 1
+                    conse[(s1, s2)]['major'].add(e.index)
+                elif len(d.negative_sources_reverse()) < len(d.negative_sources_straight()) and \
+                    len(s12 & d.negative_sources_straight()) == 0:
+                    cons[(s1, s2)]['minor'] += 1
+                    conse[(s1, s2)]['minor'].add(e.index)
+
+prg.terminate()
+
+inco =  dict(
+            map(
+                lambda m:
+                    (m,
+                    dict(
+                        map(
+                            lambda t:
+                                (t,
+                                dict(
+                                    zip(
+                                        net.sources,
+                                        map(
+                                            lambda n:
+                                                n if type(n) is int else len(n),
+                                                map(
+                                                    lambda s:
+                                                        reduce(
+                                                            lambda a, b:
+                                                                a + b if type(a) is int else a | b,
+                                                                map(
+                                                                    lambda (ss2, ic2):
+                                                                        ic2[t],
+                                                                        filter(
+                                                                            lambda (ss1, ic1):
+                                                                                ss1[0] == s,
+                                                                                globals()['inco%s'%m].items()
+                                                                        )
+                                                                )
+                                                        ),
+                                                    net.sources
+                                                )
+                                        )
+                                    )
+                                )
+                                ),
+                            ['total', 'major', 'minor']
+                        )
+                    )
+                    ),
+                ['d', 's', 'de', 'se']
+            )
+        )
+
+cons =  dict(
+            map(
+                lambda m:
+                    (m,
+                    dict(
+                        map(
+                            lambda t:
+                                (t,
+                                dict(
+                                    zip(
+                                        net.sources,
+                                        map(
+                                            lambda n:
+                                                n if type(n) is int else len(n),
+                                                map(
+                                                    lambda s:
+                                                        reduce(
+                                                            lambda a, b:
+                                                                a + b if type(a) is int else a | b,
+                                                                map(
+                                                                    lambda (ss2, ic2):
+                                                                        ic2[t],
+                                                                        filter(
+                                                                            lambda (ss1, ic1):
+                                                                                ss1[0] == s,
+                                                                                globals()['con%s'%m].items()
+                                                                        )
+                                                                )
+                                                        ),
+                                                    net.sources
+                                                )
+                                        )
+                                    )
+                                )
+                                ),
+                            ['total', 'major', 'minor']
+                        )
+                    )
+                    ),
+                ['d', 's', 'de', 'se']
+            )
+        )
+
+incid = dict(map(lambda s: (s, inco['de']['minor'][s] / \
+        float(inco['de']['minor'][s] + cons['de']['total'][s] + 0.0001)), 
+    net.sources))
+
+incis = dict(map(lambda s: (s, inco['se']['minor'][s] / \
+        float(inco['se']['minor'][s] + cons['se']['total'][s] + 0.0001)), 
+    net.sources))
+
+incidp = dict(map(lambda (s, i): (s, ((len(i['minor']) + len(inconde[(i[1], i[0])]['minor'])) / \
+        float(len(i['minor']) + len(conde[s]['total']) + 0.0001)) if (len(i['minor']) + len(conde[s]['total'])) > 5 else np.nan), 
+    incode.iteritems()))
+
+incdf = pd.DataFrame(np.vstack([np.array([incidp[(s1, s2)] for s1 in sorted(net.sources)]) for s2 in sorted(net.sources)]), 
+    index = sorted(net.sources), columns = sorted(net.sources))
+
+incdf = incdf.loc[(incdf.sum(axis=1) != 0), (incdf.sum(axis=0) != 0)]
+
+
+## ## ##
+
+##
 
 # ref ecount barplot
 console(':: Calculating HTP/LTP statistics')
