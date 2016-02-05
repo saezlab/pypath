@@ -541,7 +541,7 @@ class PyPath(object):
                 '\tlook at `pypath.descriptions` and\n'\
                 '\t`pypath.data_formats.urls`.\n\n'
             self.licence()
-            self.ownlog.msg(1, "BioGraph has been initialized")
+            self.ownlog.msg(1, "PyPath has been initialized")
             self.ownlog.msg(1, "Beginning session '%s'" % self.session)
             sys.stdout.write(
                 """\t» New session started,\n\tsession ID: '%s'\n\tlogfile:"""\
@@ -5453,6 +5453,179 @@ class PyPath(object):
             dot.draw(save_graphics, format = format, prog = prog)
         if return_object:
             return dot
+    
+    def consistency(self):
+        con = dict(map(lambda c: (c, dict(
+                map(lambda t: (t, dict(
+                    ((s1, s2), dict(
+                        map(lambda a: (a, set([]) if t.endswith('edges') else 0), \
+                            ['total', 'minor', 'major']))) \
+                        for s1 in net.sources for s2 in net.sources)), \
+                ['directions', 'directions_edges', 'signs', 'signs_edges']))), \
+            ['consistency', 'inconsistency']))
+        # inconsistency #
+        prg = progress.Progress(len(self.sources)**2, 'Counting inconsistency', 1)
+        for s1 in self.sources:
+            for s2 in self.sources:
+                prg.step()
+                s12 = set([s1, s2])
+                for e in self.graph.es:
+                    d = e['dirs']
+                    if s1 in d.sources_straight() and \
+                        s1 not in d.sources_reverse() and \
+                        s2 in d.sources_reverse() and \
+                        s2 not in d.sources_straight() or \
+                        s2 in d.sources_straight() and \
+                        s2 not in d.sources_reverse() and \
+                        s1 in d.sources_reverse() and \
+                        s1 not in d.sources_straight():
+                        con['inconsistency']['directions'][(s1, s2)]['total'] += 1
+                        con['inconsistency']['directions_edges'][(s1, s2)]['total'].add(e.index)
+                        if s1 in d.sources_straight() and s1 != s2:
+                            if len(d.sources_straight()) > len(d.sources_reverse()):
+                                con['inconsistency']['directions'][(s1, s2)]['major'] += 1
+                                con['inconsistency']['directions'][(s2, s1)]['minor'] += 1
+                                con['inconsistency']['directions_edges'][(s1, s2)]['major'].add(e.index)
+                                con['inconsistency']['directions_edges'][(s2, s1)]['minor'].add(e.index)
+                            elif len(d.sources_straight()) < len(d.sources_reverse()):
+                                con['inconsistency']['directions'][(s1, s2)]['minor'] += 1
+                                con['inconsistency']['directions'][(s2, s1)]['major'] += 1
+                                con['inconsistency']['directions_edges'][(s1, s2)]['minor'].add(e.index)
+                                con['inconsistency']['directions_edges'][(s2, s1)]['major'].add(e.index)
+                            elif len(d.sources_straight()) == 1 and \
+                                len(d.sources_reverse()) == 1:
+                                con['inconsistency']['directions'][(s1, s2)]['minor'] += 1
+                                con['inconsistency']['directions'][(s2, s1)]['minor'] += 1
+                                con['inconsistency']['directions_edges'][(s1, s2)]['minor'].add(e.index)
+                                con['inconsistency']['directions_edges'][(s2, s1)]['minor'].add(e.index)
+                    if s1 in d.positive_sources_straight() and \
+                        s2 in d.negative_sources_straight() or \
+                        s1 in d.negative_sources_straight() and \
+                        s2 in d.positive_sources_straight():
+                        con['inconsistency']['signs'][(s1, s2)]['total'] += 1
+                        con['inconsistency']['signs_edges'][(s1, s2)]['total'].add(e.index)
+                        if s1 in d.positive_sources_straight():
+                            if len(d.positive_sources_straight()) > \
+                                len(d.negative_sources_straight()):
+                                con['inconsistency']['signs'][(s1, s2)]['major'] += 1
+                                con['inconsistency']['signs'][(s2, s1)]['minor'] += 1
+                                con['inconsistency']['signs_edges'][(s1, s2)]['major'].add(e.index)
+                                con['inconsistency']['signs_edges'][(s2, s1)]['minor'].add(e.index)
+                            elif len(d.positive_sources_straight()) < \
+                                len(d.negative_sources_straight()):
+                                con['inconsistency']['signs'][(s1, s2)]['minor'] += 1
+                                con['inconsistency']['signs'][(s2, s1)]['major'] += 1
+                                con['inconsistency']['signs_edges'][(s1, s2)]['minor'].add(e.index)
+                                con['inconsistency']['signs_edges'][(s2, s1)]['major'].add(e.index)
+                            elif len(d.positive_sources_straight()) == 1 and \
+                                len(d.negative_sources_straight()) == 1:
+                                con['inconsistency']['signs'][(s1, s2)]['minor'] += 1
+                                con['inconsistency']['signs'][(s2, s1)]['minor'] += 1
+                                con['inconsistency']['signs_edges'][(s1, s2)]['minor'].add(e.index)
+                                con['inconsistency']['signs_edges'][(s2, s1)]['minor'].add(e.index)
+                    if s1 in d.positive_sources_reverse() and \
+                        s2 in d.negative_sources_reverse() or \
+                        s1 in d.negative_sources_reverse() and \
+                        s2 in d.positive_sources_reverse():
+                        con['inconsistency']['signs'][(s1, s2)]['total'] += 1
+                        con['inconsistency']['signs_edges'][(s1, s2)]['total'].add(e.index)
+                        if s1 in d.positive_sources_reverse():
+                            if len(d.positive_sources_reverse()) > \
+                                len(d.negative_sources_reverse()):
+                                con['inconsistency']['signs'][(s1, s2)]['major'] += 1
+                                con['inconsistency']['signs'][(s2, s1)]['minor'] += 1
+                                con['inconsistency']['signs_edges'][(s1, s2)]['major'].add(e.index)
+                                con['inconsistency']['signs_edges'][(s2, s1)]['minor'].add(e.index)
+                            elif len(d.positive_sources_reverse()) < \
+                                len(d.negative_sources_reverse()):
+                                con['inconsistency']['signs'][(s1, s2)]['minor'] += 1
+                                con['inconsistency']['signs'][(s2, s1)]['major'] += 1
+                                con['inconsistency']['signs_edges'][(s1, s2)]['minor'].add(e.index)
+                                con['inconsistency']['signs_edges'][(s2, s1)]['major'].add(e.index)
+                            elif len(d.positive_sources_reverse()) == 1 and \
+                                len(d.negative_sources_reverse()) == 1:
+                                con['inconsistency']['signs'][(s1, s2)]['minor'] += 1
+                                con['inconsistency']['signs'][(s2, s1)]['minor'] += 1
+                                con['inconsistency']['signs_edges'][(s1, s2)]['minor'].add(e.index)
+                                con['inconsistency']['signs_edges'][(s2, s1)]['minor'].add(e.index)
+        prg.terminate()
+        # consistency #
+        prg = progress.Progress(len(self.sources)**2, 'Counting consistency', 1)
+        for s1 in self.sources:
+            for s2 in self.sources:
+                prg.step()
+                s12 = set([s1, s2])
+                for e in self.graph.es:
+                    d = e['dirs']
+                    if s12 <= d.sources_straight():
+                        con['con['consistency']['signs']istency']['directions'][(s1, s2)]['total'] += 1
+                        con['con['consistency']['signs']istency']['directions_edges'][(s1, s2)]['total'].add(e.index)
+                        if len(d.sources_straight()) > len(d.sources_reverse()) and \
+                            len(s12 & d.sources_reverse()) == 0:
+                            con['con['consistency']['signs']istency']['directions'][(s1, s2)]['major'] += 1
+                            con['con['consistency']['signs']istency']['directions_edges'][(s1, s2)]['major'].add(e.index)
+                        elif len(d.sources_straight()) < len(d.sources_reverse()) and \
+                            len(s12 & d.sources_reverse()) == 0:
+                            con['con['consistency']['signs']istency']['directions'][(s1, s2)]['minor'] += 1
+                            con['con['consistency']['signs']istency']['directions_edges'][(s1, s2)]['minor'].add(e.index)
+                    if s12 <= d.sources_reverse():
+                        con['con['consistency']['signs']istency']['directions'][(s1, s2)]['total'] += 1
+                        con['con['consistency']['signs']istency']['directions_edges'][(s1, s2)]['total'].add(e.index)
+                        if len(d.sources_reverse()) > len(d.sources_straight()) and \
+                            len(s12 & d.sources_straight()) == 0:
+                            con['con['consistency']['signs']istency']['directions'][(s1, s2)]['major'] += 1
+                            con['con['consistency']['signs']istency']['directions_edges'][(s1, s2)]['major'].add(e.index)
+                        elif len(d.sources_reverse()) < len(d.sources_straight()) and \
+                            len(s12 & d.sources_straight()) == 0:
+                            con['con['consistency']['signs']istency']['directions'][(s1, s2)]['minor'] += 1
+                            con['con['consistency']['signs']istency']['directions_edges'][(s1, s2)]['minor'].add(e.index)
+                    if s12 <= d.positive_sources_straight():
+                        con['consistency']['signs'][(s1, s2)]['total'] += 1
+                        con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['total'].add(e.index)
+                        if len(d.positive_sources_straight()) > len(d.positive_sources_reverse()) and \
+                            len(s12 & d.positive_sources_reverse()) == 0:
+                            con['consistency']['signs'][(s1, s2)]['major'] += 1
+                            con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['major'].add(e.index)
+                        elif len(d.positive_sources_straight()) < len(d.positive_sources_reverse()) and \
+                            len(s12 & d.positive_sources_reverse()) == 0:
+                            con['consistency']['signs'][(s1, s2)]['minor'] += 1
+                            con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['minor'].add(e.index)
+                    if s12 <= d.negative_sources_straight():
+                        con['consistency']['signs'][(s1, s2)]['total'] += 1
+                        con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['total'].add(e.index)
+                        if len(d.negative_sources_straight()) > len(d.negative_sources_reverse()) and \
+                            len(s12 & d.negative_sources_reverse()) == 0:
+                            con['consistency']['signs'][(s1, s2)]['major'] += 1
+                            con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['major'].add(e.index)
+                        elif len(d.negative_sources_straight()) < len(d.negative_sources_reverse()) and \
+                            len(s12 & d.negative_sources_reverse()) == 0:
+                            con['consistency']['signs'][(s1, s2)]['minor'] += 1
+                            con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['minor'].add(e.index)
+                    if s12 <= d.positive_sources_reverse():
+                        con['consistency']['signs'][(s1, s2)]['total'] += 1
+                        con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['total'].add(e.index)
+                        if len(d.positive_sources_reverse()) > len(d.positive_sources_straight()) and \
+                            len(s12 & d.positive_sources_straight()) == 0:
+                            con['consistency']['signs'][(s1, s2)]['major'] += 1
+                            con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['major'].add(e.index)
+                        elif len(d.positive_sources_reverse()) < len(d.positive_sources_straight()) and \
+                            len(s12 & d.positive_sources_straight()) == 0:
+                            con['consistency']['signs'][(s1, s2)]['minor'] += 1
+                            con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['minor'].add(e.index)
+                    if s12 <= d.negative_sources_reverse():
+                        con['consistency']['signs'][(s1, s2)]['total'] += 1
+                        con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['total'].add(e.index)
+                        if len(d.negative_sources_reverse()) > len(d.negative_sources_straight()) and \
+                            len(s12 & d.negative_sources_straight()) == 0:
+                            con['consistency']['signs'][(s1, s2)]['major'] += 1
+                            con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['major'].add(e.index)
+                        elif len(d.negative_sources_reverse()) < len(d.negative_sources_straight()) and \
+                            len(s12 & d.negative_sources_straight()) == 0:
+                            con['consistency']['signs'][(s1, s2)]['minor'] += 1
+                            con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['minor'].add(e.index)
+        prg.terminate()
+        return con
+
     
     def _disclaimer(self):
         sys.stdout.write(self.disclaimer)
