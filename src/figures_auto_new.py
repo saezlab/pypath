@@ -1026,12 +1026,17 @@ prg = progress.Progress(len(net.sources)**2, 'Counting inconsistency', 1)
 for s1 in net.sources:
     for s2 in net.sources:
         prg.step()
+        s12 = set([s1, s2])
         for e in net.graph.es:
             d = e['dirs']
-            if s1 not in d.sources_straight() & d.sources_reverse() and \
-                s2 not in d.sources_straight() & d.sources_reverse() and \
-                s1 in d.sources_straight() ^ d.sources_reverse() and \
-                s2 in d.sources_straight() ^ d.sources_reverse():
+            if s1 in d.sources_straight() and \
+                s1 not in d.sources_reverse() and \
+                s2 in d.sources_reverse() and \
+                s2 not in d.sources_straight() or \
+                s2 in d.sources_straight() and \
+                s2 not in d.sources_reverse() and \
+                s1 in d.sources_reverse() and \
+                s1 not in d.sources_straight():
                 incod[(s1, s2)]['total'] += 1
                 incode[(s1, s2)]['total'].add(e.index)
                 if s1 in d.sources_straight() and s1 != s2:
@@ -1045,6 +1050,12 @@ for s1 in net.sources:
                         incod[(s2, s1)]['major'] += 1
                         incode[(s1, s2)]['minor'].add(e.index)
                         incode[(s2, s1)]['major'].add(e.index)
+                    elif len(d.sources_straight()) == 1 and \
+                        len(d.sources_reverse()) == 1:
+                        incod[(s1, s2)]['minor'] += 1
+                        incod[(s2, s1)]['minor'] += 1
+                        incode[(s1, s2)]['minor'].add(e.index)
+                        incode[(s2, s1)]['minor'].add(e.index)
             if s1 in d.positive_sources_straight() and \
                 s2 in d.negative_sources_straight() or \
                 s1 in d.negative_sources_straight() and \
@@ -1064,6 +1075,12 @@ for s1 in net.sources:
                         incos[(s2, s1)]['major'] += 1
                         incose[(s1, s2)]['minor'].add(e.index)
                         incose[(s2, s1)]['major'].add(e.index)
+                    elif len(d.positive_sources_straight()) == 1 and \
+                        len(d.negative_sources_straight()) == 1:
+                        incos[(s1, s2)]['minor'] += 1
+                        incos[(s2, s1)]['minor'] += 1
+                        incose[(s1, s2)]['minor'].add(e.index)
+                        incose[(s2, s1)]['minor'].add(e.index)
             if s1 in d.positive_sources_reverse() and \
                 s2 in d.negative_sources_reverse() or \
                 s1 in d.negative_sources_reverse() and \
@@ -1083,6 +1100,12 @@ for s1 in net.sources:
                         incos[(s2, s1)]['major'] += 1
                         incose[(s1, s2)]['minor'].add(e.index)
                         incose[(s2, s1)]['major'].add(e.index)
+                    elif len(d.positive_sources_reverse()) == 1 and \
+                        len(d.negative_sources_reverse()) == 1:
+                        incos[(s1, s2)]['minor'] += 1
+                        incos[(s2, s1)]['minor'] += 1
+                        incose[(s1, s2)]['minor'].add(e.index)
+                        incose[(s2, s1)]['minor'].add(e.index)
 
 prg.terminate()
 
@@ -1256,8 +1279,12 @@ incis = dict(map(lambda s: (s, inco['se']['minor'][s] / \
         float(inco['se']['minor'][s] + cons['se']['total'][s] + 0.0001)), 
     net.sources))
 
-incidp = dict(map(lambda (s, i): (s, ((len(i['minor']) + len(inconde[(i[1], i[0])]['minor'])) / \
-        float(len(i['minor']) + len(conde[s]['total']) + 0.0001)) if (len(i['minor']) + len(conde[s]['total'])) > 5 else np.nan), 
+incidp = dict(map(lambda (s, i): (s, (len(i['total']) / \
+        float(len(i['total']) + len(conde[s]['total']) + 0.0001)) if (len(i['total']) + len(conde[s]['total'])) > 5 else np.nan), 
+    incode.iteritems()))
+
+incidp = dict(map(lambda (s, i): (s, (len(i['total']) / \
+        float(len(i['total']) + len(conde[s]['total']) + 0.0001))), 
     incode.iteritems()))
 
 incdf = pd.DataFrame(np.vstack([np.array([incidp[(s1, s2)] for s1 in sorted(net.sources)]) for s2 in sorted(net.sources)]), 
@@ -1265,6 +1292,89 @@ incdf = pd.DataFrame(np.vstack([np.array([incidp[(s1, s2)] for s1 in sorted(net.
 
 incdf = incdf.loc[(incdf.sum(axis=1) != 0), (incdf.sum(axis=0) != 0)]
 
+incz = hc.linkage(incdf, method = 'average')
+
+fig, ax = plt.subplots()
+font_family = 'Helvetica Neue LT Std'
+sns.set(font = font_family)
+incdg = hc.dendrogram(incz, labels = incdf.columns, color_threshold = 0, orientation = 'right', ax = ax, 
+    link_color_func = lambda x: '#6EA945')
+
+nul = [tl.set_fontweight(fontW) for tl in ax.get_yticklabels()]
+nul = [tl.set_fontsize(lab_size[0]) for tl in ax.get_xticklabels()]
+nul = [tl.set_fontsize(lab_size[0]) for tl in ax.get_yticklabels()]
+nul = [tl.set_fontweight(fontW) for tl in ax.get_xticklabels()]
+ax.yaxis.grid(False)
+plt.tight_layout()
+
+fig.savefig('inconsistency-directions-dendrogram.pdf')
+
+plt.close()
+
+undirected = set(map(lambda (s, i): s, filter(lambda (s, i): i == 0, incid.iteritems())))
+signed = set(map(lambda (s, i): s, filter(lambda (s, i): i > 0, incis.iteritems())))
+directed = set(map(lambda (s, i): s, filter(lambda (s, i): i > 0, incid.iteritems()))) - signed
+
+singles_undirected = dict(map(lambda s: (s, len(filter(lambda e: s in e['sources'] and len(e['sources']) == 1, net.graph.es))), undirected))
+singles_directed = dict(map(lambda s: 
+    (s, sum(map(
+        lambda e: sum([
+            s in e['dirs'].sources_straight() and len(e['dirs'].sources_straight()) == 1, 
+            s in e['dirs'].sources_reverse() and len(e['dirs'].sources_reverse()) == 1]), 
+        net.graph.es))), directed))
+singles_signed = dict(map(lambda s: 
+    (s, sum(map(
+        lambda e: sum([
+            s in e['dirs'].positive_sources_straight() and len(e['dirs'].positive_sources_straight()) == 1, 
+            s in e['dirs'].positive_sources_reverse() and len(e['dirs'].positive_sources_reverse()) == 1,
+            s in e['dirs'].negative_sources_straight() and len(e['dirs'].negative_sources_straight()) == 1, 
+            s in e['dirs'].negative_sources_reverse() and len(e['dirs'].negative_sources_reverse()) == 1]), 
+        net.graph.es))), signed))
+
+scores_undirected = dict(map(lambda (s, n): (s, n/float(max(singles_undirected.values()))), singles_undirected.iteritems()))
+
+scores_directed = dict(map(lambda (s, n): (s, (n/float(max(singles_directed.values())) + (1 - incid[s])/max(map(lambda x: 1 - x, incid.values())))/2.0), singles_directed.iteritems()))
+
+scores_signed = dict(map(lambda (s, n): (s, (n/float(max(singles_signed.values())) + \
+    (1 - incis[s])/max(map(lambda x: 1 - x, incis.values())) + \
+    (1 - incid[s])/max(map(lambda x: 1 - x, incid.values())))/3.0), singles_signed.iteritems()))
+
+tbl = r'''\begin{tabularx}{\textwidth}{p{3.5cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+    \toprule
+    Resurce & Specific interactions & Direction inconsistency & Effect inconsistency & Combined score \\
+    \midrule
+    \multicolumn{5}{l}{\itshape Undirected resources} \\
+    \midrule
+        '''
+
+for s, sc in reversed(sorted(scores_undirected.iteritems(), key = lambda (s, sc): sc)):
+    tbl += r'''    %s & %u &   &  & %.04f \\
+        ''' % (s, singles_undirected[s], scores_undirected[s])
+
+tbl += r'''    \midrule
+    \multicolumn{5}{l}{\itshape Directed resources} \\
+    \midrule
+        '''
+
+for s, sc in reversed(sorted(scores_directed.iteritems(), key = lambda (s, sc): sc)):
+    tbl += r'''    %s & %u &  %.04f &  & %.04f \\
+        ''' % (s, singles_directed[s], incid[s], scores_directed[s])
+
+tbl += r'''    \midrule
+    \multicolumn{5}{l}{\itshape Signed resources} \\
+    \midrule
+        '''
+
+for s, sc in reversed(sorted(scores_signed.iteritems(), key = lambda (s, sc): sc)):
+    tbl += r'''    %s & %u &  %.04f &  %.04f & %.04f \\
+        ''' % (s, singles_signed[s], incid[s], incis[s], scores_signed[s])
+
+tbl += r'''    \bottomrule
+\end{tabularx}
+'''
+
+with open('inconsistency-table.tex', 'w') as f:
+    f.write(tbl)
 
 ## ## ##
 
