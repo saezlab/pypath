@@ -125,12 +125,12 @@ descriptions = {
         'subtype': 'pathway',
         'omnipath': True
     },
-    'Guide2Pharmacology': {
+    'Guide2Pharma': {
         'year': 2015,
         'releases': [2007, 2008, 2009, 2011, 2015],
         'size': None,
         'authors': None,
-        'label': 'Guide to Pharmacology',
+        'label': 'Guide2Pharma',
         'full_name': 'Guide to Pharmacology',
         'color': None,
         'pubmeds': [24234439],

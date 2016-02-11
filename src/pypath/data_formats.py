@@ -538,6 +538,17 @@ urls = {
     'graphviz': {
         'label': 'List of Graphviz attributes',
         'url': 'http://www.graphviz.org/doc/info/attrs.html'
+    },
+    'hid': {
+        'label': 'CCSB Human Interactome Project',
+        'lit-bm-13': 'http://interactome.dfci.harvard.edu/H_sapiens/download/Lit-BM-13.tsv',
+        'hi-ii-14': 'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-II-14.tsv',
+        'hi-i-05': 'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-I-05.tsv'
+    },
+    'ca1': {
+        'label': 'Supplementary Online Materials for Ma\'ayan 2005',
+        'url': 'http://science.sciencemag.org/highwire/filestream/586741/'\
+            'field_highwire_adjunct_files/1/Maayan_SOM_External_Files.zip'
     }
 }
 
@@ -1177,7 +1188,7 @@ ptm = {
 '''
 The default set of resources in OmniPath.
 '''
-best = dict(
+omnipath = dict(
     pathway.items() + \
     ptm.items() + \
     interaction.items()
@@ -1324,8 +1335,8 @@ interaction_misc = {
         isDirected = False, 
         sign = False,
         ncbiTaxId = 9606,
-        inFile = '/home/denes/Dokumentumok/pw/data/Lit-BM-13.tsv', 
-        references = False, header = True,
+        inFile = 'get_lit_bm_13', 
+        references = False, header = False,
         extraEdgeAttrs = {},
         extraNodeAttrsA = {},
         extraNodeAttrsB = {}),

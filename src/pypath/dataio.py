@@ -2473,6 +2473,10 @@ def get_elm_instances():
     data = data[6:]
 
 def get_elm_interactions():
+    '''
+    Downlods manually curated interactions from ELM.
+    This is the gold standard set of ELM.
+    '''
     result = []
     url = data_formats.urls['elm_int']['url']
     data = curl(url, silent = False)
@@ -3232,6 +3236,13 @@ def get_disgenet(dataset = 'curated'):
     return data
 
 def load_lmpid(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
+    '''
+    Reads and processes LMPID data from local file
+    `pypath.data/LMPID_DATA_pubmed_ref.xml`.
+    The file was provided by LMPID authors and is now
+    redistributed with the module.
+    Returns list of domain-motif interactions.
+    '''
     result = []
     with open(os.path.join(common.ROOT, 'data', fname), 'r') as f:
         data = f.read()
@@ -3255,10 +3266,19 @@ def load_lmpid(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
     return result
 
 def lmpid_interactions(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
+    '''
+    Converts list of domain-motif interactions supplied by
+    `pypath.dataio.load_lmpid()` to list of interactions.
+    '''
     data = load_lmpid(fname = fname, organism = organism)
     return [[l['prey'], l['bait'], ';'.join(l['refs'])] for l in data]
 
 def lmpid_dmi(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
+    '''
+    Converts list of domain-motif interactions supplied by
+    `pypath.dataio.load_lmpid()` to list of 
+    `pypath.intera.DomainMotif() objects.
+    '''
     data = load_lmpid(fname = fname, organism = organism)
     return [{
         'motif_protein': l['bait'],
@@ -3272,18 +3292,32 @@ def lmpid_dmi(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
     } for l in data]
 
 def get_hsn():
+    '''
+    Downloads and processes HumanSignalingNetwork version 6
+    (published 2014 Jan by Edwin Wang).
+    Returns list of interactions.
+    '''
     url = data_formats.urls['hsn']['url']
     data = curl(url, silent = False).split('\n')[1:]
     data = [r.split(',') for r in data if len(r) > 0]
     return data
 
-def get_li2012():
-    fname = os.path.join(common.ROOT, 'data', data_formats.urls['li2012']['file'])
-    with open(fname, 'r') as f:
+def get_li2012(filename = None):
+    '''
+    Reads supplementary data of Li 2012 from local file.
+    Returns table (list of lists).
+    '''
+    filename = filename if filename is not None \
+        else os.path.join(common.ROOT, 'data', data_formats.urls['li2012']['file'])
+    with open(filename, 'r') as f:
         data = [r.split('\t') for r in f.read().split('\n')[1:] if len(r) > 0]
     return data
 
 def li2012_interactions():
+    '''
+    Converts table read by `pypath.dataio.get_li2012()` to
+    list of interactions.
+    '''
     result = []
     data = get_li2012()
     for l in data:
@@ -3300,6 +3334,10 @@ def li2012_interactions():
     return [list(l) for l in common.uniqList(result)]
 
 def li2012_phospho():
+    '''
+    Converts table read by `pypath.dataio.get_li2012()` to
+    list of dicts of kinase-substrate interactions.
+    '''
     result = []
     non_digit = re.compile(r'[^\d]+')
     data = get_li2012()
@@ -3315,6 +3353,15 @@ def li2012_phospho():
     return result
 
 def li2012_dmi(mapper = None):
+    '''
+    Converts table read by `pypath.dataio.get_li2012()` to
+    list of `pypath.intera.DomainMotif()` objects.
+    Translates GeneSymbols to UniProt IDs.
+    
+    @mapper : pypath.mapping.Mapper()
+        If not provided, a new `Mapper()` instance will be 
+        initialized, reserving more memory.
+    '''
     result = {}
     nondigit = re.compile(r'[^\d]+')
     se = swissprot_seq(isoforms = True)
@@ -3351,10 +3398,21 @@ def li2012_dmi(mapper = None):
     return result
 
 def take_a_trip(cachefile = 'trip.pickle'):
-    cachefile = os.path.join('cache', 'trip.pickle')
-    if os.path.exists(cachefile):
-        result = pickle.load(open(cachefile, 'rb'))
-        return result
+    '''
+    Downloads TRIP data from webpage and preprocesses it.
+    Saves preprocessed data into `cachefile` and next
+    time loads from this file.
+    
+    @cachefile : str
+        Filename, located in `./cache`.
+        To disable cache, pass `None`.
+        To download again, remove file from `./cache`.
+    '''
+    if cachefile is not None:
+        cachefile = os.path.join('cache', 'trip.pickle')
+        if os.path.exists(cachefile):
+            result = pickle.load(open(cachefile, 'rb'))
+            return result
     result = {
         'sc': {},
         'cc': {},
@@ -3389,7 +3447,8 @@ def take_a_trip(cachefile = 'trip.pickle'):
         trpsoup = bs4.BeautifulSoup(trphtml, 'html.parser')
         trp_uniprot = trip_find_uniprot(trpsoup)
         if trp_uniprot is None or len(trp_uniprot) < 6:
-            print '\t\tcould not find uniprot for %s' % trp
+            sys.stdout.write('\t\tcould not find uniprot for %s\n' % trp)
+            sys.stdout.flush()
         for tab in trpsoup.find_all('th', colspan = ['11', '13']):
             ttl = titles[tab.text.strip()]
             tab = tab.find_parent('table')
@@ -3398,6 +3457,20 @@ def take_a_trip(cachefile = 'trip.pickle'):
     return result
 
 def trip_process_table(tab, result, intrs, trp_uniprot):
+    '''
+    Processes one HTML table downloaded from TRIP webpage.
+    
+    @tab : bs4.element.Tag()
+        One table of interactions from TRIP webpage.
+    @result : dict
+        Dictionary the data should be filled in.
+    @intrs : dict
+        Dictionary of already converted interactor IDs.
+        This serves as a cache so do not need to look up
+        the same ID twice.
+    @trp_uniprot : str
+        UniProt ID of TRP domain containing protein.
+    '''
     for row in tab.find_all('tr'):
         cells = row.find_all(['td', 'th'])
         if 'th' not in [c.name for c in cells]:
@@ -3414,12 +3487,26 @@ def trip_process_table(tab, result, intrs, trp_uniprot):
             result[(trp_uniprot, intr_uniprot)].append([c.text.strip() for c in cells])
 
 def trip_get_uniprot(syn):
+    '''
+    Downloads table from TRIP webpage and UniProt attempts to
+    look up the UniProt ID for one synonym.
+    
+    @syn : str
+        The synonym as shown on TRIP webpage.
+    '''
     url = data_formats.urls['trip']['show'] % syn
     html = curl(url)
     soup = bs4.BeautifulSoup(html, 'html.parser')
     return trip_find_uniprot(soup)
 
 def trip_find_uniprot(soup):
+    '''
+    Looks up a UniProt name in table downloaded from TRIP
+    webpage.
+    
+    @soup : bs4.BeautifulSoup
+        The `BeautifulSoup` instance returned by `pypath.dataio.trip_get_uniprot()`.
+    '''
     for tr in soup.find_all('div', id='tab2')[0].find_all('tr'):
         if tr.find('td') is not None and tr.find('td').text.strip() == 'Human':
             uniprot = tr.find_all('td')[2].text.strip()
@@ -3429,6 +3516,21 @@ def trip_find_uniprot(soup):
 
 def trip_process(exclude_methods = ['Inference', 'Speculation'], 
     predictions = False, species = 'Human', strict = False):
+    '''
+    Downloads TRIP data by calling `pypath.dadio.take_a_trip()` and
+    further provcesses it.
+    Returns dict of dict with TRIP data.
+    
+    @exclude_methods : list
+        Interaction detection methods to be discarded.
+    @predictions : bool
+        Whether to include predicted interactions.
+    @species : str
+        Organism name, e.g. `Human`.
+    @strict : bool
+        Whether include interactions with species not 
+        used as a bait or not specified.
+    '''
     nd = 'Not determined'
     spec = set([]) if strict \
         else set(['Not specified', 'Not used as a bait', ''])
@@ -3496,6 +3598,11 @@ def trip_process(exclude_methods = ['Inference', 'Speculation'],
 
 def trip_interactions(exclude_methods = ['Inference', 'Speculation'], 
     predictions = False, species = 'Human', strict = False):
+    '''
+    Obtains processed TRIP interactions by calling `pypath.dataio.trip_process()`
+    and returns list of interactions. All arguments are passed to 
+    `trip_process()`, see their definition there.
+    '''
     data = trip_process(exclude_methods, predictions, species, strict)
     def trip_effect(eff):
         pos = set(['Sensitization', 'Activation', 'Increase in plasma membrane level', 
@@ -3508,6 +3615,11 @@ def trip_interactions(exclude_methods = ['Inference', 'Speculation'],
         ';'.join(d['methods']), trip_effect(d['effect'])] for unipr, d in data.iteritems()]
 
 def load_signor_ptms(fname = 'signor_22052015.tab'):
+    '''
+    This function is deprecated, you should not use it.
+    Loads and processes Signor PTMs from local file.
+    Returns dict of dicts.
+    '''
     reres = re.compile(r'([A-Za-z]{3})([0-9]+)')
     result = []
     aalet = dict((k.lower().capitalize(), v) for k, v in common.aaletters.iteritems())
@@ -4749,3 +4861,13 @@ def phosphosite_directions(organism = 'human'):
     curated, noref = get_phosphosite()
     return [i[:2] for i in curated + noref \
         if i[2] == organism and i[3] == organism]
+
+def get_lit_bm_13():
+    url = data_formats.urls['hid']['lit-bm-13']
+    data = curl(url, silent = False)
+    return map(lambda l: l.strip().split('\t'), data.split('\n')[1:])
+
+def get_ca1():
+    url = data_formats.urls['ca1']['url']
+    data = curl(url, silent = False, files_needed = ['S1.txt'])
+    return data

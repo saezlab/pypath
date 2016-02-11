@@ -4,7 +4,7 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2015 - EMBL-EBI
+#  Copyright (c) 2014-2016 - EMBL-EBI
 #
 #  File author(s): Dénes Türei (denes@ebi.ac.uk)
 #
@@ -5150,6 +5150,19 @@ class PyPath(object):
         sys.stdout.write('\t:: Directions and signs set for %u edges based on %s,'\
             ' %u new directions, %u new signs.\n' % (sourcedirs, name, newdirs, newsigns))
     
+    def curation_effort(self, sum_by_source = False):
+        '''
+        Returns the total number of reference-interactions pairs.
+        
+        @sum_by_source : bool
+            If True, counts the refrence-interaction pairs by
+            sources, and returns the sum of these values.
+        '''
+        if sum_by_source:
+            sum(map(sum, map(lambda rs: map(len, rs.values()), self.graph.es['refs_by_source'])))
+        else:
+            sum(map(len, self.graph.es['references']))
+    
     def export_dot(self, nodes = None, edges = None, directed = True, 
         labels = 'genesymbol', edges_filter = lambda e: True, nodes_filter = lambda v: True,
         edge_sources = None, dir_sources = None, graph = None,
@@ -5558,74 +5571,73 @@ class PyPath(object):
                 for e in self.graph.es:
                     d = e['dirs']
                     if s12 <= d.sources_straight():
-                        con['con['consistency']['signs']istency']['directions'][(s1, s2)]['total'] += 1
-                        con['con['consistency']['signs']istency']['directions_edges'][(s1, s2)]['total'].add(e.index)
+                        con['consistency']['signs']['directions'][(s1, s2)]['total'] += 1
+                        con['consistency']['signs']['directions_edges'][(s1, s2)]['total'].add(e.index)
                         if len(d.sources_straight()) > len(d.sources_reverse()) and \
                             len(s12 & d.sources_reverse()) == 0:
-                            con['con['consistency']['signs']istency']['directions'][(s1, s2)]['major'] += 1
-                            con['con['consistency']['signs']istency']['directions_edges'][(s1, s2)]['major'].add(e.index)
+                            con['consistency']['signs']['directions'][(s1, s2)]['major'] += 1
+                            con['consistency']['signs']['directions_edges'][(s1, s2)]['major'].add(e.index)
                         elif len(d.sources_straight()) < len(d.sources_reverse()) and \
                             len(s12 & d.sources_reverse()) == 0:
-                            con['con['consistency']['signs']istency']['directions'][(s1, s2)]['minor'] += 1
-                            con['con['consistency']['signs']istency']['directions_edges'][(s1, s2)]['minor'].add(e.index)
+                            con['consistency']['signs']['directions'][(s1, s2)]['minor'] += 1
+                            con['consistency']['signs']['directions_edges'][(s1, s2)]['minor'].add(e.index)
                     if s12 <= d.sources_reverse():
-                        con['con['consistency']['signs']istency']['directions'][(s1, s2)]['total'] += 1
-                        con['con['consistency']['signs']istency']['directions_edges'][(s1, s2)]['total'].add(e.index)
+                        con['consistency']['signs']['directions'][(s1, s2)]['total'] += 1
+                        con['consistency']['signs']['directions_edges'][(s1, s2)]['total'].add(e.index)
                         if len(d.sources_reverse()) > len(d.sources_straight()) and \
                             len(s12 & d.sources_straight()) == 0:
-                            con['con['consistency']['signs']istency']['directions'][(s1, s2)]['major'] += 1
-                            con['con['consistency']['signs']istency']['directions_edges'][(s1, s2)]['major'].add(e.index)
+                            con['consistency']['signs']['directions'][(s1, s2)]['major'] += 1
+                            con['consistency']['signs']['directions_edges'][(s1, s2)]['major'].add(e.index)
                         elif len(d.sources_reverse()) < len(d.sources_straight()) and \
                             len(s12 & d.sources_straight()) == 0:
-                            con['con['consistency']['signs']istency']['directions'][(s1, s2)]['minor'] += 1
-                            con['con['consistency']['signs']istency']['directions_edges'][(s1, s2)]['minor'].add(e.index)
+                            con['consistency']['signs']['directions'][(s1, s2)]['minor'] += 1
+                            con['consistency']['signs']['directions_edges'][(s1, s2)]['minor'].add(e.index)
                     if s12 <= d.positive_sources_straight():
                         con['consistency']['signs'][(s1, s2)]['total'] += 1
-                        con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['total'].add(e.index)
+                        con['consistency']['signs']['signs_edges'][(s1, s2)]['total'].add(e.index)
                         if len(d.positive_sources_straight()) > len(d.positive_sources_reverse()) and \
                             len(s12 & d.positive_sources_reverse()) == 0:
                             con['consistency']['signs'][(s1, s2)]['major'] += 1
-                            con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['major'].add(e.index)
+                            con['consistency']['signs']['signs_edges'][(s1, s2)]['major'].add(e.index)
                         elif len(d.positive_sources_straight()) < len(d.positive_sources_reverse()) and \
                             len(s12 & d.positive_sources_reverse()) == 0:
                             con['consistency']['signs'][(s1, s2)]['minor'] += 1
-                            con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['minor'].add(e.index)
+                            con['consistency']['signs']['signs_edges'][(s1, s2)]['minor'].add(e.index)
                     if s12 <= d.negative_sources_straight():
                         con['consistency']['signs'][(s1, s2)]['total'] += 1
-                        con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['total'].add(e.index)
+                        con['consistency']['signs']['signs_edges'][(s1, s2)]['total'].add(e.index)
                         if len(d.negative_sources_straight()) > len(d.negative_sources_reverse()) and \
                             len(s12 & d.negative_sources_reverse()) == 0:
                             con['consistency']['signs'][(s1, s2)]['major'] += 1
-                            con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['major'].add(e.index)
+                            con['consistency']['signs']['signs_edges'][(s1, s2)]['major'].add(e.index)
                         elif len(d.negative_sources_straight()) < len(d.negative_sources_reverse()) and \
                             len(s12 & d.negative_sources_reverse()) == 0:
                             con['consistency']['signs'][(s1, s2)]['minor'] += 1
-                            con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['minor'].add(e.index)
+                            con['consistency']['signs']['signs_edges'][(s1, s2)]['minor'].add(e.index)
                     if s12 <= d.positive_sources_reverse():
                         con['consistency']['signs'][(s1, s2)]['total'] += 1
-                        con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['total'].add(e.index)
+                        con['consistency']['signs']['signs_edges'][(s1, s2)]['total'].add(e.index)
                         if len(d.positive_sources_reverse()) > len(d.positive_sources_straight()) and \
                             len(s12 & d.positive_sources_straight()) == 0:
                             con['consistency']['signs'][(s1, s2)]['major'] += 1
-                            con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['major'].add(e.index)
+                            con['consistency']['signs']['signs_edges'][(s1, s2)]['major'].add(e.index)
                         elif len(d.positive_sources_reverse()) < len(d.positive_sources_straight()) and \
                             len(s12 & d.positive_sources_straight()) == 0:
                             con['consistency']['signs'][(s1, s2)]['minor'] += 1
-                            con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['minor'].add(e.index)
+                            con['consistency']['signs']['signs_edges'][(s1, s2)]['minor'].add(e.index)
                     if s12 <= d.negative_sources_reverse():
                         con['consistency']['signs'][(s1, s2)]['total'] += 1
-                        con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['total'].add(e.index)
+                        con['consistency']['signs']['signs_edges'][(s1, s2)]['total'].add(e.index)
                         if len(d.negative_sources_reverse()) > len(d.negative_sources_straight()) and \
                             len(s12 & d.negative_sources_straight()) == 0:
                             con['consistency']['signs'][(s1, s2)]['major'] += 1
-                            con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['major'].add(e.index)
+                            con['consistency']['signs']['signs_edges'][(s1, s2)]['major'].add(e.index)
                         elif len(d.negative_sources_reverse()) < len(d.negative_sources_straight()) and \
                             len(s12 & d.negative_sources_straight()) == 0:
                             con['consistency']['signs'][(s1, s2)]['minor'] += 1
-                            con['con['consistency']['signs']istency']['signs_edges'][(s1, s2)]['minor'].add(e.index)
+                            con['consistency']['signs']['signs_edges'][(s1, s2)]['minor'].add(e.index)
         prg.terminate()
         return con
-
     
     def _disclaimer(self):
         sys.stdout.write(self.disclaimer)
