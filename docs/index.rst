@@ -6,10 +6,36 @@
 Welcome to pypath's documentation!
 =====================================
 
-Contents:
+pypath is a Python module for cellular signaling pathways analysis. It is accompanied and developed together with a high confidence, literature curated signaling network, OmniPath_.
+
+.. _OmniPath: http://omnipathdb.org/
+
+Source code
++++++++++++
+
+pypath is free software, licensed under GPLv3_.
+The code is available at github_.
+Recent package for PIP is available at http://pypath.omnipathdb.org/releases/latest/, archives are available at http://pypath.omnipathdb.org/releases/archive/.
+
+.. _GPLv3: http://www.gnu.org/licenses/gpl.html
+.. _github: https://github.com/saezlab/pypath
+
+Main features
++++++++++++++
+
+- Undirected or directed networks.
+- Easy, often seemless protein ID conversion.
+- Efficient handling of annotations, especially sources, literature references, directions, effect signs (stimulation/inhibition) and enzyme-substrate interactions.
+- Ready integration of dozens of bioinformatics resources, most of them being downloaded on the fly, directly from the original source.
+- Caching: after downloading data, a local copy saved, so faster and offline run is possible afterwards.
+- Based on igraph_: plenty of graph methods are available with excellent computational performance.
+- Partial support for non-human species.
+- Partial support for other molecular species than proteins.  
+
+.. _igraph: http://igraph.org/
 
 .. toctree:
-   :maxdepth: 2
+   :maxdepth: 3
 
 Indices and tables
 ==================

@@ -437,8 +437,10 @@ def main_page():
         'Python module for molecular networks and pathways analysis.</p>\n'\
         '<h2><a class="omnipath" href="/info">Metainformation about signaling pathway resources'\
         '</a></h2>\n'\
-        '<h2><a class="omnipath" href="http://github.com/saezlab/pypath" target="_blank">Pypath'\
-        ' code and documentation</a></h2>\n'\
+        '<h2><a class="omnipath" href="http://github.com/saezlab/pypath" target="_blank">pypath'\
+        ' code</a></h2>\n'\
+        '<h2><a class="omnipath" href="http://pypath.omnipathdb.org/" target = "_blank">pypath'\
+        ' documentation</a></h2>\n'\
         '<h2><a class="omnipath" href="" target="_blank">The article</a></h2>\n'\
         '<p>D Turei, T Korcsmaros and J Saez-Rodriguez: Benchmark of literature'\
         ' curated signaling pathway resources (submitted February 2016)</p>\n'\

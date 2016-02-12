@@ -1,10 +1,11 @@
 pypath
-#########
+######
 
 
 :note: pypath supported only in Python 2.7, and no version 3.x is available currently.
 
 :contributions: denes@ebi.ac.uk
+:documentation: http://pypath.omnipathdb.org/
 :issues: https://github.com/seazlab/pypath/issues
 
 **pypath** is a Python package built around igraph to work with molecular network representations e.g. protein, miRNA and drug compound interaction networks.
