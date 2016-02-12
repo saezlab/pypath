@@ -1,0 +1,858 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pypath.mapping &mdash; pypath 0.1.72 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="pypath 0.1.72 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> pypath
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <!-- Local TOC -->
+                <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">pypath</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>pypath.mapping</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pypath.mapping</h1><div class="highlight"><pre>
+<span class="ch">#!/usr/bin/env python2</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright (c) 2014-2015 - EMBL-EBI</span>
+<span class="c1">#</span>
+<span class="c1">#  File author(s): Dénes Türei (denes@ebi.ac.uk)</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GNU GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      http://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: http://www.ebi.ac.uk/~denes</span>
+<span class="c1">#</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">codecs</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">urllib</span>
+<span class="kn">import</span> <span class="nn">urllib2</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">cPickle</span> <span class="kn">as</span> <span class="nn">pickle</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">pickle</span>
+
+<span class="c1"># from pypath:</span>
+<span class="kn">import</span> <span class="nn">progress</span>
+<span class="kn">import</span> <span class="nn">logn</span>
+<span class="kn">from</span> <span class="nn">common</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">data_formats</span>
+<span class="kn">import</span> <span class="nn">mysql</span>
+<span class="kn">import</span> <span class="nn">dataio</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;MappingTable&#39;</span><span class="p">,</span> <span class="s1">&#39;Mapper&#39;</span><span class="p">]</span>
+
+<span class="c1">###</span>
+<span class="c1">### functions to read and use mapping tables from UniProt, file, mysql or pickle </span>
+<span class="c1">###</span>
+
+<div class="viewcode-block" id="MappingTable"><a class="viewcode-back" href="../../index.html#pypath.mapping.MappingTable">[docs]</a><span class="k">class</span> <span class="nc">MappingTable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    To initialize ID conversion tables for the first time</span>
+<span class="sd">    data is downloaded from UniProt and read to dictionaries.</span>
+<span class="sd">    It takes a couple of seconds. Data is saved to pickle </span>
+<span class="sd">    dumps, this way after tables load much faster.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">one</span><span class="p">,</span> <span class="n">two</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">ncbi_tax_id</span><span class="p">,</span> 
+        <span class="n">mysql</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">log</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">cache</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">cachedir</span> <span class="o">=</span> <span class="s1">&#39;cache&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param</span> <span class="o">=</span> <span class="n">param</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">one</span> <span class="o">=</span> <span class="n">one</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">two</span> <span class="o">=</span> <span class="n">two</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">typ</span> <span class="o">=</span> <span class="n">typ</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxlOne</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxlTwo</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mysql</span> <span class="o">=</span> <span class="n">mysql</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">cache</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cachedir</span> <span class="o">=</span> <span class="n">cachedir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;to&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="p">{}}</span>
+        <span class="k">if</span> <span class="n">log</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">!=</span> <span class="s1">&#39;logw&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">gen_session_id</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span> <span class="o">=</span> <span class="n">logn</span><span class="o">.</span><span class="n">logw</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="s1">&#39;INFO&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span> <span class="o">=</span> <span class="n">log</span>
+        <span class="k">if</span> <span class="n">param</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mid</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="nb">str</span><span class="p">((</span><span class="n">one</span><span class="p">,</span> <span class="n">two</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">bi</span><span class="p">)))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+            <span class="n">md5param</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">__dict__</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cachefile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cachedir</span><span class="p">,</span> <span class="n">md5param</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cachefile</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cachefile</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">bi</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cachefile</span><span class="p">):</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cachefile</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;mysql&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">read_mapping_mysql</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;file&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">read_mapping_file</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;pickle&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">read_mapping_pickle</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;uniprot&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">read_mapping_uniprot</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">param</span><span class="o">.</span><span class="n">bi</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cachefile</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">))</span>
+    
+    <span class="k">def</span> <span class="nf">cleanDict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">mapping</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">uniqList</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mapping</span>
+    
+    <span class="k">def</span> <span class="nf">read_mapping_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">!=</span> <span class="s2">&quot;FileMapping&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Invalid parameter for read_mapping_file()&quot;</span><span class="p">,</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dataio</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dataio</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">):</span>
+            <span class="n">toCall</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">dataio</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">)</span>
+            <span class="n">infile</span> <span class="o">=</span> <span class="n">toCall</span><span class="p">()</span>
+            <span class="n">total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">infile</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">infile</span> <span class="o">=</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">encoding</span> <span class="o">=</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">total</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">)</span>
+        <span class="n">prg</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">Progress</span><span class="p">(</span>
+            <span class="n">total</span> <span class="o">=</span> <span class="n">total</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Reading from file&quot;</span><span class="p">,</span> <span class="n">interval</span> <span class="o">=</span> <span class="mi">18</span><span class="p">)</span>
+        <span class="n">lnum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">lsum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">mapping_o</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">mapping_i</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">infile</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">lnum</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">param</span><span class="o">.</span><span class="n">header</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">lnum</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">line</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">prg</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">prg</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">separator</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">max</span><span class="p">([</span><span class="n">param</span><span class="o">.</span><span class="n">oneCol</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">twoCol</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">oneCol</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mapping_o</span><span class="p">:</span>
+                    <span class="n">mapping_o</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">oneCol</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">mapping_o</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">oneCol</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">twoCol</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">bi</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">twoCol</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mapping_i</span><span class="p">:</span>
+                        <span class="n">mapping_i</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">twoCol</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">mapping_i</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">twoCol</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">oneCol</span><span class="p">])</span>
+            <span class="n">lnum</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">file</span><span class="p">:</span>
+            <span class="n">infile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapping_o</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cleanDict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">bi</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapping_i</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cleanDict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">])</span>
+        <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+    
+<div class="viewcode-block" id="MappingTable.read_mapping_uniprot"><a class="viewcode-back" href="../../index.html#pypath.mapping.MappingTable.read_mapping_uniprot">[docs]</a>    <span class="k">def</span> <span class="nf">read_mapping_uniprot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Downloads ID mappings directly from UniProt.</span>
+<span class="sd">        See the names of possible identifiers here:</span>
+<span class="sd">        http://www.uniprot.org/help/programmatic_access</span>
+<span class="sd">        </span>
+<span class="sd">        @param : UniprotMapping instance</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">resep</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;[\s;]&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">!=</span> <span class="s2">&quot;UniprotMapping&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Invalid parameter for read_mapping_uniprot()&quot;</span><span class="p">,</span>
+                <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{}</span>
+        <span class="n">mapping_o</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">mapping_i</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">scolend</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;$;&#39;</span><span class="p">)</span>
+        <span class="n">rev</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">swissprot</span> <span class="ow">is</span> <span class="bp">None</span> \
+            <span class="k">else</span> <span class="s1">&#39; AND reviewed:</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">param</span><span class="o">.</span><span class="n">swissprot</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s1">&#39;organism:</span><span class="si">%u%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">tax</span><span class="p">),</span> <span class="n">rev</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_basic&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">post</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;query&#39;</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span> 
+            <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="s1">&#39;tab&#39;</span><span class="p">,</span> 
+            <span class="s1">&#39;columns&#39;</span><span class="p">:</span> <span class="s1">&#39;id,</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">field</span><span class="p">,</span> 
+                <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">subfield</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="s1">&#39;(</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="o">%</span><span class="n">param</span><span class="o">.</span><span class="n">subfield</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">?</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">urllib</span><span class="o">.</span><span class="n">urlencode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">post</span><span class="p">))</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">curl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">xx</span><span class="p">]</span> <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">field</span> <span class="o">==</span> <span class="s1">&#39;protein names&#39;</span> <span class="k">else</span> \
+            <span class="p">[</span><span class="n">xxx</span> <span class="k">for</span> <span class="n">xxx</span> <span class="ow">in</span> <span class="n">resep</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">scolend</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">xx</span><span class="o">.</span><span class="n">strip</span><span class="p">()))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">xxx</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span> \
+            <span class="k">for</span> <span class="n">xx</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span> 
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_protein_name</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> \
+                        <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">field</span> <span class="o">==</span> <span class="s1">&#39;protein names&#39;</span> <span class="k">else</span> <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">other</span> <span class="ow">in</span> <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                        <span class="k">if</span> <span class="n">other</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mapping_o</span><span class="p">:</span>
+                            <span class="n">mapping_o</span><span class="p">[</span><span class="n">other</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="n">mapping_o</span><span class="p">[</span><span class="n">other</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">bi</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mapping_i</span><span class="p">:</span>
+                                <span class="n">mapping_i</span><span class="p">[</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+                            <span class="n">mapping_i</span><span class="p">[</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapping_o</span>
+        <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">bi</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapping_i</span></div>
+    
+    <span class="k">def</span> <span class="nf">read_mapping_pickle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">param</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">!=</span> <span class="s2">&quot;PickleMapping&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;Invalid parameter for read_mapping_pickle()&quot;</span><span class="p">,</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="n">mapping</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span> <span class="nb">open</span><span class="p">(</span> <span class="n">param</span><span class="o">.</span><span class="n">pickleFile</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="k">if</span> <span class="n">mapping</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;MappingTable&quot;</span><span class="p">:</span>
+            <span class="bp">self</span> <span class="o">=</span> <span class="n">mapping</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+    
+    <span class="k">def</span> <span class="nf">save_mapping_pickle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">param</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">!=</span> <span class="s2">&quot;PickleMapping&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;Invalid parameter for save_mapping_pickle()&quot;</span><span class="p">,</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span> <span class="n">param</span><span class="o">.</span><span class="n">pickleFile</span><span class="o">+</span><span class="s2">&quot;.pickle&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span> <span class="p">))</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    
+    <span class="k">def</span> <span class="nf">read_mapping_mysql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">mysql</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s1">&#39;No MySQL parameters given.&#39;</span><span class="p">,</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;o&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;i&quot;</span><span class="p">:</span> <span class="p">{}}</span>
+        <span class="n">tax_filter</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">tax</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="s2">&quot;AND </span><span class="si">%s</span><span class="s2"> = </span><span class="si">%u</span><span class="s2">&quot;</span> 
+            <span class="o">%</span> <span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">tax</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">))</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT </span><span class="si">%s</span><span class="s2"> AS one,</span><span class="si">%s</span><span class="s2"> AS two FROM </span><span class="si">%s</span><span class="s2"> </span>
+<span class="s2">            WHERE </span><span class="si">%s</span><span class="s2"> IS NOT NULL AND </span><span class="si">%s</span><span class="s2"> IS NOT NULL </span><span class="si">%s</span><span class="s2">&quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">param</span><span class="o">.</span><span class="n">fieldOne</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">fieldTwo</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">tableName</span><span class="p">,</span> 
+                <span class="n">param</span><span class="o">.</span><span class="n">fieldOne</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">fieldTwo</span><span class="p">,</span> <span class="n">tax_filter</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">param</span><span class="o">.</span><span class="n">mysql</span><span class="o">.</span><span class="n">run_query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">_mysql</span><span class="o">.</span><span class="n">Error</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;MySQL error: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">FAILED QUERY: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">query</span><span class="p">),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;o&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;i&quot;</span><span class="p">:</span> <span class="p">{}}</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">mysql</span><span class="o">.</span><span class="n">result</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">prg</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">Progress</span><span class="p">(</span>
+            <span class="n">total</span><span class="o">=</span><span class="n">total</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Processing data&quot;</span><span class="p">,</span><span class="n">interval</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+        <span class="n">mapping_o</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">mapping_i</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">rr</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">mysql</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">rr</span><span class="p">[</span><span class="s2">&quot;one&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mapping_o</span><span class="p">:</span>
+                <span class="n">mapping_o</span><span class="p">[</span><span class="n">rr</span><span class="p">[</span><span class="s2">&quot;one&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">rr</span><span class="p">[</span><span class="s2">&quot;two&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mapping_i</span><span class="p">:</span>
+                <span class="n">mapping_i</span><span class="p">[</span><span class="n">rr</span><span class="p">[</span><span class="s2">&quot;two&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">mapping_o</span><span class="p">[</span><span class="n">rr</span><span class="p">[</span><span class="s2">&quot;one&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rr</span><span class="p">[</span><span class="s2">&quot;two&quot;</span><span class="p">])</span>
+            <span class="n">mapping_i</span><span class="p">[</span><span class="n">rr</span><span class="p">[</span><span class="s2">&quot;two&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rr</span><span class="p">[</span><span class="s2">&quot;one&quot;</span><span class="p">])</span>
+            <span class="n">prg</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">]</span> <span class="o">=</span>  <span class="n">mapping_o</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cleanDict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">bi</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapping_i</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cleanDict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">])</span>
+        <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">process_protein_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="n">rebr</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;\(([^\)]{3,})\)&#39;</span><span class="p">)</span>
+        <span class="n">resq</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;\[([^\]]{3,})\]&#39;</span><span class="p">)</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="n">names</span> <span class="o">+=</span> <span class="n">rebr</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">others</span> <span class="o">=</span> <span class="n">flatList</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">resq</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">name</span><span class="p">)])</span>
+        <span class="n">others</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">x</span> <span class="k">else</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">others</span><span class="p">]</span>
+        <span class="n">others</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;(&#39;</span> <span class="ow">in</span> <span class="n">x</span> <span class="k">else</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">others</span><span class="p">]</span>
+        <span class="n">names</span> <span class="o">+=</span> <span class="n">others</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span>
+    
+    <span class="k">def</span> <span class="nf">id_max_len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlOne</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">maxlOne</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">flatList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlTwo</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">maxlTwo</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">flatList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;one&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlOne</span><span class="p">,</span> <span class="s2">&quot;two&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlTwo</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="Mapper"><a class="viewcode-back" href="../../index.html#pypath.mapping.Mapper">[docs]</a><span class="k">class</span> <span class="nc">Mapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">mysql_conf</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="s1">&#39;mapping&#39;</span><span class="p">),</span> 
+        <span class="n">log</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">cache</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">cachedir</span> <span class="o">=</span> <span class="s1">&#39;cache&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reup</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">cache</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cachedir</span> <span class="o">=</span> <span class="n">cachedir</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cachedir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cachedir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unmapped</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span> <span class="o">=</span> <span class="n">log</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">ncbi_tax_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tables</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uniprot_mapped</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">log</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">!=</span> <span class="s1">&#39;logw&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">gen_session_id</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span> <span class="o">=</span> <span class="n">logn</span><span class="o">.</span><span class="n">logw</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span><span class="s1">&#39;INFO&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span> <span class="o">=</span> <span class="n">log</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mysql_conf</span> <span class="o">=</span> <span class="n">mysql_conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mysql</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_types</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;uniprot_id&#39;</span><span class="p">:</span> <span class="s1">&#39;UniProtKB-ID&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;embl&#39;</span><span class="p">:</span> <span class="s1">&#39;EMBL-CDS&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;embl_id&#39;</span><span class="p">:</span> <span class="s1">&#39;EMBL&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;entrez&#39;</span><span class="p">:</span> <span class="s1">&#39;GeneID&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;gi&#39;</span><span class="p">:</span> <span class="s1">&#39;GI&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;refseqp&#39;</span><span class="p">:</span> <span class="s1">&#39;RefSeq&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;refseqn&#39;</span><span class="p">:</span> <span class="s1">&#39;RefSeq_NT&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ensg&#39;</span><span class="p">:</span> <span class="s1">&#39;Ensembl&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ensp&#39;</span><span class="p">:</span> <span class="s1">&#39;Ensembl_PRO&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;enst&#39;</span><span class="p">:</span> <span class="s1">&#39;Ensembl_TRS&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;hgnc&#39;</span><span class="p">:</span> <span class="s1">&#39;HGNC&#39;</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">types_name</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_types</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_types</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+    
+    <span class="k">def</span> <span class="nf">init_mysql</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mysql</span> <span class="o">=</span> <span class="n">mysql</span><span class="o">.</span><span class="n">MysqlRunner</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mysql_conf</span><span class="p">,</span> <span class="n">log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="Mapper.which_table"><a class="viewcode-back" href="../../index.html#pypath.mapping.Mapper.which_table">[docs]</a>    <span class="k">def</span> <span class="nf">which_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nameType</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">,</span> <span class="n">load</span> <span class="o">=</span> <span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the table which is suitable to convert an ID of </span>
+<span class="sd">        nameType to targetNameType. If no such table have been loaded</span>
+<span class="sd">        yet, it attempts to load from UniProt.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">tbl</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">tblName</span> <span class="o">=</span> <span class="p">(</span><span class="n">nameType</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">)</span>
+        <span class="n">tblNameRev</span> <span class="o">=</span> <span class="p">(</span><span class="n">targetNameType</span><span class="p">,</span> <span class="n">nameType</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tblName</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">:</span>
+            <span class="n">tbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="n">tblName</span><span class="p">]</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">tblNameRev</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tables</span> <span class="ow">and</span> \
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="n">tblNameRev</span><span class="p">]</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">tbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="n">tblNameRev</span><span class="p">]</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">load</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">form</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;mapListUniprot&#39;</span><span class="p">,</span> <span class="s1">&#39;mapListBasic&#39;</span><span class="p">]:</span>
+                <span class="n">frm</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">data_formats</span><span class="p">,</span> <span class="n">form</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">tblName</span> <span class="ow">in</span> <span class="n">frm</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">load_mappings</span><span class="p">(</span><span class="n">maps</span> <span class="o">=</span> <span class="p">{</span><span class="n">tblName</span><span class="p">:</span> <span class="n">frm</span><span class="p">[</span><span class="n">tblName</span><span class="p">]})</span>
+                    <span class="n">tbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">which_table</span><span class="p">(</span><span class="n">nameType</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">,</span> <span class="n">load</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+                    <span class="k">break</span>
+                <span class="k">if</span> <span class="n">tblNameRev</span> <span class="ow">in</span> <span class="n">frm</span><span class="p">:</span>
+                    <span class="n">frm</span><span class="p">[</span><span class="n">tblNameRev</span><span class="p">]</span><span class="o">.</span><span class="n">bi</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">load_mappings</span><span class="p">(</span><span class="n">maps</span> <span class="o">=</span> <span class="p">{</span><span class="n">tblNameRev</span><span class="p">:</span> <span class="n">frm</span><span class="p">[</span><span class="n">tblNameRev</span><span class="p">]})</span>
+                    <span class="n">tbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">which_table</span><span class="p">(</span><span class="n">nameType</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">,</span> <span class="n">load</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+                    <span class="k">break</span>
+                <span class="k">if</span> <span class="n">tbl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">tbl</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">nameType</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_types</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">load_uniprot_mappings</span><span class="p">([</span><span class="n">nameType</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">tbl</span></div>
+    
+<div class="viewcode-block" id="Mapper.map_name"><a class="viewcode-back" href="../../index.html#pypath.mapping.Mapper.map_name">[docs]</a>    <span class="k">def</span> <span class="nf">map_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">nameType</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">,</span> 
+        <span class="n">strict</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="bp">True</span><span class="p">):</span>
+        <span class="sd">r&#39;&#39;&#39;</span>
+<span class="sd">        This function should be used to convert individual IDs.</span>
+<span class="sd">        It takes care about everything, you don&#39;t need to think</span>
+<span class="sd">        on the details. How does it work: looks up dictionaries </span>
+<span class="sd">        between the original and target ID type, if doesn&#39;t </span>
+<span class="sd">        find, attempts to load from the predefined inputs.</span>
+<span class="sd">        If the original name is genesymbol, first it looks up</span>
+<span class="sd">        among the preferred gene names from UniProt, if not </span>
+<span class="sd">        found, it takes an attempt with the alternative gene</span>
+<span class="sd">        names. If the gene symbol still couldn&#39;t be found, and </span>
+<span class="sd">        strict = False, the last attempt only the first 5 chara-</span>
+<span class="sd">        cters of the gene symbol matched. If the target name </span>
+<span class="sd">        type is uniprot, then it converts all the ACs to primary. </span>
+<span class="sd">        Then, for the Trembl IDs it looks up the preferred gene </span>
+<span class="sd">        names, and find Swissprot IDs with the same preferred </span>
+<span class="sd">        gene name.</span>
+<span class="sd">        </span>
+<span class="sd">        @name : str</span>
+<span class="sd">            The original name which shall be converted.</span>
+<span class="sd">        @nameType : str</span>
+<span class="sd">            The type of the name.</span>
+<span class="sd">            Available by default:</span>
+<span class="sd">            - genesymbol (gene name)</span>
+<span class="sd">            - entrez (Entrez Gene ID \[#\])</span>
+<span class="sd">            - refseqp (NCBI RefSeq Protein ID \[NP\_\*|XP\_\*\])</span>
+<span class="sd">            - ensp (Ensembl protein ID \[ENSP\*\])</span>
+<span class="sd">            - enst (Ensembl transcript ID \[ENST\*\])</span>
+<span class="sd">            - ensg (Ensembl genomic DNA ID \[ENSG\*\])</span>
+<span class="sd">            - hgnc (HGNC ID \[HGNC:#\])</span>
+<span class="sd">            - gi (GI number \[#\])</span>
+<span class="sd">            - embl (DDBJ/EMBL/GeneBank CDS accession)</span>
+<span class="sd">            - embl_id (DDBJ/EMBL/GeneBank accession)</span>
+<span class="sd">            To use other IDs, you need to define the input method</span>
+<span class="sd">            and load the table before calling :py:func:Mapper.map_name().</span>
+<span class="sd">        </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">nameType</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="n">mappedNames</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">nt</span> <span class="ow">in</span> <span class="n">nameType</span><span class="p">:</span>
+                <span class="n">mappedNames</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">nt</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">,</span> 
+                    <span class="n">strict</span><span class="p">,</span> <span class="n">silent</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">uniqList</span><span class="p">(</span><span class="n">mappedNames</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nameType</span> <span class="o">==</span> <span class="n">targetNameType</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">targetNameType</span> <span class="o">!=</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span> <span class="n">name</span> <span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mappedNames</span> <span class="o">=</span> <span class="p">[</span> <span class="n">name</span> <span class="p">]</span>
+        <span class="k">elif</span> <span class="n">nameType</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;refseq&#39;</span><span class="p">):</span>
+            <span class="n">mappedNames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_refseq</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">nameType</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">,</span> <span class="n">strict</span> <span class="o">=</span> <span class="n">strict</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mappedNames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">nameType</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mappedNames</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">mappedNames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_name</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">nameType</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mappedNames</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">mappedNames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_name</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">nameType</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mappedNames</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">nameType</span> <span class="o">==</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">:</span>
+            <span class="n">mappedNames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;genesymbol-syn&#39;</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">strict</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">mappedNames</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">mappedNames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;genesymbol5&#39;</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">targetNameType</span> <span class="o">==</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">:</span>
+            <span class="n">orig</span> <span class="o">=</span> <span class="n">mappedNames</span>
+            <span class="n">mappedNames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_uniprot</span><span class="p">(</span><span class="n">mappedNames</span><span class="p">)</span>
+            <span class="n">mappedNames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trembl_swissprot</span><span class="p">(</span><span class="n">mappedNames</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">orig</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">mappedNames</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">uniprot_mapped</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">orig</span><span class="p">,</span> <span class="n">mappedNames</span><span class="p">))</span>
+            <span class="n">mappedNames</span> <span class="o">=</span> <span class="p">[</span><span class="n">u</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">mappedNames</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reup</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">u</span><span class="p">)]</span>
+        <span class="c1"># print &#39;\tmapped to %s&#39; % str(mappedNames)</span>
+        <span class="k">return</span> <span class="n">uniqList</span><span class="p">(</span><span class="n">mappedNames</span><span class="p">)</span></div>
+    
+    <span class="k">def</span> <span class="nf">map_refseq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refseq</span><span class="p">,</span> <span class="n">nameType</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">,</span> <span class="n">strict</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
+        <span class="n">mappedNames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">in</span> <span class="n">refseq</span><span class="p">:</span>
+            <span class="n">mappedNames</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_name</span><span class="p">(</span><span class="n">refseq</span><span class="p">,</span> <span class="n">nameType</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mappedNames</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">strict</span><span class="p">:</span>
+                <span class="n">mappedNames</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_name</span><span class="p">(</span><span class="n">refseq</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">nameType</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mappedNames</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">strict</span><span class="p">:</span>
+            <span class="n">rstem</span> <span class="o">=</span> <span class="n">refseq</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">49</span><span class="p">):</span>
+                <span class="n">mappedNames</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_name</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.</span><span class="si">%u</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">rstem</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">nameType</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mappedNames</span>
+    
+    <span class="k">def</span> <span class="nf">_map_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">nameType</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Once we have defined the name type and the target name type,</span>
+<span class="sd">        this function looks it up in the most suitable dictionary.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">nameTypes</span> <span class="o">=</span> <span class="p">(</span><span class="n">nameType</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">)</span>
+        <span class="n">nameTypRe</span> <span class="o">=</span> <span class="p">(</span><span class="n">targetNameType</span><span class="p">,</span> <span class="n">nameType</span><span class="p">)</span>
+        <span class="n">tbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">which_table</span><span class="p">(</span><span class="n">nameType</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tbl</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tbl</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">tbl</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">tbl</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="c1">#self.trace.append({&#39;name&#39;: name, &#39;from&#39;: nameType, &#39;to&#39;: targetNameType, </span>
+        <span class="c1">#    &#39;result&#39;: result})</span>
+        <span class="k">return</span> <span class="n">result</span>
+    
+<div class="viewcode-block" id="Mapper.primary_uniprot"><a class="viewcode-back" href="../../index.html#pypath.mapping.Mapper.primary_uniprot">[docs]</a>    <span class="k">def</span> <span class="nf">primary_uniprot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        For a list of UniProt IDs returns the list of primary ids.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">pri</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+            <span class="n">pr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="s1">&#39;uniprot-sec&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot-pri&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">pri</span> <span class="o">+=</span> <span class="n">pr</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pri</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">pri</span><span class="p">))</span></div>
+    
+<div class="viewcode-block" id="Mapper.trembl_swissprot"><a class="viewcode-back" href="../../index.html#pypath.mapping.Mapper.trembl_swissprot">[docs]</a>    <span class="k">def</span> <span class="nf">trembl_swissprot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        For a list of Trembl and Swissprot IDs, returns possibly</span>
+<span class="sd">        only Swissprot, mapping from Trembl to gene names, and </span>
+<span class="sd">        then back to Swissprot.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">sws</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+            <span class="n">sw</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">gn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">tr</span><span class="p">,</span> <span class="s1">&#39;trembl&#39;</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">gn</span><span class="p">:</span>
+                <span class="n">sw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;swissprot&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sw</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">sws</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sws</span> <span class="o">+=</span> <span class="n">sw</span>
+        <span class="n">sws</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">sws</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">sws</span></div>
+    
+    <span class="k">def</span> <span class="nf">has_mapping_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nameTypeA</span><span class="p">,</span> <span class="n">nameTypeB</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">nameTypeA</span><span class="p">,</span> <span class="n">nameTypeB</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tables</span> <span class="ow">and</span> \
+            <span class="p">((</span><span class="n">nameTypeB</span><span class="p">,</span> <span class="n">nameTypeA</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tables</span> <span class="ow">or</span> \
+                <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[(</span><span class="n">nameTypeB</span><span class="p">,</span> <span class="n">nameTypeA</span><span class="p">)]</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;form&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map_table_error</span><span class="p">(</span><span class="n">nameTypeA</span><span class="p">,</span> <span class="n">nameTypeB</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">True</span>
+    
+    <span class="k">def</span> <span class="nf">map_table_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Missing mapping table: from </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2"> mapping needed.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">ERROR: &#39;</span><span class="p">,</span><span class="n">msg</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">msg</span><span class="p">,</span><span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="Mapper.load_mappings"><a class="viewcode-back" href="../../index.html#pypath.mapping.Mapper.load_mappings">[docs]</a>    <span class="k">def</span> <span class="nf">load_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">maps</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        mapList is a list of mappings to load;</span>
+<span class="sd">        elements of mapList are dicts containing the </span>
+<span class="sd">        id names, molecule type, and preferred source</span>
+<span class="sd">        e.g. (&quot;one&quot;: &quot;uniprot&quot;, &quot;two&quot;: &quot;refseq&quot;, &quot;typ&quot;: &quot;protein&quot;, </span>
+<span class="sd">        &quot;src&quot;: &quot;mysql&quot;, &quot;par&quot;: &quot;mysql_param/file_param&quot;)</span>
+<span class="sd">        by default those are loaded from pickle files</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">maps</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span> 
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">maps</span> <span class="o">=</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">mapList</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;load_mappings(): No input defined&#39;</span><span class="p">,</span><span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Loading mapping tables...&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">mapName</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">maps</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Loading table </span><span class="si">%s</span><span class="s2"> ...&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">mapName</span><span class="p">))</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">:: Loading &#39;</span><span class="si">%s</span><span class="s2">&#39; to &#39;</span><span class="si">%s</span><span class="s2">&#39; mapping table</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> \
+                <span class="p">(</span><span class="n">mapName</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mapName</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;FileMapping&#39;</span> <span class="ow">and</span> \
+                <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">)</span> <span class="ow">and</span> \
+                <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dataio</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;Error: no such file: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> \
+                    <span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;PickleMapping&#39;</span> <span class="ow">and</span> \
+                <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">pickleFile</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;Error: no such file: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> \
+                    <span class="n">m</span><span class="p">[</span><span class="s2">&quot;par&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pickleFile</span><span class="p">,</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;MysqlMapping&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mysql</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;Error: no mysql server known.&quot;</span><span class="p">,</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mysql</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">init_mysql</span><span class="p">()</span>
+                    <span class="n">param</span><span class="o">.</span><span class="n">mysql</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mysql</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="n">mapName</span><span class="p">]</span> <span class="o">=</span> <span class="n">MappingTable</span><span class="p">(</span>
+                <span class="n">mapName</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">mapName</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">param</span><span class="o">.</span><span class="n">typ</span><span class="p">,</span>
+                <span class="n">param</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Mapping&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
+                <span class="n">param</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span>
+                <span class="n">mysql</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mysql</span><span class="p">,</span>
+                <span class="n">log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="p">,</span>
+                <span class="n">cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">,</span>
+                <span class="n">cachedir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cachedir</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tables</span> <span class="ow">and</span> \
+                <span class="p">(</span><span class="s1">&#39;genesymbol-syn&#39;</span><span class="p">,</span> <span class="s1">&#39;swissprot&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tables</span> <span class="ow">and</span> \
+                <span class="p">(</span><span class="s1">&#39;genesymbol5&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">genesymbol5</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Table </span><span class="si">%s</span><span class="s2"> loaded from </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">mapName</span><span class="p">),</span> \
+                <span class="n">param</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">))</span></div>
+    
+    <span class="k">def</span> <span class="nf">swissprots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">lst</span><span class="p">):</span>
+        <span class="n">swprots</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+            <span class="n">swprots</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">swprots</span>
+    
+    <span class="k">def</span> <span class="nf">genesymbol5</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[(</span><span class="s1">&#39;genesymbol5&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">MappingTable</span><span class="p">(</span>
+            <span class="s1">&#39;genesymbol5&#39;</span><span class="p">,</span> 
+            <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;protein&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;genesymbol5&#39;</span><span class="p">,</span>
+            <span class="bp">None</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span> 
+            <span class="bp">None</span><span class="p">,</span>
+            <span class="n">log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="p">)</span>
+        <span class="n">tbl_gs5</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[(</span><span class="s1">&#39;genesymbol5&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">]</span>
+        <span class="n">tbls</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[(</span><span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">],</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[(</span><span class="s1">&#39;genesymbol-syn&#39;</span><span class="p">,</span> <span class="s1">&#39;swissprot&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">]]</span>
+        <span class="k">for</span> <span class="n">tbl</span> <span class="ow">in</span> <span class="n">tbls</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">gs</span><span class="p">,</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">tbl</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gs</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">:</span>
+                    <span class="n">gs5</span> <span class="o">=</span> <span class="n">gs</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">gs5</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tbl_gs5</span><span class="p">:</span>
+                        <span class="n">tbl_gs5</span><span class="p">[</span><span class="n">gs5</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">tbl_gs5</span><span class="p">[</span><span class="n">gs5</span><span class="p">]</span> <span class="o">+=</span> <span class="n">u</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[(</span><span class="s1">&#39;genesymbol5&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tbl_gs5</span>
+    
+    <span class="k">def</span> <span class="nf">load_uniprot_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ac_types</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">bi</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
+        <span class="n">ac_types</span> <span class="o">=</span> <span class="n">ac_types</span> <span class="k">if</span> <span class="n">ac_types</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_types</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="c1"># creating empty MappingTable objects:</span>
+        <span class="k">for</span> <span class="n">ac_typ</span> <span class="ow">in</span> <span class="n">ac_types</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[(</span><span class="n">ac_typ</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">MappingTable</span><span class="p">(</span>
+                <span class="n">ac_typ</span><span class="p">,</span> 
+                <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;protein&#39;</span><span class="p">,</span>
+                <span class="n">ac_typ</span><span class="p">,</span>
+                <span class="bp">None</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span> 
+                <span class="bp">None</span><span class="p">,</span>
+                <span class="n">log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="p">)</span>
+        <span class="c1"># attempting to load them from Pickle</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">ac_typ</span> <span class="ow">in</span> <span class="n">ac_types</span><span class="p">:</span>
+            <span class="n">md5ac</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="nb">str</span><span class="p">((</span><span class="n">ac_typ</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="n">bi</span><span class="p">)))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+            <span class="n">cachefile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">,</span> <span class="n">md5ac</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cachefile</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[(</span><span class="n">ac_typ</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">mapping</span> <span class="o">=</span> \
+                    <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">))</span>
+                <span class="n">ac_types</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ac_typ</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[(</span><span class="n">ac_typ</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">mid</span> <span class="o">=</span> <span class="n">md5ac</span>
+        <span class="c1"># loading the remaining from the big UniProt mapping file:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ac_types</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_idmap_ftp&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">prg</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">Progress</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="s2">&quot;Processing ID conversion list&quot;</span><span class="p">,</span> <span class="mi">99</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="n">prg</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+                <span class="n">l</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">ac_typ</span> <span class="ow">in</span> <span class="n">ac_types</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_types</span><span class="p">[</span><span class="n">ac_typ</span><span class="p">]</span> <span class="o">==</span> <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                        <span class="n">other</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[(</span><span class="n">ac_typ</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">]:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[(</span><span class="n">ac_typ</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">][</span><span class="n">other</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[(</span><span class="n">ac_typ</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">][</span><span class="n">other</span><span class="p">]</span><span class="o">.</span>\
+                            <span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="k">if</span> <span class="n">bi</span><span class="p">:</span>
+                            <span class="n">uniprot</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                            <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[(</span><span class="n">ac_typ</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)]</span><span class="o">.</span>\
+                                <span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">]:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[(</span><span class="n">ac_typ</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)]</span><span class="o">.</span>\
+                                <span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">][</span><span class="n">uniprot</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[(</span><span class="n">ac_typ</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">][</span><span class="n">uniprot</span><span class="p">]</span><span class="o">.</span>\
+                                <span class="n">append</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+            <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">ac_typ</span> <span class="ow">in</span> <span class="n">ac_types</span><span class="p">:</span>
+                    <span class="n">md5ac</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="nb">str</span><span class="p">((</span><span class="n">ac_typ</span><span class="p">,</span> <span class="n">bi</span><span class="p">)))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+                    <span class="n">cachefile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">,</span> <span class="n">md5ac</span><span class="p">)</span>
+                    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[(</span><span class="n">ac_typ</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">mapping</span><span class="p">,</span> 
+                        <span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">))</span>
+    
+    <span class="k">def</span> <span class="nf">save_all_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Saving all mapping tables...&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Saving table </span><span class="si">%s</span><span class="s2"> ...&quot;</span> <span class="o">%</span> <span class="n">m</span><span class="p">)</span>
+            <span class="n">param</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">pickleMapping</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">save_mapping_pickle</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Table </span><span class="si">%s</span><span class="s2"> has been written to </span><span class="si">%s</span><span class="s2">.pickle.&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">m</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">pickleFile</span><span class="p">))</span>
+    
+<div class="viewcode-block" id="Mapper.load_uniprot_mapping"><a class="viewcode-back" href="../../index.html#pypath.mapping.Mapper.load_uniprot_mapping">[docs]</a>    <span class="k">def</span> <span class="nf">load_uniprot_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This is a wrapper to load a ... mapping table.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">umap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_mapping_uniprot</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">umap</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+    <span class="k">def</span> <span class="nf">read_mapping_uniprot_mysql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">ncbi_tax_id</span><span class="p">,</span> <span class="n">log</span><span class="p">,</span> <span class="n">bi</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;No such file </span><span class="si">%s</span><span class="s2"> in read_mapping_uniprot()&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">param</span><span class="p">,</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">))</span>
+        <span class="n">infile</span> <span class="o">=</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="n">umap</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;Loading UniProt mapping table from file </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">infile</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">one</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
+            <span class="n">uniprot</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">other</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">mapTableName</span> <span class="o">=</span> <span class="n">one</span> <span class="o">+</span> <span class="s2">&quot;_uniprot&quot;</span>
+            <span class="k">if</span> <span class="n">mapTableName</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">umap</span><span class="p">:</span>
+                <span class="n">umap</span><span class="p">[</span><span class="n">mapTableName</span><span class="p">]</span> <span class="o">=</span> <span class="n">mappingTable</span><span class="p">(</span>
+                    <span class="n">one</span><span class="p">,</span> <span class="s2">&quot;uniprot&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="s2">&quot;uniprot&quot;</span><span class="p">,</span>
+                    <span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span> <span class="n">ncbi_tax_id</span><span class="p">,</span> <span class="n">log</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">other</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">umap</span><span class="p">[</span><span class="n">mapTableName</span><span class="p">]</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">]:</span>
+                <span class="n">umap</span><span class="p">[</span><span class="n">mapTableName</span><span class="p">]</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">][</span><span class="n">other</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">umap</span><span class="p">[</span><span class="n">mapTableName</span><span class="p">]</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">][</span><span class="n">other</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">uniprot</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">bi</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">umap</span><span class="p">[</span><span class="n">mapTableName</span><span class="p">]</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">]:</span>
+                    <span class="n">umap</span><span class="p">[</span><span class="n">mapTableName</span><span class="p">]</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">][</span><span class="n">uniprot</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">umap</span><span class="p">[</span><span class="n">mapTableName</span><span class="p">]</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">][</span><span class="n">uniprot</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;</span><span class="si">%u</span><span class="s2"> mapping tables from UniProt has been loaded&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">umap</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">umap</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Dénes Türei.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1.72',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

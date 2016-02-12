@@ -969,7 +969,8 @@ descriptions = {
         'urls': {
             'articles': [],
             'webpages': [
-                'http://www.pathwaycommons.org/archives/PC1/last_release-2011/tab_delim_network/by_source/'
+                'http://www.pathwaycommons.org/archives/PC1/last_release-2011/tab_delim_network/by_source/',
+                'http://web.archive.org/web/20130729025707/http://cancer.cellmap.org/cellmap/home.do'
             ]
         },
         'authors': ['Bader Lab'],
@@ -1459,7 +1460,7 @@ descriptions = {
             ],
             'intr': [
                 'pypath.dataio.netpath()'
-            ]
+            ],
             'data': [
                 'pypath.data_formats.urls[\'netpath_psimi\']',
                 'pypath.data_formats.urls[\'netpath_names\']'
