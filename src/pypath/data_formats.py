@@ -25,7 +25,7 @@ import common
 __all__ = ['urls', 'mapList', 'otherMappings', 'refLists', 
            'reaction', 'interaction', 'interaction_misc', 'pathway', 
            'ptm', 'ptm_misc', 'obsolate', 'transcription_deprecated',
-           'best', 'transcription', 'negative', 'gdsc_comp_target', 'cgc', 
+           'omnipath', 'transcription', 'negative', 'gdsc_comp_target', 'cgc', 
            'mapListUniprot', 'mapListBasic', 'reactome_modifications',
            'reaction_misc']
 
@@ -148,15 +148,15 @@ urls = {
             'Any&Submit=Search'
     },
     'pepcyber_details': {
-        'label': 'interaction details from pepcyber',
+        'label': 'Interaction details from pepcyber',
         'url': 'http://www.pepcyber.org/PPEP/idetail.php?iid=%u'
     },
     'pdzbase': {
-        'label': 'manually curated interactions of PDZ domain proteins',
+        'label': 'Manually curated interactions of PDZ domain proteins',
         'url': 'http://abc.med.cornell.edu/pdzbase/allinteractions'
     },
     'pdz_details': {
-        'label': 'details of interactions in PDZbase',
+        'label': 'Details of interactions in PDZbase',
         'url': 'http://abc.med.cornell.edu/pdzbase/interaction_detail/%u'
     },
     'psite_reg': {
@@ -549,6 +549,11 @@ urls = {
         'label': 'Supplementary Online Materials for Ma\'ayan 2005',
         'url': 'http://science.sciencemag.org/highwire/filestream/586741/'\
             'field_highwire_adjunct_files/1/Maayan_SOM_External_Files.zip'
+    },
+    'ccmap': {
+        'label': 'Cancer Cell Map from PathwayCommons 2011 snapshot',
+        'edges': 'http://www.pathwaycommons.org/archives/PC1/last_release-2011/tab_delim_network/by_source/cell-map-edge-attributes.txt.zip',
+        'nodes': 'http://www.pathwaycommons.org/archives/PC1/last_release-2011/tab_delim_network/by_source/cell-map-node-attributes.txt.zip'
     }
 }
 
@@ -903,21 +908,21 @@ pathway = {
         extraEdgeAttrs = {},
         extraNodeAttrsA = {'g2p_ligand': 4},
         extraNodeAttrsB = {'g2p_receptor': 4}),
-    'ca1': input_formats.ReadSettings(name="CA1", separator=";", 
-        nameColA=1, nameColB=6,
-        nameTypeA="uniprot", nameTypeB="uniprot",
-        typeA="protein", typeB="protein", 
-        isDirected=(10,['_','+']), sign=(10,'+','_'),
-        header=True, 
-        inFile=os.path.join(ROOT, 'data', 'ca1.csv'),
-        references=(12, ";"), ncbiTaxId=9606,
-        extraEdgeAttrs={
+    'ca1': input_formats.ReadSettings(name = "CA1", 
+        nameColA = 1, nameColB = 6,
+        nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA = "protein", typeB = "protein", 
+        isDirected = (10, ['_', '+']), sign = (10, '+', '_'),
+        header = False, 
+        inFile = 'get_ca1',
+        references = (12, ";"), ncbiTaxId = 9606,
+        extraEdgeAttrs = {
             "ca1_effect": 10,
             "ca1_type": 11},
-        extraNodeAttrsA={
+        extraNodeAttrsA = {
             "ca1_location": 4,
             "ca1_function": 3},
-        extraNodeAttrsB={
+        extraNodeAttrsB = {
             "ca1_location": 9,
             "ca1_function": 8}),
     'arn': input_formats.ReadSettings(name="ARN", 
@@ -1026,17 +1031,15 @@ interaction = {
         extraNodeAttrsA={},
         extraNodeAttrsB={}),
     'ccmap': input_formats.ReadSettings(name="CancerCellMap", 
-        separator="\t", nameColA=3, nameColB=4,
-        nameTypeA="genesymbol", nameTypeB="genesymbol",
-        typeA="protein", typeB="protein",
-        isDirected = False, sign = False, ncbiTaxId=9606,
-        inFile=os.path.join(ROOT, 'data', 'cell-map-edge-attributes.txt'),
-        references=(6, ";"),
-        negativeFilters = [(6, 'NOT_SPECIFIED')],
+        nameColA = 0, nameColB = 1,
+        nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA = "protein", typeB = "protein",
+        isDirected = (2, 'directed'), sign = False, ncbiTaxId = 9606,
+        inFile = 'get_ccmap',
+        references = (3, ";"),
         extraEdgeAttrs={},
         extraNodeAttrsA={},
-        extraNodeAttrsB={},
-        header=True),
+        extraNodeAttrsB={}),
     'mppi': input_formats.ReadSettings(name="MPPI", 
         separator="|", nameColA=2, nameColB=6,
         nameTypeA="uniprot", nameTypeB="uniprot",
@@ -1238,6 +1241,18 @@ ptm_misc = {
         inFile = 'mimp_interactions', references = False, header = False,
         extraEdgeAttrs = {},
         extraNodeAttrsA = {},
+        extraNodeAttrsB = {}),
+    'li2012': input_formats.ReadSettings(name = "Li2012", separator = False, 
+        nameColA = 0, nameColB = 1,
+        nameTypeA="genesymbol", nameTypeB="genesymbol",
+        typeA="protein", typeB="protein", isDirected = 1, 
+        sign = False,
+        inFile = 'li2012_interactions', references = False, ncbiTaxId = 9606,
+        extraEdgeAttrs = {
+            'li2012_mechanism': 3,
+            'li2012_route': 2
+        },
+        extraNodeAttrsA = {},
         extraNodeAttrsB = {})
 }
 
@@ -1276,18 +1291,6 @@ interaction_misc = {
         extraEdgeAttrs={},
         extraNodeAttrsA={},
         extraNodeAttrsB={}),
-    'li2012': input_formats.ReadSettings(name = "Li2012", separator = False, 
-        nameColA = 0, nameColB = 1,
-        nameTypeA="genesymbol", nameTypeB="genesymbol",
-        typeA="protein", typeB="protein", isDirected = 1, 
-        sign = False,
-        inFile = 'li2012_interactions', references = False, ncbiTaxId = 9606,
-        extraEdgeAttrs = {
-            'li2012_mechanism': 3,
-            'li2012_route': 2
-        },
-        extraNodeAttrsA = {},
-        extraNodeAttrsB = {}),
     'acsn': input_formats.ReadSettings(name="ACSN", 
         separator = None, nameColA=0,
         nameColB=2, nameTypeA="genesymbol", nameTypeB="genesymbol",

@@ -567,7 +567,7 @@ class PyPath(object):
         self.__dict__ = other.__dict__
         self.ownlog.msg(1, "Reinitialized", 'INFO')
     
-    def init_network(self, lst = best, exclude = [], 
+    def init_network(self, lst = omnipath, exclude = [], 
         cache_files = {}, pfile = False, save = False):
         '''
         This is a lazy way to start the module, load data 
@@ -2391,7 +2391,7 @@ class PyPath(object):
         outf.write(out[:-1])
         outf.close()
     
-    def load_resources(self, lst = best, exclude = [], cache_files = {}):
+    def load_resources(self, lst = omnipath, exclude = [], cache_files = {}):
         '''
         Loads multiple resources, and cleans up after. 
         Looks up ID types, and loads all ID conversion 
@@ -2460,8 +2460,8 @@ class PyPath(object):
             self.apply_negative(v)
     
     def list_resources(self):
-        sys.stdout.write(' » best\n')
-        for k,v in best.iteritems():
+        sys.stdout.write(' » omnipath\n')
+        for k,v in omnipath.iteritems():
             sys.stdout.write('\t:: %s (%s)\n' % (v.name,k))
         sys.stdout.write(' » good\n')
         for k,v in good.iteritems():
@@ -4333,7 +4333,7 @@ class PyPath(object):
     
     def get_dirs_signs(self):
         result = {}
-        for db in data_formats.best.values() + data_formats.good.values() \
+        for db in data_formats.omnipath.values() + data_formats.good.values() \
             + data_formats.ugly.values():
             result[db.name] = [bool(db.isDirected), bool(db.sign)]
         return result
@@ -5235,7 +5235,7 @@ class PyPath(object):
             from pypath import data_formats
             net = pypath.BioGraph()
             net.init_network(pfile = 'cache/default.pickle')
-            #net.init_network({'arn': data_formats.best['arn']})
+            #net.init_network({'arn': data_formats.omnipath['arn']})
             tgf = [v.index for v in net.graph.vs if 'TGF' in v['slk_pathways']]
             dot = net.export_dot(nodes = tgf, save_graphics = 'tgf_slk.pdf', prog = 'dot',
                 main_title = 'TGF-beta pathway', return_object = True,
