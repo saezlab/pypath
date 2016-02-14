@@ -354,14 +354,26 @@ _favicon = u'''data:image/png;base64,
 
 _default_css = u'''
                 %s
-                .quotebox {
-                    border-color: #6FA6A9;
+                .code {
+                    font-family: monospace;
+                }
+                .box {
                     border-style: solid;
                     border-width: 1px 1px 1px 3px;
                     margin: 0.75em 1em;
                     padding: 0px 0.75em;
-                    background-color: #E4ECEC;
                     color: #444444;
+                }
+                .quotebox {
+                    border-color: #6FA6A9;
+                    background-color: #E4ECEC;
+                }
+                .codebox {
+                    border-color: #A9C98B;
+                    background-color: #EFF4E9;
+                }
+                .small {
+                    font-size: small;
                 }
                 body {
                     margin: 6ex 23.61%% 18ex 14.59%%;
@@ -371,7 +383,8 @@ _default_css = u'''
                 }
                 a:link, a:active, a:visited {
                     color: #646567;
-                    text-decoration: none;
+                    text-decoration: underline;
+                    text-decoration-style: dotted;
                 }
                 h1 {
                     color: #6FA6A9;

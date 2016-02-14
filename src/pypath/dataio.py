@@ -695,7 +695,7 @@ def get_pfam_pdb():
 def get_corum():
     complexes = {}
     members = {}
-    data = curl(data_formats.urls['corum']['url'],silent=False)
+    data = curl(data_formats.urls['corum']['url'], silent=False)
     if data is None:
         return None,None
     data = data.split('\n')
