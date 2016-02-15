@@ -3767,6 +3767,25 @@ def signor_urls():
         tsv_urls.append((pw, tsv_url))
     return tsv_urls
 
+def signor_pathways():
+    urls = signor_urls()
+    proteins_pathways = {}
+    interactions_pathways = {}
+    prg = progress.Progress(len(urls), 'Downloading data from Signor', 1, percent = False)
+    for pathw, url in urls:
+        prg.step()
+        data = curl(url)
+        data = filter(lambda l: len(l) > 6, map(lambda l: l.strip().split('\t'), data.split('\n')[1:]))
+        proteins_pathways[pathw] = set([])
+        proteins_pathways[pathw] = proteins_pathways[pathw] | \
+            set(map(lambda l: l[2], filter(lambda l: l[1] == 'PROTEIN', data)))
+        proteins_pathways[pathw] = proteins_pathways[pathw] | \
+            set(map(lambda l: l[6], filter(lambda l: l[5] == 'PROTEIN', data)))
+        interactions_pathways[pathw] = set(map(lambda l: (l[2], l[6]), \
+            filter(lambda l: l[1] == 'PROTEIN' and l[5] == 'PROTEIN', data)))
+    prg.terminate()
+    return proteins_pathways, interactions_pathways
+
 def signor_interactions():
     '''
     Downloads the full dataset from Signor.
