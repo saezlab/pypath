@@ -3781,6 +3781,18 @@ class PyPath(object):
             if genesymbol in self.dlabDct else None
         return self.up_stimulates(uniprot)
     
+    def gs_inhibited_by(self, genesymbol):
+        dgraph = self._get_directed()
+        uniprot = self.dnodNam[self.dlabDct[genesymbol]] \
+            if genesymbol in self.dlabDct else None
+        return self.up_inhibited_by(uniprot)
+    
+    def gs_inhibits(self, genesymbol):
+        dgraph = self._get_directed()
+        uniprot = self.dnodNam[self.dlabDct[genesymbol]] \
+            if genesymbol in self.dlabDct else None
+        return self.up_inhibits(uniprot)
+    
     # meighbors variations
     
     def up_neighbors(self, uniprot, mode = 'ALL'):
@@ -5406,6 +5418,56 @@ class PyPath(object):
         for uniprot in uniprots:
             if uniprot in self.nodDct:
                 self.graph.vs[self.nodDct[uniprot]]['tf'] = True
+    
+    def signor_pathways(self, graph = None):
+        g = self.graph if graph is None else graph
+        nodDct = dict(zip(g.vs['name'], xrange(g.vcount())))
+        protein_pws, intera_pws = dataio.signor_pathways()
+        g.vs['signor_pathways'] = [set([]) for _ in g.vs]
+        g.es['signor_pathways'] = [set([]) for _ in g.es]
+        for pw, proteins in protein_pws.iteritems():
+            for protein in proteins:
+                if protein in proteins:
+                    uniprots = self.mapper.map_name(protein, 'uniprot', 'uniprot')
+                    for u in uniprots:
+                        if u in nodDct:
+                            g.vs['signor_pathways'].add(pw)
+        for pw, ia in intera_pws.iteritems():
+            for pair in ia:
+                usrc = self.mapper.map_name(pair[0], 'uniprot', 'uniprot')
+                utgt = self.mapper.map_name(pair[1], 'uniprot', 'uniprot')
+                if usrc in nodDct and utgt in nodDct:
+                    eid = g.get_eid(nodDct[usrc], nodDct[utgt], error = False)
+                    if eid != -1:
+                        g.es[eid]['signor_pathways'].add(pw)
+    
+    def pathway_attributes(self, graph = None):
+        g = self.graph if graph is None else graph
+        g.graph.vs['netpath_pathways'] = [set([]) for _ in xrange(g.graph.vcount())]
+        for e in g.graph.es:
+            g.graph.vs[e.source]['netpath_pathways'] = \
+                g.graph.vs[e.source]['netpath_pathways'] | set(e['netpath_pathways'])
+            g.graph.vs[e.target]['netpath_pathways'] = \
+                g.graph.vs[e.target]['netpath_pathways'] | set(e['netpath_pathways'])
+        g.graph.vs['signalink_pathways'] = [set(v['slk_pathways']) for v in g.graph.vs]
+        for v in g.graph.vs:
+            if v['atg']:
+                v['signalink_pathways'].add('autophagy')
+    
+    def pathways_table(self, filename = 'genes_pathways.list', 
+        pw_sources = ['signalink', 'signor', 'netpath'], graph = None):
+        result = []
+        hdr = ['UniProt', 'GeneSymbol', 'Database', 'Pathway']
+        g = self.graph if graph is None else graph
+        self.genesymbol_labels(graph = g)
+        for v in g.vs:
+            for src in pw_sources:
+                pw_attr = '%s_pathways'%src
+                for pw in [pw_attr]:
+                    result.append([v['name'], v['label'], src, pw])
+        with open(filename, 'w') as f:
+            f.write('\t'.join(hdr))
+            f.write('\n'.join(map('\t'.join(l), result)))
     
     def guide2pharma(self):
         result = []
