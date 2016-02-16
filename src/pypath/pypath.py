@@ -2145,12 +2145,15 @@ class PyPath(object):
         updates this attribute or recreates if ``remap_all`` 
         is ``True``.
         '''
+        self._already_has_directed()
+        if graph is None and self.dgraph is not None:
+            self.genesymbol_labels(graph = self.dgraph, remap_all = remap_all)
         g = self.graph if graph is None else graph
         defaultNameType = self.default_name_type["protein"]
         geneSymbol = "genesymbol"
         if 'label' not in g.vs.attributes():
             remap_all = True
-        labels = [None if remap_all else v['label'] for v in g.vs]
+        labels = [None if remap_all or v['label'] == v['name'] else v['label'] for v in g.vs]
         for v, l, i in zip(g.vs, labels, xrange(g.vcount())):
             if l is None and v['type'] == 'protein':
                 label = self.mapper.map_name(v['name'], defaultNameType, geneSymbol)
@@ -3636,9 +3639,10 @@ class PyPath(object):
     # conversion between directed and undirected vertices
     
     def _get_undirected(self):
-        if self._undirected is None and \
-            not self.graph.is_directed():
+        if self._undirected != self.graph and not self.graph.is_directed():
             self._undirected = self.graph
+        if self.graph.is_directed():
+            self._undirected = None
         return self._undirected
     
     def up_in_directed(self, uniprot):
@@ -3764,6 +3768,18 @@ class PyPath(object):
                 vs), self.dnodNam, self.dnodLab)
         else:
             return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
+    
+    def gs_stimulated_by(self, genesymbol):
+        dgraph = self._get_directed()
+        uniprot = self.dnodNam[self.dlabDct[genesymbol]] \
+            if genesymbol in self.dlabDct else None
+        return self.up_stimulated_by(uniprot)
+    
+    def gs_stimulates(self, genesymbol):
+        dgraph = self._get_directed()
+        uniprot = self.dnodNam[self.dlabDct[genesymbol]] \
+            if genesymbol in self.dlabDct else None
+        return self.up_stimulates(uniprot)
     
     # meighbors variations
     
