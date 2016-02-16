@@ -3713,7 +3713,7 @@ def load_macrophage():
         data = f.read()
     data = data.replace('?', '').replace('->', ',')
 
-def kegg_pathways(mapper = None):
+def get_kegg(mapper = None):
     '''
     Downloads and processes KEGG Pathways.
     Returns list of interactions.
@@ -3727,9 +3727,9 @@ def kegg_pathways(mapper = None):
     for a in lstsoup.find_all('a', href = True):
         m = rehsa.match(a['href'])
         if m:
-            hsa_list.append(m.groups(0)[0])
+            hsa_list.append((m.groups(0)[0], a.text))
     prg = progress.Progress(len(hsa_list), 'Processing KEGG Pathways', 1, percent = False)
-    for hsa in hsa_list:
+    for hsa, pw in hsa_list:
         prg.step()
         kgml = curl(data_formats.urls['kegg_pws']['kgml_url'] % hsa, silent = True)
         kgmlsoup = bs4.BeautifulSoup(kgml, 'html.parser')
@@ -3748,9 +3748,20 @@ def kegg_pathways(mapper = None):
                 st and 'name' in st.attrs:
                 for u1 in uentries[rel.attrs['entry1']]:
                     for u2 in uentries[rel.attrs['entry2']]:
-                        interactions.append((u1, u2, st.attrs['name']))
+                        interactions.append((u1, u2, st.attrs['name'], pw))
     prg.terminate()
     return common.uniqList(interactions)
+
+def kegg_pathways(mapper = None):
+    data = get_kegg(mapper = mapper)
+    pws = common.uniqList(map(lambda i: i[3], data))
+    proteins_pws = dict(map(lambda pw: (pw, set([])), pws))
+    interactions_pws = dict(map(lambda pw: (pw, set([])), pws))
+    for u1, u2, eff, pw in data:
+        proteins_pws[pw].add(u1)
+        proteins_pws[pw].add(u2)
+        interactions_pws[pw].add((u1, u2))
+    return proteins_pws, interactions_pws
 
 def signor_urls():
     '''
@@ -3767,7 +3778,7 @@ def signor_urls():
         tsv_urls.append((pw, tsv_url))
     return tsv_urls
 
-def signor_pathways():
+def signor_pathways(**kwargs):
     urls = signor_urls()
     proteins_pathways = {}
     interactions_pathways = {}

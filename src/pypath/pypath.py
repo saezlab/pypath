@@ -5419,43 +5419,65 @@ class PyPath(object):
             if uniprot in self.nodDct:
                 self.graph.vs[self.nodDct[uniprot]]['tf'] = True
     
-    def signor_pathways(self, graph = None):
+    def get_pathways(self, source):
+        attrname = '%s_pathways'%source
+        protein_pws = None
+        interaction_pws = None
+        if hasattr(dataio, attrname):
+            fun = getattr(dataio, attrname)
+            proteins_pws, interactions_pws = fun(mapper = self.mapper)
+        return proteins_pws, interactions_pws
+    
+    def load_pathways(self, source, graph = None):
+        attrname = '%s_pathways'%source
         g = self.graph if graph is None else graph
         nodDct = dict(zip(g.vs['name'], xrange(g.vcount())))
-        protein_pws, intera_pws = dataio.signor_pathways()
-        g.vs['signor_pathways'] = [set([]) for _ in g.vs]
-        g.es['signor_pathways'] = [set([]) for _ in g.es]
-        for pw, proteins in protein_pws.iteritems():
-            for protein in proteins:
-                if protein in proteins:
-                    uniprots = self.mapper.map_name(protein, 'uniprot', 'uniprot')
-                    for u in uniprots:
-                        if u in nodDct:
-                            g.vs['signor_pathways'].add(pw)
-        for pw, ia in intera_pws.iteritems():
-            for pair in ia:
-                usrc = self.mapper.map_name(pair[0], 'uniprot', 'uniprot')
-                utgt = self.mapper.map_name(pair[1], 'uniprot', 'uniprot')
-                if usrc in nodDct and utgt in nodDct:
-                    eid = g.get_eid(nodDct[usrc], nodDct[utgt], error = False)
-                    if eid != -1:
-                        g.es[eid]['signor_pathways'].add(pw)
+        proteins_pws, interactions_pws = self.get_pathways(source)
+        g.vs[attrname] = [set([]) for _ in g.vs]
+        g.es[attrname] = [set([]) for _ in g.es]
+        if type(proteins_pws) is dict:
+            for pw, proteins in proteins_pws.iteritems():
+                for protein in proteins:
+                    if protein in proteins:
+                        uniprots = self.mapper.map_name(protein, 
+                            'uniprot', 'uniprot')
+                        for u in uniprots:
+                            if u in nodDct:
+                                g.vs[nodDct[u]][attrname].add(pw)
+        if type(interactions_pws) is dict:
+            for pw, ia in interactions_pws.iteritems():
+                for pair in ia:
+                    usrcs = self.mapper.map_name(pair[0], 'uniprot', 'uniprot')
+                    utgts = self.mapper.map_name(pair[1], 'uniprot', 'uniprot')
+                    for usrc in usrcs:
+                        for utgt in utgts:
+                            if usrc in nodDct and utgt in nodDct:
+                                eid = g.get_eid(nodDct[usrc], 
+                                    nodDct[utgt], error = False)
+                                if eid != -1:
+                                    g.es[eid][attrname].add(pw)
+    
+    def signor_pathways(self, graph = None):
+        self.load_pathways('signor', graph = graph)
+    
+    def kegg_pathways(self, graph = None):
+        self.load_pathways('kegg', graph = graph)
     
     def pathway_attributes(self, graph = None):
         g = self.graph if graph is None else graph
-        g.graph.vs['netpath_pathways'] = [set([]) for _ in xrange(g.graph.vcount())]
-        for e in g.graph.es:
-            g.graph.vs[e.source]['netpath_pathways'] = \
-                g.graph.vs[e.source]['netpath_pathways'] | set(e['netpath_pathways'])
-            g.graph.vs[e.target]['netpath_pathways'] = \
-                g.graph.vs[e.target]['netpath_pathways'] | set(e['netpath_pathways'])
-        g.graph.vs['signalink_pathways'] = [set(v['slk_pathways']) for v in g.graph.vs]
-        for v in g.graph.vs:
+        g.vs['netpath_pathways'] = [set([]) for _ in xrange(g.vcount())]
+        for e in g.es:
+            g.vs[e.source]['netpath_pathways'] = \
+                g.vs[e.source]['netpath_pathways'] | set(e['netpath_pathways'])
+            g.vs[e.target]['netpath_pathways'] = \
+                g.vs[e.target]['netpath_pathways'] | set(e['netpath_pathways'])
+        g.vs['signalink_pathways'] = [set(v['slk_pathways']) for v in g.vs]
+        for v in g.vs:
             if v['atg']:
                 v['signalink_pathways'].add('autophagy')
     
     def pathways_table(self, filename = 'genes_pathways.list', 
-        pw_sources = ['signalink', 'signor', 'netpath'], graph = None):
+        pw_sources = ['signalink', 'signor', 'netpath', 'kegg'], graph = None):
         result = []
         hdr = ['UniProt', 'GeneSymbol', 'Database', 'Pathway']
         g = self.graph if graph is None else graph
@@ -5463,11 +5485,11 @@ class PyPath(object):
         for v in g.vs:
             for src in pw_sources:
                 pw_attr = '%s_pathways'%src
-                for pw in [pw_attr]:
+                for pw in v[pw_attr]:
                     result.append([v['name'], v['label'], src, pw])
         with open(filename, 'w') as f:
             f.write('\t'.join(hdr))
-            f.write('\n'.join(map('\t'.join(l), result)))
+            f.write('\n'.join(map(lambda l: '\t'.join(l), result)))
     
     def guide2pharma(self):
         result = []
@@ -5694,7 +5716,7 @@ class PyPath(object):
         self.mimp_directions(graph = graph)
     
     def kegg_directions(self, graph = None):
-        keggd = dataio.kegg_pathways()
+        keggd = dataio.get_kegg()
         self.process_directions(keggd, 'KEGG', stimulation = 'activation', 
             inhibition = 'inhibition', graph = graph)
     
