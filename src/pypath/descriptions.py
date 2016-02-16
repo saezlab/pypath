@@ -1263,7 +1263,9 @@ descriptions = {
             'name': 'CC-Attribution-4.0',
             'url': 'http://creativecommons.org/licenses/by/4.0/'
         },
-        'omnipath': False
+        'omnipath': False,
+        'type': 'Literature curated',
+        'subtype': 'Pathway'
     },
     'HSN': {
         'year': 2014,
@@ -2679,7 +2681,8 @@ descriptions = {
         'license': {
             'name': 'Constituting databases carry their own licenses.'
         },
-        'category': 'combined',
+        'type': 'combined',
+        'subtype': 'interaction',
         'pubmeds': [21071392],
         'releases': [2010, 2011, 2012, 2013, 2014],
         'omnipath': False,
@@ -2695,7 +2698,8 @@ descriptions = {
         },
         'full_name': 'Compiled Datasets for Network Analysis from Laudanna Lab',
         'authors': ['Laudanna Lab'],
-        'category': 'combined',
+        'type': 'combined',
+        'subtype': 'mixed',
         'notes': [
             '''
             Data sets are compiled from public data-bases and from literature and manually curated for accuracy. They are intended for network reconstruction, topological and multidimensional analysis in cell biology.
@@ -2898,17 +2902,23 @@ def resource_list_latex(filename = 'resource-list.tex'):
     '''
     Generates Supplementary Table 3 (The list of the 52 resources considered) for the article.
     '''
-    tex = r'''\begin{tabularx}{\textwidth}{XX}
+    tex = r'''\begin{tabularx}{\textwidth}{>{\raggedright\scriptsize\arraybackslash}X>{\raggedright\scriptsize\arraybackslash}X>{\raggedright\scriptsize\arraybackslash}X>{\raggedright\scriptsize\arraybackslash}X}
     \toprule
-    Resource name & Resource name \\
+    Resource name & Class, subclass & Resource name & Class, subclass \\
     \midrule
     '''
-    res = sorted([v['label'] if 'label' in v else k for k, v in descriptions.iteritems()], key = lambda x: x.lower())
+    res = sorted([(v['label'] if 'label' in v else k, 
+            '%s, %s'%(v['type'].capitalize(), v['subtype'].capitalize()) if 'type' in v and 'subtype' in v else '') 
+        for k, v in descriptions.iteritems()], key = lambda x: x[0].lower())
     if len(res) % 2 != 0:
         res.append('')
     res2 = zip(res[:len(res)/2], res[len(res)/2:])
     for r in res2:
-        tex += r'%s & %s \\' % (r[0], r[1]) + '\n'
+        tex += r'%s & %s & %s & %s \\' % (
+            r[0][0], 
+            r[0][1],
+            r[1][0],
+            r[1][1]) + '\n'
     tex += r'\bottomrule' + '\n'
     tex += r'\end{tabularx}' + '\n'
     with open(filename, 'w') as f:
