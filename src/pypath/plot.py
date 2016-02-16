@@ -352,15 +352,12 @@ def boxplot(data, labels, xlab, ylab, fname, fontfamily = 'Helvetica Neue LT Std
         tick.label.set_color(textcol)
     fig.savefig(fname)
 
-def stacked_barplot(x, y, data, fname, names, 
-    font_family = 'Helvetica Neue LT Std', font_style = 'normal',
-    font_weight = 'normal', font_variant = 'normal',
-    font_stretch = 'normal',
-    xlab = '', ylab = '', lab_angle = 90, lab_size = 9, legend = True, 
-    colors = ['#007b7f', '#6ea945', '#fccc06', '#818284', '#da0025'], 
+def stacked_barplot(x, y, data, fname, names, font_family = 'Helvetica Neue LT Std', 
+    xlab = '', ylab = '', lab_angle = 90, lab_size = (18, 21), axis_lab_size = 36, 
+    legend = True, font_weight = None, leg_label_size = 18, 
+    colors = ['#7AA0A1', '#C6909C', '#92C1D6', '#C5B26E', '#da0025'], 
     order = False, desc = True):
-    fp = mpl.font_manager.FontProperties(family = font_family, style = font_style,
-        variant = font_variant, weight = font_weight, stretch = font_stretch)
+    plt.close('all')
     if type(x) is list or type(x) is tuple:
         x = np.array(x)
     for i, yi in enumerate(y):
@@ -373,38 +370,42 @@ def stacked_barplot(x, y, data, fname, names,
         ordr = np.array([x[i] for i in total.argsort()])
     elif type(order) is int:
         ordr = np.array([x[i] for i in y[order].argsort()])
+    elif len(set(order) & set(x)) == len(x):
+        ordr = order
     else:
         ordr = x
     if desc:
         ordr = ordr[::-1]
-    rc = {}
-    rc['font.family'] = font_family
-    rc['font.style'] = font_style
-    rc['font.variant'] = font_variant
-    rc['font.weight'] = font_weight
-    rc['font.stretch'] = font_stretch
-    rc['lines.linewidth'] = 1.0
-    rc['patch.linewidth'] = 0.0
-    rc['grid.linewidth'] = 1.0
     fig, ax = plt.subplots()
     sns.set(font = font_family)
-    sns.set_context('talk', rc = rc)
+    sns.set_context('talk', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
+        'grid.linewidth': 1.0, 'axes.labelsize': axis_lab_size})
     for j in xrange(len(y), 0, -1):
         this_level = np.array([sum([y[jj][i] for jj in xrange(j)]) \
             for i in xrange(len(y[0]))])
         ax = sns.barplot(x, y = this_level, data = data, 
-            color = colors[j-1], order = ordr, fontproperties = fp)
-    #ax = sns.barplot(x, y = y, data = data, color = color, x_order = ordr)
-    #plt.bar(range(len(ordr)), [y[i] for i in ordr], align = 'center')
-    #plt.xticks(list(ordr), [x[i] for i in ordr])
+            color = colors[j-1], order = ordr)
     sns.set_context('talk', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
-        'grid.linewidth': 1.0})
+        'grid.linewidth': 1.0, 'axes.labelsize': axis_lab_size})
     for tick in ax.xaxis.get_major_ticks():
-        tick.label.set_fontsize(lab_size)
+        tick.label.set_fontsize(lab_size[0])
+    for tick in ax.yaxis.get_major_ticks():
+        tick.label.set_fontsize(lab_size[1])
     ax.set_ylabel(ylab)
     ax.set_xlabel(xlab)
+    if font_weight is not None:
+        ax.xaxis.label.set_fontweight(font_weight)
+        ax.yaxis.label.set_fontweight(font_weight)
+    ax.xaxis.get_label().set_fontsize(axis_lab_size)
+    ax.yaxis.get_label().set_fontsize(axis_lab_size)
     plt.setp(ax.xaxis.get_majorticklabels(), rotation = lab_angle)
-    self.finish(fig, fname)
+    if legend:
+        lhandles = [mpl.patches.Patch(color = colors[i], label = names[i]) for i in xrange(len(y))]
+    leg = ax.legend(handles = lhandles)
+    nul = [t.set_fontsize(leg_label_size) for t in leg.texts]
+    fig.tight_layout()
+    fig.savefig(fname)
+    plt.close('all')
 
 ## ## ##
 
