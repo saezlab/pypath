@@ -420,30 +420,30 @@ class AttrHelper(object):
 
 class _NamedVertexSeq(object):
     
-    def __init__(self, _vs, _nodDct, _labDct):
+    def __init__(self, _vs, _nodNam, _nodLab):
         self._vs = _vs
-        self._nodDct = _nodDct
-        self._labDct = _labDct
+        self._nodNam = _nodNam
+        self._nodLab = _nodLab
     
     def __iter__(self):
-        for v in _vs:
+        for v in self._vs:
             yield v
     
     def gs(self):
         for v in self._vs:
-            yield _labDct[v.index]
+            yield self._nodLab[v.index]
     
     def up(self):
         for v in self._vs:
-            yield _nodDct[v.index]
+            yield self._nodNam[v.index]
     
     def ids(self):
         for v in self._vs:
             yield v.index
     
-    self.genesymbol = self.gs
-    self.uniprot = self.up
-    self.vs = self.__iter__
+    genesymbol = gs
+    uniprot = up
+    vs = __iter__
 
 class PyPath(object):
     
@@ -710,7 +710,8 @@ class PyPath(object):
         '''
         self.genesymbol_labels()
         graph = self._get_undirected()
-        dgraph = self._get_directed()
+        self._already_has_directed()
+        dgraph = self._directed
         if graph is not None:
             self.nodInd = set(graph.vs['name'])
             self.nodDct = dict(zip(graph.vs['name'], xrange(graph.vcount())))
@@ -2149,7 +2150,7 @@ class PyPath(object):
         geneSymbol = "genesymbol"
         if 'label' not in g.vs.attributes():
             remap_all = True
-        labels = [None if remap_all or v['label'] if v['label'] is not None  for v in g.vs]
+        labels = [None if remap_all else v['label'] for v in g.vs]
         for v, l, i in zip(g.vs, labels, xrange(g.vcount())):
             if l is None and v['type'] == 'protein':
                 label = self.mapper.map_name(v['name'], defaultNameType, geneSymbol)
@@ -3468,7 +3469,7 @@ class PyPath(object):
         return dgraph.vs[self.dnodDct[uniprot]] \
             if uniprot in self.dnodDct else None
     
-    dup = duniprot()
+    dup = duniprot
     
     def uniprots(self, uniprots):
         '''
@@ -3617,6 +3618,13 @@ class PyPath(object):
             else:
                 self.get_directed()
     
+    def _already_has_directed(self):
+        if self._directed is None:
+            if self.graph.is_directed():
+                self._directed = self.graph
+            elif self.dgraph is not None and self.dgraph.is_directed():
+                self._directed = self.dgraph
+    
     def _get_directed(self):
         '''
         Returns the directed instance of the graph.
@@ -3663,7 +3671,7 @@ class PyPath(object):
             vertex = self.in_directed(vertex['name'])
         vs = vertex.neighbors(mode = 'IN') \
             if vertex is not None else []
-        return _NamedVertexSeq(vs, self.dnodDct, self.dlabDct)
+        return _NamedVertexSeq(vs, self.dnodNam, self.dnodLab)
     
     def _affects(self, vertex):
         dgraph = self._get_directed()
@@ -3671,7 +3679,7 @@ class PyPath(object):
             vertex = self.in_directed(vertex['name'])
         vs = vertex.neighbors(mode = 'OUT') \
             if vertex is not None else []
-        return _NamedVertexSeq(vs, self.dnodDct, self.dlabDct)
+        return _NamedVertexSeq(vs, self.dnodNam, self.dnodLab)
     
     def affected_by(self, identifier):
         vrtx = self.dprotein(identifier)
@@ -3717,9 +3725,9 @@ class PyPath(object):
             return _NamedVertexSeq(filter(lambda v: \
                 dgraph.es[dgraph.get_eid(v.index, vid)]\
                     ['dirs'].positive[v['name'], uniprot], 
-                vs), self.dnodDct, self.dlabDct)
+                vs), self.dnodNam, self.dnodLab)
         else:
-            return _NamedVertexSeq([], self.dnodDct, self.dlabDct)
+            return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
     
     def up_inhibited_by(self, uniprot):
         dgraph = self._get_directed()
@@ -3729,9 +3737,9 @@ class PyPath(object):
             return _NamedVertexSeq(filter(lambda v: \
                 dgraph.es[dgraph.get_eid(v.index, vid)]\
                     ['dirs'].negative[v['name'], uniprot], 
-                vs), self.dnodDct, self.dlabDct)
+                vs), self.dnodNam, self.dnodLab)
         else:
-            return _NamedVertexSeq([], self.dnodDct, self.dlabDct)
+            return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
     
     def up_stimulates(self, uniprot):
         dgraph = self._get_directed()
@@ -3741,9 +3749,9 @@ class PyPath(object):
             return _NamedVertexSeq(filter(lambda v: \
                 dgraph.es[dgraph.get_eid(vid, v.index)]\
                     ['dirs'].positive[uniprot, v['name']], 
-                vs), self.dnodDct, self.dlabDct)
+                vs), self.dnodNam, self.dnodLab)
         else:
-            return _NamedVertexSeq([], self.dnodDct, self.dlabDct)
+            return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
     
     def up_inhibits(self, uniprot):
         dgraph = self._get_directed()
@@ -3753,9 +3761,9 @@ class PyPath(object):
             return _NamedVertexSeq(filter(lambda v: \
                 dgraph.es[dgraph.get_eid(vid, v.index)]\
                     ['dirs'].negative[uniprot, v['name']], 
-                vs), self.dnodDct, self.dlabDct)
+                vs), self.dnodNam, self.dnodLab)
         else:
-            return _NamedVertexSeq([], self.dnodDct, self.dlabDct)
+            return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
     
     # meighbors variations
     
@@ -3764,28 +3772,28 @@ class PyPath(object):
         if vrtx is not None:
             return _NamedVertexSeq(vrtx.neighbors(mode = mode), 
                 self.nodDct, self.labDct)
-        return _NamedVertexSeq([], self.nodDct, self.labDct)
+        return _NamedVertexSeq([], self.nodNam, self.nodLab)
     
     def gs_neighbors(self, uniprot, mode = 'ALL'):
         vrtx = self.uniprot(uniprot)
         if vrtx is not None:
             return _NamedVertexSeq(vrtx.neighbors(mode = mode), 
                 self.nodDct, self.labDct)
-        return _NamedVertexSeq([], self.nodDct, self.labDct)
+        return _NamedVertexSeq([], self.nodNam, self.nodLab)
     
     def neighbors(self, identifier, mode = 'ALL'):
         vrtx = self.protein(identifier)
         if vrtx is not None:
             return _NamedVertexSeq(vrtx.neighbors(mode = mode), 
                 self.nodDct, self.labDct)
-        return _NamedVertexSeq([], self.nodDct, self.labDct)
+        return _NamedVertexSeq([], self.nodNam, self.nodLab)
     
     # neighborhood variations:
     
     def _neighborhood(self, vs, order = 1, mode = 'ALL'):
         return _NamedVertexSeq(self.graph.neighborhood(vs, 
                 order = order, mode = mode), 
-            self.nodDct, self.labDct)
+            self.nodNam, self.nodLab)
     
     def up_neighborhood(self, uniprot, order = 1, mode = 'ALL'):
         if type(uniprots) in simpleTypes:

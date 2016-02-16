@@ -5005,7 +5005,7 @@ def get_phosphosite_curated():
         curated, noref = get_phosphosite()
         return curated
     else:
-        return pickle.load(open(cureted_cache, 'rb'))
+        return pickle.load(open(curated_cache, 'rb'))
 
 def get_phosphosite_noref():
     '''
