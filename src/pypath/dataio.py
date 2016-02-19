@@ -719,7 +719,7 @@ def get_corum():
             members[u].append((name,shortName,pubmeds,spec,func,dise))
         prg.step()
     prg.terminate()
-    return complexes,members
+    return complexes, members
 
 def get_complexportal(species=9606,zipped=True):
     '''

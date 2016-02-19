@@ -903,7 +903,7 @@ pathway = {
         extraNodeAttrsB={
             "slk_pathways": (9, ";")
             }),
-    'guide2pharma': input_formats.ReadSettings(name = "Guide2Pharmacology", 
+    'guide2pharma': input_formats.ReadSettings(name = "Guide2Pharma", 
         separator = None, nameColA = 0, nameColB = 1,
         nameTypeA = "uniprot", nameTypeB = "uniprot",
         typeA = "protein", typeB = "protein", isDirected = True, 
@@ -1650,7 +1650,7 @@ categories = {
     'DEPOD': 'm',
     'phosphoELM': 'm',
     'MPPI': 'i',
-    'Guide2Pharmacology': 'p',
+    'Guide2Pharma': 'p',
     'TRIP': 'p',
     'AlzPathway': 'r',
     'PhosphoSite': 'm',

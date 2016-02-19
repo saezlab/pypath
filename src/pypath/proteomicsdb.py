@@ -4,7 +4,7 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2015 - EMBL-EBI
+#  Copyright (c) 2014-2016 - EMBL-EBI
 #
 #  File author(s): Dénes Türei (denes@ebi.ac.uk)
 #
@@ -33,7 +33,8 @@ except:
 try:
     import ssl
 except ImportError:
-    print "error: no ssl support"
+    sys.stdout.write("\t:: Error: no ssl support :(\n\n")
+    sys.stdout.flush()
 
 # from this module:
 import dataio
