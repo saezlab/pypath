@@ -28,7 +28,7 @@ __all__ = ['descriptions', 'gen_html', 'write_html']
 descriptions = {
     'Lit13': {
         'year': 2013,
-        'label': 'Lit-BM-13: High-quality non-systematic Literature dataset',
+        'label': 'Lit-BM-13',
         'urls': {
             'articles': [
                 'http://www.cell.com/cell/abstract/S0092-8674(14)01422-6'
@@ -41,17 +41,31 @@ descriptions = {
         'pubmeds': [25416956],
         'descriptions': [
             u'''
-            In 2013, we extracted interaction data from BIND, BioGRID, DIP, HPRD, MINT, IntAct, and PDB to generate a high-quality binary literature dataset comprising ~11,000 protein-protein interactions that are binary and supported by at least two traceable pieces of evidence (publications and/or methods) (Rolland et al Cell 2014). Although this dataset does not result from a systematic investigation of the interactome search space and should thus be used with caution for any network topology analyses, it represents valuable interactions for targeted studies and is freely available to the research community through the search engine or via download. 
+            High-quality non-systematic Literature dataset. In 2013, we extracted interaction data from BIND, BioGRID, DIP, HPRD, MINT, IntAct, and PDB to generate a high-quality binary literature dataset comprising ~11,000 protein-protein interactions that are binary and supported by at least two traceable pieces of evidence (publications and/or methods) (Rolland et al Cell 2014). Although this dataset does not result from a systematic investigation of the interactome search space and should thus be used with caution for any network topology analyses, it represents valuable interactions for targeted studies and is freely available to the research community through the search engine or via download. 
             '''
         ],
         'emails': [('Michael_Calderwood@dfci.harvard.edu', 'Michael Calderwood')],
         'type': 'high-throughput',
         'subtype': 'yeast 2 hybrid',
-        'omnipath': False
+        'omnipath': False,
+        'pypath': {
+            'get': [
+                'pypath.dataio.get_lit_bm_13()'
+            ],
+            'data': [
+                'pypath.data_formats.urls[\'hid\'][\'lit-bm-13\']'
+            ],
+            'input': [
+                'pypath.data_formats.interaction_misc[\'lit13\']'
+            ]
+        },
+        'license': {
+            'name': 'This dataset is freely available to the research community through the search engine or via download.'
+        }
     },
     'ELM': {
         'year': 2014,
-        'releases': [2003, 2008, 2009, 2012, 2013, 2014],
+        'releases': [2003, 2008, 2009, 2012, 2013, 2014, 2016],
         'size': {
             'nodes': None,
             'edges': None
@@ -65,14 +79,36 @@ descriptions = {
             ],
             'articles': [
                 'http://nar.oxfordjournals.org/content/40/D1/D242.long',
-                'http://nar.oxfordjournals.org/content/42/D1/D259.long'
+                'http://nar.oxfordjournals.org/content/42/D1/D259.long',
+                'http://nar.oxfordjournals.org/content/44/D1/D294.long'
             ]
         },
-        'pubmeds': [22110040, 24214962],
+        'pubmeds': [22110040, 24214962, 26615199],
         'emails': [('feedback@elm.eu.org', 'ELM Team'), ('gibson@embl.de', 'Toby Gibson')],
         'type': 'literature curated',
         'subtype': 'post-translational modifications',
-        'omnipath': True
+        'descritpions': [
+            u'''
+            Ideally, each motif class has multiple example instances of this motif annotated, whereby an instance is described as a match to the regular expression pattern of the ELM motif class in a protein sequence. For each instance entry, ideally, multiple sources of experimental evidence are recorded (identifying participant, detecting motif presence and detecting interaction), and, following annotation best practices, a reliability score is given by the annotator.
+            '''
+        ],
+        'omnipath': True,
+        'pypath': {
+            'intr': [
+                'pypath.dataio.get_elm_interactions()'
+            ],
+            'data': [
+                'data_formats.urls[\'elm_int\'][\'url\']'
+            ],
+            'format': [
+                'pypath.data_formats.ptm[\'elm\']',
+                'pypath.data_formats.omnipath[\'elm\']'
+            ]
+        },
+        'license': {
+            'name': 'ELM Software License Agreement',
+            'url': 'http://elm.eu.org/media/Elm_academic_license.pdf'
+        }
     },
     'LMPID': {
         'year': 2015,
@@ -96,7 +132,33 @@ descriptions = {
         'emails': [('ssaha4@jcbose.ac.in', 'Sudipto Saha')],
         'type': 'literature curated',
         'subtype': 'post-translational modifications',
-        'omnipath': True
+        'descriptions': [
+            u'''
+            LMPID (Linear Motif mediated Protein Interaction Database) is a manually curated database which provides comprehensive experimentally validated information about the LMs mediating PPIs from all organisms on a single platform. About 2200 entries have been compiled by detailed manual curation of PubMed abstracts, of which about 1000 LM entries were being annotated for the first time, as compared with the Eukaryotic LM resource.
+            '''
+        ],
+        'omnipath': True,
+        'pypath': {
+            'input':
+                'pypath.dataio.load_lmpid()'
+            'intr': [
+                'pypath.dataio.lmpid_interactions()'
+            ],
+            'data': [
+                'pypath.data/LMPID_DATA_pubmed_ref.xml'
+            ],
+            'format': [
+                'pypath.data_formats.ptm[\'lmpid\']',
+                'pypath.data_formats.omnipath[\'lmpid\']'
+            ],
+            'dmi': [
+                'pypath.dataio.lmpid_dmi()',
+                'pypath.pypath.PyPath().process_dmi(source = \'LMPID\')'
+            ]
+        },
+        'license': {
+            'name': 'If you are using this database please cite Sarkar 2015.'
+        }
     },
     'PDZBase': {
         'year': 2004,
@@ -123,9 +185,30 @@ descriptions = {
         'emails': [('haw2002@med.cornell.edu', 'Harel Weinstein'), ('pdzbase@med.cornell.edu' , 'PDZBase Team')],
         'type': 'literature curated',
         'subtype': 'pathway',
-        'omnipath': True
+        'omnipath': True,
+        'pypath': {
+            'input':
+                'pypath.dataio.load_lmpid()'
+            'intr': [
+                'pypath.dataio.get_pdzbase()'
+            ],
+            'data': [
+                'pypath.data/LMPID_DATA_pubmed_ref.xml'
+            ],
+            'format': [
+                'pypath.data_formats.ptm[\'lmpid\']',
+                'pypath.data_formats.omnipath[\'lmpid\']'
+            ],
+            'dmi': [
+                'pypath.dataio.lmpid_dmi()',
+                'pypath.pypath.PyPath().process_dmi(source = \'LMPID\')'
+            ]
+        },
+        'license': {
+            'name': 'If you are using this database please cite Sarkar 2015.'
+        }
     },
-    'Guide2Pharmacology': {
+    'Guide2Pharma': {
         'year': 2015,
         'releases': [2007, 2008, 2009, 2011, 2015],
         'size': None,
@@ -260,7 +343,7 @@ descriptions = {
         'authors': ['Cesareni Group'],
         'label': 'Signor',
         'color': '',
-        'data_import': ['SignaLink2', 'PhosphoSite'],
+        'data_import': ['SignaLink3', 'PhosphoSite'],
         'type': 'literature curated',
         'subtype': 'pathway',
         'omnipath': True,
@@ -601,7 +684,28 @@ descriptions = {
         ],
         'type': 'literature curated',
         'subtype': 'pathway',
-        'omnipath': True
+        'omnipath': True,
+        'pypath': {
+            'input':
+                'pypath.dataio.take_a_trip()',
+                'pypath.dataio.trip_process_table()',
+                'pypath.dataio.trip_get_uniprot()',
+                'pypath.dataio.trip_find_uniprot()'
+            'intr': [
+                'pypath.dataio.trip_interactions()'
+            ],
+            'data': [
+                'pypath.dataio.trip_process()'
+            ],
+            'format': [
+                'pypath.data_formats.pathway[\'trip\']',
+                'pypath.data_formats.omnipath[\'trip\']'
+            ]
+        },
+        'license': {
+            'name': 'CC-Attribution-ShareAlike-3.0',
+            'url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/'
+        }
     },
     'Awan2007': {
         'year': 2007,
@@ -628,7 +732,10 @@ descriptions = {
         ],
         'type': 'literature curated',
         'subtype': 'pathway',
-        'omnipath': False
+        'omnipath': False,
+        'license': {
+            'name': 'Unknown. Ask permission from authors.'
+        }
     },
     'Cui2007': {
         'year': 2007,
@@ -688,7 +795,10 @@ descriptions = {
         ],
         'type': 'literature curated',
         'subtype': 'pathway',
-        'omnipath': False
+        'omnipath': False,
+        'license': {
+            'name': 'Unknown. Ask permission from authors.'
+        }
     },
     'BioCarta': {
         'year': 2006,
@@ -702,7 +812,8 @@ descriptions = {
         'color': '',
         'urls': {
             'webpages': [
-                'http://www.biocarta.com/'
+                'http://www.biocarta.com/',
+                'http://cgap.nci.nih.gov/Pathways/BioCarta_Pathways'
             ],
             'articles': []
         },
@@ -725,7 +836,11 @@ descriptions = {
         ],
         'type': 'literature curated',
         'subtype': 'pathway',
-        'omnipath': False
+        'omnipath': False,
+        'license': {
+            'name': 'BioCarta webpage Terms and Conditions of Use (pathways are not owned by BioCarta and are free to use)',
+            'url': 'http://web.archive.org/web/20150207091158/http://biocarta.com/legal/terms.asp'
+        }
     },
     'TLR': {
         'urls': {
@@ -795,6 +910,23 @@ descriptions = {
         'type': 'literature curated',
         'subtype': 'pathway',
         'omnipath': True
+    },
+    'CARFMAP': {
+        'year': 2015,
+        'urls': {
+            'articles': [
+                'http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0143274'
+            ],
+            'webpages': [
+                'http://visionet.erc.monash.edu.au/CARFMAP/'
+            ]
+        },
+        'pubmeds': [26673252],
+        'emails': [('Hieu T Nim', 'hieu.nim@monash.edu'), ('Sarah E Boyd', 'sarah.boyd@monash.edu')],
+        'license': {
+            'name': 'CC-Attribution-4.0',
+            'url': 'http://creativecommons.org/licenses/by/4.0/'
+        }
     },
     'HSN': {
         'year': 2014,
@@ -872,18 +1004,30 @@ descriptions = {
         'type': 'high-throughput',
         'subtype': 'interaction',
         'omnipath': False,
-        'emails': [('Tong_Hao@dfci.harvard.edu', 'Tong Hao'), ('barabasi@gmail.com', 'Albert-Laszlo Barabasi')]
+        'emails': [('Tong_Hao@dfci.harvard.edu', 'Tong Hao'), ('barabasi@gmail.com', 'Albert-Laszlo Barabasi')],
+        'license': {
+            'url': 'http://creativecommons.org/licenses/by-nc/2.5',
+            'name': 'CC-Attribution-2.5'
+        }
     },
     'Reactome': {
+        'year': 2015,
+        'releases': [2004, 2008, 2010, 2012, 2014],
         'urls': {
             'webpages': [
                 'http://reactome.org/'
             ],
             'articles': [
+                'http://nar.oxfordjournals.org/content/33/suppl_1/D428.long',
+                'http://nar.oxfordjournals.org/content/37/suppl_1/D619.long',
+                'http://onlinelibrary.wiley.com/doi/10.1002/pmic.201100066/abstract',
+                'http://nar.oxfordjournals.org/content/39/suppl_1/D691.long',
                 'http://genomebiology.com/content/8/3/R39',
-                'http://nar.oxfordjournals.org/content/42/D1/D472.long'
+                'http://nar.oxfordjournals.org/content/42/D1/D472.long',
+                'http://www.mdpi.com/2072-6694/4/4/1180/htm'
             ]
         },
+        'pubmeds': [15608231, 18981052, 21751369, 21067998, 24213504, 24243840],
         'descriptions': [
             u'''
             Once the content of the module is approved by the author and curation staff, it is peer-reviewed on the development web-site, by one or more bench biologists selected by the curator in consultation with the author. The peer review is open and the reviewers are acknowledged in the database by name. Any issues raised in the review are resolved, and the new module is scheduled for release.
@@ -897,7 +1041,11 @@ descriptions = {
         'type': 'literature curated',
         'subtype': 'reaction network',
         'omnipath': False,
-        'emails': [('help@reactome.org', 'Reactome Team'), ('hhe@ebi.ac.uk', 'Henning Hermjakob')]
+        'emails': [('help@reactome.org', 'Reactome Team'), ('hhe@ebi.ac.uk', 'Henning Hermjakob')],
+        'license': {
+            'name': 'CC-Attribution-4.0',
+            'url': 'http://creativecommons.org/licenses/by/4.0/'
+        }
     },
     'Li2012': {
         'year': 2012,
@@ -1356,11 +1504,12 @@ descriptions = {
         'type': 'literature curated',
         'subtype': 'reaction network',
         'omnipath': False,
-        'emails': [('feedback@pantherdb.org', 'Panther Team'), ('paul.thomas@sri.com', 'Paul Thomas')]
+        'emails': [('feedback@pantherdb.org', 'Panther Team'), ('paul.thomas@sri.com', 'Paul Thomas')],
+        'pathguide': 164
     },
     'PhosphoSite': {
         'year': 2015,
-        'releases': [2012, 2015],
+        'releases': [2011, 2015],
         'size': {
             'nodes': None,
             'edges': None
@@ -1371,6 +1520,7 @@ descriptions = {
         'color': '',
         'urls': {
             'articles': [
+                'http://onlinelibrary.wiley.com/doi/10.1002/pmic.200300772/abstract',
                 'http://nar.oxfordjournals.org/content/40/D1/D261.long',
                 'http://nar.oxfordjournals.org/content/43/D1/D512.long'
             ],
@@ -1378,7 +1528,7 @@ descriptions = {
                 'http://www.phosphosite.org/homeAction.do'
             ]
         },
-        'pubmeds': [22135298, 25514926],
+        'pubmeds': [15174125, 22135298, 25514926],
         'taxons': [
             'human',
             'mouse',
@@ -1395,7 +1545,11 @@ descriptions = {
         'type': 'literature curated and high throughput',
         'subtype': 'post-translational modification',
         'omnipath': True,
-        'emails': [('phornbeck@cellsignal.com', 'Paul Hornbeck'), ('EditorPhosphoSite@cellsignal.com', 'PhosphoSite Team')]
+        'emails': [('phornbeck@cellsignal.com', 'Paul Hornbeck'), ('EditorPhosphoSite@cellsignal.com', 'PhosphoSite Team')],
+        'license': {
+            'name': 'CC-NonCommercial-ShareAlike',
+            'url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/'
+        }
     },
     'SPIKE': {
         'year': 2012,
@@ -1437,7 +1591,8 @@ descriptions = {
         'color': '',
         'urls': {
             'webpages': [
-                'http://pid.nci.nih.gov/index.shtml'
+                'http://pid.nci.nih.gov/index.shtml',
+                'http://www.ndexbio.org/'
             ],
             'articles': [
                 'http://nar.oxfordjournals.org/content/37/suppl_1/D674.long'
@@ -1460,12 +1615,16 @@ descriptions = {
         'notes': [
             u'''
             From the NCI-XML interactions with references, directions and signs can be extracted. Complexes are ommited.
+            ''',
+            u'''
+            From the end of 2015, the original NCI-PID webpage is not accessible anymore, and the data is available through the NDEx webserver and API.
             '''
         ],
         'type': 'literature curated',
         'subtype': 'reaction network',
         'omnipath': True,
-        'emails': [('yanch@mail.nih.gov', 'Chunhua Yan')]
+        'emails': [('yanch@mail.nih.gov', 'Chunhua Yan')],
+        'pathguide': 119
     },
     'WikiPathways': {
         'urls': {
@@ -1698,6 +1857,11 @@ descriptions = {
 }
 
 def gen_html():
+    '''
+    Generates a HTML page from the `descriptions` array.
+    This HTML is provided by the webservice under `/info`,
+    or can be saved locally with `write_html()`.
+    '''
     title = 'Metadata about signaling pathway resources'
     doc = '\t<p>This collection was created during the construction '\
         'of OmniPath, a network of signaling pathways intending to '\
@@ -1782,6 +1946,29 @@ def gen_html():
     return _html.default_template(doc, title, title)
 
 def write_html(filename = 'resources.html'):
+    '''
+    Saves the HTML descriptions to custom local file.
+    '''
     html = gen_html()
     with codecs.open(filename, encoding = 'utf-8', mode = 'w') as f:
         f.write(html)
+
+def resource_list_latex(filename = 'resource-list.tex'):
+    '''
+    Generates Supplementary Table 3 (The list of the 52 resources considered) for the article.
+    '''
+    tex = r'''\begin{tabularx}{\textwidth}{XX}
+    \toprule
+    Resource name & Resource name \\
+    \midrule
+    '''
+    res = sorted([v['label'] if 'label' in v else k for k, v in descriptions.iteritems()], key = lambda x: x.lower())
+    if len(res) % 2 != 0:
+        res.append('')
+    res2 = zip(res[:len(res)/2], res[len(res)/2:])
+    for r in res2:
+        tex += r'%s & %s \\' % (r[0], r[1]) + '\n'
+    tex += r'\bottomrule' + '\n'
+    tex += r'\end{tabularx}' + '\n'
+    with open(filename, 'w') as f:
+        f.write(tex)
