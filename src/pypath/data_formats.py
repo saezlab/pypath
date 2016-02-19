@@ -25,7 +25,7 @@ import common
 __all__ = ['urls', 'mapList', 'otherMappings', 'refLists', 
            'reaction', 'interaction', 'interaction_misc', 'pathway', 
            'ptm', 'ptm_misc', 'obsolate', 'transcription_deprecated',
-           'best', 'transcription', 'negative', 'gdsc_comp_target', 'cgc', 
+           'omnipath', 'transcription', 'negative', 'gdsc_comp_target', 'cgc', 
            'mapListUniprot', 'mapListBasic', 'reactome_modifications',
            'reaction_misc']
 
@@ -148,15 +148,15 @@ urls = {
             'Any&Submit=Search'
     },
     'pepcyber_details': {
-        'label': 'interaction details from pepcyber',
+        'label': 'Interaction details from pepcyber',
         'url': 'http://www.pepcyber.org/PPEP/idetail.php?iid=%u'
     },
     'pdzbase': {
-        'label': 'manually curated interactions of PDZ domain proteins',
+        'label': 'Manually curated interactions of PDZ domain proteins',
         'url': 'http://abc.med.cornell.edu/pdzbase/allinteractions'
     },
     'pdz_details': {
-        'label': 'details of interactions in PDZbase',
+        'label': 'Details of interactions in PDZbase',
         'url': 'http://abc.med.cornell.edu/pdzbase/interaction_detail/%u'
     },
     'psite_reg': {
@@ -549,6 +549,15 @@ urls = {
         'label': 'Supplementary Online Materials for Ma\'ayan 2005',
         'url': 'http://science.sciencemag.org/highwire/filestream/586741/'\
             'field_highwire_adjunct_files/1/Maayan_SOM_External_Files.zip'
+    },
+    'ccmap': {
+        'label': 'Cancer Cell Map from PathwayCommons 2011 snapshot',
+        'edges': 'http://www.pathwaycommons.org/archives/PC1/last_release-2011/tab_delim_network/by_source/cell-map-edge-attributes.txt.zip',
+        'nodes': 'http://www.pathwaycommons.org/archives/PC1/last_release-2011/tab_delim_network/by_source/cell-map-node-attributes.txt.zip'
+    },
+    'pathguide': {
+        'label': 'Collection of metabolic and signaling pathway and molecular interaction resources',
+        'url': 'http://pathguide.org/fullrecord.php?organisms=all&availability=all&standards=all&order=alphabetic&DBID=%u'
     }
 }
 
@@ -894,7 +903,7 @@ pathway = {
         extraNodeAttrsB={
             "slk_pathways": (9, ";")
             }),
-    'guide2pharma': input_formats.ReadSettings(name = "Guide2Pharmacology", 
+    'guide2pharma': input_formats.ReadSettings(name = "Guide2Pharma", 
         separator = None, nameColA = 0, nameColB = 1,
         nameTypeA = "uniprot", nameTypeB = "uniprot",
         typeA = "protein", typeB = "protein", isDirected = True, 
@@ -903,21 +912,21 @@ pathway = {
         extraEdgeAttrs = {},
         extraNodeAttrsA = {'g2p_ligand': 4},
         extraNodeAttrsB = {'g2p_receptor': 4}),
-    'ca1': input_formats.ReadSettings(name="CA1", separator=";", 
-        nameColA=1, nameColB=6,
-        nameTypeA="uniprot", nameTypeB="uniprot",
-        typeA="protein", typeB="protein", 
-        isDirected=(10,['_','+']), sign=(10,'+','_'),
-        header=True, 
-        inFile=os.path.join(ROOT, 'data', 'ca1.csv'),
-        references=(12, ";"), ncbiTaxId=9606,
-        extraEdgeAttrs={
+    'ca1': input_formats.ReadSettings(name = "CA1", 
+        nameColA = 1, nameColB = 6,
+        nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA = "protein", typeB = "protein", 
+        isDirected = (10, ['_', '+']), sign = (10, '+', '_'),
+        header = False, 
+        inFile = 'get_ca1',
+        references = (12, ";"), ncbiTaxId = 9606,
+        extraEdgeAttrs = {
             "ca1_effect": 10,
             "ca1_type": 11},
-        extraNodeAttrsA={
+        extraNodeAttrsA = {
             "ca1_location": 4,
             "ca1_function": 3},
-        extraNodeAttrsB={
+        extraNodeAttrsB = {
             "ca1_location": 9,
             "ca1_function": 8}),
     'arn': input_formats.ReadSettings(name="ARN", 
@@ -1026,17 +1035,15 @@ interaction = {
         extraNodeAttrsA={},
         extraNodeAttrsB={}),
     'ccmap': input_formats.ReadSettings(name="CancerCellMap", 
-        separator="\t", nameColA=3, nameColB=4,
-        nameTypeA="genesymbol", nameTypeB="genesymbol",
-        typeA="protein", typeB="protein",
-        isDirected = False, sign = False, ncbiTaxId=9606,
-        inFile=os.path.join(ROOT, 'data', 'cell-map-edge-attributes.txt'),
-        references=(6, ";"),
-        negativeFilters = [(6, 'NOT_SPECIFIED')],
+        nameColA = 0, nameColB = 1,
+        nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA = "protein", typeB = "protein",
+        isDirected = (2, 'directed'), sign = False, ncbiTaxId = 9606,
+        inFile = 'get_ccmap',
+        references = (3, ";"),
         extraEdgeAttrs={},
         extraNodeAttrsA={},
-        extraNodeAttrsB={},
-        header=True),
+        extraNodeAttrsB={}),
     'mppi': input_formats.ReadSettings(name="MPPI", 
         separator="|", nameColA=2, nameColB=6,
         nameTypeA="uniprot", nameTypeB="uniprot",
@@ -1238,6 +1245,18 @@ ptm_misc = {
         inFile = 'mimp_interactions', references = False, header = False,
         extraEdgeAttrs = {},
         extraNodeAttrsA = {},
+        extraNodeAttrsB = {}),
+    'li2012': input_formats.ReadSettings(name = "Li2012", separator = False, 
+        nameColA = 0, nameColB = 1,
+        nameTypeA="genesymbol", nameTypeB="genesymbol",
+        typeA="protein", typeB="protein", isDirected = 1, 
+        sign = False,
+        inFile = 'li2012_interactions', references = False, ncbiTaxId = 9606,
+        extraEdgeAttrs = {
+            'li2012_mechanism': 3,
+            'li2012_route': 2
+        },
+        extraNodeAttrsA = {},
         extraNodeAttrsB = {})
 }
 
@@ -1276,18 +1295,6 @@ interaction_misc = {
         extraEdgeAttrs={},
         extraNodeAttrsA={},
         extraNodeAttrsB={}),
-    'li2012': input_formats.ReadSettings(name = "Li2012", separator = False, 
-        nameColA = 0, nameColB = 1,
-        nameTypeA="genesymbol", nameTypeB="genesymbol",
-        typeA="protein", typeB="protein", isDirected = 1, 
-        sign = False,
-        inFile = 'li2012_interactions', references = False, ncbiTaxId = 9606,
-        extraEdgeAttrs = {
-            'li2012_mechanism': 3,
-            'li2012_route': 2
-        },
-        extraNodeAttrsA = {},
-        extraNodeAttrsB = {}),
     'acsn': input_formats.ReadSettings(name="ACSN", 
         separator = None, nameColA=0,
         nameColB=2, nameTypeA="genesymbol", nameTypeB="genesymbol",
@@ -1478,205 +1485,6 @@ negative = {
         extraNodeAttrsB={})
 }
 
-slk = input_formats.ReadSettings(name="SignaLink2", separator=",", nameColA=0, nameColB=1,
-                nameTypeA="uniprot", nameTypeB="uniprot",
-                typeA="protein", typeB="protein", isDirected=1, 
-                inFile=os.path.join(ROOT, 'data', 'slk01human.csv'),
-                extraEdgeAttrs={
-                    "is_stimulation": 8, 
-                    "is_direct": 6,
-                    "is_directed": 7,
-                    "references": (9, ":")},
-                extraNodeAttrsA={
-                    "slk_pathways": (4, ":"),
-                    "gene_name": 2},
-                extraNodeAttrsB={
-                    "slk_pathways": (5, ":"),
-                    "gene_name": 3})
-
-cui = input_formats.ReadSettings(name="Cui2007", separator=";", nameColA=1, nameColB=4,
-                nameTypeA="entrez", nameTypeB="entrez",
-                typeA="protein", typeB="protein", isDirected=1, 
-                inFile=os.path.join(ROOT, 'data', 'cui.sif'),
-                extraEdgeAttrs={
-                    "effect":6},
-                extraNodeAttrsA={
-                    "location": 2},
-                extraNodeAttrsB={
-                    "location": 5})
-
-ca1 = input_formats.ReadSettings(name="CA1", separator=";", nameColA=1, nameColB=6,
-                nameTypeA="uniprot", nameTypeB="uniprot",
-                typeA="protein", typeB="protein", isDirected=1, header=True,
-                inFile=os.path.join(ROOT, 'data', 'ca1.csv'),
-                extraEdgeAttrs={
-                    "effect": 10,
-                    "references": 12,
-                    "type": 11},
-                extraNodeAttrsA={
-                    "location": 4,
-                    "function": 3},
-                extraNodeAttrsB={
-                    "location": 9,
-                    "function": 8})
-
-ataxia = input_formats.ReadSettings(name="Ataxia", separator=";", nameColA=1, nameColB=3,
-                nameTypeA="entrez", nameTypeB="entrez",
-                typeA="protein", typeB="protein", isDirected=1, 
-                inFile=os.path.join(ROOT, 'data', 'ataxia.csv'),
-                extraEdgeAttrs={
-                    "sub_source":4},
-                extraNodeAttrsA={},
-                extraNodeAttrsB={})
-
-macrophage = input_formats.ReadSettings(name="Macrophage", separator=";", nameColA=0, nameColB=1,
-                nameTypeA="genesymbol", nameTypeB="genesymbol",
-                typeA="protein", typeB="protein", isDirected=1, 
-                inFile=os.path.join(ROOT, 'data', 'macrophage.sif'),
-                extraEdgeAttrs={
-                    "macrophage_type": 2,
-                    "macrophage_location": 4},
-                extraNodeAttrsA={},
-                extraNodeAttrsB={})
-
-# this was Wang's network
-hsn = input_formats.ReadSettings(name="Wang", separator=";", 
-                nameColA=1, nameColB=3,
-                nameTypeA="entrez", nameTypeB="entrez",
-                typeA="protein", typeB="protein", isDirected=1, 
-                inFile=os.path.join(ROOT, 'data', 'ccmap.sif'),
-                extraEdgeAttrs={
-                    "ccmap_effect": 4},
-                extraNodeAttrsA={},
-                extraNodeAttrsB={})
-
-ccmap2 = input_formats.ReadSettings(name="CancerCellMap", separator="\t", 
-                nameColA=3, nameColB=4,
-                nameTypeA="genesymbol", nameTypeB="genesymbol",
-                typeA="protein", typeB="protein", isDirected=1, 
-                inFile=os.path.join(ROOT, 'data', 'cell-map-edge-attributes.txt'),
-                extraEdgeAttrs={
-                    "references": (6, ";")},
-                extraNodeAttrsA={},
-                extraNodeAttrsB={},
-                header=True)
-
-spike = input_formats.ReadSettings(name="SPIKE", separator="\t", nameColA=1, nameColB=3,
-                nameTypeA="genesymbol", nameTypeB="genesymbol",
-                typeA="protein", typeB="protein", isDirected=1, 
-                inFile=os.path.join(ROOT, 'data', 'spike_hc.csv'),
-                extraEdgeAttrs={
-                    "references": (5, ";")},
-                extraNodeAttrsA={},
-                extraNodeAttrsB={})
-
-mppi = input_formats.ReadSettings(name="MPPI", separator="\t", nameColA=2, nameColB=6,
-                nameTypeA="uniprot", nameTypeB="genesymbol",
-                typeA="protein", typeB="protein", isDirected=1, 
-                inFile=os.path.join(ROOT, 'data', 'mppi_human.csv'),
-                extraEdgeAttrs={
-                    "references": (0, ";"),
-                    "mppi_evidences": (1, ";")},
-                extraNodeAttrsA={},
-                extraNodeAttrsB={})
-
-psite = input_formats.ReadSettings(name="PhosphoSite", separator="\t", nameColA=0, nameColB=1,
-                nameTypeA="uniprot", nameTypeB="uniprot",
-                typeA="protein", typeB="protein", isDirected=1, 
-                inFile=os.path.join(ROOT, 'data', 'phosphosite_human_hc.csv'),
-                extraEdgeAttrs={
-                    "references": (5, ";"),
-                    "psite_evidences": (4, ";")},
-                extraNodeAttrsA={},
-                extraNodeAttrsB={})
-
-panther = input_formats.ReadSettings(name="Panther", separator=";", nameColA=0, nameColB=1,
-                nameTypeA="uniprot", nameTypeB="uniprot",
-                typeA="protein", typeB="protein", isDirected=1, 
-                inFile=os.path.join(ROOT, 'data', 'panther1.csv'),
-                extraEdgeAttrs={
-                    "panther_type": 3},
-                extraNodeAttrsA={},
-                extraNodeAttrsB={})
-
-tlr = input_formats.ReadSettings(name="TLR", separator=";", nameColA=0, nameColB=1,
-                nameTypeA="genesymbol", nameTypeB="genesymbol",
-                typeA="protein", typeB="protein", isDirected=0, 
-                inFile=os.path.join(ROOT, 'data', 'tlr.csv'),
-                extraEdgeAttrs={},
-                extraNodeAttrsA={},
-                extraNodeAttrsB={})
-
-trip = input_formats.ReadSettings(name="TRIP", separator=";", nameColA=0, nameColB=1,
-                nameTypeA="genesymbol", nameTypeB="genesymbol",
-                typeA="protein", typeB="protein", isDirected=0, 
-                inFile=os.path.join(ROOT, 'data', 'trip.sif'),
-                extraEdgeAttrs={},
-                extraNodeAttrsA={},
-                extraNodeAttrsB={})
-
-alz = input_formats.ReadSettings(name="AlzPathway", separator="\t", nameColA=0, nameColB=1,
-                nameTypeA="uniprot", nameTypeB="uniprot",
-                typeA="protein", typeB="protein", isDirected=0, 
-                inFile=os.path.join(ROOT, 'data', 'alzpw-ppi.csv'),
-                extraEdgeAttrs={
-                    "refrences": (8, ";")
-                    },
-                extraNodeAttrsA={},
-                extraNodeAttrsB={})
-
-innatedb = input_formats.ReadSettings(name="InnateDB", separator=";", nameColA=0, nameColB=2,
-                nameTypeA="uniprot", nameTypeB="uniprot",
-                typeA="protein", typeB="protein", isDirected=0, 
-                inFile=os.path.join(ROOT, 'data', 'innatedb.csv'),
-                extraEdgeAttrs={
-                    "references": (4, ":")
-                },
-                extraNodeAttrsA={},
-                extraNodeAttrsB={})
-
-depod = input_formats.ReadSettings(name="DEPOD", separator=";", nameColA=0, nameColB=1,
-                nameTypeA="uniprot", nameTypeB="uniprot",
-                typeA="protein", typeB="protein", isDirected=0, 
-                inFile=os.path.join(ROOT, 'data', 'depod.csv'),
-                extraEdgeAttrs={},
-                extraNodeAttrsA={},
-                extraNodeAttrsB={})
-
-pp = input_formats.ReadSettings(name="PhosphoPoint", separator=";", nameColA=1, nameColB=3,
-                nameTypeA="entrez", nameTypeB="entrez",
-                typeA="protein", typeB="protein", isDirected=0, header=True, 
-                inFile=os.path.join(ROOT, 'data', 'phosphopoint.csv'),
-                extraEdgeAttrs={"phosphopoint_category":4},
-                extraNodeAttrsA={},
-                extraNodeAttrsB={})
-
-arn = input_formats.ReadSettings(name="ARN", separator=",", nameColA=0, nameColB=1,
-                nameTypeA="uniprot", nameTypeB="uniprot",
-                typeA="protein", typeB="protein", isDirected=0, 
-                inFile=os.path.join(ROOT, 'data', 'arn.csv'),
-                extraEdgeAttrs={},
-                extraNodeAttrsA={},
-                extraNodeAttrsB={})
-
-nrf2 = input_formats.ReadSettings(name="NRF2ome", separator=",", nameColA=0, nameColB=1,
-                nameTypeA="uniprot", nameTypeB="uniprot",
-                typeA="protein", typeB="protein", isDirected=0, 
-                inFile=os.path.join(ROOT, 'data', 'nrf2ome.csv'),
-                extraEdgeAttrs={},
-                extraNodeAttrsA={},
-                extraNodeAttrsB={})
-
-netpath = input_formats.ReadSettings(name="NetPath", separator=";", nameColA=0, nameColB=1,
-                nameTypeA="hgnc", nameTypeB="hgnc",
-                typeA="protein", typeB="protein", isDirected=1, 
-                inFile=os.path.join(ROOT, 'data', 'netpath.csv'),
-                extraEdgeAttrs={},
-                extraNodeAttrsA={
-                    "netpath_pathways": (2, ",")},
-                extraNodeAttrsB={
-                    "netpath_pathways": (2, ",")})
-
 biocarta = input_formats.ReadSettings(name="BioCarta", separator=";", nameColA=0, nameColB=2,
                 nameTypeA="entrez", nameTypeB="entrez",
                 typeA="protein", typeB="protein", isDirected=1, 
@@ -1842,7 +1650,7 @@ categories = {
     'DEPOD': 'm',
     'phosphoELM': 'm',
     'MPPI': 'i',
-    'Guide2Pharmacology': 'p',
+    'Guide2Pharma': 'p',
     'TRIP': 'p',
     'AlzPathway': 'r',
     'PhosphoSite': 'm',

@@ -685,11 +685,11 @@ class Interface(object):
     
     def add_residues(self, res_a, res_b, typ = 'undefined'):
         '''
-        Adds one pair of residues of type `typ', 
-        where `res_a' and `res_b' are tuples of 
+        Adds one pair of residues of type `typ`, 
+        where `res_a` and `res_b` are tuples of 
         residue number in sequence and residue type,
         e.g. (124, 'S') -- (means Serine #124)
-        `typ' can be undefined, hbonds, sbridges, ssbonds or covbonds
+        `typ` can be undefined, hbonds, sbridges, ssbonds or covbonds
         '''
         if type(res_a) is not tuple or type(res_b) is not tuple \
             or type(res_a[0]) is not int or type(res_b[0]) is not int \

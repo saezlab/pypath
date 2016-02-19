@@ -418,6 +418,33 @@ class AttrHelper(object):
         else:
             return None
 
+class _NamedVertexSeq(object):
+    
+    def __init__(self, _vs, _nodNam, _nodLab):
+        self._vs = _vs
+        self._nodNam = _nodNam
+        self._nodLab = _nodLab
+    
+    def __iter__(self):
+        for v in self._vs:
+            yield v
+    
+    def gs(self):
+        for v in self._vs:
+            yield self._nodLab[v.index]
+    
+    def up(self):
+        for v in self._vs:
+            yield self._nodNam[v.index]
+    
+    def ids(self):
+        for v in self._vs:
+            yield v.index
+    
+    genesymbol = gs
+    uniprot = up
+    vs = __iter__
+
 class PyPath(object):
     
     ###
@@ -496,6 +523,9 @@ class PyPath(object):
             g['only_directed'] = False
             # allow loop edges in the graph
             self.loops = loops
+            self.dgraph = None
+            self._undirected = self.graph
+            self._directed = None
             self.failed_edges = []
             self.uniprot_mapped = []
             self.mysql_conf = mysql
@@ -567,7 +597,7 @@ class PyPath(object):
         self.__dict__ = other.__dict__
         self.ownlog.msg(1, "Reinitialized", 'INFO')
     
-    def init_network(self, lst = best, exclude = [], 
+    def init_network(self, lst = omnipath, exclude = [], 
         cache_files = {}, pfile = False, save = False):
         '''
         This is a lazy way to start the module, load data 
@@ -663,7 +693,7 @@ class PyPath(object):
         giant_component_index = cl_sizes.index(max(cl_sizes))
         in_giant = [x == giant_component_index for x in cl.membership]
         console(':: Nodes in giant component: %u' % in_giant.count(True))
-        toDel = [i for i in range(0,gg.vcount()) if not in_giant[i]]
+        toDel = [i for i in xrange(0, gg.vcount()) if not in_giant[i]]
         gg.delete_vertices(toDel)
         console(':: Giant component size: %u edges, %u nodes' % \
             (gg.ecount(), gg.vcount()))
@@ -678,13 +708,26 @@ class PyPath(object):
         function is automatically called after all operations
         affecting node indices.
         '''
-        self.nodInd = set(self.graph.vs['name'])
-        self.nodDct = dict(zip(self.graph.vs['name'], 
-            range(0,self.graph.vcount())))
+        self.genesymbol_labels()
+        graph = self._get_undirected()
+        self._already_has_directed()
+        dgraph = self._directed
+        if graph is not None:
+            self.nodInd = set(graph.vs['name'])
+            self.nodDct = dict(zip(graph.vs['name'], xrange(graph.vcount())))
+            self.labDct = dict(zip(graph.vs['label'], xrange(graph.vcount())))
+            self.nodNam = dict(zip(xrange(graph.vcount()), graph.vs['name']))
+            self.nodLab = dict(zip(xrange(graph.vcount()), graph.vs['label']))
+        if dgraph is not None:
+            self.dnodInd = set(dgraph.vs['name'])
+            self.dnodDct = dict(zip(dgraph.vs['name'], xrange(dgraph.vcount())))
+            self.dlabDct = dict(zip(dgraph.vs['label'], xrange(dgraph.vcount())))
+            self.dnodNam = dict(zip(xrange(dgraph.vcount()), dgraph.vs['name']))
+            self.dnodLab = dict(zip(xrange(dgraph.vcount()), dgraph.vs['label']))
     
     def update_vindex(self):
         '''
-        See update_vname().
+        This is deprecated.
         '''
         self.nodNam = dict(zip(range(0, self.graph.vcount()), 
             self.graph.vs['name']))
@@ -1554,6 +1597,10 @@ class PyPath(object):
             d.delete_vertices(list(set(toDel)))
         if not graph:
             self.dgraph = d
+            self._directed = self.dgraph
+        self._get_directed()
+        self._get_undirected()
+        self.update_vname()
         if graph or ret:
             return d
     
@@ -2089,18 +2136,32 @@ class PyPath(object):
             self.update_db_dict()
             self.update_vname()
     
-    def genesymbol_labels(self):
-        g = self.graph
+    def genesymbol_labels(self, graph = None, remap_all = False):
+        '''
+        Creats vertex attribute ``label`` and fills up with Gene Symbols
+        of all proteins where the Gene Symbol can be looked up based on
+        the default name of the protein vertex.
+        If the attribute ``label`` had been already initialized, 
+        updates this attribute or recreates if ``remap_all`` 
+        is ``True``.
+        '''
+        self._already_has_directed()
+        if graph is None and self.dgraph is not None:
+            self.genesymbol_labels(graph = self.dgraph, remap_all = remap_all)
+        g = self.graph if graph is None else graph
         defaultNameType = self.default_name_type["protein"]
         geneSymbol = "genesymbol"
-        g.vs["label"] = [None]
-        for v in g.vs:
-            if v["type"] == "protein":
-                label = self.mapper.map_name(v["name"],defaultNameType,geneSymbol)
+        if 'label' not in g.vs.attributes():
+            remap_all = True
+        labels = [None if remap_all or v['label'] == v['name'] else v['label'] for v in g.vs]
+        for v, l, i in zip(g.vs, labels, xrange(g.vcount())):
+            if l is None and v['type'] == 'protein':
+                label = self.mapper.map_name(v['name'], defaultNameType, geneSymbol)
                 if len(label) == 0:
-                    v["label"] = v["name"]
+                    labels[i] = v['name']
                 else:
-                    v["label"] = label[0]
+                    labels[i] = label[0]
+        g.vs['label'] = labels
     
     def network_stats(self, outfile = None):
         '''
@@ -2391,7 +2452,7 @@ class PyPath(object):
         outf.write(out[:-1])
         outf.close()
     
-    def load_resources(self, lst = best, exclude = [], cache_files = {}):
+    def load_resources(self, lst = omnipath, exclude = [], cache_files = {}):
         '''
         Loads multiple resources, and cleans up after. 
         Looks up ID types, and loads all ID conversion 
@@ -2460,8 +2521,8 @@ class PyPath(object):
             self.apply_negative(v)
     
     def list_resources(self):
-        sys.stdout.write(' » best\n')
-        for k,v in best.iteritems():
+        sys.stdout.write(' » omnipath\n')
+        for k,v in omnipath.iteritems():
             sys.stdout.write('\t:: %s (%s)\n' % (v.name,k))
         sys.stdout.write(' » good\n')
         for k,v in good.iteritems():
@@ -3336,6 +3397,452 @@ class PyPath(object):
                         graph.es[e]['interfaces']['pisa'][pdb].append(intf)
         return unmapped
     
+    #
+    # methods with biological meaning
+    #
+    
+    def genesymbol(self, genesymbol):
+        '''
+        Returns ``igraph.Vertex()`` object if the GeneSymbol
+        can be found in the default undirected network, 
+        otherwise ``None``.
+        
+        @genesymbol : str
+            GeneSymbol.
+        '''
+        graph = self._get_undirected()
+        return graph.vs[self.labDct[genesymbol]] \
+            if genesymbol in self.labDct else None
+    
+    gs = genesymbol
+    
+    def dgenesymbol(self, genesymbol):
+        '''
+        Returns ``igraph.Vertex()`` object if the GeneSymbol
+        can be found in the default directed network, 
+        otherwise ``None``.
+        
+        @genesymbol : str
+            GeneSymbol.
+        '''
+        dgraph = self._get_directed()
+        return dgraph.vs[self.dlabDct[genesymbol]] \
+            if genesymbol in self.dlabDct else None
+    
+    dgs = dgenesymbol
+    
+    def genesymbols(self, genesymbols):
+        return filter(lambda v: v is not None, 
+            map(self.genesymbol(gs) for gs in genesymbols))
+    
+    gss = genesymbols
+    
+    def dgenesymbols(self, genesymbols):
+        return filter(lambda v: v is not None, 
+            map(self.dgenesymbol(gs) for gs in genesymbols))
+    
+    dgss = dgenesymbols
+    
+    def uniprot(self, uniprot):
+        '''
+        Returns ``igraph.Vertex()`` object if the UniProt
+        can be found in the default undirected network, 
+        otherwise ``None``.
+        
+        @uniprot : str
+            UniProt ID.
+        '''
+        graph = self._get_undirected()
+        return graph.vs[self.nodDct[uniprot]] \
+            if uniprot in self.nodDct else None
+    
+    up = uniprot
+    
+    def duniprot(self, uniprot):
+        '''
+        Same as ``PyPath.uniprot(), just for directed graph.
+        Returns ``igraph.Vertex()`` object if the UniProt
+        can be found in the default directed network, 
+        otherwise ``None``.
+        
+        @uniprot : str
+            UniProt ID.
+        '''
+        dgraph = self._get_directed()
+        return dgraph.vs[self.dnodDct[uniprot]] \
+            if uniprot in self.dnodDct else None
+    
+    dup = duniprot
+    
+    def uniprots(self, uniprots):
+        '''
+        Returns list of ``igraph.Vertex()`` object
+        for a list of UniProt IDs omitting those
+        could not be found in the default
+        undirected graph.
+        '''
+        return filter(lambda v: v is not None, 
+            map(self.uniprot(up) for up in uniprots))
+    
+    ups = uniprots
+    
+    def duniprots(self, uniprots):
+        '''
+        Returns list of ``igraph.Vertex()`` object
+        for a list of UniProt IDs omitting those
+        could not be found in the default
+        directed graph.
+        '''
+        return filter(lambda v: v is not None, 
+            map(self.duniprot(up) for up in uniprots))
+    
+    dups = duniprots
+    
+    def protein(self, identifier):
+        '''
+        Returns ``igraph.Vertex()`` object if the identifier
+        is a valid vertex index in the default undirected graph,
+        or a UniProt ID or GeneSymbol which can be found in the
+        default undirected network, otherwise ``None``.
+        
+        @identifier : int, str
+            Vertex index (int) or GeneSymbol (str) or UniProt ID (str).
+        '''
+        graph = self._get_undirected()
+        return graph.vs[identifier] \
+            if type(identifier) is int and identifier < graph.vcount() \
+            else graph.vs[self.nodDct[identifier]] \
+            if identifier in self.nodDct else \
+            graph.vs[self.labDct[identifier]] \
+            if identifier in self.labDct else None
+    
+    p = protein
+    
+    def dprotein(self, identifier):
+        '''
+        Same as ``PyPath.protein``, just for the directed graph.
+        Returns ``igraph.Vertex()`` object if the identifier
+        is a valid vertex index in the default directed graph,
+        or a UniProt ID or GeneSymbol which can be found in the
+        default directed network, otherwise ``None``.
+        
+        @identifier : int, str
+            Vertex index (int) or GeneSymbol (str) or UniProt ID (str).
+        '''
+        dgraph = self._get_directed()
+        return dgraph.vs[identifier] \
+            if type(identifier) is int and identifier < dgraph.vcount() \
+            else dgraph.vs[self.dnodDct[identifier]] \
+            if identifier in self.dnodDct else \
+            dgraph.vs[self.dlabDct[identifier]] \
+            if identifier in self.dlabDct else None
+    
+    dp = dprotein
+    
+    def proteins(self, proteins):
+        return filter(lambda v: v is not None, 
+            map(self.protein(p) for p in proteins))
+    
+    ps = proteins
+    
+    def dproteins(self, proteins):
+        return filter(lambda v: v is not None, 
+            map(self.dprotein(p) for p in proteins))
+    
+    dps = dproteins
+    
+    def up_edge(self, source, target, directed = True):
+        '''
+        Returns ``igraph.Edge`` object if an edge exist between
+        the 2 proteins, otherwise ``None``.
+        
+        @source : str
+            UniProt ID
+        @target : str
+            UniProt ID
+        @directed : bool
+            To be passed to igraph.Graph.get_eid()
+        '''
+        v_source = self.uniprot(source)
+        v_target = self.uniprot(target)
+        if v_source is not None and v_target is not None:
+            eid = self.graph.get_eid(v_source.index, v_target.index, 
+                directed = directed, error = False)
+            if eid != -1:
+                return self.graph.es[eid]
+        return None
+    
+    def gs_edge(self, source, target, directed = True):
+        '''
+        Returns ``igraph.Edge`` object if an edge exist between
+        the 2 proteins, otherwise ``None``.
+        
+        @source : str
+            GeneSymbol
+        @target : str
+            GeneSymbol
+        @directed : bool
+            To be passed to igraph.Graph.get_eid()
+        '''
+        v_source = self.genesymbol(source)
+        v_target = self.genesymbol(target)
+        if v_source is not None and v_target is not None:
+            eid = self.graph.get_eid(v_source.index, v_target.index, 
+                directed = directed, error = False)
+            if eid != -1:
+                return self.graph.es[eid]
+        return None
+    
+    def protein_edge(self, source, target, directed = True):
+        '''
+        Returns ``igraph.Edge`` object if an edge exist between
+        the 2 proteins, otherwise ``None``.
+        
+        @source : int, str
+            Vertex index or UniProt ID or GeneSymbol
+        @target : int, str
+            Vertex index or UniProt ID or GeneSymbol
+        @directed : bool
+            To be passed to igraph.Graph.get_eid()
+        '''
+        v_source = self.protein(source)
+        v_target = self.protein(target)
+        if v_source is not None and v_target is not None:
+            eid = self.graph.get_eid(v_source.index, v_target.index, 
+                directed = directed, error = False)
+            if eid != -1:
+                return self.graph.es[eid]
+        return None
+    
+    def _has_directed(self):
+        if self._directed is None:
+            if self.graph.is_directed():
+                self._directed = self.graph
+            else:
+                self.get_directed()
+    
+    def _already_has_directed(self):
+        if self._directed is None:
+            if self.graph.is_directed():
+                self._directed = self.graph
+            elif self.dgraph is not None and self.dgraph.is_directed():
+                self._directed = self.dgraph
+    
+    def _get_directed(self):
+        '''
+        Returns the directed instance of the graph.
+        If not available, creates one at ``PyPath.dgraph``.
+        '''
+        self._has_directed()
+        return self._directed
+    
+    # conversion between directed and undirected vertices
+    
+    def _get_undirected(self):
+        if self._undirected != self.graph and not self.graph.is_directed():
+            self._undirected = self.graph
+        if self.graph.is_directed():
+            self._undirected = None
+        return self._undirected
+    
+    def up_in_directed(self, uniprot):
+        self._has_directed()
+        return self.dnodDct[uniprot] if uniprot in self.dnodDct else None
+    
+    def up_in_undirected(self, uniprot):
+        self._has_undirected()
+        return self.nodDct[uniprot] if uniprot in self.nodDct else None
+    
+    def gs_in_directed(self, genesymbol):
+        self._has_directed()
+        return self.dlabDct[genesymbol] if genesymbol in self.dlabDct else None
+    
+    def gs_in_undirected(self, genesymbol):
+        self._has_undirected()
+        return self.labDct[genesymbol] if genesymbol in self.labDct else None
+    
+    def in_directed(self, vertex):
+        return self.up_in_directed(vertex['name'])
+    
+    def in_undirected(self, vertex):
+        return self.up_in_undirected(vertex['name'])
+    
+    # affects and affected_by
+    
+    def _affected_by(self, vertex):
+        dgraph = self._get_directed()
+        if dgraph != vertex.graph:
+            vertex = self.in_directed(vertex['name'])
+        vs = vertex.neighbors(mode = 'IN') \
+            if vertex is not None else []
+        return _NamedVertexSeq(vs, self.dnodNam, self.dnodLab)
+    
+    def _affects(self, vertex):
+        dgraph = self._get_directed()
+        if dgraph != vertex.graph:
+            vertex = self.in_directed(vertex['name'])
+        vs = vertex.neighbors(mode = 'OUT') \
+            if vertex is not None else []
+        return _NamedVertexSeq(vs, self.dnodNam, self.dnodLab)
+    
+    def affected_by(self, identifier):
+        vrtx = self.dprotein(identifier)
+        if vrtx is not None:
+            return self._affected_by(vrtx)
+        return []
+    
+    def affects(self, identifier):
+        vrtx = self.dprotein(identifier)
+        if vrtx is not None:
+            return self._affects(vrtx)
+        return []
+    
+    def up_affects(self, uniprot):
+        vrtx = self.duniprot(uniprot)
+        if vrtx is not None:
+            return self._affects(vrtx)
+        return []
+    
+    def up_affected_by(self, uniprot):
+        vrtx = self.duniprot(uniprot)
+        if vrtx is not None:
+            return self._affected_by(vrtx)
+        return []
+    
+    def gs_affects(self, genesymbol):
+        vrtx = self.dgenesymbol(genesymbol)
+        if vrtx is not None:
+            return self._affects(vrtx)
+        return []
+    
+    def gs_affected_by(self, genesymbol):
+        vrtx = self.dgenesymbol(genesymbol)
+        if vrtx is not None:
+            return self._affected_by(vrtx)
+        return []
+    
+    def up_stimulated_by(self, uniprot):
+        dgraph = self._get_directed()
+        if uniprot in self.dnodDct:
+            vid = self.dnodDct[uniprot]
+            vs = self.up_affected_by(uniprot)
+            return _NamedVertexSeq(filter(lambda v: \
+                dgraph.es[dgraph.get_eid(v.index, vid)]\
+                    ['dirs'].positive[v['name'], uniprot], 
+                vs), self.dnodNam, self.dnodLab)
+        else:
+            return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
+    
+    def up_inhibited_by(self, uniprot):
+        dgraph = self._get_directed()
+        if uniprot in self.dnodDct:
+            vid = self.dnodDct[uniprot]
+            vs = self.up_affected_by(uniprot)
+            return _NamedVertexSeq(filter(lambda v: \
+                dgraph.es[dgraph.get_eid(v.index, vid)]\
+                    ['dirs'].negative[v['name'], uniprot], 
+                vs), self.dnodNam, self.dnodLab)
+        else:
+            return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
+    
+    def up_stimulates(self, uniprot):
+        dgraph = self._get_directed()
+        if uniprot in self.dnodDct:
+            vid = self.dnodDct[uniprot]
+            vs = self.up_affects(uniprot)
+            return _NamedVertexSeq(filter(lambda v: \
+                dgraph.es[dgraph.get_eid(vid, v.index)]\
+                    ['dirs'].positive[uniprot, v['name']], 
+                vs), self.dnodNam, self.dnodLab)
+        else:
+            return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
+    
+    def up_inhibits(self, uniprot):
+        dgraph = self._get_directed()
+        if uniprot in self.dnodDct:
+            vid = self.dnodDct[uniprot]
+            vs = self.up_affects(uniprot)
+            return _NamedVertexSeq(filter(lambda v: \
+                dgraph.es[dgraph.get_eid(vid, v.index)]\
+                    ['dirs'].negative[uniprot, v['name']], 
+                vs), self.dnodNam, self.dnodLab)
+        else:
+            return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
+    
+    def gs_stimulated_by(self, genesymbol):
+        dgraph = self._get_directed()
+        uniprot = self.dnodNam[self.dlabDct[genesymbol]] \
+            if genesymbol in self.dlabDct else None
+        return self.up_stimulated_by(uniprot)
+    
+    def gs_stimulates(self, genesymbol):
+        dgraph = self._get_directed()
+        uniprot = self.dnodNam[self.dlabDct[genesymbol]] \
+            if genesymbol in self.dlabDct else None
+        return self.up_stimulates(uniprot)
+    
+    def gs_inhibited_by(self, genesymbol):
+        dgraph = self._get_directed()
+        uniprot = self.dnodNam[self.dlabDct[genesymbol]] \
+            if genesymbol in self.dlabDct else None
+        return self.up_inhibited_by(uniprot)
+    
+    def gs_inhibits(self, genesymbol):
+        dgraph = self._get_directed()
+        uniprot = self.dnodNam[self.dlabDct[genesymbol]] \
+            if genesymbol in self.dlabDct else None
+        return self.up_inhibits(uniprot)
+    
+    # meighbors variations
+    
+    def up_neighbors(self, uniprot, mode = 'ALL'):
+        vrtx = self.uniprot(uniprot)
+        if vrtx is not None:
+            return _NamedVertexSeq(vrtx.neighbors(mode = mode), 
+                self.nodDct, self.labDct)
+        return _NamedVertexSeq([], self.nodNam, self.nodLab)
+    
+    def gs_neighbors(self, uniprot, mode = 'ALL'):
+        vrtx = self.uniprot(uniprot)
+        if vrtx is not None:
+            return _NamedVertexSeq(vrtx.neighbors(mode = mode), 
+                self.nodDct, self.labDct)
+        return _NamedVertexSeq([], self.nodNam, self.nodLab)
+    
+    def neighbors(self, identifier, mode = 'ALL'):
+        vrtx = self.protein(identifier)
+        if vrtx is not None:
+            return _NamedVertexSeq(vrtx.neighbors(mode = mode), 
+                self.nodDct, self.labDct)
+        return _NamedVertexSeq([], self.nodNam, self.nodLab)
+    
+    # neighborhood variations:
+    
+    def _neighborhood(self, vs, order = 1, mode = 'ALL'):
+        return _NamedVertexSeq(self.graph.neighborhood(vs, 
+                order = order, mode = mode), 
+            self.nodNam, self.nodLab)
+    
+    def up_neighborhood(self, uniprot, order = 1, mode = 'ALL'):
+        if type(uniprots) in simpleTypes:
+            uniprots = [uniprots]
+        vs = self.uniprots(uniprots)
+        return self._neighborhood(vs, order = order, mode = mode)
+    
+    def gs_neighborhood(self, genesymbols, order = 1, mode = 'ALL'):
+        if type(genesymbols) in simpleTypes:
+            genesymbols = [genesymbols]
+        vs = self.genesymbols(genesymbols)
+        return self._neighborhood(vs, order = order, mode = mode)
+    
+    def neighborhood(self, identifiers, order = 1, mode = 'ALL'):
+        if type(identifiers) in simpleTypes:
+            identifiers = [identifiers]
+        vs = self.proteins(identifiers)
+        return self._neighborhood(vs, order = order, mode = mode)
+    
+    # compexes
+    
     def complex_comembership_network(self,graph=None,resources=None):
         graph = graph if graph is not None else self.graph
         if resources is None:
@@ -3351,12 +3858,67 @@ class PyPath(object):
                         if cname not in cdict[src]:
                             cdict[src][cname] = []
                         cdict[src][cname].append(v['name'])
-        
         pass
     
-    def in_complex(self,graph=None):
+    def edges_in_comlexes(self, csources = ['corum'], graph = None):
+        '''
+        Creates edge attributes ``complexes`` and ``in_complex``.
+        These are both dicts where the keys are complex resources.
+        The values in ``complexes`` are the list of complex names
+        both the source and the target vertices belong to.
+        The values ``in_complex`` are boolean values whether there
+        is at least one complex in the given resources both the
+        source and the target vertex of the edge belong to.
+        
+        @csources : list
+            List of complex resources. Should be already loaded.
+        @graph : igraph.Graph()
+            The graph object to do the calculations on.
+        '''
         graph = graph if graph is not None else self.graph
-        pass
+        if 'complexes' not in graph.es.attributes():
+            graph.es['complexes'] = [{} for _ in graph.es]
+        if 'in_complex' not in graph.es.attributes():
+            graph.es['in_complex'] = [{} for _ in graph.es]
+        def _common_complexes(e, cs):
+            return set(graph.vs[e.source]['complexes'][cs].keys()) & \
+                set(graph.vs[e.source]['complexes'][cs].keys())
+        nul = map(lambda cs: \
+            map(lambda e: \
+                e['complexes'].__setitem__(cs, _common_complexes(e, cs)),
+                graph.es),
+            csources)
+        nul = map(lambda cs: \
+            map(lambda e: \
+                e['in_complex'].__setitem__(cs, bool(len(e['complexes'][cs]))),
+                graph.es),
+            csources)
+    
+    def sum_in_complex(self, csources = ['corum'], graph = None):
+        '''
+        Returns the total number of edges in the network falling
+        between two members of the same complex.
+        Returns as a dict by complex resources.
+        Calls :py:func:pypath.pypath.Pypath.edges_in_comlexes()
+        to do the calculations.
+        
+        @csources : list
+            List of complex resources. Should be already loaded.
+        @graph : igraph.Graph()
+            The graph object to do the calculations on.
+        '''
+        graph = graph if graph is not None else self.graph
+        self.edges_in_comlexes(csources = csources, graph = graph)
+        return dict(map(lambda cs: 
+            (cs, sum(map(lambda e: 
+                e['in_complex'][cs], graph.es)
+            )), 
+            csources)
+        )
+    
+    #
+    #
+    #
     
     def get_function(self, fun):
         if hasattr(fun, '__call__'):
@@ -4333,7 +4895,7 @@ class PyPath(object):
     
     def get_dirs_signs(self):
         result = {}
-        for db in data_formats.best.values() + data_formats.good.values() \
+        for db in data_formats.omnipath.values() + data_formats.good.values() \
             + data_formats.ugly.values():
             result[db.name] = [bool(db.isDirected), bool(db.sign)]
         return result
@@ -4783,6 +5345,10 @@ class PyPath(object):
         return comm
     
     def set_receptors(self):
+        '''
+        Creates a vertex attribute `rec` with value *True* if
+        the protein is a receptor, otherwise *False*.
+        '''
         self.update_vname()
         self.graph.vs['rec'] = [False for _ in self.graph.vs]
         receptors = dataio.get_hpmr()
@@ -4793,6 +5359,10 @@ class PyPath(object):
                     self.graph.vs[self.nodDct[uniprot]]['rec'] = True
     
     def set_kinases(self):
+        '''
+        Creates a vertex attribute `kin` with value *True* if
+        the protein is a kinase, otherwise *False*.
+        '''
         self.update_vname()
         self.graph.vs['kin'] = [False for _ in self.graph.vs]
         kinases = dataio.get_kinases()
@@ -4803,6 +5373,10 @@ class PyPath(object):
                     self.graph.vs[self.nodDct[uniprot]]['kin'] = True
     
     def set_druggability(self):
+        '''
+        Creates a vertex attribute `dgb` with value *True* if
+        the protein is druggable, otherwise *False*.
+        '''
         self.update_vname()
         self.graph.vs['dgb'] = [False for _ in self.graph.vs]
         druggables = dataio.get_dgidb()
@@ -4830,6 +5404,10 @@ class PyPath(object):
                         v['dtg'] = True
     
     def set_transcription_factors(self, classes = ['a', 'b', 'other']):
+        '''
+        Creates a vertex attribute `tf` with value *True* if
+        the protein is a transcription factor, otherwise *False*.
+        '''
         self.update_vname()
         self.graph.vs['tf'] = [False for _ in self.graph.vs]
         tfs = dataio.get_tfcensus(classes)
@@ -4840,6 +5418,78 @@ class PyPath(object):
         for uniprot in uniprots:
             if uniprot in self.nodDct:
                 self.graph.vs[self.nodDct[uniprot]]['tf'] = True
+    
+    def get_pathways(self, source):
+        attrname = '%s_pathways'%source
+        protein_pws = None
+        interaction_pws = None
+        if hasattr(dataio, attrname):
+            fun = getattr(dataio, attrname)
+            proteins_pws, interactions_pws = fun(mapper = self.mapper)
+        return proteins_pws, interactions_pws
+    
+    def load_pathways(self, source, graph = None):
+        attrname = '%s_pathways'%source
+        g = self.graph if graph is None else graph
+        nodDct = dict(zip(g.vs['name'], xrange(g.vcount())))
+        proteins_pws, interactions_pws = self.get_pathways(source)
+        g.vs[attrname] = [set([]) for _ in g.vs]
+        g.es[attrname] = [set([]) for _ in g.es]
+        if type(proteins_pws) is dict:
+            for pw, proteins in proteins_pws.iteritems():
+                for protein in proteins:
+                    if protein in proteins:
+                        uniprots = self.mapper.map_name(protein, 
+                            'uniprot', 'uniprot')
+                        for u in uniprots:
+                            if u in nodDct:
+                                g.vs[nodDct[u]][attrname].add(pw)
+        if type(interactions_pws) is dict:
+            for pw, ia in interactions_pws.iteritems():
+                for pair in ia:
+                    usrcs = self.mapper.map_name(pair[0], 'uniprot', 'uniprot')
+                    utgts = self.mapper.map_name(pair[1], 'uniprot', 'uniprot')
+                    for usrc in usrcs:
+                        for utgt in utgts:
+                            if usrc in nodDct and utgt in nodDct:
+                                eid = g.get_eid(nodDct[usrc], 
+                                    nodDct[utgt], error = False)
+                                if eid != -1:
+                                    g.es[eid][attrname].add(pw)
+    
+    def signor_pathways(self, graph = None):
+        self.load_pathways('signor', graph = graph)
+    
+    def kegg_pathways(self, graph = None):
+        self.load_pathways('kegg', graph = graph)
+    
+    def pathway_attributes(self, graph = None):
+        g = self.graph if graph is None else graph
+        g.vs['netpath_pathways'] = [set([]) for _ in xrange(g.vcount())]
+        for e in g.es:
+            g.vs[e.source]['netpath_pathways'] = \
+                g.vs[e.source]['netpath_pathways'] | set(e['netpath_pathways'])
+            g.vs[e.target]['netpath_pathways'] = \
+                g.vs[e.target]['netpath_pathways'] | set(e['netpath_pathways'])
+        g.vs['signalink_pathways'] = [set(v['slk_pathways']) for v in g.vs]
+        for v in g.vs:
+            if v['atg']:
+                v['signalink_pathways'].add('autophagy')
+    
+    def pathways_table(self, filename = 'genes_pathways.list', 
+        pw_sources = ['signalink', 'signor', 'netpath', 'kegg'], graph = None):
+        result = []
+        hdr = ['UniProt', 'GeneSymbol', 'Database', 'Pathway']
+        g = self.graph if graph is None else graph
+        self.genesymbol_labels(graph = g)
+        for v in g.vs:
+            for src in pw_sources:
+                pw_attr = '%s_pathways'%src
+                for pw in v[pw_attr]:
+                    result.append([v['name'], v['label'], src, pw])
+        with open(filename, 'w') as f:
+            f.write('\t'.join(hdr))
+            f.write('\n'.join(map(lambda l: '\t'.join(l), result)))
     
     def guide2pharma(self):
         result = []
@@ -5066,7 +5716,7 @@ class PyPath(object):
         self.mimp_directions(graph = graph)
     
     def kegg_directions(self, graph = None):
-        keggd = dataio.kegg_pathways()
+        keggd = dataio.get_kegg()
         self.process_directions(keggd, 'KEGG', stimulation = 'activation', 
             inhibition = 'inhibition', graph = graph)
     
@@ -5235,7 +5885,7 @@ class PyPath(object):
             from pypath import data_formats
             net = pypath.BioGraph()
             net.init_network(pfile = 'cache/default.pickle')
-            #net.init_network({'arn': data_formats.best['arn']})
+            #net.init_network({'arn': data_formats.omnipath['arn']})
             tgf = [v.index for v in net.graph.vs if 'TGF' in v['slk_pathways']]
             dot = net.export_dot(nodes = tgf, save_graphics = 'tgf_slk.pdf', prog = 'dot',
                 main_title = 'TGF-beta pathway', return_object = True,
