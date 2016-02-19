@@ -1267,23 +1267,6 @@ descriptions = {
         'type': 'Literature curated',
         'subtype': 'Pathway'
     },
-    'CARFMAP': {
-        'year': 2015,
-        'urls': {
-            'articles': [
-                'http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0143274'
-            ],
-            'webpages': [
-                'http://visionet.erc.monash.edu.au/CARFMAP/'
-            ]
-        },
-        'pubmeds': [26673252],
-        'emails': [('Hieu T Nim', 'hieu.nim@monash.edu'), ('Sarah E Boyd', 'sarah.boyd@monash.edu')],
-        'license': {
-            'name': 'CC-Attribution-4.0',
-            'url': 'http://creativecommons.org/licenses/by/4.0/'
-        }
-    },
     'HSN': {
         'year': 2014,
         'releases': [2009, 2010, 2011, 2012, 2013, 2014],
