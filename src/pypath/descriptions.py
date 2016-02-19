@@ -22,13 +22,14 @@ import codecs
 import bs4
 
 import _html
+import data_formats
 
 __all__ = ['descriptions', 'gen_html', 'write_html']
 
 descriptions = {
     'Lit13': {
         'year': 2013,
-        'label': 'Lit-BM-13: High-quality non-systematic Literature dataset',
+        'label': 'Lit-BM-13',
         'urls': {
             'articles': [
                 'http://www.cell.com/cell/abstract/S0092-8674(14)01422-6'
@@ -41,17 +42,32 @@ descriptions = {
         'pubmeds': [25416956],
         'descriptions': [
             u'''
-            In 2013, we extracted interaction data from BIND, BioGRID, DIP, HPRD, MINT, IntAct, and PDB to generate a high-quality binary literature dataset comprising ~11,000 protein-protein interactions that are binary and supported by at least two traceable pieces of evidence (publications and/or methods) (Rolland et al Cell 2014). Although this dataset does not result from a systematic investigation of the interactome search space and should thus be used with caution for any network topology analyses, it represents valuable interactions for targeted studies and is freely available to the research community through the search engine or via download. 
+            High-quality non-systematic Literature dataset. In 2013, we extracted interaction data from BIND, BioGRID, DIP, HPRD, MINT, IntAct, and PDB to generate a high-quality binary literature dataset comprising ~11,000 protein-protein interactions that are binary and supported by at least two traceable pieces of evidence (publications and/or methods) (Rolland et al Cell 2014). Although this dataset does not result from a systematic investigation of the interactome search space and should thus be used with caution for any network topology analyses, it represents valuable interactions for targeted studies and is freely available to the research community through the search engine or via download. 
             '''
         ],
         'emails': [('Michael_Calderwood@dfci.harvard.edu', 'Michael Calderwood')],
         'type': 'high-throughput',
         'subtype': 'yeast 2 hybrid',
-        'omnipath': False
+        'omnipath': False,
+        'pypath': {
+            'get': [
+                'pypath.dataio.get_lit_bm_13()'
+            ],
+            'data': [
+                'pypath.data_formats.urls[\'hid\'][\'lit-bm-13\']'
+            ],
+            'input': [
+                'pypath.data_formats.interaction_misc[\'lit13\']'
+            ]
+        },
+        'license': {
+            'name': 'No license. "This dataset is freely available to the research community through the search engine or via download."',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        }
     },
     'ELM': {
         'year': 2014,
-        'releases': [2003, 2008, 2009, 2012, 2013, 2014],
+        'releases': [2003, 2008, 2009, 2012, 2013, 2014, 2016],
         'size': {
             'nodes': None,
             'edges': None
@@ -65,14 +81,51 @@ descriptions = {
             ],
             'articles': [
                 'http://nar.oxfordjournals.org/content/40/D1/D242.long',
-                'http://nar.oxfordjournals.org/content/42/D1/D259.long'
+                'http://nar.oxfordjournals.org/content/42/D1/D259.long',
+                'http://nar.oxfordjournals.org/content/44/D1/D294.long'
+            ],
+            'omictools': [
+                'http://omictools.com/eukaryotic-linear-motif-resource-tool'
             ]
         },
-        'pubmeds': [22110040, 24214962],
+        'pubmeds': [22110040, 24214962, 26615199],
         'emails': [('feedback@elm.eu.org', 'ELM Team'), ('gibson@embl.de', 'Toby Gibson')],
         'type': 'literature curated',
         'subtype': 'post-translational modifications',
-        'omnipath': True
+        'data_integration': 'dynamic',
+        'descritpions': [
+            u'''
+            Ideally, each motif class has multiple example instances of this motif annotated, whereby an instance is described as a match to the regular expression pattern of the ELM motif class in a protein sequence. For each instance entry, ideally, multiple sources of experimental evidence are recorded (identifying participant, detecting motif presence and detecting interaction), and, following annotation best practices, a reliability score is given by the annotator.
+            '''
+        ],
+        'omnipath': True,
+        'license': {
+            'name': 'ELM Software License Agreement, non-free',
+            'url': 'http://elm.eu.org/media/Elm_academic_license.pdf'
+        },
+        'pypath': {
+            'data': [
+                'pypath.data_formats.urls[\'ielm_domains\'][\'url\']',
+                'pypath.data_formats.urls[\'elm_class\'][\'url\']',
+                'pypath.data_formats.urls[\'elm_inst\'][\'url\']',
+                'data_formats.urls[\'elm_int\'][\'url\']'
+            ],
+            'format':[
+                'pypath.data_formats.ptm[\'elm\']',
+                'pypath.data_formats.omnipath[\'elm\']'
+            ],
+            'input': [
+                'pypath.dataio.get_elm_domains()',
+                'pypath.dataio.get_elm_classes()',
+                'pypath.dataio.get_elm_instances()'
+            ],
+            'intr': [
+                'pypath.dataio.get_elm_interactions()'
+            ],
+            'dmi': [
+                'pypath.pypath.PyPath.load_elm()'
+            ]
+        }
     },
     'LMPID': {
         'year': 2015,
@@ -90,13 +143,44 @@ descriptions = {
             ],
             'articles': [
                 'http://database.oxfordjournals.org/content/2015/bav014.long'
+            ],
+            'omictools': [
+                'http://omictools.com/linear-motif-mediated-protein-interaction-database-tool'
             ]
         },
         'pubmeds': [25776024],
         'emails': [('ssaha4@jcbose.ac.in', 'Sudipto Saha')],
         'type': 'literature curated',
         'subtype': 'post-translational modifications',
-        'omnipath': True
+        'descriptions': [
+            u'''
+            LMPID (Linear Motif mediated Protein Interaction Database) is a manually curated database which provides comprehensive experimentally validated information about the LMs mediating PPIs from all organisms on a single platform. About 2200 entries have been compiled by detailed manual curation of PubMed abstracts, of which about 1000 LM entries were being annotated for the first time, as compared with the Eukaryotic LM resource.
+            '''
+        ],
+        'omnipath': True,
+        'pypath': {
+            'input': [
+                'pypath.dataio.load_lmpid()'
+            ],
+            'intr': [
+                'pypath.dataio.lmpid_interactions()'
+            ],
+            'data': [
+                'pypath.data/LMPID_DATA_pubmed_ref.xml'
+            ],
+            'format': [
+                'pypath.data_formats.ptm[\'lmpid\']',
+                'pypath.data_formats.omnipath[\'lmpid\']'
+            ],
+            'dmi': [
+                'pypath.dataio.lmpid_dmi()',
+                'pypath.pypath.PyPath().process_dmi(source = \'LMPID\')'
+            ]
+        },
+        'license': {
+            'name': 'No license. If you are using this database please cite Sarkar 2015.',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        }
     },
     'PDZBase': {
         'year': 2004,
@@ -108,6 +192,9 @@ descriptions = {
             ],
             'articles': [
                 'http://bioinformatics.oxfordjournals.org/content/21/6/827.long'
+            ],
+            'omictools': [
+                'http://omictools.com/pdzbase-tool'
             ]
         },
         'pubmeds': [15513994],
@@ -123,9 +210,27 @@ descriptions = {
         'emails': [('haw2002@med.cornell.edu', 'Harel Weinstein'), ('pdzbase@med.cornell.edu' , 'PDZBase Team')],
         'type': 'literature curated',
         'subtype': 'pathway',
-        'omnipath': True
+        'omnipath': True,
+        'pypath': {
+            'intr': [
+                'pypath.dataio.get_pdzbase()'
+            ],
+            'data': [
+                'pypath.data_formats.urls[\'pdzbase\']',
+                'pypath.data_formats.urls[\'pdz_details\']'
+            ],
+            'format': [
+                'pypath.data_formats.pathway[\'pdz\']',
+                'pypath.data_formats.omnipath[\'pdz\']'
+            ]
+        },
+        'license': {
+            'name': 'No license.',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        },
+        'pathguide': 160
     },
-    'Guide2Pharmacology': {
+    'Guide2Pharma': {
         'year': 2015,
         'releases': [2007, 2008, 2009, 2011, 2015],
         'size': None,
@@ -141,6 +246,9 @@ descriptions = {
             'articles': [
                 'http://nar.oxfordjournals.org/content/42/D1/D1098.long',
                 'http://onlinelibrary.wiley.com/doi/10.1111/j.1476-5381.2011.01649_1.x/full'
+            ],
+            'omictools': [
+                'http://omictools.com/international-union-of-basic-and-clinical-pharmacology-british-pharmacological-society-guide-to-pharmacology-tool'
             ]
         },
         'descriptions': [
@@ -152,7 +260,21 @@ descriptions = {
         'emails': [('enquiries@guidetopharmacology.org', 'Guide to Pharmacology Team'), ('tony.harmar@ed.ac.uk', 'Tony Harmar')],
         'type': 'literature curated',
         'subtype': 'pathway',
-        'omnipath': True
+        'omnipath': True,
+        'license': {
+            'name': 'CC-Attribution-ShareAlike-3.0',
+            'url': 'http://creativecommons.org/licenses/by-sa/3.0/'
+        },
+        'pypath': {
+            'data': [
+                'pypath.data_formats'
+            ],
+            'format': [
+                'pypath.data_formats.pathway[\'guide2pharma\']',
+                'pypath.data_formats.omnipath[\'guide2pharma\']'
+            ]
+        },
+        'pathguide': 345
     },
     'phosphoELM': {
         'year': 2010,
@@ -165,25 +287,56 @@ descriptions = {
                 'http://www.biomedcentral.com/1471-2105/5/79',
                 'http://nar.oxfordjournals.org/content/36/suppl_1/D240.full',
                 'http://nar.oxfordjournals.org/content/39/suppl_1/D261'
+            ],
+            'omictools': [
+                'http://omictools.com/phospho-elm-tool'
             ]
         },
         'pubmeds': [15212693, 17962309, 21062810],
         'descriptions': [
             u'''
-            Phospho.ELM http://phospho.elm.eu.org is a new resource containing experimentally verified phosphorylation sites manually curated from the literature and is developed as part of the ELM (Eukaryotic Linear Motif) resource. Phospho.ELM constitutes the largest searchable collection of phosphorylation sites available to the research community. The Phospho.ELM entries store information about substrate proteins with the exact positions of residues known to be phosphorylated by cellular kinases. Additional annotation includes literature references, subcellular compartment, tissue distribution, and information about the signaling pathways involved as well as links to the molecular interaction database MINT. Phospho.ELM version 2.0 contains 1703 phosphorylation site instances for 556 phosphorylated proteins. (Diella 2004)
+            Phospho.ELM http://phospho.elm.eu.org is a new resource containing experimentally verified phosphorylation sites manually curated from the literature and is developed as part of the ELM (Eukaryotic Linear Motif) resource. Phospho.ELM constitutes the largest searchable collection of phosphorylation sites available to the research community. The Phospho.ELM entries store information about substrate proteins with the exact positions of residues known to be phosphorylated by cellular kinases. Additional annotation includes literature references, subcellular compartment, tissue distribution, and information about the signaling pathways involved as well as links to the molecular interaction database MINT. Phospho.ELM version 2.0 contains 1,703 phosphorylation site instances for 556 phosphorylated proteins. (Diella 2004)
             ''',
             u'''
-            Phospho.ELM is a manually curated database of eukaryotic phosphorylation sites. The resource includes data collected from published literature as well as high-throughput data sets. The current release of the Phospho.ELM data set (version 7.0, July 2007) contains 4078 phospho-protein sequences covering 12 025 phospho-serine, 2362 phospho-threonine and 2083 phospho-tyrosine sites with a total of 16 470 sites. 
+            Phospho.ELM is a manually curated database of eukaryotic phosphorylation sites. The resource includes data collected from published literature as well as high-throughput data sets. The current release of the Phospho.ELM data set (version 7.0, July 2007) contains 4078 phospho-protein sequences covering 12,025 phospho-serine, 2,362 phospho-threonine and 2,083 phospho-tyrosine sites with a total of 16,470 sites. 
             For each phospho-site we report if the phosphorylation evidence has been identified by small-scale analysis (low throughput; LTP) that typically focus on one or a few proteins at a time or by large-scale experiments (high throughput; HTP), which mainly apply MS techniques. It is noteworthy that in our data set there is a small overlap between instances identified by LTP and HTP experiments. (Diella 2007)
             ''',
             u'''
-            The current release of the Phospho.ELM data set (version 9.0) contains more than 42 500 non-redundant instances of phosphorylated residues in more than 11 000 different protein sequences (3370 tyrosine, 31 754 serine and 7449 threonine residues). For each phosphosite we report whether the phosphorylation evidence has been identified by small-scale analyses (low-throughput, LTP) and/or by large-scale experiments (high-throughput, HTP), which mainly apply MS techniques. The majority of the protein instances from Phospho. ELM are vertebrate (mostly Homo sapiens (62%) and Mus musculus (16%)) though 22% are from other species, mainly Drosophila melanogaster (13%) and Caenorhabditis elegans (7%). In total, more than 300 different kinases have been annotated and a document providing additional information about all kinases annotated in Phospho.ELM can be found at http://phospho.elm.eu.org/kinases.html. (Dinkel 2010)
+            The current release of the Phospho.ELM data set (version 9.0) contains more than 42,500 non-redundant instances of phosphorylated residues in more than 11,000 different protein sequences (3370 tyrosine, 31 754 serine and 7449 threonine residues). For each phosphosite we report whether the phosphorylation evidence has been identified by small-scale analyses (low-throughput, LTP) and/or by large-scale experiments (high-throughput, HTP), which mainly apply MS techniques. The majority of the protein instances from Phospho. ELM are vertebrate (mostly Homo sapiens (62%) and Mus musculus (16%)) though 22% are from other species, mainly Drosophila melanogaster (13%) and Caenorhabditis elegans (7%). In total, more than 300 different kinases have been annotated and a document providing additional information about all kinases annotated in Phospho.ELM can be found at http://phospho.elm.eu.org/kinases.html. (Dinkel 2010)
             '''
         ],
         'emails': [('toby.gibson@embl.de', 'Toby Gibson')],
         'type': 'Literature curated',
+        'data_integration': 'dynamic',
         'subtype': 'PTM',
-        'omnipath': True
+        'label': 'phospho.ELM',
+        'omnipath': True,
+        'license': {
+            'name': 'phospho.ELM Academic License, non-free',
+            'url': 'http://phospho.elm.eu.org/dumps/Phospho.Elm_AcademicLicense.pdf'
+        },
+        'pypath': {
+            'format': [
+                'pypath.data_formats.ptm[\'phelm\']',
+                'pypath.data_formats.omnipath[\'phelm\']'
+            ],
+            'data': [
+                'pypath.data_formats.urls[\'p_elm\'][\'psites\']',
+                'data_formats.urls[\'p_elm_kin\'][\'url\']'
+            ],
+            'intr': [
+                'pypath.dataio.phelm_interactions()'
+            ],
+            'input': [
+                'pypath.dataio.get_phosphoelm()',
+                'pypath.dataio.get_phelm_kinases()',
+                'pypath.dataio.phelm_psites()'
+            ],
+            'ptm': [
+                'pypath.pypath.PyPath().load_phosphoelm()'
+            ]
+        },
+        'pathguide': 138
     },
     'DOMINO': {
         'year': 2006,
@@ -195,6 +348,9 @@ descriptions = {
             ],
             'articles': [
                 'http://nar.oxfordjournals.org/content/35/suppl_1/D557.long'
+            ],
+            'omictools': [
+                'http://omictools.com/domino-tool'
             ]
         },
         'pubmeds': [17135199],
@@ -208,11 +364,39 @@ descriptions = {
         'emails': [('giovanni.cesareni@uniroma2.it', 'Gianni Cesareni')],
         'type': 'Literature curated',
         'subtype': 'PTM',
-        'omnipath': True
+        'omnipath': True,
+        'license': {
+            'name': 'CC-Attribution-2.5',
+            'url': 'http://creativecommons.org/licenses/by/2.5'
+        },
+        'pathguide': 239,
+        'pypath': {
+            'data': [
+                'pypath.data_formats.urls[\'domino\'][\'url\']'
+            ],
+            'format': [
+                'pypath.data_formats.ptm[\'domino\']',
+                'pypath.data_formats.omnipath[\'domino\']'
+            ],
+            'input': [
+                'pypath.dataio.get_domino()',
+                'pypath.dataio.get_domino_ddi()'
+            ],
+            'intr': [
+                'pypath.dataio.get_domino_interactions()'
+            ],
+            'ptm': [
+                'pypath.dataio.get_domino_ptms()',
+                'pypath.dataio.load_domino_ptms()'
+            ],
+            'dmi': [
+                'pypath.dataio.load_domino_dmi()'
+            ]
+        }
     },
     'dbPTM': {
-        'year': 2012,
-        'releases': [2005, 2009, 2012],
+        'year': 2015,
+        'releases': [2005, 2009, 2012, 2015],
         'authors': ['ISBLab'],
         'urls': {
             'webpages': [
@@ -221,25 +405,53 @@ descriptions = {
             'articles': [
                 'http://nar.oxfordjournals.org/content/41/D1/D295.long',
                 'http://www.biomedcentral.com/1756-0500/2/111',
-                'http://nar.oxfordjournals.org/content/34/suppl_1/D622.long'
+                'http://nar.oxfordjournals.org/content/34/suppl_1/D622.long',
+                'http://nar.oxfordjournals.org/content/44/D1/D435.long'
+            ],
+            'omictools': [
+                'http://omictools.com/dbptm-tool'
             ]
         },
-        'pubmeds': [16381945, 19549291, 23193290],
-        'taxons': ['human'],
+        'pubmeds': [16381945, 19549291, 23193290, 26578568],
+        'taxons': ['human', 'Metazoa', 'Bacteria', 'plants', 'yeast'],
         'descriptions': [
             u'''
             Due to the inaccessibility of database contents in several online PTM resources, a total 11 biological databases related to PTMs are integrated in dbPTM, including UniProtKB/SwissProt, version 9.0 of Phospho.ELM, PhosphoSitePlus, PHOSIDA, version 6.0 of O-GLYCBASE, dbOGAP, dbSNO, version 1.0 of UbiProt, PupDB, version 1.1 of SysPTM and release 9.0 of HPRD.
             With the high throughput of MS-based methods in post-translational proteomics, this update also includes manually curated MS/MS-identified peptides associated with PTMs from research articles through a literature survey. First, a table list of PTM-related keywords is constructed by referring to the UniProtKB/SwissProt PTM list (http://www.uniprot.org/docs/ptmlist.txt) and the annotations of RESID (28). Then, all fields in the PubMed database are searched based on the keywords of the constructed table list. This is then followed by downloading the full text of the research articles. For the various experiments of proteomic identification, a text-mining system is developed to survey full-text literature that potentially describes the site-specific identification of modified sites. Approximately 800 original and review articles associated with MS/MS proteomics and protein modifications are retrieved from PubMed (July 2012). Next, the full-length articles are manually reviewed for precisely extracting the MS/MS peptides along with the modified sites. Furthermore, in order to determine the locations of PTMs on a full-length protein sequence, the experimentally verified MS/MS peptides are then mapped to UniProtKB protein entries based on its database identifier (ID) and sequence identity. In the process of data mapping, MS/MS peptides that cannot align exactly to a protein sequence are discarded. Finally, each mapped PTM site is attributed with a corresponding literature (PubMed ID).
             ''',
             u'''
-            Webpage was inaccessile on the 23rd of October 2015.
+            dbPTM was developed as a comprehensive database of experimentally verified PTMs from several databases with annotations of potential PTMs for all UniProtKB protein entries. For this tenth anniversary of dbPTM, the updated resource includes not only a comprehensive dataset of experimentally verified PTMs, supported by the literature, but also an integrative interface for accessing all available databases and tools that are associated with PTM analysis. As well as collecting experimental PTM data from 14 public databases, this update manually curates over 12,000 modified peptides, including the emerging S-nitrosylation, S-glutathionylation and succinylation, from approximately 500 research articles, which were retrieved by text mining.
             '''
         ],
         'emails': [('francis@saturn.yzu.edu.tw', 'Hsien-Da Huang'), 
             ('bryan@mail.nctu.edu.tw', 'Hsien-Da Huang')],
         'type': 'Literature curated',
         'subtype': 'PTM',
-        'omnipath': True
+        'omnipath': True,
+        'data_integration': 'dynamic',
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        },
+        'pypath': {
+            'format': [
+                'pypath.data_formats.ptm[\'dbptm\']',
+                'pypath.data_formats.omnipath[\'dbptm\']'
+            ],
+            'data': [
+                'pypath.data_formats.urls[\'dbptm_benchmark\'][\'urls\']',
+                'pypath.data_formats.urls[\'dbptm\'][\'urls\']'
+            ],
+            'input': [
+                'pypath.dataio.get_dbptm()'
+            ],
+            'intr': [
+                'pypath.dataio.dbptm_interactions()'
+            ],
+            'ptm': [
+                'pypath.pypath.PyPath().load_dbptm()'
+            ]
+        }
     },
     'Signor': {
         'year': 2015,
@@ -249,8 +461,12 @@ descriptions = {
             'articles': [
                 'http://nar.oxfordjournals.org/content/44/D1/D548',
                 'http://f1000research.com/posters/1098359'
-                ]
+                ],
+            'omictools': [
+                'http://omictools.com/signaling-network-open-resource-tool'
+            ]
         },
+        'full_name': 'Signaling Network Open Resource',
         'pubmeds': [26467481],
         'descriptions': [
             u'''
@@ -260,18 +476,38 @@ descriptions = {
         'authors': ['Cesareni Group'],
         'label': 'Signor',
         'color': '',
-        'data_import': ['SignaLink2', 'PhosphoSite'],
+        'data_import': ['SignaLink3', 'PhosphoSite'],
         'type': 'literature curated',
         'subtype': 'pathway',
         'omnipath': True,
         'emails': [('perfetto@live.it', 'Livia Perfetto')],
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        },
+        'pypath': {
+            'data': [
+                'pypath.data_formats.urls[\'signor\'][\'all_url\']'
+            ],
+            'format': [
+                'pypath.data_formats.pathway[\'signor\']'
+            ],
+            'intr': [
+                'pypath.dataio.signor_interactions()'
+            ],
+            'ptm': [
+                'pypath.dataio.load_signor_ptms()',
+                'pypath.pypath.PyPath().load_signor_ptms()'
+            ]
+        }
     },
     'HuPho': {
         'year': 2015,
         'releases': [2012, 2015],
         'urls': {
             'webpages': ['http://hupho.uniroma2.it/'],
-            'articles': ['http://onlinelibrary.wiley.com/doi/10.1111/j.1742-4658.2012.08712.x/full']
+            'articles': ['http://onlinelibrary.wiley.com/doi/10.1111/j.1742-4658.2012.08712.x/full'],
+            'omictools': ['http://omictools.com/human-phosphatase-portal-tool']
         },
         'pubmeds': [22804825],
         'descriptions': [
@@ -287,11 +523,16 @@ descriptions = {
         ],
         'authors': ['Cesareni Group'],
         'label': 'HuPho',
+        'full_name': 'Human Phosphatase Portal',
         'color': '',
         'type': 'high throughput and literature curated',
         'subtype': 'post-translational modification',
         'omnipath': False,
-        'emails': [('perfetto@live.it', 'Livia Perfetto')]
+        'emails': [('perfetto@live.it', 'Livia Perfetto')],
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        }
     },
     'SignaLink3': {
         'year': 2015,
@@ -308,6 +549,9 @@ descriptions = {
             'articles': [
                 'http://bioinformatics.oxfordjournals.org/content/26/16/2042.long',
                 'http://www.biomedcentral.com/1752-0509/7/7'
+            ],
+            'omictools': [
+                'http://omictools.com/signalink-tool'
             ]
         },
         'taxons': [
@@ -330,7 +574,12 @@ descriptions = {
         'emails': [('korcsmaros@gmail.com', 'Tamas Korcsmaros'), ('tamas.korcsmaros@tgac.ac.uk', 'Tamas Korcsmaros')],
         'type': 'literature curated',
         'subtype': 'pathway',
-        'omnipath': True
+        'omnipath': True,
+        'license': {
+            'name': 'CC-Attribution-NonCommercial-ShareAlike-3.0',
+            'url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/'
+        },
+        'pathguide': 320
     },
     'NRF2ome': {
         'year': 2013,
@@ -363,7 +612,11 @@ descriptions = {
         'emails': [('korcsmaros@gmail.com', 'Tamas Korcsmaros'), ('tamas.korcsmaros@tgac.ac.uk', 'Tamas Korcsmaros')],
         'type': 'literature curated',
         'subtype': 'pathway',
-        'omnipath': True
+        'omnipath': True,
+        'license': {
+            'name': 'CC-Attribution-NonCommercial-ShareAlike-3.0',
+            'url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/'
+        }
     },
     'ARN': {
         'year': 2014,
@@ -392,7 +645,11 @@ descriptions = {
         'emails': [('korcsmaros@gmail.com', 'Tamas Korcsmaros'), ('tamas.korcsmaros@tgac.ac.uk', 'Tamas Korcsmaros')],
         'type': 'literature curated',
         'subtype': 'pathway',
-        'omnipath': True
+        'omnipath': True,
+        'license': {
+            'name': 'CC-Attribution-NonCommercial-ShareAlike-3.0',
+            'url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/'
+        }
     },
     'HPRD': {
         'year': 2010,
@@ -405,6 +662,9 @@ descriptions = {
                 'http://genome.cshlp.org/content/13/10/2363.long',
                 'http://nar.oxfordjournals.org/content/34/suppl_1/D411.long',
                 'http://nar.oxfordjournals.org/content/37/suppl_1/D767.long'
+            ],
+            'omictools': [
+                'http://omictools.com/human-protein-reference-database-tool'
             ]
         },
         'pubmeds': [14525934, 16381900, 18988627],
@@ -414,10 +674,35 @@ descriptions = {
             Posttranslational modifications were annotated based on the type of modification, site of modification, and the modified residue. In addition, the upstream enzymes that are responsible for modifications of these proteins were reported if described in the articles. The most commonly known and the alternative subcellular localization of the protein were based on the literature. The sites of expression of protein and/or mRNA were annotated based on published studies.
             '''
         ],
+        'full_name': 'Human Protein Reference Database',
         'emails': [('pandey@jhmi.edu', 'Akhilesh Pandey')],
         'type': 'literature curated',
         'subtype': 'post-translational modification',
-        'omnipath': True
+        'omnipath': True,
+        'license': {
+            'name': 'No license. Everything in HPRD is free as long as it is not used for commercial purposes. Commercial entitites will have to pay a fee under a licensing arrangement which will be used to make this database even better. Commercial users should send an e-mail for details. This model of HPRD is similar to the SWISS-PROT licensing arrangement. We do not have any intentions to profit from HPRD. Our goal is to promote science by creating the infrastructure of HPRD. We hope to keep it updated with the assistance of the entire biomedical community. Any licensing fee, if generated, will be used to annotate HPRD better and to add more entries and features.',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        },
+        'pypath': {
+            'data': [
+                'data_formats.urls[\'hprd_all\'][\'url\']',
+                'data_formats.urls[\'hprd_all\'][\'ptm_file\']'
+            ],
+            'input': [
+                'pypath.dataio.get_hprd()'
+            ],
+            'intr': [
+                'pypath.dataio.hprd_interactions()'
+            ],
+            'format': [
+                'pypath.data_formats.ptm[\'hprd\']',
+                'pypath.data_formats.omnipath[\'hprd\']'
+            ],
+            'ptm': [
+                'pypath.dataio.get_hprd_ptms()'
+            ]
+        },
+        'pathguide': 14
     },
     'ACSN': {
         'year': 2015,
@@ -450,7 +735,33 @@ descriptions = {
         'emails': [('andrei.zinovyev@curie.fr', 'Andrei Zinovyev')],
         'type': 'literature curated',
         'subtype': 'reaction',
-        'omnipath': False
+        'full_name': 'Atlas of Cancer Signalling Networks',
+        'omnipath': False,
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        },
+        'pypath': {
+            'data': [
+                'pypath.data_formats.urls[\'acsn\'][\'url\']',
+                'pypath.data_formats.files[\'acsn\'][\'ppi\']',
+                'pypath.data_formats.files[\'acsn\'][\'names\']',
+                'pypath.data_formats.urls[\'acsn\'][\'biopax_l3\']'
+            ],
+            'input': [
+                'pypath.dataio.get_acsn()',
+                'pypath.dataio.get_acsn_effects()',
+                'pypath.dataio.acsn_biopax()',
+                'pypath.pypath.PyPath().acsn_effects()'
+            ],
+            'intr': [
+                'pypath.dataio.acsn_ppi()'
+            ],
+            'format': [
+                'pypath.data_formats.reaction[\'acsn\']',
+                'pypath.data_formats.reaction_misc[\'acsn\']'
+            ]
+        }
     },
     'DOMINO': {
         'urls': {
@@ -459,6 +770,9 @@ descriptions = {
             ],
             'webpages': [
                 'http://mint.bio.uniroma2.it/domino/'
+            ],
+            'omictools': [
+                'http://omictools.com/domino-tool'
             ]
         },
         'pubmeds': [17135199],
@@ -488,7 +802,34 @@ descriptions = {
         'emails': [('Cesareni@uniroma2.it', 'Gianni Cesareni')],
         'type': 'literature curated',
         'subtype': 'post-translational modification',
-        'omnipath': True
+        'omnipath': True,
+        'license': {
+            'name': 'CC-Attribution-2.5',
+            'url': 'http://creativecommons.org/licenses/by/2.5'
+        },
+        'pypath': {
+            'data': [
+                'pypath.data_formats.urls[\'domino\'][\'url\']'
+            ],
+            'format': [
+                'pypath.data_formats.ptm[\'domino\']',
+                'pypath.data_formats.omnipath[\'domino\']'
+            ],
+            'intr': [
+                'pypath.dataio.domino_interactions()'
+            ],
+            'ptm': [
+                'pypath.dataio.get_domino_ptms()'
+            ],
+            'dmi': [
+                'pypath.dataio.get_domino_dmi()',
+                'pypath.pypath.PyPath().load_domino_dmi()'
+            ],
+            'ddi': [
+                'pypath.dataio.get_domino_ddi()'
+            ]
+        },
+        'pathguide': 239
     },
     'DeathDomain': {
         'year': 2012,
@@ -512,7 +853,10 @@ descriptions = {
                 'http://deathdomain.org/'
             ]
         },
-        'license': u'''Please cite the following paper when you use Death Domain database in your publications, which is very important to sustain our service: Kwon et al. 2012''',
+        'license': {
+            'name': 'No license. Please cite the following paper when you use Death Domain database in your publications, which is very important to sustain our service: Kwon et al. 2012',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        },
         'emails': [('hyunho@ynu.ac.kr', 'Hyun Ho O')],
         'files': {
             'articles': [
@@ -549,7 +893,22 @@ descriptions = {
         ],
         'type': 'literature curated',
         'subtype': 'pathway',
-        'omnipath': True
+        'omnipath': True,
+        'data_integration': 'static',
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        },
+        'pypath': {
+            'data': [
+                'pypath.data/dd_refs.csv'
+            ],
+            'format': [
+                'pypath.data_formats.pathway[\'death\']',
+                'pypath.data_formats.omnipath[\'death\']'
+            ]
+        },
+        'pathguide': 442
     },
     'TRIP': {
         'year': 2014,
@@ -562,8 +921,13 @@ descriptions = {
             ],
             'webpages': [
                 'http://www.trpchannel.org'
+            ],
+            'omictools': [
+                'http://omictools.com/transient-receptor-potential-channel-interacting-protein-database-tool'
             ]
         },
+        'label': 'TRIP',
+        'full_name': 'Mammalian Transient Receptor Potential Channel-Interacting Protein Database',
         'emails': [('jhjeon2@snu.ac.kr', 'Ju-Hong Jeon')],
         'size': {
             'nodes': 468,
@@ -596,12 +960,38 @@ descriptions = {
         ],
         'notes': [
             u'''
-            Good manually curated dataset focusing on TRP channel proteins, with ~800 binary interactions. The provided formats are not well suitable for bioinformatics use because of the non standard protein names, with greek letters and only human understandable formulas. Using HTML processing, and processing the data from 5-6 different tables, with couple hundreds of lines of code, one have a chance to compile a usable data table. 
+            Good manually curated dataset focusing on TRP channel proteins, with ~800 binary interactions. The provided formats are not well suitable for bioinformatics use because of the non standard protein names, with greek letters and only human understandable formulas. Using HTML processing from 5-6 different tables, with couple hundreds lines of code, one have a chance to compile a usable table. 
             '''
         ],
         'type': 'literature curated',
         'subtype': 'pathway',
-        'omnipath': True
+        'omnipath': True,
+        'pypath': {
+            'input': [
+                'pypath.dataio.trip_process()',
+                'pypath.dataio.take_a_trip()',
+                'pypath.dataio.trip_process_table()',
+                'pypath.dataio.trip_get_uniprot()',
+                'pypath.dataio.trip_find_uniprot()'
+            ],
+            'intr': [
+                'pypath.dataio.trip_interactions()'
+            ],
+            'data': [
+                'pypath.data_formats.urls[\'trip\'][\'intr\']',
+                'pypath.data_formats.urls[\'trip\'][\'show\']',
+                'pypath.data_formats.urls[\'trip\'][\'json\']',
+            ],
+            'format': [
+                'pypath.data_formats.pathway[\'trip\']',
+                'pypath.data_formats.omnipath[\'trip\']'
+            ]
+        },
+        'license': {
+            'name': 'CC-Attribution-ShareAlike-3.0',
+            'url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/'
+        },
+        'pathguide': 409
     },
     'Awan2007': {
         'year': 2007,
@@ -628,7 +1018,11 @@ descriptions = {
         ],
         'type': 'literature curated',
         'subtype': 'pathway',
-        'omnipath': False
+        'omnipath': False,
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        }
     },
     'Cui2007': {
         'year': 2007,
@@ -688,7 +1082,11 @@ descriptions = {
         ],
         'type': 'literature curated',
         'subtype': 'pathway',
-        'omnipath': False
+        'omnipath': False,
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        }
     },
     'BioCarta': {
         'year': 2006,
@@ -702,7 +1100,8 @@ descriptions = {
         'color': '',
         'urls': {
             'webpages': [
-                'http://www.biocarta.com/'
+                'http://www.biocarta.com/',
+                'http://cgap.nci.nih.gov/Pathways/BioCarta_Pathways'
             ],
             'articles': []
         },
@@ -725,7 +1124,11 @@ descriptions = {
         ],
         'type': 'literature curated',
         'subtype': 'pathway',
-        'omnipath': False
+        'omnipath': False,
+        'license': {
+            'name': 'BioCarta webpage Terms and Conditions of Use (pathways are not owned by BioCarta and are free to use)',
+            'url': 'http://web.archive.org/web/20150207091158/http://biocarta.com/legal/terms.asp'
+        }
     },
     'TLR': {
         'urls': {
@@ -735,7 +1138,11 @@ descriptions = {
         },
         'type': 'literature curated',
         'subtype': 'model',
-        'omnipath': False
+        'omnipath': False,
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        }
     },
     'CA1': {
         'year': 2005,
@@ -746,6 +1153,7 @@ descriptions = {
         },
         'authors': ['Iyengar Lab'],
         'label': 'Ma\'ayan 2005',
+        'full_name': 'Human Hippocampal CA1 Region Neurons Signaling Network',
         'color': '',
         'pubmeds': [16099987],
         'urls': {
@@ -771,20 +1179,39 @@ descriptions = {
         ],
         'type': 'literature curated',
         'subtype': 'pathway',
-        'omnipath': True
+        'omnipath': True,
+        'data_integration': 'dynamic',
+        'pypath': {
+            'intr': [
+                'pypath.data_formats.urls[\'ca1\'][\'url\']'
+            ],
+            'data': [
+                'pypath.dataio.get_ca1()'
+            ],
+            'format': [
+                'pypath.data_formats.pathway[\'ca1\']',
+                'pypath.data_formats.omnipath[\'ca1\']'
+            ]
+        },
+        'license': {
+            'name': 'Unknown. Ask authors for permission.'
+        }
     },
     'CancerCellMap': {
+        'year': 2006,
+        'relases': [2004, 2006],
         'urls': {
             'articles': [],
             'webpages': [
-                'http://www.pathwaycommons.org/pc-snapshot/current-release/tab_delim_network/by_source/'
+                'http://www.pathwaycommons.org/archives/PC1/last_release-2011/tab_delim_network/by_source/',
+                'http://web.archive.org/web/20130729025707/http://cancer.cellmap.org/cellmap/home.do'
             ]
         },
         'authors': ['Bader Lab'],
         'emails': [('gary.bader@utoronto.ca', 'Gary Bader')],
         'descriptions': [
             u'''
-            Manually curated data, unpublished. A team of M.Sc. and Ph.D. biologists at the Institute of Bioinformatics in Bangalore, India read original research papers and hand-entered the pathway data into our database. The quality of the Cancer Cell Map pathways is very high. Half of the pathways were reviewed by experts at Memorial Sloan-Kettering Cancer Center and were found to contain only a few errors, which were subsequently fixed.
+            Manually curated data, unpublished. A team of M.Sc. and Ph.D. biologists at the Institute of Bioinformatics in Bangalore, India read original research papers and hand-entered the pathway data into our database. The quality of the Cancer Cell Map pathways is very high. Half of the pathways were reviewed by experts at Memorial Sloan-Kettering Cancer Center and were found to contain only a few errors, which were subsequently fixed. A pathway is a collection of all genes/proteins that have been described as pathway members in any publication and all the interactions between them that can be found described in the literature.
             '''
         ],
         'notes': [
@@ -792,9 +1219,53 @@ descriptions = {
             One of the earliest manually curated datasets, now only available from second hand, e.g. from PathwayCommons. Included in many other resources. Contains binary interactions with PubMed references.
             '''
         ],
+        'taxons': [
+            'human',
+            'mouse',
+            'rat'
+        ],
         'type': 'literature curated',
-        'subtype': 'pathway',
-        'omnipath': True
+        'subtype': 'interaction',
+        'omnipath': True,
+        'pypath': {
+            'intr': [
+                'pypath.dataio.get_ccmap()'
+            ],
+            'data': [
+                'pypath.data_formats.urls[\'ccmap\'][\'nodes\']',
+                'pypath.data_formats.urls[\'ccmap\'][\'edges\']'
+            ],
+            'format': [
+                'pypath.data_formats.interaction[\'ccmap\']',
+                'pypath.data_formats.omnipath[\'ccmap\']'
+            ]
+        },
+        'data_integration': 'dynamic',
+        'license': {
+            'name': 'CC-Attribution-2.5',
+            'url': 'http://creativecommons.org/licenses/by/2.5/'
+        },
+        'pathguide': 223
+    },
+    'CARFMAP': {
+        'year': 2015,
+        'urls': {
+            'articles': [
+                'http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0143274'
+            ],
+            'webpages': [
+                'http://visionet.erc.monash.edu.au/CARFMAP/'
+            ]
+        },
+        'pubmeds': [26673252],
+        'emails': [('Hieu T Nim', 'hieu.nim@monash.edu'), ('Sarah E Boyd', 'sarah.boyd@monash.edu')],
+        'license': {
+            'name': 'CC-Attribution-4.0',
+            'url': 'http://creativecommons.org/licenses/by/4.0/'
+        },
+        'omnipath': False,
+        'type': 'Literature curated',
+        'subtype': 'Pathway'
     },
     'HSN': {
         'year': 2014,
@@ -802,6 +1273,7 @@ descriptions = {
         'nodes': 6300,
         'edges': 63000,
         'authors': ['Wang Group'],
+        'full_name': 'Human Signaling Network version 6',
         'label': 'HumanSignalingNetwork',
         'color': '',
         'data_import': ['Cui2007', 'BioCarta', 'CST', 'NCI-PID', 'iHOP'],
@@ -832,18 +1304,34 @@ descriptions = {
         'descriptions': [
             u'''
             Composed from multiple manually curated datasets, and contains own manual cuartion effort. Methods are unclear, and the dataset has not been published in reviewed paper. Based on the Cui et al 2007. 
-            Wang Lab has manually curated human signaling data from literature since 2005. The data sources include BioCarta, CST Signaling pathways, NCI Pathway Interaction Database, IHOP, and many review papers. The contents are updated every year. 
+            Wang Lab has manually curated human signaling data from literature since 2005. The data sources include BioCarta, CST Signaling pathways, NCI Pathway Interaction Database, iHOP, and many review papers. The contents are updated every year. 
             iHOP is not literature curated, but is a literature mining platform. 
             '''
         ],
         'notes': [
             u'''
-            This network aims to merge multiple manually curated networks. Unfortunately a precise description of the sources and methods is missing. Also, the dataset doesn't include the references. Moreover, the data file misses header and key, so users can only guess about the meaning of columns and values.
+            This network aims to merge multiple manually curated networks. Unfortunately a precise description of the sources and methods is missing. Also, the dataset does not include the references. Moreover, the data file misses header and key, so users can only guess about the meaning of columns and values.
             '''
         ],
         'type': 'literature curated',
+        'data_integration': 'dynamic',
         'subtype': 'pathway',
-        'omnipath': False
+        'omnipath': False,
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        },
+        'pypath': {
+            'data': [
+                'pypath.data_formats.urls[\'hsn\']'
+            ],
+            'format': [
+                'pypath.data_formats.interaction_misc[\'hsn\']'
+            ],
+            'intr': [
+                'pypath.dataio.get_hsn()'
+            ]
+        }
     },
     'Ataxia': {
         'year': 2010,
@@ -872,18 +1360,33 @@ descriptions = {
         'type': 'high-throughput',
         'subtype': 'interaction',
         'omnipath': False,
-        'emails': [('Tong_Hao@dfci.harvard.edu', 'Tong Hao'), ('barabasi@gmail.com', 'Albert-Laszlo Barabasi')]
+        'emails': [('Tong_Hao@dfci.harvard.edu', 'Tong Hao'), ('barabasi@gmail.com', 'Albert-Laszlo Barabasi')],
+        'license': {
+            'url': 'http://creativecommons.org/licenses/by-nc/2.5',
+            'name': 'CC-Attribution-2.5'
+        }
     },
     'Reactome': {
+        'year': 2015,
+        'releases': [2004, 2008, 2010, 2012, 2014],
         'urls': {
             'webpages': [
                 'http://reactome.org/'
             ],
             'articles': [
+                'http://nar.oxfordjournals.org/content/33/suppl_1/D428.long',
+                'http://nar.oxfordjournals.org/content/37/suppl_1/D619.long',
+                'http://onlinelibrary.wiley.com/doi/10.1002/pmic.201100066/abstract',
+                'http://nar.oxfordjournals.org/content/39/suppl_1/D691.long',
                 'http://genomebiology.com/content/8/3/R39',
-                'http://nar.oxfordjournals.org/content/42/D1/D472.long'
+                'http://nar.oxfordjournals.org/content/42/D1/D472.long',
+                'http://www.mdpi.com/2072-6694/4/4/1180/htm'
+            ],
+            'omictools': [
+                'http://omictools.com/reactome-tool'
             ]
         },
+        'pubmeds': [15608231, 18981052, 21751369, 21067998, 24213504, 24243840],
         'descriptions': [
             u'''
             Once the content of the module is approved by the author and curation staff, it is peer-reviewed on the development web-site, by one or more bench biologists selected by the curator in consultation with the author. The peer review is open and the reviewers are acknowledged in the database by name. Any issues raised in the review are resolved, and the new module is scheduled for release.
@@ -896,8 +1399,31 @@ descriptions = {
         ],
         'type': 'literature curated',
         'subtype': 'reaction network',
+        'data_integration': 'dynamic',
         'omnipath': False,
-        'emails': [('help@reactome.org', 'Reactome Team'), ('hhe@ebi.ac.uk', 'Henning Hermjakob')]
+        'emails': [('help@reactome.org', 'Reactome Team'), ('hhe@ebi.ac.uk', 'Henning Hermjakob')],
+        'license': {
+            'name': 'CC-Attribution-4.0',
+            'url': 'http://creativecommons.org/licenses/by/4.0/'
+        },
+        'pypath': {
+            'data': [
+                'pypath.data_formats.urls[\'reactome\'][\'sbml\']',
+                'pypath.data_formats.urls[\'reactome\'][\'biopax_l2\']',
+                'pypath.data_formats.urls[\'reactome\'][\'biopax_l3\']'
+            ],
+            'format': [
+                'pypath.data_formats.reaction_misc[\'reactome\']'
+            ],
+            'intr': [
+                'pypath.dataio.reactome_interactions()'
+            ],
+            'input': [
+                'pypath.dataio.reactome_sbml()',
+                'pypath.dataio.reactome_biopax()'
+            ]
+        },
+        'pathguide': 103
     },
     'Li2012': {
         'year': 2012,
@@ -920,8 +1446,34 @@ descriptions = {
             '''
         ],
         'type': 'high-throughput',
+        'data_integration': 'static',
         'subtype': 'yeast 2 hybrid',
-        'omnipath': False
+        'omnipath': False,
+        'pypath': {
+            'input': [
+                'pypath.dataio.get_li2012()'
+            ],
+            'data': [
+                'pypath.data_formats.urls[\'li2012\'][\'file\']'
+                'pypath.data/li2012.csv'
+            ],
+            'intr': [
+                'pypath.dataio.li2012_interactions()'
+            ],
+            'dmi': [
+                'pypath.dataio.li2012_dmi()'
+            ],
+            'ptm': [
+                'pypath.dataio.li2012_phospho()'
+            ],
+            'format': [
+                'pypath.data_formats.ptm_misc[\'li2012\']'
+            ]
+        },
+        'license': {
+            'name': 'No license.',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        }
     },
     'Zaman2013': {
         'year': 2013,
@@ -951,7 +1503,11 @@ descriptions = {
         ],
         'type': 'literature curated',
         'subtype': 'pathway',
-        'omnipath': False
+        'omnipath': False,
+        'license': {
+            'name': 'No license.',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        }
     },
     'AlzPathway': {
         'year': 2015,
@@ -984,8 +1540,21 @@ descriptions = {
             '''
         ],
         'type': 'literature curated',
+        'data_integration': 'static',
         'subtype': 'pathway',
-        'omnipath': True
+        'omnipath': True,
+        'pypath': {
+            'data': [
+                'pypath.data/alzpw-ppi.csv'
+            ],
+            'format': [
+                'pypath.data_formats.interaction[\'alz\']'
+            ]
+        },
+        'license': {
+            'name': 'CC-Attribution-3.0',
+            'url': 'http://creativecommons.org/licenses/by/3.0/'
+        }
     },
     'MPPI': {
         'year': 2005,
@@ -995,15 +1564,22 @@ descriptions = {
             'edges': None
         },
         'authors': ['MIPS Munich'],
-        'license': u'''You are free to use the database as you please including full download of the dataset for your own analyses as long as you cite the source properly (Pagel et al. 2005).''',
+        'license': {
+            'name': 'No license. "You are free to use the database as you please including full download of'\
+                ' the dataset for your own analyses as long as you cite the source properly (Pagel et al. 2005)."',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        },
         'label': 'MPPI',
-        'color': '',
+        'full_name': 'The MIPS Mammalian Protein-Protein Interaction Database',
         'urls': {
             'articles': [
                 'http://bioinformatics.oxfordjournals.org/content/21/6/832'
             ],
             'webpages': [
                 'http://mips.helmholtz-muenchen.de/proj/ppi/'
+            ],
+            'omictools': [
+                'http://omictools.com/mips-mammalian-protein-protein-interaction-database-tool'
             ]
         },
         'emails': [('p.pagel@wzw.tum.de', 'Philipp Pagel'), ('d.frishman@helmholtz-muenchen.de', 'Dmitrij Frishman')],
@@ -1012,6 +1588,7 @@ descriptions = {
             'human',
             'mammalia'
         ],
+        'data_integration': 'static',
         'descriptions': [
             u'''
             The first and foremost principle of our MPPI database is to favor quality over completeness. Therefore, we decided to include only published experimental evidence derived from individual experiments as opposed to large-scale surveys. High-throughput data may be integrated later, but will be marked to distinguish it from evidence derived from individual experiments.
@@ -1024,7 +1601,17 @@ descriptions = {
         ],
         'type': 'literature curated',
         'subtype': 'interaction',
-        'omnipath': True
+        'omnipath': True,
+        'pypath': {
+            'data': [
+                'pypath.data/mppi_human_rep.csv'
+            ],
+            'format': [
+                'pypath.data_formats.interaction[\'mppi\']',
+                'pypath.data_formats.omnipath[\'mppi\']'
+            ]
+        },
+        'pathguide': 319
     },
     'Negatome': {
         'year': 2013,
@@ -1036,6 +1623,9 @@ descriptions = {
             ],
             'webpages': [
                 'http://mips.helmholtz-muenchen.de/proj/ppi/negatome/'
+            ],
+            'omictools': [
+                'http://omictools.com/negatome-tool'
             ]
         },
         'pubmeds': [24214996, 19920129],
@@ -1046,8 +1636,26 @@ descriptions = {
             '''
         ],
         'type': 'literature curated',
+        'data_integration': 'static',
         'subtype': 'negative',
-        'omnipath': True
+        'omnipath': True,
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        },
+        'pypath': {
+            'data': [
+                'pypath.data/negatome_manual.csv'
+            ],
+            'format': [
+                'pypath.data_formats.negative[\'negatome\']'
+            ],
+            'misc': [
+                'pypath.pypath.PyPath().negative_report()',
+                'pypath.pypath.PyPath().apply_negative()'
+            ]
+        },
+        'pathguide': 444
     },
     'Macrophage': {
         'year': 2010,
@@ -1055,7 +1663,12 @@ descriptions = {
             'articles': [
                 'http://www.biomedcentral.com/1752-0509/4/63'
             ],
-            'webpages': []
+            'webpages': [
+                'http://www.macrophages.com/macrophage-pathways'
+            ],
+            'omictools': [
+                'http://omictools.com/macrophage-pathway-knowledgebase-tool'
+            ]
         },
         'emails': [('tom.freeman@roslin.ed.ac.uk', 'Tom Freeman')],
         'pubmeds': [20470404],
@@ -1066,7 +1679,20 @@ descriptions = {
         ],
         'type': 'literature curated',
         'subtype': 'pathway',
-        'omnipath': True
+        'omnipath': True,
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        },
+        'data_integration': 'static',
+        'pypath': {
+            'data': [
+                'pypath.data/macrophage_strict.csv'
+            ],
+            'format': [
+                'pypath.data_formats.pathway[\'macrophage\']'
+            ]
+        }
     },
     'NetPath': {
         'year': 2015,
@@ -1122,7 +1748,28 @@ descriptions = {
         ],
         'type': 'literature curated',
         'subtype': 'reaction network',
-        'omnipath': True
+        'data_integration': 'dynamic',
+        'omnipath': True,
+        'license': {
+            'name': 'CC-Attribution-2.5',
+            'url': 'http://creativecommons.org/licenses/by/2.5/'
+        },
+        'pypath': {
+            'input': [
+                'pypath.dataio.netpath_names()'
+            ],
+            'intr': [
+                'pypath.dataio.netpath()'
+            ],
+            'data': [
+                'pypath.data_formats.urls[\'netpath_psimi\']',
+                'pypath.data_formats.urls[\'netpath_names\']'
+            ],
+            'format': [
+                'pypath.data_formats.interaction[\'netpath\']'
+            ]
+        },
+        'pathguide': 315
     },
     'InnateDB': {
         'year': 2015,
@@ -1134,6 +1781,9 @@ descriptions = {
             ],
             'webpages': [
                 'http://www.innatedb.com/'
+            ],
+            'omictools': [
+                'http://omictools.com/innatedb-tool'
             ]
         },
         'authors': ['Brinkman Lab', 'Hancock Lab', 'Lynn Group'],
@@ -1159,11 +1809,26 @@ descriptions = {
             '''
         ],
         'type': 'literature curated',
+        'data_integration': 'static',
         'subtype': 'interaction',
-        'omnipath': True
+        'omnipath': True,
+        'license': {
+            'name': 'Design Science License',
+            'url': 'http://www.innatedb.com/license.jsp'
+        },
+        'pypath': {
+            'format': [
+                'pypath.data_formats.interaction[\'innatedb\']',
+                'pypath.data_formats.omnipath[\'innatedb\']'
+            ],
+            'data': [
+                'pypath.data/innatedb.csv'
+            ]
+        },
+        'pathguide': 264
     },
     'CORUM': {
-        'year': 2009,
+        'year': 2012,
         'releases': [2007, 2009],
         'urls': {
             'articles': [
@@ -1172,8 +1837,12 @@ descriptions = {
             ],
             'webpages': [
                 'http://mips.helmholtz-muenchen.de/genre/proj/corum'
+            ],
+            'omictools': [
+                'http://omictools.com/comprehensive-resource-of-mammalian-protein-complexes-tool'
             ]
         },
+        'full_name': 'Comprehensive Resource of Mammalian protein complexes',
         'emails': [('andreas.ruepp@helmholtz-muenchen.de', 'Andreas Ruepp')],
         'pubmeds': [19884131, 17965090],
         'taxons': [
@@ -1192,8 +1861,23 @@ descriptions = {
             '''
         ],
         'type': 'literature curated',
+        'data_integration': 'dynamic',
         'subtype': 'complexes',
-        'omnipath': False
+        'omnipath': False,
+        'license': {
+            'name': 'No license.',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        },
+        'pypath': {
+            'data': [
+                'pypath.data_formats.urls[\'corum\'][\'url\']'
+            ],
+            'input': [
+                'pypath.dataio.get_corum()',
+                'pypath.pypath.PyPath().load_corum()'
+            ]
+        },
+        'pathguide': 322
     },
     'CST': {
         'year': 2015,
@@ -1201,9 +1885,9 @@ descriptions = {
         'nodes': None,
         'edges': None,
         'authors': ['CST'],
-        'label': 'CST pathways',
+        'label': 'CST Pathways',
         'color': '',
-        'full_name': 'Cell Signaling Technology pathways',
+        'full_name': 'Cell Signaling Technology Pathways',
         'urls': {
             'articles': [],
             'webpages': [
@@ -1223,7 +1907,11 @@ descriptions = {
         ],
         'type': 'literature curated',
         'subtype': 'pathway',
-        'omnipath': False
+        'omnipath': False,
+        'license': {
+            'name': 'No license.',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        }
     },
     'DIP': {
         'year': 2014,
@@ -1245,6 +1933,9 @@ descriptions = {
             ],
             'webpages': [
                 'http://dip.doe-mbi.ucla.edu/dip/Main.cgi'
+            ],
+            'omictools': [
+                'http://omictools.com/database-of-interacting-proteins-tool'
             ]
         },
         'pubmeds': [10592249, 11125102, 11752321, 14681454],
@@ -1263,8 +1954,23 @@ descriptions = {
         ],
         'type': 'literature curated',
         'subtype': 'interaction',
+        'data_integration': 'static',
         'omnipath': True,
-        'emails': [('david@mbi.ucla.edu', 'David Eisenberg')]
+        'emails': [('david@mbi.ucla.edu', 'David Eisenberg')],
+        'license': {
+            'name': 'CC-Attribution-NoDerivs-3.0',
+            'url': 'http://creativecommons.org/licenses/by-nd/3.0/'
+        },
+        'pypath': {
+            'format': [
+                'pypath.data_formats.interaction[\'dip\']',
+                'pypath.data_formats.interaction[\'omnipath\']'
+            ],
+            'data': [
+                'pypath.data/dip_human_core_processed.csv'
+            ]
+        },
+        'pathguide': 3
     },
     'DEPOD': {
         'year': 2014,
@@ -1275,7 +1981,7 @@ descriptions = {
         },
         'authors': ['EMBL & EMBL-EBI'],
         'label': 'DEPOD',
-        'color': '',
+        'full_name': 'Human Dephosphorylation Database',
         'urls': {
             'articles': [
                 'http://stke.sciencemag.org/content/6/275/rs10.long',
@@ -1283,6 +1989,9 @@ descriptions = {
             ],
             'webpages': [
                 'http://www.koehn.embl.de/depod/index.php'
+            ],
+            'omictools': [
+                'http://omictools.com/dephosphorylation-database-tool'
             ]
         },
         'pubmeds': [23674824, 25332398],
@@ -1302,7 +2011,27 @@ descriptions = {
         'type': 'literature curated',
         'subtype': 'post-translational modification',
         'omnipath': True,
-        'emails': [('koehn@embl.de', 'Maja Kohn')]
+        'emails': [('koehn@embl.de', 'Maja Kohn')],
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        },
+        'pypath': {
+            'format': [
+                'pypath.data_formats.ptm[\'depod\']',
+                'pypath.data_formats.omnipath[\'depod\']'
+            ],
+            'data': [
+                'pypath.data/depod-refs.csv',
+                'pypath.data_formats.urls[\'depod\'][\'url\']'
+            ],
+            'input': [
+                'pypath.dataio.get_depod()'
+            ],
+            'ptm': [
+                'pypath.pypath.PyPath().load_depod_dmi()'
+            ]
+        }
     },
     'PhosphoPoint': {
         'year': 2008,
@@ -1311,7 +2040,11 @@ descriptions = {
                 'http://bioinformatics.oxfordjournals.org/content/24/16/i14.long'
             ],
             'webpages': [
-                'http://kinase.bioinformatics.tw/'
+                'http://kinase.bioinformatics.tw/',
+                'http://web.archive.org/web/20140530070613/http://kinase.bioinformatics.tw/'
+            ],
+            'omictools': [
+                'http://omictools.com/phosphopoint-tool'
             ]
         },
         'taxons': [
@@ -1331,8 +2064,28 @@ descriptions = {
         ],
         'type': 'literature curated and prediction',
         'subtype': 'post-translational modification',
+        'data_integration': 'static',
         'omnipath': False,
-        'emails': [('cyhuang5@ym.edu.tw' , 'Chi-Ying F. Huang'), ('kmchao@csie.ntu.edu.tw', 'Kun-Mao Chao')]
+        'emails': [('cyhuang5@ym.edu.tw' , 'Chi-Ying F. Huang'), ('kmchao@csie.ntu.edu.tw', 'Kun-Mao Chao')],
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        },
+        'pypath': {
+            'format': [
+                'pypath.data_formats.ptm_misc[\'ppoint\']'
+            ],
+            'data': [
+                'pypath.data/phosphopoint.csv'
+            ],
+            'misc': [
+                'pypath.pypath.PyPath().phosphopoint_directions()'
+            ],
+            'input': [
+                'pypath.dataio.phosphopoint_directions()'
+            ]
+        },
+        'pathguide': 252
     },
     'PANTHER': {
         'year': 2014,
@@ -1344,8 +2097,12 @@ descriptions = {
             ],
             'webpages': [
                 'http://www.pantherdb.org/'
+            ],
+            'omictools': [
+                'http://omictools.com/protein-analysis-through-evolutionary-relationships-tool'
             ]
         },
+        'full_name': 'Pathway Analysis Through Evolutionary Relationships',
         'pubmeds': [17130144, 19597783],
         'descriptions': [
             u'''
@@ -1356,11 +2113,17 @@ descriptions = {
         'type': 'literature curated',
         'subtype': 'reaction network',
         'omnipath': False,
-        'emails': [('feedback@pantherdb.org', 'Panther Team'), ('paul.thomas@sri.com', 'Paul Thomas')]
+        'emails': [('feedback@pantherdb.org', 'Panther Team'), ('paul.thomas@sri.com', 'Paul Thomas')],
+        'pathguide': 164,
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        },
+        'pathguide': 164
     },
     'PhosphoSite': {
         'year': 2015,
-        'releases': [2012, 2015],
+        'releases': [2011, 2015],
         'size': {
             'nodes': None,
             'edges': None
@@ -1371,14 +2134,18 @@ descriptions = {
         'color': '',
         'urls': {
             'articles': [
+                'http://onlinelibrary.wiley.com/doi/10.1002/pmic.200300772/abstract',
                 'http://nar.oxfordjournals.org/content/40/D1/D261.long',
                 'http://nar.oxfordjournals.org/content/43/D1/D512.long'
             ],
             'webpages': [
                 'http://www.phosphosite.org/homeAction.do'
+            ],
+            'omictools': [
+                'http://omictools.com/phosphositeplus-tool'
             ]
         },
-        'pubmeds': [22135298, 25514926],
+        'pubmeds': [15174125, 22135298, 25514926],
         'taxons': [
             'human',
             'mouse',
@@ -1394,8 +2161,46 @@ descriptions = {
         ],
         'type': 'literature curated and high throughput',
         'subtype': 'post-translational modification',
+        'data_integration': 'dynamic',
         'omnipath': True,
-        'emails': [('phornbeck@cellsignal.com', 'Paul Hornbeck'), ('EditorPhosphoSite@cellsignal.com', 'PhosphoSite Team')]
+        'emails': [('phornbeck@cellsignal.com', 'Paul Hornbeck'), ('EditorPhosphoSite@cellsignal.com', 'PhosphoSite Team')],
+        'license': {
+            'name': 'CC-NonCommercial-ShareAlike',
+            'url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/'
+        },
+        'pypath': {
+            'format': [
+                'pypath.data_formats.ptm[\'psite\']',
+                'pypath.data_formats.omnipath[\'psite\']',
+                'pypath.data_formats.ptm_misc[\'psite_noref\']'
+            ],
+            'data': [
+                'pypath.data_formats.urls[\'psite_bp\'][\'url\']',
+                'pypath.data_formats.urls[\'psite_kin\'][\'url\']',
+                'pypath.data_formats.urls[\'psite_p\'][\'url\']',
+                'pypath.data_formats.urls[\'psite_reg\'][\'url\']',
+                'pypath.data_formats.files[\'phosphosite\'][\'curated\']',
+                'pypath.data_formats.files[\'phosphosite\'][\'noref\']'
+            ],
+            'input': [
+                'pypath.dataio.get_phosphosite()',
+                'pypath.dataio.phosphosite_directions()',
+                'pypath.dataio.get_psite_phos()',
+                'pypath.dataio.get_psite_p()',
+                'pypath.dataio.get_psite_reg()'
+            ],
+            'intr': [
+                'pypath.dataio.get_phosphosite_curated()',
+                'pypath.dataio.get_phosphosite_noref()'
+            ],
+            'misc': [
+                'pypath.pypath.PyPath().phosphosite_directions()'
+            ],
+            'ptm': [
+                'pypath.pypath.PyPath().load_psite_phos()'
+            ]
+        },
+        'pathguide': 82
     },
     'SPIKE': {
         'year': 2012,
@@ -1407,10 +2212,14 @@ descriptions = {
             ],
             'webpages': [
                 'http://www.cs.tau.ac.il/~spike/'
+            ],
+            'omictools': [
+                'http://omictools.com/signaling-pathways-integrated-knowledge-engine-tool'
             ]
         },
         'authors': ['Shamir Group', 'Shiloh Group'],
         'pubmeds': [18289391, 21097778],
+        'full_name': 'Signaling Pathway Integrated Knowledge Engine',
         'descriptions': [
             u'''
             SPIKE’s data on relationships between entities come from three sources: (i) Highly curated data submitted directly to SPIKE database by SPIKE curators and experts in various biomedical domains. (ii) Data imported from external signaling pathway databaes. At present, SPIKE database imports such data from Reactome, KEGG, NetPath and The Transcription Factor Encyclopedia (http://www.cisreg.ca/cgi-bin/tfe/home.pl). (iii) Data on protein–protein interactions (PPIs) imported either directly from wide-scale studies that recorded such interactions [to date,PPI data were imported from Stelzl et al., Rual et al. and Lim et al.] or from external PPI databases [IntAct and MINT]. Relationship data coming from these different sources vary greatly in their quality and this is reflected by a quality level attribute, which is attached to each relationship in SPIKE database (Supplementary Data). Each relationship in SPIKE is linked to at least one PubMed reference that supports it.
@@ -1421,8 +2230,23 @@ descriptions = {
         ],
         'type': 'literature curated',
         'subtype': 'pathway',
+        'data_integration': 'static',
         'omnipath': True,
-        'emails': [('rshamir@tau.ac.il', 'Ron Shamir')]
+        'emails': [('rshamir@tau.ac.il', 'Ron Shamir')],
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        },
+        'pypath': {
+            'format': [
+                'pypath.data_formats.pathway[\'spike\']',
+                'pypath.data_formats.omnipath[\'spike\']'
+            ],
+            'data': [
+                'pypath.data/spike_hc.csv'
+            ]
+        },
+        'pathguide': 317
     },
     'NCI-PID': {
         'year': 2012,
@@ -1433,11 +2257,13 @@ descriptions = {
         },
         'authors': ['NCI'],
         'label': 'NCI-PID',
-        'full_name': 'Pathway Interaction Database',
+        'full_name': 'NCI-Nature Pathway Interaction Database',
         'color': '',
         'urls': {
             'webpages': [
-                'http://pid.nci.nih.gov/index.shtml'
+                'http://pid.nci.nih.gov/index.shtml',
+                'http://www.ndexbio.org/',
+                'http://web.archive.org/web/20150908030438/http://pid.nci.nih.gov/index.shtml'
             ],
             'articles': [
                 'http://nar.oxfordjournals.org/content/37/suppl_1/D674.long'
@@ -1460,12 +2286,34 @@ descriptions = {
         'notes': [
             u'''
             From the NCI-XML interactions with references, directions and signs can be extracted. Complexes are ommited.
+            ''',
+            u'''
+            From the end of 2015, the original NCI-PID webpage is not accessible anymore, and the data is available through the NDEx webserver and API.
             '''
         ],
         'type': 'literature curated',
         'subtype': 'reaction network',
         'omnipath': True,
-        'emails': [('yanch@mail.nih.gov', 'Chunhua Yan')]
+        'emails': [('yanch@mail.nih.gov', 'Chunhua Yan')],
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        },
+        'pypath': {
+            'data': [
+                'pypath.data_formats.urls[\'nci-pid\'][\'biopax_l3\']'
+            ],
+            'format': [
+                'pypath.data_formats.reaction_misc[\'nci_pid\']'
+            ],
+            'input': [
+                'pypath.dataio.pid_biopax()'
+            ],
+            'intr': [
+                'pypath.dataio.pid_interactions()'
+            ]
+        },
+        'pathguide': 119
     },
     'WikiPathways': {
         'urls': {
@@ -1474,6 +2322,9 @@ descriptions = {
             ],
             'articles': [
                 'http://nar.oxfordjournals.org/content/40/D1/D1301'
+            ],
+            'omictools': [
+                'http://omictools.com/wikipathways-tool'
             ]
         },
         'descriptions': [
@@ -1489,7 +2340,12 @@ descriptions = {
         'type': 'literature curated',
         'subtype': 'reaction network',
         'omnipath': False,
-        'emails': [('thomaskelder@gmail.com', 'Thomas Kelder'), ('apico@gladstone.ucsf.edu', 'Alex Pico')]
+        'emails': [('thomaskelder@gmail.com', 'Thomas Kelder'), ('apico@gladstone.ucsf.edu', 'Alex Pico')],
+        'license': {
+            'name': 'CC-Attribution-3.0',
+            'url': 'http://creativecommons.org/licenses/by/3.0/'
+        },
+        'pathguide': 237
     },
     'ConsensusPathDB': {
         'year': 2015,
@@ -1502,6 +2358,9 @@ descriptions = {
                 'http://nar.oxfordjournals.org/content/37/suppl_1/D623.long',
                 'http://nar.oxfordjournals.org/content/39/suppl_1/D712.long',
                 'http://nar.oxfordjournals.org/content/41/D1/D793.long'
+            ],
+            'omictools': [
+                'http://omictools.com/consensuspathdb-tool'
             ]
         },
         'taxons': [
@@ -1524,7 +2383,11 @@ descriptions = {
         ],
         'type': 'literature curated',
         'subtype': 'pathway',
-        'emails': [('kamburov@molgen.mpg.de', 'Atanas Kamburov')]
+        'emails': [('kamburov@molgen.mpg.de', 'Atanas Kamburov')],
+        'license': {
+            'name': 'Constituting resources carry their own licenses. "Due to several licensing issues, we are not allowed to release the complete integrated network (including signaling, metabolism and gene regulation)."'
+        },
+        'pathguide': 275
     },
     'KEGG': {
         'year': 2015,
@@ -1535,8 +2398,12 @@ descriptions = {
             ],
             'articles': [
                 'http://nar.oxfordjournals.org/content/28/1/27.long'
+            ],
+            'omictools': [
+                'http://omictools.com/kegg-tool'
             ]
         },
+        'full_name': 'Kyoto Encyclopedia of Genes and Genomes',
         'notes': [
             u'''
             From 2011, KEGG data is not freely available. The downloadable KGML files contain binary interactions, most of them between large complexes. No references available.
@@ -1545,7 +2412,24 @@ descriptions = {
         'type': 'literature curated',
         'subtype': 'reaction network',
         'omnipath': False,
-        'emails': [('kanehisa@kuicr.kyoto-u.ac.jp', 'Minoru Kaneshia')]
+        'emails': [('kanehisa@kuicr.kyoto-u.ac.jp', 'Minoru Kaneshia')],
+        'license': {
+            'name': 'KEGG License, non-free',
+            'url': 'http://www.genome.jp/kegg/legal.html'
+        },
+        'pathguide': 16,
+        'pypath': {
+            'data': [
+                'pypath.data_formats.urls[\'kegg_pws\'][\'kgml_url\']',
+                'pypath.data_formats.urls[\'kegg_pws\'][\'list_url\']'
+            ],
+            'input': [
+                'pypath.dataio.kegg_pathways()'
+            ],
+            'misc': [
+                'pypath.pypath.kegg_directions()'
+            ]
+        }
     },
     'BioGRID': {
         'year': 2015,
@@ -1563,13 +2447,34 @@ descriptions = {
                 'http://nar.oxfordjournals.org/content/39/suppl_1/D698.long',
                 'http://nar.oxfordjournals.org/content/41/D1/D816.long',
                 'http://nar.oxfordjournals.org/content/43/D1/D470.long'
+            ],
+            'omictools': [
+                'http://omictools.com/biological-general-repository-for-interaction-datasets-tool'
             ]
         },
         'pubmeds': [25428363, 23203989, 21071413, 18000002, 16381927, 12620108],
         'type': 'high throughput',
         'subtype': 'interaction',
+        'full_name': 'Biological General Repository for Interaction Datasets',
         'omnipath': True,
-        'emails': [('biogridadmin@gmail.com', 'BioGRID Team'), ('md.tyers@umontreal.ca', 'Michael Tyers')]
+        'emails': [('biogridadmin@gmail.com', 'BioGRID Team'), ('md.tyers@umontreal.ca', 'Michael Tyers')],
+        'license': {
+            'name': 'BioGRID License, non-free',
+            'url': 'http://wiki.thebiogrid.org/doku.php/terms_and_conditions'
+        },
+        'pypath': {
+            'format': [
+                'pypath.data_formats.interaction[\'biogrid\']',
+                'pypath.data_formats.omnipath[\'biogrid\']'
+            ],
+            'data': [
+                'pypath.data_formats.urls[\'biogrid\']'
+            ],
+            'intr': [
+                'pypath.dataio.biogrid_interactions()'
+            ]
+        },
+        'pathguide': 7
     },
     'STRING': {
         'year': 2015,
@@ -1587,6 +2492,9 @@ descriptions = {
                 'http://nar.oxfordjournals.org/content/33/suppl_1/D433.long',
                 'http://nar.oxfordjournals.org/content/31/1/258.long',
                 'http://nar.oxfordjournals.org/content/28/18/3442.long'
+            ],
+            'omictools': [
+                'http://omictools.com/string-tool'
             ]
         },
         'pubmeds': [25352553, 23203871, 21045058, 18940858, 17098935,
@@ -1597,7 +2505,12 @@ descriptions = {
         'subtype': 'interaction',
         'omnipath': False,
         'emails': [('bork@embl.de', 'Peer Bork'), ('lars.juhl.jensen@cpr.ku.dk', 'Lars Juhl Jensen'), 
-            ('mering@imls.uzh.ch', 'Christian von Mering')]
+            ('mering@imls.uzh.ch', 'Christian von Mering')],
+        'license': {
+            'name': 'CC-Attribution-3.0 or CC-Attribution-NonCommercial-ShareAlike-3.0',
+            'url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/'
+        },
+        'pathguide': 93
     },
     'MINT': {
         'year': 2015,
@@ -1613,8 +2526,14 @@ descriptions = {
         },
         'type': 'literature curated and high-throughput',
         'subtype': 'interaction',
+        'full_name': 'Molecular Interaction Database',
         'omnipath': False,
-        'emails': [('livia.perfetto@live.it', 'Livia Perfetto')]
+        'emails': [('livia.perfetto@live.it', 'Livia Perfetto')],
+        'license': {
+            'name': 'CC-Attribution-2.5',
+            'url': 'http://creativecommons.org/licenses/by/2.5/'
+        },
+        'pathguide': 17
     },
     'IntAct': {
         'year': 2015,
@@ -1625,7 +2544,7 @@ descriptions = {
         },
         'authors': ['EBI'],
         'label': 'IntAct',
-        'color': '',
+        'full_name': 'IntAct Molecular Interaction Database',
         'data_import': ['InnateDB', 'MINT'],
         'urls': {
             'articles': [
@@ -1637,6 +2556,9 @@ descriptions = {
             ],
             'webpages': [
                 'http://www.ebi.ac.uk/intact/'
+            ],
+            'omictools': [
+                'http://omictools.com/intact-tool'
             ]
         },
         'pubmeds': [14681455, 17145710, 19850723, 22121220, 24234451],
@@ -1655,7 +2577,20 @@ descriptions = {
         'type': 'literature curated and high-throughput',
         'subtype': 'interaction',
         'omnipath': False,
-        'emails': [('orchard@ebi.ac.uk', 'Sandra Orchard'), ('hhe@ebi.ac.uk', 'Henning Hermjakob')]
+        'emails': [('orchard@ebi.ac.uk', 'Sandra Orchard'), ('hhe@ebi.ac.uk', 'Henning Hermjakob')],
+        'license': {
+            'name': 'Apache License, Version 2.0',
+            'url': 'http://www.apache.org/licenses/LICENSE-2.0'
+        },
+        'pathguide': 111,
+        'pypath': {
+            'data': [
+                'pypath.data/intact_filtered.csv'
+            ],
+            'format': [
+                'pypath.data_formats.interaction_misc[\'intact\']'
+            ]
+        }
     },
     'MatrixDB': {
         'year': 2015,
@@ -1668,6 +2603,9 @@ descriptions = {
             ],
             'webpages': [
                 'http://matrixdb.ibcp.fr/'
+            ],
+            'omictools': [
+                'http://omictools.com/matrixdb-tool'
             ]
         },
         'pubmeds': [19147664, 20852260, 25378329],
@@ -1692,33 +2630,163 @@ descriptions = {
         ],
         'type': 'literature curated',
         'subtype': 'interaction',
+        'data_integration': 'static',
         'omnipath': True,
-        'emails': [('matrixdb@ibcp.fr', 'MatrixDB Team'), ('sylvie.ricard-blum@ibcp.fr', 'Sylvie Ricard-Blum')]
+        'emails': [('matrixdb@ibcp.fr', 'MatrixDB Team'), ('sylvie.ricard-blum@ibcp.fr', 'Sylvie Ricard-Blum')],
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        },
+        'pypath': {
+            'format': [
+                'pypath.data_formats.interaction[\'matrixdb\']',
+                'pypath.data_formats.omnipath[\'matrixdb\']'
+            ],
+            'data': [
+                'pypath.data/matrixdb_core.csv'
+            ]
+        },
+        'pathguide': 298
+    },
+    'PathwayCommons': {
+        'year': 2015,
+        'urls': {
+            'webpages': [
+                'http://www.pathwaycommons.org/pc2/',
+                'http://www.pathwaycommons.org/about/'
+            ],
+            'articles': [
+                'http://nar.oxfordjournals.org/content/39/suppl_1/D685.long'
+            ],
+            'omictools': [
+                'http://omictools.com/pathway-commons-tool'
+            ]
+        },
+        'label': 'PathwayCommons',
+        'authors': ['Bader Lab', 'MSKCC cBio'],
+        'notes': [
+            u'''
+            Pathway Commons is a collection of publicly available pathway information from multiple organisms. It provides researchers with convenient access to a comprehensive collection of biological pathways from multiple sources represented in a common language for gene and metabolic pathway analysis.
+            ''',
+            u'''
+            Pathway Commons integrates a number of pathway and molecular interaction databases supporting BioPAX and PSI-MI formats into one large BioPAX model, which can be queried using our web API (documented below). This API can be used by computational biologists to download custom subsets of Pathway Commons for analysis, or can be used to incorporate powerful biological pathway and network information retrieval and query functionality into websites, scripts and software. For computational biologists looking for comprehensive biological pathway data for analysis, we also make available batch downloads of the data in several formats.
+            ''',
+            u'''
+            Warehouse data (canonical molecules, ontologies) are converted to BioPAX utility classes, such as EntityReference, ControlledVocabulary, EntityFeature sub-classes, and saved as the initial BioPAX model, which forms the foundation for integrating pathway data and for id-mapping.
+            Pathway and binary interaction data (interactions, participants) are normalized next and merged into the database. Original reference molecules are replaced with the corresponding BioPAX warehouse objects.
+            '''
+        ],
+        'data_import': ['Reactome', 'NCI-PID', 'CancerCellMap', 'BioCarta', 'HPRD', 'PhosphoSite', 
+            'PANTHER', 'DIP', 'IntAct', 'BioGRID', 'BIND', 'CORUM', ],
+        'license': {
+            'name': 'Constituting databases carry their own licenses.'
+        },
+        'type': 'combined',
+        'subtype': 'interaction',
+        'pubmeds': [21071392],
+        'releases': [2010, 2011, 2012, 2013, 2014],
+        'omnipath': False,
+        'emails': [('gary.bader@utoronto.ca', 'Gary Bader')],
+        'pathguide': 293
+    },
+    'Laudanna': {
+        'year': 2014,
+        'urls': {
+            'webpages': [
+                'http://dp.univr.it/~laudanna/LCTST/downloads/'
+            ]
+        },
+        'full_name': 'Compiled Datasets for Network Analysis from Laudanna Lab',
+        'authors': ['Laudanna Lab'],
+        'type': 'combined',
+        'subtype': 'mixed',
+        'notes': [
+            '''
+            Data sets are compiled from public data-bases and from literature and manually curated for accuracy. They are intended for network reconstruction, topological and multidimensional analysis in cell biology.
+            '''
+        ],
+        'omnipath': False,
+        'data_import': ['BioGRID', 'ConsensusPathDB', 'dbPTM', 'DIP', 'HumanSignalingNetwork', 'IntAct', 'MINT', 'MPPI', 
+            'PathwayCommons', 'phospho.ELM', 'PhosphoPoint', 'PhosphoSite', 'SignaLink'],
+        'emails': [('giovanni.scardoni@gmail.com', 'Giovanni Scardoni')],
+        'license': {
+            'name': 'No license',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        },
+        'pypath': {
+            'data': [
+                'pypath.data_formats.urls[\'sigflow\']',
+                'pypath.data_formats.urls[\'sigdir\']'
+            ],
+            'input': [
+                'pypath.dataio.get_laudanna_directions()',
+                'pypath.dataio.get_laudanna_effects()'
+            ],
+            'misc': [
+                'pypath.pypath.PyPath().laudanna_directions()',
+                'pypath.pypath.PyPath().laudanna_effects()'
+            ]
+        }
     }
 }
 
+pypath_methods = {
+    'data': 'Data source (URLs and files)',
+    'format': 'Data format definition',
+    'intr': 'Interactions',
+    'input': 'Data input methods',
+    'ptm': 'Enzyme-substrate relationships and PTMs',
+    'dmi': 'Domain-motif interactions',
+    'ddi': 'Domain-domain interactions',
+    'misc': 'Miscellaneous'
+}
+
 def gen_html():
+    '''
+    Generates a HTML page from the `descriptions` array.
+    This HTML is provided by the webservice under `/info`,
+    or can be saved locally with `write_html()`.
+    '''
+    # Header
     title = 'Metadata about signaling pathway resources'
     doc = '\t<p>This collection was created during the construction '\
-        'of OmniPath, a network of signaling pathways intending to '\
+        'of OmniPath when we considered more than 50 resources and '\
+        'selected the ones containing literature curation effort. OmniPath is a network '\
+        'of signaling pathways intending to '\
         'combine all high quality, manually curated efforts. The '\
-        'descriptions here aim to cite the relevant sentences '\
-        'about the curation protocols from the original articles. '\
+        'descriptions here cite the relevant sentences '\
+        'about the curation protocols from the original articles and webpages. '\
         'URLs pointing to the articles and the webpages, and some '\
-        'additional metadata is provided where available. Note: '\
-        'the green resources are included by default in '\
-        'OmniPath.</p>\n'
+        'additional metadata are provided where available. '\
+        'The resources with green title are included by default in '\
+        'OmniPath. <span class="code">pypath</span> methods are listed '\
+        ' where available, to know more please look at <a '\
+        'target="_blank" href="http://pypath.omnipathdb.org/">'\
+        'pypath documentation.</a></p>'\
+        '<p class="small">We searched for license information '\
+        'in the main, About, Download and FAQ sections of the webpages, '\
+        'and run Google searches for the database name and license. '\
+        'Where we could not find anything about licensing, we assumed '\
+        'no license. Unfortunately due to todays restrictive copyright '\
+        'legislations, users don\'t have the freedom to use, modify and '\
+        'redistribute the data without a license explicitely granting '\
+        'these to them. Despite the clear intention from the authors to '\
+        'make their data public, and statements on the webpage like '\
+        '"free to use" or "available for download".</p>\n'
     doc += '\t<h2>Contents</h2>\n'
     doc += '\t<ul>\n'
+    # Table of Content
     for k, v in sorted(descriptions.items(), key = lambda x: x[0].lower()):
         doc += '\t\t\t<li><a href="#%s" class="%s">%s</a></li>\n' % \
             (k, 'omnipath' if 'omnipath' in v and v['omnipath'] else 'base', 
-            v['full_name'] if 'full_name' in v else v['label'] if 'label' in v else k)
+            v['label'] if 'label' in v else k)
     doc += '\t</ul>\n'
+    # Sections
     for k, v in sorted(descriptions.items(), key = lambda x: x[0].lower()):
-        doc += '\t\t<br>\n\t\t<h2 id="%s" class="%s">%s</h2>\n' % \
+        doc += u'\t\t<br>\n\t\t<h2 id="%s" class="%s">%s%s</h2>\n' % \
             (k, 'omnipath' if 'omnipath' in v and v['omnipath'] else 'base',
-            v['full_name'] if 'full_name' in v else v['label'] if 'label' in v else k)
+            v['label'] if 'label' in v else k,
+            (u' – %s' % (v['full_name'],)) if 'full_name' in v else '')
         doc += '\t\t\t<p><b>Category || Subcategory &gt;&gt;&gt;</b> %s || %s</p>\n' % \
             (v['type'].capitalize() if 'type' in v else 'Undefined', 
                 v['subtype'].capitalize() if 'subtype' in v else 'Undefined')
@@ -1733,27 +2801,49 @@ def gen_html():
             doc += '\t\t\t<p><b>Contact: </b></p>\n\n\t\t\t\t<ul>\n%s\n' % \
                 ''.join(['\t\t\t\t<li><a href="mailto:%s">%s &lt;%s&gt;</li>\n' % (em[0], em[1], em[0]) for em in v['emails']])
             doc += '\t\t\t\t</ul>\n'
+        if 'license' in v:
+            try:
+                doc += '\t\t\t<p><b>License:</b> %s%s%s</p>\n' % (
+                    ('<a href="%s" target="_blank">' % v['license']['url']) if 'url' in v['license'] else '',
+                    v['license']['name'],
+                    '</a>' if 'url' in v['license'] else '')
+            except KeyError:
+                print k, v['license']
         for uk, uv in v['urls'].iteritems():
-            if len(uv) > 0:
-                doc += '\t\t\t<h3>%s</h3>\n' % (uk.capitalize())
-                doc += '\t\t\t<ul>\n'
-                for a in uv:
-                    doc += '\t\t\t\t<li><a href="%s" target="_blank">%s</a></li>\n' % (
-                        a,a)
-                doc += '\t\t\t</ul>\n'
+            if len(uv) > 0 and uk != 'omictools':
+                try:
+                    doc += '\t\t\t<h3>%s</h3>\n' % (uk.capitalize())
+                    doc += '\t\t\t<ul>\n'
+                    for a in uv:
+                        doc += '\t\t\t\t<li><a href="%s" target="_blank">%s</a></li>\n' % (
+                            a,a)
+                    doc += '\t\t\t</ul>\n'
+                except UnicodeDecodeError:
+                    print k, uk
         if 'pubmeds' in v:
             doc += '\t\t\t<h3>PubMed</h3>\n'
             doc += '\t\t\t<ul>\n'
             for pmid in v['pubmeds']:
-                doc += '\t\t\t\t<li><a href="%s" target="_blank">%s</a></li>\n' % (
-                    'http://www.ncbi.nlm.nih.gov/pubmed/%u' % pmid, 
-                    'http://www.ncbi.nlm.nih.gov/pubmed/%u' % pmid
+                doc += '\t\t\t\t<li><a href="%s" '\
+                    'target="_blank">%s</a></li>\n' % (
+                        'http://www.ncbi.nlm.nih.gov/pubmed/%u' % pmid, 
+                        'http://www.ncbi.nlm.nih.gov/pubmed/%u' % pmid
                     )
+            doc += '\t\t\t</ul>\n'
+        if 'omictools' in v['urls'] or 'pathguide' in v:
+            doc += '\t\t\t<h3>Collections</h3>\n\t\t\t<ul>'
+            if 'omictools' in v['urls']:
+                doc += '\t\t\t<li><a href="%s" target="_blank">OmicTools</a></li>\n' % \
+                    v['urls']['omictools'][0]
+            if 'pathguide' in v:
+                doc += '\t\t\t<li><a href="%s" target="_blank">PathGuide</a></li>\n' % \
+                    (data_formats.urls['pathguide']['url'] % v['pathguide'])
             doc += '\t\t\t</ul>\n'
         if 'taxons' in v:
             doc += '<p><b>Taxons: </b><em>%s</em></p>' % \
                 ', '.join(['%s%s'%(t[0].upper(), t[1:]) for t in v['taxons']])
-        if 'size' in v and type(v['size']) is dict:
+        if 'size' in v and type(v['size']) is dict and \
+            v['size']['nodes'] is not None and v['size']['edges'] is not None:
             doc += '<p><b>Nodes: </b>%s, <b>Edges:</b>%s</p>' % (
                 v['size']['nodes'],v['size']['edges'])
         if 'data_import' in v:
@@ -1762,26 +2852,74 @@ def gen_html():
         if 'includes' in v:
             doc += '\t\t\t<p><b>Includes data from: </b>%s</p>\n' % \
                 ', '.join(v['includes'])
-        doc += '\t\t\t<h3>Quotes</h3>\n'
-        if 'descriptions' in v:
-            doc += '\t\t\t\t<div class="quotebox">\n'
-            pars = v['descriptions'][0].split('\n')
-            for p in pars:
-                p = p.strip()
-                if len(p) > 0:
-                    doc += '\t\t\t\t<p>%s</p>\n' % p
-            doc += '\t\t\t\t</div>\n'
-        if 'notes' in v:
-            doc += '\t\t\t\t<div class="quotebox">\n'
-            pars = v['notes'][0].split('\n')
-            for p in pars:
-                p = p.strip()
-                if len(p) > 0:
-                    doc += '\t\t\t\t<p>%s</p>\n' % p
+        if 'descriptions' in v or 'notes' in v:
+            doc += '\t\t\t<h3>Quotes</h3>\n'
+            if 'descriptions' in v:
+                doc += '\t\t\t\t<div class="quotebox box">\n'
+                pars = v['descriptions'][0].split('\n')
+                for p in pars:
+                    p = p.strip()
+                    if len(p) > 0:
+                        doc += '\t\t\t\t<p>%s</p>\n' % p
+                doc += '\t\t\t\t</div>\n'
+            if 'notes' in v:
+                doc += '\t\t\t\t<div class="quotebox box">\n'
+                pars = v['notes'][0].split('\n')
+                for p in pars:
+                    p = p.strip()
+                    if len(p) > 0:
+                        doc += '\t\t\t\t<p>%s</p>\n' % p
+                doc += '\t\t\t\t</div>\n'
+        if 'data_integration' in v:
+            doc += '\t\t\t<p><b>Data integration in '\
+                '<span class="code">pypath:</span></b> %s</p>' % \
+                v['data_integration']
+        if 'pypath' in v:
+            doc += '\t\t\t<h3>Methods in <span class="code">pypath'\
+                '</span></h3>\n'
+            doc += '\t\t\t\t<div class="codebox box">\n'
+            for cat in sorted(pypath_methods.keys()):
+                name = pypath_methods[cat]
+                if cat in v['pypath']:
+                    doc += '\t\t\t\t\t<p>%s</p>\n\t\t\t\t\t<ul>\n' % name
+                    for met in v['pypath'][cat]:
+                        doc += '\t\t\t\t\t\t<li><span class="code">%s'\
+                            '</span></li>\n' % met
+                    doc += '\t\t\t\t\t</ul>\n'
             doc += '\t\t\t\t</div>\n'
     return _html.default_template(doc, title, title)
 
 def write_html(filename = 'resources.html'):
+    '''
+    Saves the HTML descriptions to custom local file.
+    '''
     html = gen_html()
-    with codecs.open(filename, encoding = 'utf-8', mode = 'w') as f:
+    #with codecs.open(filename, encoding = 'utf-8', mode = 'w') as f:
+    with open(filename, 'w') as f:
         f.write(html)
+
+def resource_list_latex(filename = 'resource-list.tex'):
+    '''
+    Generates Supplementary Table 3 (The list of the 52 resources considered) for the article.
+    '''
+    tex = r'''\begin{tabularx}{\textwidth}{>{\raggedright\scriptsize\arraybackslash}X>{\raggedright\scriptsize\arraybackslash}X>{\raggedright\scriptsize\arraybackslash}X>{\raggedright\scriptsize\arraybackslash}X}
+    \toprule
+    Resource name & Class, subclass & Resource name & Class, subclass \\
+    \midrule
+    '''
+    res = sorted([(v['label'] if 'label' in v else k, 
+            '%s, %s'%(v['type'].capitalize(), v['subtype'].capitalize()) if 'type' in v and 'subtype' in v else '') 
+        for k, v in descriptions.iteritems()], key = lambda x: x[0].lower())
+    if len(res) % 2 != 0:
+        res.append('')
+    res2 = zip(res[:len(res)/2], res[len(res)/2:])
+    for r in res2:
+        tex += r'%s & %s & %s & %s \\' % (
+            r[0][0], 
+            r[0][1],
+            r[1][0],
+            r[1][1]) + '\n'
+    tex += r'\bottomrule' + '\n'
+    tex += r'\end{tabularx}' + '\n'
+    with open(filename, 'w') as f:
+        f.write(tex)

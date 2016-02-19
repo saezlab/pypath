@@ -339,7 +339,7 @@ class Mapper(object):
     
     def map_name(self, name, nameType, targetNameType, 
         strict = False, silent = True):
-        '''
+        r'''
         This function should be used to convert individual IDs.
         It takes care about everything, you don't need to think
         on the details. How does it work: looks up dictionaries 
@@ -359,22 +359,22 @@ class Mapper(object):
         @name : str
             The original name which shall be converted.
         @nameType : str
-            The type of the name. 
-            Available by default: 
-                genesymbol (gene name)
-                entrez (Entrez Gene ID [#])
-                refseqp (NCBI RefSeq Protein ID [NP_*|XP_*])
-                ensp (Ensembl protein ID [ENSP*])
-                enst (Ensembl transcript ID [ENST*])
-                ensg (Ensembl genomic DNA ID [ENSG*])
-                hgnc (HGNC ID [HGNC:#])
-                gi (GI number [#])
-                embl (DDBJ/EMBL/GeneBank CDS accession)
-                embl_id (DDBJ/EMBL/GeneBank accession)
+            The type of the name.
+            Available by default:
+            - genesymbol (gene name)
+            - entrez (Entrez Gene ID \[#\])
+            - refseqp (NCBI RefSeq Protein ID \[NP\_\*|XP\_\*\])
+            - ensp (Ensembl protein ID \[ENSP\*\])
+            - enst (Ensembl transcript ID \[ENST\*\])
+            - ensg (Ensembl genomic DNA ID \[ENSG\*\])
+            - hgnc (HGNC ID \[HGNC:#\])
+            - gi (GI number \[#\])
+            - embl (DDBJ/EMBL/GeneBank CDS accession)
+            - embl_id (DDBJ/EMBL/GeneBank accession)
             To use other IDs, you need to define the input method
-            and load the table before calling Mapper.map_name().
+            and load the table before calling :py:func:Mapper.map_name().
+        
         '''
-        # print '\tmapping %s' % name
         if type(nameType) is list:
             mappedNames = []
             for nt in nameType:

@@ -22,7 +22,6 @@ src/pypath/giant.py
 src/pypath/go.py
 src/pypath/gr_plot.py
 src/pypath/gsea.py
-src/pypath/html.py
 src/pypath/ig_drawing.py
 src/pypath/ig_drawing_edge.py
 src/pypath/ig_drawing_vertex.py
@@ -81,6 +80,7 @@ src/pypath/data/macrophage-strict.csv
 src/pypath/data/matrixdb_core.csv
 src/pypath/data/mppi_human_rep.csv
 src/pypath/data/nci-pid-strict.csv
+src/pypath/data/negatome_manual.csv
 src/pypath/data/netpath_refs.csv
 src/pypath/data/nrf2ome.csv
 src/pypath/data/phosphopoint.csv
@@ -109,6 +109,3 @@ src/pypath/data/uniprot-refseq-human-1.tab
 src/pypath/data/uniprot-refseq-human.tab
 src/pypath/data/uniprot3.tab
 src/pypath/data/vaquerizas2009-s3.txt
-src/pypath/mysql_config/.defaults.mysql.kate-swp
-src/pypath/mysql_config/defaults.mysql
-src/pypath/mysql_config/defaults.mysql~

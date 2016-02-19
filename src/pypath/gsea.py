@@ -32,20 +32,28 @@ from common import *
 
 class GSEA(object):
     
-    def __init__(self, user = 'denes@ebi.ac.uk', mapper = None):
-        self.user = user
-        self.login()
-        self.mapper = mapper if mapper is not None else mapping.Mapper()
-        self.info = {}
-        self.groups = {}
-        self.sets = {}
-        self.collections = {}
-        self.list_collections()
-        self.ids = {
-            'entrez': 'entrez',
-            'symbol': 'genesymbol'
-        }
-        self.target_id = 'uniprot'
+    def __init__(self, user = None, mapper = None):
+        self.user = user if user is not None \
+            else globals()['MSIGDB_USER'] if 'MSIGDB_USER' in globals() 
+            else None
+        if self.user is not None:
+            self.login()
+            self.mapper = mapper if mapper is not None else mapping.Mapper()
+            self.info = {}
+            self.groups = {}
+            self.sets = {}
+            self.collections = {}
+            self.list_collections()
+            self.ids = {
+                'entrez': 'entrez',
+                'symbol': 'genesymbol'
+            }
+            self.target_id = 'uniprot'
+        else:
+            sys.stdout.write('\t:: Please provide an MSigDB username by \n'\
+                '``pypath.gsea.GSEA(user = \'\', ...)``, or by \n'\
+                'setting ``MSIGDB_USER`` global variable.\n\n')
+            sys.stdout.flush()
     
     def login(self):
         url = data_formats.urls['msigdb']['login1']
