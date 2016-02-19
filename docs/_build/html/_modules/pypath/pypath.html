@@ -125,7 +125,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pypath.pypath</h1><div class="highlight"><pre>
-<span class="ch">#!/usr/bin/env python2</span>
+<span></span><span class="ch">#!/usr/bin/env python2</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
 <span class="c1">#</span>
@@ -545,6 +545,33 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">None</span>
 
+<span class="k">class</span> <span class="nc">_NamedVertexSeq</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_vs</span><span class="p">,</span> <span class="n">_nodNam</span><span class="p">,</span> <span class="n">_nodLab</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs</span> <span class="o">=</span> <span class="n">_vs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nodNam</span> <span class="o">=</span> <span class="n">_nodNam</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nodLab</span> <span class="o">=</span> <span class="n">_nodLab</span>
+    
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">v</span>
+    
+    <span class="k">def</span> <span class="nf">gs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodLab</span><span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+    
+    <span class="k">def</span> <span class="nf">up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodNam</span><span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+    
+    <span class="k">def</span> <span class="nf">ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">v</span><span class="o">.</span><span class="n">index</span>
+    
+    <span class="n">genesymbol</span> <span class="o">=</span> <span class="n">gs</span>
+    <span class="n">uniprot</span> <span class="o">=</span> <span class="n">up</span>
+    <span class="n">vs</span> <span class="o">=</span> <span class="n">__iter__</span>
+
 <div class="viewcode-block" id="PyPath"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath">[docs]</a><span class="k">class</span> <span class="nc">PyPath</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     
     <span class="c1">###</span>
@@ -623,6 +650,9 @@
             <span class="n">g</span><span class="p">[</span><span class="s1">&#39;only_directed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
             <span class="c1"># allow loop edges in the graph</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">loops</span> <span class="o">=</span> <span class="n">loops</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dgraph</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_undirected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_directed</span> <span class="o">=</span> <span class="bp">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">failed_edges</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">uniprot_mapped</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mysql_conf</span> <span class="o">=</span> <span class="n">mysql</span>
@@ -790,7 +820,7 @@
         <span class="n">giant_component_index</span> <span class="o">=</span> <span class="n">cl_sizes</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">cl_sizes</span><span class="p">))</span>
         <span class="n">in_giant</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="o">==</span> <span class="n">giant_component_index</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cl</span><span class="o">.</span><span class="n">membership</span><span class="p">]</span>
         <span class="n">console</span><span class="p">(</span><span class="s1">&#39;:: Nodes in giant component: </span><span class="si">%u</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">in_giant</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="bp">True</span><span class="p">))</span>
-        <span class="n">toDel</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">gg</span><span class="o">.</span><span class="n">vcount</span><span class="p">())</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">in_giant</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+        <span class="n">toDel</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">gg</span><span class="o">.</span><span class="n">vcount</span><span class="p">())</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">in_giant</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
         <span class="n">gg</span><span class="o">.</span><span class="n">delete_vertices</span><span class="p">(</span><span class="n">toDel</span><span class="p">)</span>
         <span class="n">console</span><span class="p">(</span><span class="s1">&#39;:: Giant component size: </span><span class="si">%u</span><span class="s1"> edges, </span><span class="si">%u</span><span class="s1"> nodes&#39;</span> <span class="o">%</span> \
             <span class="p">(</span><span class="n">gg</span><span class="o">.</span><span class="n">ecount</span><span class="p">(),</span> <span class="n">gg</span><span class="o">.</span><span class="n">vcount</span><span class="p">()))</span>
@@ -805,13 +835,26 @@
 <span class="sd">        function is automatically called after all operations</span>
 <span class="sd">        affecting node indices.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nodInd</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> 
-            <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">())))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">genesymbol_labels</span><span class="p">()</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_undirected</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_already_has_directed</span><span class="p">()</span>
+        <span class="n">dgraph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_directed</span>
+        <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodInd</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">())))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">labDct</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">],</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">())))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodNam</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()),</span> <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodLab</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()),</span> <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="n">dgraph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dnodInd</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">dgraph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dnodDct</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">dgraph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">dgraph</span><span class="o">.</span><span class="n">vcount</span><span class="p">())))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dlabDct</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">dgraph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">],</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">dgraph</span><span class="o">.</span><span class="n">vcount</span><span class="p">())))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dnodNam</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="n">dgraph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()),</span> <span class="n">dgraph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dnodLab</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="n">dgraph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()),</span> <span class="n">dgraph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]))</span></div>
     
 <div class="viewcode-block" id="PyPath.update_vindex"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.update_vindex">[docs]</a>    <span class="k">def</span> <span class="nf">update_vindex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        See update_vname().</span>
+<span class="sd">        This is deprecated.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nodNam</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()),</span> 
             <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]))</span></div>
@@ -1681,6 +1724,10 @@
             <span class="n">d</span><span class="o">.</span><span class="n">delete_vertices</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">toDel</span><span class="p">)))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">graph</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dgraph</span> <span class="o">=</span> <span class="n">d</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_directed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dgraph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_directed</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_undirected</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_vname</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">graph</span> <span class="ow">or</span> <span class="n">ret</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">d</span>
     
@@ -2216,18 +2263,32 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">update_db_dict</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_vname</span><span class="p">()</span>
     
-    <span class="k">def</span> <span class="nf">genesymbol_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
+<div class="viewcode-block" id="PyPath.genesymbol_labels"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.genesymbol_labels">[docs]</a>    <span class="k">def</span> <span class="nf">genesymbol_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">remap_all</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creats vertex attribute ``label`` and fills up with Gene Symbols</span>
+<span class="sd">        of all proteins where the Gene Symbol can be looked up based on</span>
+<span class="sd">        the default name of the protein vertex.</span>
+<span class="sd">        If the attribute ``label`` had been already initialized, </span>
+<span class="sd">        updates this attribute or recreates if ``remap_all`` </span>
+<span class="sd">        is ``True``.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_already_has_directed</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">dgraph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">genesymbol_labels</span><span class="p">(</span><span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dgraph</span><span class="p">,</span> <span class="n">remap_all</span> <span class="o">=</span> <span class="n">remap_all</span><span class="p">)</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">graph</span>
         <span class="n">defaultNameType</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_name_type</span><span class="p">[</span><span class="s2">&quot;protein&quot;</span><span class="p">]</span>
         <span class="n">geneSymbol</span> <span class="o">=</span> <span class="s2">&quot;genesymbol&quot;</span>
-        <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;protein&quot;</span><span class="p">:</span>
-                <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span><span class="n">defaultNameType</span><span class="p">,</span><span class="n">geneSymbol</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;label&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">attributes</span><span class="p">():</span>
+            <span class="n">remap_all</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span> <span class="k">if</span> <span class="n">remap_all</span> <span class="ow">or</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">())):</span>
+            <span class="k">if</span> <span class="n">l</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;protein&#39;</span><span class="p">:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">defaultNameType</span><span class="p">,</span> <span class="n">geneSymbol</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">v</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                    <span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">v</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span></div>
     
 <div class="viewcode-block" id="PyPath.network_stats"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.network_stats">[docs]</a>    <span class="k">def</span> <span class="nf">network_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -3463,6 +3524,452 @@
                         <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">e</span><span class="p">][</span><span class="s1">&#39;interfaces&#39;</span><span class="p">][</span><span class="s1">&#39;pisa&#39;</span><span class="p">][</span><span class="n">pdb</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">intf</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">unmapped</span>
     
+    <span class="c1">#</span>
+    <span class="c1"># methods with biological meaning</span>
+    <span class="c1">#</span>
+    
+<div class="viewcode-block" id="PyPath.genesymbol"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.genesymbol">[docs]</a>    <span class="k">def</span> <span class="nf">genesymbol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">genesymbol</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns ``igraph.Vertex()`` object if the GeneSymbol</span>
+<span class="sd">        can be found in the default undirected network, </span>
+<span class="sd">        otherwise ``None``.</span>
+<span class="sd">        </span>
+<span class="sd">        @genesymbol : str</span>
+<span class="sd">            GeneSymbol.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_undirected</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">labDct</span><span class="p">[</span><span class="n">genesymbol</span><span class="p">]]</span> \
+            <span class="k">if</span> <span class="n">genesymbol</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labDct</span> <span class="k">else</span> <span class="bp">None</span></div>
+    
+    <span class="n">gs</span> <span class="o">=</span> <span class="n">genesymbol</span>
+    
+<div class="viewcode-block" id="PyPath.dgenesymbol"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.dgenesymbol">[docs]</a>    <span class="k">def</span> <span class="nf">dgenesymbol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">genesymbol</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns ``igraph.Vertex()`` object if the GeneSymbol</span>
+<span class="sd">        can be found in the default directed network, </span>
+<span class="sd">        otherwise ``None``.</span>
+<span class="sd">        </span>
+<span class="sd">        @genesymbol : str</span>
+<span class="sd">            GeneSymbol.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">dgraph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_directed</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">dgraph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dlabDct</span><span class="p">[</span><span class="n">genesymbol</span><span class="p">]]</span> \
+            <span class="k">if</span> <span class="n">genesymbol</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dlabDct</span> <span class="k">else</span> <span class="bp">None</span></div>
+    
+    <span class="n">dgs</span> <span class="o">=</span> <span class="n">dgenesymbol</span>
+    
+    <span class="k">def</span> <span class="nf">genesymbols</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">genesymbols</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">,</span> 
+            <span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">genesymbol</span><span class="p">(</span><span class="n">gs</span><span class="p">)</span> <span class="k">for</span> <span class="n">gs</span> <span class="ow">in</span> <span class="n">genesymbols</span><span class="p">))</span>
+    
+    <span class="n">gss</span> <span class="o">=</span> <span class="n">genesymbols</span>
+    
+    <span class="k">def</span> <span class="nf">dgenesymbols</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">genesymbols</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">,</span> 
+            <span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dgenesymbol</span><span class="p">(</span><span class="n">gs</span><span class="p">)</span> <span class="k">for</span> <span class="n">gs</span> <span class="ow">in</span> <span class="n">genesymbols</span><span class="p">))</span>
+    
+    <span class="n">dgss</span> <span class="o">=</span> <span class="n">dgenesymbols</span>
+    
+<div class="viewcode-block" id="PyPath.uniprot"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.uniprot">[docs]</a>    <span class="k">def</span> <span class="nf">uniprot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns ``igraph.Vertex()`` object if the UniProt</span>
+<span class="sd">        can be found in the default undirected network, </span>
+<span class="sd">        otherwise ``None``.</span>
+<span class="sd">        </span>
+<span class="sd">        @uniprot : str</span>
+<span class="sd">            UniProt ID.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_undirected</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]]</span> \
+            <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span> <span class="k">else</span> <span class="bp">None</span></div>
+    
+    <span class="n">up</span> <span class="o">=</span> <span class="n">uniprot</span>
+    
+<div class="viewcode-block" id="PyPath.duniprot"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.duniprot">[docs]</a>    <span class="k">def</span> <span class="nf">duniprot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Same as ``PyPath.uniprot(), just for directed graph.</span>
+<span class="sd">        Returns ``igraph.Vertex()`` object if the UniProt</span>
+<span class="sd">        can be found in the default directed network, </span>
+<span class="sd">        otherwise ``None``.</span>
+<span class="sd">        </span>
+<span class="sd">        @uniprot : str</span>
+<span class="sd">            UniProt ID.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">dgraph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_directed</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">dgraph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dnodDct</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]]</span> \
+            <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodDct</span> <span class="k">else</span> <span class="bp">None</span></div>
+    
+    <span class="n">dup</span> <span class="o">=</span> <span class="n">duniprot</span>
+    
+<div class="viewcode-block" id="PyPath.uniprots"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.uniprots">[docs]</a>    <span class="k">def</span> <span class="nf">uniprots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprots</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns list of ``igraph.Vertex()`` object</span>
+<span class="sd">        for a list of UniProt IDs omitting those</span>
+<span class="sd">        could not be found in the default</span>
+<span class="sd">        undirected graph.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">,</span> 
+            <span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uniprot</span><span class="p">(</span><span class="n">up</span><span class="p">)</span> <span class="k">for</span> <span class="n">up</span> <span class="ow">in</span> <span class="n">uniprots</span><span class="p">))</span></div>
+    
+    <span class="n">ups</span> <span class="o">=</span> <span class="n">uniprots</span>
+    
+<div class="viewcode-block" id="PyPath.duniprots"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.duniprots">[docs]</a>    <span class="k">def</span> <span class="nf">duniprots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprots</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns list of ``igraph.Vertex()`` object</span>
+<span class="sd">        for a list of UniProt IDs omitting those</span>
+<span class="sd">        could not be found in the default</span>
+<span class="sd">        directed graph.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">,</span> 
+            <span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">duniprot</span><span class="p">(</span><span class="n">up</span><span class="p">)</span> <span class="k">for</span> <span class="n">up</span> <span class="ow">in</span> <span class="n">uniprots</span><span class="p">))</span></div>
+    
+    <span class="n">dups</span> <span class="o">=</span> <span class="n">duniprots</span>
+    
+<div class="viewcode-block" id="PyPath.protein"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.protein">[docs]</a>    <span class="k">def</span> <span class="nf">protein</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns ``igraph.Vertex()`` object if the identifier</span>
+<span class="sd">        is a valid vertex index in the default undirected graph,</span>
+<span class="sd">        or a UniProt ID or GeneSymbol which can be found in the</span>
+<span class="sd">        default undirected network, otherwise ``None``.</span>
+<span class="sd">        </span>
+<span class="sd">        @identifier : int, str</span>
+<span class="sd">            Vertex index (int) or GeneSymbol (str) or UniProt ID (str).</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_undirected</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">identifier</span><span class="p">]</span> \
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span> <span class="ow">and</span> <span class="n">identifier</span> <span class="o">&lt;</span> <span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span> \
+            <span class="k">else</span> <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">identifier</span><span class="p">]]</span> \
+            <span class="k">if</span> <span class="n">identifier</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span> <span class="k">else</span> \
+            <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">labDct</span><span class="p">[</span><span class="n">identifier</span><span class="p">]]</span> \
+            <span class="k">if</span> <span class="n">identifier</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labDct</span> <span class="k">else</span> <span class="bp">None</span></div>
+    
+    <span class="n">p</span> <span class="o">=</span> <span class="n">protein</span>
+    
+<div class="viewcode-block" id="PyPath.dprotein"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.dprotein">[docs]</a>    <span class="k">def</span> <span class="nf">dprotein</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Same as ``PyPath.protein``, just for the directed graph.</span>
+<span class="sd">        Returns ``igraph.Vertex()`` object if the identifier</span>
+<span class="sd">        is a valid vertex index in the default directed graph,</span>
+<span class="sd">        or a UniProt ID or GeneSymbol which can be found in the</span>
+<span class="sd">        default directed network, otherwise ``None``.</span>
+<span class="sd">        </span>
+<span class="sd">        @identifier : int, str</span>
+<span class="sd">            Vertex index (int) or GeneSymbol (str) or UniProt ID (str).</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">dgraph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_directed</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">dgraph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">identifier</span><span class="p">]</span> \
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span> <span class="ow">and</span> <span class="n">identifier</span> <span class="o">&lt;</span> <span class="n">dgraph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span> \
+            <span class="k">else</span> <span class="n">dgraph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dnodDct</span><span class="p">[</span><span class="n">identifier</span><span class="p">]]</span> \
+            <span class="k">if</span> <span class="n">identifier</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodDct</span> <span class="k">else</span> \
+            <span class="n">dgraph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dlabDct</span><span class="p">[</span><span class="n">identifier</span><span class="p">]]</span> \
+            <span class="k">if</span> <span class="n">identifier</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dlabDct</span> <span class="k">else</span> <span class="bp">None</span></div>
+    
+    <span class="n">dp</span> <span class="o">=</span> <span class="n">dprotein</span>
+    
+    <span class="k">def</span> <span class="nf">proteins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proteins</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">,</span> 
+            <span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protein</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">))</span>
+    
+    <span class="n">ps</span> <span class="o">=</span> <span class="n">proteins</span>
+    
+    <span class="k">def</span> <span class="nf">dproteins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proteins</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">,</span> 
+            <span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dprotein</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">))</span>
+    
+    <span class="n">dps</span> <span class="o">=</span> <span class="n">dproteins</span>
+    
+<div class="viewcode-block" id="PyPath.up_edge"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.up_edge">[docs]</a>    <span class="k">def</span> <span class="nf">up_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">directed</span> <span class="o">=</span> <span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns ``igraph.Edge`` object if an edge exist between</span>
+<span class="sd">        the 2 proteins, otherwise ``None``.</span>
+<span class="sd">        </span>
+<span class="sd">        @source : str</span>
+<span class="sd">            UniProt ID</span>
+<span class="sd">        @target : str</span>
+<span class="sd">            UniProt ID</span>
+<span class="sd">        @directed : bool</span>
+<span class="sd">            To be passed to igraph.Graph.get_eid()</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">v_source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uniprot</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="n">v_target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uniprot</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">v_source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">v_target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">eid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_eid</span><span class="p">(</span><span class="n">v_source</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">v_target</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> 
+                <span class="n">directed</span> <span class="o">=</span> <span class="n">directed</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">eid</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">eid</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">None</span></div>
+    
+<div class="viewcode-block" id="PyPath.gs_edge"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.gs_edge">[docs]</a>    <span class="k">def</span> <span class="nf">gs_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">directed</span> <span class="o">=</span> <span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns ``igraph.Edge`` object if an edge exist between</span>
+<span class="sd">        the 2 proteins, otherwise ``None``.</span>
+<span class="sd">        </span>
+<span class="sd">        @source : str</span>
+<span class="sd">            GeneSymbol</span>
+<span class="sd">        @target : str</span>
+<span class="sd">            GeneSymbol</span>
+<span class="sd">        @directed : bool</span>
+<span class="sd">            To be passed to igraph.Graph.get_eid()</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">v_source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">genesymbol</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="n">v_target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">genesymbol</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">v_source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">v_target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">eid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_eid</span><span class="p">(</span><span class="n">v_source</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">v_target</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> 
+                <span class="n">directed</span> <span class="o">=</span> <span class="n">directed</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">eid</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">eid</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">None</span></div>
+    
+<div class="viewcode-block" id="PyPath.protein_edge"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.protein_edge">[docs]</a>    <span class="k">def</span> <span class="nf">protein_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">directed</span> <span class="o">=</span> <span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns ``igraph.Edge`` object if an edge exist between</span>
+<span class="sd">        the 2 proteins, otherwise ``None``.</span>
+<span class="sd">        </span>
+<span class="sd">        @source : int, str</span>
+<span class="sd">            Vertex index or UniProt ID or GeneSymbol</span>
+<span class="sd">        @target : int, str</span>
+<span class="sd">            Vertex index or UniProt ID or GeneSymbol</span>
+<span class="sd">        @directed : bool</span>
+<span class="sd">            To be passed to igraph.Graph.get_eid()</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">v_source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="n">v_target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">v_source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">v_target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">eid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_eid</span><span class="p">(</span><span class="n">v_source</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">v_target</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> 
+                <span class="n">directed</span> <span class="o">=</span> <span class="n">directed</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">eid</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">eid</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">None</span></div>
+    
+    <span class="k">def</span> <span class="nf">_has_directed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_directed</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_directed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_directed</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">_already_has_directed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_directed</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_directed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dgraph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">dgraph</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_directed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dgraph</span>
+    
+    <span class="k">def</span> <span class="nf">_get_directed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the directed instance of the graph.</span>
+<span class="sd">        If not available, creates one at ``PyPath.dgraph``.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_directed</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_directed</span>
+    
+    <span class="c1"># conversion between directed and undirected vertices</span>
+    
+    <span class="k">def</span> <span class="nf">_get_undirected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_undirected</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_undirected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_undirected</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_undirected</span>
+    
+    <span class="k">def</span> <span class="nf">up_in_directed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_directed</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodDct</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span> <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodDct</span> <span class="k">else</span> <span class="bp">None</span>
+    
+    <span class="k">def</span> <span class="nf">up_in_undirected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_undirected</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span> <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span> <span class="k">else</span> <span class="bp">None</span>
+    
+    <span class="k">def</span> <span class="nf">gs_in_directed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">genesymbol</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_directed</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dlabDct</span><span class="p">[</span><span class="n">genesymbol</span><span class="p">]</span> <span class="k">if</span> <span class="n">genesymbol</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dlabDct</span> <span class="k">else</span> <span class="bp">None</span>
+    
+    <span class="k">def</span> <span class="nf">gs_in_undirected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">genesymbol</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_undirected</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">labDct</span><span class="p">[</span><span class="n">genesymbol</span><span class="p">]</span> <span class="k">if</span> <span class="n">genesymbol</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labDct</span> <span class="k">else</span> <span class="bp">None</span>
+    
+    <span class="k">def</span> <span class="nf">in_directed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertex</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">up_in_directed</span><span class="p">(</span><span class="n">vertex</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+    
+    <span class="k">def</span> <span class="nf">in_undirected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertex</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">up_in_undirected</span><span class="p">(</span><span class="n">vertex</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+    
+    <span class="c1"># affects and affected_by</span>
+    
+    <span class="k">def</span> <span class="nf">_affected_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertex</span><span class="p">):</span>
+        <span class="n">dgraph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_directed</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">dgraph</span> <span class="o">!=</span> <span class="n">vertex</span><span class="o">.</span><span class="n">graph</span><span class="p">:</span>
+            <span class="n">vertex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_directed</span><span class="p">(</span><span class="n">vertex</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+        <span class="n">vs</span> <span class="o">=</span> <span class="n">vertex</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;IN&#39;</span><span class="p">)</span> \
+            <span class="k">if</span> <span class="n">vertex</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">_NamedVertexSeq</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodNam</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodLab</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_affects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertex</span><span class="p">):</span>
+        <span class="n">dgraph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_directed</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">dgraph</span> <span class="o">!=</span> <span class="n">vertex</span><span class="o">.</span><span class="n">graph</span><span class="p">:</span>
+            <span class="n">vertex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_directed</span><span class="p">(</span><span class="n">vertex</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+        <span class="n">vs</span> <span class="o">=</span> <span class="n">vertex</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;OUT&#39;</span><span class="p">)</span> \
+            <span class="k">if</span> <span class="n">vertex</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">_NamedVertexSeq</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodNam</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodLab</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">affected_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">):</span>
+        <span class="n">vrtx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dprotein</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vrtx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_affected_by</span><span class="p">(</span><span class="n">vrtx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    
+    <span class="k">def</span> <span class="nf">affects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">):</span>
+        <span class="n">vrtx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dprotein</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vrtx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_affects</span><span class="p">(</span><span class="n">vrtx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    
+    <span class="k">def</span> <span class="nf">up_affects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">):</span>
+        <span class="n">vrtx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">duniprot</span><span class="p">(</span><span class="n">uniprot</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vrtx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_affects</span><span class="p">(</span><span class="n">vrtx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    
+    <span class="k">def</span> <span class="nf">up_affected_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">):</span>
+        <span class="n">vrtx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">duniprot</span><span class="p">(</span><span class="n">uniprot</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vrtx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_affected_by</span><span class="p">(</span><span class="n">vrtx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    
+    <span class="k">def</span> <span class="nf">gs_affects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">genesymbol</span><span class="p">):</span>
+        <span class="n">vrtx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dgenesymbol</span><span class="p">(</span><span class="n">genesymbol</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vrtx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_affects</span><span class="p">(</span><span class="n">vrtx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    
+    <span class="k">def</span> <span class="nf">gs_affected_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">genesymbol</span><span class="p">):</span>
+        <span class="n">vrtx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dgenesymbol</span><span class="p">(</span><span class="n">genesymbol</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vrtx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_affected_by</span><span class="p">(</span><span class="n">vrtx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    
+    <span class="k">def</span> <span class="nf">up_stimulated_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">):</span>
+        <span class="n">dgraph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_directed</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodDct</span><span class="p">:</span>
+            <span class="n">vid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodDct</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span>
+            <span class="n">vs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">up_affected_by</span><span class="p">(</span><span class="n">uniprot</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">_NamedVertexSeq</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> \
+                <span class="n">dgraph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">dgraph</span><span class="o">.</span><span class="n">get_eid</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">vid</span><span class="p">)]</span>\
+                    <span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">uniprot</span><span class="p">],</span> 
+                <span class="n">vs</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodNam</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodLab</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_NamedVertexSeq</span><span class="p">([],</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodNam</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodLab</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">up_inhibited_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">):</span>
+        <span class="n">dgraph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_directed</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodDct</span><span class="p">:</span>
+            <span class="n">vid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodDct</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span>
+            <span class="n">vs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">up_affected_by</span><span class="p">(</span><span class="n">uniprot</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">_NamedVertexSeq</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> \
+                <span class="n">dgraph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">dgraph</span><span class="o">.</span><span class="n">get_eid</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">vid</span><span class="p">)]</span>\
+                    <span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">uniprot</span><span class="p">],</span> 
+                <span class="n">vs</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodNam</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodLab</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_NamedVertexSeq</span><span class="p">([],</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodNam</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodLab</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">up_stimulates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">):</span>
+        <span class="n">dgraph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_directed</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodDct</span><span class="p">:</span>
+            <span class="n">vid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodDct</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span>
+            <span class="n">vs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">up_affects</span><span class="p">(</span><span class="n">uniprot</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">_NamedVertexSeq</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> \
+                <span class="n">dgraph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">dgraph</span><span class="o">.</span><span class="n">get_eid</span><span class="p">(</span><span class="n">vid</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span>\
+                    <span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">uniprot</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]],</span> 
+                <span class="n">vs</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodNam</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodLab</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_NamedVertexSeq</span><span class="p">([],</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodNam</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodLab</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">up_inhibits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">):</span>
+        <span class="n">dgraph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_directed</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodDct</span><span class="p">:</span>
+            <span class="n">vid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodDct</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span>
+            <span class="n">vs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">up_affects</span><span class="p">(</span><span class="n">uniprot</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">_NamedVertexSeq</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> \
+                <span class="n">dgraph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">dgraph</span><span class="o">.</span><span class="n">get_eid</span><span class="p">(</span><span class="n">vid</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span>\
+                    <span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="n">uniprot</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]],</span> 
+                <span class="n">vs</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodNam</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodLab</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_NamedVertexSeq</span><span class="p">([],</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodNam</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodLab</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">gs_stimulated_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">genesymbol</span><span class="p">):</span>
+        <span class="n">dgraph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_directed</span><span class="p">()</span>
+        <span class="n">uniprot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodNam</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dlabDct</span><span class="p">[</span><span class="n">genesymbol</span><span class="p">]]</span> \
+            <span class="k">if</span> <span class="n">genesymbol</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dlabDct</span> <span class="k">else</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">up_stimulated_by</span><span class="p">(</span><span class="n">uniprot</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">gs_stimulates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">genesymbol</span><span class="p">):</span>
+        <span class="n">dgraph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_directed</span><span class="p">()</span>
+        <span class="n">uniprot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodNam</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dlabDct</span><span class="p">[</span><span class="n">genesymbol</span><span class="p">]]</span> \
+            <span class="k">if</span> <span class="n">genesymbol</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dlabDct</span> <span class="k">else</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">up_stimulates</span><span class="p">(</span><span class="n">uniprot</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">gs_inhibited_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">genesymbol</span><span class="p">):</span>
+        <span class="n">dgraph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_directed</span><span class="p">()</span>
+        <span class="n">uniprot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodNam</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dlabDct</span><span class="p">[</span><span class="n">genesymbol</span><span class="p">]]</span> \
+            <span class="k">if</span> <span class="n">genesymbol</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dlabDct</span> <span class="k">else</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">up_inhibited_by</span><span class="p">(</span><span class="n">uniprot</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">gs_inhibits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">genesymbol</span><span class="p">):</span>
+        <span class="n">dgraph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_directed</span><span class="p">()</span>
+        <span class="n">uniprot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnodNam</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dlabDct</span><span class="p">[</span><span class="n">genesymbol</span><span class="p">]]</span> \
+            <span class="k">if</span> <span class="n">genesymbol</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dlabDct</span> <span class="k">else</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">up_inhibits</span><span class="p">(</span><span class="n">uniprot</span><span class="p">)</span>
+    
+    <span class="c1"># meighbors variations</span>
+    
+    <span class="k">def</span> <span class="nf">up_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;ALL&#39;</span><span class="p">):</span>
+        <span class="n">vrtx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uniprot</span><span class="p">(</span><span class="n">uniprot</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vrtx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_NamedVertexSeq</span><span class="p">(</span><span class="n">vrtx</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span><span class="p">),</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">labDct</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_NamedVertexSeq</span><span class="p">([],</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodNam</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodLab</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">gs_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;ALL&#39;</span><span class="p">):</span>
+        <span class="n">vrtx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uniprot</span><span class="p">(</span><span class="n">uniprot</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vrtx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_NamedVertexSeq</span><span class="p">(</span><span class="n">vrtx</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span><span class="p">),</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">labDct</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_NamedVertexSeq</span><span class="p">([],</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodNam</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodLab</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;ALL&#39;</span><span class="p">):</span>
+        <span class="n">vrtx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protein</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vrtx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_NamedVertexSeq</span><span class="p">(</span><span class="n">vrtx</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span><span class="p">),</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">labDct</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_NamedVertexSeq</span><span class="p">([],</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodNam</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodLab</span><span class="p">)</span>
+    
+    <span class="c1"># neighborhood variations:</span>
+    
+    <span class="k">def</span> <span class="nf">_neighborhood</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vs</span><span class="p">,</span> <span class="n">order</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;ALL&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_NamedVertexSeq</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">neighborhood</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> 
+                <span class="n">order</span> <span class="o">=</span> <span class="n">order</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span><span class="p">),</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodNam</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodLab</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">up_neighborhood</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">order</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;ALL&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">uniprots</span><span class="p">)</span> <span class="ow">in</span> <span class="n">simpleTypes</span><span class="p">:</span>
+            <span class="n">uniprots</span> <span class="o">=</span> <span class="p">[</span><span class="n">uniprots</span><span class="p">]</span>
+        <span class="n">vs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uniprots</span><span class="p">(</span><span class="n">uniprots</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neighborhood</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">order</span> <span class="o">=</span> <span class="n">order</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">gs_neighborhood</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">genesymbols</span><span class="p">,</span> <span class="n">order</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;ALL&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">genesymbols</span><span class="p">)</span> <span class="ow">in</span> <span class="n">simpleTypes</span><span class="p">:</span>
+            <span class="n">genesymbols</span> <span class="o">=</span> <span class="p">[</span><span class="n">genesymbols</span><span class="p">]</span>
+        <span class="n">vs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">genesymbols</span><span class="p">(</span><span class="n">genesymbols</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neighborhood</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">order</span> <span class="o">=</span> <span class="n">order</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">neighborhood</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifiers</span><span class="p">,</span> <span class="n">order</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;ALL&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">identifiers</span><span class="p">)</span> <span class="ow">in</span> <span class="n">simpleTypes</span><span class="p">:</span>
+            <span class="n">identifiers</span> <span class="o">=</span> <span class="p">[</span><span class="n">identifiers</span><span class="p">]</span>
+        <span class="n">vs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proteins</span><span class="p">(</span><span class="n">identifiers</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neighborhood</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">order</span> <span class="o">=</span> <span class="n">order</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span><span class="p">)</span>
+    
+    <span class="c1"># compexes</span>
+    
     <span class="k">def</span> <span class="nf">complex_comembership_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">graph</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">resources</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span> <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
         <span class="k">if</span> <span class="n">resources</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
@@ -3478,12 +3985,67 @@
                         <span class="k">if</span> <span class="n">cname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cdict</span><span class="p">[</span><span class="n">src</span><span class="p">]:</span>
                             <span class="n">cdict</span><span class="p">[</span><span class="n">src</span><span class="p">][</span><span class="n">cname</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
                         <span class="n">cdict</span><span class="p">[</span><span class="n">src</span><span class="p">][</span><span class="n">cname</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
-        
         <span class="k">pass</span>
     
-    <span class="k">def</span> <span class="nf">in_complex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">graph</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.edges_in_comlexes"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.edges_in_comlexes">[docs]</a>    <span class="k">def</span> <span class="nf">edges_in_comlexes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csources</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;corum&#39;</span><span class="p">],</span> <span class="n">graph</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creates edge attributes ``complexes`` and ``in_complex``.</span>
+<span class="sd">        These are both dicts where the keys are complex resources.</span>
+<span class="sd">        The values in ``complexes`` are the list of complex names</span>
+<span class="sd">        both the source and the target vertices belong to.</span>
+<span class="sd">        The values ``in_complex`` are boolean values whether there</span>
+<span class="sd">        is at least one complex in the given resources both the</span>
+<span class="sd">        source and the target vertex of the edge belong to.</span>
+<span class="sd">        </span>
+<span class="sd">        @csources : list</span>
+<span class="sd">            List of complex resources. Should be already loaded.</span>
+<span class="sd">        @graph : igraph.Graph()</span>
+<span class="sd">            The graph object to do the calculations on.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span> <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
-        <span class="k">pass</span>
+        <span class="k">if</span> <span class="s1">&#39;complexes&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="o">.</span><span class="n">attributes</span><span class="p">():</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s1">&#39;complexes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{}</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;in_complex&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="o">.</span><span class="n">attributes</span><span class="p">():</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s1">&#39;in_complex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{}</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">]</span>
+        <span class="k">def</span> <span class="nf">_common_complexes</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">cs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">][</span><span class="s1">&#39;complexes&#39;</span><span class="p">][</span><span class="n">cs</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">&amp;</span> \
+                <span class="nb">set</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">][</span><span class="s1">&#39;complexes&#39;</span><span class="p">][</span><span class="n">cs</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">nul</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">cs</span><span class="p">:</span> \
+            <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> \
+                <span class="n">e</span><span class="p">[</span><span class="s1">&#39;complexes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">__setitem__</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="n">_common_complexes</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">cs</span><span class="p">)),</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">),</span>
+            <span class="n">csources</span><span class="p">)</span>
+        <span class="n">nul</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">cs</span><span class="p">:</span> \
+            <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> \
+                <span class="n">e</span><span class="p">[</span><span class="s1">&#39;in_complex&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">__setitem__</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;complexes&#39;</span><span class="p">][</span><span class="n">cs</span><span class="p">]))),</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">),</span>
+            <span class="n">csources</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="PyPath.sum_in_complex"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.sum_in_complex">[docs]</a>    <span class="k">def</span> <span class="nf">sum_in_complex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csources</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;corum&#39;</span><span class="p">],</span> <span class="n">graph</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the total number of edges in the network falling</span>
+<span class="sd">        between two members of the same complex.</span>
+<span class="sd">        Returns as a dict by complex resources.</span>
+<span class="sd">        Calls :py:func:pypath.pypath.Pypath.edges_in_comlexes()</span>
+<span class="sd">        to do the calculations.</span>
+<span class="sd">        </span>
+<span class="sd">        @csources : list</span>
+<span class="sd">            List of complex resources. Should be already loaded.</span>
+<span class="sd">        @graph : igraph.Graph()</span>
+<span class="sd">            The graph object to do the calculations on.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span> <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges_in_comlexes</span><span class="p">(</span><span class="n">csources</span> <span class="o">=</span> <span class="n">csources</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">cs</span><span class="p">:</span> 
+            <span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> 
+                <span class="n">e</span><span class="p">[</span><span class="s1">&#39;in_complex&#39;</span><span class="p">][</span><span class="n">cs</span><span class="p">],</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">)</span>
+            <span class="p">)),</span> 
+            <span class="n">csources</span><span class="p">)</span>
+        <span class="p">)</span></div>
+    
+    <span class="c1">#</span>
+    <span class="c1">#</span>
+    <span class="c1">#</span>
     
     <span class="k">def</span> <span class="nf">get_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fun</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="s1">&#39;__call__&#39;</span><span class="p">):</span>
@@ -4909,7 +5471,11 @@
                 <span class="n">comm</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">as_clustering</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">comm</span>
     
-    <span class="k">def</span> <span class="nf">set_receptors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.set_receptors"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.set_receptors">[docs]</a>    <span class="k">def</span> <span class="nf">set_receptors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creates a vertex attribute `rec` with value *True* if</span>
+<span class="sd">        the protein is a receptor, otherwise *False*.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_vname</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;rec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">False</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">]</span>
         <span class="n">receptors</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">get_hpmr</span><span class="p">()</span>
@@ -4917,9 +5483,13 @@
             <span class="n">urec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="n">urec</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]][</span><span class="s1">&#39;rec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]][</span><span class="s1">&#39;rec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span></div>
     
-    <span class="k">def</span> <span class="nf">set_kinases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.set_kinases"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.set_kinases">[docs]</a>    <span class="k">def</span> <span class="nf">set_kinases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creates a vertex attribute `kin` with value *True* if</span>
+<span class="sd">        the protein is a kinase, otherwise *False*.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_vname</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;kin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">False</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">]</span>
         <span class="n">kinases</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">get_kinases</span><span class="p">()</span>
@@ -4927,9 +5497,13 @@
             <span class="n">ukin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">kin</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="n">ukin</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]][</span><span class="s1">&#39;kin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]][</span><span class="s1">&#39;kin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span></div>
     
-    <span class="k">def</span> <span class="nf">set_druggability</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.set_druggability"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.set_druggability">[docs]</a>    <span class="k">def</span> <span class="nf">set_druggability</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creates a vertex attribute `dgb` with value *True* if</span>
+<span class="sd">        the protein is druggable, otherwise *False*.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_vname</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;dgb&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">False</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">]</span>
         <span class="n">druggables</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">get_dgidb</span><span class="p">()</span>
@@ -4937,7 +5511,7 @@
             <span class="n">udgb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">dgb</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="n">udgb</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]][</span><span class="s1">&#39;dgb&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]][</span><span class="s1">&#39;dgb&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span></div>
     
 <div class="viewcode-block" id="PyPath.set_drugtargets"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.set_drugtargets">[docs]</a>    <span class="k">def</span> <span class="nf">set_drugtargets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pchembl</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -4956,7 +5530,11 @@
                     <span class="k">if</span> <span class="nb">max</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">pchembl</span><span class="p">:</span>
                         <span class="n">v</span><span class="p">[</span><span class="s1">&#39;dtg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span></div>
     
-    <span class="k">def</span> <span class="nf">set_transcription_factors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;other&#39;</span><span class="p">]):</span>
+<div class="viewcode-block" id="PyPath.set_transcription_factors"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.set_transcription_factors">[docs]</a>    <span class="k">def</span> <span class="nf">set_transcription_factors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;other&#39;</span><span class="p">]):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Creates a vertex attribute `tf` with value *True* if</span>
+<span class="sd">        the protein is a transcription factor, otherwise *False*.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_vname</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;tf&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">False</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">]</span>
         <span class="n">tfs</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">get_tfcensus</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span>
@@ -4966,7 +5544,79 @@
             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">tfs</span><span class="p">[</span><span class="s1">&#39;hgnc&#39;</span><span class="p">]])</span>
         <span class="k">for</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="n">uniprots</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]][</span><span class="s1">&#39;tf&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]][</span><span class="s1">&#39;tf&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span></div>
+    
+    <span class="k">def</span> <span class="nf">get_pathways</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+        <span class="n">attrname</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_pathways&#39;</span><span class="o">%</span><span class="n">source</span>
+        <span class="n">protein_pws</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">interaction_pws</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dataio</span><span class="p">,</span> <span class="n">attrname</span><span class="p">):</span>
+            <span class="n">fun</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">dataio</span><span class="p">,</span> <span class="n">attrname</span><span class="p">)</span>
+            <span class="n">proteins_pws</span><span class="p">,</span> <span class="n">interactions_pws</span> <span class="o">=</span> <span class="n">fun</span><span class="p">(</span><span class="n">mapper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">proteins_pws</span><span class="p">,</span> <span class="n">interactions_pws</span>
+    
+    <span class="k">def</span> <span class="nf">load_pathways</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="n">attrname</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_pathways&#39;</span><span class="o">%</span><span class="n">source</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">graph</span>
+        <span class="n">nodDct</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">())))</span>
+        <span class="n">proteins_pws</span><span class="p">,</span> <span class="n">interactions_pws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_pathways</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">attrname</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">set</span><span class="p">([])</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">]</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">attrname</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">set</span><span class="p">([])</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">proteins_pws</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">pw</span><span class="p">,</span> <span class="n">proteins</span> <span class="ow">in</span> <span class="n">proteins_pws</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">protein</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">protein</span> <span class="ow">in</span> <span class="n">proteins</span><span class="p">:</span>
+                        <span class="n">uniprots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">protein</span><span class="p">,</span> 
+                            <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">uniprots</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">nodDct</span><span class="p">:</span>
+                                <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">nodDct</span><span class="p">[</span><span class="n">u</span><span class="p">]][</span><span class="n">attrname</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pw</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">interactions_pws</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">pw</span><span class="p">,</span> <span class="n">ia</span> <span class="ow">in</span> <span class="n">interactions_pws</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">ia</span><span class="p">:</span>
+                    <span class="n">usrcs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span>
+                    <span class="n">utgts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">usrc</span> <span class="ow">in</span> <span class="n">usrcs</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">utgt</span> <span class="ow">in</span> <span class="n">utgts</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">usrc</span> <span class="ow">in</span> <span class="n">nodDct</span> <span class="ow">and</span> <span class="n">utgt</span> <span class="ow">in</span> <span class="n">nodDct</span><span class="p">:</span>
+                                <span class="n">eid</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">get_eid</span><span class="p">(</span><span class="n">nodDct</span><span class="p">[</span><span class="n">usrc</span><span class="p">],</span> 
+                                    <span class="n">nodDct</span><span class="p">[</span><span class="n">utgt</span><span class="p">],</span> <span class="n">error</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+                                <span class="k">if</span> <span class="n">eid</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                                    <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">eid</span><span class="p">][</span><span class="n">attrname</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pw</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">signor_pathways</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_pathways</span><span class="p">(</span><span class="s1">&#39;signor&#39;</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">kegg_pathways</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_pathways</span><span class="p">(</span><span class="s1">&#39;kegg&#39;</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">pathway_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">graph</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;netpath_pathways&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">set</span><span class="p">([])</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">())]</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">:</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">][</span><span class="s1">&#39;netpath_pathways&#39;</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">][</span><span class="s1">&#39;netpath_pathways&#39;</span><span class="p">]</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;netpath_pathways&#39;</span><span class="p">])</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">target</span><span class="p">][</span><span class="s1">&#39;netpath_pathways&#39;</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">target</span><span class="p">][</span><span class="s1">&#39;netpath_pathways&#39;</span><span class="p">]</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;netpath_pathways&#39;</span><span class="p">])</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;signalink_pathways&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">set</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;slk_pathways&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;atg&#39;</span><span class="p">]:</span>
+                <span class="n">v</span><span class="p">[</span><span class="s1">&#39;signalink_pathways&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;autophagy&#39;</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">pathways_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;genes_pathways.list&#39;</span><span class="p">,</span> 
+        <span class="n">pw_sources</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;signalink&#39;</span><span class="p">,</span> <span class="s1">&#39;signor&#39;</span><span class="p">,</span> <span class="s1">&#39;netpath&#39;</span><span class="p">,</span> <span class="s1">&#39;kegg&#39;</span><span class="p">],</span> <span class="n">graph</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">hdr</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;UniProt&#39;</span><span class="p">,</span> <span class="s1">&#39;GeneSymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;Database&#39;</span><span class="p">,</span> <span class="s1">&#39;Pathway&#39;</span><span class="p">]</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">genesymbol_labels</span><span class="p">(</span><span class="n">graph</span> <span class="o">=</span> <span class="n">g</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">pw_sources</span><span class="p">:</span>
+                <span class="n">pw_attr</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_pathways&#39;</span><span class="o">%</span><span class="n">src</span>
+                <span class="k">for</span> <span class="n">pw</span> <span class="ow">in</span> <span class="n">v</span><span class="p">[</span><span class="n">pw_attr</span><span class="p">]:</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">],</span> <span class="n">src</span><span class="p">,</span> <span class="n">pw</span><span class="p">])</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">hdr</span><span class="p">))</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">l</span><span class="p">:</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span><span class="p">),</span> <span class="n">result</span><span class="p">)))</span>
     
     <span class="k">def</span> <span class="nf">guide2pharma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
@@ -5193,7 +5843,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">mimp_directions</span><span class="p">(</span><span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span><span class="p">)</span></div>
     
     <span class="k">def</span> <span class="nf">kegg_directions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
-        <span class="n">keggd</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">kegg_pathways</span><span class="p">()</span>
+        <span class="n">keggd</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">get_kegg</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">process_directions</span><span class="p">(</span><span class="n">keggd</span><span class="p">,</span> <span class="s1">&#39;KEGG&#39;</span><span class="p">,</span> <span class="n">stimulation</span> <span class="o">=</span> <span class="s1">&#39;activation&#39;</span><span class="p">,</span> 
             <span class="n">inhibition</span> <span class="o">=</span> <span class="s1">&#39;inhibition&#39;</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span><span class="p">)</span>
     

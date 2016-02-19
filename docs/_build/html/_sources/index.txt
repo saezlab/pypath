@@ -1,3 +1,4 @@
+
 .. pypath documentation master file, created by
    sphinx-quickstart2 on Mon Mar  2 12:43:52 2015.
    You can adapt this file completely to your liking, but it should at least
@@ -187,8 +188,7 @@ The mapping submodule of pypath can be used for ID conversion. Here is a basic e
 .. code-block:: python
 
     from pypath import mapping
-    m = mapping.Mapper(9606, mysql_conf = (None, 'mapping_gelati'))
-    m.load_mappings()
+    m = mapping.Mapper(9606)
     result = {}
     gene_list = ['EGFR', 'AKT1', 'GABARAPL1', 'TP53']
     for g in gene_list:
