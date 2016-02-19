@@ -80,6 +80,7 @@ src/pypath/data/macrophage-strict.csv
 src/pypath/data/matrixdb_core.csv
 src/pypath/data/mppi_human_rep.csv
 src/pypath/data/nci-pid-strict.csv
+src/pypath/data/negatome_manual.csv
 src/pypath/data/netpath_refs.csv
 src/pypath/data/nrf2ome.csv
 src/pypath/data/phosphopoint.csv
