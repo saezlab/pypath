@@ -567,6 +567,10 @@ urls = {
     'havugimana': {
         'label': 'Census of human soluble protein complexes',
         'url': 'http://www.cell.com/cms/attachment/2021768736/2041631145/mmc3.xls'
+    },
+    'matrixdb': {
+        'label': 'MatrixDB in house curated interactions, PSI-MI tab format',
+        'url': 'http://matrixdb.ibcp.fr/download/matrixdb_CORE.tab.gz'
     }
 }
 
@@ -585,10 +589,6 @@ files = {
     'phosphosite': {
         'curated': os.path.join('cache', 'phosphosite_curated.pickle'),
         'noref': os.path.join('cache', 'phosphosite_noref.pickle')
-    },
-    'matrixdb': {
-        'label': 'MatrixDB in house curated interactions, PSI-MI tab format',
-        'url': 'http://matrixdb.ibcp.fr/download/matrixdb_CORE.tab.gz'
     }
 }
 
