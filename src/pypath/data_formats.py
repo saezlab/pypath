@@ -1107,17 +1107,17 @@ interaction = {
         extraEdgeAttrs={},
         extraNodeAttrsA={},
         extraNodeAttrsB={}),
-    'matrixdb': input_formats.ReadSettings(name="MatrixDB", 
-        separator=";", nameColA=0, nameColB=1,
-        nameTypeA="uniprot", nameTypeB="uniprot",
-        typeA="protein", typeB="protein", isDirected=False, sign=False,
-        inFile=os.path.join(ROOT, 'data', 'matrixdb_core.csv'),
-        references=(2, "|"),ncbiTaxId=9606,
-        extraEdgeAttrs={
+    'matrixdb': input_formats.ReadSettings(name = "MatrixDB", 
+        nameColA = 0, nameColB = 1,
+        nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA = "protein", typeB = "protein", isDirected = False, sign = False,
+        inFile = 'get_matrixdb',
+        references = (2, "|"),ncbiTaxId = 9606,
+        extraEdgeAttrs = {
             "matrixdb_methods": (3, '|')
             },
-        extraNodeAttrsA={},
-        extraNodeAttrsB={}),
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {}),
 }
 
 '''
