@@ -1034,71 +1034,75 @@ class PyPath(object):
             self.data[settings.name] = edgeListMapped
         self.raw_data = edgeListMapped
     
-    def read_list_file(self, settings):
+    def read_list_file(self, settings, **kwargs):
         if settings.__class__.__name__ != "ReadList":
             self.ownlog.msg(2,("""No proper input file definition!\n\'settings\'
                 should be a \'readList\' instance\n"""), 'ERROR')
             return None
+        if hasattr(dataio, settings.inFile):
+            _input = getattr(dataio, settings.inFile)
+            infile = _input(**kwargs)
         elif not os.path.isfile(settings.inFile):
             self.ownlog.msg(2,"%s: No such file! :(\n" % (settings.inFile), 'ERROR')
             return None
-        else:
-            originalNameType = settings.nameType
-            defaultNameType = self.default_name_type[settings.typ]
-            mapTbl = ''.join([originalNameType,"_",defaultNameType])
+        originalNameType = settings.nameType
+        defaultNameType = self.default_name_type[settings.typ]
+        mapTbl = ''.join([originalNameType,"_",defaultNameType])
+        if type(_input) in charTypes:
             infile = codecs.open(settings.inFile, encoding='utf-8', mode='r')
-            self.ownlog.msg(2, "%s opened..." % settings.inFile)
-            # finding the largest referred column number, 
-            # to avoid references out of index
-            maxCol = max(
-                [   settings.nameCol, 
-                    self.get_max(settings.extraAttrs) ])
-            # iterating lines from input file
-            lnum = 1
-            readError = 0
-            itemList = []
-            for line in infile:
-                if len(line) == 0 or (lnum == 1 and settings.header):
-                    # empty lines
-                    # or header row
-                    lnum += 1
-                    continue
+        self.ownlog.msg(2, "%s opened..." % settings.inFile)
+        # finding the largest referred column number, 
+        # to avoid references out of index
+        maxCol = max(
+            [   settings.nameCol, 
+                self.get_max(settings.extraAttrs) ])
+        # iterating lines from input file
+        lnum = 1
+        readError = 0
+        itemList = []
+        for line in infile:
+            if len(line) == 0 or (lnum == 1 and settings.header):
+                # empty lines
+                # or header row
+                lnum += 1
+                continue
+            if type(line) in charTypes:
                 line = line.rstrip().split(settings.separator)
-                # in case line has less fields than needed
-                if len(line) < maxCol:
-                    self.ownlog.msg(2,(
-                        "Line #%u has less than %u fields! :(\n" % \
-                            (lnum, maxCol)), 'ERROR')
+            # in case line has less fields than needed
+            if len(line) < maxCol:
+                self.ownlog.msg(2,(
+                    "Line #%u has less than %u fields! :(\n" % \
+                        (lnum, maxCol)), 'ERROR')
+                readError = 1
+                break
+            else:
+                # reading names and attributes
+                try:
+                    newItem = {
+                        "name": line[settings.nameCol], 
+                        "nameType": settings.nameType, 
+                        "type": settings.typ, 
+                        "source": settings.name}
+                except:
+                    self.ownlog.msg(2,("""Wrong name column indexes (%u and %u), 
+                        or wrong separator (%s)? Line #%u\n""" 
+                        % ( settings.nameCol, settings.separator, lnum)), 'ERROR')
                     readError = 1
                     break
-                else:
-                    # reading names and attributes
-                    try:
-                        newItem = {
-                            "name": line[settings.nameCol], 
-                            "nameType": settings.nameType, 
-                            "type": settings.typ, 
-                            "source": settings.name}
-                    except:
-                        self.ownlog.msg(2,("""Wrong name column indexes (%u and %u), 
-                            or wrong separator (%s)? Line #%u\n""" 
-                            % ( settings.nameCol, settings.separator, lnum)), 'ERROR')
-                        readError = 1
-                        break
-                    # getting additional attributes
-                    attrsItem = self.get_attrs(line, settings.extraAttrs, lnum)
-                    # merging dictionaries
-                    newItem = dict(chain(newItem.iteritems(), attrsItem.iteritems() ))
-                if readError != 0:
-                    break
-                itemList.append(newItem)
-                lnum += 1
-            infile.close()
-            itemListMapped = self.map_list(itemList,singleList=True)
-            itemListMapped = list(set(itemListMapped))
-            self.ownlog.msg(2, "%u lines have been read from %s, %u '\
-                items after mapping" %
-                (lnum, settings.inFile, len(itemListMapped)))
+                # getting additional attributes
+                attrsItem = self.get_attrs(line, settings.extraAttrs, lnum)
+                # merging dictionaries
+                newItem = dict(chain(newItem.iteritems(), attrsItem.iteritems() ))
+            if readError != 0:
+                break
+            itemList.append(newItem)
+            lnum += 1
+        infile.close()
+        itemListMapped = self.map_list(itemList,singleList=True)
+        itemListMapped = list(set(itemListMapped))
+        self.ownlog.msg(2, "%u lines have been read from %s, %u '\
+            items after mapping" %
+            (lnum, settings.inFile, len(itemListMapped)))
         self.lists[settings.name] = itemListMapped
     
     def map_list(self,lst,singleList=False):

@@ -41,6 +41,14 @@ import urllib
 import urllib2
 import httplib2
 import urlparse
+try:
+    import pysftp
+except:
+    sys.stdout.write('''\n\t:: Module `pyfstp` not available. 
+        Only downloading of a small number of resources 
+        relies on this module.
+        Please install by PIP if it is necessary for you.
+    ''')
 import codecs
 import gzip
 import zipfile
@@ -175,7 +183,9 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
         files_needed = None, timeout = 300, init_url = None, 
         init_fun = 'get_jsessionid', follow = True, large = False,
         override_post = False, init_headers = False, 
-        write_cache = True, force_quote = False):
+        write_cache = True, force_quote = False,
+        sftp_user = None, sftp_passwd = None, sftp_passwd_file = None,
+        sftp_port = 22, sftp_host = None, sftp_ask = None):
     url = url_fix(url, force = force_quote)
     if init_url is not None:
         init_url = url_fix(init_url, force = force_quote)
@@ -183,8 +193,11 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
     multifile = False
     domain = url.replace('https://', '').replace('http://','').\
         replace('ftp://','').split('/')[0]
+    if sftp_host is not None:
+        sftp_filename = url
+        url = '%s%s'%(sftp_host, sftp_filename)
     # first try to find file in cache:
-    if cache or write_cache:
+    if cache or write_cache or sftp_host is not None:
         # outf param is to give a unique name to data
         # downloaded previously by post requests
         outf = outf if outf is not None else url.split('/')[-1].split('?')[0]
@@ -218,61 +231,74 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
     # if not found in cache, download with curl:
     if not usecache:
         headers = []
-        if not init_url and large:
-            result = open(cachefile, 'wb')
+        if sftp_host is not None:
+            sftp_localpath = cachefile
+            sftp_success = sftp_download(sftp_filename, sftp_localpath,
+                host = sftp_host, user = sftp_user, passwd = sftp_passwd, 
+                passwd_file = sftp_passwd_file, ask = sftp_ask,
+                port = sftp_port)
+            if sftp_success:
+                result = open(cachefile, 'r')
+                status = 200
+            else:
+                result = None
+                status = 501
         else:
-            result = StringIO()
-        c = pycurl.Curl()
-        if init_url:
-            c.setopt(c.URL, init_url)
-        else:
-            try:
-                c.setopt(c.URL, url)
-            except:
-                return url
-        c.setopt(c.FOLLOWLOCATION, follow)
-        c.setopt(c.CONNECTTIMEOUT, 15)
-        c.setopt(c.TIMEOUT, timeout)
-        if override_post:
-            if req_headers is None: req_headers = []
-            req_headers.append('X-HTTP-Method-Override: GET')
-        if type(req_headers) is list:
-            c.setopt(c.HTTPHEADER, req_headers)
-        c.setopt(c.WRITEFUNCTION, result.write)
-        c.setopt(c.HEADERFUNCTION, headers.append)
-        # if debug is necessary:
-        if debug:
-            c.setopt(pycurl.VERBOSE, 1)
-            c.setopt(pycurl.DEBUGFUNCTION, print_debug_info)
-        if type(post) is dict:
-            postfields = urllib.urlencode(post)
-            c.setopt(c.POSTFIELDS, postfields)
-            c.setopt(c.POST, 1)
-        if not silent:
-            sys.stdout.write('\t:: Downloading data from %s. Waiting for reply...' % \
-                domain)
-            sys.stdout.flush()
-        for i in xrange(3):
-            try:
-                if debug:
-                    sys.stdout.write('\t:: pypath.dataio.curl() :: attempt #%u\n' % i)
-                    sys.stdout.flush()
-                c.perform()
-                if url.startswith('http'):
-                    status = c.getinfo(pycurl.HTTP_CODE)
-                    if status == 200:
-                        break
-                if url.startswith('ftp'):
-                    status = 500
-                    for h in headers:
-                        if h.startswith('226'):
-                            status = 200
-                            break
-            except pycurl.error as (errno, strerror):
-                status = 500
-                sys.stdout.write('\tPycURL error: %u, %s\n' % (errno, strerror))
+            if not init_url and large:
+                result = open(cachefile, 'wb')
+            else:
+                result = StringIO()
+            c = pycurl.Curl()
+            if init_url:
+                c.setopt(c.URL, init_url)
+            else:
+                try:
+                    c.setopt(c.URL, url)
+                except:
+                    return url
+            c.setopt(c.FOLLOWLOCATION, follow)
+            c.setopt(c.CONNECTTIMEOUT, 15)
+            c.setopt(c.TIMEOUT, timeout)
+            if override_post:
+                if req_headers is None: req_headers = []
+                req_headers.append('X-HTTP-Method-Override: GET')
+            if type(req_headers) is list:
+                c.setopt(c.HTTPHEADER, req_headers)
+            c.setopt(c.WRITEFUNCTION, result.write)
+            c.setopt(c.HEADERFUNCTION, headers.append)
+            # if debug is necessary:
+            if debug:
+                c.setopt(pycurl.VERBOSE, 1)
+                c.setopt(pycurl.DEBUGFUNCTION, print_debug_info)
+            if type(post) is dict:
+                postfields = urllib.urlencode(post)
+                c.setopt(c.POSTFIELDS, postfields)
+                c.setopt(c.POST, 1)
+            if not silent:
+                sys.stdout.write('\t:: Downloading data from %s. Waiting for reply...' % \
+                    domain)
                 sys.stdout.flush()
-        c.close()
+            for i in xrange(3):
+                try:
+                    if debug:
+                        sys.stdout.write('\t:: pypath.dataio.curl() :: attempt #%u\n' % i)
+                        sys.stdout.flush()
+                    c.perform()
+                    if url.startswith('http'):
+                        status = c.getinfo(pycurl.HTTP_CODE)
+                        if status == 200:
+                            break
+                    if url.startswith('ftp'):
+                        status = 500
+                        for h in headers:
+                            if h.startswith('226'):
+                                status = 200
+                                break
+                except pycurl.error as (errno, strerror):
+                    status = 500
+                    sys.stdout.write('\tPycURL error: %u, %s\n' % (errno, strerror))
+                    sys.stdout.flush()
+            c.close()
     # sometimes authentication or cookies are needed to access the target url:
     if init_url and not usecache:
         if not silent:
@@ -471,17 +497,18 @@ def read_table(cols, fileObject = None, data = None, sep = '\t', sep2 = None, re
     return res
 
 def all_uniprots(organism = 9606, swissprot = None):
-    result = []
     rev = '' if swissprot is None else ' AND reviewed:%s'%swissprot
     url = data_formats.urls['uniprot_basic']['url']
     post = {'query': 'organism:%s%s' % (str(organism), rev), 
         'format': 'tab', 'columns': 'id'}
     data = curl(url, post = post, silent = False)
-    data = data.split('\n')
-    del data[0]
-    for l in data:
-        result.append(l.strip())
-    return filter(lambda x: len(x) > 0, result)
+    return filter(lambda x:
+        len(x) > 0,
+        map(lambda l:
+            l.strip(),
+            data.split('\n')[1:]
+        )
+    )
 
 def swissprot_seq(organism = 9606, isoforms = False):
     taxids = {
@@ -814,21 +841,20 @@ def get_complexportal(species=9606,zipped=True):
         sys.stdout.flush()
     return complexes
 
+def get_havugimana():
+    url = data_formats.urls['havugimana']['url']
+    data = curl(url, silent = False, large = True)
+    fname = data.name
+    data.close()
+    table = read_xls(fname)
+    return table[3:]
+
 def read_complexes_havugimana():
     '''
     Supplement Table S3/1 from Havugimana 2012
     Cell. 150(5): 1068–1081.
     '''
-    complexes = []
-    # TODO: place file name into settings
-    infile = os.path.join(common.ROOT,'data','complexes_havugimana2012.csv')
-    with codecs.open(infile,encoding='utf-8',mode='r') as f:
-        hdr = f.readline()
-        del hdr
-        for l in f:
-            l = l.replace('\n','').replace('\r','').split('\t')
-            complexes.append(l[2].split(','))
-    return complexes
+    return map(lambda l: l[2].split(','), get_havugimana())
 
 def get_compleat():
     url = data_formats.urls['compleat']['url']
@@ -2852,11 +2878,23 @@ def get_cpdb(exclude = None):
                 result.append([participants[0], participants[1], l[0], l[1]])
     return result
 
-def get_uniprot_sec():
+def get_uniprot_sec(organism = 9606):
+    if organism is not None:
+        proteome = all_uniprots(organism = organism)
+        proteome = set(proteome)
+    sec_pri = []
     url = data_formats.urls['uniprot_sec']['url']
-    data = curl(url, silent = False)
-    data = [x.split() for x in data.split('\n')[30:]]
-    return data
+    data = curl(url, silent = False, large = True)
+    return filter(lambda line:
+        len(line) == 2 and (organism is None or line[1] in proteome),
+        map(lambda (i, line):
+            line.split(), 
+            filter(lambda (i, line):
+                i >= 30,
+                enumerate(data)
+            )
+        )
+    )
 
 def get_go(organism = 9606, swissprot = 'yes'):
     rev = '' if swissprot is None \
@@ -5100,3 +5138,107 @@ def get_ccmap(organism = 9606):
                             e[6].strip(';').replace('PUBMED:', '')
                         ])
     return interactions
+
+def ask_passwd(ask, passwd_file, use_passwd_file = True):
+    print 'begin ask_passwd()'
+    if use_passwd_file and os.path.exists(passwd_file):
+        with open(passwd_file, 'r') as f:
+            user = f.readline().strip()
+            passwd = f.readline().strip()
+        return user, passwd
+    sys.stdout.write(ask)
+    sys.stdout.flush()
+    while True:
+        user = raw_input('\n\tUsername: ')
+        passwd = raw_input('\tPassword (leave empty if no password needed): ')
+        correct = raw_input('Are these details correct? '\
+            'User: `%s`, password: `%s` [Y/n]\n' % (user, passwd))
+        if correct.lower().strip() not in ['', 'y', 'yes']:
+            continue
+        save = raw_input('Do you wish to save your login details unencripted\n'\
+            'to the following file, so you don\'t need to enter them next '\
+            'time? File: %s\nSave login details [Y/n]' % passwd_file)
+        break
+    if save.lower().strip() in ['', 'y', 'yes']:
+        with open(passwd_file, 'w') as f:
+            f.write('%s\n%s' % (user, passwd))
+    return user, passwd
+
+def sftp_download(filename, localpath, host, user = None,
+    passwd = None, passwd_file = None, ask = None, port = 22):
+    print 'begin sftp_download()'
+    ask = 'Please enter your login details for %s\n' % host \
+        if ask is None else ask
+    passwd_file = os.path.join('cache', '%s.login'%host) \
+        if passwd_file is None else passwd_file
+    if user is None:
+        user, passwd = ask_passwd(ask, passwd_file)
+    while True:
+        passwd = None if passwd.strip() == '' else passwd
+        with pysftp.Connection(host = host, username = user,
+            password = passwd, port = port) as con:
+            try:
+                con.get(filename, localpath)
+                break
+            except IOError:
+                msg = 'Failed to get %s from %s\n'\
+                    'Try again (1) || Enter new login details (2) '\
+                    '|| Cancel (3) ?\n' % (filename, host)
+                whattodo = raw_input(msg)
+                if '1' in whattodo:
+                    continue
+                if '2' in whattodo:
+                    user, passwd = ask_passwd(ask, passwd_file, 
+                        use_passwd_file = False)
+                    continue
+                if '3' in whattodo:
+                    return False
+    return True
+
+def get_cgc(user = None, passwd = None):
+    host = data_formats.urls['cgc']['host']
+    fname = data_formats.urls['cgc']['file']
+    ask = 'To access Cancer Gene Census data you need to be '\
+        'registered at COSMIC\n'\
+        '(http://cancer.sanger.ac.uk/cosmic/).\n'\
+        'If you have already an account, please enter your login details.\n'\
+        'In case you don\'t, you can register now.\n'\
+        'Please see licensing terms to find out how you are allowed to\n'\
+        'use COSMIC data: http://cancer.sanger.ac.uk/cosmic/license\n'
+    data = curl(fname, sftp_host = host, sftp_ask = ask, sftp_user = user,
+        sftp_passwd = passwd, large = True)
+    for line in data:
+        yield line
+
+def get_matrixdb(organism = 9606):
+    url = data_formats.urls['matrixdb']['url']
+    f = curl(url, silent = False, large = True)
+    i = []
+    lnum = 0
+    for l in f:
+        if lnum == 0:
+            lnum += 1
+            continue
+        l = l.replace('\n','').replace('\r','')
+        l = l.split('\t')
+        specA = 0 if l[9] == '-' else int(l[9].split(':')[1].split('(')[0])
+        specB = 0 if l[10] == '-' else int(l[10].split(':')[1].split('(')[0])
+        if organism is None or (specA == organism and specB == organism):
+            pm = [p.replace('pubmed:','') for p in l[8].split('|') if p.startswith('pubmed:')]
+            met = [m.split('(')[1].replace(')','') for m in l[6].split('|') if '(' in m]
+            l = [l[0],l[1]]
+            interaction = ()
+            for ll in l:
+                ll = ll.split('|')
+                uniprot = ''
+                for lll in ll:
+                    nm = lll.split(':')
+                    if nm[0] == 'uniprotkb' and len(nm[1]) == 6:
+                        uniprot = nm[1]
+                interaction += (uniprot,)
+            interaction += ('|'.join(pm),'|'.join(met))
+            if len(interaction[0]) > 5 and len(interaction[1]) > 5:
+                i.append(list(interaction))
+        lnum += 1
+    f.close()
+    return i

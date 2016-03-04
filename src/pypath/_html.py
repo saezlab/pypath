@@ -445,7 +445,7 @@ def default_template(content, page_title, title = ''):
         .prettify().encode('utf-8')
 
 def main_page():
-    doc = u'<p>Welcome to the home of OmniPath, the most comprehensive collection of '\
+    doc = u'<p>Welcome to the home of OmniPath, a comprehensive collection of '\
         'literature curated human signaling pathways. And pypath, the powerful '\
         'Python module for molecular networks and pathways analysis.</p>\n'\
         '<h2><a class="omnipath" href="/info">Metainformation about signaling pathway resources'\

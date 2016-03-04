@@ -558,6 +558,15 @@ urls = {
     'pathguide': {
         'label': 'Collection of metabolic and signaling pathway and molecular interaction resources',
         'url': 'http://pathguide.org/fullrecord.php?organisms=all&availability=all&standards=all&order=alphabetic&DBID=%u'
+    },
+    'cgc': {
+        'label': 'Cancer Gene Census: list of cancer related (driver) genes',
+        'host': 'sftp-cancer.sanger.ac.uk',
+        'file': '/files/grch38/cosmic/v76/cancer_gene_census.csv'
+    },
+    'havugimana': {
+        'label': 'Census of human soluble protein complexes',
+        'url': 'http://www.cell.com/cms/attachment/2021768736/2041631145/mmc3.xls'
     }
 }
 
@@ -576,6 +585,10 @@ files = {
     'phosphosite': {
         'curated': os.path.join('cache', 'phosphosite_curated.pickle'),
         'noref': os.path.join('cache', 'phosphosite_noref.pickle')
+    },
+    'matrixdb': {
+        'label': 'MatrixDB in house curated interactions, PSI-MI tab format',
+        'url': 'http://matrixdb.ibcp.fr/download/matrixdb_CORE.tab.gz'
     }
 }
 
@@ -1535,15 +1548,15 @@ gdsc_lst = input_formats.ReadList(name="atg", separator=";", nameCol=0,
                 inFile=os.path.join(ROOT, 'data', 'autophagy.list'),
                 extraAttrs={'drugs': 2})
 
-cgc = input_formats.ReadList(name="CancerGeneCensus", separator="|", nameCol=2,
+cgc = input_formats.ReadList(name="CancerGeneCensus", separator=",", nameCol=2,
                 nameType="entrez", typ="protein",
-                inFile=os.path.join(ROOT, 'data', 'cancer_gene_census.csv'),
+                inFile = 'get_cgc',
                 extraAttrs={})
 
-intogene_cancer = input_formats.ReadList(name="Intogene", separator="\t", nameCol=1,
-               nameType="genesymbol", typ="protein",
-              inFile=os.path.join(ROOT, 'data', 'intogene_cancerdrivers.tsv'),
-              extraAttrs={})
+intogene_cancer = input_formats.ReadList(name = "IntOGen", separator = "\t", nameCol=1,
+                nameType = "genesymbol", typ = "protein",
+                inFile = 'intogen_cancerdrivers.tsv',
+                extraAttrs={})
 
 aidan_list = input_formats.ReadList(name="aidan_list", separator=";", nameCol=0,
                 nameType="uniprot", typ="protein",
