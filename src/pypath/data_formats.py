@@ -799,8 +799,7 @@ otherMappings = [
     ]
 
 refLists = [
-        input_formats.ReferenceList('uniprot','protein',9606,
-                              os.path.join(ROOT, 'data','uniprot-all-human.tab'))
+        input_formats.ReferenceList('uniprot', 'protein', 9606, 'all_uniprots')
     ]
 
 '''

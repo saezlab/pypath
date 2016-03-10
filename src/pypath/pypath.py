@@ -2514,7 +2514,7 @@ class PyPath(object):
         for rl in reflists:
             self.load_reflist(rl)
     
-    def load_reflist(self,reflist):
+    def load_reflist(self, reflist):
         reflist.load()
         idx = (reflist.nameType,reflist.typ,reflist.tax)
         self.reflists[idx] = reflist
