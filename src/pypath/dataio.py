@@ -5348,10 +5348,8 @@ def get_dip(organism = 9606):
             s += line
     return i
 
-def dip_login():
+def dip_login(user, passwd):
     bdr = '---------------------------8945224391427558067125853467'
-    user = 'deeenes'
-    passwd = 'kc4Kv'
     useragent = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:43.0) '\
         'Gecko/20110304 Firefox/43.0'
     loginfname = os.path.join('cache', 'dip.logindata.tmp')
@@ -5373,8 +5371,8 @@ def dip_login():
     ]
     post = {
         'lgn': '1',
-        'login': 'deeenes',
-        'pass': 'kc4Kv',
+        'login': user,
+        'pass': passwd,
         'Login': 'Login'
     }
     login = '--%s\r\n\r\nContent-Disposition: form-data; name="lgn"\r\n\r\n1'\
