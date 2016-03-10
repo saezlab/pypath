@@ -284,9 +284,9 @@ urls = {
     'depod': {
         'label': 'Dephosphorylation substrates and sites',
         'urls': [
-            'http://www.koehnlab.de/depod/download/DEPOD_201408'\
+            'http://www.koehn.embl.de/depod/download/DEPOD_201408'\
                 '_human_phosphatase-substrate.txt',
-            'http://www.koehnlab.de/depod/download/DEPOD_201405'\
+            'http://www.koehn.embl.de/depod/download/DEPOD_201405'\
                 '_human_phosphatase-substrate.mitab'
         ]
     },
@@ -470,8 +470,8 @@ urls = {
     },
     'li2012': {
         'label': 'Human Phosphotyrosine Signaling Network',
-        'url': 'http://genome.cshlp.org/content/22/7/1222/suppl/DC1',
-        'file': 'li2012.csv'
+        'url': 'http://genome.cshlp.org/content/suppl/2011/12/27/'\
+            'gr.128819.111.DC1/Supplementary_files_S1-S5.xls'
     },
     'trip': {
         'label': 'The TRP channel database',
@@ -490,7 +490,7 @@ urls = {
     },
     'hiii14': {
         'label': 'Rolland et al 2014, Human Interactome II',
-        'file': os.path.join(ROOT, 'data', 'rolland2014_s2g.tab')
+        'url': 'http://www.cell.com/cms/attachment/2021150198/2041343422/mmc3.xlsx'
     },
     'kinome': {
         'label': 'List of human kinases',
@@ -558,6 +558,56 @@ urls = {
     'pathguide': {
         'label': 'Collection of metabolic and signaling pathway and molecular interaction resources',
         'url': 'http://pathguide.org/fullrecord.php?organisms=all&availability=all&standards=all&order=alphabetic&DBID=%u'
+    },
+    'cgc': {
+        'label': 'Cancer Gene Census: list of cancer related (driver) genes',
+        'host': 'sftp-cancer.sanger.ac.uk',
+        'file': '/files/grch38/cosmic/v76/cancer_gene_census.csv'
+    },
+    'havugimana': {
+        'label': 'Census of human soluble protein complexes',
+        'url': 'http://www.cell.com/cms/attachment/2021768736/2041631145/mmc3.xls'
+    },
+    'matrixdb': {
+        'label': 'MatrixDB in house curated interactions, PSI-MI tab format',
+        'url': 'http://matrixdb.ibcp.fr/download/matrixdb_CORE.tab.gz'
+    },
+    'innatedb': {
+        'label': 'InnateDB PSI-MI tab',
+        'url': 'http://innatedb.com/download/interactions/innatedb_ppi.mitab.gz'
+    },
+    'dip': {
+        'label': 'DIP PSI-MI tab',
+        'login': 'http://dip.doe-mbi.ucla.edu/dip/Login.cgi',
+        'url': ''
+    },
+    'vaquerizas2009': {
+        'label': 'A census of human transcription factors: function, expression and evolution; Supplementary Table S3',
+        'url': 'http://www.nature.com/nrg/journal/v10/n4/extref/nrg2538-s3.txt'
+    },
+    'spike': {
+        'label': 'SPIKE database XML',
+        'url': 'http://www.cs.tau.ac.il/~spike/download/LatestSpikeDB.xml.zip'
+    },
+    'mppi': {
+        'label': 'MIPS PPI full download',
+        'url': 'http://mips.helmholtz-muenchen.de/proj/ppi/data/mppi.gz'
+    },
+    'negatome': {
+        'label': 'Negatome manually curated non-interacting protein pairs',
+        'manual': 'http://mips.helmholtz-muenchen.de/proj/ppi/negatome/manual.txt'
+    },
+    'macrophage': {
+        'label': 'Macrophage Pathways; Raza 2010, Supplementary Materials 1',
+        'url': r'https://static-content.springer.com/esm/art%3A10.1186%2F1752-0509-4-63/MediaObjects/12918_2010_452_MOESM2_ESM.XLS'
+    },
+    'intact': {
+        'label': 'IntAct entire database PSI-MI tab',
+        'mitab' : 'ftp://ftp.ebi.ac.uk/pub/databases/intact/current/psimitab/intact.zip'
+    },
+    'death': {
+        'label': 'DeathDomain webpage',
+        'url': 'http://www.deathdomain.org/proteins/show?family=%s'
     }
 }
 
@@ -749,8 +799,7 @@ otherMappings = [
     ]
 
 refLists = [
-        input_formats.ReferenceList('uniprot','protein',9606,
-                              os.path.join(ROOT, 'data','uniprot-all-human.tab'))
+        input_formats.ReferenceList('uniprot', 'protein', 9606, 'all_uniprots')
     ]
 
 '''
@@ -870,22 +919,22 @@ pathway = {
         sign = (4, 'stimulation', 'inhibition'),
         ncbiTaxId = 9606,
         inFile = 'trip_interactions', references = (2, ';'), header = False,
-        extraEdgeAttrs={'trip_methods': (3, ';')},
-        extraNodeAttrsA={},
-        extraNodeAttrsB={}),
-    'spike': input_formats.ReadSettings(name="SPIKE", 
-        separator="\t", nameColA=1, nameColB=3,
-        nameTypeA="genesymbol", nameTypeB="genesymbol",
-        typeA="protein", typeB="protein", isDirected=(4,['1']), 
-        sign = (7, '1', '2'),
-        inFile=os.path.join(ROOT, 'data', 'spike_hc.csv'),
-        references=(5, ";"),ncbiTaxId=9606,
-        extraEdgeAttrs={
+        extraEdgeAttrs = {'trip_methods': (3, ';')},
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {}),
+    'spike': input_formats.ReadSettings(name = "SPIKE", 
+        separator = "\t", nameColA = 1, nameColB = 3,
+        nameTypeA = "genesymbol", nameTypeB = "genesymbol",
+        typeA = "protein", typeB = "protein", isDirected = (4,['1']), 
+        sign  =  (7, '1', '2'),
+        inFile = 'spike_interactions',
+        references = (5, ";"), ncbiTaxId = 9606,
+        extraEdgeAttrs = {
             'spike_effect': 7, 
             'spike_mechanism': 11},
-        extraNodeAttrsA={},
-        extraNodeAttrsB={}),
-    'signalink3': input_formats.ReadSettings(name="SignaLink3", 
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {}),
+    'signalink3': input_formats.ReadSettings(name = "SignaLink3", 
         separator = None, nameColA = 0, nameColB = 1,
         nameTypeA="uniprot", nameTypeB="uniprot",
         typeA="protein", typeB="protein", isDirected = (6, 'directed'), 
@@ -947,52 +996,52 @@ pathway = {
         extraNodeAttrsB={
             "atg": 6
             }),
-    'nrf2': input_formats.ReadSettings(name="NRF2ome", 
-        separator=",", nameColA=0, nameColB=1,
-        nameTypeA="uniprot", nameTypeB="uniprot",
-        typeA="protein", typeB="protein", 
-        isDirected=(3,['1','2']), sign=(4,'1','-1'),
-        inFile=os.path.join(ROOT, 'data', 'nrf2ome.csv'),
-        references=(5, ":"),ncbiTaxId=9606,
-        extraEdgeAttrs={
+    'nrf2': input_formats.ReadSettings(name = "NRF2ome", 
+        separator = ",", nameColA = 0, nameColB = 1,
+        nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA = "protein", typeB = "protein", 
+        isDirected = (3,['1','2']), sign = (4,'1','-1'),
+        inFile = os.path.join(ROOT, 'data', 'nrf2ome.csv'),
+        references = (5, ":"),ncbiTaxId = 9606,
+        extraEdgeAttrs = {
             "netbiol_effect": 4,
             "is_direct": 2,
             "is_directed": 3
             },
-        extraNodeAttrsA={},
-        extraNodeAttrsB={}),
-    'macrophage': input_formats.ReadSettings(name="Macrophage", 
-        separator=";", nameColA=0, nameColB=1,
-        nameTypeA="genesymbol", nameTypeB="genesymbol",
-        typeA="protein", typeB="protein", isDirected=(3,['1']),
-        sign=(2,'Activation','Inhibition'),
-        inFile=os.path.join(ROOT, 'data', 'macrophage-strict.csv'),
-        references=(5, ","),ncbiTaxId=9606,
-        extraEdgeAttrs={
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {}),
+    'macrophage': input_formats.ReadSettings(name = "Macrophage", 
+        separator = ";", nameColA = 0, nameColB = 1,
+        nameTypeA = "genesymbol", nameTypeB = "genesymbol",
+        typeA = "protein", typeB = "protein", isDirected = (3,['1']),
+        sign = (2,'Activation','Inhibition'),
+        inFile  =  'macrophage_interactions',
+        references = (5, ","),ncbiTaxId = 9606,
+        extraEdgeAttrs = {
             "macrophage_type": (2, ","),
             "macrophage_location": (4, ",")},
-        extraNodeAttrsA={},
-        extraNodeAttrsB={}),
-    'death': input_formats.ReadSettings(name="DeathDomain", 
-        separator="\t", nameColA=0, nameColB=1,
-        nameTypeA="genesymbol", nameTypeB="genesymbol",
-        typeA="protein", typeB="protein", isDirected=False, sign=False,
-        inFile=os.path.join(ROOT, 'data', 'dd_refs.csv'),
-        references=(3, ";"), ncbiTaxId = 9606,
-        extraEdgeAttrs={
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {}),
+    'death': input_formats.ReadSettings(name = "DeathDomain", 
+        separator = "\t", nameColA = 0, nameColB = 1,
+        nameTypeA = "genesymbol", nameTypeB = "genesymbol",
+        typeA = "protein", typeB = "protein", isDirected = False, sign = False,
+        inFile = 'deathdomain_interactions',
+        references = (3, ";"), ncbiTaxId  =  9606,
+        extraEdgeAttrs = {
             "dd_methods": (2, ';')
             },
-        extraNodeAttrsA={},
-        extraNodeAttrsB={}),
-    'pdz': input_formats.ReadSettings(name="PDZBase", 
-        separator = None, nameColA=1,
-        nameColB=4, nameTypeA="uniprot", nameTypeB="uniprot",
-        typeA = "protein", typeB = "protein", isDirected = 1, sign = False,
-        ncbiTaxId = {'col': 5, 'dict': {'human': 9606}}, 
-        inFile = 'get_pdzbase', references = 6, header = False,
-        extraEdgeAttrs={},
-        extraNodeAttrsA={},
-        extraNodeAttrsB={}),
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {}),
+    'pdz': input_formats.ReadSettings(name = "PDZBase", 
+        separator  =  None, nameColA = 1,
+        nameColB = 4, nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA  =  "protein", typeB  =  "protein", isDirected  =  1, sign  =  False,
+        ncbiTaxId  =  {'col': 5, 'dict': {'human': 9606}}, 
+        inFile  =  'get_pdzbase', references  =  6, header  =  False,
+        extraEdgeAttrs = {},
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {}),
     'signor': input_formats.ReadSettings(name="Signor", 
         separator="\t", nameColA = 2, nameColB = 6,
         nameTypeA="uniprot", nameTypeB="uniprot",
@@ -1044,16 +1093,16 @@ interaction = {
         extraEdgeAttrs={},
         extraNodeAttrsA={},
         extraNodeAttrsB={}),
-    'mppi': input_formats.ReadSettings(name="MPPI", 
-        separator="|", nameColA=2, nameColB=6,
-        nameTypeA="uniprot", nameTypeB="uniprot",
-        typeA="protein", typeB="protein", isDirected=False,sign=False,
-        inFile=os.path.join(ROOT, 'data', 'mppi_human_rep.csv'),
-        references=(0, ";"), ncbiTaxId=9606,
-        extraEdgeAttrs={
+    'mppi': input_formats.ReadSettings(name = "MPPI", 
+        separator = "|", nameColA = 2, nameColB = 6,
+        nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA = "protein", typeB = "protein", isDirected = False, sign = False,
+        inFile = 'mppi_interactions',
+        references = (0, ";"), ncbiTaxId = 9606,
+        extraEdgeAttrs = {
             "mppi_evidences": (1, ";")},
-        extraNodeAttrsA={},
-        extraNodeAttrsB={}),
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {}),
     'dip': input_formats.ReadSettings(name="DIP", separator="\t", 
         nameColA=0, nameColB=1,
         nameTypeA="uniprot", nameTypeB="uniprot",
@@ -1069,22 +1118,22 @@ interaction = {
         nameColA = 1, nameColB = 3,
         nameTypeA="entrez", nameTypeB="entrez",
         typeA="protein", typeB="protein", isDirected=False, sign=False,
-        inFile='netpath', references=(4, ";"), ncbiTaxId=9606,
+        inFile='netpath_interactions', references=(4, ";"), ncbiTaxId=9606,
         extraEdgeAttrs={
             "netpath_methods": (5, ";"),
             "netpath_type": (6, ";"),
             "netpath_pathways": (7, ';')},
         extraNodeAttrsA={},
         extraNodeAttrsB={}),
-    'innatedb': input_formats.ReadSettings(name="InnateDB", 
-        separator=";", nameColA=0, nameColB=2,
-        nameTypeA="uniprot", nameTypeB="uniprot",
-        typeA="protein", typeB="protein", isDirected=False, sign=False,
-        inFile=os.path.join(ROOT, 'data', 'innatedb.csv'),
-        references=(4, ":"),ncbiTaxId=9606,
-        extraEdgeAttrs={},
-        extraNodeAttrsA={},
-        extraNodeAttrsB={}),
+    'innatedb': input_formats.ReadSettings(name = "InnateDB", 
+        nameColA = 0, nameColB = 2,
+        nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA = "protein", typeB = "protein", isDirected = False, sign = False,
+        inFile = 'get_innatedb',
+        references = (4, ":"),ncbiTaxId = 9606,
+        extraEdgeAttrs = {},
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {}),
     'alz': input_formats.ReadSettings(name="AlzPathway", 
         separator="\t", nameColA=0, nameColB=1,
         nameTypeA="uniprot", nameTypeB="uniprot",
@@ -1094,17 +1143,17 @@ interaction = {
         extraEdgeAttrs={},
         extraNodeAttrsA={},
         extraNodeAttrsB={}),
-    'matrixdb': input_formats.ReadSettings(name="MatrixDB", 
-        separator=";", nameColA=0, nameColB=1,
-        nameTypeA="uniprot", nameTypeB="uniprot",
-        typeA="protein", typeB="protein", isDirected=False, sign=False,
-        inFile=os.path.join(ROOT, 'data', 'matrixdb_core.csv'),
-        references=(2, "|"),ncbiTaxId=9606,
-        extraEdgeAttrs={
+    'matrixdb': input_formats.ReadSettings(name = "MatrixDB", 
+        nameColA = 0, nameColB = 1,
+        nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA = "protein", typeB = "protein", isDirected = False, sign = False,
+        inFile = 'get_matrixdb',
+        references = (2, "|"),ncbiTaxId = 9606,
+        extraEdgeAttrs = {
             "matrixdb_methods": (3, '|')
             },
-        extraNodeAttrsA={},
-        extraNodeAttrsB={}),
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {}),
 }
 
 '''
@@ -1122,54 +1171,54 @@ ptm = {
             "psite_evidences": (4, ";")},
         extraNodeAttrsA = {},
         extraNodeAttrsB = {}),
-    'depod': input_formats.ReadSettings(name="DEPOD", 
-        separator=";", nameColA=0, nameColB=1,
-        nameTypeA="uniprot", nameTypeB="uniprot",
-        typeA="protein", typeB="protein", isDirected=True, sign=False,
-        inFile=os.path.join(ROOT, 'data', 'depod-refs.csv'),
-        references=(2, "|"),ncbiTaxId=9606,
-        extraEdgeAttrs={},
-        extraNodeAttrsA={},
-        extraNodeAttrsB={}),
-    'lmpid': input_formats.ReadSettings(name="LMPID", 
-        separator = None, nameColA = 0,
-        nameColB = 1, nameTypeA="uniprot", nameTypeB="uniprot",
-        typeA = "protein", typeB = "protein", isDirected = 0, sign = False,
-        ncbiTaxId = 9606, 
-        inFile = 'lmpid_interactions', references = (2, ';'), header = False,
-        extraEdgeAttrs={},
-        extraNodeAttrsA={},
-        extraNodeAttrsB={}),
-    'phelm': input_formats.ReadSettings(name="phosphoELM", 
-        separator = None, nameColA=0,
-        nameColB=1, nameTypeA="uniprot", nameTypeB="uniprot",
-        typeA = "protein", typeB = "protein", isDirected = 1, sign = False,
-        ncbiTaxId = {'col': 3, 'dict': {'Homo sapiens': 9606}}, 
-        inFile = 'phelm_interactions', references = (2, ';'), header = False,
-        extraEdgeAttrs={},
-        extraNodeAttrsA={},
-        extraNodeAttrsB={}),
-    'elm': input_formats.ReadSettings(name="ELM", 
-        separator = None, nameColA=2,
-        nameColB=3, nameTypeA="uniprot", nameTypeB="uniprot",
-        typeA = "protein", typeB = "protein", isDirected = 0, sign = False,
-        ncbiTaxId = {'A': {'col': 11, 'dict': {'"9606"(Homo sapiens)': 9606}}, 
+    'depod': input_formats.ReadSettings(name = "DEPOD", 
+        separator = ";", nameColA = 0, nameColB = 1,
+        nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA = "protein", typeB = "protein", isDirected = True, sign = False,
+        inFile = 'depod_interactions',
+        references = (2, "|"),ncbiTaxId = 9606,
+        extraEdgeAttrs = {},
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {}),
+    'lmpid': input_formats.ReadSettings(name = "LMPID", 
+        separator  =  None, nameColA  =  0,
+        nameColB  =  1, nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA  =  "protein", typeB  =  "protein", isDirected  =  0, sign  =  False,
+        ncbiTaxId  =  9606, 
+        inFile  =  'lmpid_interactions', references  =  (2, ';'), header  =  False,
+        extraEdgeAttrs = {},
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {}),
+    'phelm': input_formats.ReadSettings(name = "phosphoELM", 
+        separator  =  None, nameColA = 0,
+        nameColB = 1, nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA  =  "protein", typeB  =  "protein", isDirected  =  1, sign  =  False,
+        ncbiTaxId  =  {'col': 3, 'dict': {'Homo sapiens': 9606}}, 
+        inFile  =  'phelm_interactions', references  =  (2, ';'), header  =  False,
+        extraEdgeAttrs = {},
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {}),
+    'elm': input_formats.ReadSettings(name = "ELM", 
+        separator  =  None, nameColA = 2,
+        nameColB = 3, nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA  =  "protein", typeB  =  "protein", isDirected  =  0, sign  =  False,
+        ncbiTaxId  =  {'A': {'col': 11, 'dict': {'"9606"(Homo sapiens)': 9606}}, 
                         'B': {'col': 12, 'dict': {'"9606"(Homo sapiens)': 9606}}},
-        inFile = 'get_elm_interactions', references = (10, ','), header = False,
-        extraEdgeAttrs={},
-        extraNodeAttrsA={},
-        extraNodeAttrsB={}),
-    'domino': input_formats.ReadSettings(name="DOMINO", 
-        separator = None, nameColA=0,
-        nameColB=1, nameTypeA="uniprot", nameTypeB="uniprot",
-        typeA = "protein", typeB = "protein", isDirected = 0, sign = False,
-        ncbiTaxId = {'A': {'col': 6, 'dict': {'9606': 9606}}, 
+        inFile  =  'get_elm_interactions', references  =  (10, ','), header  =  False,
+        extraEdgeAttrs = {},
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {}),
+    'domino': input_formats.ReadSettings(name = "DOMINO", 
+        separator  =  None, nameColA = 0,
+        nameColB = 1, nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA  =  "protein", typeB  =  "protein", isDirected  =  0, sign  =  False,
+        ncbiTaxId  =  {'A': {'col': 6, 'dict': {'9606': 9606}},
                         'B': {'col': 7, 'dict': {'9606': 9606}}},
-        inFile = 'get_domino_interactions', references = (5, ';'), 
-        header = False,
-        extraEdgeAttrs={'domino_methods': (4, ';')},
-        extraNodeAttrsA={},
-        extraNodeAttrsB={}),
+        inFile  =  'get_domino_interactions', references  =  (5, ';'),
+        header  =  False,
+        extraEdgeAttrs = {'domino_methods': (4, ';')},
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {}),
     'dbptm': input_formats.ReadSettings(name="dbPTM", 
         separator = None, nameColA=0,
         nameColB=1, nameTypeA=['genesymbol', 'uniprot'], nameTypeB="uniprot",
@@ -1267,17 +1316,17 @@ or because we could not separate the low throughput,
 manually curated interactions.
 '''
 interaction_misc = {
-    'intact': input_formats.ReadSettings(name="IntAct", 
-        separator=",", nameColA=0, nameColB=1,
-        nameTypeA = "uniprot", nameTypeB = "uniprot",
-        typeA = "protein", typeB = "protein", isDirected = False, sign = False,
-        inFile=os.path.join(ROOT, 'data', 'intact_filtered.csv'),
-        references=(2, ";"), ncbiTaxId = 9606,
-        extraEdgeAttrs={
+    'intact': input_formats.ReadSettings(name = "IntAct", 
+        separator = ",", nameColA = 0, nameColB = 1,
+        nameTypeA  =  "uniprot", nameTypeB  =  "uniprot",
+        typeA  =  "protein", typeB  =  "protein", isDirected  =  False, sign  =  False,
+        inFile = 'intact_interactions',
+        references = (2, ";"), ncbiTaxId  =  9606,
+        extraEdgeAttrs = {
             "intact_methods": (3, ';')
             },
-        extraNodeAttrsA={},
-        extraNodeAttrsB={}),
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {}),
     'biogrid': input_formats.ReadSettings(name="BioGRID", separator = None, nameColA = 0,
         nameColB = 1, nameTypeA = "genesymbol", nameTypeB = "genesymbol",
         typeA = "protein", typeB = "protein", isDirected = False, sign = False,
@@ -1472,17 +1521,17 @@ proteins prooved in experiments to not interact with
 each other.
 '''
 negative = {
-    'negatome': input_formats.ReadSettings(name="Negatome", 
-        separator="\t", nameColA=0, nameColB=1,
-        nameTypeA="uniprot", nameTypeB="uniprot",
-        typeA="protein", typeB="protein", isDirected=0, 
-        inFile=os.path.join(ROOT, 'data', 'negatome_manual.csv'),
-        extraEdgeAttrs={
+    'negatome': input_formats.ReadSettings(name = "Negatome", 
+        separator = "\t", nameColA = 0, nameColB = 1,
+        nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA = "protein", typeB = "protein", isDirected = 0, 
+        inFile = 'negatome_pairs',
+        extraEdgeAttrs = {
             "references": (2, ';'),
             "negatome_methods": (3, ';')
             },
-        extraNodeAttrsA={},
-        extraNodeAttrsB={})
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {})
 }
 
 biocarta = input_formats.ReadSettings(name="BioCarta", separator=";", nameColA=0, nameColB=2,
@@ -1535,15 +1584,15 @@ gdsc_lst = input_formats.ReadList(name="atg", separator=";", nameCol=0,
                 inFile=os.path.join(ROOT, 'data', 'autophagy.list'),
                 extraAttrs={'drugs': 2})
 
-cgc = input_formats.ReadList(name="CancerGeneCensus", separator="|", nameCol=2,
+cgc = input_formats.ReadList(name="CancerGeneCensus", separator=",", nameCol=2,
                 nameType="entrez", typ="protein",
-                inFile=os.path.join(ROOT, 'data', 'cancer_gene_census.csv'),
+                inFile = 'get_cgc',
                 extraAttrs={})
 
-intogene_cancer = input_formats.ReadList(name="Intogene", separator="\t", nameCol=1,
-               nameType="genesymbol", typ="protein",
-              inFile=os.path.join(ROOT, 'data', 'intogene_cancerdrivers.tsv'),
-              extraAttrs={})
+intogene_cancer = input_formats.ReadList(name = "IntOGen", separator = "\t", nameCol=1,
+                nameType = "genesymbol", typ = "protein",
+                inFile = 'intogen_cancerdrivers.tsv',
+                extraAttrs={})
 
 aidan_list = input_formats.ReadList(name="aidan_list", separator=";", nameCol=0,
                 nameType="uniprot", typ="protein",

@@ -1258,7 +1258,8 @@ descriptions = {
             ]
         },
         'pubmeds': [26673252],
-        'emails': [('Hieu T Nim', 'hieu.nim@monash.edu'), ('Sarah E Boyd', 'sarah.boyd@monash.edu')],
+        'emails': [('hieu.nim@monash.edu', 'Hieu T Nim'),
+            ('sarah.boyd@monash.edu', 'Sarah E Boyd')],
         'license': {
             'name': 'CC-Attribution-4.0',
             'url': 'http://creativecommons.org/licenses/by/4.0/'

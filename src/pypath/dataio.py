@@ -16,11 +16,11 @@
 #
 
 #
-# this module makes possible a
-# dynamic data integration, download 
+# this module makes possible
+# dynamic data integration, downloads
 # files from various resources, in standard
 # or non-standard text based and xml formats,
-# process them, sometimes parse html
+# processes them, sometimes parses html
 #
 
 import pycurl
@@ -41,6 +41,14 @@ import urllib
 import urllib2
 import httplib2
 import urlparse
+try:
+    import pysftp
+except:
+    sys.stdout.write('''\n\t:: Module `pyfstp` not available. 
+        Only downloading of a small number of resources 
+        relies on this module.
+        Please install by PIP if it is necessary for you.
+    ''')
 import codecs
 import gzip
 import zipfile
@@ -170,12 +178,15 @@ def get_jsessionid(headers):
 def get_xsessionid(headers):
     pass
 
-def curl(url, silent = True, post = None, req_headers = None, cache = True, 
-        debug = False, outf = None, compr = None, encoding = None, 
+def curl(url, silent = True, post = None, req_headers = None, cache = True,
+        debug = False, outf = None, compr = None, encoding = None,
         files_needed = None, timeout = 300, init_url = None, 
         init_fun = 'get_jsessionid', follow = True, large = False,
-        override_post = False, init_headers = False, 
-        write_cache = True, force_quote = False):
+        override_post = False, init_headers = False,
+        return_headers = False, binary_data = None,
+        write_cache = True, force_quote = False,
+        sftp_user = None, sftp_passwd = None, sftp_passwd_file = None,
+        sftp_port = 22, sftp_host = None, sftp_ask = None):
     url = url_fix(url, force = force_quote)
     if init_url is not None:
         init_url = url_fix(init_url, force = force_quote)
@@ -183,8 +194,11 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
     multifile = False
     domain = url.replace('https://', '').replace('http://','').\
         replace('ftp://','').split('/')[0]
+    if sftp_host is not None:
+        sftp_filename = url
+        url = '%s%s'%(sftp_host, sftp_filename)
     # first try to find file in cache:
-    if cache or write_cache:
+    if cache or write_cache or sftp_host is not None:
         # outf param is to give a unique name to data
         # downloaded previously by post requests
         outf = outf if outf is not None else url.split('/')[-1].split('?')[0]
@@ -218,61 +232,83 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
     # if not found in cache, download with curl:
     if not usecache:
         headers = []
-        if not init_url and large:
-            result = open(cachefile, 'wb')
+        if sftp_host is not None:
+            sftp_localpath = cachefile
+            sftp_success = sftp_download(sftp_filename, sftp_localpath,
+                host = sftp_host, user = sftp_user, passwd = sftp_passwd, 
+                passwd_file = sftp_passwd_file, ask = sftp_ask,
+                port = sftp_port)
+            if sftp_success:
+                result = open(cachefile, 'r')
+                status = 200
+            else:
+                result = None
+                status = 501
         else:
-            result = StringIO()
-        c = pycurl.Curl()
-        if init_url:
-            c.setopt(c.URL, init_url)
-        else:
-            try:
-                c.setopt(c.URL, url)
-            except:
-                return url
-        c.setopt(c.FOLLOWLOCATION, follow)
-        c.setopt(c.CONNECTTIMEOUT, 15)
-        c.setopt(c.TIMEOUT, timeout)
-        if override_post:
-            if req_headers is None: req_headers = []
-            req_headers.append('X-HTTP-Method-Override: GET')
-        if type(req_headers) is list:
-            c.setopt(c.HTTPHEADER, req_headers)
-        c.setopt(c.WRITEFUNCTION, result.write)
-        c.setopt(c.HEADERFUNCTION, headers.append)
-        # if debug is necessary:
-        if debug:
-            c.setopt(pycurl.VERBOSE, 1)
-            c.setopt(pycurl.DEBUGFUNCTION, print_debug_info)
-        if type(post) is dict:
-            postfields = urllib.urlencode(post)
-            c.setopt(c.POSTFIELDS, postfields)
-            c.setopt(c.POST, 1)
-        if not silent:
-            sys.stdout.write('\t:: Downloading data from %s. Waiting for reply...' % \
-                domain)
-            sys.stdout.flush()
-        for i in xrange(3):
-            try:
-                if debug:
-                    sys.stdout.write('\t:: pypath.dataio.curl() :: attempt #%u\n' % i)
-                    sys.stdout.flush()
-                c.perform()
-                if url.startswith('http'):
-                    status = c.getinfo(pycurl.HTTP_CODE)
-                    if status == 200:
-                        break
-                if url.startswith('ftp'):
-                    status = 500
-                    for h in headers:
-                        if h.startswith('226'):
-                            status = 200
-                            break
-            except pycurl.error as (errno, strerror):
-                status = 500
-                sys.stdout.write('\tPycURL error: %u, %s\n' % (errno, strerror))
+            if not init_url and large:
+                result = open(cachefile, 'wb')
+            else:
+                result = StringIO()
+            c = pycurl.Curl()
+            if init_url:
+                c.setopt(c.URL, init_url)
+            else:
+                try:
+                    c.setopt(c.URL, url)
+                except:
+                    return url
+            c.setopt(c.FOLLOWLOCATION, follow)
+            c.setopt(c.CONNECTTIMEOUT, 15)
+            c.setopt(c.TIMEOUT, timeout)
+            if override_post:
+                if req_headers is None: req_headers = []
+                req_headers.append('X-HTTP-Method-Override: GET')
+            if type(req_headers) is list:
+                c.setopt(c.HTTPHEADER, req_headers)
+            c.setopt(c.WRITEFUNCTION, result.write)
+            c.setopt(c.HEADERFUNCTION, headers.append)
+            # if debug is necessary:
+            if debug:
+                c.setopt(pycurl.VERBOSE, 1)
+                c.setopt(pycurl.DEBUGFUNCTION, print_debug_info)
+            if type(post) is dict:
+                postfields = urllib.urlencode(post)
+                c.setopt(c.POSTFIELDS, postfields)
+                c.setopt(c.POST, 1)
+            if binary_data:
+                c.setopt(c.POST, 1)
+                filesize = os.path.getsize(binary_data)
+                c.setopt(pycurl.POSTFIELDSIZE, filesize)
+                to_send = open(binary_data, 'rb')
+                c.setopt(pycurl.READFUNCTION, to_send.read)
+                # c.setopt(pycurl.POSTFIELDS, to_send.read())
+                c.setopt(pycurl.CUSTOMREQUEST, 'POST')
+                c.setopt(pycurl.POSTREDIR, 3)
+            if not silent:
+                sys.stdout.write('\t:: Downloading data from %s. Waiting for reply...' % \
+                    domain)
                 sys.stdout.flush()
-        c.close()
+            for i in xrange(3):
+                try:
+                    if debug:
+                        sys.stdout.write('\t:: pypath.dataio.curl() :: attempt #%u\n' % i)
+                        sys.stdout.flush()
+                    c.perform()
+                    if url.startswith('http'):
+                        status = c.getinfo(pycurl.HTTP_CODE)
+                        if status == 200:
+                            break
+                    if url.startswith('ftp'):
+                        status = 500
+                        for h in headers:
+                            if h.startswith('226'):
+                                status = 200
+                                break
+                except pycurl.error as (errno, strerror):
+                    status = 500
+                    sys.stdout.write('\tPycURL error: %u, %s\n' % (errno, strerror))
+                    sys.stdout.flush()
+            c.close()
     # sometimes authentication or cookies are needed to access the target url:
     if init_url and not usecache:
         if not silent:
@@ -297,6 +333,8 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
         if encoding is None:
             if not usecache:
                 headers = get_headers(headers)
+                if return_headers:
+                    return result, headers
                 encoding = None
                 if 'content-type' in headers:
                     content_type = headers['content-type'].lower()
@@ -315,7 +353,7 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
             sys.stdout.write('\b'*20 + ' '*20 + '\b'*20 + 'Success.\n')
             sys.stdout.flush()
         result.seek(0)
-        if url.endswith('tar.gz') or url.endswith('tgz') or compr == 'tgz':
+        if url[-6:].lower() == 'tar.gz' or url[-3:].lower() == 'tgz' or compr == 'tgz':
             multifile = True
             results = {}
             res = tarfile.open(fileobj = result, mode = 'r:gz')
@@ -332,7 +370,7 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
                         this_file.close()
             if not large:
                 res.close()
-        elif url.endswith('gz') or compr == 'gz':
+        elif url[-2:].lower() == 'gz' or compr == 'gz':
             res = gzip.GzipFile(fileobj=result, mode='rb')
             if not large:
                 res = res.read()
@@ -342,7 +380,7 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
                 except:
                     # better to proceed even if there is some trouble with encodings...
                     pass
-        elif url.endswith('zip') or compr == 'zip':
+        elif url[-3:].lower() == 'zip' or compr == 'zip':
             multifile = True
             results = {}
             res = zipfile.ZipFile(result,'r')
@@ -471,17 +509,18 @@ def read_table(cols, fileObject = None, data = None, sep = '\t', sep2 = None, re
     return res
 
 def all_uniprots(organism = 9606, swissprot = None):
-    result = []
     rev = '' if swissprot is None else ' AND reviewed:%s'%swissprot
     url = data_formats.urls['uniprot_basic']['url']
     post = {'query': 'organism:%s%s' % (str(organism), rev), 
         'format': 'tab', 'columns': 'id'}
     data = curl(url, post = post, silent = False)
-    data = data.split('\n')
-    del data[0]
-    for l in data:
-        result.append(l.strip())
-    return filter(lambda x: len(x) > 0, result)
+    return filter(lambda x:
+        len(x) > 0,
+        map(lambda l:
+            l.strip(),
+            data.split('\n')[1:]
+        )
+    )
 
 def swissprot_seq(organism = 9606, isoforms = False):
     taxids = {
@@ -814,21 +853,20 @@ def get_complexportal(species=9606,zipped=True):
         sys.stdout.flush()
     return complexes
 
+def get_havugimana():
+    url = data_formats.urls['havugimana']['url']
+    data = curl(url, silent = False, large = True)
+    fname = data.name
+    data.close()
+    table = read_xls(fname)
+    return table[3:]
+
 def read_complexes_havugimana():
     '''
     Supplement Table S3/1 from Havugimana 2012
     Cell. 150(5): 1068–1081.
     '''
-    complexes = []
-    # TODO: place file name into settings
-    infile = os.path.join(common.ROOT,'data','complexes_havugimana2012.csv')
-    with codecs.open(infile,encoding='utf-8',mode='r') as f:
-        hdr = f.readline()
-        del hdr
-        for l in f:
-            l = l.replace('\n','').replace('\r','').split('\t')
-            complexes.append(l[2].split(','))
-    return complexes
+    return map(lambda l: l[2].split(','), get_havugimana())
 
 def get_compleat():
     url = data_formats.urls['compleat']['url']
@@ -2852,11 +2890,23 @@ def get_cpdb(exclude = None):
                 result.append([participants[0], participants[1], l[0], l[1]])
     return result
 
-def get_uniprot_sec():
+def get_uniprot_sec(organism = 9606):
+    if organism is not None:
+        proteome = all_uniprots(organism = organism)
+        proteome = set(proteome)
+    sec_pri = []
     url = data_formats.urls['uniprot_sec']['url']
-    data = curl(url, silent = False)
-    data = [x.split() for x in data.split('\n')[30:]]
-    return data
+    data = curl(url, silent = False, large = True)
+    return filter(lambda line:
+        len(line) == 2 and (organism is None or line[1] in proteome),
+        map(lambda (i, line):
+            line.split(), 
+            filter(lambda (i, line):
+                i >= 30,
+                enumerate(data)
+            )
+        )
+    )
 
 def get_go(organism = 9606, swissprot = 'yes'):
     rev = '' if swissprot is None \
@@ -2928,7 +2978,7 @@ def netpath_names():
             result[num] = name
     return result
 
-def netpath():
+def netpath_interactions():
     result = []
     repwnum = re.compile(r'NetPath_([0-9]+)_')
     mi = '{net:sf:psidev:mi}'
@@ -3071,14 +3121,14 @@ def get_tfcensus(classes = ['a', 'b', 'other']):
     ensg = []
     hgnc = []
     reensg = re.compile(r'ENSG[0-9]{11}')
-    fname = os.path.join(common.ROOT, 'data', 'vaquerizas2009-s3.txt')
-    with open(fname, 'r') as f:
-        for l in f:
-            if len(l) > 0 and l.split('\t')[0] in classes:
-                ensg += reensg.findall(l)
-                h = l.split('\t')[5].strip()
-                if len(h) > 0:
-                    hgnc.append(h)
+    url = data_formats.urls['vaquerizas2009']['url']
+    f = curl(url, silent = False, large = True)
+    for l in f:
+        if len(l) > 0 and l.split('\t')[0] in classes:
+            ensg += reensg.findall(l)
+            h = l.split('\t')[5].strip()
+            if len(h) > 0:
+                hgnc.append(h)
     return {'ensg': ensg, 'hgnc': hgnc}
 
 def get_guide2pharma(organism = 'human', endogenous = True):
@@ -3355,16 +3405,20 @@ def get_hsn():
     data = [r.split(',') for r in data if len(r) > 0]
     return data
 
-def get_li2012(filename = None):
+def get_li2012():
     '''
     Reads supplementary data of Li 2012 from local file.
     Returns table (list of lists).
     '''
-    filename = filename if filename is not None \
-        else os.path.join(common.ROOT, 'data', data_formats.urls['li2012']['file'])
-    with open(filename, 'r') as f:
-        data = [r.split('\t') for r in f.read().split('\n')[1:] if len(r) > 0]
-    return data
+    url = data_formats.urls['li2012']['url']
+    xls = curl(url, silent = False, large = True)
+    xlsfile = xls.name
+    xls.close()
+    tbl = read_xls(xlsfile, sheet = 'File S1')
+    return map(lambda l:
+        l[:7],
+        tbl[2:]
+    )
 
 def li2012_interactions():
     '''
@@ -3673,19 +3727,17 @@ def load_signor_ptms(fname = 'signor_22052015.tab'):
     Loads and processes Signor PTMs from local file.
     Returns dict of dicts.
     '''
+    url = data_formats.urls['signor']['all_url']
+    data = curl(url, silent = False, large = True)
     reres = re.compile(r'([A-Za-z]{3})([0-9]+)')
     result = []
     aalet = dict((k.lower().capitalize(), v) for k, v in common.aaletters.iteritems())
-    fname = os.path.join(common.ROOT, 'data', fname)
-    if os.path.exists(fname):
-        with open(fname, 'r') as f:
-            data = [[i.strip() for i in l.split('\t')] for l in \
-                [ll.strip() for ll in f.read().split('\n')[1:] \
-                if len(ll.strip()) > 0]]
+    null = data.readline()
     for d in data:
+        d = d.strip().split('\t')
         resm = reres.match(d[10])
         if resm is not None:
-            aa = aalet[resm.groups()[0]]
+            aa = aalet[resm.groups()[0].capitalize()]
             aanum = int(resm.groups()[1])
             typ = d[9]
             inst = d[11].upper()
@@ -3805,18 +3857,24 @@ def signor_interactions():
     url = data_formats.urls['signor']['all_url']
     return curl(url, silent = False, large = True)
 
-def rolland_hi_ii_14(filename = None):
+def rolland_hi_ii_14():
     '''
     Loads the HI-II-14 unbiased interactome from the large scale screening
     of from Rolland 2014.
     Returns list of interactions.
     '''
-    filename = filename if filename is not None \
-        else data_formats.urls['hiii14']['file']
-    with open(filename, 'r') as f:
-        null = f.readline()
-        data = [l.strip().split('\t') for l in f]
-    return data
+    url = data_formats.urls['hiii14']['url']
+    xls = curl(url, silent = False, large = True)
+    xlsname = xls.name
+    xls.close()
+    tbl = read_xls(xlsname, sheet = '2G')
+    return map(lambda l:
+        map(lambda c:
+            c.split('.')[0],
+            l
+        ),
+        tbl
+    )[1:]
 
 def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
     '''
@@ -3829,7 +3887,7 @@ def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
             sheet = book.sheet_by_name(sheet)
         except XLRDError:
             sheet = book.sheet_by_index(0)
-        table = [[str(c.value) for c in sheet.row(i)] for i in xrange(sheet.nrows)]
+        table = [[unicode(c.value) for c in sheet.row(i)] for i in xrange(sheet.nrows)]
         if csv_file:
             with open(csv_file, 'w') as csv:
                 csv.write('\n'.join(['\t'.join(r) for r in table]))
@@ -5100,3 +5158,591 @@ def get_ccmap(organism = 9606):
                             e[6].strip(';').replace('PUBMED:', '')
                         ])
     return interactions
+
+def ask_passwd(ask, passwd_file, use_passwd_file = True):
+    print 'begin ask_passwd()'
+    if use_passwd_file and os.path.exists(passwd_file):
+        with open(passwd_file, 'r') as f:
+            user = f.readline().strip()
+            passwd = f.readline().strip()
+        return user, passwd
+    sys.stdout.write(ask)
+    sys.stdout.flush()
+    while True:
+        user = raw_input('\n\tUsername: ')
+        passwd = raw_input('\tPassword (leave empty if no password needed): ')
+        correct = raw_input('Are these details correct? '\
+            'User: `%s`, password: `%s` [Y/n]\n' % (user, passwd))
+        if correct.lower().strip() not in ['', 'y', 'yes']:
+            continue
+        save = raw_input('Do you wish to save your login details unencripted\n'\
+            'to the following file, so you don\'t need to enter them next '\
+            'time? File: %s\nSave login details [Y/n]' % passwd_file)
+        break
+    if save.lower().strip() in ['', 'y', 'yes']:
+        with open(passwd_file, 'w') as f:
+            f.write('%s\n%s' % (user, passwd))
+    return user, passwd
+
+def sftp_download(filename, localpath, host, user = None,
+    passwd = None, passwd_file = None, ask = None, port = 22):
+    print 'begin sftp_download()'
+    ask = 'Please enter your login details for %s\n' % host \
+        if ask is None else ask
+    passwd_file = os.path.join('cache', '%s.login'%host) \
+        if passwd_file is None else passwd_file
+    if user is None:
+        user, passwd = ask_passwd(ask, passwd_file)
+    while True:
+        passwd = None if passwd.strip() == '' else passwd
+        with pysftp.Connection(host = host, username = user,
+            password = passwd, port = port) as con:
+            try:
+                con.get(filename, localpath)
+                break
+            except IOError:
+                msg = 'Failed to get %s from %s\n'\
+                    'Try again (1) || Enter new login details (2) '\
+                    '|| Cancel (3) ?\n' % (filename, host)
+                whattodo = raw_input(msg)
+                if '1' in whattodo:
+                    continue
+                if '2' in whattodo:
+                    user, passwd = ask_passwd(ask, passwd_file, 
+                        use_passwd_file = False)
+                    continue
+                if '3' in whattodo:
+                    return False
+    return True
+
+def get_cgc(user = None, passwd = None):
+    host = data_formats.urls['cgc']['host']
+    fname = data_formats.urls['cgc']['file']
+    ask = 'To access Cancer Gene Census data you need to be '\
+        'registered at COSMIC\n'\
+        '(http://cancer.sanger.ac.uk/cosmic/).\n'\
+        'If you have already an account, please enter your login details.\n'\
+        'In case you don\'t, you can register now.\n'\
+        'Please see licensing terms to find out how you are allowed to\n'\
+        'use COSMIC data: http://cancer.sanger.ac.uk/cosmic/license\n'
+    data = curl(fname, sftp_host = host, sftp_ask = ask, sftp_user = user,
+        sftp_passwd = passwd, large = True)
+    for line in data:
+        yield line
+
+def get_matrixdb(organism = 9606):
+    url = data_formats.urls['matrixdb']['url']
+    f = curl(url, silent = False, large = True)
+    i = []
+    lnum = 0
+    for l in f:
+        if lnum == 0:
+            lnum += 1
+            continue
+        l = l.replace('\n','').replace('\r','')
+        l = l.split('\t')
+        specA = 0 if l[9] == '-' else int(l[9].split(':')[1].split('(')[0])
+        specB = 0 if l[10] == '-' else int(l[10].split(':')[1].split('(')[0])
+        if organism is None or (specA == organism and specB == organism):
+            pm = [p.replace('pubmed:','') for p in l[8].split('|') if p.startswith('pubmed:')]
+            met = [m.split('(')[1].replace(')','') for m in l[6].split('|') if '(' in m]
+            l = [l[0],l[1]]
+            interaction = ()
+            for ll in l:
+                ll = ll.split('|')
+                uniprot = ''
+                for lll in ll:
+                    nm = lll.split(':')
+                    if nm[0] == 'uniprotkb' and len(nm[1]) == 6:
+                        uniprot = nm[1]
+                interaction += (uniprot,)
+            interaction += ('|'.join(pm),'|'.join(met))
+            if len(interaction[0]) > 5 and len(interaction[1]) > 5:
+                i.append(list(interaction))
+        lnum += 1
+    f.close()
+    return i
+
+def get_innatedb(organism = 9606):
+    url = data_formats.urls['innatedb']['url']
+    f = curl(url, silent = False, large = True)
+    i = []
+    lnum = 0
+    for l in f:
+        if lnum == 0:
+            lnum += 1
+            continue
+        l = l.replace('\n','').replace('\r','')
+        l = l.split('\t')
+        specA = 0 if l[9] == '-' else int(l[9].split(':')[1].split('(')[0])
+        specB = 0 if l[10] == '-' else int(l[10].split(':')[1].split('(')[0])
+        if organism is None or (specA == organism and specB == organism):
+            pm = l[8].replace('pubmed:','')
+            l = [l[4],l[5]]
+            interaction = ()
+            for ll in l:
+                ll = ll.split('|')
+                hgnc = ''
+                uniprot = ''
+                for lll in ll:
+                    nm = lll.split(':')
+                    if nm[0] == 'hgnc':
+                        hgnc = nm[1].split('(')[0]
+                    if nm[0] == 'uniprotkb' and len(nm[1]) == 6:
+                        uniprot = nm[1]
+                interaction += (uniprot,hgnc)
+            interaction += (pm,)
+            i.append(interaction)
+        lnum += 1
+    f.close()
+    s = ''
+    for l in i:
+        line = ';'.join(list(l)) + "\n"
+        if len(line) > 12:
+            s += line
+    return i
+
+def get_dip(organism = 9606):
+    url = data_formats.urls['dip']['url']
+    f = curl(url, silent = False, large = True)
+    i = []
+    lnum = 0
+    for l in f:
+        if lnum == 0:
+            lnum += 1
+            continue
+        l = l.replace('\n','').replace('\r','')
+        l = l.split('\t')
+        specA = int(l[9].split(':')[1].split('(')[0])
+        specA = 0 if l[9] == '-' else int(l[9].split(':')[1].split('(')[0])
+        specB = 0 if l[10] == '-' else int(l[10].split(':')[1].split('(')[0])
+        intProp = l[11].split('|')
+        expEv = l[6].split('|')
+        if organism is None or (specA == organism and specB == organism):
+            pm = l[8].replace('pubmed:','').split('|')
+            pm = [p for p in pm if not p.startswith('DIP')]
+            l = [l[0],l[1]]
+            interaction = ()
+            for ll in l:
+                ll = ll.split('|')
+                uniprot = ''
+                for lll in ll:
+                    nm = lll.split(':')
+                    if nm[0] == 'uniprotkb' and len(nm[1]) == 6:
+                        uniprot = nm[1]
+                interaction += (uniprot,)
+            interaction += (';'.join(pm),)
+            intProp = [ip.split('(')[1].replace(')','') for ip in intProp]
+            expEv = [ee.split('(')[1].replace(')','') for ee in expEv]
+            interaction += (';'.join(intProp),)
+            interaction += (';'.join(expEv),)
+            print interaction
+            if len(interaction[0]) == 6 and len(interaction[1]) == 6:
+                i.append(interaction)
+        lnum += 1
+    f.close()
+    s = ''
+    for l in i:
+        line = '\t'.join(list(l)) + "\n"
+        if len(line) > 12:
+            s += line
+    return i
+
+def dip_login(user, passwd):
+    bdr = '---------------------------8945224391427558067125853467'
+    useragent = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:43.0) '\
+        'Gecko/20110304 Firefox/43.0'
+    loginfname = os.path.join('cache', 'dip.logindata.tmp')
+    url = data_formats.urls['dip']['login']
+    req_hdrs = [
+        'User-Agent: %s' % useragent
+    ]
+    res, hdr = curl(url, cache = False, write_cache = False, 
+        req_headers = req_hdrs, return_headers = True, debug = True)
+    cookie = hdr['set-cookie'].split(';')[0]
+    cookie2 = '%s%u' % (cookie[:-1], int(cookie[-1]) + 1)
+    othercookie = 'DIPID=11133%3A'
+    req_hdrs = ['Content-type: multipart/form-data; '\
+        'boundary=%s' % bdr,
+        'Cookie: %s' % cookie2,
+        'Referer: %s' % url,
+        'User-Agent: %s' % useragent,
+        'Connection: keep-alive',
+    ]
+    post = {
+        'lgn': '1',
+        'login': user,
+        'pass': passwd,
+        'Login': 'Login'
+    }
+    login = '--%s\r\n\r\nContent-Disposition: form-data; name="lgn"\r\n\r\n1'\
+        '\r\n--%s\r\n\r\nContent-Disposition: form-data; name="login"\r\n\r\n'\
+        '%s\r\n--%s\r\n\r\nContent-Disposition: form-data; name="pass"\r\n\r'\
+        '\n%s\r\n--%s\r\n\r\nContent-Disposition: form-data; name="Login"\r\n'\
+        '\r\nLogin\r\n%s--\r\n' % (bdr, bdr, user, bdr, passwd, bdr, bdr)
+    # login = login.replace('\r', '')
+    with codecs.open(loginfname, encoding = 'ISO-8859-1', mode = 'w') as f:
+        f.write(login)
+    res, hdr = curl(url, cache = False, write_cache = False, follow = True,
+        req_headers = req_hdrs, timeout = 10,
+        binary_data = loginfname, return_headers = True, debug = True)
+    return res, hdr
+
+def spike_interactions(high_confidence = True):
+    url = data_formats.urls['spike']['url']
+    spikexml = curl(url, silent = False, large = True, files_needed = ['LatestSpikeDB.xml'])
+
+    xml = ET.parse(spikexml['LatestSpikeDB.xml'])
+
+    xmlroot = xml.getroot()
+
+    # iterating genes
+
+    bblock = xmlroot.find('BuildingBlock')
+    rblock = xmlroot.find('RegulationBlock')
+    iblock = xmlroot.find('InteractionBlock')
+
+    genes = {}
+    #
+    #out = 'Entrez_A\tGeneSymbol_A\tEntrez_B\tGeneSymbol_B\tIsDirected\tPMID'\
+    #    '\tConfidence\tEffect\tAssayType\tDataSource\tDescription\tMechanism\n'
+    
+    result = []
+    
+    for gene in bblock.findall('Gene'):
+        sy = '' if 'name' not in gene.attrib else gene.attrib['name']
+        genes[gene.attrib['id']] = (gene.find('XRef').attrib['id'],sy)
+
+    for reg in rblock.findall('Regulation'):
+        ds = reg.attrib['dataSource']
+        itg = reg.attrib['integrity']
+        eff = reg.attrib['effect']
+        mec = reg.attrib['mechanism']
+        src = reg.find('Source').attrib['ref']
+        tgt = reg.find('PhysicalTarget').attrib['ref']
+        dcd = "1"
+        dsc = '' if reg.find('Description') is None else reg.find('Description').text.\
+            replace('\n', ' ')
+        asy = '' if 'biologicalAssay' not in reg.attrib else reg.attrib['biologicalAssay']
+        refs = reg.findall('Reference')
+        pmids = []
+        for r in refs:
+            pmids.append(r.attrib['pmid'])
+        if src in genes and tgt in genes:
+            if itg == '1' or not high_confidence:
+                result.append([
+                    genes[src][0],
+                    genes[src][1],
+                    genes[tgt][0],
+                    genes[tgt][1],
+                    dcd,
+                    ';'.join(pmids),
+                    itg,
+                    eff,
+                    asy,
+                    ds,
+                    dsc,
+                    mec
+                ])
+
+    for ict in iblock.findall('Interaction'):
+        ds = ict.attrib['dataSource']
+        itg = ict.attrib['integrity']
+        eff = '' if 'effect' not in ict.attrib else ict.attrib['effect']
+        src = ict.find('ProteinA').attrib['ref']
+        tgt = ict.find('ProteinB').attrib['ref']
+        dcd = "0"
+        mec = ""
+        dsc = '' if ict.find('Description') is None else ict.find('Description').text.\
+            replace('\n', ' ')
+        asy = '' if 'biologicalAssay' not in ict.attrib else ict.attrib['biologicalAssay']
+        refs = ict.findall('Reference')
+        pmids = []
+        for r in refs:
+            pmids.append(r.attrib['pmid'])
+        if src in genes and tgt in genes:
+            if itg == '1' or not high_confidence:
+                result.append([
+                    genes[src][0],
+                    genes[src][1],
+                    genes[tgt][0],
+                    genes[tgt][1],
+                    dcd,
+                    ';'.join(pmids),
+                    itg,
+                    eff,
+                    asy,
+                    ds,
+                    dsc,
+                    mec
+                ])
+
+    return result
+
+def mppi_interactions(organism = 9606):
+    url = data_formats.urls['mppi']['url']
+    xmlfile = curl(url, silent = False, large = True)
+    
+    prefix = '{net:sf:psidev:mi}'
+    
+    result = []
+
+    xml = ET.parse(xmlfile)
+
+    xmlroot = xml.getroot()
+
+    ilist = xmlroot[0][1]
+    
+    proteinInteractor = './/%sproteinInteractor' % prefix
+    _organism = './/%sorganism' % prefix
+    organism = '%u' % organism
+    ncbiTaxId = 'ncbiTaxId'
+    primaryRef = './/%sprimaryRef' % prefix
+    bibref = './/%sbibref' % prefix
+    interactionDetection = './/%sinteractionDetection' % prefix
+    shortLabel = './/%sshortLabel' % prefix
+    fullName = './/%sfullName' % prefix
+
+    #out = 'PMID\tMethods\tUniProt_A\tSwissP/TrEMBL_A\tGene_names_A\t'\
+        #'NCBI_tax_ID_A\tUniProt_B\tSwissP/TrEMBL_B\tGene_names_B\tNCBI_tax_ID_B'
+
+    for i in ilist:
+        _proteins = i.findall(proteinInteractor)
+        if len(_proteins) == 2 and (organism is None or \
+            (_proteins[0].findall(_organism)[0].attrib[ncbiTaxId] \
+                == organism and \
+            _proteins[1].findall(_organism)[0].attrib[ncbiTaxId] \
+                == organism)):
+            pmids = []
+            pms = i.findall(bibref)[0].findall(primaryRef)
+            for pm in pms:
+                if 'id' in pm.attrib:
+                    pmids.append(pm.attrib['id'])
+            meths = []
+            dets = i.findall(interactionDetection)[0]\
+                .findall(shortLabel)
+            for m in dets:
+                meths.append(m.text)
+            proteins = []
+            for prot in _proteins:
+                thisP = {}
+                if 'id' in prot.findall(primaryRef)[0].attrib:
+                    thisP['u'] = prot.findall(primaryRef)[0].attrib['id']
+                else:
+                    thisP['u'] = ''
+                thisP['nt'] = prot.findall(primaryRef)[0].attrib['db']
+                thisP['gn'] = prot.findall(fullName)[0].text
+                thisP['o'] = prot.findall(_organism)[0].attrib[ncbiTaxId]
+                proteins.append(thisP)
+            
+            result.append([
+                ';'.join(pmids), ';'.join(pmids), 
+                proteins[0]['u'], proteins[0]['nt'],
+                proteins[0]['gn'], proteins[0]['o'],
+                proteins[1]['u'], proteins[1]['nt'],
+                proteins[1]['gn'], proteins[1]['o']
+            ])
+    return result
+
+def depod_interactions(organism = 9606):
+    url = data_formats.urls['depod']['urls'][1]
+    data = curl(url, silent = False, large = True)
+    result = []
+    i = []
+    lnum = 0
+    for l in data:
+        if lnum == 0:
+            lnum += 1
+            continue
+        l = l.replace('\n','').replace('\r','')
+        l = l.split('\t')
+        specA = int(l[9].split(':')[1].split('(')[0])
+        specB = int(l[10].split(':')[1].split('(')[0])
+        if organism is None or (specA == organism and specB == organism):
+            pm = l[8].replace('pubmed:','')
+            sc = l[14].replace('curator score:','')
+            ty = l[11].split('(')[1].replace(')','')
+            l = [l[0],l[1]]
+            interaction = ()
+            for ll in l:
+                ll = ll.split('|')
+                uniprot = ''
+                for lll in ll:
+                    nm = lll.split(':')
+                    u = nm[1].strip()
+                    if nm[0] == 'uniprotkb' and len(u) == 6:
+                        uniprot = u
+                interaction += (uniprot,)
+            interaction += (pm,sc,ty)
+            if len(interaction[0]) > 1 and len(interaction[1]) > 1:
+                i.append(interaction)
+        lnum += 1
+    return i
+
+def negatome_pairs():
+    url = data_formats.urls['negatome']['manual']
+    f = curl(url, silent = False, large = True)
+    result = []
+    for l in f:
+        l = l.strip().split('\t')
+        if len(l) == 4:
+            l[3] = ';'.join(
+                map(lambda x:
+                    x.split('-')[1].strip(),
+                    filter(lambda x:
+                        '-' in x,
+                        l[3].replace('–', '-').split(',')
+                    )
+                )
+            )
+        l[0] = l[0].split('-')[0]
+        l[1] = l[1].split('-')[0]
+        result.append(l)
+    return result
+
+def trim_macrophage_gname(gname):
+    gname = re.sub('\[.*\]','',re.sub('\(.*\)','',gname))
+    gname = re.sub(r'[A-Z]{0,1}[a-z]{1,}','',gname)
+    gname = gname.split(':')
+    for i,g in enumerate(gname):
+        gname[i] = gname[i].strip()
+    return gname
+
+def macrophage_interactions():
+    url = data_formats.urls['macrophage']['url']
+    data = curl(url, silent = False, large = True)
+    fname = data.name
+    data.close()
+    tbl = read_xls(fname)[5:]
+    types = ["Protein","Complex"]
+    lst = []
+    lnum = 0
+    for l in tbl:
+        null = ['','-']
+        if len(l) > 11:
+            if l[3].strip() in types and l[7].strip() in types:
+                alist = trim_macrophage_gname(l[1])
+                blist = trim_macrophage_gname(l[5])
+                if len(alist) > 0 and len(blist) > 0:
+                    for i in alist:
+                        for j in blist:
+                            if i != j not in null and i not in null:
+                                pm = l[11].replace(',','').strip().split('.')[0]
+                                if not pm.startswith('INF'):
+                                    d = "0" if l[9].strip() == "Binding" else "1"
+                                    lst.append([i,j,l[9].strip(),d,l[10].strip(),pm])
+        lnum += 1
+    return lst
+
+def intact_interactions(miscore = 0.6, organism = 9606, complex_expansion = False):
+    result = {}
+    url = data_formats.urls['intact']['mitab']
+    if type(organism) is int:
+        organism = '%u' % organism
+    data = curl(url, silent = False, large = True, files_needed = ['intact.txt'])
+    f = data.values()[0]
+    lnum = 0
+    for l in f:
+        if lnum == 0:
+            lnum += 1
+            continue
+        l = l.replace('\n', '').replace('\r', '').strip()
+        l = l.split('\t')
+        tax1 = '0' if l[9] == '-' \
+            else l[9].split('|')[0].split(':')[1].split('(')[0]
+        tax2 = '0' if l[10] == '-' \
+            else l[10].split('|')[0].split(':')[1].split('(')[0]
+        if (organism is None or (tax1 == organism and tax2 == organism)) and \
+            (complex_expansion or 'expansion' not in l[15]):
+            sc = '0'
+            au = '0'
+            for s in l[14].split('|'):
+                if s.startswith('intact-miscore'):
+                    sc = s.split(':')[1]
+                if s.startswith('author'):
+                    au = len(s.split(':')[1])
+            if float(sc) >= miscore:
+                nt1 = 'unknown' if l[0] == '-' else l[0].split(':')[0]
+                nt2 = 'unknown' if l[1] == '-' else l[1].split(':')[0]
+                if nt1 == 'uniprotkb' and nt2 == 'uniprotkb':
+                    u1 = 'unknown' if l[0] == '-' \
+                        else '-'.join(l[0].split(':')[1:]).replace('"','')
+                    u2 = 'unknown' if l[1] == '-' \
+                        else '-'.join(l[1].split(':')[1:]).replace('"','')
+                    uniprots = tuple(sorted([u1, u2]))
+                    if uniprots not in result:
+                        result[uniprots] = [set([]), set([]), set([])]
+                    null = map(result[uniprots][0].add,
+                        map(lambda ref:
+                            ref[1],
+                            filter(lambda ref:
+                                ref[0] == 'pubmed',
+                                map(lambda pm:
+                                    pm.split(':'),
+                                    l[8].split('|')
+                                )
+                            )
+                        )
+                    )
+                    null = map(result[uniprots][1].add,
+                        map(lambda m:
+                            m.split('(')[1].replace(')','').replace('"',''),
+                            l[6].split('|')
+                        )
+                    )
+                    if l[15] != '-':
+                        result[uniprots][2].add(
+                            l[15].split('(')[1].replace(')','')
+                        )
+    result = map(lambda (ups, a):
+        [ups[0], ups[1], ';'.join(list(a[0])), ';'.join(list(a[1])), ';'.join(list(a[2]))],
+        result.iteritems()
+    )
+    return result
+
+def deathdomain_interactions():
+    result = []
+    families = ['CARD', 'DD', 'DED', 'PYD']
+    
+    for fam in families:
+        
+        url = data_formats.urls['death']['url'] % fam
+        html = curl(url, silent = False)
+        
+        soup = bs4.BeautifulSoup(html, 'lxml')
+        
+        d = {}
+        for tab in soup.find_all('table', {'class': 'tab'}):
+            for r in tab.find_all('tr'):
+                cs = r.find_all('td')
+                if len(cs) > 0:
+                    i = {
+                        'family': cs[0].find('a').text,
+                        'A': cs[1].find('a').text,
+                        'B': cs[3].find('a').text,
+                        'met': cs[4].text if cs[4].text is not None else '',
+                        'ref': cs[-1].find('a').text
+                    }
+                    if i['A'] not in d:
+                        d[i['A']] = {}
+                    if i['B'] not in d[i['A']]:
+                        d[i['A']][i['B']] = {}
+                    d[i['A']][i['B']]['family'] = i['family']
+                    if 'met' not in d[i['A']][i['B']]:
+                        d[i['A']][i['B']]['met'] = []
+                    d[i['A']][i['B']]['met'].append(i['met'])
+                    if 'ref' not in d[i['A']][i['B']]:
+                        d[i['A']][i['B']]['ref'] = []
+                    d[i['A']][i['B']]['ref'].append(i['ref'])
+        
+        for p1,v1 in d.iteritems():
+            for p2,v2 in v1.iteritems():
+                if p1 != p2:
+                    result.append([
+                        p1,
+                        p2,
+                        ';'.join(common.uniqList(v2['met'])),
+                        ';'.join(common.uniqList(v2['ref']))
+                    ])
+    
+    return result
