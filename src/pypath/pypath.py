@@ -2487,7 +2487,12 @@ class PyPath(object):
             self.mapper.load_uniprot_mappings(list(ac_types - table_loaded & \
                 set(self.mapper.name_types.keys())))
             for k, v in lst.iteritems():
-                self.load_resource(v, clean = False, cache_files = cache_files)
+                try:
+                    self.load_resource(v, clean = False, cache_files = cache_files)
+                except:
+                    sys.stdout.write('\t:: Could not load %s, unexpected error occurred:\n'%k)
+                    sys.stdout.write('\t\tError: %s\n\n'%sys.exc_info()[0])
+                    sys.stdout.flush()
         sys.stdout.write('\n')
         self.clean_graph()
         self.update_sources()
