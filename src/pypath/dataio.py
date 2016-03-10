@@ -3405,16 +3405,20 @@ def get_hsn():
     data = [r.split(',') for r in data if len(r) > 0]
     return data
 
-def get_li2012(filename = None):
+def get_li2012():
     '''
     Reads supplementary data of Li 2012 from local file.
     Returns table (list of lists).
     '''
-    filename = filename if filename is not None \
-        else os.path.join(common.ROOT, 'data', data_formats.urls['li2012']['file'])
-    with open(filename, 'r') as f:
-        data = [r.split('\t') for r in f.read().split('\n')[1:] if len(r) > 0]
-    return data
+    url = data_formats.urls['li2012']['url']
+    xls = curl(url, silent = False, large = True)
+    xlsfile = xls.name
+    xls.close()
+    tbl = read_xls(xlsfile, sheet = 'File S1')
+    return map(lambda l:
+        l[:7],
+        tbl[2:]
+    )
 
 def li2012_interactions():
     '''
@@ -3853,18 +3857,24 @@ def signor_interactions():
     url = data_formats.urls['signor']['all_url']
     return curl(url, silent = False, large = True)
 
-def rolland_hi_ii_14(filename = None):
+def rolland_hi_ii_14():
     '''
     Loads the HI-II-14 unbiased interactome from the large scale screening
     of from Rolland 2014.
     Returns list of interactions.
     '''
-    filename = filename if filename is not None \
-        else data_formats.urls['hiii14']['file']
-    with open(filename, 'r') as f:
-        null = f.readline()
-        data = [l.strip().split('\t') for l in f]
-    return data
+    url = data_formats.urls['hiii14']['url']
+    xls = curl(url, silent = False, large = True)
+    xlsname = xls.name
+    xls.close()
+    tbl = read_xls(xlsname, sheet = '2G')
+    return map(lambda l:
+        map(lambda c:
+            c.split('.')[0],
+            l
+        ),
+        tbl
+    )[1:]
 
 def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
     '''

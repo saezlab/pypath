@@ -470,8 +470,8 @@ urls = {
     },
     'li2012': {
         'label': 'Human Phosphotyrosine Signaling Network',
-        'url': 'http://genome.cshlp.org/content/22/7/1222/suppl/DC1',
-        'file': 'li2012.csv'
+        'url': 'http://genome.cshlp.org/content/suppl/2011/12/27/'\
+            'gr.128819.111.DC1/Supplementary_files_S1-S5.xls'
     },
     'trip': {
         'label': 'The TRP channel database',
@@ -490,7 +490,7 @@ urls = {
     },
     'hiii14': {
         'label': 'Rolland et al 2014, Human Interactome II',
-        'file': os.path.join(ROOT, 'data', 'rolland2014_s2g.tab')
+        'url': 'http://www.cell.com/cms/attachment/2021150198/2041343422/mmc3.xlsx'
     },
     'kinome': {
         'label': 'List of human kinases',
