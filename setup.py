@@ -158,7 +158,7 @@ with open('HISTORY.rst') as f:
 deps = ['python-igraph', 'pandas', 'bioservices', 'beautifulsoup4', 'pymysql', 
     'pyopenssl', 'ndg-httpsclient', 'chembl_webresource_client', 'pyasn1',
     'twisted', 'fisher', 'statsmodels', 'pygraphviz', 'fabric', 'pycurl',
-    'lxml']
+    'lxml', 'pysftp']
 
 #mysql = 'pymysql'
 #if which('mysql') and which('mysql_config'):
