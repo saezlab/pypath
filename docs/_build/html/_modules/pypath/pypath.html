@@ -1161,71 +1161,75 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">edgeListMapped</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span> <span class="o">=</span> <span class="n">edgeListMapped</span></div>
     
-    <span class="k">def</span> <span class="nf">read_list_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">read_list_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">!=</span> <span class="s2">&quot;ReadList&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,(</span><span class="s2">&quot;&quot;&quot;No proper input file definition!</span><span class="se">\n\&#39;</span><span class="s2">settings</span><span class="se">\&#39;</span><span class="s2"></span>
 <span class="s2">                should be a </span><span class="se">\&#39;</span><span class="s2">readList</span><span class="se">\&#39;</span><span class="s2"> instance</span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span><span class="p">),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dataio</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">):</span>
+            <span class="n">_input</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">dataio</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">)</span>
+            <span class="n">infile</span> <span class="o">=</span> <span class="n">_input</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: No such file! :(</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">originalNameType</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">nameType</span>
-            <span class="n">defaultNameType</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_name_type</span><span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">typ</span><span class="p">]</span>
-            <span class="n">mapTbl</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">originalNameType</span><span class="p">,</span><span class="s2">&quot;_&quot;</span><span class="p">,</span><span class="n">defaultNameType</span><span class="p">])</span>
+        <span class="n">originalNameType</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">nameType</span>
+        <span class="n">defaultNameType</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_name_type</span><span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">typ</span><span class="p">]</span>
+        <span class="n">mapTbl</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">originalNameType</span><span class="p">,</span><span class="s2">&quot;_&quot;</span><span class="p">,</span><span class="n">defaultNameType</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">_input</span><span class="p">)</span> <span class="ow">in</span> <span class="n">charTypes</span><span class="p">:</span>
             <span class="n">infile</span> <span class="o">=</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> opened...&quot;</span> <span class="o">%</span> <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">)</span>
-            <span class="c1"># finding the largest referred column number, </span>
-            <span class="c1"># to avoid references out of index</span>
-            <span class="n">maxCol</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
-                <span class="p">[</span>   <span class="n">settings</span><span class="o">.</span><span class="n">nameCol</span><span class="p">,</span> 
-                    <span class="bp">self</span><span class="o">.</span><span class="n">get_max</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">extraAttrs</span><span class="p">)</span> <span class="p">])</span>
-            <span class="c1"># iterating lines from input file</span>
-            <span class="n">lnum</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="n">readError</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">itemList</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">infile</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="p">(</span><span class="n">lnum</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">settings</span><span class="o">.</span><span class="n">header</span><span class="p">):</span>
-                    <span class="c1"># empty lines</span>
-                    <span class="c1"># or header row</span>
-                    <span class="n">lnum</span> <span class="o">+=</span> <span class="mi">1</span>
-                    <span class="k">continue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> opened...&quot;</span> <span class="o">%</span> <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">)</span>
+        <span class="c1"># finding the largest referred column number, </span>
+        <span class="c1"># to avoid references out of index</span>
+        <span class="n">maxCol</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="p">[</span>   <span class="n">settings</span><span class="o">.</span><span class="n">nameCol</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_max</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">extraAttrs</span><span class="p">)</span> <span class="p">])</span>
+        <span class="c1"># iterating lines from input file</span>
+        <span class="n">lnum</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">readError</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">itemList</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">infile</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="p">(</span><span class="n">lnum</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">settings</span><span class="o">.</span><span class="n">header</span><span class="p">):</span>
+                <span class="c1"># empty lines</span>
+                <span class="c1"># or header row</span>
+                <span class="n">lnum</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="ow">in</span> <span class="n">charTypes</span><span class="p">:</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">separator</span><span class="p">)</span>
-                <span class="c1"># in case line has less fields than needed</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">maxCol</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,(</span>
-                        <span class="s2">&quot;Line #</span><span class="si">%u</span><span class="s2"> has less than </span><span class="si">%u</span><span class="s2"> fields! :(</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> \
-                            <span class="p">(</span><span class="n">lnum</span><span class="p">,</span> <span class="n">maxCol</span><span class="p">)),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
+            <span class="c1"># in case line has less fields than needed</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">maxCol</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,(</span>
+                    <span class="s2">&quot;Line #</span><span class="si">%u</span><span class="s2"> has less than </span><span class="si">%u</span><span class="s2"> fields! :(</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> \
+                        <span class="p">(</span><span class="n">lnum</span><span class="p">,</span> <span class="n">maxCol</span><span class="p">)),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
+                <span class="n">readError</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># reading names and attributes</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">newItem</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">line</span><span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">nameCol</span><span class="p">],</span> 
+                        <span class="s2">&quot;nameType&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">nameType</span><span class="p">,</span> 
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">typ</span><span class="p">,</span> 
+                        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,(</span><span class="s2">&quot;&quot;&quot;Wrong name column indexes (</span><span class="si">%u</span><span class="s2"> and </span><span class="si">%u</span><span class="s2">), </span>
+<span class="s2">                        or wrong separator (</span><span class="si">%s</span><span class="s2">)? Line #</span><span class="si">%u</span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span> 
+                        <span class="o">%</span> <span class="p">(</span> <span class="n">settings</span><span class="o">.</span><span class="n">nameCol</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">separator</span><span class="p">,</span> <span class="n">lnum</span><span class="p">)),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
                     <span class="n">readError</span> <span class="o">=</span> <span class="mi">1</span>
                     <span class="k">break</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># reading names and attributes</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="n">newItem</span> <span class="o">=</span> <span class="p">{</span>
-                            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">line</span><span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">nameCol</span><span class="p">],</span> 
-                            <span class="s2">&quot;nameType&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">nameType</span><span class="p">,</span> 
-                            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">typ</span><span class="p">,</span> 
-                            <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
-                    <span class="k">except</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,(</span><span class="s2">&quot;&quot;&quot;Wrong name column indexes (</span><span class="si">%u</span><span class="s2"> and </span><span class="si">%u</span><span class="s2">), </span>
-<span class="s2">                            or wrong separator (</span><span class="si">%s</span><span class="s2">)? Line #</span><span class="si">%u</span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span> 
-                            <span class="o">%</span> <span class="p">(</span> <span class="n">settings</span><span class="o">.</span><span class="n">nameCol</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">separator</span><span class="p">,</span> <span class="n">lnum</span><span class="p">)),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
-                        <span class="n">readError</span> <span class="o">=</span> <span class="mi">1</span>
-                        <span class="k">break</span>
-                    <span class="c1"># getting additional attributes</span>
-                    <span class="n">attrsItem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_attrs</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">extraAttrs</span><span class="p">,</span> <span class="n">lnum</span><span class="p">)</span>
-                    <span class="c1"># merging dictionaries</span>
-                    <span class="n">newItem</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="n">newItem</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(),</span> <span class="n">attrsItem</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()</span> <span class="p">))</span>
-                <span class="k">if</span> <span class="n">readError</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="k">break</span>
-                <span class="n">itemList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newItem</span><span class="p">)</span>
-                <span class="n">lnum</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">infile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="n">itemListMapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_list</span><span class="p">(</span><span class="n">itemList</span><span class="p">,</span><span class="n">singleList</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-            <span class="n">itemListMapped</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">itemListMapped</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%u</span><span class="s2"> lines have been read from </span><span class="si">%s</span><span class="s2">, </span><span class="si">%u</span><span class="s2"> &#39;</span><span class="se">\</span>
-<span class="s2">                items after mapping&quot;</span> <span class="o">%</span>
-                <span class="p">(</span><span class="n">lnum</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">itemListMapped</span><span class="p">)))</span>
+                <span class="c1"># getting additional attributes</span>
+                <span class="n">attrsItem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_attrs</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">extraAttrs</span><span class="p">,</span> <span class="n">lnum</span><span class="p">)</span>
+                <span class="c1"># merging dictionaries</span>
+                <span class="n">newItem</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="n">newItem</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(),</span> <span class="n">attrsItem</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()</span> <span class="p">))</span>
+            <span class="k">if</span> <span class="n">readError</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">itemList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newItem</span><span class="p">)</span>
+            <span class="n">lnum</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">infile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">itemListMapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_list</span><span class="p">(</span><span class="n">itemList</span><span class="p">,</span><span class="n">singleList</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">itemListMapped</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">itemListMapped</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%u</span><span class="s2"> lines have been read from </span><span class="si">%s</span><span class="s2">, </span><span class="si">%u</span><span class="s2"> &#39;</span><span class="se">\</span>
+<span class="s2">            items after mapping&quot;</span> <span class="o">%</span>
+            <span class="p">(</span><span class="n">lnum</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">itemListMapped</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">itemListMapped</span>
     
 <div class="viewcode-block" id="PyPath.map_list"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.map_list">[docs]</a>    <span class="k">def</span> <span class="nf">map_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">lst</span><span class="p">,</span><span class="n">singleList</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
@@ -2610,7 +2614,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">load_uniprot_mappings</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">ac_types</span> <span class="o">-</span> <span class="n">table_loaded</span> <span class="o">&amp;</span> \
                 <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">name_types</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">lst</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">load_resource</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">clean</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">cache_files</span> <span class="o">=</span> <span class="n">cache_files</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">load_resource</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">clean</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">cache_files</span> <span class="o">=</span> <span class="n">cache_files</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">:: Could not load </span><span class="si">%s</span><span class="s1">, unexpected error &#39;</span>\
+                        <span class="s1">&#39;occurred, see </span><span class="si">%s</span><span class="s1"> for error.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">logfile</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s1">&#39;Error at loading </span><span class="si">%s</span><span class="s1">: </span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="s1">, </span><span class="se">\t</span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> \
+                        <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">2</span><span class="p">],</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">]))</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clean_graph</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_sources</span><span class="p">()</span>
@@ -2637,7 +2648,7 @@
         <span class="k">for</span> <span class="n">rl</span> <span class="ow">in</span> <span class="n">reflists</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">load_reflist</span><span class="p">(</span><span class="n">rl</span><span class="p">)</span>
     
-    <span class="k">def</span> <span class="nf">load_reflist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">reflist</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">load_reflist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reflist</span><span class="p">):</span>
         <span class="n">reflist</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">reflist</span><span class="o">.</span><span class="n">nameType</span><span class="p">,</span><span class="n">reflist</span><span class="o">.</span><span class="n">typ</span><span class="p">,</span><span class="n">reflist</span><span class="o">.</span><span class="n">tax</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reflists</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">reflist</span>
@@ -5286,7 +5297,7 @@
         <span class="k">return</span> <span class="n">enr</span>
     
 <div class="viewcode-block" id="PyPath.find_all_paths"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath.find_all_paths">[docs]</a>    <span class="k">def</span> <span class="nf">find_all_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;OUT&#39;</span><span class="p">,</span> 
-            <span class="n">maxlen</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+            <span class="n">maxlen</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Finds all paths up to length `maxlen` between groups of</span>
 <span class="sd">        vertices. This function is needed only becaues igraph`s</span>

@@ -5170,7 +5170,7 @@ class PyPath(object):
         return enr
     
     def find_all_paths(self, start, end, mode = 'OUT', 
-            maxlen = None, graph = None):
+            maxlen = 2, graph = None):
         '''
         Finds all paths up to length `maxlen` between groups of
         vertices. This function is needed only becaues igraph`s
