@@ -36,7 +36,7 @@ Main features
 .. _igraph: http://igraph.org/
 
 .. toctree:
-   :maxdepth: 3
+   :maxdepth: 5
 
 Indices and tables
 ==================
@@ -175,10 +175,10 @@ PTMs are stored in objects. This example shows how to access the type of modific
 
 .. code-block:: python
 
-    pa.graph.es[70]['ptm'][0].ptm.typ
-    pa.graph.es[70]['ptm'][0].ptm.protein
-    pa.graph.es[70]['ptm'][0].ptm.residue.name
-    pa.graph.es[70]['ptm'][0].ptm.residue.number
+   pa.graph.es[70]['ptm'][0].ptm.typ
+   pa.graph.es[70]['ptm'][0].ptm.protein
+   pa.graph.es[70]['ptm'][0].ptm.residue.name
+   pa.graph.es[70]['ptm'][0].ptm.residue.number
 
 Example 2: using the Mapper class for translating IDs
 +++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -187,12 +187,95 @@ The mapping submodule of pypath can be used for ID conversion. Here is a basic e
 
 .. code-block:: python
 
-    from pypath import mapping
-    m = mapping.Mapper(9606)
-    result = {}
-    gene_list = ['EGFR', 'AKT1', 'GABARAPL1', 'TP53']
-    for g in gene_list:
-        result[g] = m.map_name(g, 'genesymbol', 'uniprot')
+   from pypath import mapping
+   m = mapping.Mapper(9606)
+   result = {}
+   gene_list = ['EGFR', 'AKT1', 'GABARAPL1', 'TP53']
+     for g in gene_list:
+       result[g] = m.map_name(g, 'genesymbol', 'uniprot')
+
+Example 3: pathways annotations
++++++++++++++++++++++++++++++++
+
+Pathways are functional annotations of molecules in molecular networks. Currently pathway annotations from 4 sources are available in pypath: from KEGG, NetPath, SignaLink and Signor. NetPath and SignaLink will be loaded automatically with the network data, the other two need to be loaded separately:
+
+.. code-block:: python
+
+   pa.kegg_pathways()
+   pa.signor_pathways()
+
+SignaLink assigns pathway annotations to proteins, while the other resources assignes this to interactions (at least the data read this way). In addition, proteins classified as autophagy proteins in the Autophagy Regulatory Network will appear as a SignaLink pathway named `Autophagy`. To have uniform annotations for both proteins and interactions, use this method to do the necessary conversion:
+
+.. code-block:: python
+
+   pa.pathway_attributes()
+
+After this, you can access the pathway annotations in `kegg_pathways`, `netpath_pathways`, `signalink_pathways` and `signor_pathways` edge and vertex attributes:
+
+.. code-block:: python
+
+   print pa.graph.vs[333]['signor_pathways']
+
+You can simply do all the steps above by calling one method:
+
+.. code-block:: python
+
+   pa.load_all_pathways()
+
+Example 4: other functional annotations
++++++++++++++++++++++++++++++++++++++++
+
+Pathways as defined above usually follow the well known ways of information flow as it is presented in textbooks and reviews. But they are incomplete and biased. More complete and less biased functional annotations are Gene Ontology and GeneSets from the Molecular Signature Database. Methods are available in pypath, so you can load these annotations into network attributes.
+
+.. code-block:: python
+
+   # load only the biological process aspect:
+   pa.load_go(['P'])
+   # get the GO BP terms for AKT1:
+   pa.gs('AKT1')['go']['P']
+   # get the GO annotation:
+   pa.go_dict()
+   # list names instead of IDs:
+   # (9606 is an NCBI taxonomy ID)
+   map(pa.go[9606].get_name, pa.gs('AKT1')['go']['P'])
+   # calculate enrichment:
+   # this is a simple Fisher test
+   # with multiple p-values correction
+   # for example, get the enriched terms for the Notch pathway:
+   pa.load_all_pathways()
+   notch = pa.pathway_members('Notch', 'signalink')
+   pa.go_dict()
+   enr = pa.go_enrichment(list(notch.up()))
+   print enr
+   enr.toplist()
+   enr.top_terms()
+   enr.top_ids()
+   enr.enrichments[enr.top_ids()[0]].pval_adj
+   enr.enrichments[enr.top_ids()[0]].significant()
+
+
+Using GeneSets from MSigDB:
+
+.. code-block:: python
+
+   from pypath import gsea
+   # login with an MSigDB user:
+   g = gsea.GSEA('user@email.org', mapper = pa.mapper)
+   g.show_collections()
+   g.load_collection('CGP')
+   # genesets are loaded into g.sets
+   enr = gsea.GSEABinaryEnrichmentSet(basic_set = pa.graph.vs['name'], gsea = g)
+   # or ``basic_set`` could be ``dataio.all_uniprots()``
+   enr.new_set(list(notch.up()))
+   # if you see nothing, it means none of the loaded sets
+   # are enriched in your list
+   print enr
+   enr.top_genesets()
+   enr.top_geneset_ids()
+   # to do the same with methods of the PyPath() object:
+   pa.init_gsea('user@email.org')
+   pa.add_genesets(['CP:KEGG'])
+   enr = pa.geneset_enrichment(list(notch.up()), alpha = 0.2)
 
 Reference
 =========

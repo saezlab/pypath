@@ -450,8 +450,8 @@ urls = {
     },
     'msigdb': {
         'label': 'Molecular Signatures Database', 
-        'login1': 'http://www.broadinstitute.org/gsea/login.jsp',
-        'login2': 'http://www.broadinstitute.org/gsea/j_spring_security_check',
+        'login1': 'http://software.broadinstitute.org/gsea/login.jsp',
+        'login2': 'http://software.broadinstitute.org/gsea/j_spring_security_check',
         'url': 'http://www.broadinstitute.org/gsea/msigdb/download_file.jsp?'\
             'filePath=/resources/msigdb/5.0/%s.all.v5.0.%s.gmt',
         'coll': 'http://www.broadinstitute.org/gsea/msigdb/collections.jsp',
@@ -1525,7 +1525,7 @@ negative = {
         separator = "\t", nameColA = 0, nameColB = 1,
         nameTypeA = "uniprot", nameTypeB = "uniprot",
         typeA = "protein", typeB = "protein", isDirected = 0, 
-        inFile = 'negatome_pairs',
+        inFile = 'negatome_pairs', ncbiTaxId = 9606,
         extraEdgeAttrs = {
             "references": (2, ';'),
             "negatome_methods": (3, ';')

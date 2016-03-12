@@ -56,6 +56,7 @@ import mysql
 import dataio
 import intera
 import go
+import gsea
 import drawing as bdrawing
 import proteomicsdb
 from ig_drawing import *
@@ -724,6 +725,12 @@ class PyPath(object):
             self.dlabDct = dict(zip(dgraph.vs['label'], xrange(dgraph.vcount())))
             self.dnodNam = dict(zip(xrange(dgraph.vcount()), dgraph.vs['name']))
             self.dnodLab = dict(zip(xrange(dgraph.vcount()), dgraph.vs['label']))
+    
+    def vsgs(self):
+        return _NamedVertexSeq(self.graph.vs, self.nodNam, self.nodLab).gs()
+    
+    def vsup(self):
+        return _NamedVertexSeq(self.graph.vs, self.nodNam, self.nodLab).gs()
     
     def update_vindex(self):
         '''
@@ -5159,18 +5166,46 @@ class PyPath(object):
         self.go[organism] = go.GOAnnotation(organism)
     
     def go_enrichment(self, proteins = None, aspect = 'P', alpha = 0.05, 
-        correction_method = 'hommel'):
-        all_proteins = set(self.graph.vs['name'])
+        correction_method = 'hommel', all_proteins = None):
+        if not hasattr(self, 'go') or self.ncbi_tax_id not in self.go:
+            self.go_dict()
+        all_proteins = set(all_proteins) \
+            if type(all_proteins) is list else all_proteins \
+            if type(all_proteins) is set else set(self.graph.vs['name'])
         annotation = dict([(up, g) for up, g in \
             getattr(self.go[self.ncbi_tax_id], aspect.lower()).iteritems() \
             if up in all_proteins])
         enr = go.GOEnrichmentSet(aspect = aspect, organism = self.ncbi_tax_id, 
-            basic_set = annotation, alpha = alpha, correction_method = correction_method)
+            basic_set = annotation, alpha = alpha, 
+            correction_method = correction_method)
         if proteins is not None: enr.new_set(set_names = proteins)
         return enr
     
+    def init_gsea(self, user):
+        self.gsea = gsea.GSEA(user = user, mapper = self.mapper)
+        sys.stdout.write('\n :: GSEA object initialized, use '\
+            'load_genesets() to load some of the collections.\n')
+        sys.stdout.write('      e.g. load_genesets([\'H\'])\n\n')
+        sys.stdout.flush()
+        self.gsea.show_collections()
+    
+    def add_genesets(self, genesets):
+        for gsetid in genesets:
+            if gsetid in self.gsea.collections:
+                self.gsea.load_collection(gsetid)
+    
+    def geneset_enrichment(self, proteins, all_proteins = None,
+        geneset_ids = None, alpha = 0.05, correction_method = 'hommel'):
+        all_proteins = self.graph.vs['name'] \
+            if all_proteins is None else all_proteins
+        enr = gsea.GSEABinaryEnrichmentSet(basic_set = all_proteins,
+            gsea = self.gsea, geneset_ids = geneset_ids,
+            alpha = alpha, correction_method = correction_method)
+        enr.new_set(proteins)
+        return enr
+    
     def find_all_paths(self, start, end, mode = 'OUT', 
-            maxlen = 2, graph = None):
+        maxlen = 2, graph = None):
         '''
         Finds all paths up to length `maxlen` between groups of
         vertices. This function is needed only becaues igraph`s
@@ -5438,6 +5473,25 @@ class PyPath(object):
             fun = getattr(dataio, attrname)
             proteins_pws, interactions_pws = fun(mapper = self.mapper)
         return proteins_pws, interactions_pws
+    
+    def pathway_members(self, pathway, source):
+        attr = '%s_pathways'%source
+        if attr in self.graph.vs.attribute_names():
+            return _NamedVertexSeq(
+                filter(lambda v:
+                    pathway in v[attr],
+                    self.graph.vs
+                ),
+                self.nodNam,
+                self.nodLab
+            )
+        else:
+            return _NamedVertexSeq([], self.nodNam, self.nodLab)
+    
+    def load_all_pathways(self, graph = None):
+        self.kegg_pathways(graph = graph)
+        self.signor_pathways(graph = graph)
+        self.pathway_attributes(graph = graph)
     
     def load_pathways(self, source, graph = None):
         attrname = '%s_pathways'%source
