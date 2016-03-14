@@ -258,7 +258,7 @@ descriptions = {
             The new database was constructed by integrating data from IUPHAR-DB and the published GRAC compendium. An overview of the curation process is depicted as an organizational flow chart in Figure 2. New information was added to the existing relational database behind IUPHAR-DB and new webpages were created to display the integrated information. For each new target, information on human, mouse and rat genes and proteins, including gene symbol, full name, location, gene ID, UniProt and Ensembl IDs was manually curated from HGNC, the Mouse Genome Database (MGD) at Mouse Genome Informatics (MGI), the Rat Genome Database (RGD), UniProt and Ensembl, respectively. In addition, ‘Other names’, target-specific fields such as ‘Principal transduction’, text from the ‘Overview’ and ‘Comments’ sections and reference citations (downloaded from PubMed; http://www.ncbi.nlm.nih.gov/pubmed) were captured from GRAC and uploaded into the database against a unique Object ID.
             '''
         ],
-        'emails': [('enquiries@guidetopharmacology.org', 'Guide to Pharmacology Team'), ('tony.harmar@ed.ac.uk', 'Tony Harmar')],
+        'emails': [('enquiries@guidetopharmacology.org', 'Guide to Pharmacology Team'), ('cdsouthan@hotmail.com', 'Cristopher Southan')],
         'type': 'literature curated',
         'subtype': 'pathway',
         'omnipath': True,
@@ -1917,8 +1917,9 @@ descriptions = {
         }
     },
     'DIP': {
-        'year': 2014,
-        'releases': [2000, 2001, 2002, 2004, 2011, 2014],
+        'year': 2015,
+        'releases': [2000, 2001, 2002, 2003, 2004, 2005, 2006,
+            2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015],
         'size': {
             'nodes': None,
             'edges': None

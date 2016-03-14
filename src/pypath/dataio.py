@@ -3415,9 +3415,12 @@ def get_li2012():
     xlsfile = xls.name
     xls.close()
     tbl = read_xls(xlsfile, sheet = 'File S1')
-    return map(lambda l:
-        l[:7],
-        tbl[2:]
+    return filter(lambda l:
+        len(l[-1]) > 0,
+        map(lambda l:
+            l[:7],
+            tbl[2:]
+        )
     )
 
 def li2012_interactions():
