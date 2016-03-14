@@ -1042,21 +1042,28 @@ class PyPath(object):
         self.raw_data = edgeListMapped
     
     def read_list_file(self, settings, **kwargs):
+        _input = None
         if settings.__class__.__name__ != "ReadList":
             self.ownlog.msg(2,("""No proper input file definition!\n\'settings\'
                 should be a \'readList\' instance\n"""), 'ERROR')
             return None
         if hasattr(dataio, settings.inFile):
-            _input = getattr(dataio, settings.inFile)
-            infile = _input(**kwargs)
+            toCall = getattr(dataio, settings.inFile)
+            _input = toCall(**kwargs)
         elif not os.path.isfile(settings.inFile):
             self.ownlog.msg(2,"%s: No such file! :(\n" % (settings.inFile), 'ERROR')
             return None
+        else:
+            _input = settings.inFile
         originalNameType = settings.nameType
         defaultNameType = self.default_name_type[settings.typ]
         mapTbl = ''.join([originalNameType,"_",defaultNameType])
-        if type(_input) in charTypes:
-            infile = codecs.open(settings.inFile, encoding='utf-8', mode='r')
+        if type(_input) in charTypes and os.path.isfile(_input):
+            _input = codecs.open(_input, encoding='utf-8', mode='r')
+        if _input is None:
+            self.ownlog.msg(2,("""Could not find '\
+                'file or dataio function.\n"""), 'ERROR')
+            return None
         self.ownlog.msg(2, "%s opened..." % settings.inFile)
         # finding the largest referred column number, 
         # to avoid references out of index
@@ -1067,7 +1074,7 @@ class PyPath(object):
         lnum = 1
         readError = 0
         itemList = []
-        for line in infile:
+        for line in _input:
             if len(line) == 0 or (lnum == 1 and settings.header):
                 # empty lines
                 # or header row
@@ -1104,7 +1111,8 @@ class PyPath(object):
                 break
             itemList.append(newItem)
             lnum += 1
-        infile.close()
+        if type(_input) is file:
+            _input.close()
         itemListMapped = self.map_list(itemList,singleList=True)
         itemListMapped = list(set(itemListMapped))
         self.ownlog.msg(2, "%u lines have been read from %s, %u '\

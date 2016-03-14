@@ -579,7 +579,8 @@ urls = {
     'dip': {
         'label': 'DIP PSI-MI tab',
         'login': 'http://dip.doe-mbi.ucla.edu/dip/Login.cgi',
-        'url': ''
+        'url': 'http://dip.mbi.ucla.edu/dip/file?ds=current&fn=Hsapi20160114CR&ff=txt',
+        'ik': 'http://dip.doe-mbi.ucla.edu/dip/DIPview.cgi?IK=%u'
     },
     'vaquerizas2009': {
         'label': 'A census of human transcription factors: function, expression and evolution; Supplementary Table S3',
@@ -1103,15 +1104,17 @@ interaction = {
             "mppi_evidences": (1, ";")},
         extraNodeAttrsA = {},
         extraNodeAttrsB = {}),
-    'dip': input_formats.ReadSettings(name="DIP", separator="\t", 
+    'dip': input_formats.ReadSettings(name="DIP",
         nameColA=0, nameColB=1,
         nameTypeA="uniprot", nameTypeB="uniprot",
         typeA="protein", typeB="protein",isDirected=False,sign=False,
-        inFile=os.path.join(ROOT, 'data', 'dip_human_core_processed.csv'),
+        inFile = 'get_dip',
         references=(2, ";"),ncbiTaxId=9606,
         extraEdgeAttrs={
             "dip_methods": (4, ";"),
-            "dip_type": (3, ";")},
+            "dip_type": (3, ";"),
+            'dip_id': 5
+        },
         extraNodeAttrsA={},
         extraNodeAttrsB={}),
     'netpath': input_formats.ReadSettings(name = "NetPath", separator = None,
