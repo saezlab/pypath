@@ -557,11 +557,11 @@
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">v</span>
     
-    <span class="k">def</span> <span class="nf">gs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">genesymbol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs</span><span class="p">:</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodLab</span><span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
     
-    <span class="k">def</span> <span class="nf">up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">uniprot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs</span><span class="p">:</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodNam</span><span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
     
@@ -569,8 +569,8 @@
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">v</span><span class="o">.</span><span class="n">index</span>
     
-    <span class="n">genesymbol</span> <span class="o">=</span> <span class="n">gs</span>
-    <span class="n">uniprot</span> <span class="o">=</span> <span class="n">up</span>
+    <span class="n">gs</span> <span class="o">=</span> <span class="n">genesymbol</span>
+    <span class="n">up</span> <span class="o">=</span> <span class="n">uniprot</span>
     <span class="n">vs</span> <span class="o">=</span> <span class="n">__iter__</span>
 
 <div class="viewcode-block" id="PyPath"><a class="viewcode-back" href="../../index.html#pypath.pypath.PyPath">[docs]</a><span class="k">class</span> <span class="nc">PyPath</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>

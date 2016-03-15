@@ -284,30 +284,30 @@ Cache makes pypath run much faster. A typical session downloads hundreds MBs of 
 
 .. code-block:: python
 
-    # here we use the old cache:
-    pa.load_signor_ptms()
-    
-    with pypath.dataio.cache_off():
-        # here we don not read from the cache
-        # but download again and write the
-        # new files into the cache:
-        pa.load_signor_ptms()
-    
-    # here already the new files are used from the cache:
-    pa.load_signor_ptms()
-    
-    # similarly, if the cache is turned off by default,
-    # we can temporarily enable:
-    
-    # this way we permanently disable the cache:
-    pypath.dataio.CACHE = False
-    
-    # and here temporarily enable:
-    with pypath.dataio.cache_on():
-        human_proteome = pypath.dataio.all_uniprots()
-    
-    # the cache is permanently enabled if this variable is ``None`` or ``True``:
-    pypath.dataio.CACHE = None
+   # here we use the old cache:
+   pa.load_signor_ptms()
+   
+   with pypath.dataio.cache_off():
+       # here we don not read from the cache
+       # but download again and write the
+       # new files into the cache:
+       pa.load_signor_ptms()
+   
+   # here already the new files are used from the cache:
+   pa.load_signor_ptms()
+   
+   # similarly, if the cache is turned off by default,
+   # we can temporarily enable:
+   
+   # this way we permanently disable the cache:
+   pypath.dataio.CACHE = False
+   
+   # and here temporarily enable:
+   with pypath.dataio.cache_on():
+       human_proteome = pypath.dataio.all_uniprots()
+   
+   # the cache is permanently enabled if this variable is ``None`` or ``True``:
+   pypath.dataio.CACHE = None
 
 I plan to introduce more methods to give a more flexible control over the files in cache.
 
@@ -338,6 +338,56 @@ The network object with its attributes can be saved into a pickle dump, and load
     pa.save_network('cache/other_network.pickle')
     pa = pypath.PyPath()
     pa.init_network(pfile = 'cache/other_network.pickle')
+
+How to set up a ChEMBL MySQL instance?
+======================================
+
+Currently ``pypath.chembl`` gives some powerful and flexible methods to query compound-target relationships from ChEMBL.
+This is implemented using MySQL, and so far I could not find a way to provide the same features with using the webservice.
+Using the webservice would be much more convenient for most of the users, so it is only matter of time and I will implement a webservice based ChEMBL module.
+Until then, here is a short guide to load ChEMBL on your own MySQL server. To do this, you will need 25GB of free disk space. ChEMBL is huge. 1GB is the downloaded compressed database dump, 8GB is the same uncompressed, and 16GB is the database loaded into MySQL. You can delete the 2 former, so at the end you will sacrifice only 16GB to have your own ChEMBL.
+
+.. code-block:: bash
+
+    # login to the MySQL shell as administrator:
+    
+    mysql --user=root --password=foobar [--host=217.0.0.1 --port=3306]
+
+.. code-block:: mysql
+
+    /* create a database and user for ChEMBL: */
+    CREATE DATABASE chembl;
+    CREATE USER chembl;
+    GRANT ALL ON chembl.* TO `chembl`@`%` IDENTIFIED BY 'a-new-password';
+    FLUSH PRIVILEGES;
+    
+    /* optionally create a user which can only read, e.g. if you want
+    to share this database with the whole institute: */
+    CREATE USER chembl_ro;
+    GRANT SELECT ON chembl.* TO `chembl_ro`@`%` IDENTIFIED BY 'a-new-password';
+    FLUSH PRIVILEGES;
+    
+    EXIT;
+
+.. code-block:: bash
+
+    # let's download the ChEMBL MySQL dump (warning, it is 1GB!):
+    curl -O ftp://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/chembl_21_mysql.tar.gz
+    
+    # uncompressing. start this only if you have 8GB free space:
+    tar -xzvf chembl_21_mysql.tar.gz
+    
+    # loading into mysql. this will take up 16GB more space:
+    mysql --user=chembl --password='password-of-chembl' [--host=217.0.0.1 --port=3306] < \
+        chembl_21_mysql/chembl_21.mysqldump.sql
+
+At this point you can query ChEMBL on your own laptop/server. Congratulations! Enjoy!
+You might find it necessary to increase the cache and buffer sizes in ``/etc/mysql/my.cnf``.
+Loading the mysqldump takes time, if it fails try it again, but before check if you have enough free space and see the error log of MySQL.
+
+Alternatively, you can download and run the `myChEMBL virtual machine`_, and connect to its pre-installed MySQL server via the VirtualBox virtual network.
+
+.. _`myChEMBL virtual machine`: http://chembl.blogspot.co.uk/2014/06/mychembl-launchpadlaunched.html
 
 Reference
 =========
