@@ -599,7 +599,8 @@ class PyPath(object):
         self.ownlog.msg(1, "Reinitialized", 'INFO')
     
     def init_network(self, lst = omnipath, exclude = [], 
-        cache_files = {}, pfile = False, save = False):
+        cache_files = {}, pfile = False, save = False,
+        reread = False, redownload = False):
         '''
         This is a lazy way to start the module, load data 
         and build the high confidence, literature curated
@@ -623,7 +624,8 @@ class PyPath(object):
                     self.update_sources()
                     return None
         self.load_reflists()
-        self.load_resources(lst = lst, exclude = exclude)
+        self.load_resources(lst = lst, exclude = exclude,
+            reread = reread, readownload_files)
         if save:
             sys.stdout.write('\t:: Saving igraph object to file `%s`...' % pfile)
             sys.stdout.flush()
@@ -821,7 +823,8 @@ class PyPath(object):
             thisDir = set(line[dirCol].split(dirSep))
             return len(thisDir & dirVal) > 0
     
-    def read_data_file(self, settings, keep_raw = False, cache_files = {}, cache = True):
+    def read_data_file(self, settings, keep_raw = False, cache_files = {},
+        reread = False, redownload = False):
         '''
         Interaction data with node and edge attributes can be read 
         from simple text based files. This function works not only
@@ -845,7 +848,7 @@ class PyPath(object):
         _name = settings.name.lower()
         int_cache = os.path.join('cache', '%s.interactions.pickle' % _name)
         edges_cache = os.path.join('cache', '%s.edges.pickle' % _name)
-        if cache:
+        if not reread and not redownload:
             infile, edgeListMapped = self.lookup_cache(_name, 
                 cache_files, int_cache, edges_cache)
         if len(edgeListMapped) == 0:
@@ -878,27 +881,35 @@ class PyPath(object):
                 # reading from remote or local file, or executing import function:
                 if settings.inFile.startswith('http') or \
                     settings.inFile.startswith('ftp'):
-                    infile = dataio.curl(settings.inFile, silent = False)
-                    infile = [x for x in infile.replace('\r', '').split('\n') if len(x) > 0]
-                    self.ownlog.msg(2, "Retrieving data from%s ..." % settings.inFile)
+                    curl_use_cache = not redownload
+                    infile = dataio.curl(settings.inFile, silent = False,
+                        cache = curl_use_cache)
+                    infile = [x for x in infile.replace('\r', '').split('\n') \
+                        if len(x) > 0]
+                    self.ownlog.msg(2, "Retrieving data from%s ..." % \
+                        settings.inFile)
                 # elif hasattr(dataio, settings.inFile):
                 elif inputFunc is not None:
-                    infile = inputFunc(**settings.inputArgs)
                     self.ownlog.msg(2, "Retrieving data by dataio.%s() ..." % \
                         inputFunc.__name__)
+                    _store_cache = dataio.CACHE
+                    dataio.CACHE = redownload
+                    infile = inputFunc(**settings.inputArgs)
+                    dataio.CACHE = _store_cache
                 elif os.path.isfile(settings.inFile):
-                    infile = codecs.open(settings.inFile, encoding='utf-8', mode='r')
+                    infile = codecs.open(settings.inFile, 
+                        encoding='utf-8', mode='r')
                     self.ownlog.msg(2, "%s opened..." % settings.inFile)
                 else:
-                    self.ownlog.msg(2,"%s: No such file or dataio function! :(\n" % \
-                    (settings.inFile), 'ERROR')
+                    self.ownlog.msg(2,"%s: No such file or "\
+                        "dataio function! :(\n" % (settings.inFile), 'ERROR')
                     return None
             # finding the largest referred column number, 
             # to avoid references out of range
             isDir = settings.isDirected
             sign = settings.sign
-            refCol = settings.refs[0] if type(settings.refs) is tuple else settings.refs \
-                if type(settings.refs) is int else None
+            refCol = settings.refs[0] if type(settings.refs) is tuple \
+                else settings.refs if type(settings.refs) is int else None
             refSep = settings.refs[1] if type(settings.refs) is tuple else ';'
             sigCol = None if type(sign) is not tuple else sign[0]
             dirCol = None
@@ -1034,7 +1045,7 @@ class PyPath(object):
             "%u lines filtered by taxon filters." % \
             (lnum-1, settings.inFile, len(edgeListMapped), 
                 lFiltered, rFiltered, tFiltered))
-            if cache:
+            if reread or redownload:
                 pickle.dump(edgeListMapped, open(edges_cache, 'wb'))
                 self.ownlog.msg(2, 'Mapped edge list saved to %s'%edges_cache)
         if keep_raw:
@@ -2471,7 +2482,8 @@ class PyPath(object):
         outf.write(out[:-1])
         outf.close()
     
-    def load_resources(self, lst = omnipath, exclude = [], cache_files = {}):
+    def load_resources(self, lst = omnipath, exclude = [], cache_files = {},
+        reread = False, redownload = False):
         '''
         Loads multiple resources, and cleans up after. 
         Looks up ID types, and loads all ID conversion 
@@ -2503,7 +2515,10 @@ class PyPath(object):
                 set(self.mapper.name_types.keys())))
             for k, v in lst.iteritems():
                 try:
-                    self.load_resource(v, clean = False, cache_files = cache_files)
+                    self.load_resource(v, clean = False,
+                        cache_files = cache_files,
+                        reread = reread,
+                        redownload = redownload)
                 except:
                     sys.stdout.write('\t:: Could not load %s, unexpected error '\
                         'occurred, see %s for error.\n'%(k, self.ownlog.logfile))
@@ -2523,9 +2538,11 @@ class PyPath(object):
     def load_mappings(self):
         self.mapper.load_mappings(maps=data_formats.mapList)
     
-    def load_resource(self, settings, clean = True, cache_files = {}):
+    def load_resource(self, settings, clean = True, cache_files = {},
+        reread = False, redownload = False):
         sys.stdout.write(' » '+settings.name+'\n')
-        self.read_data_file(settings, cache_files = cache_files)
+        self.read_data_file(settings, cache_files = cache_files,
+            reread = reread, redownload = redownload)
         self.attach_network()
         if clean:
             self.clean_graph()

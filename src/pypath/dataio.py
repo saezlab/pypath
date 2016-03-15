@@ -83,6 +83,7 @@ import seq as se
 
 CURSOR_UP_ONE = '\x1b[1A'
 ERASE_LINE = '\x1b[2K'
+CACHE = None
 
 show_cache = False
 
@@ -187,6 +188,9 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
         write_cache = True, force_quote = False,
         sftp_user = None, sftp_passwd = None, sftp_passwd_file = None,
         sftp_port = 22, sftp_host = None, sftp_ask = None):
+    # CACHE overrides cache param if it is not None
+    if type(CACHE) is bool:
+        cache = CACHE
     url = url_fix(url, force = force_quote)
     if init_url is not None:
         init_url = url_fix(init_url, force = force_quote)

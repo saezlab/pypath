@@ -114,7 +114,7 @@ The graph is undirected by default, and 'Direction' objects can be found in <edg
 .. code-block:: python
 
     print pa.graph.es[111]['dirs']
-    pa.graph.es[111].is_directed()
+    pa.graph.es[111]['dirs'].is_directed()
     pa.graph.es[111]['dirs'].is_inhibition()
     pa.graph.es[111]['dirs'].which_dirs()
     pa.graph.es[111]['dirs'].get_dir(pa.graph.es[111]['dirs'].which_dirs()[0])
