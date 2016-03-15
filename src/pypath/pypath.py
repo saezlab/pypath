@@ -56,6 +56,7 @@ import mysql
 import dataio
 import intera
 import go
+import gsea
 import drawing as bdrawing
 import proteomicsdb
 from ig_drawing import *
@@ -429,11 +430,11 @@ class _NamedVertexSeq(object):
         for v in self._vs:
             yield v
     
-    def gs(self):
+    def genesymbol(self):
         for v in self._vs:
             yield self._nodLab[v.index]
     
-    def up(self):
+    def uniprot(self):
         for v in self._vs:
             yield self._nodNam[v.index]
     
@@ -441,8 +442,8 @@ class _NamedVertexSeq(object):
         for v in self._vs:
             yield v.index
     
-    genesymbol = gs
-    uniprot = up
+    gs = genesymbol
+    up = uniprot
     vs = __iter__
 
 class PyPath(object):
@@ -598,7 +599,8 @@ class PyPath(object):
         self.ownlog.msg(1, "Reinitialized", 'INFO')
     
     def init_network(self, lst = omnipath, exclude = [], 
-        cache_files = {}, pfile = False, save = False):
+        cache_files = {}, pfile = False, save = False,
+        reread = False, redownload = False):
         '''
         This is a lazy way to start the module, load data 
         and build the high confidence, literature curated
@@ -622,7 +624,8 @@ class PyPath(object):
                     self.update_sources()
                     return None
         self.load_reflists()
-        self.load_resources(lst = lst, exclude = exclude)
+        self.load_resources(lst = lst, exclude = exclude,
+            reread = reread, redownload = redownload)
         if save:
             sys.stdout.write('\t:: Saving igraph object to file `%s`...' % pfile)
             sys.stdout.flush()
@@ -725,6 +728,12 @@ class PyPath(object):
             self.dnodNam = dict(zip(xrange(dgraph.vcount()), dgraph.vs['name']))
             self.dnodLab = dict(zip(xrange(dgraph.vcount()), dgraph.vs['label']))
     
+    def vsgs(self):
+        return _NamedVertexSeq(self.graph.vs, self.nodNam, self.nodLab).gs()
+    
+    def vsup(self):
+        return _NamedVertexSeq(self.graph.vs, self.nodNam, self.nodLab).gs()
+    
     def update_vindex(self):
         '''
         This is deprecated.
@@ -814,7 +823,8 @@ class PyPath(object):
             thisDir = set(line[dirCol].split(dirSep))
             return len(thisDir & dirVal) > 0
     
-    def read_data_file(self, settings, keep_raw = False, cache_files = {}, cache = True):
+    def read_data_file(self, settings, keep_raw = False, cache_files = {},
+        reread = False, redownload = False):
         '''
         Interaction data with node and edge attributes can be read 
         from simple text based files. This function works not only
@@ -838,7 +848,7 @@ class PyPath(object):
         _name = settings.name.lower()
         int_cache = os.path.join('cache', '%s.interactions.pickle' % _name)
         edges_cache = os.path.join('cache', '%s.edges.pickle' % _name)
-        if cache:
+        if not reread and not redownload:
             infile, edgeListMapped = self.lookup_cache(_name, 
                 cache_files, int_cache, edges_cache)
         if len(edgeListMapped) == 0:
@@ -871,27 +881,35 @@ class PyPath(object):
                 # reading from remote or local file, or executing import function:
                 if settings.inFile.startswith('http') or \
                     settings.inFile.startswith('ftp'):
-                    infile = dataio.curl(settings.inFile, silent = False)
-                    infile = [x for x in infile.replace('\r', '').split('\n') if len(x) > 0]
-                    self.ownlog.msg(2, "Retrieving data from%s ..." % settings.inFile)
+                    curl_use_cache = not redownload
+                    infile = dataio.curl(settings.inFile, silent = False,
+                        cache = curl_use_cache)
+                    infile = [x for x in infile.replace('\r', '').split('\n') \
+                        if len(x) > 0]
+                    self.ownlog.msg(2, "Retrieving data from%s ..." % \
+                        settings.inFile)
                 # elif hasattr(dataio, settings.inFile):
                 elif inputFunc is not None:
-                    infile = inputFunc(**settings.inputArgs)
                     self.ownlog.msg(2, "Retrieving data by dataio.%s() ..." % \
                         inputFunc.__name__)
+                    _store_cache = dataio.CACHE
+                    dataio.CACHE = redownload
+                    infile = inputFunc(**settings.inputArgs)
+                    dataio.CACHE = _store_cache
                 elif os.path.isfile(settings.inFile):
-                    infile = codecs.open(settings.inFile, encoding='utf-8', mode='r')
+                    infile = codecs.open(settings.inFile, 
+                        encoding='utf-8', mode='r')
                     self.ownlog.msg(2, "%s opened..." % settings.inFile)
                 else:
-                    self.ownlog.msg(2,"%s: No such file or dataio function! :(\n" % \
-                    (settings.inFile), 'ERROR')
+                    self.ownlog.msg(2,"%s: No such file or "\
+                        "dataio function! :(\n" % (settings.inFile), 'ERROR')
                     return None
             # finding the largest referred column number, 
             # to avoid references out of range
             isDir = settings.isDirected
             sign = settings.sign
-            refCol = settings.refs[0] if type(settings.refs) is tuple else settings.refs \
-                if type(settings.refs) is int else None
+            refCol = settings.refs[0] if type(settings.refs) is tuple \
+                else settings.refs if type(settings.refs) is int else None
             refSep = settings.refs[1] if type(settings.refs) is tuple else ';'
             sigCol = None if type(sign) is not tuple else sign[0]
             dirCol = None
@@ -1027,7 +1045,7 @@ class PyPath(object):
             "%u lines filtered by taxon filters." % \
             (lnum-1, settings.inFile, len(edgeListMapped), 
                 lFiltered, rFiltered, tFiltered))
-            if cache:
+            if reread or redownload:
                 pickle.dump(edgeListMapped, open(edges_cache, 'wb'))
                 self.ownlog.msg(2, 'Mapped edge list saved to %s'%edges_cache)
         if keep_raw:
@@ -1035,21 +1053,28 @@ class PyPath(object):
         self.raw_data = edgeListMapped
     
     def read_list_file(self, settings, **kwargs):
+        _input = None
         if settings.__class__.__name__ != "ReadList":
             self.ownlog.msg(2,("""No proper input file definition!\n\'settings\'
                 should be a \'readList\' instance\n"""), 'ERROR')
             return None
         if hasattr(dataio, settings.inFile):
-            _input = getattr(dataio, settings.inFile)
-            infile = _input(**kwargs)
+            toCall = getattr(dataio, settings.inFile)
+            _input = toCall(**kwargs)
         elif not os.path.isfile(settings.inFile):
             self.ownlog.msg(2,"%s: No such file! :(\n" % (settings.inFile), 'ERROR')
             return None
+        else:
+            _input = settings.inFile
         originalNameType = settings.nameType
         defaultNameType = self.default_name_type[settings.typ]
         mapTbl = ''.join([originalNameType,"_",defaultNameType])
-        if type(_input) in charTypes:
-            infile = codecs.open(settings.inFile, encoding='utf-8', mode='r')
+        if type(_input) in charTypes and os.path.isfile(_input):
+            _input = codecs.open(_input, encoding='utf-8', mode='r')
+        if _input is None:
+            self.ownlog.msg(2,("""Could not find '\
+                'file or dataio function.\n"""), 'ERROR')
+            return None
         self.ownlog.msg(2, "%s opened..." % settings.inFile)
         # finding the largest referred column number, 
         # to avoid references out of index
@@ -1060,7 +1085,7 @@ class PyPath(object):
         lnum = 1
         readError = 0
         itemList = []
-        for line in infile:
+        for line in _input:
             if len(line) == 0 or (lnum == 1 and settings.header):
                 # empty lines
                 # or header row
@@ -1097,7 +1122,8 @@ class PyPath(object):
                 break
             itemList.append(newItem)
             lnum += 1
-        infile.close()
+        if type(_input) is file:
+            _input.close()
         itemListMapped = self.map_list(itemList,singleList=True)
         itemListMapped = list(set(itemListMapped))
         self.ownlog.msg(2, "%u lines have been read from %s, %u '\
@@ -2456,7 +2482,8 @@ class PyPath(object):
         outf.write(out[:-1])
         outf.close()
     
-    def load_resources(self, lst = omnipath, exclude = [], cache_files = {}):
+    def load_resources(self, lst = omnipath, exclude = [], cache_files = {},
+        reread = False, redownload = False):
         '''
         Loads multiple resources, and cleans up after. 
         Looks up ID types, and loads all ID conversion 
@@ -2488,7 +2515,10 @@ class PyPath(object):
                 set(self.mapper.name_types.keys())))
             for k, v in lst.iteritems():
                 try:
-                    self.load_resource(v, clean = False, cache_files = cache_files)
+                    self.load_resource(v, clean = False,
+                        cache_files = cache_files,
+                        reread = reread,
+                        redownload = redownload)
                 except:
                     sys.stdout.write('\t:: Could not load %s, unexpected error '\
                         'occurred, see %s for error.\n'%(k, self.ownlog.logfile))
@@ -2508,9 +2538,11 @@ class PyPath(object):
     def load_mappings(self):
         self.mapper.load_mappings(maps=data_formats.mapList)
     
-    def load_resource(self, settings, clean = True, cache_files = {}):
+    def load_resource(self, settings, clean = True, cache_files = {},
+        reread = False, redownload = False):
         sys.stdout.write(' » '+settings.name+'\n')
-        self.read_data_file(settings, cache_files = cache_files)
+        self.read_data_file(settings, cache_files = cache_files,
+            reread = reread, redownload = redownload)
         self.attach_network()
         if clean:
             self.clean_graph()
@@ -5159,18 +5191,46 @@ class PyPath(object):
         self.go[organism] = go.GOAnnotation(organism)
     
     def go_enrichment(self, proteins = None, aspect = 'P', alpha = 0.05, 
-        correction_method = 'hommel'):
-        all_proteins = set(self.graph.vs['name'])
+        correction_method = 'hommel', all_proteins = None):
+        if not hasattr(self, 'go') or self.ncbi_tax_id not in self.go:
+            self.go_dict()
+        all_proteins = set(all_proteins) \
+            if type(all_proteins) is list else all_proteins \
+            if type(all_proteins) is set else set(self.graph.vs['name'])
         annotation = dict([(up, g) for up, g in \
             getattr(self.go[self.ncbi_tax_id], aspect.lower()).iteritems() \
             if up in all_proteins])
         enr = go.GOEnrichmentSet(aspect = aspect, organism = self.ncbi_tax_id, 
-            basic_set = annotation, alpha = alpha, correction_method = correction_method)
+            basic_set = annotation, alpha = alpha, 
+            correction_method = correction_method)
         if proteins is not None: enr.new_set(set_names = proteins)
         return enr
     
+    def init_gsea(self, user):
+        self.gsea = gsea.GSEA(user = user, mapper = self.mapper)
+        sys.stdout.write('\n :: GSEA object initialized, use '\
+            'load_genesets() to load some of the collections.\n')
+        sys.stdout.write('      e.g. load_genesets([\'H\'])\n\n')
+        sys.stdout.flush()
+        self.gsea.show_collections()
+    
+    def add_genesets(self, genesets):
+        for gsetid in genesets:
+            if gsetid in self.gsea.collections:
+                self.gsea.load_collection(gsetid)
+    
+    def geneset_enrichment(self, proteins, all_proteins = None,
+        geneset_ids = None, alpha = 0.05, correction_method = 'hommel'):
+        all_proteins = self.graph.vs['name'] \
+            if all_proteins is None else all_proteins
+        enr = gsea.GSEABinaryEnrichmentSet(basic_set = all_proteins,
+            gsea = self.gsea, geneset_ids = geneset_ids,
+            alpha = alpha, correction_method = correction_method)
+        enr.new_set(proteins)
+        return enr
+    
     def find_all_paths(self, start, end, mode = 'OUT', 
-            maxlen = None, graph = None):
+        maxlen = 2, graph = None):
         '''
         Finds all paths up to length `maxlen` between groups of
         vertices. This function is needed only becaues igraph`s
@@ -5438,6 +5498,25 @@ class PyPath(object):
             fun = getattr(dataio, attrname)
             proteins_pws, interactions_pws = fun(mapper = self.mapper)
         return proteins_pws, interactions_pws
+    
+    def pathway_members(self, pathway, source):
+        attr = '%s_pathways'%source
+        if attr in self.graph.vs.attribute_names():
+            return _NamedVertexSeq(
+                filter(lambda v:
+                    pathway in v[attr],
+                    self.graph.vs
+                ),
+                self.nodNam,
+                self.nodLab
+            )
+        else:
+            return _NamedVertexSeq([], self.nodNam, self.nodLab)
+    
+    def load_all_pathways(self, graph = None):
+        self.kegg_pathways(graph = graph)
+        self.signor_pathways(graph = graph)
+        self.pathway_attributes(graph = graph)
     
     def load_pathways(self, source, graph = None):
         attrname = '%s_pathways'%source
@@ -5894,7 +5973,7 @@ class PyPath(object):
         Example:
             import pypath
             from pypath import data_formats
-            net = pypath.BioGraph()
+            net = pypath.PyPath()
             net.init_network(pfile = 'cache/default.pickle')
             #net.init_network({'arn': data_formats.omnipath['arn']})
             tgf = [v.index for v in net.graph.vs if 'TGF' in v['slk_pathways']]

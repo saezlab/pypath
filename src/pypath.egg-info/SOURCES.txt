@@ -57,7 +57,6 @@ src/pypath/data/acsn_names.gmt
 src/pypath/data/acsn_ppi.txt
 src/pypath/data/alzpw-ppi.csv
 src/pypath/data/arn_curated.csv
-src/pypath/data/dip_human_core_processed.csv
 src/pypath/data/embl_colors
 src/pypath/data/nci-pid-strict.csv
 src/pypath/data/nrf2ome.csv

@@ -34,7 +34,7 @@ class GSEA(object):
     
     def __init__(self, user = None, mapper = None):
         self.user = user if user is not None \
-            else globals()['MSIGDB_USER'] if 'MSIGDB_USER' in globals() 
+            else globals()['MSIGDB_USER'] if 'MSIGDB_USER' in globals() \
             else None
         if self.user is not None:
             self.login()
@@ -57,19 +57,19 @@ class GSEA(object):
     
     def login(self):
         url = data_formats.urls['msigdb']['login1']
-        self.pre_session = dataio.curl(url, init_url = url, 
+        self.pre_session = dataio.curl(url, init_url = url,
             silent = False, cache = False, init_headers = True)
         url = data_formats.urls['msigdb']['login2']
         post = {'j_username': self.user, 'j_password': 'password'}
         self.session = dataio.curl(url, init_url = url, post = post, 
-            req_headers = self.pre_session, 
+            req_headers = self.pre_session,
             silent = False, cache = False, init_headers = True)
     
     def list_collections(self):
         renm = re.compile(r'(.+)\([^0-9]*([0-9]*)[^0-9]*\)')
         url = data_formats.urls['msigdb']['coll']
         html = dataio.curl(url, req_headers = self.session, silent = False)
-        soup = bs4.BeautifulSoup(html)
+        soup = bs4.BeautifulSoup(html, 'lxml')
         for col in soup.find('table', class_ = 'lists1').find_all('tr'):
             lname, num = renm.findall(col.find('th').text.replace('\n', ''))[0]
             sname = col.find('a').attrs['name']
@@ -151,13 +151,16 @@ class GSEA(object):
 class GSEABinaryEnrichmentSet(enrich.EnrichmentSet):
     
     def __init__(self, basic_set, gsea = None, geneset_ids = None, 
-        alpha = 0.05, correction_method = 'hommel', gsea_user = 'denes@ebi.ac.uk'):
+        alpha = 0.05, correction_method = 'hommel', user = None,
+        mapper = None):
         if type(gsea) is not GSEA and geneset_ids is None:
             console('Please give either a `pypath.gsea.GSEA` object'\
                 'or a list of geneset names.')
         if geneset_ids is None: geneset_ids = gsea.sets.keys()
-        if type(gsea) is not GSEA: 
-            gsea = GSEA(user = gsea_user)
+        self.user = user
+        self.mapper = mapper
+        if type(gsea) is not GSEA:
+            gsea = GSEA(user = self.user, mapper = self.mapper)
             for geneset_id in geneset_ids:
                 gsea.load_set(geneset_id)
         self.geneset_ids = geneset_ids

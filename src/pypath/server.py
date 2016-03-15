@@ -22,6 +22,10 @@ import json
 from common import *
 import descriptions
 import _html
+import data_formats
+
+def stop_server():
+    reactor.removeAll()
 
 class Rest(object):
     
@@ -42,7 +46,8 @@ class RestResource(resource.Resource):
     def render_GET(self, request):
         html = len(request.postpath) == 0 or request.postpath[0] in self.htmls
         self.set_defaults(request, html = html)
-        if len(request.postpath) > 0 and hasattr(self, request.postpath[0]):
+        if len(request.postpath) > 0 and hasattr(self, request.postpath[0]) \
+            and request.postpath[0][0] != '_':
             toCall = getattr(self, request.postpath[0])
             if hasattr(toCall, '__call__'):
                 response = toCall(request)
@@ -99,8 +104,10 @@ class RestResource(resource.Resource):
         res = []
         hdr = ['source', 'target', 'is_directed', 'is_stimulation', 'is_inhibition']
         hdr += [f for f in fields if f in req.args['fields']]
+        all_sources = set([])
         for eid in elist:
             e = self.g.es[eid]
+            all_sources = all_sources | set(e['sources'])
             for d in ['straight', 'reverse']:
                 uniprots = getattr(e['dirs'], d)
                 if e['dirs'].dirs[uniprots]:
@@ -119,6 +126,7 @@ class RestResource(resource.Resource):
                         thisEdge.append([r.pmid for r in flatList([rs for s, rs in \
                             e['refs_by_source'].iteritems() \
                             if s in dsources])])
+                    thisEdge.append(self._dip_urls(e))
                     res.append(thisEdge)
             if not e['dirs'].is_directed():
                 thisEdge = [e['dirs'].nodes[0], e['dirs'].nodes[1], 0, 0, 0]
@@ -126,7 +134,15 @@ class RestResource(resource.Resource):
                     thisEdge.append(e['sources'])
                 if 'references' in hdr:
                     thisEdge.append([r.pmid for r in e['references']])
+                thisEdge.append(self._dip_urls(e))
                 res.append(thisEdge)
+        if 'DIP' in all_sources:
+            hdr.append('dip_url')
+        else:
+            res = map(lambda r:
+                r[:-1],
+                res
+            )
         if req.args['format'] == 'json':
             return json.dumps([dict(zip(hdr, r)) for r in res])
         else:
@@ -186,17 +202,39 @@ class RestResource(resource.Resource):
             return self._table_output(res, hdr, req)
     
     def resources(self, req):
-        hdr = ['database', 'proteins', 'interactions', 'directions', 'stimulations', 'inhibitions', 'signs']
-        res = [[s, len([_ for v in self.g.vs if s in v['sources']]), 
-            len([_ for e in self.g.es if s in e['sources']]), 
-            sum([s in e['dirs'].sources[d] for e in self.g.es for d in e['dirs'].which_dirs()]),
-            sum([s in e['dirs'].positive_sources[d] for e in self.g.es for d in e['dirs'].which_dirs()]),
-            sum([s in e['dirs'].negative_sources[d] for e in self.g.es for d in e['dirs'].which_dirs()]),
-            sum([s in sg for e in self.g.es for d in e['dirs'].which_dirs() \
-                for sg in [e['dirs'].positive_sources[d], e['dirs'].negative_sources]]),
+        hdr = ['database', 'proteins', 'interactions', 'directions',
+            'stimulations', 'inhibitions', 'signs']
+        res = [[
+                # database name
+                s,
+                # number of proteins
+                len([1 for v in self.g.vs if s in v['sources']]),
+                # number of interacting pairs
+                len([1 for e in self.g.es if s in e['sources']]),
+                # number of directions
+                sum([s in e['dirs'].sources[d] \
+                    for e in self.g.es for d in e['dirs'].which_dirs()]),
+                # number of stimulations
+                sum([s in e['dirs'].positive_sources[d] \
+                    for e in self.g.es for d in e['dirs'].which_dirs()]),
+                # number of inhibitions
+                sum([s in e['dirs'].negative_sources[d] \
+                    for e in self.g.es for d in e['dirs'].which_dirs()]),
+                # number of signs
+                sum([s in sg for e in self.g.es for d in e['dirs'].which_dirs() \
+                    for sg in [e['dirs'].positive_sources[d], 
+                        e['dirs'].negative_sources[d]]]),
             ]
             for s in self.p.sources]
         if req.args['format'] == 'json':
             return json.dumps([dict(zip(hdr, r)) for r in res])
         else:
             return self._table_output(res, hdr, req)
+    
+    def _dip_urls(self, e):
+        result = []
+        if 'dip_id' in e.attributes():
+            for dip_id in e['dip_id']:
+                result.append(data_formats.urls['dip']['ik'] % \
+                    int(dip_id.split('-')[1][:-1]))
+        return ';'.join(result)

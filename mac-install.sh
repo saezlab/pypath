@@ -3,7 +3,7 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2015 - EMBL-EBI
+#  Copyright (c) 2014-2016 - EMBL-EBI
 #
 #  File author(s): Dénes Türei (denes@ebi.ac.uk)
 #
@@ -48,7 +48,7 @@
 #     disk space saving methods might be possible.
 
 PYVER=`python --version | sed 's/.*\([0-9]\.[0-9]\).*/\1/p'`
-BIOIGRAPHSRC="http://www.ebi.ac.uk/~denes/54b510889336eb2591d8beff/pypath-0.1.25.tar.gz"
+PYPATHSRC="http://pypath.omnipathdb.org/pypath-latest.tar.gz"
 BUILDDIR="$HOME/build"
 LOCAL="$HOME/local"
 LOCALBIN="$LOCAL/bin"
@@ -72,7 +72,7 @@ if [ -d $LOCALBIN ]; then
 fi
 EOF
 
-curl -L $BIOIGRAPHSRC > pypath.tar.gz
+curl -L $PYPATHSRC > pypath.tar.gz
 curl -L https://distfiles.macports.org/MacPorts/MacPorts-$MACPORTSVER.tar.bz2 > macports.tar.bz2
 tar -vxjf macports.tar.bz2
 mv MacPorts-* macports
