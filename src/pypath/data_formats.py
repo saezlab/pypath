@@ -450,8 +450,8 @@ urls = {
     },
     'msigdb': {
         'label': 'Molecular Signatures Database', 
-        'login1': 'http://www.broadinstitute.org/gsea/login.jsp',
-        'login2': 'http://www.broadinstitute.org/gsea/j_spring_security_check',
+        'login1': 'http://software.broadinstitute.org/gsea/login.jsp',
+        'login2': 'http://software.broadinstitute.org/gsea/j_spring_security_check',
         'url': 'http://www.broadinstitute.org/gsea/msigdb/download_file.jsp?'\
             'filePath=/resources/msigdb/5.0/%s.all.v5.0.%s.gmt',
         'coll': 'http://www.broadinstitute.org/gsea/msigdb/collections.jsp',
@@ -579,7 +579,8 @@ urls = {
     'dip': {
         'label': 'DIP PSI-MI tab',
         'login': 'http://dip.doe-mbi.ucla.edu/dip/Login.cgi',
-        'url': ''
+        'url': 'http://dip.mbi.ucla.edu/dip/file?ds=current&fn=Hsapi20160114CR&ff=txt',
+        'ik': 'http://dip.doe-mbi.ucla.edu/dip/DIPview.cgi?IK=%u'
     },
     'vaquerizas2009': {
         'label': 'A census of human transcription factors: function, expression and evolution; Supplementary Table S3',
@@ -1103,15 +1104,17 @@ interaction = {
             "mppi_evidences": (1, ";")},
         extraNodeAttrsA = {},
         extraNodeAttrsB = {}),
-    'dip': input_formats.ReadSettings(name="DIP", separator="\t", 
+    'dip': input_formats.ReadSettings(name="DIP",
         nameColA=0, nameColB=1,
         nameTypeA="uniprot", nameTypeB="uniprot",
         typeA="protein", typeB="protein",isDirected=False,sign=False,
-        inFile=os.path.join(ROOT, 'data', 'dip_human_core_processed.csv'),
+        inFile = 'get_dip',
         references=(2, ";"),ncbiTaxId=9606,
         extraEdgeAttrs={
             "dip_methods": (4, ";"),
-            "dip_type": (3, ";")},
+            "dip_type": (3, ";"),
+            'dip_id': 5
+        },
         extraNodeAttrsA={},
         extraNodeAttrsB={}),
     'netpath': input_formats.ReadSettings(name = "NetPath", separator = None,
@@ -1525,7 +1528,7 @@ negative = {
         separator = "\t", nameColA = 0, nameColB = 1,
         nameTypeA = "uniprot", nameTypeB = "uniprot",
         typeA = "protein", typeB = "protein", isDirected = 0, 
-        inFile = 'negatome_pairs',
+        inFile = 'negatome_pairs', ncbiTaxId = 9606,
         extraEdgeAttrs = {
             "references": (2, ';'),
             "negatome_methods": (3, ';')

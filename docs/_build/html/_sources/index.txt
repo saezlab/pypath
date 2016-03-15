@@ -36,7 +36,7 @@ Main features
 .. _igraph: http://igraph.org/
 
 .. toctree:
-   :maxdepth: 3
+   :maxdepth: 5
 
 Indices and tables
 ==================
@@ -114,7 +114,7 @@ The graph is undirected by default, and 'Direction' objects can be found in <edg
 .. code-block:: python
 
     print pa.graph.es[111]['dirs']
-    pa.graph.es[111].is_directed()
+    pa.graph.es[111]['dirs'].is_directed()
     pa.graph.es[111]['dirs'].is_inhibition()
     pa.graph.es[111]['dirs'].which_dirs()
     pa.graph.es[111]['dirs'].get_dir(pa.graph.es[111]['dirs'].which_dirs()[0])
@@ -175,10 +175,10 @@ PTMs are stored in objects. This example shows how to access the type of modific
 
 .. code-block:: python
 
-    pa.graph.es[70]['ptm'][0].ptm.typ
-    pa.graph.es[70]['ptm'][0].ptm.protein
-    pa.graph.es[70]['ptm'][0].ptm.residue.name
-    pa.graph.es[70]['ptm'][0].ptm.residue.number
+   pa.graph.es[70]['ptm'][0].ptm.typ
+   pa.graph.es[70]['ptm'][0].ptm.protein
+   pa.graph.es[70]['ptm'][0].ptm.residue.name
+   pa.graph.es[70]['ptm'][0].ptm.residue.number
 
 Example 2: using the Mapper class for translating IDs
 +++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -187,12 +187,207 @@ The mapping submodule of pypath can be used for ID conversion. Here is a basic e
 
 .. code-block:: python
 
-    from pypath import mapping
-    m = mapping.Mapper(9606)
-    result = {}
-    gene_list = ['EGFR', 'AKT1', 'GABARAPL1', 'TP53']
-    for g in gene_list:
-        result[g] = m.map_name(g, 'genesymbol', 'uniprot')
+   from pypath import mapping
+   m = mapping.Mapper(9606)
+   result = {}
+   gene_list = ['EGFR', 'AKT1', 'GABARAPL1', 'TP53']
+     for g in gene_list:
+       result[g] = m.map_name(g, 'genesymbol', 'uniprot')
+
+Example 3: pathways annotations
++++++++++++++++++++++++++++++++
+
+Pathways are functional annotations of molecules in molecular networks. Currently pathway annotations from 4 sources are available in pypath: from KEGG, NetPath, SignaLink and Signor. NetPath and SignaLink will be loaded automatically with the network data, the other two need to be loaded separately:
+
+.. code-block:: python
+
+   pa.kegg_pathways()
+   pa.signor_pathways()
+
+SignaLink assigns pathway annotations to proteins, while the other resources assignes this to interactions (at least the data read this way). In addition, proteins classified as autophagy proteins in the Autophagy Regulatory Network will appear as a SignaLink pathway named `Autophagy`. To have uniform annotations (from all sources, for both proteins and interactions, with ``<source>_pathways`` attribute names), use this method to do the necessary conversion:
+
+.. code-block:: python
+
+   pa.pathway_attributes()
+
+After this, you can access the pathway annotations in `kegg_pathways`, `netpath_pathways`, `signalink_pathways` and `signor_pathways` edge and vertex attributes:
+
+.. code-block:: python
+
+   print pa.graph.vs[333]['signor_pathways']
+
+You can simply do all the steps above by calling one method:
+
+.. code-block:: python
+
+   pa.load_all_pathways()
+
+Example 4: other functional annotations
++++++++++++++++++++++++++++++++++++++++
+
+Pathways as defined above usually follow the well known ways of information flow as it is presented in textbooks and reviews. But they are incomplete and biased. More complete and less biased functional annotations are Gene Ontology and GeneSets from the Molecular Signature Database. Methods are available in pypath, so you can load these annotations into network attributes.
+
+.. code-block:: python
+
+   # load only the biological process aspect:
+   pa.load_go(['P'])
+   # get the GO BP terms for AKT1:
+   pa.gs('AKT1')['go']['P']
+   # get the GO annotation:
+   pa.go_dict()
+   # list names instead of IDs:
+   # (9606 is an NCBI taxonomy ID)
+   map(pa.go[9606].get_name, pa.gs('AKT1')['go']['P'])
+   # calculate enrichment:
+   # this is a simple Fisher test
+   # with multiple p-values correction
+   # for example, get the enriched terms for the Notch pathway:
+   pa.load_all_pathways()
+   notch = pa.pathway_members('Notch', 'signalink')
+   pa.go_dict()
+   enr = pa.go_enrichment(list(notch.up()))
+   print enr
+   enr.toplist()
+   enr.top_terms()
+   enr.top_ids()
+   enr.enrichments[enr.top_ids()[0]].pval_adj
+   enr.enrichments[enr.top_ids()[0]].significant()
+
+
+Using GeneSets from MSigDB:
+
+.. code-block:: python
+
+   from pypath import gsea
+   # login with an MSigDB user:
+   g = gsea.GSEA('user@email.org', mapper = pa.mapper)
+   g.show_collections()
+   g.load_collection('CGP')
+   # genesets are loaded into g.sets
+   enr = gsea.GSEABinaryEnrichmentSet(basic_set = pa.graph.vs['name'], gsea = g)
+   # or ``basic_set`` could be ``dataio.all_uniprots()``
+   enr.new_set(list(notch.up()))
+   # if you see nothing, it means none of the loaded sets
+   # are enriched in your list
+   print enr
+   enr.top_genesets()
+   enr.top_geneset_ids()
+   # to do the same with methods of the PyPath() object:
+   pa.init_gsea('user@email.org')
+   pa.add_genesets(['CP:KEGG'])
+   enr = pa.geneset_enrichment(list(notch.up()), alpha = 0.2)
+
+Example 5: bypass cache
++++++++++++++++++++++++
+
+Cache makes pypath run much faster. A typical session downloads hundreds MBs of data from dozens of sources, and it takes minutes to do this. In addition it makes pypath sensitive to network connectivity and speed. After the first download, files are saved in ``./cache`` directory, and files with the same URL will be automatically read from there. However, sometimes it is necessary to bypass the cache and download the files again. For example if we suspect there are erroneous or old files there. There is an easy way to disable the cache temporarily while executing data input methods:
+
+.. code-block:: python
+
+   # here we use the old cache:
+   pa.load_signor_ptms()
+   
+   with pypath.dataio.cache_off():
+       # here we don not read from the cache
+       # but download again and write the
+       # new files into the cache:
+       pa.load_signor_ptms()
+   
+   # here already the new files are used from the cache:
+   pa.load_signor_ptms()
+   
+   # similarly, if the cache is turned off by default,
+   # we can temporarily enable:
+   
+   # this way we permanently disable the cache:
+   pypath.dataio.CACHE = False
+   
+   # and here temporarily enable:
+   with pypath.dataio.cache_on():
+       human_proteome = pypath.dataio.all_uniprots()
+   
+   # the cache is permanently enabled if this variable is ``None`` or ``True``:
+   pypath.dataio.CACHE = None
+
+I plan to introduce more methods to give a more flexible control over the files in cache.
+
+Example 6: saving and loading a session:
+++++++++++++++++++++++++++++++++++++++++
+
+The network object with its attributes can be saved into a pickle dump, and loaded from there in subsequent sessions.
+
+.. code-block:: python
+
+    # initialize a PyPath() object:
+    pa = pypath.PyPath()
+    pa.init_network()
+    pa.load_all_pathways()
+    
+    # here we save the loaded network
+    # with the pathway annotations:
+    pa.save_network()
+    
+    # in another session we load the saved network:
+    pa = pypath.PyPath()
+    pa.init_network(pfile = True)
+    
+    # above the network has been saved into
+    # `cache/default_network.pickle`
+    # to save/load to/from different file:
+    
+    pa.save_network('cache/other_network.pickle')
+    pa = pypath.PyPath()
+    pa.init_network(pfile = 'cache/other_network.pickle')
+
+How to set up a ChEMBL MySQL instance?
+======================================
+
+Currently ``pypath.chembl`` gives some powerful and flexible methods to query compound-target relationships from ChEMBL.
+This is implemented using MySQL, and so far I could not find a way to provide the same features with using the webservice.
+Using the webservice would be much more convenient for most of the users, so it is only matter of time and I will implement a webservice based ChEMBL module.
+Until then, here is a short guide to load ChEMBL on your own MySQL server. To do this, you will need 25GB of free disk space. ChEMBL is huge. 1GB is the downloaded compressed database dump, 8GB is the same uncompressed, and 16GB is the database loaded into MySQL. You can delete the 2 former, so at the end you will sacrifice only 16GB to have your own ChEMBL.
+
+.. code-block:: bash
+
+    # login to the MySQL shell as administrator:
+    
+    mysql --user=root --password=foobar [--host=217.0.0.1 --port=3306]
+
+.. code-block:: mysql
+
+    /* create a database and user for ChEMBL: */
+    CREATE DATABASE chembl;
+    CREATE USER chembl;
+    GRANT ALL ON chembl.* TO `chembl`@`%` IDENTIFIED BY 'a-new-password';
+    FLUSH PRIVILEGES;
+    
+    /* optionally create a user which can only read, e.g. if you want
+    to share this database with the whole institute: */
+    CREATE USER chembl_ro;
+    GRANT SELECT ON chembl.* TO `chembl_ro`@`%` IDENTIFIED BY 'a-new-password';
+    FLUSH PRIVILEGES;
+    
+    EXIT;
+
+.. code-block:: bash
+
+    # let's download the ChEMBL MySQL dump (warning, it is 1GB!):
+    curl -O ftp://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/chembl_21_mysql.tar.gz
+    
+    # uncompressing. start this only if you have 8GB free space:
+    tar -xzvf chembl_21_mysql.tar.gz
+    
+    # loading into mysql. this will take up 16GB more space:
+    mysql --user=chembl --password='password-of-chembl' [--host=217.0.0.1 --port=3306] < \
+        chembl_21_mysql/chembl_21.mysqldump.sql
+
+At this point you can query ChEMBL on your own laptop/server. Congratulations! Enjoy!
+You might find it necessary to increase the cache and buffer sizes in ``/etc/mysql/my.cnf``.
+Loading the mysqldump takes time, if it fails try it again, but before check if you have enough free space and see the error log of MySQL.
+
+Alternatively, you can download and run the `myChEMBL virtual machine`_, and connect to its pre-installed MySQL server via the VirtualBox virtual network.
+
+.. _`myChEMBL virtual machine`: http://chembl.blogspot.co.uk/2014/06/mychembl-launchpadlaunched.html
 
 Reference
 =========

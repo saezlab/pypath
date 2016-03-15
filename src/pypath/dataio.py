@@ -83,8 +83,41 @@ import seq as se
 
 CURSOR_UP_ONE = '\x1b[1A'
 ERASE_LINE = '\x1b[2K'
+CACHE = None
 
 show_cache = False
+
+class cache_on(object):
+    
+    def __init__(self):
+        pass
+    
+    def __enter__(self):
+        global CACHE
+        self._store_cache = globals()['CACHE']
+        CACHE = True
+    
+    def __exit__(self, exception_type, exception_value, traceback):
+        global CACHE
+        if exception_type is not None:
+            print exception_type, exception_value, traceback
+        CACHE = self._store_cache
+
+class cache_off(object):
+    
+    def __init__(self):
+        pass
+    
+    def __enter__(self):
+        global CACHE
+        self._store_cache = globals()['CACHE']
+        CACHE = False
+    
+    def __exit__(self, exception_type, exception_value, traceback):
+        global CACHE
+        if exception_type is not None:
+            print exception_type, exception_value, traceback
+        CACHE = self._store_cache
 
 class RemoteFile(object):
     
@@ -187,6 +220,9 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
         write_cache = True, force_quote = False,
         sftp_user = None, sftp_passwd = None, sftp_passwd_file = None,
         sftp_port = 22, sftp_host = None, sftp_ask = None):
+    # CACHE overrides cache param if it is not None
+    if type(CACHE) is bool:
+        cache = CACHE
     url = url_fix(url, force = force_quote)
     if init_url is not None:
         init_url = url_fix(init_url, force = force_quote)
@@ -3415,9 +3451,12 @@ def get_li2012():
     xlsfile = xls.name
     xls.close()
     tbl = read_xls(xlsfile, sheet = 'File S1')
-    return map(lambda l:
-        l[:7],
-        tbl[2:]
+    return filter(lambda l:
+        len(l[-1]) > 0,
+        map(lambda l:
+            l[:7],
+            tbl[2:]
+        )
     )
 
 def li2012_interactions():
@@ -5302,8 +5341,32 @@ def get_innatedb(organism = 9606):
             s += line
     return i
 
-def get_dip(organism = 9606):
-    url = data_formats.urls['dip']['url']
+def mitab_field_list(field):
+    return common.uniqList(map(lambda x:
+        x.split('(')[1][:-1],
+        field.split('|')
+    ))
+
+def mitab_field_uniprot(field):
+    uniprots = filter(lambda x:
+        len(x) == 2 and x[0] == 'uniprotkb',
+        map(lambda x:
+            x.split(':'),
+            field.split('|')
+        )
+    )
+    if len(uniprots) > 0:
+        return uniprots[0][1]
+    else:
+        return None
+
+def get_dip(url = None, organism = 9606, core_only = True, direct_only = True,
+    small_scale_only = True):
+    strDipCore = 'dip-quality-status:core'
+    strDirect = 'direct interaction'
+    strPhysInt = 'physical interaction'
+    strSmallS = 'small scale'
+    url = data_formats.urls['dip']['url'] if url is None else url
     f = curl(url, silent = False, large = True)
     i = []
     lnum = 0
@@ -5316,36 +5379,32 @@ def get_dip(organism = 9606):
         specA = int(l[9].split(':')[1].split('(')[0])
         specA = 0 if l[9] == '-' else int(l[9].split(':')[1].split('(')[0])
         specB = 0 if l[10] == '-' else int(l[10].split(':')[1].split('(')[0])
-        intProp = l[11].split('|')
-        expEv = l[6].split('|')
+        intProp = mitab_field_list(l[11])
+        intProc = mitab_field_list(l[15])
+        dipLinkId = l[13]
+        expEv = mitab_field_list(l[6])
+        conf = l[14]
         if organism is None or (specA == organism and specB == organism):
-            pm = l[8].replace('pubmed:','').split('|')
-            pm = [p for p in pm if not p.startswith('DIP')]
-            l = [l[0],l[1]]
-            interaction = ()
-            for ll in l:
-                ll = ll.split('|')
-                uniprot = ''
-                for lll in ll:
-                    nm = lll.split(':')
-                    if nm[0] == 'uniprotkb' and len(nm[1]) == 6:
-                        uniprot = nm[1]
-                interaction += (uniprot,)
-            interaction += (';'.join(pm),)
-            intProp = [ip.split('(')[1].replace(')','') for ip in intProp]
-            expEv = [ee.split('(')[1].replace(')','') for ee in expEv]
-            interaction += (';'.join(intProp),)
-            interaction += (';'.join(expEv),)
-            print interaction
-            if len(interaction[0]) == 6 and len(interaction[1]) == 6:
-                i.append(interaction)
+            if (not core_only or strDipCore in conf) and \
+                (not direct_only or strDirect in intProp or \
+                    strPhysInt in intProp) and \
+                (not small_scale_only or strSmallS in intProc):
+                pm = l[8].replace('pubmed:','').split('|')
+                pm = [p for p in pm if not p.startswith('DIP')]
+                l = [l[0],l[1]]
+                uniprotA = mitab_field_uniprot(l[0])
+                uniprotB = mitab_field_uniprot(l[1])
+                if uniprotA is not None and uniprotB is not None:
+                    i.append([
+                        uniprotA,
+                        uniprotB,
+                        ';'.join(pm),
+                        ';'.join(intProp),
+                        ';'.join(expEv),
+                        dipLinkId
+                    ])
         lnum += 1
     f.close()
-    s = ''
-    for l in i:
-        line = '\t'.join(list(l)) + "\n"
-        if len(line) > 12:
-            s += line
     return i
 
 def dip_login(user, passwd):

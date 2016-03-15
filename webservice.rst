@@ -17,7 +17,7 @@ The ``network`` prints basic statistics about the whole network:
 
 The ``resources`` returns the list of all resources with their size:
     
-    http://omnipathdb.org/network
+    http://omnipathdb.org/resources
 
 The ``info`` returns a HTML page with comprehensive information about the resources:
 
