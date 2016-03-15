@@ -1790,7 +1790,8 @@ descriptions = {
             ]
         },
         'authors': ['Brinkman Lab', 'Hancock Lab', 'Lynn Group'],
-        'emails': [('innatedb-mail@sfu.ca', 'InnateDB Team'), ('david.lynn@teagasc.ie', 'David Lynn')],
+        'emails': [('innatedb-mail@sfu.ca', 'InnateDB Team'), 
+            ('david.lynn@sahmri.com', 'David Lynn')],
         'license': 'http://innatedb.com/license.jsp',
         'pubmeds': [
             20727158,
