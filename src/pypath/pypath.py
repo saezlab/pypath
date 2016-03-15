@@ -430,11 +430,11 @@ class _NamedVertexSeq(object):
         for v in self._vs:
             yield v
     
-    def gs(self):
+    def genesymbol(self):
         for v in self._vs:
             yield self._nodLab[v.index]
     
-    def up(self):
+    def uniprot(self):
         for v in self._vs:
             yield self._nodNam[v.index]
     
@@ -442,8 +442,8 @@ class _NamedVertexSeq(object):
         for v in self._vs:
             yield v.index
     
-    genesymbol = gs
-    uniprot = up
+    gs = genesymbol
+    up = uniprot
     vs = __iter__
 
 class PyPath(object):
