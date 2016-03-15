@@ -204,7 +204,7 @@ Pathways are functional annotations of molecules in molecular networks. Currentl
    pa.kegg_pathways()
    pa.signor_pathways()
 
-SignaLink assigns pathway annotations to proteins, while the other resources assignes this to interactions (at least the data read this way). In addition, proteins classified as autophagy proteins in the Autophagy Regulatory Network will appear as a SignaLink pathway named `Autophagy`. To have uniform annotations for both proteins and interactions, use this method to do the necessary conversion:
+SignaLink assigns pathway annotations to proteins, while the other resources assignes this to interactions (at least the data read this way). In addition, proteins classified as autophagy proteins in the Autophagy Regulatory Network will appear as a SignaLink pathway named `Autophagy`. To have uniform annotations (from all sources, for both proteins and interactions, with ``<source>_pathways`` attribute names), use this method to do the necessary conversion:
 
 .. code-block:: python
 
@@ -310,6 +310,34 @@ Cache makes pypath run much faster. A typical session downloads hundreds MBs of 
     pypath.dataio.CACHE = None
 
 I plan to introduce more methods to give a more flexible control over the files in cache.
+
+Example 6: saving and loading a session:
+++++++++++++++++++++++++++++++++++++++++
+
+The network object with its attributes can be saved into a pickle dump, and loaded from there in subsequent sessions.
+
+.. code-block:: python
+
+    # initialize a PyPath() object:
+    pa = pypath.PyPath()
+    pa.init_network()
+    pa.load_all_pathways()
+    
+    # here we save the loaded network
+    # with the pathway annotations:
+    pa.save_network()
+    
+    # in another session we load the saved network:
+    pa = pypath.PyPath()
+    pa.init_network(pfile = True)
+    
+    # above the network has been saved into
+    # `cache/default_network.pickle`
+    # to save/load to/from different file:
+    
+    pa.save_network('cache/other_network.pickle')
+    pa = pypath.PyPath()
+    pa.init_network(pfile = 'cache/other_network.pickle')
 
 Reference
 =========

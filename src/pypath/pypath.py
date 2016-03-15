@@ -5973,7 +5973,7 @@ class PyPath(object):
         Example:
             import pypath
             from pypath import data_formats
-            net = pypath.BioGraph()
+            net = pypath.PyPath()
             net.init_network(pfile = 'cache/default.pickle')
             #net.init_network({'arn': data_formats.omnipath['arn']})
             tgf = [v.index for v in net.graph.vs if 'TGF' in v['slk_pathways']]

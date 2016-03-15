@@ -311,6 +311,34 @@ Cache makes pypath run much faster. A typical session downloads hundreds MBs of 
 
 I plan to introduce more methods to give a more flexible control over the files in cache.
 
+Example 6: saving and loading a session:
+++++++++++++++++++++++++++++++++++++++++
+
+The network object with its attributes can be saved into a pickle dump, and loaded from there in subsequent sessions.
+
+.. code-block:: python
+
+    # initialize a PyPath() object:
+    pa = pypath.PyPath()
+    pa.init_network()
+    pa.load_all_pathways()
+    
+    # here we save the loaded network
+    # with the pathway annotations:
+    pa.save_network()
+    
+    # in another session we load the saved network:
+    pa = pypath.PyPath()
+    pa.init_network(pfile = True)
+    
+    # above the network has been saved into
+    # `cache/default_network.pickle`
+    # to save/load to/from different file:
+    
+    pa.save_network('cache/other_network.pickle')
+    pa = pypath.PyPath()
+    pa.init_network(pfile = 'cache/other_network.pickle')
+
 Reference
 =========
 
