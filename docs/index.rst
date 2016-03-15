@@ -204,7 +204,7 @@ Pathways are functional annotations of molecules in molecular networks. Currentl
    pa.kegg_pathways()
    pa.signor_pathways()
 
-SignaLink assigns pathway annotations to proteins, while the other resources assignes this to interactions (at least the data read this way). In addition, proteins classified as autophagy proteins in the Autophagy Regulatory Network will appear as a SignaLink pathway named `Autophagy`. To have uniform annotations for both proteins and interactions, use this method to do the necessary conversion:
+SignaLink assigns pathway annotations to proteins, while the other resources assignes this to interactions (at least the data read this way). In addition, proteins classified as autophagy proteins in the Autophagy Regulatory Network will appear as a SignaLink pathway named `Autophagy`. To have uniform annotations (from all sources, for both proteins and interactions, with ``<source>_pathways`` attribute names), use this method to do the necessary conversion:
 
 .. code-block:: python
 
@@ -276,6 +276,40 @@ Using GeneSets from MSigDB:
    pa.init_gsea('user@email.org')
    pa.add_genesets(['CP:KEGG'])
    enr = pa.geneset_enrichment(list(notch.up()), alpha = 0.2)
+
+Example 5: bypass cache
++++++++++++++++++++++++
+
+Cache makes pypath run much faster. A typical session downloads hundreds MBs of data from dozens of sources, and it takes minutes to do this. In addition it makes pypath sensitive to network connectivity and speed. After the first download, files are saved in ``./cache`` directory, and files with the same URL will be automatically read from there. However, sometimes it is necessary to bypass the cache and download the files again. For example if we suspect there are erroneous or old files there. There is an easy way to disable the cache temporarily while executing data input methods:
+
+.. code-block:: python
+
+    # here we use the old cache:
+    pa.load_signor_ptms()
+    
+    with pypath.dataio.cache_off():
+        # here we don not read from the cache
+        # but download again and write the
+        # new files into the cache:
+        pa.load_signor_ptms()
+    
+    # here already the new files are used from the cache:
+    pa.load_signor_ptms()
+    
+    # similarly, if the cache is turned off by default,
+    # we can temporarily enable:
+    
+    # this way we permanently disable the cache:
+    pypath.dataio.CACHE = False
+    
+    # and here temporarily enable:
+    with pypath.dataio.cache_on():
+        human_proteome = pypath.dataio.all_uniprots()
+    
+    # the cache is permanently enabled if this variable is ``None`` or ``True``:
+    pypath.dataio.CACHE = None
+
+I plan to introduce more methods to give a more flexible control over the files in cache.
 
 Reference
 =========

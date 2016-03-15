@@ -87,6 +87,38 @@ CACHE = None
 
 show_cache = False
 
+class cache_on(object):
+    
+    def __init__(self):
+        pass
+    
+    def __enter__(self):
+        global CACHE
+        self._store_cache = globals()['CACHE']
+        CACHE = True
+    
+    def __exit__(self, exception_type, exception_value, traceback):
+        global CACHE
+        if exception_type is not None:
+            print exception_type, exception_value, traceback
+        CACHE = self._store_cache
+
+class cache_off(object):
+    
+    def __init__(self):
+        pass
+    
+    def __enter__(self):
+        global CACHE
+        self._store_cache = globals()['CACHE']
+        CACHE = False
+    
+    def __exit__(self, exception_type, exception_value, traceback):
+        global CACHE
+        if exception_type is not None:
+            print exception_type, exception_value, traceback
+        CACHE = self._store_cache
+
 class RemoteFile(object):
     
     def __init__(self, filename, user, host, passwd, port = 22, sep = '\t', 

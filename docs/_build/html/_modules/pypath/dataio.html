@@ -210,8 +210,41 @@
 
 <span class="n">CURSOR_UP_ONE</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\x1b</span><span class="s1">[1A&#39;</span>
 <span class="n">ERASE_LINE</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\x1b</span><span class="s1">[2K&#39;</span>
+<span class="n">CACHE</span> <span class="o">=</span> <span class="bp">None</span>
 
 <span class="n">show_cache</span> <span class="o">=</span> <span class="bp">False</span>
+
+<span class="k">class</span> <span class="nc">cache_on</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+    
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">CACHE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_store_cache</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;CACHE&#39;</span><span class="p">]</span>
+        <span class="n">CACHE</span> <span class="o">=</span> <span class="bp">True</span>
+    
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exception_type</span><span class="p">,</span> <span class="n">exception_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">CACHE</span>
+        <span class="k">if</span> <span class="n">exception_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">print</span> <span class="n">exception_type</span><span class="p">,</span> <span class="n">exception_value</span><span class="p">,</span> <span class="n">traceback</span>
+        <span class="n">CACHE</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store_cache</span>
+
+<span class="k">class</span> <span class="nc">cache_off</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+    
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">CACHE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_store_cache</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;CACHE&#39;</span><span class="p">]</span>
+        <span class="n">CACHE</span> <span class="o">=</span> <span class="bp">False</span>
+    
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exception_type</span><span class="p">,</span> <span class="n">exception_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">CACHE</span>
+        <span class="k">if</span> <span class="n">exception_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">print</span> <span class="n">exception_type</span><span class="p">,</span> <span class="n">exception_value</span><span class="p">,</span> <span class="n">traceback</span>
+        <span class="n">CACHE</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store_cache</span>
 
 <span class="k">class</span> <span class="nc">RemoteFile</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     
@@ -314,6 +347,9 @@
         <span class="n">write_cache</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">force_quote</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
         <span class="n">sftp_user</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">sftp_passwd</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">sftp_passwd_file</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
         <span class="n">sftp_port</span> <span class="o">=</span> <span class="mi">22</span><span class="p">,</span> <span class="n">sftp_host</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">sftp_ask</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+    <span class="c1"># CACHE overrides cache param if it is not None</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">CACHE</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">cache</span> <span class="o">=</span> <span class="n">CACHE</span>
     <span class="n">url</span> <span class="o">=</span> <span class="n">url_fix</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">force</span> <span class="o">=</span> <span class="n">force_quote</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">init_url</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
         <span class="n">init_url</span> <span class="o">=</span> <span class="n">url_fix</span><span class="p">(</span><span class="n">init_url</span><span class="p">,</span> <span class="n">force</span> <span class="o">=</span> <span class="n">force_quote</span><span class="p">)</span>
@@ -3542,9 +3578,12 @@
     <span class="n">xlsfile</span> <span class="o">=</span> <span class="n">xls</span><span class="o">.</span><span class="n">name</span>
     <span class="n">xls</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="n">tbl</span> <span class="o">=</span> <span class="n">read_xls</span><span class="p">(</span><span class="n">xlsfile</span><span class="p">,</span> <span class="n">sheet</span> <span class="o">=</span> <span class="s1">&#39;File S1&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">l</span><span class="p">:</span>
-        <span class="n">l</span><span class="p">[:</span><span class="mi">7</span><span class="p">],</span>
-        <span class="n">tbl</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+    <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">l</span><span class="p">:</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">l</span><span class="p">:</span>
+            <span class="n">l</span><span class="p">[:</span><span class="mi">7</span><span class="p">],</span>
+            <span class="n">tbl</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+        <span class="p">)</span>
     <span class="p">)</span></div>
 
 <div class="viewcode-block" id="li2012_interactions"><a class="viewcode-back" href="../../index.html#pypath.dataio.li2012_interactions">[docs]</a><span class="k">def</span> <span class="nf">li2012_interactions</span><span class="p">():</span>
@@ -5429,8 +5468,32 @@
             <span class="n">s</span> <span class="o">+=</span> <span class="n">line</span>
     <span class="k">return</span> <span class="n">i</span>
 
-<span class="k">def</span> <span class="nf">get_dip</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">):</span>
-    <span class="n">url</span> <span class="o">=</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;dip&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
+<span class="k">def</span> <span class="nf">mitab_field_list</span><span class="p">(</span><span class="n">field</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">common</span><span class="o">.</span><span class="n">uniqList</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">field</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+    <span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">mitab_field_uniprot</span><span class="p">(</span><span class="n">field</span><span class="p">):</span>
+    <span class="n">uniprots</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;uniprotkb&#39;</span><span class="p">,</span>
+        <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span>
+            <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">),</span>
+            <span class="n">field</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">uniprots</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">uniprots</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+<span class="k">def</span> <span class="nf">get_dip</span><span class="p">(</span><span class="n">url</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">,</span> <span class="n">core_only</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">direct_only</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+    <span class="n">small_scale_only</span> <span class="o">=</span> <span class="bp">True</span><span class="p">):</span>
+    <span class="n">strDipCore</span> <span class="o">=</span> <span class="s1">&#39;dip-quality-status:core&#39;</span>
+    <span class="n">strDirect</span> <span class="o">=</span> <span class="s1">&#39;direct interaction&#39;</span>
+    <span class="n">strPhysInt</span> <span class="o">=</span> <span class="s1">&#39;physical interaction&#39;</span>
+    <span class="n">strSmallS</span> <span class="o">=</span> <span class="s1">&#39;small scale&#39;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;dip&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">url</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">url</span>
     <span class="n">f</span> <span class="o">=</span> <span class="n">curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
     <span class="n">i</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">lnum</span> <span class="o">=</span> <span class="mi">0</span>
@@ -5443,36 +5506,32 @@
         <span class="n">specA</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">specA</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">specB</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">intProp</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
-        <span class="n">expEv</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+        <span class="n">intProp</span> <span class="o">=</span> <span class="n">mitab_field_list</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">11</span><span class="p">])</span>
+        <span class="n">intProc</span> <span class="o">=</span> <span class="n">mitab_field_list</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">15</span><span class="p">])</span>
+        <span class="n">dipLinkId</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">13</span><span class="p">]</span>
+        <span class="n">expEv</span> <span class="o">=</span> <span class="n">mitab_field_list</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span>
+        <span class="n">conf</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">14</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">organism</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="p">(</span><span class="n">specA</span> <span class="o">==</span> <span class="n">organism</span> <span class="ow">and</span> <span class="n">specB</span> <span class="o">==</span> <span class="n">organism</span><span class="p">):</span>
-            <span class="n">pm</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;pubmed:&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
-            <span class="n">pm</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pm</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;DIP&#39;</span><span class="p">)]</span>
-            <span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
-            <span class="n">interaction</span> <span class="o">=</span> <span class="p">()</span>
-            <span class="k">for</span> <span class="n">ll</span> <span class="ow">in</span> <span class="n">l</span><span class="p">:</span>
-                <span class="n">ll</span> <span class="o">=</span> <span class="n">ll</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
-                <span class="n">uniprot</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-                <span class="k">for</span> <span class="n">lll</span> <span class="ow">in</span> <span class="n">ll</span><span class="p">:</span>
-                    <span class="n">nm</span> <span class="o">=</span> <span class="n">lll</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">nm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;uniprotkb&#39;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">nm</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
-                        <span class="n">uniprot</span> <span class="o">=</span> <span class="n">nm</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                <span class="n">interaction</span> <span class="o">+=</span> <span class="p">(</span><span class="n">uniprot</span><span class="p">,)</span>
-            <span class="n">interaction</span> <span class="o">+=</span> <span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pm</span><span class="p">),)</span>
-            <span class="n">intProp</span> <span class="o">=</span> <span class="p">[</span><span class="n">ip</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;)&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">intProp</span><span class="p">]</span>
-            <span class="n">expEv</span> <span class="o">=</span> <span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;)&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">ee</span> <span class="ow">in</span> <span class="n">expEv</span><span class="p">]</span>
-            <span class="n">interaction</span> <span class="o">+=</span> <span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">intProp</span><span class="p">),)</span>
-            <span class="n">interaction</span> <span class="o">+=</span> <span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">expEv</span><span class="p">),)</span>
-            <span class="k">print</span> <span class="n">interaction</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">interaction</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">6</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">interaction</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
-                <span class="n">i</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">interaction</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">core_only</span> <span class="ow">or</span> <span class="n">strDipCore</span> <span class="ow">in</span> <span class="n">conf</span><span class="p">)</span> <span class="ow">and</span> \
+                <span class="p">(</span><span class="ow">not</span> <span class="n">direct_only</span> <span class="ow">or</span> <span class="n">strDirect</span> <span class="ow">in</span> <span class="n">intProp</span> <span class="ow">or</span> \
+                    <span class="n">strPhysInt</span> <span class="ow">in</span> <span class="n">intProp</span><span class="p">)</span> <span class="ow">and</span> \
+                <span class="p">(</span><span class="ow">not</span> <span class="n">small_scale_only</span> <span class="ow">or</span> <span class="n">strSmallS</span> <span class="ow">in</span> <span class="n">intProc</span><span class="p">):</span>
+                <span class="n">pm</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;pubmed:&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+                <span class="n">pm</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pm</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;DIP&#39;</span><span class="p">)]</span>
+                <span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="n">uniprotA</span> <span class="o">=</span> <span class="n">mitab_field_uniprot</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">uniprotB</span> <span class="o">=</span> <span class="n">mitab_field_uniprot</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">uniprotA</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">uniprotB</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">i</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                        <span class="n">uniprotA</span><span class="p">,</span>
+                        <span class="n">uniprotB</span><span class="p">,</span>
+                        <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pm</span><span class="p">),</span>
+                        <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">intProp</span><span class="p">),</span>
+                        <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">expEv</span><span class="p">),</span>
+                        <span class="n">dipLinkId</span>
+                    <span class="p">])</span>
         <span class="n">lnum</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">i</span><span class="p">:</span>
-        <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">l</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">12</span><span class="p">:</span>
-            <span class="n">s</span> <span class="o">+=</span> <span class="n">line</span>
     <span class="k">return</span> <span class="n">i</span>
 
 <span class="k">def</span> <span class="nf">dip_login</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">passwd</span><span class="p">):</span>
