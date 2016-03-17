@@ -3848,8 +3848,8 @@ class PyPath(object):
                 self.nodDct, self.labDct)
         return _NamedVertexSeq([], self.nodNam, self.nodLab)
     
-    def gs_neighbors(self, uniprot, mode = 'ALL'):
-        vrtx = self.uniprot(uniprot)
+    def gs_neighbors(self, genesymbol, mode = 'ALL'):
+        vrtx = self.genesymbol(genesymbol)
         if vrtx is not None:
             return _NamedVertexSeq(vrtx.neighbors(mode = mode), 
                 self.nodDct, self.labDct)
