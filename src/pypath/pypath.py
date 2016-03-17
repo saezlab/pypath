@@ -2523,7 +2523,10 @@ class PyPath(object):
                     sys.stdout.write('\t:: Could not load %s, unexpected error '\
                         'occurred, see %s for error.\n'%(k, self.ownlog.logfile))
                     self.ownlog.msg('Error at loading %s: \n%s\n, \t%s, %s\n' % \
-                        (k, sys.exc_info()[1], sys.exc_info()[2], sys.exc_info()[0]))
+                            (k, sys.exc_info()[1],
+                            sys.exc_info()[2],
+                            sys.exc_info()[0]),
+                        'ERROR')
                     sys.stdout.flush()
         sys.stdout.write('\n')
         self.clean_graph()
@@ -3845,8 +3848,8 @@ class PyPath(object):
                 self.nodDct, self.labDct)
         return _NamedVertexSeq([], self.nodNam, self.nodLab)
     
-    def gs_neighbors(self, uniprot, mode = 'ALL'):
-        vrtx = self.uniprot(uniprot)
+    def gs_neighbors(self, genesymbol, mode = 'ALL'):
+        vrtx = self.genesymbol(genesymbol)
         if vrtx is not None:
             return _NamedVertexSeq(vrtx.neighbors(mode = mode), 
                 self.nodDct, self.labDct)

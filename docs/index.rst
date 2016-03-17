@@ -389,6 +389,27 @@ Alternatively, you can download and run the `myChEMBL virtual machine`_, and con
 
 .. _`myChEMBL virtual machine`: http://chembl.blogspot.co.uk/2014/06/mychembl-launchpadlaunched.html
 
+How to access OmniPath data by bioservices_
+===========================================
+
+Bioservices is a Python module to access various webserices. If you need only the network data and kinase-substrate interactions, and you would like to proccess the data further your own way, bioservices offers a convenient way to fetch the data directly from the OmniPath webservice into Python objects.
+
+.. code-block:: python
+
+    from bioservices import omnipath
+    op = omnipath.OmniPath()
+    
+    # all interactions:
+    i = op.get_interactions()
+    
+    # or only those of EGFR1 but include the sources and references fields:
+    i = op.get_interactions('P00533', fields = ['sources', 'references'])
+    
+    # get kinase-substrate interactions of EGFR1 and PRKCA:
+    ks = op.get_ptms('P00533,Q02156', fields = ['sources'])
+
+.. _bioservices: http://pythonhosted.org/bioservices/
+
 Reference
 =========
 
