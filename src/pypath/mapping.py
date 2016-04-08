@@ -34,7 +34,10 @@ import progress
 import logn
 from common import *
 import data_formats
-import mysql
+try:
+    import mysql
+except:
+    print 'No `mysql` available.'
 import dataio
 
 __all__ = ['MappingTable', 'Mapper']

@@ -1,17 +1,10 @@
 python-igraph
-pandas
-bioservices
 beautifulsoup4
-pymysql
 pyopenssl
 ndg-httpsclient
 chembl_webresource_client
 pyasn1
-twisted
 fisher
 statsmodels
-pygraphviz
-fabric
 pycurl
 lxml
-pysftp

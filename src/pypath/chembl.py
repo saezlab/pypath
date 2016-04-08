@@ -22,7 +22,10 @@ import threading
 import hashlib
 
 # from pypath:
-import mysql
+try:
+    import mysql
+except:
+    print 'No `mysql` available.'
 import mapping
 import progress
 import data_formats
