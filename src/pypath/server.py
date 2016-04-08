@@ -15,8 +15,11 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
-from twisted.web import server, resource
-from twisted.internet import reactor
+try:
+    from twisted.web import server, resource
+    from twisted.internet import reactor
+except:
+    print 'No `twisted` available.'
 import urllib
 import json
 from common import *

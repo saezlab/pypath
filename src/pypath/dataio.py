@@ -63,10 +63,16 @@ import copy
 import struct
 import json
 import webbrowser
-from bioservices import WSDLService
+try:
+    from bioservices import WSDLService
+except:
+    print 'No `bioservices` available.'
 from contextlib import closing
-from fabric.network import connect, HostConnectionCache
-from fabric.state import env
+try:
+    from fabric.network import connect, HostConnectionCache
+    from fabric.state import env
+except:
+    print 'No `fabric` available.'
 from xlrd import open_workbook
 from xlrd.biffh import XLRDError
 
