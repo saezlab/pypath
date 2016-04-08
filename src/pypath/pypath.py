@@ -30,7 +30,6 @@ import random
 import textwrap
 import copy
 import json
-import pandas
 import operator
 import locale
 import heapq
@@ -40,6 +39,7 @@ from collections import Counter
 import cPickle as pickle
 try:
     import pygraphviz as graphviz
+    import pandas
 except:
     sys.stdout.write('\nModule `pygraphviz` not found.\n'\
         'You don\'t need it unless you want to export dot files.\n')
@@ -52,7 +52,10 @@ import mapping
 import descriptions
 import chembl
 import gdsc
-import mysql
+try:
+    import mysql
+except:
+    print 'No `mysql` available.'
 import dataio
 import intera
 import go
@@ -3478,14 +3481,14 @@ class PyPath(object):
     dgs = dgenesymbol
     
     def genesymbols(self, genesymbols):
-        return filter(lambda v: v is not None, 
-            map(self.genesymbol(gs) for gs in genesymbols))
+        return filter(lambda v: v is not None,
+            map(self.genesymbol, genesymbols))
     
     gss = genesymbols
     
     def dgenesymbols(self, genesymbols):
-        return filter(lambda v: v is not None, 
-            map(self.dgenesymbol(gs) for gs in genesymbols))
+        return filter(lambda v: v is not None,
+            map(self.dgenesymbol, genesymbols))
     
     dgss = dgenesymbols
     
@@ -3528,7 +3531,7 @@ class PyPath(object):
         undirected graph.
         '''
         return filter(lambda v: v is not None, 
-            map(self.uniprot(up) for up in uniprots))
+            map(self.uniprot, uniprots))
     
     ups = uniprots
     
@@ -3540,7 +3543,7 @@ class PyPath(object):
         directed graph.
         '''
         return filter(lambda v: v is not None, 
-            map(self.duniprot(up) for up in uniprots))
+            map(self.duniprot, uniprots))
     
     dups = duniprots
     
@@ -3587,13 +3590,13 @@ class PyPath(object):
     
     def proteins(self, proteins):
         return filter(lambda v: v is not None, 
-            map(self.protein(p) for p in proteins))
+            map(self.protein, proteins))
     
     ps = proteins
     
     def dproteins(self, proteins):
         return filter(lambda v: v is not None, 
-            map(self.dprotein(p) for p in proteins))
+            map(self.dprotein, proteins))
     
     dps = dproteins
     
@@ -3845,28 +3848,34 @@ class PyPath(object):
         vrtx = self.uniprot(uniprot)
         if vrtx is not None:
             return _NamedVertexSeq(vrtx.neighbors(mode = mode), 
-                self.nodDct, self.labDct)
+                self.nodNam, self.nodLab)
         return _NamedVertexSeq([], self.nodNam, self.nodLab)
     
     def gs_neighbors(self, genesymbol, mode = 'ALL'):
         vrtx = self.genesymbol(genesymbol)
         if vrtx is not None:
             return _NamedVertexSeq(vrtx.neighbors(mode = mode), 
-                self.nodDct, self.labDct)
+                self.nodNam, self.nodLab)
         return _NamedVertexSeq([], self.nodNam, self.nodLab)
     
     def neighbors(self, identifier, mode = 'ALL'):
         vrtx = self.protein(identifier)
         if vrtx is not None:
             return _NamedVertexSeq(vrtx.neighbors(mode = mode), 
-                self.nodDct, self.labDct)
+                self.nodNam, self.nodLab)
         return _NamedVertexSeq([], self.nodNam, self.nodLab)
     
     # neighborhood variations:
     
     def _neighborhood(self, vs, order = 1, mode = 'ALL'):
-        return _NamedVertexSeq(self.graph.neighborhood(vs, 
-                order = order, mode = mode), 
+        return _NamedVertexSeq(
+            map(lambda vi: self.graph.vs[vi],
+                reduce(lambda (a, b):
+                    a.extend(b),
+                    self.graph.neighborhood(vs,
+                        order = order, mode = mode)
+                ),
+            ),
             self.nodNam, self.nodLab)
     
     def up_neighborhood(self, uniprot, order = 1, mode = 'ALL'):
@@ -5359,6 +5368,9 @@ class PyPath(object):
         return graph.induced_subgraph([v.index for v in graph.vs if v[tissue] > 0.0])
     
     def small_plot(self, graph, **kwargs):
+        '''
+        This method is deprecated, do not use it.
+        '''
         arrow_size = []
         arrow_width = []
         edge_color = []
@@ -5766,6 +5778,7 @@ class PyPath(object):
         self.graph.delete_edges(htedgs)
         zerodeg = [v.index for v in self.graph.vs if v.degree() == 0]
         self.graph.delete_vertices(zerodeg)
+        self.update_vname()
         sys.stdout.write('\t:: Interactions from only high-throughput resources '\
             'have been removed.\n\t   %u interactions removed.\n\t   Number of edges '\
             'decreased from %u to %u, number of vertices from %u to %u.\n' % \
@@ -6381,6 +6394,17 @@ class PyPath(object):
                             con['consistency']['signs']['signs_edges'][(s1, s2)]['minor'].add(e.index)
         prg.terminate()
         return con
+    
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        reload(mod)
+        # print 'self.__class__.__name__ = ', self.__class__.__name__
+        # print 'mod = ', mod
+        new = getattr(mod, self.__class__.__name__)
+        # print 'new = ', new
+        # print 'new.__class__ = ', new.__class__
+        setattr(self, '__class__', new)
     
     def _disclaimer(self):
         sys.stdout.write(self.disclaimer)
