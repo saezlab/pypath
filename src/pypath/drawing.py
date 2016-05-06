@@ -125,8 +125,8 @@ class Plot(object):
             self.title_text = title
         if self._has_graph():
             if type(self.vertex_label) is str and \
-                self.vartex_label in self.graph.vs.attributes():
-                self.vertex_label = g.vs[self.vertex_label]
+                self.vertex_label in self.graph.vs.attributes():
+                self.vertex_label = self.graph.vs[self.vertex_label]
             self.graph.vertex_label_font = self.vertex_label_font
             self.graph.edge_label_font = self.edge_label_font
             self.size = 'small' if self.graph.vcount() <= 100 \

@@ -1225,18 +1225,17 @@ class PyPath(object):
             return lst[1]
         if lst[1] is None:
             return lst[0]
-        if (isinstance(lst[0], (int, long, float)) and 
-            isinstance(lst[1], (int, long, float))):
+        if (type(lst[0]) in numTypes) and lst[1] in numTypes)):
             return max(lst)
-        if isinstance(lst[0], list) and isinstance(lst[1], list):
+        if type(lst[0]) is list and type(lst[1]) list:
             try:
                 return list(set(lst[0] + lst[1]))
             except:
                 return lst[0] + lst[1]
-        if isinstance(lst[0], dict) and isinstance(lst[1], dict):
+        if type(lst[0]) is dict and type(lst[1]) is dict:
             return dict(lst[0].items() + lst[1].items())
-        if (isinstance(lst[0], str) or isinstance(lst[0], unicode) 
-            and isinstance(lst[1], str) or isinstance(lst[1], unicode)):
+        if (type(lst[0]) is str or type(lst[0]) is unicode) and \
+            (type(lst[1]) is str or type(lst[1]) is unicode):
             if len(lst[0]) == 0:
                 return lst[1]
             if len(lst[1]) == 0:
@@ -5915,9 +5914,26 @@ class PyPath(object):
             sources, and returns the sum of these values.
         '''
         if sum_by_source:
-            sum(map(sum, map(lambda rs: map(len, rs.values()), self.graph.es['refs_by_source'])))
+            return sum(
+                map(
+                    sum,
+                        map(
+                            lambda rs:
+                                map(
+                                    len,
+                                    rs.values()
+                                ),
+                            self.graph.es['refs_by_source']
+                        )
+                    )
+                )
         else:
-            sum(map(len, self.graph.es['references']))
+            return sum(
+                map(
+                    len,
+                    self.graph.es['references']
+                )
+            )
     
     def export_dot(self, nodes = None, edges = None, directed = True, 
         labels = 'genesymbol', edges_filter = lambda e: True, nodes_filter = lambda v: True,
@@ -6394,6 +6410,47 @@ class PyPath(object):
                             con['consistency']['signs']['signs_edges'][(s1, s2)]['minor'].add(e.index)
         prg.terminate()
         return con
+    
+    def export_edgelist(self, fname, graph = None, names = ['name'], edge_attributes=[], sep='\t'):
+        """
+            Write edge list to text file with attributes
+            
+            @param fname: the name of the file or a stream to read from.
+            @param graph: the igraph object containing the network
+            @param names: list with the vertex attribute names to be printed
+                for source and target vertices
+            @param edge_attributes: list with the edge attribute names
+                to be printed
+            @param sep: string used to separate columns
+            """
+        # from Luis Tobalina
+        graph = self.graph if graph is None else graph
+        # check that input 'names' and 'edge_attributes' exist
+        names = \
+            filter(
+                lambda name:
+                    name in graph.vs.attribute_names(),
+                names
+            )
+        edge_attributes = \
+            filter(
+                lambda attr:
+                    attr in graph.es.attribute_names()
+            )
+        # write file
+        with open(fname, 'wt') as fid:
+            # write header
+            for iname in names:
+                fid.write('%s%s' % (sep.join(['{}_{}'.format(st, iname)
+                    for st in ('source', 'target')]), sep))
+            fid.write('%s\n' % sep.join(eattr for eattr in edge_attributes))
+            # write data
+            for edge in graph.es:
+                for iname in names:
+                    fid.write('%s%s' (sep.join([graph.vs[v][iname]
+                        for v in edge.tuple]), sep))
+                fid.write('%s\n' % sep.join(['{}'.format(edge[eattr])
+                    for eattr in edge_attributes]))
     
     def reload(self):
         modname = self.__class__.__module__
