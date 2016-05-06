@@ -6411,7 +6411,8 @@ class PyPath(object):
         prg.terminate()
         return con
     
-    def export_edgelist(self, fname, graph = None, names = ['name'], edge_attributes=[], sep='\t'):
+    def export_edgelist(self, fname, graph = None, names = ['name'],
+        edge_attributes = [], sep = '\t'):
         """
             Write edge list to text file with attributes
             
@@ -6435,7 +6436,8 @@ class PyPath(object):
         edge_attributes = \
             filter(
                 lambda attr:
-                    attr in graph.es.attribute_names()
+                    attr in graph.es.attribute_names(),
+                edge_attributes
             )
         # write file
         with open(fname, 'wt') as fid:
@@ -6447,7 +6449,7 @@ class PyPath(object):
             # write data
             for edge in graph.es:
                 for iname in names:
-                    fid.write('%s%s' (sep.join([graph.vs[v][iname]
+                    fid.write('%s%s' % (sep.join([graph.vs[v][iname] \
                         for v in edge.tuple]), sep))
                 fid.write('%s\n' % sep.join(['{}'.format(edge[eattr])
                     for eattr in edge_attributes]))
