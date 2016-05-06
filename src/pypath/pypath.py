@@ -1225,9 +1225,9 @@ class PyPath(object):
             return lst[1]
         if lst[1] is None:
             return lst[0]
-        if (type(lst[0]) in numTypes) and lst[1] in numTypes)):
+        if type(lst[0]) in numTypes and type(lst[1]) in numTypes:
             return max(lst)
-        if type(lst[0]) is list and type(lst[1]) list:
+        if type(lst[0]) is list and type(lst[1]) is list:
             try:
                 return list(set(lst[0] + lst[1]))
             except:
