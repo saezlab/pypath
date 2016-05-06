@@ -21,7 +21,7 @@ import math
 import random
 import textwrap
 
-__all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'uniqList', 'addToList', 
+__all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes', 'uniqList', 'addToList', 
            'gen_session_id', 'sorensen_index', 'console', 'wcl', 'flatList', 
            'charTypes', 'delEmpty', '__version__', 'get_args', 
            'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs']
@@ -74,9 +74,11 @@ aacodes = {
 
 aaletters = dict(zip(aacodes.values(),aacodes.keys()))
 
-simpleTypes = [int, float, str, unicode]
+simpleTypes = set([int, long, float, str, unicode])
 
-charTypes = [str, unicode]
+numTypes = set([int, long, float])
+
+charTypes = set([str, unicode])
 
 def uniqList(seq):
     # Not order preserving
