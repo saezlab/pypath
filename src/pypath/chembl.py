@@ -25,7 +25,10 @@ import hashlib
 try:
     import mysql
 except:
-    print 'No `mysql` available.'
+    try:
+        import pymysql as myslq
+    except:
+        print 'No `mysql` available.'
 import mapping
 import progress
 import data_formats

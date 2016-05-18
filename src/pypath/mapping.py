@@ -37,7 +37,10 @@ import data_formats
 try:
     import mysql
 except:
-    print 'No `mysql` available.'
+    try:
+        import pymysql as myslq
+    except:
+        print 'No `mysql` available.'
 import dataio
 
 __all__ = ['MappingTable', 'Mapper']
