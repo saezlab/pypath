@@ -51,11 +51,13 @@ import data_formats
 import mapping
 import descriptions
 import chembl
-import gdsc
 try:
     import mysql
 except:
-    print 'No `mysql` available.'
+    try:
+        import pymysql as myslq
+    except:
+        print 'No `mysql` available.'
 import dataio
 import intera
 import go
@@ -517,6 +519,7 @@ class PyPath(object):
             g.es['type'] = [[] for _ in xrange(self.graph.ecount())]
             g.es['references'] = [[] for _ in xrange(self.graph.ecount())]
             g.es['refs_by_source'] = [{} for _ in xrange(self.graph.ecount())]
+            g.es['refs_by_dir'] = [{} for _ in xrange(self.graph.ecount())]
             g.es['refs_by_type'] = [{} for _ in xrange(self.graph.ecount())]
             g.es['sources_by_type'] = [{} for _ in xrange(self.graph.ecount())]
             g.es['negative_refs'] = [[] for _ in xrange(self.graph.ecount())]
@@ -1523,8 +1526,11 @@ class PyPath(object):
             g.es[edge]['dirs'] = Direction(nameA,nameB)
         if isDir:
             g.es[edge]['dirs'].set_dir((nameA,nameB),source)
+            # updating references-by-direction dict:
+            self.add_grouped_eattr(edge, 'refs_by_dir', (nameA, nameB), refs)
         else:
             g.es[edge]['dirs'].set_dir('undirected',source)
+            self.add_grouped_eattr(edge, 'refs_by_dir', 'undirected', refs)
         # setting signs:
         if stim:
             g.es[edge]['dirs'].set_sign((nameA,nameB),'positive',source)
