@@ -175,10 +175,36 @@ cd ..
 export PYTHONPATH="$LOCAL/lib/python2.7/site-packages:$PYTHONPATH"
 # pycairo installed
 
+# installing autoconf, automake and libtool
+# this is needed to build graphviz from git
+curl -L http://ftpmirror.gnu.org/autoconf/autoconf-latest.tar.gz -o autoconf.tar.gz
+tar xzf autoconf.tar.gz
+cd autoconf-*
+./configure --prefix=/usr/local
+make install
+cd ..
+
+curl -L http://ftpmirror.gnu.org/automake/automake-latest.tar.gz -o automake.tar.gz
+tar -xzf automake.tar.gz
+cd automake-*
+./configure --prefix=$LOCAL
+make install
+cd ..
+
+cd $build
+curl -L http://ftpmirror.gnu.org/libtool/libtool-latest.tar.gz -o libtool.tar.gz
+tar -xzf libtool.tar.gz
+cd libtool-*
+./configure --prefix=$LOCAL
+make install
+cd ..
+# automake, autoconf and libtool are installed
+
 # installing graphviz -- optional
 curl -L $GVIZURL --retry 5 -o graphviz.tar.gz
 tar -xzf graphviz.tar.gz
 cd "graphviz-master"
+sh ./autogen.sh
 ./configure --prefix=$LOCAL
 make install
 cd ..
