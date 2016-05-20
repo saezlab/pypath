@@ -174,7 +174,7 @@ cd ..
 export PYTHONPATH="$LOCAL/lib/python2.7/site-packages:$PYTHONPATH"
 
 # installing graphviz -- optional
-curl -L $GVIZURL -o graphviz.tar.gz
+curl -L $GVIZURL --retry 5 -o graphviz.tar.gz
 tar -xzf graphviz.tar.gz
 cd "graphviz-$GVIZVER"
 ./configure --prefix=$LOCAL
