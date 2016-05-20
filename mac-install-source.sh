@@ -71,6 +71,7 @@ CAIROURL="http://cairographics.org/releases/cairo-$CAIROVER.tar.xz"
 LIBPNGURL="http://downloads.sourceforge.net/project/libpng/libpng16/$LIBPNGVER/libpng-$LIBPNGVER.tar.xz"
 PYPATHURL="http://pypath.omnipathdb.org/releases/latest/pypath-latest.tar.gz"
 GVIZURL="http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-$GVIZVER.tar.gz"
+GVIZURL="https://github.com/ellson/graphviz/archive/master.tar.gz"
 
 # local Python installation paths
 LOCALPYHOME="/Users/$USER/Library/Python/$PYVERSHORT"
@@ -172,6 +173,7 @@ cd py2cairo-$PYCAIROVER
 ./waf install
 cd ..
 export PYTHONPATH="$LOCAL/lib/python2.7/site-packages:$PYTHONPATH"
+# pycairo installed
 
 # installing graphviz -- optional
 curl -L $GVIZURL --retry 5 -o graphviz.tar.gz
