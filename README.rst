@@ -66,7 +66,21 @@ Python igraph is a Python interface to use the igraph C library. The C library s
 Mac OS X
 --------
 
-On OS X installation of cairo and the igraph C core is not straightforward. It is advised to follow the **mac_install.sh** script. To know more see the description in the script header.
+On OS X installation is not straightforward primarily because cairo needs to be compiled from source. We provide 2 scripts here: the **mac-install-source.sh** requires only Python 2.7 and Xcode installed, while the **mac-install-brew.sh** to install everything with HomeBrew. To know more see the description in the script header.
+
+Troubleshooting
+~~~~~~~~~~~~~~~
+
+* ``no module named ...`` when you try to load a module in Python. Did the installation of the module run without error? Try to run again the specific part from the mac install shell script to see if any error comes up. Is the path where the module has been installed in your ``$PYTHONPATH``? Try ``echo $PYTHONPATH`` to see the current paths. Add your local install directories if those are not there, e.g. ``export PYTHONPATH="/Users/me/local/python2.7/site-packages:$PYTHONPATH"``. If it works afterwards, don't forget to append these export path statements to your ``~/.bash_profile``, so these will be set every time you launch a new shell.
+
+* ``pkgconfig`` not found. Check if the ``$PKG_CONFIG_PATH`` variable is set correctly, and pointing on a directory where pkgconfig really can be found.
+
+* Error while trying to install py2cairo by pip. py2cairo could not be installed by pip, but only by waf. Please set the ``$PKG_CONFIG_PATH`` before. See **mac-install-source.sh** on how to install with waf.
+
+* Error at pygraphviz build: ``graphviz/cgraph.h file not found``. This is because the directory of graphviz detected wrong by pkgconfig. See **mac-install-source.sh** how to set include dirs and library dirs by ``--global-option`` parameters.
+
+* Can not install bioservices, because installation of jurko-suds fails. Ok, this fails because pip is not able to install the recent version of setuptools, because a very old version present in the system path. The development version of jurko-suds does not require setuptools, so you can install it directly from git as it is done in **mac-install-source.sh**.
+
 
 Directly from git
 -----------------
