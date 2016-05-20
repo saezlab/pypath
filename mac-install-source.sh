@@ -180,7 +180,7 @@ export PYTHONPATH="$LOCAL/lib/python2.7/site-packages:$PYTHONPATH"
 curl -L http://ftpmirror.gnu.org/autoconf/autoconf-latest.tar.gz -o autoconf.tar.gz
 tar xzf autoconf.tar.gz
 cd autoconf-*
-./configure --prefix=/usr/local
+./configure --prefix=$LOCAL
 make install
 cd ..
 
