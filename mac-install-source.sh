@@ -74,8 +74,11 @@ GVIZURL="http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-$GVIZVER.t
 
 # local Python installation paths
 LOCALPYHOME="/Users/$USER/Library/Python/$PYVERSHORT"
+LOCALPYHOME2="$LOCAL/lib/python2.7"
 LOCALPYPATH="$LOCALPYHOME/site-packages"
-LOCALPYPATH2="$LOCAL/lib/python2.7/site-packages"
+LOCALPYBIN="$LOCALPYHOME/bin"
+LOCALPYPATH2="$LOCALPYHOME2/site-packages"
+LOCALPYBIN2="$LOCALPYHOME2/bin"
 
 export PYTHONPATH="$LOCALPYPATH:$PYTHONPATH"
 
@@ -98,11 +101,11 @@ export PYTHONSTARTUP=~/.pythonrc
 EOF
 
 # creating local Python install dir if does not exist
-if ![ -d $LOCALPYDIR ];
+if ! [ -d $LOCALPYDIR ];
   then mkdir -p $LOCALPYDIR;
 fi
 
-export PATH="$LOCALBIN:$PATH"
+export PATH="$LOCALPYBIN:$LOCALPYBIN2$LOCALBIN:$PATH"
 
 # doing all downloads and builds in this dir
 # later will be easy to remove
@@ -113,7 +116,7 @@ cd $BUILDDIR
 curl -L -O https://bootstrap.pypa.io/get-pip.py
 
 # installing pip
-python2.7 ./get-pip.py
+python2.7 ./get-pip.py --user
 
 # adding the local Python dir to the path
 # otherwise Python won`t find it and gives
@@ -199,9 +202,10 @@ pip install --user $PYPATHURL
 cd ~
 rm -R $BUILDDIR
 
-# adding local python paths permantently
+# adding local paths and python paths permantently
 cat << EOF >> .bashrc
 export PYTHONPATH="$LOCALPYPATH2:$LOCALPYPATH:\$PYTHONPATH"
+export PATH="$LOCALPYBIN:$LOCALPYBIN2$LOCALBIN:\$PATH"
 EOF
 
 exit 0
