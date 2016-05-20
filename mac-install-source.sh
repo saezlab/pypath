@@ -97,7 +97,7 @@ else:
     readline.parse_and_bind("tab: complete")
 EOF
 
-cat << EOF >> .bashrc
+cat << EOF >> .bash_profile
 export PYTHONSTARTUP=~/.pythonrc
 EOF
 
@@ -202,9 +202,10 @@ cd ~
 rm -R $BUILDDIR
 
 # adding local paths and python paths permantently
-cat << EOF >> .bashrc
+cat << EOF >> .bash_profile
 export PYTHONPATH="$LOCALPYPATH2:$LOCALPYPATH:\$PYTHONPATH"
 export PATH="$LOCALPYBIN:$LOCALPYBIN2:$LOCALBIN:\$PATH"
 EOF
+
 
 exit 0
