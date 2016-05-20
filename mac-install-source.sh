@@ -80,7 +80,8 @@ LOCALPYBIN="$LOCALPYHOME/bin"
 LOCALPYPATH2="$LOCALPYHOME2/site-packages"
 LOCALPYBIN2="$LOCALPYHOME2/bin"
 
-export PYTHONPATH="$LOCALPYPATH:$PYTHONPATH"
+export PYTHONPATH="$LOCALPYPATH:$LOCALPYPATH2:$PYTHONPATH"
+export PATH="$LOCALPYBIN:$LOCALPYBIN2:$LOCALBIN:$PATH"
 
 cd ~
 
@@ -104,8 +105,6 @@ EOF
 if ! [ -d $LOCALPYDIR ];
   then mkdir -p $LOCALPYDIR;
 fi
-
-export PATH="$LOCALPYBIN:$LOCALPYBIN2$LOCALBIN:$PATH"
 
 # doing all downloads and builds in this dir
 # later will be easy to remove
@@ -205,7 +204,7 @@ rm -R $BUILDDIR
 # adding local paths and python paths permantently
 cat << EOF >> .bashrc
 export PYTHONPATH="$LOCALPYPATH2:$LOCALPYPATH:\$PYTHONPATH"
-export PATH="$LOCALPYBIN:$LOCALPYBIN2$LOCALBIN:\$PATH"
+export PATH="$LOCALPYBIN:$LOCALPYBIN2:$LOCALBIN:\$PATH"
 EOF
 
 exit 0
