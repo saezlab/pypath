@@ -70,7 +70,7 @@ PXMANURL="http://www.cairographics.org/releases/pixman-$PXMANVER.tar.gz"
 CAIROURL="http://cairographics.org/releases/cairo-$CAIROVER.tar.xz"
 LIBPNGURL="http://downloads.sourceforge.net/project/libpng/libpng16/$LIBPNGVER/libpng-$LIBPNGVER.tar.xz"
 PYPATHURL="http://pypath.omnipathdb.org/releases/latest/pypath-latest.tar.gz"
-GVIZURL="http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-$GVIZVER.tar.gz"
+# GVIZURL="http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-$GVIZVER.tar.gz"
 GVIZURL="https://github.com/ellson/graphviz/archive/master.tar.gz"
 
 # local Python installation paths
@@ -178,7 +178,7 @@ export PYTHONPATH="$LOCAL/lib/python2.7/site-packages:$PYTHONPATH"
 # installing graphviz -- optional
 curl -L $GVIZURL --retry 5 -o graphviz.tar.gz
 tar -xzf graphviz.tar.gz
-cd "graphviz-$GVIZVER"
+cd "graphviz-master"
 ./configure --prefix=$LOCAL
 make install
 cd ..
