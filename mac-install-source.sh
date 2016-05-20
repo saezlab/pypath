@@ -227,7 +227,7 @@ pip install --user $PYPATHURL
 
 #removing build dir
 cd ~
-rm -R $BUILDDIR
+rm -Rf $BUILDDIR
 
 # adding local paths and python paths permantently
 cat << EOF >> .bash_profile
