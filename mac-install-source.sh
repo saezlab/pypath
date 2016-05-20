@@ -62,6 +62,8 @@ PXMANVER="0.34.0"
 PKGCFGVER="0.28"
 LIBPNGVER="1.6.21"
 GVIZVER="2.38.0"
+AMVER="1.15"
+LTOOLVER="2.4.6"
 
 # URLs
 PKGCFGURL="https://pkg-config.freedesktop.org/releases/pkg-config-$PKGCFGVER.tar.gz"
@@ -184,17 +186,16 @@ cd autoconf-*
 make install
 cd ..
 
-curl -L http://ftpmirror.gnu.org/automake/automake-latest.tar.gz -o automake.tar.gz
-tar -xzf automake.tar.gz
-cd automake-*
+curl -L http://ftpmirror.gnu.org/automake/automake-$AMVER.tar.xz -o automake.tar.xz
+tar -xf automake.tar.xz
+cd automake-$AMVER
 ./configure --prefix=$LOCAL
 make install
 cd ..
 
-cd $build
-curl -L http://ftpmirror.gnu.org/libtool/libtool-latest.tar.gz -o libtool.tar.gz
-tar -xzf libtool.tar.gz
-cd libtool-*
+curl -L http://ftpmirror.gnu.org/libtool/libtool-$LTOOLVER.tar.xz -o libtool.tar.xz
+tar -xf libtool.tar.xz
+cd libtool-$LTOOLVER
 ./configure --prefix=$LOCAL
 make install
 cd ..
