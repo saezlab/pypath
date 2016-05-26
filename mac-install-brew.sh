@@ -24,6 +24,7 @@ HOME="/Users/$USER"
 LOCAL="$HOME/local"
 LOCALBIN="$LOCAL/bin"
 LOCALPIP="$LOCALBIN/pip2.7"
+LOCALPYPATH="$LOCAL/lib/python2.7/site-packages"
 PYPATHURL="http://pypath.omnipathdb.org/releases/latest/pypath-latest.tar.gz"
 
 if [ ! -d $LOCAL ];
@@ -32,10 +33,26 @@ fi
 
 export PATH="$LOCALBIN:$PATH"
 
-cd $LOCAL
+# autocompletion is highly useful
+# we add it to the .pyhthonrc
+# feel free to remove later if u don't like
+cat << EOF >> .pythonrc
+import readline
+import rlcompleter
+if 'libedit' in readline.__doc__:
+    readline.parse_and_bind("bind ^I rl_complete")
+    else:
+        readline.parse_and_bind("tab: complete")
+EOF
+
+cat << EOF >> .bash_profile
+export PYTHONSTARTUP=~/.pythonrc
+EOF
 
 # downloading and extracting homebrew:
+cd $LOCAL
 curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1
+cd ~
 
 brew update
 brew install python py2cairo homebrew/science/igraph graphviz
@@ -45,9 +62,16 @@ $LOCALPIP install python-igraph
 $LOCALPIP install pysftp
 $LOCALPIP install fabric
 $LOCALPIP install pandas
+$LOCALPIP install scipy
 $LOCALPIP install suds-jurko
 $LOCALPIP install bioservices
 $LOCALPIP install pymysql
 $LOCALPIP install pygraphviz
 
 $LOCALPIP install $PYPATHURL
+
+# adding local paths and python paths permantently
+cat << EOF >> .bash_profile
+export PYTHONPATH="$LOCALPYPATH:\$PYTHONPATH"
+export PATH="$LOCALBIN:\$PATH"
+EOF

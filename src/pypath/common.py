@@ -72,6 +72,12 @@ aacodes = {
     'X': 'XAA'
 }
 
+if 'long' not in globals():
+    long = int
+
+if 'unicode' not in globals():
+    unicode = str
+
 aaletters = dict(zip(aacodes.values(),aacodes.keys()))
 
 simpleTypes = set([int, long, float, str, unicode])
@@ -85,12 +91,7 @@ def uniqList(seq):
     # from http://www.peterbe.com/plog/uniqifiers-benchmark
     keys = {}
     for e in seq:
-        try:
-            keys[e] = 1
-        except:
-            print e
-            print seq
-            print keys
+        keys[e] = 1
     return keys.keys()
 
 def flatList(lst):

@@ -59,7 +59,8 @@ except:
     try:
         import pymysql as myslq
     except:
-        print 'No `mysql` available.'
+        sys.stdout.write('No `mysql` available.\n\n')
+        sys.stdout.flush()
 import dataio
 import intera
 import go
@@ -406,7 +407,8 @@ class AttrHelper(object):
                     if self.name in self.defaults and \
                         resource_type in self.defaults[self.name]:
                         return self.defaults[self.name][resource_type]
-            print 'No category for %s' % thisSources
+            sys.stdout.wrtie('No category for %s\n' % thisSources)
+            sys.stdout.flush()
         # if value is constant:
         elif type(self.value) in simpleTypes:
             return self.value
