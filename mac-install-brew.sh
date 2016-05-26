@@ -32,4 +32,7 @@ fi
 mkdir $BREWDIR
 cd $BREWDIR
 
+# downloading and extracting homebrew:
+curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1
+
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
