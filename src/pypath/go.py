@@ -19,10 +19,10 @@ import sys
 from collections import Counter, OrderedDict
 
 # from this package:
-import dataio
-import progress
-import enrich
-from common import *
+from pypath import dataio
+import pypath.progress
+from pypath import enrich
+from pypath.common import *
 
 class GOAnnotation(object):
     

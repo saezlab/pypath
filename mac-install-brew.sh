@@ -75,3 +75,6 @@ cat << EOF >> .bash_profile
 export PYTHONPATH="$LOCALPYPATH:\$PYTHONPATH"
 export PATH="$LOCALBIN:\$PATH"
 EOF
+
+# with Py3 this will be necessary:
+# pip install git+https://github.com/brentp/fishers_exact_test.git

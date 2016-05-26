@@ -22,10 +22,11 @@ except:
     print 'No `twisted` available.'
 import urllib
 import json
-from common import *
-import descriptions
-import _html
-import data_formats
+
+from pypath.common import *
+import pypath.descriptions
+import pypath._html
+import pypath.data_formats
 
 def stop_server():
     reactor.removeAll()

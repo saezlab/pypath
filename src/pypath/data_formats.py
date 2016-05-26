@@ -16,11 +16,13 @@
 #
 
 # external modules:
+from future.utils import iteritems
+
 import os
 
 # from pypath:
-import input_formats
-import common
+from pypath import input_formats
+from pypath import common
 
 __all__ = ['urls', 'mapList', 'otherMappings', 'refLists', 
            'reaction', 'interaction', 'interaction_misc', 'pathway', 
@@ -1248,11 +1250,10 @@ ptm = {
 '''
 The default set of resources in OmniPath.
 '''
-omnipath = dict(
-    pathway.items() + \
-    ptm.items() + \
-    interaction.items()
-)
+omnipath = {}
+omnipath.update(pathway)
+omnipath.update(ptm)
+omnipath.update(interaction)
 
 '''
 Other PTM datasets which are not used because the lack of
@@ -1719,7 +1720,7 @@ i = set([])
 r = set([])
 m = set([])
 
-for db, c in categories.iteritems():
+for db, c in iteritems(categories):
     locals()[c].add(db)
 
 pathway_resources = p

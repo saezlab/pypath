@@ -23,24 +23,49 @@
 # processes them, sometimes parses html
 #
 
+from future.utils import iteritems
+from past.builtins import xrange, range, reduce
+
 import pycurl
 try:
     from cStringIO import StringIO
 except:
-    from StringIO import StringIO
+    try:
+        from StringIO import StringIO
+    except:
+        from io import BytesIO as StringIO
+        from io import StringIO as UStringIO
+
 try:
     import cPickle as pickle
 except:
     import pickle
+
 import sys
 import os
 import re
 import itertools
 from collections import Counter
+
 import urllib
-import urllib2
+
+try:
+    import urllib2
+except ImportError:
+    # this works seemless in Py3:
+    urllib2 = urllib.request
+
 import httplib2
-import urlparse
+try:
+    import urlparse
+except:
+    # this works seemless in Py3:
+    urlparse = urllib.parse
+
+if not hasattr(urllib, 'quote'):
+    _urllib = urllib
+    urllib = _urllib.parse
+
 try:
     import pysftp
 except:
@@ -66,26 +91,34 @@ import webbrowser
 try:
     from bioservices import WSDLService
 except:
-    print 'No `bioservices` available.'
+    sys.stdout.write('No `bioservices` available.\n\n')
+    sys.stdout.flush()
+
 from contextlib import closing
 try:
     from fabric.network import connect, HostConnectionCache
     from fabric.state import env
 except:
-    print 'No `fabric` available.'
+    sys.stdout.write('No `fabric` available.\n')
+    sys.stdout.flush()
+
 from xlrd import open_workbook
 from xlrd.biffh import XLRDError
 
 # from this module
 
-import data_formats
-import progress
-import common
-import intera
-import reaction
-import residues
-import mapping
-import seq as se
+from pypath import data_formats
+from pypath import progress
+from pypath import common
+from pypath import intera
+from pypath import reaction
+from pypath import residues
+from pypath import mapping
+from pypath import seq as se
+
+
+if 'unicode' not in globals():
+    unicode = str
 
 CURSOR_UP_ONE = '\x1b[1A'
 ERASE_LINE = '\x1b[2K'
@@ -106,7 +139,9 @@ class cache_on(object):
     def __exit__(self, exception_type, exception_value, traceback):
         global CACHE
         if exception_type is not None:
-            print exception_type, exception_value, traceback
+            sys.stdout.write('%s, %s, %s\n' % \
+                (str(exception_type), str(exception_value), str(traceback)))
+            sys.stdout.flush()
         CACHE = self._store_cache
 
 class cache_off(object):
@@ -122,14 +157,16 @@ class cache_off(object):
     def __exit__(self, exception_type, exception_value, traceback):
         global CACHE
         if exception_type is not None:
-            print exception_type, exception_value, traceback
+            sys.stdout.write('%s, %s, %s\n' % \
+                (str(exception_type), str(exception_value), str(traceback)))
+            sys.stdout.flush()
         CACHE = self._store_cache
 
 class RemoteFile(object):
     
     def __init__(self, filename, user, host, passwd, port = 22, sep = '\t', 
         header = True, rownames = True):
-        for key, val in locals().iteritems():
+        for key, val in iteritems(locals()):
             setattr(self, key, val)
         env.keepalive = 60
         env.connection_attempts = 5
@@ -180,6 +217,8 @@ def url_fix(s, charset='utf-8', force = False):
     """
     if isinstance(s, unicode):
         s = s.encode(charset, 'ignore')
+    if isinstance(s, bytes):
+        s = str(s, charset)
     scheme, netloc, path, qs, anchor = urlparse.urlsplit(s)
     if force or not is_quoted(path):
         path = urllib.quote(path, '/%')
@@ -198,6 +237,8 @@ def print_debug_info(debug_type, debug_msg, truncate = 1000):
 def get_headers(header_list):
     headers = {}
     for header_line in header_list:
+        if type(header_line) is not str:
+            header_line = str(header_line, 'ascii')
         if ':' not in header_line:
             continue
         name, value = header_line.split(':', 1)
@@ -234,8 +275,8 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
         init_url = url_fix(init_url, force = force_quote)
     # either from cache or from download, we load the data into StringIO:
     multifile = False
-    domain = url.replace('https://', '').replace('http://','').\
-        replace('ftp://','').split('/')[0]
+    domain = url.replace('https://', '').replace('http://', '').\
+        replace('ftp://', '').split('/')[0]
     if sftp_host is not None:
         sftp_filename = url
         url = '%s%s'%(sftp_host, sftp_filename)
@@ -248,7 +289,7 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
             '?' + '&'.join(sorted([i[0]+'='+i[1] for i in post.items()]))
         try:
             urlmd5 = hashlib.md5(url+poststr).hexdigest()
-        except UnicodeEncodeError:
+        except (UnicodeEncodeError, TypeError):
             urlmd5 = hashlib.md5(('%s%s' % (url, poststr)).encode('utf-8')).hexdigest()
         if not os.path.exists(os.path.join(os.getcwd(),'cache')):
             os.mkdir(os.path.join(os.getcwd(),'cache'))
@@ -264,11 +305,12 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
                     'downloaded from %s\n'%(outf,domain))
                 sys.stdout.flush()
             if large:
-                result = open(cachefile, 'rb')
+                result = open(cachefile, 'r')
             else:
                 with open(cachefile,'rb') as f:
                     result = StringIO()
-                    result.write(f.read())
+                    read = f.read()
+                    result.write(read)
     else:
         usecache = False
     # if not found in cache, download with curl:
@@ -288,7 +330,7 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
                 status = 501
         else:
             if not init_url and large:
-                result = open(cachefile, 'wb')
+                result = open(cachefile, 'w')
             else:
                 result = StringIO()
             c = pycurl.Curl()
@@ -346,9 +388,9 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
                             if h.startswith('226'):
                                 status = 200
                                 break
-                except pycurl.error as (errno, strerror):
+                except pycurl.error as e:
                     status = 500
-                    sys.stdout.write('\tPycURL error: %u, %s\n' % (errno, strerror))
+                    sys.stdout.write('\tPycURL error: %u, %s\n' % e)
                     sys.stdout.flush()
             c.close()
     # sometimes authentication or cookies are needed to access the target url:
@@ -367,10 +409,10 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
             write_cache = write_cache)
     # get the data from the file downloaded/loaded from cache:
     if usecache or status == 200:
-        if type(result) is file:
+        if result is not None and type(result) is not StringIO:
             fname = result.name
             result.close()
-            result = open(fname, 'r')
+            result = open(fname, 'rb')
         # find out the encoding:
         if encoding is None:
             if not usecache:
@@ -413,9 +455,14 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
             if not large:
                 res.close()
         elif url[-2:].lower() == 'gz' or compr == 'gz':
-            res = gzip.GzipFile(fileobj=result, mode='rb')
+            res = gzip.GzipFile(fileobj = result, mode = 'r')
             if not large:
-                res = res.read()
+                try:
+                    res = res.read()
+                except:
+                    print(type(result))
+                    print(result)
+                    print(type(res))
                 try:
                     res = res.decode(encoding)
                     res = res.encode('utf-8')
@@ -446,10 +493,12 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
         if not large:
             for k in results.keys():
                 # handle files with CR line endings:
+                if type(results[k]) is bytes:
+                    results[k] = str(results[k], encoding)
                 if '\r' in results[k] and '\n' not in results[k]:
-                    results[k] = results[k].replace('\r','\n')
+                    results[k] = results[k].replace('\r', '\n')
                 else:
-                    results[k] = results[k].replace('\r','')
+                    results[k] = results[k].replace('\r', '')
                 if 'encoding' != 'utf-8':
                     try:
                         results[k] = results[k].decode(encoding).encode('utf-8')
@@ -460,6 +509,8 @@ def curl(url, silent = True, post = None, req_headers = None, cache = True,
                 if not multifile and not url.endswith('gz'):
                 # write the decoded data back to StringIO
                     result.truncate(0)
+                    if type(results[k]) is not bytes:
+                        results[k] = bytes(results[k], encoding)
                     result.write(results[k])
                 # if cache is turned on, but data is not from cache,
                 # place it there to make available next time:
@@ -541,7 +592,7 @@ def read_table(cols, fileObject = None, data = None, sep = '\t', sep2 = None, re
         l = [f.strip() for f in l.split(sep)]
         if len(l) > max(cols.values()):
             dic = {}
-            for name,col in cols.iteritems():
+            for name,col in iteritems(cols):
                 field = l[col].strip()
                 if sep2 is not None:
                     field = [sf.strip() for sf in field.split(sep2) if len(sf) > 0]
@@ -581,8 +632,8 @@ def swissprot_seq(organism = 9606, isoforms = False):
             result[l[0]] = se.Seq(l[0], l[1])
     if isoforms:
         data = get_isoforms()
-        for unip, isoforms in data.iteritems():
-            for isof, seq in isoforms.iteritems():
+        for unip, isoforms in iteritems(data):
+            for isof, seq in iteritems(isoforms):
                 if unip in result:
                     result[unip].add_seq(seq, isof)
     return result
@@ -600,11 +651,11 @@ def get_pdb():
         l = re.split('[ ]{2,}',re.sub('[ ]+,[ ]+',',',re.sub('[ ]*\(','(',l)))
         if len(l[0]) == 4 and pdb_re.match(l[0]):
             pdb = l[0].lower()
-            res = None if l[2] == '-' else float(l[2].replace(' A',''))
+            res = None if l[2] == '-' else float(l[2].replace(' A', ''))
             met = l[1]
         if pdb is not None and len(l) > 1:
             uniprots = l[1] if len(l) < 4 else l[3]
-            uniprots = [u.split('(')[1].replace(')','') 
+            uniprots = [u.split('(')[1].replace(')', '') 
                         for u in uniprots.split(',') if '(' in u]
             pdb_u[pdb] = uniprots
             for u in uniprots:
@@ -682,7 +733,10 @@ def get_pfam_regions(uniprots = [], pfams = [], keepfile = False, dicts = 'both'
         sys.stdout.write('\t:: Downloading data from %s' % \
             url.replace('http://', '').replace('ftp://', '').split('/')[0])
         sys.stdout.flush()
-        urllib.urlretrieve(url, cachefile)
+        if hasattr(urllib, 'urlretrieve'):
+            urllib.urlretrieve(url, cachefile)
+        else:
+            _urllib.request.urlretrieve(url, cachefile)
         sys.stdout.write('\n')
     with open(cachefile, 'rb') as f:
         f.seek(-4, 2)
@@ -729,7 +783,7 @@ def get_pfam_names():
         return None, None
     dname_pfam = {}
     pfam_dname = {}
-    data = data.replace('\r','').split('\n')
+    data = data.replace('\r', '').split('\n')
     del data[0]
     for l in data:
         l = l.split('\t')
@@ -742,9 +796,9 @@ def get_pfam_names():
                 dname_pfam[name] = []
             pfam_dname[pfam].append(name)
             dname_pfam[name].append(pfam)
-    for k,v in pfam_dname.iteritems():
+    for k,v in iteritems(pfam_dname):
         pfam_dname[k] = list(set(v))
-    for k,v in dname_pfam.iteritems():
+    for k,v in iteritems(dname_pfam):
         dname_pfam[k] = list(set(v))
     return dname_pfam, pfam_dname
 
@@ -755,7 +809,7 @@ def get_pfam_pdb():
         return None, None
     pdb_pfam = {}
     pfam_pdb = {}
-    data = data.replace('\r','').split('\n')
+    data = data.replace('\r', '').split('\n')
     del data[0]
     for l in data:
         l = l.split('\t')
@@ -783,7 +837,7 @@ def get_corum():
     del data[0]
     prg = progress.Progress(len(data),'Processing data',9)
     for l in data:
-        l = l.replace('\n','').replace('\r','').split(';')
+        l = l.replace('\n', '').replace('\r', '').split(';')
         if len(l) < 10:
             continue
         uniprots = l[4].split(',')
@@ -791,8 +845,8 @@ def get_corum():
         shortName = l[1].split('(')[0].strip()
         pubmeds = l[7].split(',')
         spec = l[3]
-        func = l[9].replace('"','')
-        dise = l[10].replace('"','')
+        func = l[9].replace('"', '')
+        dise = l[10].replace('"', '')
         complexes[name] = (uniprots,shortName,pubmeds,spec,func,dise)
         for u in uniprots:
             if u not in members:
@@ -913,7 +967,7 @@ def read_complexes_havugimana():
 def get_compleat():
     url = data_formats.urls['compleat']['url']
     data = curl(url,silent=False)
-    data = data.replace('\r','').split('\n')
+    data = data.replace('\r', '').split('\n')
     complexes = []
     for l in data:
         l = l.split('\t')
@@ -932,7 +986,7 @@ def get_pdb_chains():
     chains = curl(data_formats.urls['pdb_chains']['url'],silent=False)
     if chains is None:
         return None,None
-    chains = chains.replace('\r','').split('\n')
+    chains = chains.replace('\r', '').split('\n')
     del chains[0]
     del chains[0]
     pdb_u = {}
@@ -985,7 +1039,7 @@ def get_3dcomplexes():
     del contact[0]
     corr_dict = {}
     for l in corresp:
-        l = l.replace('\r','').split('\t')
+        l = l.replace('\r', '').split('\t')
         if len(l) > 2:
             pdb = l[0].split('.')[0]
             if pdb not in corr_dict:
@@ -993,7 +1047,7 @@ def get_3dcomplexes():
             corr_dict[pdb][l[1]] = l[2]
     compl_dict = {}
     for l in contact:
-        l = l.replace('\r','').split('\t')
+        l = l.replace('\r', '').split('\t')
         if len(l) > 11 and int(l[11]) == 0 and int(l[10]) == 0:
             compl = l[0]
             pdb = compl.split('_')[0]
@@ -1096,7 +1150,10 @@ def get_domino_ptms():
                     bsend2 = [int(x.split('-')[1]) for x in l[11].split(';') \
                         if x != '' and x != '0']
                 except:
-                    print l
+                    sys.stdout.write('Error processing line:\n')
+                    sys.stdout.write(l)
+                    sys.stdout.write('\n')
+                    sys.stdout.flush()
                     return None
                 bs1 = []
                 bs2 = []
@@ -1155,7 +1212,7 @@ def get_3dc_ddi():
     ddi = []
     uniprots = []
     for l in corresp:
-        l = l.replace('\r','').split('\t')
+        l = l.replace('\r', '').split('\t')
         if len(l) > 2:
             pdb = l[0].split('.')[0]
             if pdb not in corr_dict:
@@ -1164,7 +1221,7 @@ def get_3dc_ddi():
     prg = progress.Progress(len(contact), 'Collecting UniProts', 9)
     for l in contact:
         prg.step()
-        l = l.replace('\r','').split('\t')
+        l = l.replace('\r', '').split('\t')
         if len(l) > 11 and int(l[11]) == 0 and int(l[10]) == 0:
             pdb = l[0].split('_')[0]
             if pdb in corr_dict:
@@ -1182,7 +1239,7 @@ def get_3dc_ddi():
     prg = progress.Progress(len(contact), 'Processing contact information', 9)
     for l in contact:
         prg.step()
-        l = l.replace('\r','').split('\t')
+        l = l.replace('\r', '').split('\t')
         if len(l) > 11 and int(l[11]) == 0 and int(l[10]) == 0:
             pdb = l[0].split('_')[0]
             pfams1 = list(set([x.split('.')[0] for x in l[7].split(';')]))
@@ -1290,10 +1347,10 @@ def get_pisa(pdblist):
             chains = {}
             resconv = ResidueMapper()
             if pdb_id in pdb_u:
-                for chain, chain_data in pdb_u[pdb_id].iteritems():
+                for chain, chain_data in iteritems(pdb_u[pdb_id]):
                     chains[chain] = chain_data['uniprot']
                 for interface in pdb.find_all('interface'):
-                    for b, t in bond_types.iteritems():
+                    for b, t in iteritems(bond_types):
                         lst = interface.find(t)
                         if lst is not None:
                             bonds = pisa_bonds(lst,chains)
@@ -1433,9 +1490,9 @@ def get_3did_ddi(residues=False,ddi_flat=None,organism=9606):
         prg.terminate()
         prg = progress.Progress(len(ddi),'Processing interfaces',99)
         if residues:
-            for u,v1 in ddi.iteritems():
+            for u,v1 in iteritems(ddi):
                 prg.step()
-                for d,v2 in v1.iteritems():
+                for d,v2 in iteritems(v1):
                     for p in v2['pdbs'].keys():
                         if (u[0],u[1],p) in interfaces:
                             ddi[u][d]['interfaces'] = interfaces[(u[0],u[1],p)]
@@ -1631,11 +1688,11 @@ def process_3did_dmi():
     dname_re = re.compile(r'(.*)(_[A-Z]{3}_)(.*)')
     dmi2 = {}
     prg = progress.Progress(len(dmi), 'Processing data', 11)
-    for uniprots, dmis in dmi.iteritems():
+    for uniprots, dmis in iteritems(dmi):
         prg.step()
         if uniprots not in dmi2:
             dmi2[uniprots] = []
-        for regions, dmi_list in dmis.iteritems():
+        for regions, dmi_list in iteritems(dmis):
             new = True
             for dm in dmi_list:
                 if new:
@@ -1675,7 +1732,7 @@ def get_instruct():
     data = curl(data_formats.urls['instruct_human']['url'],silent=False)
     if data is None:
         return None
-    data = data.replace('\r','').split('\n')
+    data = data.replace('\r', '').split('\n')
     del data[0]
     instruct = []
     for l in data:
@@ -1714,7 +1771,7 @@ def get_instruct_offsets():
     data = curl(data_formats.urls['instruct_offsets']['url'],silent=False)
     if data is None:
         return None
-    data = data.replace('\r','').split('\n')
+    data = data.replace('\r', '').split('\n')
     del data[0]
     offsets = {}
     for l in data:
@@ -1726,8 +1783,10 @@ def get_instruct_offsets():
                 offset = int(non_digit.sub('',l[2]))
                 offsets[(pdb,uniprot)] = offset
             except:
-                print l[2]
-                print l
+                sys.stdout.write('Error processing line:\n')
+                sys.stdout.write(l[2])
+                sys.stdout.write('\n')
+                sys.stdout.flush()
     return offsets
 
 def get_i3d():
@@ -1744,7 +1803,7 @@ def get_i3d():
     data = curl(data_formats.urls['i3d_human']['url'],silent=False)
     if data is None:
         return None
-    data = data.replace('\r','').split('\n')
+    data = data.replace('\r', '').split('\n')
     del data[0]
     i3d = []
     prg = progress.Progress(len(data), 'Processing domain-domain interactions', 11)
@@ -1822,7 +1881,7 @@ def get_switches_elm():
         if l['modification'].startswith('MOD'):
             if l['modification'] in mod_ont:
                 l['modification'] = mod_ont[l['modification']]
-        l['references'] = [x.replace('PMID:','').strip() for x in l['references']]
+        l['references'] = [x.replace('PMID:', '').strip() for x in l['references']]
         l['modsites'] = [(m.group(2),m.group(1)) for m in \
                          [residue.match(s.strip()) for s in l['modsites'].split(';')]]
         l['intramol'] = True if l['intramol'].strip() == 'TRUE' else False
@@ -1968,7 +2027,7 @@ class ResidueMapper(object):
         if pdb not in self.mappers:
             self.load_mapping(pdb)
         if pdb in self.mappers:
-            for chain,data in self.mappers[pdb].iteritems():
+            for chain,data in iteritems(self.mappers[pdb]):
                 pdbends = data.keys()
                 if resnum <= max(pdbends):
                     pdbend = min([x for x in [
@@ -2137,7 +2196,7 @@ def regsites_tab(regsites, mapper, outfile = None):
     header = ['uniprot_a', 'isoform_a', 'a_res_aa', 'a_res_num', 
         'a_mod_type', 'effect', 'uniprot_b', 'references']
     result = []
-    for uniprot, regsite in regsites.iteritems():
+    for uniprot, regsite in iteritems(regsites):
         isoform = '1'
         uniprot = uniprot.split('-')
         if len(uniprot) > 1:
@@ -2180,7 +2239,6 @@ def get_ielm_huge(ppi, id_type = 'UniProtKB_AC', mydomains = 'HMMS',
                 cache, part = True, headers = headers)
             if this_res:
                 if type(this_res) is dict:
-                    print type(this_res)
                     return this_res
                 result += this_res
                 if r == ranges[-1]:
@@ -2232,7 +2290,7 @@ def get_ielm(ppi, id_type = 'UniProtKB_AC', mydomains = 'HMMS',
         sessid = soup.find('input', {'name':'session_ID'})['value']
         src = 'iELM'
     if data is None:
-        print ERASE_LINE + CURSOR_UP_ONE
+        sys.stdout.write(ERASE_LINE + CURSOR_UP_ONE)
         sys.stdout.write('\t:: Initial query failed. No data retrieved from iELM.\n')
         sys.stdout.flush()
         return None
@@ -2241,7 +2299,7 @@ def get_ielm(ppi, id_type = 'UniProtKB_AC', mydomains = 'HMMS',
             #and \
             #len([i for i in soup.find_all('font', {'color': '#FF0000'}) if i.text == \
             #'File no longer available']) == 0:
-        print ERASE_LINE + CURSOR_UP_ONE
+        sys.stdout.write(ERASE_LINE + CURSOR_UP_ONE)
         sys.stdout.write('\t:: Waiting for result. Wait time: %u sec. '\
             'Max waiting time: %u sec.' % (wait,maxwait))
         sys.stdout.flush()
@@ -2257,7 +2315,7 @@ def get_ielm(ppi, id_type = 'UniProtKB_AC', mydomains = 'HMMS',
         time.sleep(3)
         wait += 3
     if len(soup.find_all('table')) == 0:
-        print ERASE_LINE + CURSOR_UP_ONE
+        sys.stdout.write(ERASE_LINE + CURSOR_UP_ONE)
         sys.stdout.write('\t:: No data retrieved from iELM. \n')
         sys.stdout.flush()
         soup.title.string = 'http://i.elm.eu.org/proteomic_results/%s'%sessid
@@ -2266,7 +2324,7 @@ def get_ielm(ppi, id_type = 'UniProtKB_AC', mydomains = 'HMMS',
     if cache:
         with open(cachefile, 'w') as f:
             f.write(data)
-    print ERASE_LINE + CURSOR_UP_ONE
+    sys.stdout.write(ERASE_LINE + CURSOR_UP_ONE)
     sys.stdout.write('\t:: Data retrieved from %s in %u seconds.\n' % (src, wait))
     sys.stdout.flush()
     tbl = soup.find('table', {'id': 'example1'})
@@ -2324,7 +2382,6 @@ def get_pepcyber(cache = None):
             thisRow[9] = None if 'p' not in thisRow[4] else \
                 thisRow[4][thisRow[4].index('p') + 1]
             if thisRow[2] not in uniprots or thisRow[3] not in uniprots:
-                # print "Query: %s, %s, %u" % (thisRow[2], thisRow[3], inum)
                 uniprots = dict(uniprots.items() + pepcyber_uniprot(inum).items())
             if thisRow[2] in uniprots and thisRow[3] in uniprots:
                 thisRow += uniprots[thisRow[2]] + uniprots[thisRow[3]]
@@ -2333,7 +2390,7 @@ def get_pepcyber(cache = None):
                 notfound.append([thisRow[2], thisRow[3], inum])
     prg.terminate()
     with open(cache, 'w') as f:
-        for g, u in uniprots.iteritems():
+        for g, u in iteritems(uniprots):
             try:
                 f.write('\t'.join([g] + u) + '\n')
             except:
@@ -2357,7 +2414,6 @@ def pepcyber_uniprot(num):
         if prev.startswith('SwissProt') and gname is not None:
             swprot = td.text.strip()
             if len(gname) > 0:
-                # print "Result: %s, %s, %u" % (gname, swprot, num)
                 result[gname] = [swprot, refseq]
             gname = None
         prev = td.text.strip()
@@ -2481,7 +2537,7 @@ def get_phosphoelm(organism = 'Homo sapiens', ltp_only = True):
     non_digit = re.compile(r'[^\d.-]+')
     url = data_formats.urls['p_elm']['url']
     data = curl(url, silent = False)
-    data = [n for d, n in data.iteritems() \
+    data = [n for d, n in iteritems(data) \
         if d.startswith(data_formats.urls['p_elm']['psites'])]
     data = data[0] if len(data) > 0 else ''
     data = [l.split('\t') for l in data.split('\n')]
@@ -2574,7 +2630,10 @@ def pfam_uniprot(uniprots, infile = None):
     if not os.path.exists(infile):
         sys.stdout.write('\t:: Downloading data...\n')
         sys.stdout.flush()
-        urllib.urlretrieve(url, infile)
+        if hasattr(urllib, 'urlretrieve'):
+            urllib.urlretrieve(url, infile)
+        else:
+            _urllib.request.urlretrieve(url, infile)
     sys.stdout.write('\t:: Processing domains...\n')
     sys.stdout.flush()
     gzfile = gzip.open(infile, mode='r')
@@ -2598,7 +2657,7 @@ def get_dbptm():
     non_digit = re.compile(r'[^\d.-]+')
     for url in data_formats.urls['dbptm']['urls']:
         extra = curl(url, silent = False)
-        for k, data in extra.iteritems():
+        for k, data in iteritems(extra):
             data = [x.split('\t') for x in data.split('\n')]
             for l in data:
                 if len(l) > 8:
@@ -2779,7 +2838,7 @@ def get_isoforms(organism = 'Homo sapiens'):
     url = data_formats.urls['unip_iso']['url']
     data = curl(url, silent = False)
     data = read_fasta(data)
-    for header, seq in data.iteritems():
+    for header, seq in iteritems(data):
         org = reorg.findall(header)
         if len(org) > 0 and org[0] == organism:
             prot = header.split('|')[1].split('-')
@@ -2941,9 +3000,9 @@ def get_uniprot_sec(organism = 9606):
     data = curl(url, silent = False, large = True)
     return filter(lambda line:
         len(line) == 2 and (organism is None or line[1] in proteome),
-        map(lambda (i, line):
+        map(lambda i, line:
             line.split(), 
-            filter(lambda (i, line):
+            filter(lambda i, line:
                 i >= 30,
                 enumerate(data)
             )
@@ -2993,7 +3052,10 @@ def get_go_quick(organism = 9606, slim = False):
             terms[l[3][0]][l[0]].add(l[1])
             names[l[1]] = l[2]
         except:
-            print l
+            sys.stdout.write('Error processing line:\n')
+            sys.stdout.write(l)
+            sys.stdout.write('\n')
+            sys.stdout.flush()
     return {'terms': terms, 'names': names}
 
 def get_goslim(url = None):
@@ -3026,13 +3088,16 @@ def netpath_interactions():
     mi = '{net:sf:psidev:mi}'
     url = data_formats.urls['netpath_psimi']['url']
     data = curl(url, silent = False)
-    data = dict([(k, v) for k, v in data.iteritems() if k.endswith('xml')])
+    data = dict([(k, v) for k, v in iteritems(data) if k.endswith('xml')])
     pwnames = netpath_names()
-    for pwfile, rawxml in data.iteritems():
+    for pwfile, rawxml in iteritems(data):
         try:
             pwnum = repwnum.findall(pwfile)[0]
         except:
-            print pwfile
+            sys.stdout.write('Error at processing file:\n')
+            sys.stdout.write(pwfile)
+            sys.stdout.write('\n')
+            sys.stdout.flush()
         pwname = pwnames[pwnum]
         root = ET.fromstring(rawxml)
         for e in root.findall(mi+'entry'):
@@ -3093,8 +3158,8 @@ def get_pubmeds(pmids):
         for i in xrange(3):
             try:
                 res = curl(url, silent = False, cache = cache, post = post, req_headers = hdr)
-                data = dict([(k,v) for k,v in json.loads(res)['result'].iteritems()] + \
-                    [(k,v) for k,v in data.iteritems()])
+                data = dict([(k,v) for k,v in iteritems(json.loads(res)['result'])] + \
+                    [(k,v) for k,v in iteritems(data)])
                 break
             except ValueError:
                 sys.stdout.write('\t:: Error in JSON, retry %u\n'%i)
@@ -3127,7 +3192,7 @@ def get_lincs_compounds():
                     [b.strip() for b in a.split('\t')] \
                         for a in ''.join(\
                             [\
-                                s.replace(',','\t') \
+                                s.replace(',', '\t') \
                                     if i%2==0 
                                     else s.replace('\n', '') \
                                 for i, s in enumerate(\
@@ -3530,7 +3595,7 @@ def li2012_dmi(mapper = None):
         for su in subs_uniprots:
             if su in se:
                 subs_iso = None
-                for iso, s in se[su].isof.iteritems():
+                for iso, s in iteritems(se[su].isof):
                     if se[su].get(subs_resnum, isoform = iso) == 'Y':
                         subs_iso = iso
                         break
@@ -3631,7 +3696,8 @@ def trip_process_table(tab, result, intrs, trp_uniprot):
                 intr_uniprot = trip_get_uniprot(intr)
                 intrs[intr] = intr_uniprot
                 if intr_uniprot is None or len(intr_uniprot) < 6:
-                    print '\t\tcould not find uniprot for %s' % intr
+                    sys.stdout.write('\t\tcould not find uniprot for %s\n' % intr)
+                    sys.stdout.flush()
             else:
                 intr_uniprot = intrs[intr]
             if (trp_uniprot, intr_uniprot) not in result:
@@ -3662,7 +3728,6 @@ def trip_find_uniprot(soup):
     for tr in soup.find_all('div', id='tab2')[0].find_all('tr'):
         if tr.find('td') is not None and tr.find('td').text.strip() == 'Human':
             uniprot = tr.find_all('td')[2].text.strip()
-            # print '\t\tuniprot found: %s' % str(uniprot)
             return uniprot
     return None
 
@@ -3764,7 +3829,7 @@ def trip_interactions(exclude_methods = ['Inference', 'Speculation'],
         return 'stimulation' if len(eff & pos) > 0 \
             else 'inhibition' if len(eff & neg) > 0 else 'unknown'
     return [[unipr[0], unipr[1], ';'.join(d['refs']), 
-        ';'.join(d['methods']), trip_effect(d['effect'])] for unipr, d in data.iteritems()]
+        ';'.join(d['methods']), trip_effect(d['effect'])] for unipr, d in iteritems(data)]
 
 def load_signor_ptms(fname = 'signor_22052015.tab'):
     '''
@@ -3776,7 +3841,7 @@ def load_signor_ptms(fname = 'signor_22052015.tab'):
     data = curl(url, silent = False, large = True)
     reres = re.compile(r'([A-Za-z]{3})([0-9]+)')
     result = []
-    aalet = dict((k.lower().capitalize(), v) for k, v in common.aaletters.iteritems())
+    aalet = dict((k.lower().capitalize(), v) for k, v in iteritems(common.aaletters))
     null = data.readline()
     for d in data:
         d = d.strip().split('\t')
@@ -3838,7 +3903,7 @@ def get_kegg(mapper = None):
                     .replace('...', '').split(',')]
         uentries = dict([(eid, common.uniqList(common.flatList(
             [mapper.map_name(gn, 'genesymbol', 'uniprot', strict = True) \
-                for gn in gns]))) for eid, gns in entries.iteritems()])
+                for gn in gns]))) for eid, gns in iteritems(entries)])
         for rel in kgmlsoup.find_all('relation'):
             st = rel.find('subtype')
             if rel.attrs['entry1'] in uentries and rel.attrs['entry2'] in uentries and \
@@ -4247,7 +4312,9 @@ def reactions_biopax(biopax_file, organism = 9606, protein_name_type = 'UniProt'
                         'pathways': _bp_collect_resources(elem, bppcom)
                     }
                 except TypeError:
-                    print etree.tostring(elem)
+                    sys.stdout.write('Wrong type at element:\n')
+                    sys.stdout.write(etree.tostring(elem))
+                    sys.stdout.flush()
             if clean:
                 used_elements.append(elem)
                 if len(used_elements) > 800:
@@ -4265,7 +4332,7 @@ def reactions_biopax(biopax_file, organism = 9606, protein_name_type = 'UniProt'
     prg = progress.Progress(len(proteins), 'Processing proteins', 11)
     proteins_uniprots = {}
     # return proteinreferences, uniprots
-    for pref, protein in proteins.iteritems():
+    for pref, protein in iteritems(proteins):
         prg.step()
         if protein['protein'] in proteinreferences:
             for prref in proteinreferences[protein['protein']]:
@@ -4274,7 +4341,7 @@ def reactions_biopax(biopax_file, organism = 9606, protein_name_type = 'UniProt'
     prg.terminate()
     prg = progress.Progress(len(proteins), 'Processing PTMs', 11)
     proteins_modifications = {}
-    for pref, protein in proteins.iteritems():
+    for pref, protein in iteritems(proteins):
         prg.step()
         for modf in protein['modfeatures']:
             if modf in modificationfeatures:
@@ -4293,7 +4360,7 @@ def reactions_biopax(biopax_file, organism = 9606, protein_name_type = 'UniProt'
     # including complexes and variations/families
     entity_uniprot = {}
     prg = progress.Progress(len(proteins_uniprots), 'Processing proteins', 11)
-    for pref, protein in proteins_uniprots.iteritems():
+    for pref, protein in iteritems(proteins_uniprots):
         prg.step()
         entity_uniprot[pref] = [{
             'members': [protein],
@@ -4302,7 +4369,7 @@ def reactions_biopax(biopax_file, organism = 9606, protein_name_type = 'UniProt'
         }]
     prg.terminate()
     prg = progress.Progress(len(proteinfamilies), 'Processing protein families', 11)
-    for pfref, prefs in proteinfamilies.iteritems():
+    for pfref, prefs in iteritems(proteinfamilies):
         prg.step()
         entity_uniprot[pfref] = []
         for pref in prefs:
@@ -4318,7 +4385,7 @@ def reactions_biopax(biopax_file, organism = 9606, protein_name_type = 'UniProt'
     del proteinfamilies
     del proteinreferences
     prg = progress.Progress(len(complexes), 'Processing complexes', 11)
-    for cref, cplex in complexes.iteritems():
+    for cref, cplex in iteritems(complexes):
         prg.step()
         if cref not in entity_uniprot:
             process_complex(0, cref, entity_uniprot, 
@@ -4340,7 +4407,7 @@ def reactions_biopax(biopax_file, organism = 9606, protein_name_type = 'UniProt'
     prg = progress.Progress(len(controls) + len(catalyses), 'Processing controls and catalyses', 11)
     controls_uniprots = _process_controls(dict(controls.items() + catalyses.items()), entity_uniprot, 
         dict(reactions_uniprots.items() + complexassemblies_uniprots.items()), publications)
-    for caref, ca in complexassemblies_uniprots.iteritems():
+    for caref, ca in iteritems(complexassemblies_uniprots):
         controls_uniprots[caref] = {
             'type': 'BINDING',
             'refs': [publications[r] for r in ca['refs'] if r in publications],
@@ -4354,7 +4421,7 @@ def reactions_biopax(biopax_file, organism = 9606, protein_name_type = 'UniProt'
 
 def process_reactions(reactions, entity_uniprot, publications):
     result = {}
-    for rref, rea in reactions.iteritems():
+    for rref, rea in iteritems(reactions):
         result[rref] = {
             'refs': [publications[r] for r in rea['refs'] if r in publications],
             'left': [entity_uniprot[l] for l in rea['left'] \
@@ -4366,7 +4433,7 @@ def process_reactions(reactions, entity_uniprot, publications):
 
 def _process_controls(controls, entity_uniprot, reactions_uniprots, publications):
     result = {}
-    for cref, ctrl in controls.iteritems():
+    for cref, ctrl in iteritems(controls):
         result[cref] = {
             'type': ctrl['type'],
             'refs': [publications[r] for r in ctrl['refs'] if r in publications] \
@@ -4425,7 +4492,7 @@ def process_complex(depth, cref, entity_uniprot,
                     for new_member in entity_uniprot[ref]:
                         var_new = copy.deepcopy(var)
                         var_new['members'].extend(new_member['members'] * num)
-                        for u, ptm in new_member['ptms'].iteritems():
+                        for u, ptm in iteritems(new_member['ptms']):
                             if u not in var_new['ptms']:
                                 var_new['ptms'][u] = set([])
                             var_new['ptms'][u] = var_new['ptms'][u] | new_member['ptms'][u]
@@ -5192,7 +5259,6 @@ def get_ccmap(organism = 9606):
         map(lambda l: l.strip().split('\t'), 
             edges['cell-map-edge-attributes.txt'].split('\n')[1:])
     )
-    print len(nodes), len(edges)
     for e in edges:
         if e[1] != 'IN_SAME_COMPONENT' and e[3] in nodes and e[4] in nodes:
             for src in nodes[e[3]]:
@@ -5205,7 +5271,6 @@ def get_ccmap(organism = 9606):
     return interactions
 
 def ask_passwd(ask, passwd_file, use_passwd_file = True):
-    print 'begin ask_passwd()'
     if use_passwd_file and os.path.exists(passwd_file):
         with open(passwd_file, 'r') as f:
             user = f.readline().strip()
@@ -5231,7 +5296,6 @@ def ask_passwd(ask, passwd_file, use_passwd_file = True):
 
 def sftp_download(filename, localpath, host, user = None,
     passwd = None, passwd_file = None, ask = None, port = 22):
-    print 'begin sftp_download()'
     ask = 'Please enter your login details for %s\n' % host \
         if ask is None else ask
     passwd_file = os.path.join('cache', '%s.login'%host) \
@@ -5284,13 +5348,13 @@ def get_matrixdb(organism = 9606):
         if lnum == 0:
             lnum += 1
             continue
-        l = l.replace('\n','').replace('\r','')
+        l = l.replace('\n', '').replace('\r', '')
         l = l.split('\t')
         specA = 0 if l[9] == '-' else int(l[9].split(':')[1].split('(')[0])
         specB = 0 if l[10] == '-' else int(l[10].split(':')[1].split('(')[0])
         if organism is None or (specA == organism and specB == organism):
-            pm = [p.replace('pubmed:','') for p in l[8].split('|') if p.startswith('pubmed:')]
-            met = [m.split('(')[1].replace(')','') for m in l[6].split('|') if '(' in m]
+            pm = [p.replace('pubmed:', '') for p in l[8].split('|') if p.startswith('pubmed:')]
+            met = [m.split('(')[1].replace(')', '') for m in l[6].split('|') if '(' in m]
             l = [l[0],l[1]]
             interaction = ()
             for ll in l:
@@ -5317,12 +5381,12 @@ def get_innatedb(organism = 9606):
         if lnum == 0:
             lnum += 1
             continue
-        l = l.replace('\n','').replace('\r','')
+        l = l.replace('\n', '').replace('\r', '')
         l = l.split('\t')
         specA = 0 if l[9] == '-' else int(l[9].split(':')[1].split('(')[0])
         specB = 0 if l[10] == '-' else int(l[10].split(':')[1].split('(')[0])
         if organism is None or (specA == organism and specB == organism):
-            pm = l[8].replace('pubmed:','')
+            pm = l[8].replace('pubmed:', '')
             l = [l[4],l[5]]
             interaction = ()
             for ll in l:
@@ -5380,7 +5444,7 @@ def get_dip(url = None, organism = 9606, core_only = True, direct_only = True,
         if lnum == 0:
             lnum += 1
             continue
-        l = l.replace('\n','').replace('\r','')
+        l = l.replace('\n', '').replace('\r', '')
         l = l.split('\t')
         specA = int(l[9].split(':')[1].split('(')[0])
         specA = 0 if l[9] == '-' else int(l[9].split(':')[1].split('(')[0])
@@ -5395,7 +5459,7 @@ def get_dip(url = None, organism = 9606, core_only = True, direct_only = True,
                 (not direct_only or strDirect in intProp or \
                     strPhysInt in intProp) and \
                 (not small_scale_only or strSmallS in intProc):
-                pm = l[8].replace('pubmed:','').split('|')
+                pm = l[8].replace('pubmed:', '').split('|')
                 pm = [p for p in pm if not p.startswith('DIP')]
                 l = [l[0],l[1]]
                 uniprotA = mitab_field_uniprot(l[0])
@@ -5619,14 +5683,14 @@ def depod_interactions(organism = 9606):
         if lnum == 0:
             lnum += 1
             continue
-        l = l.replace('\n','').replace('\r','')
+        l = l.replace('\n', '').replace('\r', '')
         l = l.split('\t')
         specA = int(l[9].split(':')[1].split('(')[0])
         specB = int(l[10].split(':')[1].split('(')[0])
         if organism is None or (specA == organism and specB == organism):
-            pm = l[8].replace('pubmed:','')
-            sc = l[14].replace('curator score:','')
-            ty = l[11].split('(')[1].replace(')','')
+            pm = l[8].replace('pubmed:', '')
+            sc = l[14].replace('curator score:', '')
+            ty = l[11].split('(')[1].replace(')', '')
             l = [l[0],l[1]]
             interaction = ()
             for ll in l:
@@ -5692,7 +5756,7 @@ def macrophage_interactions():
                     for i in alist:
                         for j in blist:
                             if i != j not in null and i not in null:
-                                pm = l[11].replace(',','').strip().split('.')[0]
+                                pm = l[11].replace(',', '').strip().split('.')[0]
                                 if not pm.startswith('INF'):
                                     d = "0" if l[9].strip() == "Binding" else "1"
                                     lst.append([i,j,l[9].strip(),d,l[10].strip(),pm])
@@ -5731,9 +5795,9 @@ def intact_interactions(miscore = 0.6, organism = 9606, complex_expansion = Fals
                 nt2 = 'unknown' if l[1] == '-' else l[1].split(':')[0]
                 if nt1 == 'uniprotkb' and nt2 == 'uniprotkb':
                     u1 = 'unknown' if l[0] == '-' \
-                        else '-'.join(l[0].split(':')[1:]).replace('"','')
+                        else '-'.join(l[0].split(':')[1:]).replace('"', '')
                     u2 = 'unknown' if l[1] == '-' \
-                        else '-'.join(l[1].split(':')[1:]).replace('"','')
+                        else '-'.join(l[1].split(':')[1:]).replace('"', '')
                     uniprots = tuple(sorted([u1, u2]))
                     if uniprots not in result:
                         result[uniprots] = [set([]), set([]), set([])]
@@ -5751,17 +5815,17 @@ def intact_interactions(miscore = 0.6, organism = 9606, complex_expansion = Fals
                     )
                     null = map(result[uniprots][1].add,
                         map(lambda m:
-                            m.split('(')[1].replace(')','').replace('"',''),
+                            m.split('(')[1].replace(')', '').replace('"', ''),
                             l[6].split('|')
                         )
                     )
                     if l[15] != '-':
                         result[uniprots][2].add(
-                            l[15].split('(')[1].replace(')','')
+                            l[15].split('(')[1].replace(')', '')
                         )
-    result = map(lambda (ups, a):
+    result = map(lambda ups, a:
         [ups[0], ups[1], ';'.join(list(a[0])), ';'.join(list(a[1])), ';'.join(list(a[2]))],
-        result.iteritems()
+        iteritems(result)
     )
     return result
 
@@ -5800,8 +5864,8 @@ def deathdomain_interactions():
                         d[i['A']][i['B']]['ref'] = []
                     d[i['A']][i['B']]['ref'].append(i['ref'])
         
-        for p1,v1 in d.iteritems():
-            for p2,v2 in v1.iteritems():
+        for p1,v1 in iteritems(d):
+            for p2,v2 in iteritems(v1):
                 if p1 != p2:
                     result.append([
                         p1,

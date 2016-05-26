@@ -15,16 +15,20 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
+from future.utils import iteritems
+from past.builtins import xrange, range, reduce
+
 import os
 import sys
 import math
 import random
 import textwrap
+import hashlib
 
 __all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes', 'uniqList', 'addToList', 
            'gen_session_id', 'sorensen_index', 'console', 'wcl', 'flatList', 
            'charTypes', 'delEmpty', '__version__', 'get_args', 
-           'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs']
+           'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs', 'md5']
 
 # get the location
 ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -91,8 +95,11 @@ def uniqList(seq):
     # from http://www.peterbe.com/plog/uniqifiers-benchmark
     keys = {}
     for e in seq:
-        keys[e] = 1
-    return keys.keys()
+        try:
+            keys[e] = 1
+        except:
+            print(e)
+    return list(keys.keys())
 
 def flatList(lst):
     return [it for sl in lst for it in sl]
@@ -172,7 +179,7 @@ def get_args(loc_dict, remove = set([])):
     if type(remove) is list: remove = set(remove)
     remove.add('self')
     remove.add('kwargs')
-    args = dict((k, v) for k, v in loc_dict.iteritems() if k not in remove)
+    args = dict((k, v) for k, v in iteritems(loc_dict) if k not in remove)
     if 'kwargs' in loc_dict: args = dict(args.items() + loc_dict['kwargs'].items())
     return args
 
@@ -196,6 +203,15 @@ def cleanDict(dct):
         else:
             dct[k] = str(v)
     return dct
+
+def md5(value):
+    try:
+        # this for Py3
+        string = bytes(str(value), 'ascii')
+    except TypeError:
+        # this for Py2
+        string = str(value)
+    return hashlib.md5(string).hexdigest()
 
 igraph_graphics_attrs = {
     'vertex': ['size', ' color', 'frame_color', 'frame_width', 'shape', 'label', 'label_dist', 'label_color', 'label_size', 'label_angle'],

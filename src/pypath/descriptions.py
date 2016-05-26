@@ -22,8 +22,8 @@ import codecs
 import bs4
 import textwrap
 
-import _html
-import data_formats
+from pypath import _html
+from pypath import data_formats
 
 __all__ = ['descriptions', 'gen_html', 'write_html']
 
@@ -2813,7 +2813,8 @@ def gen_html():
                     v['license']['name'],
                     '</a>' if 'url' in v['license'] else '')
             except KeyError:
-                print k, v['license']
+                sys.stdout.write('Wrong license format for %s\n' % k)
+                sys.stdout.flush()
         for uk, uv in v['urls'].iteritems():
             if len(uv) > 0 and uk != 'omictools':
                 try:
@@ -2824,7 +2825,8 @@ def gen_html():
                             a,a)
                     doc += '\t\t\t</ul>\n'
                 except UnicodeDecodeError:
-                    print k, uk
+                    sys.stdout.write('UnicdeDecodeError at %s\n' % k)
+                    sys.stdout.flush()
         if 'pubmeds' in v:
             doc += '\t\t\t<h3>PubMed</h3>\n'
             doc += '\t\t\t<ul>\n'

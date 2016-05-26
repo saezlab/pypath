@@ -28,11 +28,13 @@ except:
     try:
         import pymysql as myslq
     except:
-        print 'No `mysql` available.'
-import mapping
-import progress
-import data_formats
-from common import uniqList
+        sys.stdout.write('No `mysql` available.\n\n')
+        sys.stdout.flush()
+
+from pypath import mapping
+from pypath import progress
+from pypath import data_formats
+from pypath.common import uniqList
 
 class Chembl(object):
     

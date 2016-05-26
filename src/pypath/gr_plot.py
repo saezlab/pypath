@@ -15,10 +15,13 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
-from colorgen import *
+# external modules:
 import math
 from igraph import *
-from common import uniqList, flatList
+
+# from this module:
+from pypath.colorgen import *
+from pypath.common import uniqList, flatList
 
 def inter_group(g,groups):
     # group-group adjacency matrix weighted by connecting edges, 

@@ -19,11 +19,13 @@
 import __main__
 
 from future.utils import iteritems
+from past.builtins import xrange, range, reduce
 
 # external modules:
 import os
 import sys
 import re
+import imp
 import math
 import igraph
 import cairo
@@ -38,42 +40,50 @@ import heapq
 import threading
 from itertools import chain
 from collections import Counter
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+
 try:
     import pygraphviz as graphviz
-    import pandas
 except:
     sys.stdout.write('\nModule `pygraphviz` not found.\n'\
         'You don\'t need it unless you want to export dot files.\n')
     sys.stdout.flush()
 
-# from this module:
-import logn
-import data_formats
-import mapping
-import descriptions
-import chembl
 try:
-    import mysql
+    import pandas
 except:
-    try:
-        import pymysql as myslq
-    except:
-        sys.stdout.write('No `mysql` available.\n\n')
-        sys.stdout.flush()
-import dataio
-import intera
-import go
-import gsea
-import drawing as bdrawing
-import proteomicsdb
-from ig_drawing import *
-from common import *
-from common import __version__ as __version__
-from colorgen import *
-from gr_plot import *
-from progress import *
-from data_formats import *
+    sys.stdout.write('\nModule `pandas` not found.\n\n')
+    sys.stdout.flush()
+
+# from this module:
+from pypath import logn
+from pypath import data_formats
+from pypath import mapping
+from  pypath import descriptions
+from pypath import chembl
+from pypath import mysql
+
+from pypath import dataio
+from pypath import intera
+from pypath import go
+from pypath import gsea
+from pypath import drawing as bdrawing
+from pypath import proteomicsdb
+from pypath.ig_drawing import *
+from pypath.common import *
+from pypath.common import __version__ as __version__
+from pypath.colorgen import *
+from pypath.gr_plot import *
+from pypath.progress import *
+
+omnipath = data_formats.omnipath
+refLists = data_formats.refLists
+
+if 'unicode' not in globals():
+    unicode = str
 
 __all__ = ['PyPath', 'Direction', 'Reference', '__version__', 'a', 'AttrHelper']
 
@@ -1560,6 +1570,8 @@ class PyPath(object):
             e[attr] = []
         elif type(e[attr]) is not list:
             e[attr] = [e[attr]]
+        # print(type(e[attr]))
+        # print(type(value))
         e[attr] = uniqList(e[attr] + value)
     
     def add_grouped_eattr(self, edge, attr, group, value):
@@ -2526,20 +2538,24 @@ class PyPath(object):
             self.mapper.load_uniprot_mappings(list(ac_types - table_loaded & \
                 set(self.mapper.name_types.keys())))
             for k, v in iteritems(lst):
-                try:
-                    self.load_resource(v, clean = False,
+                self.load_resource(v, clean = False,
                         cache_files = cache_files,
                         reread = reread,
                         redownload = redownload)
-                except:
-                    sys.stdout.write('\t:: Could not load %s, unexpected error '\
-                        'occurred, see %s for error.\n'%(k, self.ownlog.logfile))
-                    self.ownlog.msg('Error at loading %s: \n%s\n, \t%s, %s\n' % \
-                            (k, sys.exc_info()[1],
-                            sys.exc_info()[2],
-                            sys.exc_info()[0]),
-                        'ERROR')
-                    sys.stdout.flush()
+                #try:
+                #    self.load_resource(v, clean = False,
+                #        cache_files = cache_files,
+                #        reread = reread,
+                #        redownload = redownload)
+                #except:
+                #    sys.stdout.write('\t:: Could not load %s, unexpected error '\
+                #        'occurred, see %s for error.\n'%(k, self.ownlog.logfile))
+                #    self.ownlog.msg(1, 'Error at loading %s: \n%s\n, \t%s, %s\n' % \
+                #            (k, sys.exc_info()[1],
+                #            sys.exc_info()[2],
+                #            sys.exc_info()[0]),
+                #        'ERROR')
+                #    sys.stdout.flush()
         sys.stdout.write('\n')
         self.clean_graph()
         self.update_sources()
@@ -3879,7 +3895,7 @@ class PyPath(object):
     def _neighborhood(self, vs, order = 1, mode = 'ALL'):
         return _NamedVertexSeq(
             map(lambda vi: self.graph.vs[vi],
-                reduce(lambda (a, b):
+                reduce(lambda a, b:
                     a.extend(b),
                     self.graph.neighborhood(vs,
                         order = order, mode = mode)
@@ -5360,7 +5376,7 @@ class PyPath(object):
             Counter([uniprot for uniprots in \
                 [expr.keys() for expr in \
                     [prdb.expression[sample] for sample in prdb.samples[tissue]] \
-                ] for uniprot in iteritems(uniprots])) \
+                ] for uniprot in iteritems(uniprots)]) \
             if cnt >= occurrence]) & set(graph.vs['name'])
         expressions = dict([(uniprot, group_function(
             [prdb.expression[sample][uniprot] \
@@ -6467,7 +6483,7 @@ class PyPath(object):
     def reload(self):
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
-        reload(mod)
+        imp.reload(mod)
         # print 'self.__class__.__name__ = ', self.__class__.__name__
         # print 'mod = ', mod
         new = getattr(mod, self.__class__.__name__)

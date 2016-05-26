@@ -16,7 +16,8 @@
 #
 
 import codecs
-import dataio
+
+from pypath import dataio
 
 __all__ = ['MysqlMapping','FileMapping','ReferenceList',
            'PickleMapping','ReadSettings','ReadList']

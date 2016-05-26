@@ -23,12 +23,15 @@
 # domain-motif interactions, binding interfaces
 #
 
+from future.utils import iteritems
+from past.builtins import xrange, range, reduce
+
 import re
 import sys
 from collections import Counter
 
 # from pypath:
-import common
+import pypath.common
 
 __all__ = ['Residue', 'Ptm', 'Motif', 'Domain', 
     'DomainDomain', 'DomainMotif', 'Interface']
@@ -366,7 +369,7 @@ class Domain(object):
         self.isoform = isoform if type(isoform) is int \
             else int(non_digit.sub('',isoform))
         self.pdbs = {}
-        for pdb, chain in chains.iteritems():
+        for pdb, chain in iteritems(chains):
             self.add_chains(pdb, chain)
     
     def __hash__(self):
@@ -434,7 +437,7 @@ class Domain(object):
             0 if self.start is None else self.start, 
             0 if self.end is None else self.end, 
             ','.join(['%s.%s'%(pdb, '.'.join(chains)) \
-                for pdb, chains in self.pdbs.iteritems()])
+                for pdb, chains in iteritems(self.pdbs)])
             )
     
     def __str__(self):
@@ -446,13 +449,13 @@ class Domain(object):
                 0 if self.start is None else self.start, 
                 0 if self.end is None else self.end, 
                 ', '.join(['%s (chains %s)' % (pdb, ', '.join(chains)) \
-                for pdb, chains in self.pdbs.iteritems()])
+                for pdb, chains in iteritems(self.pdbs)])
             )
     
     def merge(self, other):
         if self == other or (self.start and self.end) is None or \
             (other.start and other.end) is None:
-            for pdb, chain in other.pdbs.iteritems():
+            for pdb, chain in iteritems(other.pdbs):
                 self.add_chains(pdb, chain)
             self.domain_id_type = self.domain_id_type or other.domain_id_type
             if self.domain_id_type != 'pfam' and other.domain is not None \
@@ -643,7 +646,7 @@ class Complex(object):
         sources = sources if type(sources) is list else [sources]
         sources = set(sources)
         proteins = proteins if type(proteins) is list else list(proteins)
-        for key, val in locals().iteritems():
+        for key, val in iteritems(locals()):
             setattr(self, key, val)
         self.members = sorted(uniqList(self.proteins))
         self.constitution = Counter(proteins)
@@ -696,9 +699,6 @@ class Interface(object):
             or (type(res_a[1]) is not unicode and type(res_a[1]) is not str) \
             or (type(res_b[1]) is not unicode and type(res_b[1]) is not str) \
             or typ not in self.__dict__:
-            print res_a
-            print res_b
-            print typ
             sys.stdout.write('\tWrong parameters for Interface.add_residues()\n')
         else:
             self.__dict__[typ][self.id_a].append(
