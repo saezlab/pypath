@@ -23,16 +23,12 @@ USER=`whoami`
 HOME="/Users/$USER"
 LOCAL="$HOME/local"
 LOCALBIN="$LOCAL/bin"
-BREWDIR="$LOCAL/brew"
 
-if ! -d $LOCAL;
+if ![ -d $LOCAL ];
     then mkdir $LOCAL;
 fi
 
-mkdir $BREWDIR
-cd $BREWDIR
+cd $LOCAL
 
 # downloading and extracting homebrew:
 curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1
-
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
