@@ -43,12 +43,13 @@ from pypath import progress
 from pypath import logn
 from pypath import common
 from pypath.common import *
-from pypath import data_formats
+from pypath import maps
 from pypath import mysql
 
-from pypath import dataio
+from pypath import curl
+import pypath.dataio as dataio
 
-__all__ = ['MappingTable', 'Mapper']
+__all__ = ['MappingTable', 'Mapper', 'ReferenceList']
 
 ###
 ### functions to read and use mapping tables from UniProt, file, mysql or pickle 
@@ -171,7 +172,7 @@ class MappingTable(object):
         rev = '' if param.swissprot is None \
             else ' AND reviewed:%s' % param.swissprot
         query = 'organism:%u%s' % (int(param.tax), rev)
-        self.url = data_formats.urls['uniprot_basic']['url']
+        self.url = urls.urls['uniprot_basic']['url']
         self.post = {
             'query': query, 
             'format': 'tab', 
@@ -179,7 +180,7 @@ class MappingTable(object):
                 '' if param.subfield is None else '(%s)'%param.subfield)
         }
         self.url = '%s?%s' % (self.url, urllib.urlencode(self.post))
-        data = dataio.curl(self.url, silent = False)
+        data = curl.curl(self.url, silent = False)
         self.data = data
         data = [[[xx] if param.field == 'protein names' else \
             [xxx for xxx in resep.split(scolend.sub('', xx.strip())) if len(xxx) > 0] \
@@ -331,7 +332,7 @@ class Mapper(object):
             tbl = self.tables[tblNameRev].mapping['from']
         elif load:
             for form in ['mapListUniprot', 'mapListBasic']:
-                frm = getattr(data_formats, form)
+                frm = getattr(maps, form)
                 if tblName in frm:
                     self.load_mappings(maps = {tblName: frm[tblName]})
                     tbl = self.which_table(nameType, targetNameType, load = False)
@@ -502,14 +503,14 @@ class Mapper(object):
         "src": "mysql", "par": "mysql_param/file_param")
         by default those are loaded from pickle files
         '''
-        if maps is None: 
+        if maplst is None: 
             try:
-                maps = data_formats.mapList
+                maplst = maps.mapList
             except:
                 self.ownlog.msg(1, 'load_mappings(): No input defined','ERROR')
                 return None
         self.ownlog.msg(1, "Loading mapping tables...")
-        for mapName, param in iteritems(maps):
+        for mapName, param in iteritems(maplst):
             self.ownlog.msg(2, "Loading table %s ..." % str(mapName))
             sys.stdout.write("\t:: Loading '%s' to '%s' mapping table\n" % \
                 (mapName[0], mapName[1]))
@@ -603,8 +604,8 @@ class Mapper(object):
                 self.tables[(ac_typ, 'uniprot')].mid = md5ac
         # loading the remaining from the big UniProt mapping file:
         if len(ac_types) > 0:
-            url = data_formats.urls['uniprot_idmap_ftp']['url']
-            data = dataio.curl(url, silent = False)
+            url = urls.urls['uniprot_idmap_ftp']['url']
+            data = curl.curl(url, silent = False)
             data = data.split('\n')
             prg = progress.Progress(len(data), "Processing ID conversion list", 99)
             for l in data:

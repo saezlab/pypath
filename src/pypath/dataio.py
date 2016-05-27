@@ -26,27 +26,6 @@
 from future.utils import iteritems
 from past.builtins import xrange, range, reduce
 
-import pycurl
-try:
-    from cStringIO import StringIO
-except:
-    try:
-        from StringIO import StringIO
-    except:
-        from io import BytesIO as StringIO
-        from io import StringIO as UStringIO
-
-try:
-    import cPickle as pickle
-except:
-    import pickle
-
-import sys
-import os
-import re
-import itertools
-from collections import Counter
-
 import urllib
 
 try:
@@ -62,27 +41,21 @@ except:
     # this works seemless in Py3:
     urlparse = urllib.parse
 
-if not hasattr(urllib, 'quote'):
-    _urllib = urllib
-    urllib = _urllib.parse
-
 try:
-    import pysftp
+    import cPickle as pickle
 except:
-    sys.stdout.write('''\n\t:: Module `pyfstp` not available. 
-        Only downloading of a small number of resources 
-        relies on this module.
-        Please install by PIP if it is necessary for you.
-    ''')
-import codecs
-import gzip
-import zipfile
-import tarfile
+    import pickle
+
+import sys
+import os
+import re
+import itertools
+from collections import Counter
+
 import xlrd
 import bs4
 import xml.etree.cElementTree as ET
 from lxml import etree
-import hashlib
 import time
 import copy
 import struct
@@ -94,443 +67,20 @@ except:
     sys.stdout.write('No `bioservices` available.\n\n')
     sys.stdout.flush()
 
-from contextlib import closing
-try:
-    from fabric.network import connect, HostConnectionCache
-    from fabric.state import env
-except:
-    sys.stdout.write('No `fabric` available.\n')
-    sys.stdout.flush()
-
 from xlrd import open_workbook
 from xlrd.biffh import XLRDError
 
 # from this module
 
-from pypath import data_formats
+import pypath.mapping
+from pypath import curl
+from pypath import urls
 from pypath import progress
 from pypath import common
 from pypath import intera
 from pypath import reaction
 from pypath import residues
-from pypath import mapping
 from pypath import seq as se
-
-
-if 'unicode' not in globals():
-    unicode = str
-
-CURSOR_UP_ONE = '\x1b[1A'
-ERASE_LINE = '\x1b[2K'
-CACHE = None
-
-show_cache = False
-
-class cache_on(object):
-    
-    def __init__(self):
-        pass
-    
-    def __enter__(self):
-        global CACHE
-        self._store_cache = globals()['CACHE']
-        CACHE = True
-    
-    def __exit__(self, exception_type, exception_value, traceback):
-        global CACHE
-        if exception_type is not None:
-            sys.stdout.write('%s, %s, %s\n' % \
-                (str(exception_type), str(exception_value), str(traceback)))
-            sys.stdout.flush()
-        CACHE = self._store_cache
-
-class cache_off(object):
-    
-    def __init__(self):
-        pass
-    
-    def __enter__(self):
-        global CACHE
-        self._store_cache = globals()['CACHE']
-        CACHE = False
-    
-    def __exit__(self, exception_type, exception_value, traceback):
-        global CACHE
-        if exception_type is not None:
-            sys.stdout.write('%s, %s, %s\n' % \
-                (str(exception_type), str(exception_value), str(traceback)))
-            sys.stdout.flush()
-        CACHE = self._store_cache
-
-class RemoteFile(object):
-    
-    def __init__(self, filename, user, host, passwd, port = 22, sep = '\t', 
-        header = True, rownames = True):
-        for key, val in iteritems(locals()):
-            setattr(self, key, val)
-        env.keepalive = 60
-        env.connection_attempts = 5
-        env.password = self.passwd
-    
-    def wcl(self):
-        with closing(connect(self.user, self.host, self.port, \
-            HostConnectionCache())) as ssh:
-            stdin, stdout, stderr = ssh.exec_command('wc -l %s'%self.filename)
-            return int(stdout.readlines()[0].split()[0]) - (1 if self.header else 0)
-    
-    def rowns(self):
-        with closing(connect(self.user, self.host, self.port, \
-            HostConnectionCache())) as ssh:
-            stdin, stdout, stderr = ssh.exec_command(
-                'awk \'BEGIN{FS="%s"}{print $1}\' %s%s' % \
-                (self.sep, self.filename, '' if not self.header else ' | tail -n +2'))
-            return [x.strip() for x in stdout.readlines()]
-    
-    def open(self, return_header = True):
-        with closing(connect(self.user, self.host, self.port, \
-            HostConnectionCache())) as ssh:
-            with closing(ssh.open_sftp()) as sftp:
-                with closing(sftp.open(self.filename)) as f:
-                    if not return_header:
-                        line = f.readline()
-                    for line in f:
-                        yield line
-
-def is_quoted(string):
-    '''
-    From http://stackoverflow.com/questions/1637762/test-if-string-is-url-encoded-in-php
-    '''
-    test = string
-    while(urllib.unquote(test) != test):
-        test = urllib.unquote(test)
-    return urllib.quote(test, '/%') == string or urllib.quote(test) == string
-
-def is_quoted_plus(string):
-    test = string
-    while(urllib.unquote_plus(test) != test):
-        test = urllib.unquote_plus(test)
-    return urllib.quote_plus(test, '&=') == string or urllib.quote_plus(test) == string
-
-def url_fix(s, charset='utf-8', force = False):
-    """
-    From http://stackoverflow.com/a/121017/854988
-    """
-    if isinstance(s, unicode):
-        s = s.encode(charset, 'ignore')
-    if isinstance(s, bytes):
-        s = str(s, charset)
-    scheme, netloc, path, qs, anchor = urlparse.urlsplit(s)
-    if force or not is_quoted(path):
-        path = urllib.quote(path, '/%')
-    if force or not is_quoted_plus(qs):
-        qs = urllib.quote_plus(qs, '&=')
-    return urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
-
-def print_debug_info(debug_type, debug_msg, truncate = 1000):
-    sys.stdout.write("debug(%d): %s\n" % (debug_type, debug_msg[:truncate]))
-    sys.stdout.flush()
-
-#class Dataio(object):
-#    
-#    __init__(self,mapper=None):
-
-def get_headers(header_list):
-    headers = {}
-    for header_line in header_list:
-        if type(header_line) is not str:
-            header_line = str(header_line, 'ascii')
-        if ':' not in header_line:
-            continue
-        name, value = header_line.split(':', 1)
-        name = name.strip()
-        value = value.strip()
-        name = name.lower()
-        headers[name] = value
-    return headers
-
-def get_jsessionid(headers):
-    rejsess = re.compile(r'.*(JSESSIONID=[A-Z0-9]*)')
-    for hdr in headers:
-        jsess = rejsess.findall(hdr)
-        if len(jsess) > 0:
-            return ['Cookie: %s'%jsess[0]]
-
-def get_xsessionid(headers):
-    pass
-
-def curl(url, silent = True, post = None, req_headers = None, cache = True,
-        debug = False, outf = None, compr = None, encoding = None,
-        files_needed = None, timeout = 300, init_url = None, 
-        init_fun = 'get_jsessionid', follow = True, large = False,
-        override_post = False, init_headers = False,
-        return_headers = False, binary_data = None,
-        write_cache = True, force_quote = False,
-        sftp_user = None, sftp_passwd = None, sftp_passwd_file = None,
-        sftp_port = 22, sftp_host = None, sftp_ask = None):
-    # CACHE overrides cache param if it is not None
-    if type(CACHE) is bool:
-        cache = CACHE
-    url = url_fix(url, force = force_quote)
-    if init_url is not None:
-        init_url = url_fix(init_url, force = force_quote)
-    # either from cache or from download, we load the data into StringIO:
-    multifile = False
-    domain = url.replace('https://', '').replace('http://', '').\
-        replace('ftp://', '').split('/')[0]
-    if sftp_host is not None:
-        sftp_filename = url
-        url = '%s%s'%(sftp_host, sftp_filename)
-    # first try to find file in cache:
-    if cache or write_cache or sftp_host is not None:
-        # outf param is to give a unique name to data
-        # downloaded previously by post requests
-        outf = outf if outf is not None else url.split('/')[-1].split('?')[0]
-        poststr = '' if post is None else \
-            '?' + '&'.join(sorted([i[0]+'='+i[1] for i in post.items()]))
-        try:
-            urlmd5 = hashlib.md5(url+poststr).hexdigest()
-        except (UnicodeEncodeError, TypeError):
-            urlmd5 = hashlib.md5(('%s%s' % (url, poststr)).encode('utf-8')).hexdigest()
-        if not os.path.exists(os.path.join(os.getcwd(),'cache')):
-            os.mkdir(os.path.join(os.getcwd(),'cache'))
-        cachefile = os.path.join(os.getcwd(),'cache',urlmd5+'-'+outf)
-        if show_cache:
-            sys.stdout.write('\tFor URL %s\n' % url)
-            sys.stdout.write('\tChache file is %s' % cachefile)
-        usecache = True if os.path.exists(cachefile) and cache else False
-        # load from cache:
-        if usecache:
-            if not silent:
-                sys.stdout.write('\t:: Loading %s from cache, previously '\
-                    'downloaded from %s\n'%(outf,domain))
-                sys.stdout.flush()
-            if large:
-                result = open(cachefile, 'r')
-            else:
-                with open(cachefile,'rb') as f:
-                    result = StringIO()
-                    read = f.read()
-                    result.write(read)
-    else:
-        usecache = False
-    # if not found in cache, download with curl:
-    if not usecache:
-        headers = []
-        if sftp_host is not None:
-            sftp_localpath = cachefile
-            sftp_success = sftp_download(sftp_filename, sftp_localpath,
-                host = sftp_host, user = sftp_user, passwd = sftp_passwd, 
-                passwd_file = sftp_passwd_file, ask = sftp_ask,
-                port = sftp_port)
-            if sftp_success:
-                result = open(cachefile, 'r')
-                status = 200
-            else:
-                result = None
-                status = 501
-        else:
-            if not init_url and large:
-                result = open(cachefile, 'w')
-            else:
-                result = StringIO()
-            c = pycurl.Curl()
-            if init_url:
-                c.setopt(c.URL, init_url)
-            else:
-                try:
-                    c.setopt(c.URL, url)
-                except:
-                    return url
-            c.setopt(c.FOLLOWLOCATION, follow)
-            c.setopt(c.CONNECTTIMEOUT, 15)
-            c.setopt(c.TIMEOUT, timeout)
-            if override_post:
-                if req_headers is None: req_headers = []
-                req_headers.append('X-HTTP-Method-Override: GET')
-            if type(req_headers) is list:
-                c.setopt(c.HTTPHEADER, req_headers)
-            c.setopt(c.WRITEFUNCTION, result.write)
-            c.setopt(c.HEADERFUNCTION, headers.append)
-            # if debug is necessary:
-            if debug:
-                c.setopt(pycurl.VERBOSE, 1)
-                c.setopt(pycurl.DEBUGFUNCTION, print_debug_info)
-            if type(post) is dict:
-                postfields = urllib.urlencode(post)
-                c.setopt(c.POSTFIELDS, postfields)
-                c.setopt(c.POST, 1)
-            if binary_data:
-                c.setopt(c.POST, 1)
-                filesize = os.path.getsize(binary_data)
-                c.setopt(pycurl.POSTFIELDSIZE, filesize)
-                to_send = open(binary_data, 'rb')
-                c.setopt(pycurl.READFUNCTION, to_send.read)
-                # c.setopt(pycurl.POSTFIELDS, to_send.read())
-                c.setopt(pycurl.CUSTOMREQUEST, 'POST')
-                c.setopt(pycurl.POSTREDIR, 3)
-            if not silent:
-                sys.stdout.write('\t:: Downloading data from %s. Waiting for reply...' % \
-                    domain)
-                sys.stdout.flush()
-            for i in xrange(3):
-                try:
-                    if debug:
-                        sys.stdout.write('\t:: pypath.dataio.curl() :: attempt #%u\n' % i)
-                        sys.stdout.flush()
-                    c.perform()
-                    if url.startswith('http'):
-                        status = c.getinfo(pycurl.HTTP_CODE)
-                        if status == 200:
-                            break
-                    if url.startswith('ftp'):
-                        status = 500
-                        for h in headers:
-                            if h.startswith('226'):
-                                status = 200
-                                break
-                except pycurl.error as e:
-                    status = 500
-                    sys.stdout.write('\tPycURL error: %u, %s\n' % e)
-                    sys.stdout.flush()
-            c.close()
-    # sometimes authentication or cookies are needed to access the target url:
-    if init_url and not usecache:
-        if not silent:
-            sys.stdout.write('\b'*20 + ' '*20 + '\b'*20 + 'Success.\n')
-            sys.stdout.flush()
-        # here, you may define a custom function to fetch 
-        # the authentication data from cookies/headers, 
-        # and return with headers for the main request:
-        req_headers = globals()[init_fun](headers)
-        if init_headers: return req_headers
-        return curl(url = url, req_headers = req_headers, silent = silent, 
-            debug = debug, outf = outf, compr = compr, encoding = encoding, 
-            files_needed = files_needed, timeout = timeout, large = large,
-            write_cache = write_cache)
-    # get the data from the file downloaded/loaded from cache:
-    if usecache or status == 200:
-        if result is not None and type(result) is not StringIO:
-            fname = result.name
-            result.close()
-            result = open(fname, 'rb')
-        # find out the encoding:
-        if encoding is None:
-            if not usecache:
-                headers = get_headers(headers)
-                if return_headers:
-                    return result, headers
-                encoding = None
-                if 'content-type' in headers:
-                    content_type = headers['content-type'].lower()
-                    match = re.search('charset=(\S+)', content_type)
-                    if match:
-                        encoding = match.group(1)
-                if encoding is None:
-                    if url.startswith('ftp'):
-                        encoding = 'utf-8'
-                    else:
-                        encoding = 'iso-8859-1'
-            else:
-                # in case of using the cache:
-                encoding = 'utf-8'
-        if not silent and not usecache:
-            sys.stdout.write('\b'*20 + ' '*20 + '\b'*20 + 'Success.\n')
-            sys.stdout.flush()
-        result.seek(0)
-        if url[-6:].lower() == 'tar.gz' or url[-3:].lower() == 'tgz' or compr == 'tgz':
-            multifile = True
-            results = {}
-            res = tarfile.open(fileobj = result, mode = 'r:gz')
-            membs = res.getmembers()
-            for m in membs:
-                if (files_needed is None or m.name in files_needed) \
-                    and m.size != 0:
-                    # m.size is 0 for dierctories
-                    this_file = res.extractfile(m)
-                    if large:
-                        results[m.name] = this_file
-                    else:
-                        results[m.name] = this_file.read()
-                        this_file.close()
-            if not large:
-                res.close()
-        elif url[-2:].lower() == 'gz' or compr == 'gz':
-            res = gzip.GzipFile(fileobj = result, mode = 'r')
-            if not large:
-                try:
-                    res = res.read()
-                except:
-                    print(type(result))
-                    print(result)
-                    print(type(res))
-                try:
-                    res = res.decode(encoding)
-                    res = res.encode('utf-8')
-                except:
-                    # better to proceed even if there is some trouble with encodings...
-                    pass
-        elif url[-3:].lower() == 'zip' or compr == 'zip':
-            multifile = True
-            results = {}
-            res = zipfile.ZipFile(result,'r')
-            membs = res.namelist()
-            for m in membs:
-                if files_needed is None or m in files_needed:
-                    this_file = res.open(m)
-                    if large:
-                        results[m] = this_file
-                    else:
-                        results[m] = this_file.read()
-                        this_file.close()
-            res.close()
-        else:
-            if large:
-                res = result
-            else:
-                res = result.getvalue()
-        if not multifile:
-            results = {'one': res}
-        if not large:
-            for k in results.keys():
-                # handle files with CR line endings:
-                if type(results[k]) is bytes:
-                    results[k] = str(results[k], encoding)
-                if '\r' in results[k] and '\n' not in results[k]:
-                    results[k] = results[k].replace('\r', '\n')
-                else:
-                    results[k] = results[k].replace('\r', '')
-                if 'encoding' != 'utf-8':
-                    try:
-                        results[k] = results[k].decode(encoding).encode('utf-8')
-                    except:
-                        pass
-        if (cache or write_cache) and not usecache and not large:
-            for k in results.keys():
-                if not multifile and not url.endswith('gz'):
-                # write the decoded data back to StringIO
-                    result.truncate(0)
-                    if type(results[k]) is not bytes:
-                        results[k] = bytes(results[k], encoding)
-                    result.write(results[k])
-                # if cache is turned on, but data is not from cache,
-                # place it there to make available next time:
-                result.seek(0)
-                with open(cachefile,'wb') as f:
-                    f.write(result.getvalue())
-        res = results if multifile else results['one']
-    else:
-        # download error:
-        if not silent:
-            sys.stdout.write('\b'*20 + ' '*20 + '\b'*20 + \
-                'Failed. (Status: %u)\n'%status)
-            if status > 200:
-                sys.stdout.write('\t# URL: %s\n\t# POST: %s\n' % \
-                    (url, '' if type(post) is not dict else urllib.urlencode(post)))
-            sys.stdout.flush()
-        res = None
-    # returns raw data, dict of file names and raw data in case of 
-    # multiple file archives, or file object in case of large files:
-    return res
 
 #
 # thanks for http://stackoverflow.com/a/3239248/854988
@@ -603,10 +153,10 @@ def read_table(cols, fileObject = None, data = None, sep = '\t', sep2 = None, re
 
 def all_uniprots(organism = 9606, swissprot = None):
     rev = '' if swissprot is None else ' AND reviewed:%s'%swissprot
-    url = data_formats.urls['uniprot_basic']['url']
+    url = urls.urls['uniprot_basic']['url']
     post = {'query': 'organism:%s%s' % (str(organism), rev), 
         'format': 'tab', 'columns': 'id'}
-    data = curl(url, post = post, silent = False)
+    data = curl.curl(url, post = post, silent = False)
     return filter(lambda x:
         len(x) > 0,
         map(lambda l:
@@ -620,10 +170,10 @@ def swissprot_seq(organism = 9606, isoforms = False):
         9606: 'Homo sapiens'
     }
     result = {}
-    url = data_formats.urls['uniprot_basic']['url']
+    url = urls.urls['uniprot_basic']['url']
     post = {'query': 'organism:%s AND reviewed:yes'%str(organism), 
         'format': 'tab', 'columns': 'id,sequence'}
-    data = curl(url, post = post, silent = False)
+    data = curl.curl(url, post = post, silent = False)
     data = data.split('\n')
     del data[0]
     for l in data:
@@ -639,7 +189,7 @@ def swissprot_seq(organism = 9606, isoforms = False):
     return result
 
 def get_pdb():
-    data = curl(data_formats.urls['uniprot_pdb']['url'], silent=False)
+    data = curl.curl(urls.urls['uniprot_pdb']['url'], silent=False)
     if data is None:
         return None, None
     data = data.split('\n')
@@ -678,7 +228,7 @@ def get_pfam(uniprots=None,organism=None):
             thisPart = ' OR '.join(['accession:%s'%u for u in thisPart])
             post = {'query': thisPart, 'format': 'tab', 'columns': 'id,database(Pfam)'}
             for j in xrange(3):
-                data = curl(data_formats.urls['uniprot_basic']['url'],post=post)
+                data = curl.curl(urls.urls['uniprot_basic']['url'],post=post)
                 if data is not None:
                     break
             if data is None:
@@ -698,7 +248,7 @@ def get_pfam(uniprots=None,organism=None):
         organismQuery = 'organism:%u AND reviewed:yes'%organism
         post = {'query': organismQuery, 'format': 'tab', 'columns': 'id,database(Pfam)'}
         for j in xrange(3):
-            data_all = curl(data_formats.urls['uniprot_basic']['url'],post=post,
+            data_all = curl.curl(urls.urls['uniprot_basic']['url'],post=post,
                             silent=False,outf='uniprot-pfam-%u.tab'%organism)
             if data_all is not None:
                 break
@@ -719,9 +269,9 @@ def get_pfam(uniprots=None,organism=None):
     return u_pfam, pfam_u
 
 def get_pfam_regions(uniprots = [], pfams = [], keepfile = False, dicts = 'both'):
-    url = data_formats.urls['pfam_up']['url']
+    url = urls.urls['pfam_up']['url']
     outf = url.split('/')[-1]
-    urlmd5 = hashlib.md5(url).hexdigest()
+    urlmd5 = common.md5(url)
     if not os.path.exists(os.path.join(os.getcwd(),'cache')):
         os.mkdir(os.path.join(os.getcwd(),'cache'))
     cachefile = os.path.join(os.getcwd(),'cache',urlmd5+'-'+outf)
@@ -778,7 +328,7 @@ def get_pfam_regions(uniprots = [], pfams = [], keepfile = False, dicts = 'both'
         return u_pfam, pfam_u
 
 def get_pfam_names():
-    data = curl(data_formats.urls['pfam_pdb']['url'],silent=False)
+    data = curl.curl(urls.urls['pfam_pdb']['url'],silent=False)
     if data is None:
         return None, None
     dname_pfam = {}
@@ -804,7 +354,7 @@ def get_pfam_names():
 
 def get_pfam_pdb():
     non_digit = re.compile(r'[^\d.-]+')
-    data = curl(data_formats.urls['pfam_pdb']['url'],silent=False)
+    data = curl.curl(urls.urls['pfam_pdb']['url'],silent=False)
     if data is None:
         return None, None
     pdb_pfam = {}
@@ -830,7 +380,7 @@ def get_pfam_pdb():
 def get_corum():
     complexes = {}
     members = {}
-    data = curl(data_formats.urls['corum']['url'], silent=False)
+    data = curl.curl(urls.urls['corum']['url'], silent=False)
     if data is None:
         return None,None
     data = data.split('\n')
@@ -868,13 +418,13 @@ def get_complexportal(species=9606,zipped=True):
     }
     species = species if type(species) is not int else spec[species]
     if zipped:
-        zipurl = '/'.join([data_formats.urls['complex_portal']['url'],species+'.zip'])
-        files = curl(zipurl,silent=False)
+        zipurl = '/'.join([urls.urls['complex_portal']['url'],species+'.zip'])
+        files = curl.curl(zipurl,silent=False)
         if files is None:
             return None
     else:
-        url = '/'.join([data_formats.urls['complex_portal']['url'],species,''])
-        lst = curl(url,silent=False)
+        url = '/'.join([urls.urls['complex_portal']['url'],species,''])
+        lst = curl.curl(url,silent=False)
         if lst is None:
             return None
     if zipped:
@@ -889,8 +439,8 @@ def get_complexportal(species=9606,zipped=True):
         if zipped:
             xml = files[xmlname]
         else:
-            url = '/'.join([data_formats.urls['complex_portal']['url'],species,xmlname])
-            xml = curl(url)
+            url = '/'.join([urls.urls['complex_portal']['url'],species,xmlname])
+            xml = curl.curl(url)
         if xml is None:
             msg = 'Could not get file: \n\t\t%s' % url
             errors.append(msg)
@@ -950,8 +500,8 @@ def get_complexportal(species=9606,zipped=True):
     return complexes
 
 def get_havugimana():
-    url = data_formats.urls['havugimana']['url']
-    data = curl(url, silent = False, large = True)
+    url = urls.urls['havugimana']['url']
+    data = curl.curl(url, silent = False, large = True)
     fname = data.name
     data.close()
     table = read_xls(fname)
@@ -965,8 +515,8 @@ def read_complexes_havugimana():
     return map(lambda l: l[2].split(','), get_havugimana())
 
 def get_compleat():
-    url = data_formats.urls['compleat']['url']
-    data = curl(url,silent=False)
+    url = urls.urls['compleat']['url']
+    data = curl.curl(url,silent=False)
     data = data.replace('\r', '').split('\n')
     complexes = []
     for l in data:
@@ -983,7 +533,7 @@ def get_compleat():
     return complexes
 
 def get_pdb_chains():
-    chains = curl(data_formats.urls['pdb_chains']['url'],silent=False)
+    chains = curl.curl(urls.urls['pdb_chains']['url'],silent=False)
     if chains is None:
         return None,None
     chains = chains.replace('\r', '').split('\n')
@@ -1028,8 +578,8 @@ def get_pdb_chains():
     return u_pdb, pdb_u
 
 def get_3dcomplexes():
-    contact = curl(data_formats.urls['3dcomplexes_contact']['url'],silent=False)
-    corresp = curl(data_formats.urls['3dcomplexes_correspondancy']['url'],silent=False)
+    contact = curl.curl(urls.urls['3dcomplexes_contact']['url'],silent=False)
+    corresp = curl.curl(urls.urls['3dcomplexes_correspondancy']['url'],silent=False)
     u_pdb, pdb_u = get_pdb_chains()
     del u_pdb
     if contact is None or corresp is None or pdb_u is None:
@@ -1199,8 +749,8 @@ def get_domino_ptms():
     return {'ddi': ddi, 'dmi': dmi}
 
 def get_3dc_ddi():
-    contact = curl(data_formats.urls['3dcomplexes_contact']['url'], silent=False)
-    corresp = curl(data_formats.urls['3dcomplexes_correspondancy']['url'], silent=False)
+    contact = curl.curl(urls.urls['3dcomplexes_contact']['url'], silent=False)
+    corresp = curl.curl(urls.urls['3dcomplexes_correspondancy']['url'], silent=False)
     u_pdb, pdb_u = get_pdb_chains()
     del u_pdb
     if contact is None or corresp is None or pdb_u is None:
@@ -1333,8 +883,8 @@ def get_pisa(pdblist):
     for i in xrange(0,len(pdblist),p):
         to = i + p
         thisPart = pdblist[i:to]
-        url = data_formats.urls['pisa_interfaces']['url'] + ','.join(thisPart)
-        data = curl(url,cache=False)
+        url = urls.urls['pisa_interfaces']['url'] + ','.join(thisPart)
+        data = curl.curl(url,cache=False)
         if data is None:
             msg = 'Could not download: \n\t\t%s' % url
             errors.append(msg)
@@ -1399,7 +949,7 @@ def get_pisa(pdblist):
 
 def get_3did_ddi(residues=False,ddi_flat=None,organism=9606):
     if ddi_flat is None:
-        data = curl(data_formats.urls['3did_ddi']['url'],silent=False)
+        data = curl.curl(urls.urls['3did_ddi']['url'],silent=False)
         tmpfile = '3did_flat_tmp'
         if data is None:
             return None
@@ -1511,7 +1061,7 @@ def get_3did(ddi_flat = None, res = True, organism = 9606, pickl = True):
         if len(result) == 1: return result
         else: return result[0], result[1]
     if ddi_flat is None:
-        data = curl(data_formats.urls['3did_ddi']['url'],silent=False)
+        data = curl.curl(urls.urls['3did_ddi']['url'],silent=False)
         tmpfile = '3did_flat_tmp'
         if data is None:
             return None
@@ -1611,7 +1161,7 @@ def get_3did_dmi(dmi_flat = None):
     if os.path.exists(resultfile):
         return pickle.load(open(resultfile, 'rb'))
     if dmi_flat is None:
-        data = curl(data_formats.urls['3did_dmi']['url'], silent = False)
+        data = curl.curl(urls.urls['3did_dmi']['url'], silent = False)
         tmpfile = '3did_dmi_flat_tmp'
         if data is None:
             return None
@@ -1729,7 +1279,7 @@ def get_instruct():
     domain-domain // protein-protein interaction.
     '''
     non_digit = re.compile(r'[^\d.-]+')
-    data = curl(data_formats.urls['instruct_human']['url'],silent=False)
+    data = curl.curl(urls.urls['instruct_human']['url'],silent=False)
     if data is None:
         return None
     data = data.replace('\r', '').split('\n')
@@ -1768,7 +1318,7 @@ def get_instruct_offsets():
     These offsets should be understood as from UniProt to PDB.
     '''
     non_digit = re.compile(r'[^\d.-]+')
-    data = curl(data_formats.urls['instruct_offsets']['url'],silent=False)
+    data = curl.curl(urls.urls['instruct_offsets']['url'],silent=False)
     if data is None:
         return None
     data = data.replace('\r', '').split('\n')
@@ -1800,7 +1350,7 @@ def get_i3d():
     if dname_pfam is None:
         sys.stdout.write('\n\t:: Could not get Pfam domain names\n\n')
     non_digit = re.compile(r'[^\d.-]+')
-    data = curl(data_formats.urls['i3d_human']['url'],silent=False)
+    data = curl.curl(urls.urls['i3d_human']['url'],silent=False)
     if data is None:
         return None
     data = data.replace('\r', '').split('\n')
@@ -1847,7 +1397,7 @@ def get_switches_elm():
     '''
     residue = re.compile(r'(^[A-Z])([0-9]+)')
     url = data.formats.urls['switches.elm']['url']
-    data = curl(url,silent=False)
+    data = curl.curl(url,silent=False)
     if data is None:
         return None
     buff = StringIO()
@@ -1919,8 +1469,8 @@ def get_switches_elm():
     return table
 
 def get_csa(uniprots=None):
-    url = data_formats.urls['catalytic_sites']['url']
-    data = curl(url,silent=False)
+    url = urls.urls['catalytic_sites']['url']
+    data = curl.curl(url,silent=False)
     if data is None:
         return None
     u_pdb, pdb_u = get_pdb_chains()
@@ -1966,17 +1516,17 @@ def get_csa(uniprots=None):
     return css
 
 def get_ontology(ontology):
-    ols = WSDLService("OLS", data_formats.urls['ols']['url'])
+    ols = WSDLService("OLS", urls.urls['ols']['url'])
     ont = dict((x.key,x.value) for x in ols.serv.getAllTermsFromOntology(ontology).item)
     return ont
 
 def get_listof_ontologies():
-    ols = WSDLService("OLS", data_formats.urls['ols']['url'])
+    ols = WSDLService("OLS", urls.urls['ols']['url'])
     olist = dict((x.key,x.value) for x in ols.serv.getOntologyNames().item)
     return olist
 
 def residue_pdb(pdb,chain,residue):
-    url = data_formats.urls['pdbsws']['url']
+    url = urls.urls['pdbsws']['url']
     params = urllib.urlencode({'plain': 1, 'qtype': 'pdb', 
                                 'id': pdb, 'chain': chain, 'res': residue})
     data = urllib2.urlopen(url + "?%s"%params)
@@ -2001,7 +1551,7 @@ class ResidueMapper(object):
     def load_mapping(self,pdb):
         non_digit = re.compile(r'[^\d.-]+')
         pdb = pdb.lower()
-        url = data_formats.urls['pdb_align']['url'] + pdb
+        url = urls.urls['pdb_align']['url'] + pdb
         data = urllib2.urlopen(url)
         mapper = {}
         soup = bs4.BeautifulSoup(data.read(), 'html.parser')
@@ -2052,14 +1602,14 @@ class ResidueMapper(object):
         self.mappers = {}
 
 def get_comppi():
-    url = data_formats.urls['comppi']['url']
+    url = urls.urls['comppi']['url']
     post = {
         'fDlSet': 'comp',
         'fDlSpec': '0',
         'fDlMLoc': 'all',
         'fDlSubmit': 'Download'
     }
-    data = curl(url, post = post, silent = False, compr = 'gz')
+    data = curl.curl(url, post = post, silent = False, compr = 'gz')
     cols = {
         'uniprot1': 0,
         'uniprot2': 8,
@@ -2073,8 +1623,8 @@ def get_comppi():
     return data
 
 def get_psite_phos(raw = True, organism = 'human'):
-    url = data_formats.urls['psite_kin']['url']
-    data = curl(url, silent = False, compr = 'gz', encoding = 'iso-8859-1')
+    url = urls.urls['psite_kin']['url']
+    data = curl.curl(url, silent = False, compr = 'gz', encoding = 'iso-8859-1')
     cols = {
         'kinase': 1,
         'kinase_org': 3,
@@ -2121,8 +1671,8 @@ def get_psite_phos(raw = True, organism = 'human'):
 
 def get_psite_p(organism = 'human'):
     result = []
-    url = data_formats.urls['psite_p']['url']
-    data = curl(url, silent = False)
+    url = urls.urls['psite_p']['url']
+    data = curl.curl(url, silent = False)
     data = [r.split('\t') for r in data.split('\n')[4:]]
     nondigit = re.compile(r'[^\d]+')
     remot = re.compile(r'(_*)([A-Za-z]+)(_*)')
@@ -2153,8 +1703,8 @@ def get_psite_p(organism = 'human'):
     return result
 
 def get_psite_reg():
-    url = data_formats.urls['psite_reg']['url']
-    data = curl(url, silent = False, compr = 'gz', encoding = 'iso-8859-1')
+    url = urls.urls['psite_reg']['url']
+    data = curl.curl(url, silent = False, compr = 'gz', encoding = 'iso-8859-1')
     cols = {
         'uniprot': 2,
         'organism': 6,
@@ -2254,7 +1804,7 @@ def get_ielm_huge(ppi, id_type = 'UniProtKB_AC', mydomains = 'HMMS',
 
 def get_ielm(ppi, id_type = 'UniProtKB_AC', mydomains = 'HMMS', 
         maxwait = 180, cache = True, part = False, part_size = 500, headers = None):
-    url = data_formats.urls['proteomic_ielm']['url']
+    url = urls.urls['proteomic_ielm']['url']
     network = ''
     from_pickle = []
     ppi_pickle = []
@@ -2276,7 +1826,7 @@ def get_ielm(ppi, id_type = 'UniProtKB_AC', mydomains = 'HMMS',
     for pp in ppi_query:
         network += '%s %s\r\n' % (pp[0], pp[1])
     post = {'network': network, 'databases': id_type, 'mydomains': mydomains}
-    net_md5 = hashlib.md5(network).hexdigest()
+    net_md5 = common.md5(network)
     cachefile = os.path.join(os.getcwd(),'cache',net_md5 + '.ielm')
     if os.path.exists(cachefile) and cache:
         with open(cachefile, 'r') as f:
@@ -2284,7 +1834,7 @@ def get_ielm(ppi, id_type = 'UniProtKB_AC', mydomains = 'HMMS',
         soup = bs4.BeautifulSoup(data, 'html.parser')
         src = 'cache'
     else:
-        data = curl(url, post = post, silent = False, cache = False, 
+        data = curl.curl(url, post = post, silent = False, cache = False, 
             req_headers = headers)
         soup = bs4.BeautifulSoup(data, 'html.parser')
         sessid = soup.find('input', {'name':'session_ID'})['value']
@@ -2308,7 +1858,7 @@ def get_ielm(ppi, id_type = 'UniProtKB_AC', mydomains = 'HMMS',
             'database': id_type, 
             'number': '', 
             'domains': mydomains}
-        data = curl('http://i.elm.eu.org/wait_2/', post = post, cache = False, 
+        data = curl.curl('http://i.elm.eu.org/wait_2/', post = post, cache = False, 
             req_headers = headers)
         if data is not None:
             soup = bs4.BeautifulSoup(data, 'html.parser')
@@ -2330,8 +1880,8 @@ def get_ielm(ppi, id_type = 'UniProtKB_AC', mydomains = 'HMMS',
     tbl = soup.find('table', {'id': 'example1'})
     this_result = []
     if tbl:
-        url = data_formats.urls['elm_depr']['url']
-        depr_list = curl(url)
+        url = urls.urls['elm_depr']['url']
+        depr_list = curl.curl(url)
         depr_list = depr_list.replace('"', '').split('\n')[5:]
         depr = [tuple(x.split('\t')) for x in depr_list if len(x) > 0]
         depr = dict(depr + [tuple([x[0].lower(), x[1]]) for x in depr])
@@ -2357,9 +1907,9 @@ def get_ielm(ppi, id_type = 'UniProtKB_AC', mydomains = 'HMMS',
     return this_result
 
 def get_pepcyber(cache = None):
-    url = data_formats.urls['pepcyber']['url']
+    url = urls.urls['pepcyber']['url']
     # this is huge, takes a few minutes! 
-    data = curl(url, silent = False, timeout = 600)
+    data = curl.curl(url, silent = False, timeout = 600)
     soup = bs4.BeautifulSoup(data, 'html.parser')
     rows = soup.find_all('table')[6].find_all('tr')
     result = []
@@ -2399,8 +1949,8 @@ def get_pepcyber(cache = None):
 
 def pepcyber_uniprot(num):
     result = {}
-    url = data_formats.urls['pepcyber_details']['url'] % num
-    data = curl(url, cache = False)
+    url = urls.urls['pepcyber_details']['url'] % num
+    data = curl.curl(url, cache = False)
     if data is None:
         return result
     soup = bs4.BeautifulSoup(data, 'html.parser')
@@ -2420,8 +1970,8 @@ def pepcyber_uniprot(num):
     return result
 
 def get_pdzbase():
-    url = data_formats.urls['pdzbase']['url']
-    data = curl(url, silent = False)
+    url = urls.urls['pdzbase']['url']
+    data = curl.curl(url, silent = False)
     soup = bs4.BeautifulSoup(data, 'html.parser')
     rows = soup.find_all('table')[3].find('table').find('table').find_all('tr')
     result = []
@@ -2443,8 +1993,8 @@ def get_domino(none_values = False, outfile = None):
     ptmrn = re.compile(r'.*sequence:[\s]*[0-9]+-[0-9]+[\s]*:[\s]*([A-Z]{10,}).*')
     ptmty = re.compile(r'[0-9]*;MI:[0-9]*\((.*)\);.*;.*')
     refrs = re.compile(r'(pubmed|doi):["]*([-0-9a-zA-Z\.\(\)/]*)["]*')
-    url = data_formats.urls['domino']['url']
-    data = curl(url, silent = False)
+    url = urls.urls['domino']['url']
+    data = curl.curl(url, silent = False)
     data = data.split('\n')
     data.remove('')
     del data[0]
@@ -2517,8 +2067,8 @@ def get_domino(none_values = False, outfile = None):
 
 def get_elm_domains():
     result = {}
-    url = data_formats.urls['ielm_domains']['url']
-    data = curl(url, silent = False)
+    url = urls.urls['ielm_domains']['url']
+    data = curl.curl(url, silent = False)
     soup = bs4.BeautifulSoup(data, 'html.parser')
     tbl = soup.find('table').find_all('td')
     rows = [tbl[x:x+4] for x in xxrange(0, len(tbl), 4)]
@@ -2535,10 +2085,10 @@ def get_elm_domains():
 def get_phosphoelm(organism = 'Homo sapiens', ltp_only = True):
     result = []
     non_digit = re.compile(r'[^\d.-]+')
-    url = data_formats.urls['p_elm']['url']
-    data = curl(url, silent = False)
+    url = urls.urls['p_elm']['url']
+    data = curl.curl(url, silent = False)
     data = [n for d, n in iteritems(data) \
-        if d.startswith(data_formats.urls['p_elm']['psites'])]
+        if d.startswith(urls.urls['p_elm']['psites'])]
     data = data[0] if len(data) > 0 else ''
     data = [l.split('\t') for l in data.split('\n')]
     kinases = get_phelm_kinases()
@@ -2586,8 +2136,8 @@ def phelm_psites():
 
 def get_phelm_kinases():
     result = {}
-    url = data_formats.urls['p_elm_kin']['url']
-    data = curl(url, silent = False)
+    url = urls.urls['p_elm_kin']['url']
+    data = curl.curl(url, silent = False)
     soup = bs4.BeautifulSoup(data, 'html.parser')
     for row in soup.find_all('table')[1].find_all('tr'):
         thisRow = [x.text for x in row.find_all('td')]
@@ -2596,15 +2146,15 @@ def get_phelm_kinases():
     return result
 
 def get_elm_classes():
-    url = data_formats.urls['elm_class']['url']
-    data = curl(url, silent = False)
+    url = urls.urls['elm_class']['url']
+    data = curl.curl(url, silent = False)
     data = [x.split('\t')[:-2] for x in \
         data.replace('"', '').split('\n')[6:] if len(x) > 0]
     return dict(zip([x[1] for x in data], data))
 
 def get_elm_instances():
-    url = data_formats.urls['elm_inst']['url']
-    data = curl(url, silent = False)
+    url = urls.urls['elm_inst']['url']
+    data = curl.curl(url, silent = False)
     data = data.replace('"', '').split('\t')
     data = data[6:]
 
@@ -2614,8 +2164,8 @@ def get_elm_interactions():
     This is the gold standard set of ELM.
     '''
     result = []
-    url = data_formats.urls['elm_int']['url']
-    data = curl(url, silent = False)
+    url = urls.urls['elm_int']['url']
+    data = curl.curl(url, silent = False)
     data = data.split('\n')
     del data[0]
     for l in data:
@@ -2624,7 +2174,7 @@ def get_elm_interactions():
 
 def pfam_uniprot(uniprots, infile = None):
     result = {}
-    url = data_formats.urls['pfam_up']['url']
+    url = urls.urls['pfam_up']['url']
     infile = infile if infile is not None \
         else os.path.join('cache', 'pfam-regions.tab.gz')
     if not os.path.exists(infile):
@@ -2655,8 +2205,8 @@ def get_dbptm():
     byre = re.compile(r'.*by\s([A-Za-z0-9\s]+)\.*')
     andre = re.compile(r',|and')
     non_digit = re.compile(r'[^\d.-]+')
-    for url in data_formats.urls['dbptm']['urls']:
-        extra = curl(url, silent = False)
+    for url in urls.urls['dbptm']['urls']:
+        extra = curl.curl(url, silent = False)
         for k, data in iteritems(extra):
             data = [x.split('\t') for x in data.split('\n')]
             for l in data:
@@ -2704,8 +2254,8 @@ def get_phosphonetworks():
     reres = re.compile(r'([A-Z])([0-9]+)')
     non_digit = re.compile(r'[^\d.-]+')
     motre = re.compile(r'(-*)([A-Za-z]+)(-*)')
-    url = data_formats.urls['phosnw']['url']
-    data = curl(url, silent = False)
+    url = urls.urls['phosnw']['url']
+    data = curl.curl(url, silent = False)
     if data is None:
         return None
     data = data.split('\n')
@@ -2747,10 +2297,10 @@ def pnetworks_interactions():
 def get_depod(organism = 'Homo sapiens'):
     result = []
     reunip = re.compile(r'uniprotkb:([A-Z0-9]+)')
-    url = data_formats.urls['depod']['urls'][0]
-    url_mitab = data_formats.urls['depod']['urls'][1]
-    data = curl(url, silent = False)
-    data_mitab = curl(url_mitab, silent = False)
+    url = urls.urls['depod']['urls'][0]
+    url_mitab = urls.urls['depod']['urls'][1]
+    data = curl.curl(url, silent = False)
+    data_mitab = curl.curl(url_mitab, silent = False)
     data = [x.split('\t') for x in data.split('\n')]
     data_mitab = [x.split('\t') for x in data_mitab.split('\n')]
     del data[0]
@@ -2767,8 +2317,8 @@ def get_mimp():
     result = []
     non_digit = re.compile(r'[^\d.-]+')
     motre = re.compile(r'(-*)([A-Za-z]+)(-*)')
-    url = data_formats.urls['mimp']['url']
-    data = curl(url, silent = False)
+    url = urls.urls['mimp']['url']
+    data = curl.curl(url, silent = False)
     kclass = get_kinase_class()
     if data is None:
         return None
@@ -2824,7 +2374,7 @@ def mimp_interactions():
 
 def phosphopoint_directions():
     directions = []
-    fname = data_formats.files['phosphopoint']['data']
+    fname = urls.files['phosphopoint']['data']
     with open(fname, 'r') as f:
         nul = f.readline()
         for l in f:
@@ -2835,8 +2385,8 @@ def phosphopoint_directions():
 def get_isoforms(organism = 'Homo sapiens'):
     reorg = re.compile(r'OS=([A-Z][a-z]+\s[a-z]+)')
     result = {}
-    url = data_formats.urls['unip_iso']['url']
-    data = curl(url, silent = False)
+    url = urls.urls['unip_iso']['url']
+    data = curl.curl(url, silent = False)
     data = read_fasta(data)
     for header, seq in iteritems(data):
         org = reorg.findall(header)
@@ -2868,8 +2418,8 @@ def get_kinase_class():
     }
     tabs = re.compile(r'[\t]{3,}')
     reps = re.compile(r'ps[0-9]*$')
-    url = data_formats.urls['kinclass']['url']
-    data = curl(url, silent = False)
+    url = urls.urls['kinclass']['url']
+    data = curl.curl(url, silent = False)
     data = tabs.sub('', data)
     data = [x.split('\t') for x in data.split('\n')]
     data = data[9:]
@@ -2905,8 +2455,8 @@ def get_acsn():
     }
     regreek = re.compile(r'\b(' + '|'.join(greek.keys()) + r')\b')
     result = []
-    url = data_formats.urls['acsn']['url']
-    data = curl(url, silent = False)
+    url = urls.urls['acsn']['url']
+    data = curl.curl(url, silent = False)
     data = [x.split('\t') \
         for x in data.replace('\r', '').replace('*', '').strip().split('\n')]
     for l in data:
@@ -2916,8 +2466,8 @@ def get_acsn():
 
 def get_abs():
     result = []
-    url = data_formats.urls['abs']['url']
-    data = curl(url, silent = False)
+    url = urls.urls['abs']['url']
+    data = curl.curl(url, silent = False)
     data = [[x.replace('*', '') for x in xx.split('\t')] for xx in data.split('\n')]
     for d in data:
         if len(d) > 2:
@@ -2925,14 +2475,14 @@ def get_abs():
     return result
 
 def get_pazar():
-    url = data_formats.urls['pazar']['url']
-    data = curl(url, silent = False)
+    url = urls.urls['pazar']['url']
+    data = curl.curl(url, silent = False)
     return [map(x.split('\t').__getitem__, (1, 4, 10)) \
         for x in ''.join(data.values()).split('\n') if len(x) > 0]
 
 def get_htri():
-    data = curl(data_formats.urls['htri']['url'], 
-        init_url = data_formats.urls['htri']['init_url'], silent = False)
+    data = curl.curl(urls.urls['htri']['url'], 
+        init_url = urls.urls['htri']['init_url'], silent = False)
     return [map(x.split(';').__getitem__, (1, 3, 6)) \
         for x in data.split('\n') if len(x) > 0][1:]
 
@@ -2940,8 +2490,8 @@ def get_oreganno_old(organism = 'Homo sapiens'):
     nsep = re.compile(r'([-A-Za-z0-9]{3,})[\s/\(]*.*')
     nrem = re.compile(r'[-/]')
     result = []
-    url = data_formats.urls['oreganno_old']['url']
-    data = curl(url, silent = False)
+    url = urls.urls['oreganno_old']['url']
+    data = curl.curl(url, silent = False)
     data = [[xx.strip() for xx in x.split('\t')] for x in data.split('\n') if len(x) > 0][1:]
     for l in data:
         if l[0] == organism and \
@@ -2957,8 +2507,8 @@ def get_oreganno(organism = 'Homo sapiens'):
     nsep = re.compile(r'([-A-Za-z0-9]{3,})[\s/\(]*.*')
     nrem = re.compile(r'[-/]')
     result = []
-    url = data_formats.urls['oreganno']['url']
-    data = curl(url, silent = False, large = True)
+    url = urls.urls['oreganno']['url']
+    data = curl.curl(url, silent = False, large = True)
     null = data.readline()
     del null
     for l in data:
@@ -2980,8 +2530,8 @@ def get_cpdb_ltp():
 def get_cpdb(exclude = None):
     exclude = set(exclude) if type(exclude) is list else exclude
     result = []
-    url = data_formats.urls['cpdb']['url']
-    data = curl(url, silent = False)
+    url = urls.urls['cpdb']['url']
+    data = curl.curl(url, silent = False)
     data = [x.split('\t') for x in data.split('\n') \
         if not x.startswith('#') and len(x) > 0]
     for l in data:
@@ -2996,8 +2546,8 @@ def get_uniprot_sec(organism = 9606):
         proteome = all_uniprots(organism = organism)
         proteome = set(proteome)
     sec_pri = []
-    url = data_formats.urls['uniprot_sec']['url']
-    data = curl(url, silent = False, large = True)
+    url = urls.urls['uniprot_sec']['url']
+    data = curl.curl(url, silent = False, large = True)
     return filter(lambda line:
         len(line) == 2 and (organism is None or line[1] in proteome),
         map(lambda i, line:
@@ -3013,20 +2563,20 @@ def get_go(organism = 9606, swissprot = 'yes'):
     rev = '' if swissprot is None \
             else ' AND reviewed:%s' % swissprot
     query = 'organism:%u%s' % (int(organism), rev)
-    url = data_formats.urls['uniprot_basic']['url']
+    url = urls.urls['uniprot_basic']['url']
     post = {
         'query': query, 
         'format': 'tab', 
         'columns': 'id,go-id'
     }
-    data = curl(url, post = post, silent = False)
+    data = curl.curl(url, post = post, silent = False)
     return dict([(x[0], [go.strip() for go in x[1].split(';')]) for x in \
         [x.split('\t') for x in data.split('\n')] if len(x) > 1])
 
 def get_go_goa(organism = 'human'):
     result = {'P': {}, 'C': {}, 'F': {}}
-    url = data_formats.urls['goa']['url'] % (organism.upper(), organism)
-    data = curl(url, silent = False)
+    url = urls.urls['goa']['url'] % (organism.upper(), organism)
+    data = curl.curl(url, silent = False)
     data = [x.split('\t') for x in data.split('\n') \
         if not x.startswith('!') and len(x) > 0]
     for l in data:
@@ -3041,8 +2591,8 @@ def get_go_quick(organism = 9606, slim = False):
         else '&goid=%s'%','.join(get_goslim(url = slim))
     terms = {'C': {}, 'F': {}, 'P': {}}
     names = {}
-    url = data_formats.urls['quickgo']['url'] % (goslim, termuse, organism)
-    data = curl(url, silent = False)
+    url = urls.urls['quickgo']['url'] % (goslim, termuse, organism)
+    data = curl.curl(url, silent = False)
     data = [x.split('\t') for x in data.split('\n') if len(x) > 0]
     del data[0]
     for l in data:
@@ -3061,8 +2611,8 @@ def get_go_quick(organism = 9606, slim = False):
 def get_goslim(url = None):
     rego = re.compile(r'GO:[0-9]{7}')
     url = url if type(url) in [str, unicode] \
-        else data_formats.urls['goslim_gen']['url']
-    data = curl(url, silent = False)
+        else urls.urls['goslim_gen']['url']
+    data = curl.curl(url, silent = False)
     result = []
     for l in data.split('\n'):
         if l.startswith('id:'):
@@ -3072,8 +2622,8 @@ def get_goslim(url = None):
 def netpath_names():
     repwnum = re.compile(r'_([0-9]+)$')
     result = {}
-    url = data_formats.urls['netpath_names']['url']
-    html = curl(url, silent = False)
+    url = urls.urls['netpath_names']['url']
+    html = curl.curl(url, silent = False)
     soup = bs4.BeautifulSoup(html, 'html.parser')
     for a in soup.find_all('a'):
         if a.attrs['href'].startswith('pathways'):
@@ -3086,8 +2636,8 @@ def netpath_interactions():
     result = []
     repwnum = re.compile(r'NetPath_([0-9]+)_')
     mi = '{net:sf:psidev:mi}'
-    url = data_formats.urls['netpath_psimi']['url']
-    data = curl(url, silent = False)
+    url = urls.urls['netpath_psimi']['url']
+    data = curl.curl(url, silent = False)
     data = dict([(k, v) for k, v in iteritems(data) if k.endswith('xml')])
     pwnames = netpath_names()
     for pwfile, rawxml in iteritems(data):
@@ -3146,7 +2696,7 @@ def netpath_interactions():
 
 def get_pubmeds(pmids):
     pmids = [str(pmid) for pmid in pmids]
-    url = data_formats.urls['pubmed-eutils']['url']
+    url = urls.urls['pubmed-eutils']['url']
     cache = len(pmids) < 10
     data = {}
     prg = progress.Progress(len(pmids)/100 + 1, 'Retrieving data from NCBI e-utils', 
@@ -3157,7 +2707,7 @@ def get_pubmeds(pmids):
         hdr = ['X-HTTP-Method-Override:GET']
         for i in xrange(3):
             try:
-                res = curl(url, silent = False, cache = cache, post = post, req_headers = hdr)
+                res = curl.curl(url, silent = False, cache = cache, post = post, req_headers = hdr)
                 data = dict([(k,v) for k,v in iteritems(json.loads(res)['result'])] + \
                     [(k,v) for k,v in iteritems(data)])
                 break
@@ -3196,8 +2746,8 @@ def get_lincs_compounds():
                                     if i%2==0 
                                     else s.replace('\n', '') \
                                 for i, s in enumerate(\
-                                    curl(\
-                                        data_formats.urls['lincs-compounds']['url'], 
+                                    curl.curl(\
+                                        urls.urls['lincs-compounds']['url'], 
                                         silent = False)\
                                     .split('"')\
                                 )] \
@@ -3213,7 +2763,7 @@ def get_hpmr():
     human receptor census (HPMR -- Human Plasma Membrane Receptome).
     Returns list of GeneSymbols.
     '''
-    html = curl(data_formats.urls['hpmr']['url'], silent = False)
+    html = curl.curl(urls.urls['hpmr']['url'], silent = False)
     soup = bs4.BeautifulSoup(html, 'html.parser')
     gnames = [gname for gname in [tr.find_all('td')[1].text \
         for tr in soup.find_all('tr', class_ = 'res_receptor_rec')] \
@@ -3228,8 +2778,8 @@ def get_tfcensus(classes = ['a', 'b', 'other']):
     ensg = []
     hgnc = []
     reensg = re.compile(r'ENSG[0-9]{11}')
-    url = data_formats.urls['vaquerizas2009']['url']
-    f = curl(url, silent = False, large = True)
+    url = urls.urls['vaquerizas2009']['url']
+    f = curl.curl(url, silent = False, large = True)
     for l in f:
         if len(l) > 0 and l.split('\t')[0] in classes:
             ensg += reensg.findall(l)
@@ -3253,8 +2803,8 @@ def get_guide2pharma(organism = 'human', endogenous = True):
         'irreversible agonist', 'positive']
     negatives = ['inhibitor', 'antagonist', 'inhibition', 'irreversible inhibition',
         'inverse agonist', 'negative', 'weak inhibition', 'reversible inhibition']
-    url = data_formats.urls['gtp']['url']
-    data = curl(url, silent = False)
+    url = urls.urls['gtp']['url']
+    data = curl.curl(url, silent = False)
     buff = StringIO()
     buff.write(data)
     cols = {
@@ -3298,7 +2848,7 @@ def open_pubmed(pmid):
         PubMed ID
     '''
     pmid = str(pmid)
-    url = data_formats.urls['pubmed']['url'] % pmid
+    url = urls.urls['pubmed']['url'] % pmid
     webbrowser.open(url)
 
 def only_pmids(idList, strict = True):
@@ -3336,8 +2886,8 @@ def get_pmid(idList):
     '''
     if type(idList) in common.simpleTypes:
         idList = [idList]
-    url = data_formats.urls['pubmed-eutils']['conv'] % ','.join(str(i) for i in idList)
-    data = curl(url, silent = True)
+    url = urls.urls['pubmed-eutils']['conv'] % ','.join(str(i) for i in idList)
+    data = curl.curl(url, silent = True)
     try:
         js = json.loads(data)
     except:
@@ -3372,9 +2922,9 @@ def get_hprd(in_vivo = True):
     '''
     Downloads and preprocesses HPRD data.
     '''
-    url = data_formats.urls['hprd_all']['url']
-    files = [data_formats.urls['hprd_all']['ptm_file']]
-    data = curl(url, silent = False, files_needed = files)
+    url = urls.urls['hprd_all']['url']
+    files = [urls.urls['hprd_all']['ptm_file']]
+    data = curl.curl(url, silent = False, files_needed = files)
     if len(data) == 0:
         return []
     data = [l.split('\t') for l in data[files[0]].split('\n')][:-1]
@@ -3427,8 +2977,8 @@ def get_disgenet(dataset = 'curated'):
         Name of DisGeNet dataset to be obtained:
         `curated`, `literature`, `befree` or `all`.
     '''
-    url = data_formats.urls['disgenet']['url'] % dataset
-    data = curl(url, silent = False, files_needed = [url.split('/')[-1].replace('tar.gz', 'txt')])
+    url = urls.urls['disgenet']['url'] % dataset
+    data = curl.curl(url, silent = False, files_needed = [url.split('/')[-1].replace('tar.gz', 'txt')])
     cols = {
         'entrez': 0,
         'genesymbol': 1,
@@ -3507,8 +3057,8 @@ def get_hsn():
     (published 2014 Jan by Edwin Wang).
     Returns list of interactions.
     '''
-    url = data_formats.urls['hsn']['url']
-    data = curl(url, silent = False).split('\n')[1:]
+    url = urls.urls['hsn']['url']
+    data = curl.curl(url, silent = False).split('\n')[1:]
     data = [r.split(',') for r in data if len(r) > 0]
     return data
 
@@ -3517,8 +3067,8 @@ def get_li2012():
     Reads supplementary data of Li 2012 from local file.
     Returns table (list of lists).
     '''
-    url = data_formats.urls['li2012']['url']
-    xls = curl(url, silent = False, large = True)
+    url = urls.urls['li2012']['url']
+    xls = curl.curl(url, silent = False, large = True)
     xlsfile = xls.name
     xls.close()
     tbl = read_xls(xlsfile, sheet = 'File S1')
@@ -3646,21 +3196,21 @@ def take_a_trip(cachefile = 'trip.pickle'):
         'Functional consequence': 'fc'
     }
     interactors = {}
-    base_url = data_formats.urls['trip']['base']
-    show_url = data_formats.urls['trip']['show']
-    # url = data_formats.urls['trip']['url']
-    # json_url = data_formats.urls['trip']['json']
-    # jsn = curl(json_url, silent = False)
-    # data = curl(url, silent = False)
+    base_url = urls.urls['trip']['base']
+    show_url = urls.urls['trip']['show']
+    # url = urls.urls['trip']['url']
+    # json_url = urls.urls['trip']['json']
+    # jsn = curl.curl(json_url, silent = False)
+    # data = curl.curl(url, silent = False)
     # jsn = json.loads(jsn, encoding = 'utf-8')
-    mainhtml = curl(base_url)
+    mainhtml = curl.curl(base_url)
     mainsoup = bs4.BeautifulSoup(mainhtml, 'html.parser')
     trppages = common.flatList([[a.attrs['href'] for a in ul.find_all('a')] \
         for ul in mainsoup.find('div', id = 'trp_selector').find('ul').find_all('ul')])
     for trpp in trppages:
         trp = trpp.split('/')[-1]
         trpurl = show_url % trp
-        trphtml = curl(trpurl, silent = False)
+        trphtml = curl.curl(trpurl, silent = False)
         trpsoup = bs4.BeautifulSoup(trphtml, 'html.parser')
         trp_uniprot = trip_find_uniprot(trpsoup)
         if trp_uniprot is None or len(trp_uniprot) < 6:
@@ -3712,8 +3262,8 @@ def trip_get_uniprot(syn):
     @syn : str
         The synonym as shown on TRIP webpage.
     '''
-    url = data_formats.urls['trip']['show'] % syn
-    html = curl(url)
+    url = urls.urls['trip']['show'] % syn
+    html = curl.curl(url)
     soup = bs4.BeautifulSoup(html, 'html.parser')
     return trip_find_uniprot(soup)
 
@@ -3837,8 +3387,8 @@ def load_signor_ptms(fname = 'signor_22052015.tab'):
     Loads and processes Signor PTMs from local file.
     Returns dict of dicts.
     '''
-    url = data_formats.urls['signor']['all_url']
-    data = curl(url, silent = False, large = True)
+    url = urls.urls['signor']['all_url']
+    data = curl.curl(url, silent = False, large = True)
     reres = re.compile(r'([A-Za-z]{3})([0-9]+)')
     result = []
     aalet = dict((k.lower().capitalize(), v) for k, v in iteritems(common.aaletters))
@@ -3869,7 +3419,7 @@ def load_macrophage():
     Loads Macrophage from local file.
     Returns list of interactions.
     '''
-    fname = data_formats.omnipath['macrophage'].inFile
+    fname = urls.files['macrophage']
     fname = os.path.join(common.ROOT, 'data', fname)
     with open(fname, 'r') as f:
         data = f.read()
@@ -3884,7 +3434,7 @@ def get_kegg(mapper = None):
     mapper = mapper if mapper is not None else mapping.Mapper()
     hsa_list = []
     interactions = []
-    htmllst = curl(data_formats.urls['kegg_pws']['list_url'], silent = True)
+    htmllst = curl.curl(urls.urls['kegg_pws']['list_url'], silent = True)
     lstsoup = bs4.BeautifulSoup(htmllst, 'html.parser')
     for a in lstsoup.find_all('a', href = True):
         m = rehsa.match(a['href'])
@@ -3893,7 +3443,7 @@ def get_kegg(mapper = None):
     prg = progress.Progress(len(hsa_list), 'Processing KEGG Pathways', 1, percent = False)
     for hsa, pw in hsa_list:
         prg.step()
-        kgml = curl(data_formats.urls['kegg_pws']['kgml_url'] % hsa, silent = True)
+        kgml = curl.curl(urls.urls['kegg_pws']['kgml_url'] % hsa, silent = True)
         kgmlsoup = bs4.BeautifulSoup(kgml, 'html.parser')
         entries = {}
         for ent in kgmlsoup.find_all('entry'):
@@ -3930,9 +3480,9 @@ def signor_urls():
     This function is deprecated.
     '''
     tsv_urls = []
-    url = data_formats.urls['signor']['list_url']
-    baseurl = data_formats.urls['signor']['base_url']
-    html = curl(url, silent = True)
+    url = urls.urls['signor']['list_url']
+    baseurl = urls.urls['signor']['base_url']
+    html = curl.curl(url, silent = True)
     soup = bs4.BeautifulSoup(html, 'html.parser')
     for td in soup.find_all('td', style = lambda x: x.startswith('border')):
         pw = td.text.strip().split(':')[0]
@@ -3947,7 +3497,7 @@ def signor_pathways(**kwargs):
     prg = progress.Progress(len(urls), 'Downloading data from Signor', 1, percent = False)
     for pathw, url in urls:
         prg.step()
-        data = curl(url)
+        data = curl.curl(url)
         data = filter(lambda l: len(l) > 6, map(lambda l: l.strip().split('\t'), data.split('\n')[1:]))
         proteins_pathways[pathw] = set([])
         proteins_pathways[pathw] = proteins_pathways[pathw] | \
@@ -3964,8 +3514,8 @@ def signor_interactions():
     Downloads the full dataset from Signor.
     Return the file contents.
     '''
-    url = data_formats.urls['signor']['all_url']
-    return curl(url, silent = False, large = True)
+    url = urls.urls['signor']['all_url']
+    return curl.curl(url, silent = False, large = True)
 
 def rolland_hi_ii_14():
     '''
@@ -3973,8 +3523,8 @@ def rolland_hi_ii_14():
     of from Rolland 2014.
     Returns list of interactions.
     '''
-    url = data_formats.urls['hiii14']['url']
-    xls = curl(url, silent = False, large = True)
+    url = urls.urls['hiii14']['url']
+    xls = curl.curl(url, silent = False, large = True)
     xlsname = xls.name
     xls.close()
     tbl = read_xls(xlsname, sheet = '2G')
@@ -4014,8 +3564,8 @@ def get_kinases():
     Downloads and processes the list of all human kinases.
     Returns a list of GeneSymbols.
     '''
-    url = data_formats.urls['kinome']['url']
-    xlsf = curl(url, large = True, silent = False)
+    url = urls.urls['kinome']['url']
+    xlsf = curl.curl(url, large = True, silent = False)
     xlsname = xlsf.name
     xlsf.close()
     tbl = read_xls(xlsname)
@@ -4028,15 +3578,15 @@ def get_dgidb():
     Returns a list of GeneSymbols.
     '''
     genesymbols = []
-    url = data_formats.urls['dgidb']['main_url']
-    html = curl(url, silent = False)
+    url = urls.urls['dgidb']['main_url']
+    html = curl.curl(url, silent = False)
     soup = bs4.BeautifulSoup(html, 'html.parser')
     cats = [o.attrs['value'] \
         for o in soup.find('select', {'id': 'gene_categories'})\
             .find_all('option')]
     for cat in cats:
-        url = data_formats.urls['dgidb']['url'] % cat
-        html = curl(url)
+        url = urls.urls['dgidb']['url'] % cat
+        html = curl.curl(url)
         soup = bs4.BeautifulSoup(html, 'html.parser')
         trs = soup.find('tbody').find_all('tr')
         genesymbols.extend([tr.find('td').text.strip() for tr in trs])
@@ -4047,8 +3597,8 @@ def reactome_sbml():
     Downloads Reactome human reactions in SBML format.
     Returns gzip.GzipFile object.
     '''
-    url = data_formats.urls['reactome']['sbml']
-    sbml = curl(url, silent = False, large = True)
+    url = urls.urls['reactome']['sbml']
+    sbml = curl.curl(url, silent = False, large = True)
     return sbml
 
 def reactome_biopax(organism = 9606, cache = True):
@@ -4061,8 +3611,8 @@ def reactome_biopax(organism = 9606, cache = True):
     }
     unzipped = 'cache/reactome_biopax_%s.owl' % organisms[organism]
     if not os.path.exists(unzipped) or not cache:
-        url = data_formats.urls['reactome']['biopax_l3']
-        bpz = curl(url, silent = False, large = True, 
+        url = urls.urls['reactome']['biopax_l3']
+        bpz = curl.curl(url, silent = False, large = True, 
             files_needed = ['%s.owl'%organisms[organism]]).values()[0]
         with open(unzipped, 'w') as _unzipped:
             while True:
@@ -4075,16 +3625,16 @@ def reactome_biopax(organism = 9606, cache = True):
     return _unzipped
 
 def pid_biopax():
-    url = data_formats.urls['nci-pid']['biopax_l3']
-    return curl(url, silent = False, large = True)
+    url = urls.urls['nci-pid']['biopax_l3']
+    return curl.curl(url, silent = False, large = True)
 
 def panther_biopax():
-    url = data_formats.urls['panther']['biopax_l3']
-    return curl(url, silent = False, large = True).values()
+    url = urls.urls['panther']['biopax_l3']
+    return curl.curl(url, silent = False, large = True).values()
 
 def acsn_biopax():
-    url = data_formats.urls['acsn']['biopax_l3']
-    return curl(url, silent = False, large = True)
+    url = urls.urls['acsn']['biopax_l3']
+    return curl.curl(url, silent = False, large = True)
 
 def reactome_bs():
     sbml = reactome_sbml()
@@ -4814,9 +4364,9 @@ def signalink_interactions():
     repar = re.compile(r'.*\(([a-z\s]+)\)')
     notNeeded = set(['acsn', 'reactome'])
     edgesFile = os.path.join(common.ROOT, 'data', 
-        data_formats.files['signalink']['edges'])
+        urls.files['signalink']['edges'])
     nodesFile = os.path.join(common.ROOT, 'data', 
-        data_formats.files['signalink']['nodes'])
+        urls.files['signalink']['nodes'])
     nodes = {}
     interactions = []
     def _get_attr(attrs, attrName):
@@ -4882,8 +4432,8 @@ def get_laudanna_directions():
     from Laudanna Lab.
     Returns list of directions.
     '''
-    url = data_formats.urls['laudanna']['sigflow']
-    data = curl(url, silent = False)
+    url = urls.urls['laudanna']['sigflow']
+    data = curl.curl(url, silent = False)
     data = data.split('\n')[1:]
     directions = []
     for l in data:
@@ -4897,8 +4447,8 @@ def get_laudanna_effects():
     from Laudanna Lab.
     Returns list of effects.
     '''
-    url = data_formats.urls['laudanna']['sigdir']
-    data = curl(url, silent = False)
+    url = urls.urls['laudanna']['sigdir']
+    data = curl.curl(url, silent = False)
     data = data.split('\n')[1:]
     effects = []
     for l in data:
@@ -4938,8 +4488,8 @@ def get_wang_effects():
     Downloads and processes Wang Lab HumanSignalingNetwork.
     Returns list of effects.
     '''
-    url = data_formats.urls['wang']['url']
-    data = curl(url, silent = False)
+    url = urls.urls['wang']['url']
+    data = curl.curl(url, silent = False)
     data = data.split('\n')
     effects = []
     nodes = {}
@@ -4976,8 +4526,8 @@ def biogrid_interactions(organism = 9606, htp_limit = 1):
     organism = str(organism)
     interactions = []
     refc = []
-    url = data_formats.urls['biogrid']['url']
-    f = curl(url, silent = False, large = True).values()[0]
+    url = urls.urls['biogrid']['url']
+    f = curl.curl(url, silent = False, large = True).values()[0]
     nul = f.readline()
     for l in f:
         l = l.split('\t')
@@ -4997,8 +4547,8 @@ def acsn_ppi(keep_in_complex_interactions = True):
     @keep_in_complex_interactions : bool
         Whether to include interactions from complex expansion.
     '''
-    nfname = data_formats.files['acsn']['names']
-    pfname = data_formats.files['acsn']['ppi']
+    nfname = urls.files['acsn']['names']
+    pfname = urls.files['acsn']['ppi']
     names = {}
     interactions = []
     with open(nfname, 'r') as f:
@@ -5025,8 +4575,8 @@ def get_graphviz_attrs():
     Downloads graphviz attribute list from graphviz.org.
     Returns 3 dicts of dicts: graph_attrs, vertex_attrs and edge_attrs.
     '''
-    url = data_formats.urls['graphviz']['url']
-    html = curl(url)
+    url = urls.urls['graphviz']['url']
+    html = curl.curl(url)
     soup = bs4.BeautifulSoup(html)
     vertex_attrs = {}
     edge_attrs = {}
@@ -5060,8 +4610,8 @@ def get_phosphosite(cache = True):
     Processes BioPAX format.
     Returns list of interactions.
     '''
-    curated_cache = data_formats.files['phosphosite']['curated']
-    noref_cache = data_formats.files['phosphosite']['noref']
+    curated_cache = urls.files['phosphosite']['curated']
+    noref_cache = urls.files['phosphosite']['noref']
     if cache and os.path.exists(curated_cache) and os.path.exists(noref_cache):
         return (
             pickle.load(open(curated_cache, 'rb')),
@@ -5069,8 +4619,8 @@ def get_phosphosite(cache = True):
         )
     result_curated = []
     result_noref = []
-    url = data_formats.urls['psite_bp']['url']
-    bpax = curl(url, silent = False, large = True)
+    url = urls.urls['psite_bp']['url']
+    bpax = curl.curl(url, silent = False, large = True)
     xml = ET.parse(bpax)
     xmlroot = xml.getroot()
     bpprefix = '{http://www.biopax.org/release/biopax-level3.owl#}'
@@ -5181,7 +4731,7 @@ def get_phosphosite_curated():
     from preprocessed cache file if available.
     Returns list of interactions.
     '''
-    curated_cache = data_formats.files['phosphosite']['curated']
+    curated_cache = urls.files['phosphosite']['curated']
     if not os.path.exists(curated_cache):
         curated, noref = get_phosphosite()
         return curated
@@ -5194,7 +4744,7 @@ def get_phosphosite_noref():
     from preprocessed cache file if available.
     Returns list of interactions.
     '''
-    noref_cache = data_formats.files['phosphosite']['noref']
+    noref_cache = urls.files['phosphosite']['noref']
     if not os.path.exists(noref_cache):
         curated, noref = get_phosphosite()
         return noref
@@ -5216,8 +4766,8 @@ def get_lit_bm_13():
     literature curated interactions from CCSB.
     Returns list of interactions.
     '''
-    url = data_formats.urls['hid']['lit-bm-13']
-    data = curl(url, silent = False)
+    url = urls.urls['hid']['lit-bm-13']
+    data = curl.curl(url, silent = False)
     return map(lambda l: l.strip().split('\t'), data.split('\n')[1:])
 
 def get_ca1():
@@ -5225,8 +4775,8 @@ def get_ca1():
     Downloads and processes the CA1 signaling network (Ma\'ayan 2005).
     Returns list of interactions.
     '''
-    url = data_formats.urls['ca1']['url']
-    data = curl(url, silent = False, files_needed = ['S1.txt'])
+    url = urls.urls['ca1']['url']
+    data = curl.curl(url, silent = False, files_needed = ['S1.txt'])
     return filter(lambda l: len(l) == 13,
         map(lambda l: l.strip().split(), data['S1.txt'].split('\n')[1:])
     )
@@ -5241,10 +4791,10 @@ def get_ccmap(organism = 9606):
     '''
     organism = '%u' % organism
     interactions = []
-    nodes_url = data_formats.urls['ccmap']['nodes']
-    edges_url = data_formats.urls['ccmap']['edges']
-    nodes = curl(nodes_url, silent = False, files_needed = ['cell-map-node-attributes.txt'])
-    edges = curl(edges_url, silent = False, files_needed = ['cell-map-edge-attributes.txt'])
+    nodes_url = urls.urls['ccmap']['nodes']
+    edges_url = urls.urls['ccmap']['edges']
+    nodes = curl.curl(nodes_url, silent = False, files_needed = ['cell-map-node-attributes.txt'])
+    edges = curl.curl(edges_url, silent = False, files_needed = ['cell-map-edge-attributes.txt'])
     nodes = dict(
         map(lambda l: (l[1], l[2].split(':')),
             filter(lambda l: l[5] == 'protein' and l[6] == organism,
@@ -5325,8 +4875,8 @@ def sftp_download(filename, localpath, host, user = None,
     return True
 
 def get_cgc(user = None, passwd = None):
-    host = data_formats.urls['cgc']['host']
-    fname = data_formats.urls['cgc']['file']
+    host = urls.urls['cgc']['host']
+    fname = urls.urls['cgc']['file']
     ask = 'To access Cancer Gene Census data you need to be '\
         'registered at COSMIC\n'\
         '(http://cancer.sanger.ac.uk/cosmic/).\n'\
@@ -5334,14 +4884,14 @@ def get_cgc(user = None, passwd = None):
         'In case you don\'t, you can register now.\n'\
         'Please see licensing terms to find out how you are allowed to\n'\
         'use COSMIC data: http://cancer.sanger.ac.uk/cosmic/license\n'
-    data = curl(fname, sftp_host = host, sftp_ask = ask, sftp_user = user,
+    data = curl.curl(fname, sftp_host = host, sftp_ask = ask, sftp_user = user,
         sftp_passwd = passwd, large = True)
     for line in data:
         yield line
 
 def get_matrixdb(organism = 9606):
-    url = data_formats.urls['matrixdb']['url']
-    f = curl(url, silent = False, large = True)
+    url = urls.urls['matrixdb']['url']
+    f = curl.curl(url, silent = False, large = True)
     i = []
     lnum = 0
     for l in f:
@@ -5373,8 +4923,8 @@ def get_matrixdb(organism = 9606):
     return i
 
 def get_innatedb(organism = 9606):
-    url = data_formats.urls['innatedb']['url']
-    f = curl(url, silent = False, large = True)
+    url = urls.urls['innatedb']['url']
+    f = curl.curl(url, silent = False, large = True)
     i = []
     lnum = 0
     for l in f:
@@ -5436,8 +4986,8 @@ def get_dip(url = None, organism = 9606, core_only = True, direct_only = True,
     strDirect = 'direct interaction'
     strPhysInt = 'physical interaction'
     strSmallS = 'small scale'
-    url = data_formats.urls['dip']['url'] if url is None else url
-    f = curl(url, silent = False, large = True)
+    url = urls.urls['dip']['url'] if url is None else url
+    f = curl.curl(url, silent = False, large = True)
     i = []
     lnum = 0
     for l in f:
@@ -5482,11 +5032,11 @@ def dip_login(user, passwd):
     useragent = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:43.0) '\
         'Gecko/20110304 Firefox/43.0'
     loginfname = os.path.join('cache', 'dip.logindata.tmp')
-    url = data_formats.urls['dip']['login']
+    url = urls.urls['dip']['login']
     req_hdrs = [
         'User-Agent: %s' % useragent
     ]
-    res, hdr = curl(url, cache = False, write_cache = False, 
+    res, hdr = curl.curl(url, cache = False, write_cache = False, 
         req_headers = req_hdrs, return_headers = True, debug = True)
     cookie = hdr['set-cookie'].split(';')[0]
     cookie2 = '%s%u' % (cookie[:-1], int(cookie[-1]) + 1)
@@ -5512,14 +5062,14 @@ def dip_login(user, passwd):
     # login = login.replace('\r', '')
     with codecs.open(loginfname, encoding = 'ISO-8859-1', mode = 'w') as f:
         f.write(login)
-    res, hdr = curl(url, cache = False, write_cache = False, follow = True,
+    res, hdr = curl.curl(url, cache = False, write_cache = False, follow = True,
         req_headers = req_hdrs, timeout = 10,
         binary_data = loginfname, return_headers = True, debug = True)
     return res, hdr
 
 def spike_interactions(high_confidence = True):
-    url = data_formats.urls['spike']['url']
-    spikexml = curl(url, silent = False, large = True, files_needed = ['LatestSpikeDB.xml'])
+    url = urls.urls['spike']['url']
+    spikexml = curl.curl(url, silent = False, large = True, files_needed = ['LatestSpikeDB.xml'])
 
     xml = ET.parse(spikexml['LatestSpikeDB.xml'])
 
@@ -5609,8 +5159,8 @@ def spike_interactions(high_confidence = True):
     return result
 
 def mppi_interactions(organism = 9606):
-    url = data_formats.urls['mppi']['url']
-    xmlfile = curl(url, silent = False, large = True)
+    url = urls.urls['mppi']['url']
+    xmlfile = curl.curl(url, silent = False, large = True)
     
     prefix = '{net:sf:psidev:mi}'
     
@@ -5674,8 +5224,8 @@ def mppi_interactions(organism = 9606):
     return result
 
 def depod_interactions(organism = 9606):
-    url = data_formats.urls['depod']['urls'][1]
-    data = curl(url, silent = False, large = True)
+    url = urls.urls['depod']['urls'][1]
+    data = curl.curl(url, silent = False, large = True)
     result = []
     i = []
     lnum = 0
@@ -5709,8 +5259,8 @@ def depod_interactions(organism = 9606):
     return i
 
 def negatome_pairs():
-    url = data_formats.urls['negatome']['manual']
-    f = curl(url, silent = False, large = True)
+    url = urls.urls['negatome']['manual']
+    f = curl.curl(url, silent = False, large = True)
     result = []
     for l in f:
         l = l.strip().split('\t')
@@ -5738,8 +5288,8 @@ def trim_macrophage_gname(gname):
     return gname
 
 def macrophage_interactions():
-    url = data_formats.urls['macrophage']['url']
-    data = curl(url, silent = False, large = True)
+    url = urls.urls['macrophage']['url']
+    data = curl.curl(url, silent = False, large = True)
     fname = data.name
     data.close()
     tbl = read_xls(fname)[5:]
@@ -5765,10 +5315,10 @@ def macrophage_interactions():
 
 def intact_interactions(miscore = 0.6, organism = 9606, complex_expansion = False):
     result = {}
-    url = data_formats.urls['intact']['mitab']
+    url = urls.urls['intact']['mitab']
     if type(organism) is int:
         organism = '%u' % organism
-    data = curl(url, silent = False, large = True, files_needed = ['intact.txt'])
+    data = curl.curl(url, silent = False, large = True, files_needed = ['intact.txt'])
     f = data.values()[0]
     lnum = 0
     for l in f:
@@ -5835,8 +5385,8 @@ def deathdomain_interactions():
     
     for fam in families:
         
-        url = data_formats.urls['death']['url'] % fam
-        html = curl(url, silent = False)
+        url = urls.urls['death']['url'] % fam
+        html = curl.curl(url, silent = False)
         
         soup = bs4.BeautifulSoup(html, 'lxml')
         

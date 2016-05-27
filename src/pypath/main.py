@@ -60,9 +60,9 @@ except:
 
 # from this module:
 from pypath import logn
-from pypath import data_formats
-from pypath import mapping
-from  pypath import descriptions
+import pypath.data_formats as data_formats
+import pypath.mapping as mapping
+from pypath import descriptions
 from pypath import chembl
 from pypath import mysql
 
@@ -72,6 +72,7 @@ from pypath import go
 from pypath import gsea
 from pypath import drawing as bdrawing
 from pypath import proteomicsdb
+from pypath import reflists
 from pypath.ig_drawing import *
 from pypath.common import *
 from pypath.common import __version__ as __version__
@@ -80,12 +81,12 @@ from pypath.gr_plot import *
 from pypath.progress import *
 
 omnipath = data_formats.omnipath
-refLists = data_formats.refLists
 
 if 'unicode' not in globals():
     unicode = str
 
-__all__ = ['PyPath', 'Direction', 'Reference', '__version__', 'a', 'AttrHelper']
+__all__ = ['PyPath', 'Direction', 'Reference', '__version__', 'a',
+    'AttrHelper', 'ReferenceList']
 
 class Reference(object):
     
@@ -2580,8 +2581,10 @@ class PyPath(object):
         self.update_sources()
         self.update_vertex_sources()
     
-    def load_reflists(self, reflists = refLists):
-        for rl in reflists:
+    def load_reflists(self, reflst = None):
+        if reflst is None:
+            reflst = reflists.get_reflists()
+        for rl in reflst:
             self.load_reflist(rl)
     
     def load_reflist(self, reflist):

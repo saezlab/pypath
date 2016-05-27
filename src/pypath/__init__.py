@@ -3,7 +3,7 @@
 
 # try:
 #import __main__ as ext
-import pypath.main
+from pypath import main
 #import pypath.common
 #import descriptions
 #import pypath.common as common
