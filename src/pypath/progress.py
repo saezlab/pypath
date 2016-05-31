@@ -27,7 +27,7 @@ class Progress(object):
         self.set_total(total)
         self.done = 0
         self.percent = percent
-        sys.stdout.write("\r"+" "*100)
+        sys.stdout.write("\r"+" "*150)
         if self.percent:
             sys.stdout.write("\r\t:: %s: %s 0.00%%" % (self.name, '%s,'%self.status))
         else:
@@ -39,7 +39,7 @@ class Progress(object):
         self.status = status
         self.done += step
         if self.done % self.interval < 1.0:
-            sys.stdout.write("\r"+" "*100)
+            sys.stdout.write("\r"+" "*150)
             if self.percent:
                 sys.stdout.write(
                     "\r\t:: %s: %s %.2f%% %s" % (
@@ -64,7 +64,7 @@ class Progress(object):
         self.step(step = 0, status = status)
     
     def terminate(self, status = 'finished'):
-        sys.stdout.write("\r"+" "*100)
+        sys.stdout.write("\r"+" "*150)
         self.status = status
         if self.percent:
             sys.stdout.write("\r\t:: %s: %s 100.0%%" % (self.name, '%s,'%self.status))

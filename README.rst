@@ -2,7 +2,7 @@ pypath
 ######
 
 
-:note: pypath supported only in Python 2.7, and no version 3.x is available currently.
+:note: pypath has been developed initially only for Python 2.7. In its current state it can be imported in Python 3.5, and the most essential functionalities have been tested and fixed to work both in Py2 and Py3. You can build the network also in Py3, which means ``pypath.curl.Curl()``, ``pypath.mapping.Mapper()`` and the core functionalites of ``pypath.main.PyPath()`` certainly work. Other methods are fixed in arbitrary order, depending on their importance.
 
 :contributions: denes@ebi.ac.uk
 :documentation: http://pypath.omnipathdb.org/
