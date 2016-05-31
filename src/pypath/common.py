@@ -206,11 +206,9 @@ def cleanDict(dct):
 
 def md5(value):
     try:
-        # this for Py3
-        string = bytes(str(value), 'ascii')
-    except TypeError:
-        # this for Py2
-        string = str(value)
+        string = str(value).encode('ascii')
+    except:
+        string = str(value).encode('ascii')
     return hashlib.md5(string).hexdigest()
 
 igraph_graphics_attrs = {

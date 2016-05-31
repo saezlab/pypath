@@ -45,6 +45,7 @@ from pypath import common
 from pypath.common import *
 from pypath import maps
 from pypath import mysql
+from pypath import urls
 
 from pypath import curl
 import pypath.dataio as dataio
@@ -99,6 +100,13 @@ class MappingTable(object):
                     self.read_mapping_uniprot(param)
                 if len(self.mapping['to']) != 0 and (not param.bi or len(self.mapping['from']) != 0):
                     pickle.dump(self.mapping, open(self.cachefile, 'wb'))
+    
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
     
     def cleanDict(self,mapping):
         for key, value in iteritems(mapping):
@@ -180,12 +188,13 @@ class MappingTable(object):
                 '' if param.subfield is None else '(%s)'%param.subfield)
         }
         self.url = '%s?%s' % (self.url, urllib.urlencode(self.post))
-        data = curl.curl(self.url, silent = False)
+        c = curl.Curl(self.url, silent = False)
+        data = c.result
         self.data = data
         data = [[[xx] if param.field == 'protein names' else \
             [xxx for xxx in resep.split(scolend.sub('', xx.strip())) if len(xxx) > 0] \
             for xx in x.split('\t') if len(xx.strip()) > 0] 
-            for x in data.split(b'\n') if len(x.strip()) > 0]
+            for x in data.split('\n') if len(x.strip()) > 0]
         if len(data) > 0:
             del data[0]
             for l in data:
@@ -313,6 +322,14 @@ class Mapper(object):
         }
         self.types_name = dict(zip(self.name_types.values(), self.name_types.keys()))
     
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    
     def init_mysql(self):
         self.mysql = mysql.MysqlRunner(self.mysql_conf, log = self.ownlog)
     
@@ -334,12 +351,12 @@ class Mapper(object):
             for form in ['mapListUniprot', 'mapListBasic']:
                 frm = getattr(maps, form)
                 if tblName in frm:
-                    self.load_mappings(maps = {tblName: frm[tblName]})
+                    self.load_mappings(maplst = {tblName: frm[tblName]})
                     tbl = self.which_table(nameType, targetNameType, load = False)
                     break
                 if tblNameRev in frm:
                     frm[tblNameRev].bi = True
-                    self.load_mappings(maps = {tblNameRev: frm[tblNameRev]})
+                    self.load_mappings(maplst = {tblNameRev: frm[tblNameRev]})
                     tbl = self.which_table(nameType, targetNameType, load = False)
                     break
                 if tbl is not None:
@@ -494,7 +511,7 @@ class Mapper(object):
         sys.stdout.write(''.join(['\tERROR: ',msg,'\n']))
         self.ownlog.msg(2,msg,'ERROR')
     
-    def load_mappings(self, maps = None):
+    def load_mappings(self, maplst = None):
         '''
         mapList is a list of mappings to load;
         elements of mapList are dicts containing the 
@@ -605,8 +622,8 @@ class Mapper(object):
         # loading the remaining from the big UniProt mapping file:
         if len(ac_types) > 0:
             url = urls.urls['uniprot_idmap_ftp']['url']
-            data = curl.curl(url, silent = False)
-            data = data.split('\n')
+            c = curl.Curl(url, silent = False)
+            data = c.result.split('\n')
             prg = progress.Progress(len(data), "Processing ID conversion list", 99)
             for l in data:
                 prg.step()

@@ -6487,11 +6487,7 @@ class PyPath(object):
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
         imp.reload(mod)
-        # print 'self.__class__.__name__ = ', self.__class__.__name__
-        # print 'mod = ', mod
         new = getattr(mod, self.__class__.__name__)
-        # print 'new = ', new
-        # print 'new.__class__ = ', new.__class__
         setattr(self, '__class__', new)
     
     def _disclaimer(self):
