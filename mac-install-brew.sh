@@ -19,12 +19,36 @@
 
 # installing HomeBrew first:
 
+$USAGE="\tUsage: $0 [-h] [-p <2 or 3> (Python version)]\n"
+PYMAINVER="2"
+
+while getopts ":hv" opt;
+do
+    case $opt in
+        h) echo -en $USAGE; exit 0;;
+        p) PYMAINVER=$OPTARG;;
+        ?) echo -en $USAGE; exit 2;;
+    esac
+done
+
+if [ $PYMAINVER == "3" ];
+    then
+        PYVER="3.5";
+        PYCAIRONAME="py3cairo";
+        PYTHONNAME="python3";
+    else
+        PYVER="2.7";
+        PYMAINVER="2";
+        PYCAIRONAME="py2cairo";
+        PYTHONNAME="python";
+fi
+
 USER=`whoami`
 HOME="/Users/$USER"
 LOCAL="$HOME/local"
 LOCALBIN="$LOCAL/bin"
-LOCALPIP="$LOCALBIN/pip2.7"
-LOCALPYPATH="$LOCAL/lib/python2.7/site-packages"
+LOCALPIP="$LOCALBIN/pip$PYVER"
+LOCALPYPATH="$LOCAL/lib/python$PYVER/site-packages"
 PYPATHURL="http://pypath.omnipathdb.org/releases/latest/pypath-latest.tar.gz"
 
 if [ ! -d $LOCAL ];
@@ -55,7 +79,7 @@ curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1
 cd ~
 
 brew update
-brew install python py2cairo homebrew/science/igraph graphviz
+brew install $PYTHONNAME $PYCAIRONAME homebrew/science/igraph graphviz
 
 $LOCALPIP install --upgrade pip
 $LOCALPIP install python-igraph
