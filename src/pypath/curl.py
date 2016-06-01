@@ -388,7 +388,7 @@ class Curl(object):
                 if self.progress is not None:
                     self.progress.terminate(status = 'failed')
                     self.progress = None
-                self.print_debug_info('\tPycURL error: %u, %s\n' % e)
+                self.print_debug_info('PycURL error: %u, %s' % e.args)
         self.curl.close()
         self.target.close()
     
