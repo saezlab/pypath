@@ -16,9 +16,8 @@
 #
 
 import codecs
-import dataio
 
-__all__ = ['MysqlMapping','FileMapping','ReferenceList',
+__all__ = ['MysqlMapping','FileMapping',
            'PickleMapping','ReadSettings','ReadList']
 
 class MysqlMapping(object):
@@ -99,27 +98,6 @@ class UniprotMapping(object):
             else ac_query[nameType][0]
         self.subfield = None if nameType not in ac_query \
             else ac_query[nameType][1]
-
-class ReferenceList(object):
-    
-    def __init__(self,nameType,typ,tax,inFile,**kwargs):
-        self.infile = inFile
-        self.nameType = nameType
-        self.typ = typ
-        self.tax = tax
-        self.kwargs = kwargs
-    
-    def load(self):
-        if hasattr(dataio, self.infile):
-            toCall = getattr(dataio, self.infile)
-            lst = toCall(**self.kwargs)
-        else:
-            f = codecs.open(self.infile,encoding='utf-8',mode='r')
-            lst = []
-            for l in f:
-                lst.append(l.strip())
-            f.close()
-        self.lst = set(lst)
 
 class PickleMapping(object):
     

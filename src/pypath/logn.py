@@ -21,7 +21,7 @@ import textwrap
 import datetime
 import logging
 
-import common
+from pypath import common
 
 class logw(object):
     

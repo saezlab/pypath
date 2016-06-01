@@ -15,16 +15,20 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
+from future.utils import iteritems
+from past.builtins import xrange, range, reduce
+
 import os
 import sys
 import math
 import random
 import textwrap
+import hashlib
 
 __all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes', 'uniqList', 'addToList', 
            'gen_session_id', 'sorensen_index', 'console', 'wcl', 'flatList', 
            'charTypes', 'delEmpty', '__version__', 'get_args', 
-           'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs']
+           'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs', 'md5']
 
 # get the location
 ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -72,6 +76,12 @@ aacodes = {
     'X': 'XAA'
 }
 
+if 'long' not in globals():
+    long = int
+
+if 'unicode' not in globals():
+    unicode = str
+
 aaletters = dict(zip(aacodes.values(),aacodes.keys()))
 
 simpleTypes = set([int, long, float, str, unicode])
@@ -88,10 +98,8 @@ def uniqList(seq):
         try:
             keys[e] = 1
         except:
-            print e
-            print seq
-            print keys
-    return keys.keys()
+            print(e)
+    return list(keys.keys())
 
 def flatList(lst):
     return [it for sl in lst for it in sl]
@@ -171,7 +179,7 @@ def get_args(loc_dict, remove = set([])):
     if type(remove) is list: remove = set(remove)
     remove.add('self')
     remove.add('kwargs')
-    args = dict((k, v) for k, v in loc_dict.iteritems() if k not in remove)
+    args = dict((k, v) for k, v in iteritems(loc_dict) if k not in remove)
     if 'kwargs' in loc_dict: args = dict(args.items() + loc_dict['kwargs'].items())
     return args
 
@@ -195,6 +203,13 @@ def cleanDict(dct):
         else:
             dct[k] = str(v)
     return dct
+
+def md5(value):
+    try:
+        string = str(value).encode('ascii')
+    except:
+        string = str(value).encode('ascii')
+    return hashlib.md5(string).hexdigest()
 
 igraph_graphics_attrs = {
     'vertex': ['size', ' color', 'frame_color', 'frame_width', 'shape', 'label', 'label_dist', 'label_color', 'label_size', 'label_angle'],

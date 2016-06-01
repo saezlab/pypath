@@ -10,6 +10,7 @@ src/pypath/chembl.py
 src/pypath/chemblws.py
 src/pypath/colorgen.py
 src/pypath/common.py
+src/pypath/curl.py
 src/pypath/data_formats.py
 src/pypath/dataio.py
 src/pypath/descriptions.py
@@ -30,7 +31,9 @@ src/pypath/intera.py
 src/pypath/io.py
 src/pypath/linkcomm.py
 src/pypath/logn.py
+src/pypath/main.py
 src/pypath/mapping.py
+src/pypath/maps.py
 src/pypath/moduland.py
 src/pypath/mysql.py
 src/pypath/mysql_connect.py
@@ -40,12 +43,13 @@ src/pypath/pdb.py
 src/pypath/plot.py
 src/pypath/progress.py
 src/pypath/proteomicsdb.py
-src/pypath/pypath.py
 src/pypath/reaction.py
+src/pypath/reflists.py
 src/pypath/residues.py
 src/pypath/seq.py
 src/pypath/server.py
 src/pypath/unichem.py
+src/pypath/urls.py
 src/pypath.egg-info/PKG-INFO
 src/pypath.egg-info/SOURCES.txt
 src/pypath.egg-info/dependency_links.txt

@@ -15,20 +15,27 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
+from future.utils import iteritems
+from past.builtins import xrange, range, reduce
+
 import re
 import bs4
 import sys
 import os
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+
 from collections import OrderedDict
 
 # from this module:
-import dataio
-import data_formats
-import enrich
-import mapping
-import progress
-from common import *
+from pypath import dataio
+from pypath import data_formats
+from pypath import enrich
+from pypath import mapping
+from pypath import progress
+from pypath.common import *
 
 class GSEA(object):
     
@@ -82,7 +89,7 @@ class GSEA(object):
         s = '\n :: Available gene set collections:\n\n'\
             + '\tID\t\t\t#genes\tDescription\n\t%s\n\t'%('-'*75) \
             + '\n\t'.join('%s\t\t\t%u\t%s'%(sname, inf['count'], inf['name']) \
-                for sname, inf in self.collections.iteritems()) \
+                for sname, inf in iteritems(self.collections)) \
             + '\n'
         sys.stdout.write(s)
         sys.stdout.flush()
@@ -133,8 +140,8 @@ class GSEA(object):
         collections = set(collections) & set(self.groups.keys())
         for coll in collections:
             pfile = os.path.join(cachedir, 'gsea-%s.pickle'%coll)
-            sets = dict([(k, v) for k, v in self.sets.iteritems() if k in self.groups[coll]])
-            info = dict([(k, v) for k, v in self.info.iteritems() if k in self.groups[coll]])
+            sets = dict([(k, v) for k, v in iteritems(self.sets) if k in self.groups[coll]])
+            info = dict([(k, v) for k, v in iteritems(self.info) if k in self.groups[coll]])
             group = self.groups[coll]
             pickle.dump((sets, info, group), open(pfile, 'wb'))
     
@@ -177,7 +184,7 @@ class GSEABinaryEnrichmentSet(enrich.EnrichmentSet):
     
     def count(self, this_set):
         return dict((i, len(this_set & s)) \
-            for i, s in self.gsea.sets.iteritems())
+            for i, s in iteritems(self.gsea.sets))
     
     def new_set(self, set_names):
         if type(set_names) is not set: set_names = set(set_names)
@@ -187,7 +194,7 @@ class GSEABinaryEnrichmentSet(enrich.EnrichmentSet):
     
     def calculate(self):
         data = dict([(gset_id, (cnt, self.counts_pop[gset_id], self.set_size, \
-            self.gsea.info[gset_id])) for gset_id, cnt in self.counts_set.iteritems()])
+            self.gsea.info[gset_id])) for gset_id, cnt in iteritems(self.counts_set)])
         enrich.EnrichmentSet.__init__(self, data, self.pop_size, alpha = self.alpha, 
             correction_method = self.correction_method)
     
@@ -195,7 +202,7 @@ class GSEABinaryEnrichmentSet(enrich.EnrichmentSet):
         groups = None, filtr = lambda x: True, **kwargs):
         args = get_args(locals(), ['filtr', 'groups'])
         if groups is None: groups = self.gsea.groups.keys() # all by default
-        sets = set(flatList(s for g, s in self.gsea.groups.iteritems() if g in groups))
+        sets = set(flatList(s for g, s in iteritems(self.gsea.groups) if g in groups))
         return super(GSEABinaryEnrichmentSet, self).toplist(
             filtr = lambda x: x[0] in sets and filtr(x), **args)
     

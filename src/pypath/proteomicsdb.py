@@ -19,6 +19,9 @@
 #  http://www.ncbi.nlm.nih.gov/pubmed/24870543
 #
 
+from future.utils import iteritems
+from past.builtins import xrange, range, reduce
+
 import json
 import base64
 import re
@@ -37,9 +40,9 @@ except ImportError:
     sys.stdout.flush()
 
 # from this module:
-import dataio
-from progress import Progress
-from common import *
+from pypath import dataio
+from pypath.progress import Progress
+from pypath.common import *
 
 class ProteomicsDB(object):
 
@@ -212,9 +215,11 @@ class ProteomicsDB(object):
                 self.result.close()
                 self.result = None
         except:
-            print type(self.result)
-            print self.result.mode
-            print self.result.name
+            sys.stdout.write('Error in pypath.proteomicsdb.py/get_expression():\n')
+            sys.stdout.write('Result type: %s\n' % str(type(self.result)))
+            sys.stdout.write('Result mode: %s\n' % str(self.result.mode))
+            sys.stdout.write('Result name: %s\n' % str(self.result.name))
+            sys.stdout.flush()
     
     def tissues_x_proteins(self, normalized = True, tissues = None):
         '''
@@ -254,7 +259,7 @@ class ProteomicsDB(object):
         pfile = pfile if pfile is not None else os.path.join('cache', 'proteomicsdb.pickle')
         if os.path.exists(pfile):
             loaded = pickle.load(open(pfile, 'rb'))
-            for k, v in loaded.__dict__.iteritems():
+            for k, v in iteritems(loaded.__dict__):
                 if not hasattr(v, '__call__'):
                     setattr(self, k, v)
             sys.stdout.write('\t:: Loaded %u samples of %u tissues from file %s\n' % \

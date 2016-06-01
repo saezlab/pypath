@@ -18,10 +18,14 @@
 # import main
 import __main__
 
+from future.utils import iteritems
+from past.builtins import xrange, range, reduce
+
 # external modules:
 import os
 import sys
 import re
+import imp
 import math
 import igraph
 import cairo
@@ -36,43 +40,53 @@ import heapq
 import threading
 from itertools import chain
 from collections import Counter
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+
 try:
     import pygraphviz as graphviz
-    import pandas
 except:
     sys.stdout.write('\nModule `pygraphviz` not found.\n'\
         'You don\'t need it unless you want to export dot files.\n')
     sys.stdout.flush()
 
-# from this module:
-import logn
-import data_formats
-import mapping
-import descriptions
-import chembl
 try:
-    import mysql
+    import pandas
 except:
-    try:
-        import pymysql as myslq
-    except:
-        print 'No `mysql` available.'
-import dataio
-import intera
-import go
-import gsea
-import drawing as bdrawing
-import proteomicsdb
-from ig_drawing import *
-from common import *
-from common import __version__ as __version__
-from colorgen import *
-from gr_plot import *
-from progress import *
-from data_formats import *
+    sys.stdout.write('\nModule `pandas` not found.\n\n')
+    sys.stdout.flush()
 
-__all__ = ['PyPath', 'Direction', 'Reference', '__version__', 'a', 'AttrHelper']
+# from this module:
+from pypath import logn
+import pypath.data_formats as data_formats
+import pypath.mapping as mapping
+from pypath import descriptions
+from pypath import chembl
+from pypath import mysql
+
+from pypath import dataio
+from pypath import intera
+from pypath import go
+from pypath import gsea
+from pypath import drawing as bdrawing
+from pypath import proteomicsdb
+from pypath import reflists
+from pypath.ig_drawing import *
+from pypath.common import *
+from pypath.common import __version__ as __version__
+from pypath.colorgen import *
+from pypath.gr_plot import *
+from pypath.progress import *
+
+omnipath = data_formats.omnipath
+
+if 'unicode' not in globals():
+    unicode = str
+
+__all__ = ['PyPath', 'Direction', 'Reference', '__version__', 'a',
+    'AttrHelper', 'ReferenceList']
 
 class Reference(object):
     
@@ -203,7 +217,7 @@ class Direction(object):
             return None
     
     def which_dirs(self):
-        return [d for d, s in self.dirs.iteritems() if s and d != 'undirected']
+        return [d for d, s in iteritems(self.dirs) if s and d != 'undirected']
     
     def unset_dir(self, direction, source = None):
         '''
@@ -222,7 +236,7 @@ class Direction(object):
                 self.dirs[direction] = False
     
     def is_directed(self):
-        return bool(sum([v for k,v in self.dirs.iteritems() if k != 'undirected']))
+        return bool(sum([v for k,v in iteritems(self.dirs) if k != 'undirected']))
     
     def is_stimulation(self, direction = None):
         if direction is None:
@@ -300,21 +314,21 @@ class Direction(object):
         list will contain 2 IDs. If the interaction is undirec-
         ted, an empty list will be returned.
         '''
-        return [k[0] for k, v in self.dirs.iteritems() if k != 'undirected' and v]
+        return [k[0] for k, v in iteritems(self.dirs) if k != 'undirected' and v]
     
     def tgt(self):
         '''
         Returns the IDs of the target moleculess in the inter-
         action. Same behaviour as `Direction.src()`.
         '''
-        return [k[1] for k, v in self.dirs.iteritems() if k != 'undirected' and v]
+        return [k[1] for k, v in iteritems(self.dirs) if k != 'undirected' and v]
     
     def src_by_source(self, source):
-        return [k[0] for k, v in self.sources.iteritems() \
+        return [k[0] for k, v in iteritems(self.sources) \
             if k != 'undirected' and source in v]
     
     def tgt_by_source(self, source):
-        return [k[1] for k, v in self.sources.iteritems() \
+        return [k[1] for k, v in iteritems(self.sources) \
             if k != 'undirected' and source in v]
     
     def sources_straight(self):
@@ -404,7 +418,8 @@ class AttrHelper(object):
                     if self.name in self.defaults and \
                         resource_type in self.defaults[self.name]:
                         return self.defaults[self.name][resource_type]
-            print 'No category for %s' % thisSources
+            sys.stdout.wrtie('No category for %s\n' % thisSources)
+            sys.stdout.flush()
         # if value is constant:
         elif type(self.value) in simpleTypes:
             return self.value
@@ -1036,7 +1051,7 @@ class PyPath(object):
                         "attrsNodeA": attrsNodeA, 
                         "attrsNodeB": attrsNodeB, 
                         "attrsEdge": attrsEdge}
-                    newEdge = dict(chain(newEdge.iteritems(), nodeAttrs.iteritems() ))
+                    newEdge = iteritems(dict(chain(newEdge), iteritems(nodeAttrs) ))
                 if readError != 0:
                     break
                 edgeList.append(newEdge)
@@ -1123,7 +1138,7 @@ class PyPath(object):
                 # getting additional attributes
                 attrsItem = self.get_attrs(line, settings.extraAttrs, lnum)
                 # merging dictionaries
-                newItem = dict(chain(newItem.iteritems(), attrsItem.iteritems() ))
+                newItem = iteritems(dict(chain(newItem), iteritems(attrsItem) ))
             if readError != 0:
                 break
             itemList.append(newItem)
@@ -1187,7 +1202,7 @@ class PyPath(object):
     
     def merge_attrs(self,a,b,exc=["name"]):
         sys.stdout.write('.')
-        for key, val in b.attributes().iteritems():
+        for key, val in iteritems(b.attributes()):
             if key not in a.attributes():
                 a[key] = val
             elif key not in exc:
@@ -1333,7 +1348,7 @@ class PyPath(object):
         # copying node attributes
         prg = Progress(
             total=len(primNodes),name="Processing node attributes",interval=10)
-        for k,v in primNodes.iteritems():
+        for k,v in iteritems(primNodes):
             prim = g.vs.find(name=k)
             for s in v:
                 sec = g.vs.find(name=s)
@@ -1343,9 +1358,9 @@ class PyPath(object):
         # copying edge attributes
         prg = Progress(
             total=len(primEdges),name="Processing edge attributes",interval=10)
-        for a,bdict in primEdges.iteritems():
+        for a,bdict in iteritems(primEdges):
             primA = g.vs.find(name=a).index
-            for b,originals in bdict.iteritems():
+            for b,originals in iteritems(bdict):
                 primB = g.vs.find(name=b).index
                 prim = g.es.select(_between=((primA,),(primB,)))[0]
                 for o in originals:
@@ -1484,9 +1499,9 @@ class PyPath(object):
             if thisNode["originalNames"] is None:
                 thisNode["originalNames"] = {}
             thisNode["originalNames"][originalName] = originalNameType
-        for key, value in defAttrs.iteritems():
+        for key, value in iteritems(defAttrs):
             thisNode[key] = value
-        for key, value in extraAttrs.iteritems():
+        for key, value in iteritems(extraAttrs):
             if key not in g.vs.attributes():
                 g.vs[key] = [[] for _ in xrange(self.graph.vcount())] \
                     if type(value) is list else [None]
@@ -1541,7 +1556,7 @@ class PyPath(object):
         # adding type:
         self.add_list_eattr(edge, 'type', typ)
         # adding extra attributes:
-        for key, value in extraAttrs.iteritems():
+        for key, value in iteritems(extraAttrs):
             if key not in g.es.attributes():
                 g.es[key] = [[] for _ in xrange(self.graph.ecount())] \
                     if type(value) is list else [None]
@@ -1556,6 +1571,8 @@ class PyPath(object):
             e[attr] = []
         elif type(e[attr]) is not list:
             e[attr] = [e[attr]]
+        # print(type(e[attr]))
+        # print(type(value))
         e[attr] = uniqList(e[attr] + value)
     
     def add_grouped_eattr(self, edge, attr, group, value):
@@ -2057,14 +2074,14 @@ class PyPath(object):
     def search_attr_or(self,obj,lst):
         if len(lst) == 0:
             return True
-        for a,v in lst.iteritems():
+        for a,v in iteritems(lst):
             if (type(v) is list and len(set(obj[a]).intersection(v)) > 0
                 ) or (type(v) is not list and obj[a] == v):
                 return True
         return False
     
     def search_attr_and(self,obj,lst):
-        for a,v in lst.iteritems():
+        for a,v in iteritems(lst):
             if (type(v) is list and len(set(obj[a]).intersection(v)) == 0
                 ) or (type(v) is not list and obj[a] != v):
                 return False
@@ -2228,7 +2245,7 @@ class PyPath(object):
             g = self.get_network({"edge": {"sources": [s]}, "node": {}})
             if g.vcount() > 0:
                 dds[s] = g.degree_distribution()
-        for k,v in dds.iteritems():
+        for k,v in iteritems(dds):
             filename = ''.join([self.outdir,"pwnet-",self.session,"-degdist-",k])
             bins = []
             vals = []
@@ -2500,13 +2517,13 @@ class PyPath(object):
         resources one by one.
         '''
         self.load_reflists()
-        huge = dict((k, v) for k, v in lst.iteritems() \
+        huge = dict((k, v) for k, v in iteritems(lst) \
             if v.huge and k not in exclude and v.name not in cache_files)
-        nothuge = dict((k, v) for k, v in lst.iteritems() \
+        nothuge = dict((k, v) for k, v in iteritems(lst) \
             if (not v.huge or v.name in cache_files) and k not in exclude)
         for lst in [huge, nothuge]:
             ac_types = set([])
-            for k, v in lst.iteritems():
+            for k, v in iteritems(lst):
                 if type(v.nameTypeA) is list:
                     ac_types = ac_types | set(v.nameTypeA)
                 else:
@@ -2521,21 +2538,25 @@ class PyPath(object):
                     table_loaded.add(ids[0])
             self.mapper.load_uniprot_mappings(list(ac_types - table_loaded & \
                 set(self.mapper.name_types.keys())))
-            for k, v in lst.iteritems():
-                try:
-                    self.load_resource(v, clean = False,
+            for k, v in iteritems(lst):
+                self.load_resource(v, clean = False,
                         cache_files = cache_files,
                         reread = reread,
                         redownload = redownload)
-                except:
-                    sys.stdout.write('\t:: Could not load %s, unexpected error '\
-                        'occurred, see %s for error.\n'%(k, self.ownlog.logfile))
-                    self.ownlog.msg('Error at loading %s: \n%s\n, \t%s, %s\n' % \
-                            (k, sys.exc_info()[1],
-                            sys.exc_info()[2],
-                            sys.exc_info()[0]),
-                        'ERROR')
-                    sys.stdout.flush()
+                #try:
+                #    self.load_resource(v, clean = False,
+                #        cache_files = cache_files,
+                #        reread = reread,
+                #        redownload = redownload)
+                #except:
+                #    sys.stdout.write('\t:: Could not load %s, unexpected error '\
+                #        'occurred, see %s for error.\n'%(k, self.ownlog.logfile))
+                #    self.ownlog.msg(1, 'Error at loading %s: \n%s\n, \t%s, %s\n' % \
+                #            (k, sys.exc_info()[1],
+                #            sys.exc_info()[2],
+                #            sys.exc_info()[0]),
+                #        'ERROR')
+                #    sys.stdout.flush()
         sys.stdout.write('\n')
         self.clean_graph()
         self.update_sources()
@@ -2560,8 +2581,10 @@ class PyPath(object):
         self.update_sources()
         self.update_vertex_sources()
     
-    def load_reflists(self, reflists = refLists):
-        for rl in reflists:
+    def load_reflists(self, reflst = None):
+        if reflst is None:
+            reflst = reflists.get_reflists()
+        for rl in reflst:
             self.load_reflist(rl)
     
     def load_reflist(self, reflist):
@@ -2570,16 +2593,16 @@ class PyPath(object):
         self.reflists[idx] = reflist
     
     def load_negatives(self):
-        for k,v in negative.iteritems():
+        for k,v in iteritems(negative):
             sys.stdout.write(' » '+v.name+'\n')
             self.apply_negative(v)
     
     def list_resources(self):
         sys.stdout.write(' » omnipath\n')
-        for k,v in omnipath.iteritems():
+        for k,v in iteritems(omnipath):
             sys.stdout.write('\t:: %s (%s)\n' % (v.name,k))
         sys.stdout.write(' » good\n')
-        for k,v in good.iteritems():
+        for k,v in iteritems(good):
             sys.stdout.write('\t:: %s (%s)\n' % (v.name,k))
     
     def info(self,name):
@@ -2811,7 +2834,7 @@ class PyPath(object):
                     row.append(';'.join(dbs))
                     # references
                     row.append(';'.join([r for rs in \
-                        [refs for db, refs in e['refs_by_source'].iteritems() \
+                        [refs for db, refs in iteritems(e['refs_by_source']) \
                             if db in dbs] \
                         for r in rs]))
                     # signs
@@ -2877,7 +2900,7 @@ class PyPath(object):
                     row.append(';'.join(dbs))
                     # references
                     row.append(';'.join([r for rs in \
-                        [refs for db, refs in e['refs_by_source'].iteritems() \
+                        [refs for db, refs in iteritems(e['refs_by_source']) \
                             if db in dbs] \
                         for r in rs]))
                     # signs
@@ -2932,19 +2955,19 @@ class PyPath(object):
                             e['dirs'].get_sign((nameA,nameB),sources=True) + \
                             e['dirs'].get_sign((nameB,nameA),sources=True)]
                 thisEdge.append(e['type'])
-                for k,v in extraEdgeAttrs.iteritems():
+                for k,v in iteritems(extraEdgeAttrs):
                     thisEdge.append(
                         ';'.join([x.strip() for x in 
                             stripJson.sub('',json.dumps(e[v])).split(',')])
                     )
-                for k,v in extraNodeAttrs.iteritems():
+                for k,v in iteritems(extraNodeAttrs):
                     thisEdge.append(
                         ';'.join([x.strip() for x in 
                             stripJson.sub('',json.dumps(
                                 self.graph.vs[e.source][v])
                             ).split(',')])
                     )
-                for k,v in extraNodeAttrs.iteritems():
+                for k,v in iteritems(extraNodeAttrs):
                     thisEdge.append(
                         ';'.join([x.strip() for x in 
                             stripJson.sub('',json.dumps(
@@ -2960,7 +2983,7 @@ class PyPath(object):
             else 'network-%s.sif'%self.session
         with open(outfile, 'w') as f:
             for e in self.graph.es:
-                for d in [d for d, b in e['dirs'].dirs.iteritems() if b]:
+                for d in [d for d, b in iteritems(e['dirs'].dirs) if b]:
                     if e['dirs'].is_directed() and d == 'undirected':
                         continue
                     sign = '' if d == 'undirected' \
@@ -3081,7 +3104,7 @@ class PyPath(object):
         num = len(self.chembl.compounds)
         prg = Progress(total=num,name='Adding compounds',interval=11)
         hascomp = 0
-        for target,data in self.chembl.compounds.iteritems():
+        for target,data in iteritems(self.chembl.compounds):
             prg.step()
             if self.node_exists(target):
                 hascomp += 1
@@ -3119,7 +3142,7 @@ class PyPath(object):
         prg = Progress(self.graph.ecount(),'Calculating scores',11)
         for e in self.graph.es:
             score = 0.0
-            for s,rs in e['refs_by_source'].iteritems():
+            for s,rs in iteritems(e['refs_by_source']):
                 for r in rs:
                     score += 1.0 / ref_freq[s][r]
             mindeg = min(self.graph.vs[e.source].degree(),self.graph.vs[e.target].degree())
@@ -3200,7 +3223,7 @@ class PyPath(object):
             self.graph.vs['doms'] = [[] for _ in self.graph.vs]
             for v in self.graph.vs:
                 if v['name'] in self.u_pfam:
-                    for pfam, regions in self.u_pfam[v['name']].iteritems():
+                    for pfam, regions in iteritems(self.u_pfam[v['name']]):
                         for region in regions:
                             v['doms'].append(intera.Domain(protein = v['name'], 
                                 domain = pfam, start = region['start'], 
@@ -3214,7 +3237,7 @@ class PyPath(object):
             self.ownlog.msg(2,'Failed to download data from CORUM','ERROR')
         else:
             self.init_complex_attr(graph,'corum')
-            for u,cs in members.iteritems():
+            for u,cs in iteritems(members):
                 sw = self.mapper.map_name(u,'uniprot','uniprot')
                 for s in sw:
                     if s in graph.vs['name']:
@@ -3356,19 +3379,19 @@ class PyPath(object):
             compl_membs = {}
             compl_links = []
             prg = Progress(len(c3d),'Processing complexes',7)
-            for cname,v in c3d.iteritems():
+            for cname,v in iteritems(c3d):
                 swprots = []
                 uprots = []
-                for ups,contact in v.iteritems():
+                for ups,contact in iteritems(v):
                     uprots += list(ups)
                     up1s = self.mapper.map_name(ups[0],'uniprot','uniprot')
                     for up1 in up1s:
                         inRefLists = False
-                        for tax,lst in self.reflists.iteritems():
+                        for tax,lst in iteritems(self.reflists):
                             if up1 in lst.lst:
                                 up2s = self.mapper.map_name(ups[1],'uniprot','uniprot')
                                 for up2 in up2s:
-                                    for tax,lst in self.reflists.iteritems():
+                                    for tax,lst in iteritems(self.reflists):
                                         if up2 in lst.lst:
                                             inRefLists = True
                                             thisPair = [up1,up2]
@@ -3391,7 +3414,7 @@ class PyPath(object):
                 prg.step()
             prg.terminate()
             prg = Progress(len(compl_membs),'Processing nodes',3)
-            for cname,uniprots in compl_membs.iteritems():
+            for cname,uniprots in iteritems(compl_membs):
                 for sp in uniprots[0]:
                     if sp in graph.vs['name']:
                         graph.vs.select(name=sp)[0]['complexes']['3dcomplexes'][cname] = {
@@ -3428,9 +3451,9 @@ class PyPath(object):
             self.load_complexportal(graph=graph)
         pdblist = []
         for v in graph.vs:
-            for n, d in v['complexes']['3dcomplexes'].iteritems():
+            for n, d in iteritems(v['complexes']['3dcomplexes']):
                 pdblist.append(n.split('_')[0])
-            for n, d in v['complexes']['complexportal'].iteritems():
+            for n, d in iteritems(v['complexes']['complexportal']):
                 pdblist += d['pdbs']
         pdblist = list(set(pdblist))
         pisa, unmapped = dataio.get_pisa(pdblist)
@@ -3441,8 +3464,8 @@ class PyPath(object):
                 e['interfaces'] = {}
             if 'pisa' not in e['interfaces']:
                 e['interfaces']['pisa'] = {}
-        for pdb,iflist in pisa.iteritems():
-            for uniprots,intf in iflist.iteritems():
+        for pdb,iflist in iteritems(pisa):
+            for uniprots,intf in iteritems(iflist):
                 if uniprots[0] in graph.vs['name'] and uniprots[1] in graph.vs['name']:
                     e = self.edge_exists(uniprots[0], uniprots[1])
                     if type(e) is int:
@@ -3875,7 +3898,7 @@ class PyPath(object):
     def _neighborhood(self, vs, order = 1, mode = 'ALL'):
         return _NamedVertexSeq(
             map(lambda vi: self.graph.vs[vi],
-                reduce(lambda (a, b):
+                reduce(lambda a, b:
                     a.extend(b),
                     self.graph.neighborhood(vs,
                         order = order, mode = mode)
@@ -3914,7 +3937,7 @@ class PyPath(object):
                 if src not in cdict:
                     cdict[src] = {}
                 if src in c['complexes']:
-                    for cname,cannot in c['complexes'][src].iteritems():
+                    for cname,cannot in iteritems(c['complexes'][src]):
                         if cname not in cdict[src]:
                             cdict[src][cname] = []
                         cdict[src][cname].append(v['name'])
@@ -4109,7 +4132,7 @@ class PyPath(object):
         if 'ptm' not in self.graph.es.attributes():
             self.graph.es['ptm'] = [[] for _ in self.graph.es]
         prg = Progress(len(dmi), 'Loading domain-motif interactions', 11)
-        for uniprots, dmi_list in dmi.iteritems():
+        for uniprots, dmi_list in iteritems(dmi):
             prg.step()
             if self.node_exists(uniprots[0]) and self.node_exists(uniprots[1]):
                 e = self.edge_exists(uniprots[0], uniprots[1])
@@ -4213,7 +4236,7 @@ class PyPath(object):
             if '3did' not in e['ddi']:
                 e['ddi']['3did'] = []
         prg = Progress(len(ddi),'Loading domain-domain interactions',99)
-        for k,v in ddi.iteritems():
+        for k,v in iteritems(ddi):
             uniprot1 = k[0]
             uniprot2 = k[1]
             swprots = self.mapper.swissprots([uniprot1,uniprot2])
@@ -4222,9 +4245,9 @@ class PyPath(object):
                     if swprot1 in g.vs['name'] and swprot2 in g.vs['name']:
                         e = self.edge_exists(swprot1,swprot2)
                         if type(e) is int:
-                            for domains,structures in v.iteritems():
+                            for domains,structures in iteritems(v):
                                 for pdb,pdb_uniprot_pairs in \
-                                        structures['pdbs'].iteritems():
+                                        iteritems(structures['pdbs']):
                                     for pdbuniprots in pdb_uniprot_pairs:
                                         pdbswprots = self.mapper.swissprots(pdbuniprots)
                                         for pdbswprot1 in pdbswprots[pdbuniprots[0]]:
@@ -4302,7 +4325,7 @@ class PyPath(object):
                     dom = intera.Domain(protein = l[9], start = int(l[11]), 
                         end = int(l[12]), domain = l[10], domain_id_type = 'ielm_hmm')
                     if self.u_pfam is not None and l[9] in self.u_pfam:
-                        for pfam, regions in self.u_pfam[l[9]].iteritems():
+                        for pfam, regions in iteritems(self.u_pfam[l[9]]):
                             for region in regions:
                                 if int(l[11]) == region['start'] and \
                                     int(l[12]) == region['end']:
@@ -4471,7 +4494,7 @@ class PyPath(object):
             self.graph.es['ptm'] = [[] for _ in self.graph.es]
         preg = dataio.get_psite_reg()
         prg = Progress(len(preg), 'Processing regulatory effects', 11)
-        for src, tgts in preg.iteritems():
+        for src, tgts in iteritems(preg):
             prg.step()
             # ptm on src
             # tgt: interactor of src, depending on ptm
@@ -4541,10 +4564,10 @@ class PyPath(object):
         graph.es['loc'] = [[] for _ in graph.es]
         for e in graph.es:
             e['loc'] = list(set([i[0] for i in \
-                heapq.nlargest(2 , graph.vs[e.source]['comppi'].iteritems(), 
+                heapq.nlargest(2 , iteritems(graph.vs[e.source]['comppi']), 
                 operator.itemgetter(1))
             ]) & set([i[0] for i in \
-                heapq.nlargest(2 , graph.vs[e.target]['comppi'].iteritems(), 
+                heapq.nlargest(2 , iteritems(graph.vs[e.target]['comppi']), 
                 operator.itemgetter(1))
             ]))
     
@@ -4946,9 +4969,9 @@ class PyPath(object):
         stats = self.sources_overlap(diagonal = True)
         sources = []
         overlaps = {}
-        for s, n in stats['single']['nodes'].iteritems():
+        for s, n in iteritems(stats['single']['nodes']):
             sources.append((s, (n, None), (stats['single']['edges'][s], None)))
-        for s, n in stats['overlap']['nodes'].iteritems():
+        for s, n in iteritems(stats['overlap']['nodes']):
             overlaps[s] = {'size': (n, stats['overlap']['edges'][s])}
         diagram = bdrawing.InterSet(sources, overlaps, outf = outf, **kwargs)
         diagram.draw()
@@ -5027,10 +5050,10 @@ class PyPath(object):
         stats = self.sources_overlap()
         tupleListNodes = []
         tupleListEdges = []
-        for dbs, overlap in stats['overlap']['nodes'].iteritems():
+        for dbs, overlap in iteritems(stats['overlap']['nodes']):
             if overlap > 0:
                 tupleListNodes.append(tuple(sorted(list(dbs)) + [overlap]))
-        for dbs, overlap in stats['overlap']['edges'].iteritems():
+        for dbs, overlap in iteritems(stats['overlap']['edges']):
             if overlap > 0:
                 tupleListEdges.append(tuple(sorted(list(dbs)) + [overlap]))
         tupleListNodes = list(set(tupleListNodes))
@@ -5101,7 +5124,7 @@ class PyPath(object):
         if 'mut' not in self.graph.vs.attributes():
             self.graph.vs['mut'] = [{} for _ in self.graph.vs]
         prg = Progress(len(data), 'Processing mutations', 33)
-        for uniprot, muts in data.iteritems():
+        for uniprot, muts in iteritems(data):
             prg.step()
             if uniprot in self.nodDct:
                 for mu in muts:
@@ -5138,7 +5161,7 @@ class PyPath(object):
                 del data[gsymb]
             self.exp = pandas.DataFrame(data)
         else:
-            for gsymb, expr in data.iteritems():
+            for gsymb, expr in iteritems(data):
                 prg.step()
                 uniprots = self.mapper.map_name(gsymb, 'genesymbol', 'uniprot')
                 for up in uniprots:
@@ -5188,7 +5211,7 @@ class PyPath(object):
         disrupted = {}
         for e in self.graph.es:
             for v in [e.source, e.target]:
-                for smpl, mut in self.graph.vs[v]['mut'].iteritems():
+                for smpl, mut in iteritems(self.graph.vs[v]['mut']):
                     if smpl == sample:
                         for ptm in e['ptm']:
                             if mut.original == ptm.ptm.residue:
@@ -5215,7 +5238,7 @@ class PyPath(object):
             if type(all_proteins) is list else all_proteins \
             if type(all_proteins) is set else set(self.graph.vs['name'])
         annotation = dict([(up, g) for up, g in \
-            getattr(self.go[self.ncbi_tax_id], aspect.lower()).iteritems() \
+            getattr(self.go[self.ncbi_tax_id], iteritems(aspect.lower())) \
             if up in all_proteins])
         enr = go.GOEnrichmentSet(aspect = aspect, organism = self.ncbi_tax_id, 
             basic_set = annotation, alpha = alpha, 
@@ -5356,7 +5379,7 @@ class PyPath(object):
             Counter([uniprot for uniprots in \
                 [expr.keys() for expr in \
                     [prdb.expression[sample] for sample in prdb.samples[tissue]] \
-                ] for uniprot in uniprots]).iteritems() \
+                ] for uniprot in iteritems(uniprots)]) \
             if cnt >= occurrence]) & set(graph.vs['name'])
         expressions = dict([(uniprot, group_function(
             [prdb.expression[sample][uniprot] \
@@ -5546,7 +5569,7 @@ class PyPath(object):
         g.vs[attrname] = [set([]) for _ in g.vs]
         g.es[attrname] = [set([]) for _ in g.es]
         if type(proteins_pws) is dict:
-            for pw, proteins in proteins_pws.iteritems():
+            for pw, proteins in iteritems(proteins_pws):
                 for protein in proteins:
                     if protein in proteins:
                         uniprots = self.mapper.map_name(protein, 
@@ -5555,7 +5578,7 @@ class PyPath(object):
                             if u in nodDct:
                                 g.vs[nodDct[u]][attrname].add(pw)
         if type(interactions_pws) is dict:
-            for pw, ia in interactions_pws.iteritems():
+            for pw, ia in iteritems(interactions_pws):
                 for pair in ia:
                     usrcs = self.mapper.map_name(pair[0], 'uniprot', 'uniprot')
                     utgts = self.mapper.map_name(pair[1], 'uniprot', 'uniprot')
@@ -5651,7 +5674,7 @@ class PyPath(object):
             src_refs = set(uniqList([r.pmid for r in flatList([e['refs_by_source'][s] \
                 for e in self.graph.es if s in e['refs_by_source']])]))
             other_refs = set(flatList([[r.pmid for r in \
-                flatList([rr for sr, rr in e['refs_by_source'].iteritems() if sr != s])] \
+                flatList([rr for sr, rr in iteritems(e['refs_by_source']) if sr != s])] \
                 for e in self.graph.es]))
             only_src_refs = len(src_refs - other_refs)
             only_src_refs_pct = len(src_refs - other_refs) / float(all_refs) * 100.0
@@ -5659,13 +5682,13 @@ class PyPath(object):
             shared_refs = len(src_refs & other_refs)
             shared_curation_effort = sum([len(x) for x in \
                 [set(flatList([[(r.pmid, e.index) for r in rr] \
-                    for sr, rr in e['refs_by_source'].iteritems() if sr != s])) & \
+                    for sr, rr in iteritems(e['refs_by_source']) if sr != s])) & \
                 set([(rl.pmid, e.index) for rl in e['refs_by_source'][s]]) \
                 for e in self.graph.es if s in e['refs_by_source']] if len (x) != 0])
             src_only_curation_effort = sum([len(x) for x in \
                 [set([(rl.pmid, e.index) for rl in e['refs_by_source'][s]]) - \
                 set(flatList([[(r.pmid, e.index) for r in rr] \
-                    for sr, rr in e['refs_by_source'].iteritems() if sr != s])) \
+                    for sr, rr in iteritems(e['refs_by_source']) if sr != s])) \
                 for e in self.graph.es if s in e['refs_by_source']] if len (x) != 0])
             src_curation_effort = sum([len(x) for x in \
                 [set([(rl.pmid, e.index) for rl in e['refs_by_source'][s]]) \
@@ -6053,7 +6076,7 @@ class PyPath(object):
             'vertex_fontcolor': '#000000'
         }
         #
-        for k, v in defaults.iteritems():
+        for k, v in iteritems(defaults):
             _defaults[k] = v
         #
         g = self.graph if graph is None else graph
@@ -6108,15 +6131,15 @@ class PyPath(object):
         # graph
         dot = graphviz.AGraph(directed = directed)
         attrs = {}
-        for gattr, fun in _attrs['graph_callbacks'].iteritems():
+        for gattr, fun in iteritems(_attrs['graph_callbacks']):
             attrs[gattr] = fun(g)
         attrs = cleanDict(attrs)
-        for gattr, value in attrs.iteritems():
+        for gattr, value in iteritems(attrs):
             dot.graph_attr[gattr] = value
         # vertices
-        for vid, node in dNodes.iteritems():
+        for vid, node in iteritems(dNodes):
             attrs = {}
-            for vattr, fun in _attrs['vertex_callbacks'].iteritems():
+            for vattr, fun in iteritems(_attrs['vertex_callbacks']):
                 attrs[vattr] = fun(g.vs[vid])
             if vid in hide_nodes:
                 attrs['style'] = 'invis'
@@ -6159,7 +6182,7 @@ class PyPath(object):
                                 thisSign = 'stimulation'
                                 thisSources = ssign[0] if dir_sources is None else \
                                     ssign[0] & dir_sources
-                                for eattr, fun in edge_callbacks.iteritems():
+                                for eattr, fun in iteritems(edge_callbacks):
                                     attrs[eattr] = fun(g.es[eid], 
                                         thisDir, thisSign, thisDirSources, set(g.es[eid]['sources']))
                             elif vis and (sign[1] and dir_sources is None or \
@@ -6168,13 +6191,13 @@ class PyPath(object):
                                 thisSign = 'inhibition'
                                 thisSoures = ssign[1] if dir_sources is None else \
                                     ssign[1] & dir_sources
-                                for eattr, fun in edge_callbacks.iteritems():
+                                for eattr, fun in iteritems(edge_callbacks):
                                     attrs[eattr] = fun(g.es[eid], 
                                         thisDir, thisSign, thisSources, set(g.es[eid]['sources']))
                             elif vis:
                                 thisSign = 'unknown'
                                 thisSources = sdir
-                                for eattr, fun in edge_callbacks.iteritems():
+                                for eattr, fun in iteritems(edge_callbacks):
                                     attrs[eattr] = fun(g.es[eid], 
                                         thisDir, thisSign, thisSources, set(g.es[eid]['sources']))
                             else:
@@ -6197,7 +6220,7 @@ class PyPath(object):
                                 thisSign = 'stimulation'
                                 thisSources = ssign[0] if dir_sources is None else \
                                     ssign[0] & dir_sources
-                                for eattr, fun in edge_callbacks.iteritems():
+                                for eattr, fun in iteritems(edge_callbacks):
                                     attrs[eattr] = fun(g.es[eid], 
                                         thisDir, thisSign, thisSources, set(g.es[eid]['sources']))
                             elif vis and (sign[1] and dir_sources is None or \
@@ -6206,13 +6229,13 @@ class PyPath(object):
                                 thisSign = 'inhibition'
                                 thisSources = ssign[1] if dir_sources is None else \
                                     ssign[1] & dir_sources
-                                for eattr, fun in edge_callbacks.iteritems():
+                                for eattr, fun in iteritems(edge_callbacks):
                                     attrs[eattr] = fun(g.es[eid], 
                                         thisDir, thisSign, thisSources, set(g.es[eid]['sources']))
                             elif vis:
                                 thisSign = 'unknown'
                                 thisSources = sdir
-                                for eattr, fun in edge_callbacks.iteritems():
+                                for eattr, fun in iteritems(edge_callbacks):
                                     attrs[eattr] = fun(g.es[eid], 
                                         thisDir, thisSign, thisSources, set(g.es[eid]['sources']))
                             else:
@@ -6225,7 +6248,7 @@ class PyPath(object):
                     thisDir = 'undirected'
                     thisSign = 'unknown'
                     thisSources = d.get_dir('undirected', sources = True)
-                    for eattr, fun in edge_callbacks.iteritems():
+                    for eattr, fun in iteritems(edge_callbacks):
                         attrs[eattr] = fun(g.es[eid], thisDir, thisSign, 
                             thisSources, set(g.es[eid]['sources']))
                     if (not evis and hide) or drawn_directed:
@@ -6463,12 +6486,8 @@ class PyPath(object):
     def reload(self):
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
-        reload(mod)
-        # print 'self.__class__.__name__ = ', self.__class__.__name__
-        # print 'mod = ', mod
+        imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
-        # print 'new = ', new
-        # print 'new.__class__ = ', new.__class__
         setattr(self, '__class__', new)
     
     def _disclaimer(self):

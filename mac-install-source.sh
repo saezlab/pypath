@@ -217,6 +217,7 @@ pip install --user python-igraph
 # optional dependencies
 pip install --user pysftp
 pip install --user fabric
+pip install --user scipy
 pip install --user pandas
 pip install --user https://bitbucket.org/jurko/suds/get/tip.zip
 pip install --user bioservices

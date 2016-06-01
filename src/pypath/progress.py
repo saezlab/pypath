@@ -21,13 +21,13 @@ __all__ = ['Progress']
 class Progress(object):
     
     def __init__(self, total = None, name = "Progress", interval = 3000, percent = True, status = 'initializing'):
-        self.set_status(status)
+        self.status = status
         self.name = name
         self.interval = interval
-        self.total = total
+        self.set_total(total)
         self.done = 0
         self.percent = percent
-        sys.stdout.write("\r"+" "*90)
+        sys.stdout.write("\r"+" "*150)
         if self.percent:
             sys.stdout.write("\r\t:: %s: %s 0.00%%" % (self.name, '%s,'%self.status))
         else:
@@ -36,10 +36,10 @@ class Progress(object):
         sys.stdout.flush()
     
     def step(self, step = 1, msg = None, status = 'working on it'):
-        self.set_status(status)
+        self.status = status
         self.done += step
-        if self.done % self.interval == 0:
-            sys.stdout.write("\r"+" "*90)
+        if self.done % self.interval < 1.0:
+            sys.stdout.write("\r"+" "*150)
             if self.percent:
                 sys.stdout.write(
                     "\r\t:: %s: %s %.2f%% %s" % (
@@ -54,12 +54,18 @@ class Progress(object):
                         '' if msg is None else '[%s]'%msg))
             sys.stdout.flush()
     
+    def set_total(self, total):
+        self.total = total or 9999999999.0
+    
+    def set_done(self, done):
+        self.done = done
+    
     def set_status(self, status):
-        self.status = status
+        self.step(step = 0, status = status)
     
     def terminate(self, status = 'finished'):
-        sys.stdout.write("\r"+" "*90)
-        self.set_status(status)
+        sys.stdout.write("\r"+" "*150)
+        self.status = status
         if self.percent:
             sys.stdout.write("\r\t:: %s: %s 100.0%%" % (self.name, '%s,'%self.status))
         else:

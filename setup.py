@@ -155,10 +155,22 @@ with open('HISTORY.rst') as f:
     history = f.read()
 
 # choosing module for mysql access:
-deps = ['python-igraph', 'beautifulsoup4',
-    'pyopenssl', 'ndg-httpsclient', 'chembl_webresource_client', 'pyasn1',
-    'fisher', 'statsmodels', 'pycurl',
-    'lxml', 'xlrd', 'httplib2']
+deps = [
+    'python-igraph',
+    'beautifulsoup4',
+    'configparser',
+    'pyopenssl',
+    'ndg-httpsclient',
+    'chembl_webresource_client',
+    'pyasn1',
+    'fisher',
+    'statsmodels',
+    'pycurl',
+    'lxml',
+    'xlrd',
+    'httplib2',
+    'future'
+]
 
 #mysql = 'pymysql'
 #if which('mysql') and which('mysql_config'):
