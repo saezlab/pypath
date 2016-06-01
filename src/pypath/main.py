@@ -38,6 +38,7 @@ import operator
 import locale
 import heapq
 import threading
+import traceback
 from itertools import chain
 from collections import Counter
 try:
@@ -915,14 +916,24 @@ class PyPath(object):
                     self.ownlog.msg(2, "Retrieving data by dataio.%s() ..." % \
                         inputFunc.__name__)
                     _store_cache = curl.CACHE
-                    curl.CACHE = redownload
-                    infile = inputFunc(**settings.inputArgs)
+                    curl.CACHE = not redownload
+                    # this try-except needs to be removed
+                    # once correct exception handling will
+                    # be implemented in every input function
+                    try:
+                        infile = inputFunc(**settings.inputArgs)
+                    except Exception as e:
+                        sys.stdout.write('\n\t:: Error in `pypath.dataio.%s()`. '\
+                            'Skipping to next resource.\n' % inputFunc.__name__)
+                        sys.stdout.write('\t:: %s\n' % str(e.args))
+                        sys.stdout.flush()
+                        traceback.print_tb(e.__traceback__, file = sys.stdout)
                     curl.CACHE = _store_cache
                 elif os.path.isfile(settings.inFile):
                     infile = codecs.open(settings.inFile, 
                         encoding='utf-8', mode='r')
                     self.ownlog.msg(2, "%s opened..." % settings.inFile)
-                else:
+                if infile is None:
                     self.ownlog.msg(2,"%s: No such file or "\
                         "dataio function! :(\n" % (settings.inFile), 'ERROR')
                     return None
@@ -948,14 +959,19 @@ class PyPath(object):
                 dirSep = sign[3] if len(sign) > 3 else None
             dirVal = set(dirVal if type(dirVal) is list else [dirVal])
             maxCol = max(
-                [ 
-                    settings.nameColA, 
-                    settings.nameColB, 
-                    self.get_max(settings.extraEdgeAttrs), 
-                    self.get_max(settings.extraNodeAttrsA), 
-                    self.get_max(settings.extraNodeAttrsB),
-                    refCol,dirCol,sigCol
-                ])
+                filter(
+                    lambda i:
+                        i is not None,
+                    [ 
+                        settings.nameColA, 
+                        settings.nameColB, 
+                        self.get_max(settings.extraEdgeAttrs), 
+                        self.get_max(settings.extraNodeAttrsA), 
+                        self.get_max(settings.extraNodeAttrsB),
+                        refCol,dirCol,sigCol
+                    ]
+                )
+            )
             # iterating lines from input file
             lnum = 0
             lFiltered = 0

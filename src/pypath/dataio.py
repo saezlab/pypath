@@ -2047,7 +2047,6 @@ def get_domino(none_values = False, outfile = None):
     c = curl.Curl(url, silent = False)
     data = c.result
     data = data.split('\n')
-    data.remove('')
     del data[0]
     header = ['uniprot-A', 'uniprot-B', 'isoform-A', 'isoform-B', 
               'exp. method', 'references', 'taxon-A', 'taxon-B', 
@@ -2059,6 +2058,8 @@ def get_domino(none_values = False, outfile = None):
               'domains-interpro-B', 'negative']
     for r in data:
         r = r.split('\t')
+        if len(r) < 39:
+            continue
         thisRow = [
             None if ':' not in r[0] else r[0].split(':')[1].split('-')[0], 
             None if ':' not in r[1] else r[1].split(':')[1].split('-')[0], 
@@ -2623,10 +2624,10 @@ def get_uniprot_sec(organism = 9606):
     data = c.result
     return filter(lambda line:
         len(line) == 2 and (organism is None or line[1] in proteome),
-        map(lambda i, line:
-            line.decode('utf-8').split(), 
-            filter(lambda i, line:
-                i >= 30,
+        map(lambda i:
+            i[1].decode('utf-8').split(), 
+            filter(lambda i:
+                i[0] >= 30,
                 enumerate(data)
             )
         )
@@ -4639,7 +4640,7 @@ def biogrid_interactions(organism = 9606, htp_limit = 1):
     refc = []
     url = urls.urls['biogrid']['url']
     c = curl.Curl(url, silent = False, large = True)
-    f = c.result.values()[0]
+    f = next(iter(c.result.values()))
     nul = f.readline()
     for l in f:
         l = l.decode('utf-8')
@@ -5038,11 +5039,13 @@ def mitab_field_list(field):
     ))
 
 def mitab_field_uniprot(field):
-    uniprots = filter(lambda x:
-        len(x) == 2 and x[0] == 'uniprotkb',
-        map(lambda x:
-            x.split(':'),
-            field.split('|')
+    uniprots = list(
+        filter(lambda x:
+            len(x) == 2 and x[0] == 'uniprotkb',
+            map(lambda x:
+                x.split(':'),
+                field.split('|')
+            )
         )
     )
     if len(uniprots) > 0:
@@ -5312,7 +5315,7 @@ def depod_interactions(organism = 9606):
         if lnum == 0:
             lnum += 1
             continue
-        l = l.decode('utf-8')
+        l = l.decode('iso-8859-1')
         l = l.replace('\n', '').replace('\r', '')
         l = l.split('\t')
         specA = int(l[9].split(':')[1].split('(')[0])
