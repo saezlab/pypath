@@ -67,6 +67,7 @@ from pypath import chembl
 from pypath import mysql
 
 from pypath import dataio
+from pypath import curl
 from pypath import intera
 from pypath import go
 from pypath import gsea
