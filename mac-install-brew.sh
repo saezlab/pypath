@@ -56,7 +56,7 @@ HOME="/Users/$USER"
 LOCAL="$HOME/local"
 LOCALBIN="$LOCAL/bin"
 LOCALPIP="$LOCALBIN/pip$PYVER"
-LOCALPYPATH="$LOCAL/lib/python$PYVER/site-packages"
+#LOCALPYPATH="$LOCAL/lib/python$PYVER/site-packages"
 PYPATHURL="http://pypath.omnipathdb.org/releases/latest/pypath-latest.tar.gz"
 
 if [ ! -d $LOCAL ];
@@ -72,7 +72,7 @@ cat << EOF >> .pythonrc
 import readline
 import rlcompleter
 if 'libedit' in readline.__doc__:
-    readline.parse_and_bind("bind ^I rl_complete")
+        readline.parse_and_bind("bind ^I rl_complete")
     else:
         readline.parse_and_bind("tab: complete")
 EOF
@@ -92,7 +92,10 @@ brew install $PYTHONNAME $PYCAIRONAME homebrew/science/igraph graphviz
 $LOCALPIP install --upgrade pip
 $LOCALPIP install python-igraph
 $LOCALPIP install pysftp
-$LOCALPIP install fabric
+if [[ $PYMAINVER == "3" ]];
+    then $LOCALPIP install fabric3;
+    else $LOCALPIP install fabric;
+fi
 $LOCALPIP install pandas
 $LOCALPIP install scipy
 $LOCALPIP install suds-jurko
@@ -104,7 +107,7 @@ $LOCALPIP install $PYPATHURL
 
 # adding local paths and python paths permantently
 cat << EOF >> .bash_profile
-export PYTHONPATH="$LOCALPYPATH:\$PYTHONPATH"
+#export PYTHONPATH="$LOCALPYPATH:\$PYTHONPATH"
 export PATH="$LOCALBIN:\$PATH"
 EOF
 

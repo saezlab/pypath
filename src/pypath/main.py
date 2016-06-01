@@ -913,10 +913,10 @@ class PyPath(object):
                 elif inputFunc is not None:
                     self.ownlog.msg(2, "Retrieving data by dataio.%s() ..." % \
                         inputFunc.__name__)
-                    _store_cache = dataio.CACHE
-                    dataio.CACHE = redownload
+                    _store_cache = curl.CACHE
+                    curl.CACHE = redownload
                     infile = inputFunc(**settings.inputArgs)
-                    dataio.CACHE = _store_cache
+                    curl.CACHE = _store_cache
                 elif os.path.isfile(settings.inFile):
                     infile = codecs.open(settings.inFile, 
                         encoding='utf-8', mode='r')
