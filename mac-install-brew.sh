@@ -19,19 +19,27 @@
 
 # installing HomeBrew first:
 
-$USAGE="\tUsage: $0 [-h] [-p <2 or 3> (Python version)]\n"
+$USAGE="\tUsage: $0 [-h] [-p <2|3> (Python version)]\n"
 PYMAINVER="2"
 
-while getopts ":hv" opt;
+while getopts ":hp:" opt;
 do
     case $opt in
-        h) echo -en $USAGE; exit 0;;
-        p) PYMAINVER=$OPTARG;;
-        ?) echo -en $USAGE; exit 2;;
+        h)
+            echo -en $USAGE;
+            exit 0
+            ;;
+        p)
+            PYMAINVER=${OPTARG}
+            ;;
+        ?)
+            echo -en $USAGE;
+            exit 2
+            ;;
     esac
 done
 
-if [ $PYMAINVER == "3" ];
+if [[ $PYMAINVER == "3" ]];
     then
         PYVER="3.5";
         PYCAIRONAME="py3cairo";
@@ -101,4 +109,6 @@ export PATH="$LOCALBIN:\$PATH"
 EOF
 
 # with Py3 this will be necessary:
-# pip install git+https://github.com/brentp/fishers_exact_test.git
+if [[ $PYMAINVER == "3" ]];
+    then $LOCALPIP install git+https://github.com/brentp/fishers_exact_test.git;
+fi
