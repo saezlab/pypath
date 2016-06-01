@@ -122,7 +122,10 @@ class MappingTable(object):
         if hasattr(dataio, param.input):
             toCall = getattr(dataio, param.input)
             infile = toCall()
-            total = sum([sys.getsizeof(i) for i in infile])
+            try:
+                total = sum([sys.getsizeof(i) for i in infile])
+            except:
+                print(param.input)
         else:
             infile = codecs.open(param.input, encoding = 'utf-8', mode = 'r')
             total = os.path.getsize(param.input)
@@ -141,6 +144,7 @@ class MappingTable(object):
             if type(line is list):
                 prg.step(sys.getsizeof(line))
             else:
+                line = line.decode('utf-8')
                 prg.step(len(line))
                 line = line.rstrip().split(param.separator)
             if len(line) > max([param.oneCol, param.twoCol]):

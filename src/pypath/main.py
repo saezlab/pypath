@@ -969,6 +969,8 @@ class PyPath(object):
                     # or header row
                     continue
                 if type(line) not in listLike:
+                    if hasattr(line, 'decode'):
+                        line = line.decode('utf-8')
                     line = line.replace('\n','').replace('\r','').\
                     split(settings.separator)
                 else:
@@ -1049,14 +1051,14 @@ class PyPath(object):
                     attrsNodeB = self.get_attrs(line, settings.extraNodeAttrsB, lnum)
                     # merging dictionaries
                     nodeAttrs = {
-                        "attrsNodeA": attrsNodeA, 
-                        "attrsNodeB": attrsNodeB, 
+                        "attrsNodeA": attrsNodeA,
+                        "attrsNodeB": attrsNodeB,
                         "attrsEdge": attrsEdge}
-                    newEdge = iteritems(dict(chain(newEdge), iteritems(nodeAttrs) ))
+                    newEdge = dict(chain(iteritems(newEdge), iteritems(nodeAttrs)))
                 if readError != 0:
                     break
                 edgeList.append(newEdge)
-            if type(infile) is file:
+            if hasattr(infile, 'close'):
                 infile.close()
             ### !!!! ##
             edgeListMapped = self.map_list(edgeList)

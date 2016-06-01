@@ -46,6 +46,16 @@ try:
 except:
     import pickle
 
+try:
+    from cStringIO import StringIO
+except:
+    try:
+        from StringIO import StringIO
+        from StringIO import StringIO as BytesIO
+    except:
+        from io import BytesIO
+        from io import StringIO
+
 import sys
 import os
 import re
@@ -81,6 +91,9 @@ from pypath import intera
 from pypath import reaction
 from pypath import residues
 from pypath import seq as se
+
+if 'unicode' not in globals():
+    unicode = str
 
 #
 # thanks for http://stackoverflow.com/a/3239248/854988
@@ -252,8 +265,9 @@ def get_pfam(uniprots=None, organism=None):
         organismQuery = 'organism:%u AND reviewed:yes'%organism
         post = {'query': organismQuery, 'format': 'tab', 'columns': 'id,database(Pfam)'}
         for j in xrange(3):
-            data_all = curl.curl(urls.urls['uniprot_basic']['url'],post=post,
+            c = curl.Curl(urls.urls['uniprot_basic']['url'],post=post,
                             silent=False,outf='uniprot-pfam-%u.tab'%organism)
+            data_all = c.result
             if data_all is not None:
                 break
         if data_all is None:
@@ -1864,8 +1878,9 @@ def get_ielm(ppi, id_type = 'UniProtKB_AC', mydomains = 'HMMS',
         soup = bs4.BeautifulSoup(data, 'html.parser')
         src = 'cache'
     else:
-        data = curl.curl(url, post = post, silent = False, cache = False, 
+        c = curl.Curl(url, post = post, silent = False, cache = False, 
             req_headers = headers)
+        data = c.result
         soup = bs4.BeautifulSoup(data, 'html.parser')
         sessid = soup.find('input', {'name':'session_ID'})['value']
         src = 'iELM'
@@ -1888,8 +1903,9 @@ def get_ielm(ppi, id_type = 'UniProtKB_AC', mydomains = 'HMMS',
             'database': id_type, 
             'number': '', 
             'domains': mydomains}
-        data = curl.curl('http://i.elm.eu.org/wait_2/', post = post, cache = False, 
+        c = curl.Curl('http://i.elm.eu.org/wait_2/', post = post, cache = False, 
             req_headers = headers)
+        data = c.result
         if data is not None:
             soup = bs4.BeautifulSoup(data, 'html.parser')
         time.sleep(3)
@@ -2532,8 +2548,9 @@ def get_pazar():
         for x in ''.join(data.values()).split('\n') if len(x) > 0]
 
 def get_htri():
-    data = curl.curl(urls.urls['htri']['url'], 
+    c = curl.Curl(urls.urls['htri']['url'],
         init_url = urls.urls['htri']['init_url'], silent = False)
+    data = c.result
     return [map(x.split(';').__getitem__, (1, 3, 6)) \
         for x in data.split('\n') if len(x) > 0][1:]
 
@@ -2565,6 +2582,7 @@ def get_oreganno(organism = 'Homo sapiens'):
     null = data.readline()
     del null
     for l in data:
+        l = l.decode('utf-8')
         if len(l) > 0:
             l = [x.strip() for x in l.split('\t')]
             if l[1] == organism and \
@@ -2606,7 +2624,7 @@ def get_uniprot_sec(organism = 9606):
     return filter(lambda line:
         len(line) == 2 and (organism is None or line[1] in proteome),
         map(lambda i, line:
-            line.split(), 
+            line.decode('utf-8').split(), 
             filter(lambda i, line:
                 i >= 30,
                 enumerate(data)
@@ -2784,6 +2802,9 @@ def get_lincs_compounds():
         '\tIDs of compounds as keys, and tuples of PubChem, ChEMBL, ChEBI, InChi, \n'\
         '\tInChi Key, SMILES and LINCS as values.\n\n')
     sys.stdout.flush()
+    c = curl.Curl(\
+            urls.urls['lincs-compounds']['url'],
+            silent = False)
     return dict(\
         [(key, pair[1]) for pair in \
             [\
@@ -2808,10 +2829,7 @@ def get_lincs_compounds():
                                     if i%2==0 
                                     else s.replace('\n', '') \
                                 for i, s in enumerate(\
-                                    curl.curl(\
-                                        urls.urls['lincs-compounds']['url'], 
-                                        silent = False)\
-                                    .split('"')\
+                                    c.result.split('"')\
                                 )] \
                         ).split('\n')[1:] \
                             if len(a) > 0]
@@ -2845,6 +2863,7 @@ def get_tfcensus(classes = ['a', 'b', 'other']):
     c = curl.Curl(url, silent = False, large = True)
     f = c.result
     for l in f:
+        l = l.decode('utf-8')
         if len(l) > 0 and l.split('\t')[0] in classes:
             ensg += reensg.findall(l)
             h = l.split('\t')[5].strip()
@@ -3126,7 +3145,8 @@ def get_hsn():
     Returns list of interactions.
     '''
     url = urls.urls['hsn']['url']
-    data = curl.curl(url, silent = False).split('\n')[1:]
+    c = curl.Curl(url, silent = False).split('\n')[1:]
+    data = c.result
     data = [r.split(',') for r in data if len(r) > 0]
     return data
 
@@ -3469,7 +3489,7 @@ def load_signor_ptms(fname = 'signor_22052015.tab'):
     aalet = dict((k.lower().capitalize(), v) for k, v in iteritems(common.aaletters))
     null = data.readline()
     for d in data:
-        d = d.strip().split('\t')
+        d = d.decode('utf-8').strip().split('\t')
         resm = reres.match(d[10])
         if resm is not None:
             aa = aalet[resm.groups()[0].capitalize()]
@@ -3594,7 +3614,8 @@ def signor_interactions():
     Return the file contents.
     '''
     url = urls.urls['signor']['all_url']
-    return curl.curl(url, silent = False, large = True)
+    c = curl.Curl(url, silent = False, large = True)
+    return c.result
 
 def rolland_hi_ii_14():
     '''
@@ -3696,29 +3717,32 @@ def reactome_biopax(organism = 9606, cache = True):
     unzipped = 'cache/reactome_biopax_%s.owl' % organisms[organism]
     if not os.path.exists(unzipped) or not cache:
         url = urls.urls['reactome']['biopax_l3']
-        bpz = curl.curl(url, silent = False, large = True, 
+        c = curl.Curl(url, silent = False, large = True,
             files_needed = ['%s.owl'%organisms[organism]]).values()[0]
         with open(unzipped, 'w') as _unzipped:
             while True:
-                chunk = bpz.read(4096)
+                chunk = c.result.read(4096)
                 if not chunk:
                     break
                 _unzipped.write(chunk)
-        bpz.close()
+        c.result.close()
     _unzipped = open(unzipped, 'r')
     return _unzipped
 
 def pid_biopax():
     url = urls.urls['nci-pid']['biopax_l3']
-    return curl.curl(url, silent = False, large = True)
+    c = curl.Curl(url, silent = False, large = True)
+    return c.result
 
 def panther_biopax():
     url = urls.urls['panther']['biopax_l3']
-    return curl.curl(url, silent = False, large = True).values()
+    c = curl.Curl(url, silent = False, large = True).values()
+    return c.result
 
 def acsn_biopax():
     url = urls.urls['acsn']['biopax_l3']
-    return curl.curl(url, silent = False, large = True)
+    c = curl.Curl(url, silent = False, large = True)
+    return c.result
 
 def reactome_bs():
     sbml = reactome_sbml()
@@ -4614,9 +4638,11 @@ def biogrid_interactions(organism = 9606, htp_limit = 1):
     interactions = []
     refc = []
     url = urls.urls['biogrid']['url']
-    f = curl.curl(url, silent = False, large = True).values()[0]
+    c = curl.Curl(url, silent = False, large = True)
+    f = c.result.values()[0]
     nul = f.readline()
     for l in f:
+        l = l.decode('utf-8')
         l = l.split('\t')
         if len(l) > 17:
             if l[17].startswith('Low') and l[15] == organism and l[16] == organism:
@@ -4923,10 +4949,11 @@ def get_cgc(user = None, passwd = None):
         'In case you don\'t, you can register now.\n'\
         'Please see licensing terms to find out how you are allowed to\n'\
         'use COSMIC data: http://cancer.sanger.ac.uk/cosmic/license\n'
-    data = curl.curl(fname, sftp_host = host, sftp_ask = ask, sftp_user = user,
+    c = curl.Curl(fname, sftp_host = host, sftp_ask = ask, sftp_user = user,
         sftp_passwd = passwd, large = True)
+    data = c.result
     for line in data:
-        yield line
+        yield line.decode('utf-8')
 
 def get_matrixdb(organism = 9606):
     url = urls.urls['matrixdb']['url']
@@ -4938,6 +4965,7 @@ def get_matrixdb(organism = 9606):
         if lnum == 0:
             lnum += 1
             continue
+        l = l.decode('utf-8')
         l = l.replace('\n', '').replace('\r', '')
         l = l.split('\t')
         specA = 0 if l[9] == '-' else int(l[9].split(':')[1].split('(')[0])
@@ -4972,6 +5000,7 @@ def get_innatedb(organism = 9606):
         if lnum == 0:
             lnum += 1
             continue
+        l = l.decode('utf-8')
         l = l.replace('\n', '').replace('\r', '')
         l = l.split('\t')
         specA = 0 if l[9] == '-' else int(l[9].split(':')[1].split('(')[0])
@@ -5036,6 +5065,7 @@ def get_dip(url = None, organism = 9606, core_only = True, direct_only = True,
         if lnum == 0:
             lnum += 1
             continue
+        l = l.decode('utf-8')
         l = l.replace('\n', '').replace('\r', '')
         l = l.split('\t')
         specA = int(l[9].split(':')[1].split('(')[0])
@@ -5078,8 +5108,10 @@ def dip_login(user, passwd):
     req_hdrs = [
         'User-Agent: %s' % useragent
     ]
-    res, hdr = curl.curl(url, cache = False, write_cache = False, 
+    c = curl.Curl(url, cache = False, write_cache = False,
         req_headers = req_hdrs, return_headers = True, debug = True)
+    res = c.result
+    hdr = c.resp_headers
     cookie = hdr['set-cookie'].split(';')[0]
     cookie2 = '%s%u' % (cookie[:-1], int(cookie[-1]) + 1)
     othercookie = 'DIPID=11133%3A'
@@ -5104,9 +5136,11 @@ def dip_login(user, passwd):
     # login = login.replace('\r', '')
     with codecs.open(loginfname, encoding = 'ISO-8859-1', mode = 'w') as f:
         f.write(login)
-    res, hdr = curl.curl(url, cache = False, write_cache = False, follow = True,
+    c = curl.Curl(url, cache = False, write_cache = False, follow = True,
         req_headers = req_hdrs, timeout = 10,
         binary_data = loginfname, return_headers = True, debug = True)
+    res = c.result
+    hdr = c.resp_headers
     return res, hdr
 
 def spike_interactions(high_confidence = True):
@@ -5278,6 +5312,7 @@ def depod_interactions(organism = 9606):
         if lnum == 0:
             lnum += 1
             continue
+        l = l.decode('utf-8')
         l = l.replace('\n', '').replace('\r', '')
         l = l.split('\t')
         specA = int(l[9].split(':')[1].split('(')[0])
@@ -5373,6 +5408,7 @@ def intact_interactions(miscore = 0.6, organism = 9606, complex_expansion = Fals
         if lnum == 0:
             lnum += 1
             continue
+        l = l.decode('utf-8')
         l = l.replace('\n', '').replace('\r', '').strip()
         l = l.split('\t')
         tax1 = '0' if l[9] == '-' \
