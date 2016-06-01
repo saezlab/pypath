@@ -16,12 +16,21 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
+
+from future.utils import iteritems
+from past.builtins import xrange, range, reduce
+
 import os
 import sys
 import codecs
 import re
+
 import urllib
-import urllib2
+
+if not hasattr(urllib, 'urlencode'):
+    _urllib = urllib
+    urllib = _urllib.parse
+
 import hashlib
 import json
 try:
@@ -30,20 +39,18 @@ except:
     import pickle
 
 # from pypath:
-import progress
-import logn
-from common import *
-import data_formats
-try:
-    import mysql
-except:
-    try:
-        import pymysql as myslq
-    except:
-        print 'No `mysql` available.'
-import dataio
+from pypath import progress
+from pypath import logn
+from pypath import common
+from pypath.common import *
+from pypath import maps
+from pypath import mysql
+from pypath import urls
 
-__all__ = ['MappingTable', 'Mapper']
+from pypath import curl
+import pypath.dataio as dataio
+
+__all__ = ['MappingTable', 'Mapper', 'ReferenceList']
 
 ###
 ### functions to read and use mapping tables from UniProt, file, mysql or pickle 
@@ -75,8 +82,8 @@ class MappingTable(object):
         else:
             self.ownlog = log
         if param is not None:
-            self.mid = hashlib.md5(str((one, two, self.param.bi))).hexdigest()
-            md5param = hashlib.md5(json.dumps(self.param.__dict__)).hexdigest()
+            self.mid = common.md5((one, two, self.param.bi))
+            md5param = common.md5(json.dumps(self.param.__dict__))
             self.cachefile = os.path.join(self.cachedir, md5param)
             if self.cache and os.path.isfile(self.cachefile):
                 self.mapping = pickle.load(open(self.cachefile, 'rb'))
@@ -94,8 +101,15 @@ class MappingTable(object):
                 if len(self.mapping['to']) != 0 and (not param.bi or len(self.mapping['from']) != 0):
                     pickle.dump(self.mapping, open(self.cachefile, 'wb'))
     
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
     def cleanDict(self,mapping):
-        for key, value in mapping.iteritems():
+        for key, value in iteritems(mapping):
             mapping[key] = uniqList(value)
         return mapping
     
@@ -166,7 +180,7 @@ class MappingTable(object):
         rev = '' if param.swissprot is None \
             else ' AND reviewed:%s' % param.swissprot
         query = 'organism:%u%s' % (int(param.tax), rev)
-        self.url = data_formats.urls['uniprot_basic']['url']
+        self.url = urls.urls['uniprot_basic']['url']
         self.post = {
             'query': query, 
             'format': 'tab', 
@@ -174,7 +188,8 @@ class MappingTable(object):
                 '' if param.subfield is None else '(%s)'%param.subfield)
         }
         self.url = '%s?%s' % (self.url, urllib.urlencode(self.post))
-        data = dataio.curl(self.url, silent = False)
+        c = curl.Curl(self.url, silent = False)
+        data = c.result
         self.data = data
         data = [[[xx] if param.field == 'protein names' else \
             [xxx for xxx in resep.split(scolend.sub('', xx.strip())) if len(xxx) > 0] \
@@ -229,7 +244,7 @@ class MappingTable(object):
                 param.fieldOne, param.fieldTwo, tax_filter)
         try:
             param.mysql.run_query(query)
-        except _mysql.Error, e:
+        except _mysql.Error as e:
             self.ownlog.msg(2,"MySQL error: %s\nFAILED QUERY: %s" % (e,query), 'ERROR')
             return {"o": {}, "i": {}}
         total = len(param.mysql.result) + 1
@@ -307,6 +322,14 @@ class Mapper(object):
         }
         self.types_name = dict(zip(self.name_types.values(), self.name_types.keys()))
     
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    
     def init_mysql(self):
         self.mysql = mysql.MysqlRunner(self.mysql_conf, log = self.ownlog)
     
@@ -326,14 +349,14 @@ class Mapper(object):
             tbl = self.tables[tblNameRev].mapping['from']
         elif load:
             for form in ['mapListUniprot', 'mapListBasic']:
-                frm = getattr(data_formats, form)
+                frm = getattr(maps, form)
                 if tblName in frm:
-                    self.load_mappings(maps = {tblName: frm[tblName]})
+                    self.load_mappings(maplst = {tblName: frm[tblName]})
                     tbl = self.which_table(nameType, targetNameType, load = False)
                     break
                 if tblNameRev in frm:
                     frm[tblNameRev].bi = True
-                    self.load_mappings(maps = {tblNameRev: frm[tblNameRev]})
+                    self.load_mappings(maplst = {tblNameRev: frm[tblNameRev]})
                     tbl = self.which_table(nameType, targetNameType, load = False)
                     break
                 if tbl is not None:
@@ -488,7 +511,7 @@ class Mapper(object):
         sys.stdout.write(''.join(['\tERROR: ',msg,'\n']))
         self.ownlog.msg(2,msg,'ERROR')
     
-    def load_mappings(self, maps = None):
+    def load_mappings(self, maplst = None):
         '''
         mapList is a list of mappings to load;
         elements of mapList are dicts containing the 
@@ -497,14 +520,14 @@ class Mapper(object):
         "src": "mysql", "par": "mysql_param/file_param")
         by default those are loaded from pickle files
         '''
-        if maps is None: 
+        if maplst is None: 
             try:
-                maps = data_formats.mapList
+                maplst = maps.mapList
             except:
                 self.ownlog.msg(1, 'load_mappings(): No input defined','ERROR')
                 return None
         self.ownlog.msg(1, "Loading mapping tables...")
-        for mapName, param in maps.iteritems():
+        for mapName, param in iteritems(maplst):
             self.ownlog.msg(2, "Loading table %s ..." % str(mapName))
             sys.stdout.write("\t:: Loading '%s' to '%s' mapping table\n" % \
                 (mapName[0], mapName[1]))
@@ -565,7 +588,7 @@ class Mapper(object):
         tbls = [self.tables[('genesymbol', 'uniprot')].mapping['to'], 
             self.tables[('genesymbol-syn', 'swissprot')].mapping['to']]
         for tbl in tbls:
-            for gs, u in tbl.iteritems():
+            for gs, u in iteritems(tbl):
                 if len(gs) >= 5:
                     gs5 = gs[:5]
                     if gs5 not in tbl_gs5:
@@ -589,7 +612,7 @@ class Mapper(object):
         # attempting to load them from Pickle
         i = 0
         for ac_typ in ac_types:
-            md5ac = hashlib.md5(str((ac_typ, 'uniprot', bi))).hexdigest()
+            md5ac = common.md5((ac_typ, 'uniprot', bi))
             cachefile = os.path.join('cache', md5ac)
             if self.cache and os.path.isfile(cachefile):
                 self.tables[(ac_typ, 'uniprot')].mapping = \
@@ -598,9 +621,9 @@ class Mapper(object):
                 self.tables[(ac_typ, 'uniprot')].mid = md5ac
         # loading the remaining from the big UniProt mapping file:
         if len(ac_types) > 0:
-            url = data_formats.urls['uniprot_idmap_ftp']['url']
-            data = dataio.curl(url, silent = False)
-            data = data.split('\n')
+            url = urls.urls['uniprot_idmap_ftp']['url']
+            c = curl.Curl(url, silent = False)
+            data = c.result.split('\n')
             prg = progress.Progress(len(data), "Processing ID conversion list", 99)
             for l in data:
                 prg.step()
@@ -623,7 +646,7 @@ class Mapper(object):
             prg.terminate()
             if self.cache:
                 for ac_typ in ac_types:
-                    md5ac = hashlib.md5(str((ac_typ, bi))).hexdigest()
+                    md5ac = common.md5((ac_typ, bi))
                     cachefile = os.path.join('cache', md5ac)
                     pickle.dump(self.tables[(ac_typ, 'uniprot')].mapping, 
                         open(cachefile, 'wb'))
@@ -642,7 +665,7 @@ class Mapper(object):
         This is a wrapper to load a ... mapping table.
         '''
         umap = self.read_mapping_uniprot(filename, self.ncbi_tax_id, self.ownlog)
-        for key, value in umap.iteritems():
+        for key, value in iteritems(umap):
             self.tables[key] = value
 
     def read_mapping_uniprot_mysql(self, filename, ncbi_tax_id, log, bi = False):

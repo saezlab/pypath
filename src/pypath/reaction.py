@@ -17,10 +17,10 @@
 
 from collections import Counter
 
-import mapping
-import intera
-from common import *
-import dataio
+import pypath.mapping
+import pypath.intera
+from pypath.common import *
+import pypath.dataio
 
 class Reaction(object):
     '''

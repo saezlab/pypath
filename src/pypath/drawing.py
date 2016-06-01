@@ -15,6 +15,9 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
+from future.utils import iteritems
+from past.builtins import xrange, range, reduce
+
 import cairo
 import math
 import igraph
@@ -22,9 +25,9 @@ import os
 import sys
 import time
 
-from common import *
-from ig_drawing import *
-import logn
+from pypath.common import *
+from pypath.ig_drawing import *
+from pypath import logn
 
 __all__ = ['Plot', 'InterSet']
 
@@ -48,7 +51,7 @@ class Plot(object):
         palettes = {}, bbox = None, margin = 10, small = None, 
         dimensions = (1280, 1280), grouping = None, **kwargs):
         # setting parameters:
-        for key, val in locals().iteritems():
+        for key, val in iteritems(locals()):
             setattr(self, key, val)
         self.default_alpha = {
             'vertex_color': 'AA', 
@@ -231,7 +234,7 @@ class Plot(object):
     
     def set_defaults(self, preset):
         if hasattr(self, preset):
-            for k, v in getattr(self, preset).iteritems():
+            for k, v in getattr(self, iteritems(preset)):
                 self.set_param(k, v)
     
     def set_alpha(self, seq, alpha, attr):
@@ -322,7 +325,7 @@ class InterSet(object):
             cols = None, interscols = None, ysizes = None, 
             ycols = None, skip = 3.5, margin = 24, 
             mincircle = 5, cellpadding = 4):
-        for key, val in locals().iteritems():
+        for key, val in iteritems(locals()):
             setattr(self, key, val)
         self.colors = {
             'embl_green': (115, 179, 96, 255),
@@ -429,7 +432,6 @@ class InterSet(object):
         return [[xx[0] for i, xx in enumerate(x[1:])] for x in sizes]
     
     def scale_sizes(self, sizes):
-        print sizes
         scaled = [math.sqrt(x / math.pi) for x in 
             self.scale([i for ii in sizes for i in ii], 
                 self.minarea, 
@@ -489,7 +491,6 @@ class InterSet(object):
     def circle(self, x, y, r, c):
         c = self.set_alpha(c, 0.5)
         self.ctx.set_source_rgba(*c)
-        print 'Drawing circle at (%f, %f) of radius %f, color %s' % (x, y, r, str(c))
         self.ctx.arc(x, y, r, 0, 2 * math.pi)
         self.ctx.fill()
     
@@ -498,8 +499,6 @@ class InterSet(object):
         self.ctx.select_font_face(self.font, cairo.FONT_SLANT_NORMAL, \
             cairo.FONT_WEIGHT_NORMAL)
         self.ctx.set_font_size(pt)
-        print 'Font color set to', c
-        print 'Drawing label at %s'%str((x, y))
         self.ctx.save()
         self.ctx.translate(x, y)
         self.ctx.rotate(math.radians(rot))
@@ -539,9 +538,9 @@ class InterSet(object):
             for yi in range(0, len(self.ycoo)):
                 ulx = self.margin[0] + sum(self.xcoo[:xi])
                 uly = self.margin[2] + sum(self.ycoo[:yi])
-                print 'Drawing rectangle at (%f, %f), size (%f, %f)' % \
-                    (ulx + self.skip, uly + self.skip, self.xcoo[xi] - self.skip, 
-                    self.ycoo[yi] - self.skip)
+                # print 'Drawing rectangle at (%f, %f), size (%f, %f)' % \
+                #    (ulx + self.skip, uly + self.skip, self.xcoo[xi] - self.skip, 
+                #    self.ycoo[yi] - self.skip)
                 self.ctx.rectangle(ulx + self.skip, uly + self.skip, 
                     self.xcoo[xi] - self.skip, self.ycoo[yi] - self.skip)
                 self.ctx.stroke_preserve()
@@ -553,7 +552,6 @@ class InterSet(object):
         return [x * uni for x in props]
 
     def scale(self, lst, lower, upper):
-        print lst
         return [((x - min(set(lst) - set([0]))) / \
             float(max(lst) - min(set(lst) - set([0]))) * (upper - lower) + lower) \
             if x != 0 else 0 for x in lst]

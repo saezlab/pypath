@@ -25,10 +25,10 @@ import time
 import pymysql as MySQLdb
 import pymysql.cursors as cursors
 import hashlib
-import Queue
+from queue import Queue
 import threading
 
-import mysql_connect
+from pypath import mysql_connect
 
 class MysqlRunner(object):
     
@@ -191,7 +191,7 @@ class MysqlRunner(object):
                 if not silent:
                     sys.stdout.write(' Done.\n')
                 self.lock.release()
-            except MySQLdb.Error, e:
+            except MySQLdb.Error as e:
                 emsg = 'MySQL error occured. See `mysql.error` for details.'
                 self.send_error(emsg)
                 out = "MySQL Error [%d]: %s\n\n" % (e.args[0], e.args[1])

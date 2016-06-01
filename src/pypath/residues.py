@@ -16,13 +16,20 @@
 #
 
 import re
-import urllib2
+try:
+    import urllib2
+except:
+    import urllib.request as urllib2
+
 import gzip
 import bs4
 try:
     from cStringIO import StringIO
 except:
-    from StringIO import StringIO
+    try:
+        from StringIO import StringIO
+    except:
+        from io import StringIO
 
 class ResidueMapper(object):
     

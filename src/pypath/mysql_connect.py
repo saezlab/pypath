@@ -17,11 +17,11 @@
 
 import os
 import sys
-import ConfigParser
+from configparser import ConfigParser
 import pymysql as MySQLdb
 import pymysql.cursors as cursors
 
-import common
+from pypath import common
 
 class MysqlConnect(object):
     

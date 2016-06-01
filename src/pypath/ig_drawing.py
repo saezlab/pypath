@@ -43,7 +43,11 @@ network from Cytoscape and convert it to igraph format.
 """
 
 from collections import defaultdict
-from itertools import izip
+try:
+    from itertools import izip
+except ImportError:
+    izip = zip
+
 from math import atan2, cos, pi, sin, tan
 from warnings import warn
 
@@ -53,12 +57,12 @@ from igraph.configuration import Configuration
 from igraph.drawing.baseclasses import AbstractDrawer, AbstractCairoDrawer, \
                                        AbstractXMLRPCDrawer
 from igraph.drawing.colors import color_to_html_format, color_name_to_rgb
-from ig_drawing_edge import ArrowEdgeDrawer
+from pypath.ig_drawing_edge import ArrowEdgeDrawer
 from igraph.drawing.text import TextAlignment, TextDrawer
 from igraph.drawing.metamagic import AttributeCollectorBase
 from igraph.drawing.shapes import PolygonDrawer
 from igraph.drawing.utils import Point
-from ig_drawing_vertex import DefaultVertexDrawer
+from pypath.ig_drawing_vertex import DefaultVertexDrawer
 from igraph.layout import Layout
 from igraph.drawing.graph import AbstractCairoGraphDrawer
 
