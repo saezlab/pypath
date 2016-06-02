@@ -37,7 +37,6 @@ def which(exe):
                     return True
     return False
 
-
 def query_yes_no(question, default="yes"):
     """
     From http://stackoverflow.com/questions/3041986/python-command-line-yes-no-input

@@ -186,6 +186,8 @@ class Curl(object):
         retries = 3, cache_dir = 'cache'):
         
         self.result = None
+        self.download_failed = False
+        self.status = 0
         self.large = large
         self.silent = silent
         self.debug = debug
@@ -240,7 +242,7 @@ class Curl(object):
             sys.stdout.write('\t:: Loading data from cache '\
                 'previously downloaded from %s\n' % self.domain)
             sys.stdout.flush()
-        if process:
+        if process and not self.download_failed:
             self.process_file()
     
     def reload(self):
@@ -372,23 +374,25 @@ class Curl(object):
                         'pypath.curl.Curl().curl_call() :: attempt #%u' % i)
                 self.curl.perform()
                 if self.url.startswith('http'):
-                    self.last_status = self.curl.getinfo(pycurl.HTTP_CODE)
-                    if self.last_status == 200:
+                    self.status = self.curl.getinfo(pycurl.HTTP_CODE)
+                    if self.status == 200:
                         self.terminate_progress()
                         break
                 if self.url.startswith('ftp'):
-                    self.last_status == 500
+                    self.status == 500
                     for h in self.resp_headers:
                         if h.startswith('226'):
-                            self.last_status = 200
+                            self.status = 200
                             self.terminate_progress()
                             break
             except pycurl.error as e:
-                status = 500
+                self.status = 500
                 if self.progress is not None:
                     self.progress.terminate(status = 'failed')
                     self.progress = None
-                self.print_debug_info('\tPycURL error: %u, %s\n' % e)
+                self.print_debug_info('PycURL error: %u, %s' % e.args)
+        if self.status != 200:
+            self.download_failed = True
         self.curl.close()
         self.target.close()
     

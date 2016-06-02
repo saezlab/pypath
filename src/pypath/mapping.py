@@ -24,6 +24,7 @@ import os
 import sys
 import codecs
 import re
+import imp
 
 import urllib
 
@@ -122,7 +123,12 @@ class MappingTable(object):
         if hasattr(dataio, param.input):
             toCall = getattr(dataio, param.input)
             infile = toCall()
-            total = sum([sys.getsizeof(i) for i in infile])
+            if type(infile) is map or type(infile) is filter:
+                infile = list(infile)
+            try:
+                total = sum([sys.getsizeof(i) for i in infile])
+            except:
+                print(param.input)
         else:
             infile = codecs.open(param.input, encoding = 'utf-8', mode = 'r')
             total = os.path.getsize(param.input)
@@ -141,6 +147,7 @@ class MappingTable(object):
             if type(line is list):
                 prg.step(sys.getsizeof(line))
             else:
+                line = line.decode('utf-8')
                 prg.step(len(line))
                 line = line.rstrip().split(param.separator)
             if len(line) > max([param.oneCol, param.twoCol]):
@@ -152,7 +159,7 @@ class MappingTable(object):
                         mapping_i[line[param.twoCol]] = []
                     mapping_i[line[param.twoCol]].append(line[param.oneCol])
             lnum += 1
-        if type(infile) is file:
+        if hasattr(infile, 'close'):
             infile.close()
         self.mapping["to"] = mapping_o
         self.cleanDict(self.mapping["to"])
