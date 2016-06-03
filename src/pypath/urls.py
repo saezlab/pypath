@@ -597,6 +597,11 @@ urls = {
     'death': {
         'label': 'DeathDomain webpage',
         'url': 'http://www.deathdomain.org/proteins/show?family=%s'
+    },
+    'string': {
+        'label': 'STRING',
+        'actions': 'http://string-db.org/download/'\
+            'protein.actions.v10/%u.protein.actions.v10.txt.gz'
     }
 }
 

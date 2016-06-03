@@ -82,7 +82,7 @@ from xlrd.biffh import XLRDError
 
 # from this module
 
-import pypath.mapping
+from pypath import mapping
 from pypath import curl
 from pypath import urls
 from pypath import progress
@@ -5513,3 +5513,29 @@ def deathdomain_interactions():
                     ])
     
     return result
+
+def get_string_effects(ncbi_tax_id = 9606,
+                    stimulation = ['activation'],
+                    inhibition = ['inhibition'],
+                    exclude = ['expression'],
+                    score_threshold = 0):
+    effects = []
+    if type(stimulation) is list: stimulation = set(stimulation)
+    if type(inhibition) is list: inhibition = set(inhibition)
+    if type(exclude) is list: exclude = set(exclude)
+    url = urls.urls['string']['actions'] % ncbi_tax_id
+    c = curl.Curl(url, silent = False, large = True)
+    null = c.result.readline()
+    for l in c.result:
+        l = l.encode('ascii').split('\t')
+        if len(l) and l[4] == '1' \
+            and int(l[5]) >= score_threshold:
+            eff = '+' if l[2] in stimulation \
+                else '-' if l[2] in inhibition \
+                else '*' if l[2] not in exclude \
+                else None
+            if eff is not None:
+                effects.append([
+                    l[0][5:], l[1][5:], eff
+                ])
+    return effects

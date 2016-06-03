@@ -5858,6 +5858,7 @@ class PyPath(object):
         for interactions already supported by literature 
         evidences from other sources.
         '''
+        self.string_effects(graph = graph)
         self.kegg_directions(graph = graph)
         self.laudanna_effects(graph = graph)
         self.laudanna_directions(graph = graph)
@@ -5903,6 +5904,12 @@ class PyPath(object):
         self.process_directions(laud, 'Laudanna_effects', stimulation = 'activation', 
             inhibition = 'inhibition', directed = 'docking', 
             id_type = 'genesymbol', graph = graph)
+    
+    def string_effects(self, graph = None):
+        string = dataio.get_string_effects()
+        self.process_directions(string, 'STRING', stimulation = '+',
+            inhibition = '-', directed = '*',
+            id_type = 'ensp', graph = graph)
     
     def acsn_effects(self, graph = None):
         acsnd = dataio.get_acsn_effects()

@@ -96,6 +96,7 @@ if [[ $PYMAINVER == "3" ]];
     then $LOCALPIP install fabric3;
     else $LOCALPIP install fabric;
 fi
+$LOCALPIP install future
 $LOCALPIP install pandas
 $LOCALPIP install scipy
 $LOCALPIP install suds-jurko
