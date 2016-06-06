@@ -40,15 +40,13 @@ except:
     import pickle
 
 # from pypath:
-from pypath import progress
-from pypath import logn
-from pypath import common
-from pypath.common import *
-from pypath import maps
-from pypath import mysql
-from pypath import urls
-
-from pypath import curl
+import pypath.progress as progress
+import pypath.logn as logn
+import pypath.common as common
+import pypath.maps as maps
+import pypath.mysql as mysql
+import pypath.urls as urls
+import pypath.curl as curl
 import pypath.dataio as dataio
 
 __all__ = ['MappingTable', 'Mapper', 'ReferenceList']
@@ -111,7 +109,7 @@ class MappingTable(object):
     
     def cleanDict(self,mapping):
         for key, value in iteritems(mapping):
-            mapping[key] = uniqList(value)
+            mapping[key] = common.uniqList(value)
         return mapping
     
     def read_mapping_file(self, param):
@@ -416,7 +414,7 @@ class Mapper(object):
             for nt in nameType:
                 mappedNames += self.map_name(name, nt, targetNameType, 
                     strict, silent)
-            return uniqList(mappedNames)
+            return common.uniqList(mappedNames)
         if nameType == targetNameType:
             if targetNameType != 'uniprot':
                 return [ name ]
@@ -442,7 +440,7 @@ class Mapper(object):
                 self.uniprot_mapped.append((orig, mappedNames))
             mappedNames = [u for u in mappedNames if self.reup.match(u)]
         # print '\tmapped to %s' % str(mappedNames)
-        return uniqList(mappedNames)
+        return common.uniqList(mappedNames)
     
     def map_refseq(self, refseq, nameType, targetNameType, strict = False):
         mappedNames = []

@@ -17,7 +17,7 @@
 
 import os
 
-from pypath.common import ROOT
+import pypath.common as common
 
 urls = {
     'uniprot_pdb': {
@@ -611,11 +611,11 @@ files = {
         'nodes': 'signalink3_nodes.tsv'
     },
     'acsn': {
-        'names': os.path.join(ROOT, 'data', 'acsn_names.gmt'),
-        'ppi': os.path.join(ROOT, 'data', 'acsn_ppi.txt')
+        'names': os.path.join(common.ROOT, 'data', 'acsn_names.gmt'),
+        'ppi': os.path.join(common.ROOT, 'data', 'acsn_ppi.txt')
     },
     'phosphopoint': {
-        'data': os.path.join(ROOT, 'data', 'phosphopoint.csv')
+        'data': os.path.join(common.ROOT, 'data', 'phosphopoint.csv')
     },
     'phosphosite': {
         'curated': os.path.join('cache', 'phosphosite_curated.pickle'),

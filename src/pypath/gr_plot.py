@@ -20,8 +20,7 @@ import math
 from igraph import *
 
 # from this module:
-from pypath.colorgen import *
-from pypath.common import uniqList, flatList
+import pypath.colorgen as colorgen
 
 def inter_group(g,groups):
     # group-group adjacency matrix weighted by connecting edges, 
@@ -181,7 +180,7 @@ def group_colors(g,groups,edges=False):
     groups = groups2attribute(g,groups)
     gr = set(g.vs[groups])
     n = len(gr)
-    palette = gethexrgbs(n)
+    palette = colorgen.gethexrgbs(n)
     palette.reverse()
     grCol = {}
     for i in gr:

@@ -15,8 +15,12 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
+from future.utils import iteritems
+from past.builtins import xrange, range, reduce
+
 import os
 import sys
+import imp
 import re
 import gzip
 import tarfile
@@ -24,14 +28,14 @@ import zipfile
 import struct
 from lxml import etree
 
-from pypath import mapping
-from pypath import common
-from pypath import progress
-from pypath import curl
+import pypath.mapping as mapping
+import pypath.common as common
+import pypath.progress as progress
+import pypath.curl as curl
 
 class BioPaxReader(object):
     
-    __init__(self, biopax, source, cleanup_period = 800):
+    def __init__(self, biopax, source, cleanup_period = 800):
         self.biopax = biopax
         self.source = source
         
@@ -126,6 +130,13 @@ class BioPaxReader(object):
             self.bppath: 'pathway'
         }
     
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
     def process(self):
         self.biopax_size()
         self.set_progress()
@@ -150,7 +161,7 @@ class BioPaxReader(object):
         self.used_elements = []
     
     def set_progress(self):
-        prg = progress.Progress(self.bp_filesize,
+        self.prg = progress.Progress(self.bp_filesize,
             'Processing %s from BioPAX XML' % self.source, 1)
     
     def iterate(self):
@@ -159,7 +170,7 @@ class BioPaxReader(object):
             for ev, elem in self.bp:
                 # step the progressbar:
                 new_fpos = self.biopax.tell()
-                prg.step(new_fpos - self.fpos)
+                self.prg.step(new_fpos - self.fpos)
                 self.fpos = new_fpos
                 self.next_elem = elem
                 self.next_id = self.next_elem.get(self.rdfid) \
@@ -178,7 +189,7 @@ class BioPaxReader(object):
     
     def cleanup_hook(self):
         if len(self.used_elements) > self.cleanup_period:
-            for _ in xrange(self.cleanup_period / 2):
+            for _ in xrange(int(self.cleanup_period / 2)):
                 e = self.used_elements.pop()
                 e.clear()
     
@@ -189,8 +200,9 @@ class BioPaxReader(object):
     def protein(self):
         entref = self.next_elem.find(self.bperef)
         if entref is not None:
-            self.proteins[self.next_id] = [
-                'protein': entref.get(self.rdfres).replace('#', ''),
+            protein = self.get_none(entref.get(self.rdfres))
+            self.proteins[self.next_id] = {
+                'protein': protein,
                 'seqfeatures': self._bp_collect_resources(self.bpfeat),
                 'modfeatures': self._bp_collect_resources(self.bpfeat)
             }
@@ -206,7 +218,7 @@ class BioPaxReader(object):
         db = self.next_elem.find(self.bpdb)
         if db is not None:
             id_type = db.text.lower()
-            i = elem.find(self.bpid)
+            i = self.next_elem.find(self.bpid)
             if i is not None:
                 self.ids[self.next_id] = (id_type, i.text)
     
@@ -244,8 +256,8 @@ class BioPaxReader(object):
         if cter is not None and cted is not None:
             typ = self.next_elem.find(self.bpctyp)
             self.catalyses[self.next_id] = {
-                'controller': cter.get(self.rdfres).replace('#', ''),
-                'controlled': cted.get(self.rdfres).replace('#', ''),
+                'controller': self.get_none(cter.get(self.rdfres)),
+                'controlled': self.get_none(cted.get(self.rdfres)),
                 'type': '' if typ is None else typ.text
             }
     
@@ -306,12 +318,17 @@ class BioPaxReader(object):
         try:
             self.pathways[self.next_id] = {
                 'reactions': self._bp_collect_resources(self.bppcom),
-                'pathways': _bp_collect_resources(self.bppcom)
+                'pathways': self._bp_collect_resources(self.bppcom)
             }
         except TypeError:
             sys.stdout.write('Wrong type at element:\n')
             sys.stdout.write(etree.tostring(self.next_elem))
             sys.stdout.flush()
+    
+    def get_none(self, something):
+        if something is not None:
+            something.replace('#', '')
+        return something
     
     def _bp_collect_resources(self, tag, restype = None):
         return \
@@ -323,14 +340,14 @@ class BioPaxReader(object):
                     self.rdfrs in e.attrib and (\
                         restype is None or \
                         e.get(self.rdfres).replace('#', '').startswith(restype)
-                    )
+                    ),
                 self.next_elem.iterfind(tag)
             )
         )
 
 class RePath(object):
     
-    __init__(self, mapper = None, ncbi_tax_id = 9606):
+    def __init__(self, mapper = None, ncbi_tax_id = 9606):
         self.ncbi_tax_id = ncbi_tax_id
         self.inputs = {}
         self.sources = set([])
@@ -344,7 +361,7 @@ class RePath(object):
         self.inputs[source] = infile
     
     def read_biopax(self, source):
-        self.
+        pass
 
 class Reaction(object):
     

@@ -15,7 +15,7 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
-from pypath import dataio
+import pypath.dataio as dataio
 
 class ReferenceList(object):
     

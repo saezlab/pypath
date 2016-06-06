@@ -89,7 +89,7 @@ except:
 
 from contextlib import closing
 
-from pypath import progress
+import pypath.progress as progress
 
 if 'unicode' not in globals():
     unicode = str

@@ -16,6 +16,7 @@
 #
 
 import sys
+
 __all__ = ['Progress']
 
 class Progress(object):

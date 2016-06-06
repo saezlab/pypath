@@ -32,8 +32,7 @@ import matplotlib.gridspec as gridspec
 from matplotlib import ticker
 from scipy import stats
 
-from progress import Progress
-from common import uniqList, ROOT
+import pypath.common as common
 
 # color converting functions
 
@@ -145,7 +144,7 @@ class Plot(object):
     
     def embl_palette(self, inFile = 'embl_colors'):
         cols = []
-        inFile = os.path.join(ROOT, 'data', inFile)
+        inFile = os.path.join(common.ROOT, 'data', inFile)
         with open(inFile, 'r') as f:
             series = []
             for i, l in enumerate(f):

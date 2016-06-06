@@ -82,15 +82,14 @@ from xlrd.biffh import XLRDError
 
 # from this module
 
-from pypath import mapping
-from pypath import curl
-from pypath import urls
-from pypath import progress
-from pypath import common
-from pypath import intera
-from pypath import reaction
-from pypath import residues
-from pypath import seq as se
+import pypath.curl as curl
+import pypath.urls as urls
+import pypath.progress as progress
+import pypath.common as common
+import pypath.intera as intera
+#from pypath import reaction
+import pypath.residues as residues
+import pypath.seq as se
 
 if 'unicode' not in globals():
     unicode = str
@@ -2614,25 +2613,6 @@ def get_cpdb(exclude = None):
                 result.append([participants[0], participants[1], l[0], l[1]])
     return result
 
-def get_uniprot_sec(organism = 9606):
-    if organism is not None:
-        proteome = all_uniprots(organism = organism)
-        proteome = set(proteome)
-    sec_pri = []
-    url = urls.urls['uniprot_sec']['url']
-    c = curl.Curl(url, silent = False, large = True)
-    data = c.result
-    return filter(lambda line:
-        len(line) == 2 and (organism is None or line[1] in proteome),
-        map(lambda i:
-            i[1].decode('utf-8').split(), 
-            filter(lambda i:
-                i[0] >= 30,
-                enumerate(data)
-            )
-        )
-    )
-
 def get_go(organism = 9606, swissprot = 'yes'):
     rev = '' if swissprot is None \
             else ' AND reviewed:%s' % swissprot
@@ -3113,6 +3093,25 @@ def load_lmpid(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
     prg.terminate()
     return result
 
+def get_uniprot_sec(organism = 9606):
+    if organism is not None:
+        proteome = dataio.all_uniprots(organism = organism)
+        proteome = set(proteome)
+    sec_pri = []
+    url = urls.urls['uniprot_sec']['url']
+    c = curl.Curl(url, silent = False, large = True)
+    data = c.result
+    return filter(lambda line:
+        len(line) == 2 and (organism is None or line[1] in proteome),
+        map(lambda i:
+            i[1].decode('utf-8').split(), 
+            filter(lambda i:
+                i[0] >= 30,
+                enumerate(data)
+            )
+        )
+    )
+
 def lmpid_interactions(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
     '''
     Converts list of domain-motif interactions supplied by
@@ -3222,6 +3221,7 @@ def li2012_dmi(mapper = None):
     result = {}
     nondigit = re.compile(r'[^\d]+')
     se = swissprot_seq(isoforms = True)
+    import pypath.mapping as mapping
     if type(mapper) is not mapping.Mapper: mapper = mapping.Mapper(9606)
     data = get_li2012()
     for l in data:
@@ -3527,6 +3527,7 @@ def get_kegg(mapper = None):
     Returns list of interactions.
     '''
     rehsa = re.compile(r'.*(hsa[0-9]+).*')
+    import pypath.mapping as mapping
     mapper = mapper if mapper is not None else mapping.Mapper()
     hsa_list = []
     interactions = []
