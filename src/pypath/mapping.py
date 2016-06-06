@@ -47,7 +47,7 @@ import pypath.maps as maps
 import pypath.mysql as mysql
 import pypath.urls as urls
 import pypath.curl as curl
-import pypath.dataio as dataio
+import pypath.mapping_input as mapping_input
 
 __all__ = ['MappingTable', 'Mapper', 'ReferenceList']
 
@@ -116,10 +116,10 @@ class MappingTable(object):
         if param.__class__.__name__ != "FileMapping":
             self.ownlog.msg(2, "Invalid parameter for read_mapping_file()", 'ERROR')
             return {}
-        if not os.path.exists(param.input) and not hasattr(dataio, param.input):
+        if not os.path.exists(param.input) and not hasattr(mapping_input, param.input):
             return {}
-        if hasattr(dataio, param.input):
-            toCall = getattr(dataio, param.input)
+        if hasattr(mapping_input, param.input):
+            toCall = getattr(mapping_input, param.input)
             infile = toCall()
             if type(infile) is map or type(infile) is filter:
                 infile = list(infile)
@@ -538,7 +538,7 @@ class Mapper(object):
                 (mapName[0], mapName[1]))
             if param.__class__.__name__ == 'FileMapping' and \
                 not os.path.isfile(param.input) and \
-                not hasattr(dataio, param.input):
+                not hasattr(mapping_input, param.input):
                 self.ownlog.msg(2,"Error: no such file: %s" % \
                     param.input, "ERROR")
                 continue

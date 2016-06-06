@@ -68,6 +68,7 @@ import pypath.chembl as chembl
 import pypath.mysql as mysql
 
 import pypath.dataio as dataio
+import pypath.uniprot_input as uniprot_input
 import pypath.curl as curl
 import pypath.intera as intera
 import pypath.go as go
@@ -4097,7 +4098,7 @@ class PyPath(object):
     
     def load_domino_dmi(self, organism = None):
         organism = organism if organism is not None else self.ncbi_tax_id
-        #all_unip = dataio.all_uniprots(organism)
+        #all_unip = dataio.uniprot_input.all_uniprots(organism)
         domi = dataio.get_domino_ptms()
         if domi is None:
             self.ownlog.msg(2,
