@@ -35,7 +35,7 @@ class Progress(object):
         self.start_time = time.time()
         self.min_update_interval = 0.0 \
             if not self.ipython or self.ipython == 'terminal' \
-            else 5.0
+            else 1.0
         sys.stdout.write("\r"+" "*150)
         if self.percent:
             sys.stdout.write("\r\t:: %s: %s 0.00%%" % \
@@ -55,7 +55,7 @@ class Progress(object):
             if self.percent:
                 sys.stdout.write(
                     "\r\t:: %s: %s %.2f%% %s" % (
-                        self.name, 
+                        self.name,
                         '' if self.status is None else'%s,'%self.status,
                         float(self.done)/float(self.total)*100.0,
                         '' if msg is None else '[%s]'%msg))
@@ -74,6 +74,8 @@ class Progress(object):
         self.done = done
     
     def set_status(self, status):
+        #if self.ipython == 'notebook':
+        #    status = '%s; progress indicator disabled in IPython notebook.' % status
         self.step(step = 0, status = status, force = True)
     
     def terminate(self, status = 'finished'):
@@ -100,12 +102,8 @@ class Progress(object):
         self.last_updated = time.time()
     
     def in_ipython(self):
-        if 'get_ipython' in globals():
-            self.ipython = True
-            ip = get_ipython()
-            if ip.__class__.__name__ == 'ZMQInteractiveShell':
-                self.ipython = 'notebook'
-            elif ip.__class__.__name__ == 'TerminalInteractiveShell':
-                self.ipython = 'terminal'
-        else:
-            self.ipython = False
+        self.ipython = False
+        if 'ipykernel' in sys.modules:
+            self.ipython = 'notebook'
+        elif 'Ipython' in sys.modules:
+            self.ipython = 'terminal'
