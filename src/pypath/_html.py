@@ -860,6 +860,16 @@ def default_template(content, page_title, title = ''):
         .prettify().encode('utf-8')
 
 def main_page():
+    notebooks = []
+    notebook_dir = ['pypath-docs', 'notebooks']
+    if os.path.exists(os.path.join(notebook_dir)):
+        notebooks = list(
+            map(
+                lambda nb:
+                    '/'.join(notebook_dir + [nb])
+                os.listdir(os.path.join(notebook_dir))
+            )
+        )
     with open(os.path.join(common.ROOT, 'data', 'main.html'), 'r') as f:
         doc = f.read()
         

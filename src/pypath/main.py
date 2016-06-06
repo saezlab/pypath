@@ -76,6 +76,7 @@ import pypath.gsea as gsea
 import pypath.drawing as bdrawing
 import pypath.proteomicsdb as proteomicsdb
 import pypath.reflists as reflists
+import pypath.input_formats as input_formats
 
 import pypath.ig_drawing as ig_drawing
 import pypath.common as common
@@ -1262,12 +1263,12 @@ class PyPath(object):
             return [lst[0],lst[1]]
         if (type(lst[0]) is list and type(lst[1]) in common.simpleTypes):
             if len(lst[1]) > 0:
-                return addToList(lst[0],lst[1])
+                return common.addToList(lst[0],lst[1])
             else:
                 return lst[0]
         if (type(lst[1]) is list and type(lst[0]) in common.simpleTypes):
             if len(lst[0]) > 0:
-                return addToList(lst[1],lst[0])
+                return common.addToList(lst[1],lst[0])
             else:
                 return lst[1]
         if lst[0].__class__.__name__ == 'Direction' and \
