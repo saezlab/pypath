@@ -110,7 +110,7 @@ class ReadSettings:
             nameTypeA = "uniprot", nameTypeB = "uniprot", typeA = "protein", 
             typeB = "protein", isDirected = False, sign = False, inFile = None, 
             references = False, extraEdgeAttrs = {}, extraNodeAttrsA = {}, 
-            extraNodeAttrsB = {}, header = False, taxonA = False, taxonB = False, 
+            extraNodeAttrsB = {}, header = False, taxonA = 9606, taxonB = 9606, 
             ncbiTaxId = False, interactionType = 'PPI', 
             positiveFilters = [], negativeFilters = [], inputArgs = {}, 
             must_have_references = True, huge = False):

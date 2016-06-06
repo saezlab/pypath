@@ -16,6 +16,7 @@
 #
 
 import pypath.uniprot_input as uniprot_input
+import pypath.dataio as dataio
 
 class ReferenceList(object):
     

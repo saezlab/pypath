@@ -76,7 +76,7 @@ class MappingTable(object):
         self.cachedir = cachedir
         self.mapping = {"to": {}, "from": {}}
         if log.__class__.__name__ != 'logw':
-            self.session = gen_session_id()
+            self.session = common.gen_session_id()
             self.ownlog = logn.logw(self.session, 'INFO')
         else:
             self.ownlog = log
@@ -305,7 +305,7 @@ class Mapper(object):
         self.tables = {}
         self.uniprot_mapped = []
         if log.__class__.__name__ != 'logw':
-            self.session = gen_session_id()
+            self.session = common.gen_session_id()
             self.ownlog = logn.logw(self.session,'INFO')
         else:
             self.ownlog = log

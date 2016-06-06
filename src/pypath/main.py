@@ -854,7 +854,7 @@ class PyPath(object):
         if not reread and not redownload:
             infile, edgeListMapped = self.lookup_cache(_name, 
                 cache_files, int_cache, edges_cache)
-        if len(edgeListMapped) == 0:
+        if not len(edgeListMapped):
             if infile is None:
                 if settings.huge:
                     sys.stdout.write('\n\tProcessing %s requires huge memory.\n'\
@@ -1004,13 +1004,15 @@ class PyPath(object):
                         taxA = settings.ncbiTaxId
                         taxB = settings.ncbiTaxId
                     # to enable more sophisticated inputs:
-                    if type(settings.ncbiTaxId) is dict:
+                    elif type(settings.ncbiTaxId) is dict:
                         taxx = self.get_taxon(settings.ncbiTaxId, line)
                         if type(taxx) is tuple:
                             taxA = taxx[0]
                             taxB = taxx[1]
                         else:
                             taxA = taxB = taxx
+                    else:
+                        taxA = taxB = self.ncbi_tax_id
                     if taxA is None or taxB is None:
                         tFiltered += 1
                         continue
@@ -1019,13 +1021,13 @@ class PyPath(object):
                     if type(sign) is tuple:
                         stim, inh = self.process_sign(line[sign[0]], sign)
                     newEdge = {
-                        "nameA": line[settings.nameColA], 
-                        "nameB": line[settings.nameColB], 
-                        "nameTypeA": settings.nameTypeA, 
-                        "nameTypeB": settings.nameTypeB, 
-                        "typeA": settings.typeA, 
-                        "typeB": settings.typeB, 
-                        "source": settings.name, 
+                        "nameA": line[settings.nameColA].strip(),
+                        "nameB": line[settings.nameColB].strip(),
+                        "nameTypeA": settings.nameTypeA,
+                        "nameTypeB": settings.nameTypeB,
+                        "typeA": settings.typeA,
+                        "typeB": settings.typeB,
+                        "source": settings.name,
                         "isDirected": thisEdgeDir,
                         "references": refs,
                         "stim": stim,
