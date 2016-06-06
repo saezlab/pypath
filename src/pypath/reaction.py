@@ -4,7 +4,7 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2015 - EMBL-EBI
+#  Copyright (c) 2014-2016 - EMBL-EBI
 #
 #  File author(s): Dénes Türei (denes@ebi.ac.uk)
 #
@@ -15,123 +15,343 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
-from collections import Counter
+import os
+import sys
+import re
+import gzip
+import tarfile
+import zipfile
+import struct
+from lxml import etree
 
-import pypath.mapping
-import pypath.intera
-from pypath.common import *
-import pypath.dataio
+from pypath import mapping
+from pypath import common
+from pypath import progress
+from pypath import curl
+
+class BioPaxReader(object):
+    
+    __init__(self, biopax, source, cleanup_period = 800):
+        self.biopax = biopax
+        self.source = source
+        
+        self.cleanup_period = cleanup_period
+    
+        # string constants
+        self.bppref = '{http://www.biopax.org/release/biopax-level3.owl#}'
+        self.rdfpref = '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+        self.rdfid = '%sID' % self.rdfpref
+        self.rdfab = '%sabout' % self.rdfpref
+        self.rdfres = '%sresource' % self.rdfpref
+        self.bpprot = '%sProtein' % self.bppref
+        self.bpcplx = '%sComplex' % self.bppref
+        self.bpprre = '%sProteinReference' % self.bppref
+        self.bpreac = '%sBiochemicalReaction' % self.bppref
+        self.bpcata = '%sCatalysis' % self.bppref
+        self.bpctrl = '%sControl' % self.bppref
+        self.bpcoma = '%sComplexAssembly' % self.bppref
+        self.bppstp = '%sPathwayStep' % self.bppref
+        self.bpuxrf = '%sUnificationXref' % self.bppref
+        self.bpstoi = '%sStoichiometry' % self.bppref
+        self.bppubr = '%sPublicationXref' % self.bppref
+        self.bppath = '%sPathway' % self.bppref
+        self.bpfrfe = '%sFragmentFeature' % self.bppref
+        self.bpseqi = '%sSequenceInterval' % self.bppref
+        self.bpseqs = '%sSequenceSite' % self.bppref
+        self.bpmodf = '%sModificationFeature' % self.bppref
+        self.bpmodv = '%sSequenceModificationVocabulary' % self.bppref
+        self.bpmphe = '%smemberPhysicalEntity' % self.bppref
+        self.bperef = '%sentityReference' % self.bppref
+        self.bpxref = '%sxref' % self.bppref
+        self.bprelr = '%sRelationshipXref' % self.bppref
+        self.bpcsto = '%scomponentStoichiometry' % self.bppref
+        self.bpstoc = '%sstoichiometricCoefficient' % self.bppref
+        self.bpphye = '%sphysicalEntity' % self.bppref
+        self.bpcted = '%scontrolled' % self.bppref
+        self.bpcter = '%scontroller' % self.bppref
+        self.bpctyp = '%scontrolType' % self.bppref
+        self.bpleft = '%sleft' % self.bppref
+        self.bprgth = '%sright' % self.bppref
+        self.bpsprc = '%sstepProcess' % self.bppref
+        self.bpfeat = '%sfeature' % self.bppref
+        self.bpfelo = '%sfeatureLocation' % self.bppref
+        self.bpibeg = '%ssequenceIntervalBegin' % self.bppref
+        self.bpiend = '%ssequenceIntervalEnd' % self.bppref
+        self.bpseqp = '%ssequencePosition' % self.bppref
+        self.bpmoty = '%smodificationType' % self.bppref
+        self.bppcom = '%spathwayComponent' % self.bppref
+        self.bpterm = '%sterm' % self.bppref
+        self.bpdb = '%sdb' % self.bppref
+        self.bpid = '%sid' % self.bppref
+        self.upStr = 'UniProt'
+        
+        self.proteins = {}
+        self.pfamilies = {}
+        self.complexes = {}
+        self.cvariations = {}
+        self.prefs = {}
+        self.ids = {}
+        self.reactions = {}
+        self.cassemblies = {}
+        self.stoichiometries = {}
+        self.catalyses = {}
+        self.controls = {}
+        self.pwsteps = {}
+        self.pubrefs = {}
+        self.fragfeas = {}
+        self.seqints = {}
+        self.seqsites = {}
+        self.modfeas = {}
+        self.seqmodvocs = {}
+        self.pathways = {}
+        
+        self.methods = {
+            self.bpprot: 'protein',
+            self.bpcplx: 'cplex',
+            self.bpprre: 'pref',
+            self.bpuxrf: 'uxref',
+            self.bprelr: 'uxref',
+            self.bpstoi: 'stoichiometry',
+            self.bpreac: 'reaction',
+            self.bpcoma: 'cassembly',
+            self.bpcata: 'catalysis',
+            self.bpctrl: 'control',
+            self.bppstp: 'pwstep',
+            self.bppubr: 'pubref',
+            self.bpfrfe: 'fragfea',
+            self.bpseqi: 'seqint',
+            self.bpseqs: 'seqsite',
+            self.bpmodf: 'modfea',
+            self.bpmodv: 'seqmodvoc',
+            self.bppath: 'pathway'
+        }
+    
+    def process(self):
+        self.biopax_size()
+        self.set_progress()
+        self.init_etree()
+        self.iterate()
+        self.close_biopax()
+    
+    def biopax_size(self):
+        self.bp_filesize = 0
+        if type(self.biopax) is tarfile.ExFileObject:
+            self.bp_filesize = biopax.size
+        elif type(self.biopax) is gzip.GzipFile:
+            f = open(self.biopax.name, 'rb')
+            f.seek(-4, 2)
+            self.bp_filesize = struct.unpack('<I', f.read())[0]
+            f.close()
+        elif hasattr(self.biopax, 'name') and os.path.exists(self.biopax.name):
+            self.bp_filesize = os.path.getsize(self.biopax.name)
+    
+    def init_etree(self):
+        self.bp = etree.iterparse(self.biopax, events = ('end',))
+        self.used_elements = []
+    
+    def set_progress(self):
+        prg = progress.Progress(self.bp_filesize,
+            'Processing %s from BioPAX XML' % self.source, 1)
+    
+    def iterate(self):
+        self.fpos = self.biopax.tell()
+        try:
+            for ev, elem in self.bp:
+                # step the progressbar:
+                new_fpos = self.biopax.tell()
+                prg.step(new_fpos - self.fpos)
+                self.fpos = new_fpos
+                self.next_elem = elem
+                self.next_id = self.next_elem.get(self.rdfid) \
+                    if self.rdfid in elem.attrib \
+                    else self.next_elem.get(self.rdfab)
+                if self.next_elem.tag in self.methods:
+                    method = getattr(self, self.methods[self.next_elem.tag])
+                    method()
+                self.used_elements.append(self.next_elem)
+                self.cleanup_hook()
+        except etree.XMLSyntaxError as e:
+            self.prg.terminate(status = 'failed')
+            sys.stdout.write('\n\t:: Syntax error in BioPAX:\n\t\t%s\n' % str(e))
+            sys.stdout.flush()
+        self.prg.terminate()
+    
+    def cleanup_hook(self):
+        if len(self.used_elements) > self.cleanup_period:
+            for _ in xrange(self.cleanup_period / 2):
+                e = self.used_elements.pop()
+                e.clear()
+    
+    def close_biopax(self):
+        del self.bp
+        self.biopax.close()
+    
+    def protein(self):
+        entref = self.next_elem.find(self.bperef)
+        if entref is not None:
+            self.proteins[self.next_id] = [
+                'protein': entref.get(self.rdfres).replace('#', ''),
+                'seqfeatures': self._bp_collect_resources(self.bpfeat),
+                'modfeatures': self._bp_collect_resources(self.bpfeat)
+            }
+        else:
+            self.protein_families[self.next_id] = \
+                self._bp_collect_resources(self.bpmphe)
+    
+    def pref(self):
+        self.prefs[self.next_id] = \
+            self._bp_collect_resources(self.bpxref)
+    
+    def uxref(self):
+        db = self.next_elem.find(self.bpdb)
+        if db is not None:
+            id_type = db.text.lower()
+            i = elem.find(self.bpid)
+            if i is not None:
+                self.ids[self.next_id] = (id_type, i.text)
+    
+    def cplex(self):
+        if self.next_elem.find(self.bpcsto) is not None:
+            self.complexes[self.next_id] = \
+                self._bp_collect_resources(self.bpcsto)
+        else:
+            self.cvariations[self.next_id] = \
+                self._bp_collect_resources(self.bpmphe)
+    
+    def stoichiometry(self):
+        self.stoichiometries[self.next_id] = (
+            self.next_elem.find(self.bpphye).get(self.rdfres).replace('#', ''),
+            int(float(self.next_elem.find(self.bpstoc).text))
+        )
+    
+    def reaction(self):
+        self.reactions[self.next_id] = {
+            'refs': self._bp_collect_resources(self.bpxref),
+            'left': self._bp_collect_resources(self.bpleft),
+            'right': self._bp_collect_resources(self.bprgth)
+        }
+    
+    def cassembly(self):
+        self.cassemblies[self.next_id] = {
+            'refs': self._bp_collect_resources(self.bpxref),
+            'left': self._bp_collect_resources(self.bpleft),
+            'right': self._bp_collect_resources(self.bprgth)
+        }
+    
+    def catalysis(self):
+        cter = self.next_elem.find(self.bpcter)
+        cted = self.next_elem.find(self.bpcted)
+        if cter is not None and cted is not None:
+            typ = self.next_elem.find(self.bpctyp)
+            self.catalyses[self.next_id] = {
+                'controller': cter.get(self.rdfres).replace('#', ''),
+                'controlled': cted.get(self.rdfres).replace('#', ''),
+                'type': '' if typ is None else typ.text
+            }
+    
+    def control(self):
+        cter = self.next_elem.find(self.bpcter)
+        cted = self.next_elem.find(self.bpcted)
+        if cter is not None and cted is not None:
+            typ = self.next_elem.find(self.bpctyp)
+            self.controls[self.next_id] = {
+                'refs': _bp_collect_resources(elem, bpxref),
+                'controller': cter.get(rdfres).replace('#', ''),
+                'controlled': cted.get(rdfres).replace('#', ''),
+                'type': '' if typ is None else typ.text
+            }
+    
+    def pwstep(self):
+        self.pwsteps[_id] = self._bp_collect_resources(self.bppstp)
+    
+    def pubref(self):
+        pmid = self.next_elem.find(self.bpid)
+        if pmid is not None:
+            self.pubrefs[self.next_id] = pmid.text
+    
+    def fragfea(self):
+        self.fragfeas[self.next_id] = \
+            self.next_elem.find(self.bpfelo).get(self.rdfres).replace('#', '')
+    
+    def seqint(self):
+        beg = self.next_elem.find(self.bpibeg)
+        end = self.next_elem.find(self.bpiend)
+        self.seqints[self.next_id] = (
+            beg.get(self.rdfres).replace('#', '') if beg is not None else None,
+            end.get(self.rdfres).replace('#', '') if end is not None else None
+        )
+    
+    def seqsite(self):
+        eqp = self.next_elem.find(self.bpseqp)
+        if seqp is not None:
+            self.seqsites[self.next_id] = int(seqp.text)
+    
+    def modfea(self):
+        felo = self.next_elem.find(self.bpfelo)
+        moty = self.next_elem.find(self.bpmoty)
+        if felo is not None and moty is not None:
+            self.modfeas[self.next_id] = (
+                self.next_elem.find(self.bpfelo).\
+                    get(self.rdfres).replace('#', ''),
+                self.next_elem.find(self.bpmoty).\
+                    get(self.rdfres).replace('#', '')
+            )
+    
+    def seqmodvoc(self):
+        term = self.next_elem.find(self.bpterm)
+        if term is not None:
+            self.seqmodvocs[self.next_id] = term.text
+    
+    def pathway(self):
+        try:
+            self.pathways[self.next_id] = {
+                'reactions': self._bp_collect_resources(self.bppcom),
+                'pathways': _bp_collect_resources(self.bppcom)
+            }
+        except TypeError:
+            sys.stdout.write('Wrong type at element:\n')
+            sys.stdout.write(etree.tostring(self.next_elem))
+            sys.stdout.flush()
+    
+    def _bp_collect_resources(self, tag, restype = None):
+        return \
+        map(
+            lambda e:
+                e.get(self.rdfres).replace('#', ''),
+            filter(
+                lambda e:
+                    self.rdfrs in e.attrib and (\
+                        restype is None or \
+                        e.get(self.rdfres).replace('#', '').startswith(restype)
+                    )
+                self.next_elem.iterfind(tag)
+            )
+        )
+
+class RePath(object):
+    
+    __init__(self, mapper = None, ncbi_tax_id = 9606):
+        self.ncbi_tax_id = ncbi_tax_id
+        self.inputs = {}
+        self.sources = set([])
+        self.mapper = mapping.Mapper(ncbi_tax_id) if mapper is None else mapper
+        self.species = {}
+        self.reactions = {}
+        self.references = {}
+    
+    def add_source(self, source, infile):
+        self.sources.add(source)
+        self.inputs[source] = infile
+    
+    def read_biopax(self, source):
+        self.
 
 class Reaction(object):
-    '''
-    Standard representation of a reaction from reaction networks,
-    e.g. ACSN, NCI-PID, PANTHER or Reactome.
-    '''
     
-    def __init__(self, source, reactants = [], products = [],
-        references = [],
-        id_type = 'uniprot', 
-        names_reactants = None,
-        names_products = None,
-        ptms_reactants = None, 
-        ncbi_tax_id = 9606,
-        ptms_products = None, 
-        mapper = None, seq = None):
-        '''
-        source : str
-        Source database, e.g. `Reactome`.
-        
-        reactants : list
-        List of reactants. List of string IDs or list of lists, if
-        reactants are complexes.
-        
-        products : list
-        List of products. List of string IDs or list of lists, if
-        products are complexes.
-        
-        id_type : str
-        Type of reactant and product IDs. Default is UniProt ID.
-        
-        mapper : pypath.mapping.Mapper
-        If no Mapper instance given, a new one will be initialized.
-        '''
-        self.mapper = mapper if mapper is not None else mapping.Mapper()
-        self.source = source
-        self.references = references
-        self.ncbi_tax_id = ncbi_tax_id
-        self.reactants = {}
-        self.products = {}
-        reactants = (ids if type(ids) is list else [ids] for ids in reactants)
-        products = (ids if type(ids) is list else [ids] for ids in products)
-        names_reactants = names_reactants if type(names_reactants) is list \
-            else (self.species_name(ids) for ids in self.reactants)
-        names_reactants = dict(zip((species_id(ids) for ids in reactants), names_reactants))
-        names_products = names_products if type(names_products) is list \
-            else (self.species_name(ids) for ids in self.products)
-        names_products = dict(zip((species_id(ids) for ids in products), names_products))
-        self.add_species('reactants', reactants, names_reactants, source)
-        self.add_species('products', products, names_products, source)
-        if source == 'Reactome':
-            for i, name in names_reactants.iteritems():
-                ptms = self.reactome_ptms(i, name)
-    
-    def _add_species(role, ids, name, source):
-        '''
-        Adds a complex to dict of reactants.
-        Single proteins considered a one member "complex".
-        '''
-        ids = ids if type(ids) is list else [ids]
-        ids = self.species_id(ids)
-        self.getattr(role)[ids] = Complex(ids, name, name, source)
-    
-    def add_species(role, species, names, source):
-        for sp, name in zip(species, names):
-            sp = sp if type(sp) is list else [sp]
-            self._add_species(role, sp, name)
-    
-    def species_name(ids):
-        return '-'.join([i for i in sorted(ids)])
-    
-    def species_id(ids):
-        return tuple(sorted(ids))
-    
-    def sequences(self, isoforms = True):
-        self.seq = dataio.swissprot_seq(self.ncbi_tax_id, isoforms)
-    
-    def reactome_ptms(i, name, role):
-        renum = re.compile(r'[0-9]+')
-        if self.seq is None:
-            self.sequences(isoforms = True)
-        name = name.split()[0].split(':')
-        for protein in name:
-            ptms = []
-            ptmstr, gs = protein.split('-')
-            uniprots = self.mapper.map_name(gs, 'genesymbol', 'uniprot')
-            for u in uniprots:
-                if u in self.getattr(role)[i] and u in self.seq:
-                    s = self.seq[u]
-                    for ptm in ptmstr.split(','):
-                        num = renum.findall()
-                        pass
+    def __init__(self):
+        pass
 
 class Species(object):
-    '''
-    Represents one species, i.e. reactant or product
-    in a reaction.
-    '''
     
-    def __init__(self, identifier, ptms = None):
-        '''
-        identifier : str
-        UniProt AC of the protein.
-        
-        ptms : list
-        List 3 element tuples, containing
-        residue name, number and the PTM type (e.g. phosphorylation).
-        '''
-        self.id = identifier
-        self.ptms = []
-        if ptms is not None:
-            for name, number, typ in ptms:
-                res = intera.Residue(number, name, identifier)
-                ptm = intera.Ptm(identifier, residue = res, typ = typ)
+    def __init__(self):
+        pass

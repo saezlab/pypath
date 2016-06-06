@@ -18,7 +18,7 @@
 import codecs
 
 __all__ = ['MysqlMapping','FileMapping',
-           'PickleMapping','ReadSettings','ReadList']
+           'PickleMapping','ReadSettings','ReadList', 'Reference']
 
 class MysqlMapping(object):
         
@@ -184,3 +184,24 @@ ac_mapping = {
     'ensgt': 'ENSEMBLGENOME_TRS_ID',
     'hgnc': 'HGNC_ID'
 }
+
+class Reference(object):
+    
+    def __init__(self, pmid):
+        self.pmid = str(pmid.strip())
+        
+    def __eq__(self, other):
+        return other.__class__.__name__ == self.__class__.__name__ \
+            and self.pmid == other.pmid
+    
+    def __hash__(self):
+        return hash(self.pmid)
+    
+    def open(self):
+        dataio.open_pubmed(self.pmid)
+    
+    def __str__(self):
+        return self.pmid
+    
+    def info(self):
+        return dataio.get_pubmeds([self.pmid])

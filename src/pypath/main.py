@@ -90,26 +90,6 @@ if 'unicode' not in globals():
 __all__ = ['PyPath', 'Direction', 'Reference', '__version__', 'a',
     'AttrHelper', 'ReferenceList']
 
-class Reference(object):
-    
-    def __init__(self, pmid):
-        self.pmid = str(pmid.strip())
-        
-    def __eq__(self, other):
-        return type(other) == Reference and self.pmid == other.pmid
-    
-    def __hash__(self):
-        return hash(self.pmid)
-    
-    def open(self):
-        dataio.open_pubmed(self.pmid)
-    
-    def __str__(self):
-        return self.pmid
-    
-    def info(self):
-        return dataio.get_pubmeds([self.pmid])
-
 class Direction(object):
     
     def __init__(self,nameA,nameB):
@@ -1549,7 +1529,7 @@ class PyPath(object):
         self.add_list_eattr(edge, 'sources', source)
         # adding references:
         # if len(refs) > 0:
-        refs = [Reference(pmid) for pmid in refs]
+        refs = [input_formats.Reference(pmid) for pmid in refs]
         self.add_list_eattr(edge, 'references', refs)
         # updating references-by-source dict:
         self.add_grouped_eattr(edge, 'refs_by_source', source, refs)
