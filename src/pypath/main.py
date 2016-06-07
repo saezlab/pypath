@@ -77,6 +77,7 @@ import pypath.drawing as bdrawing
 import pypath.proteomicsdb as proteomicsdb
 import pypath.reflists as reflists
 import pypath.input_formats as input_formats
+import pypath.refs as _refs
 
 import pypath.ig_drawing as ig_drawing
 import pypath.common as common
@@ -88,7 +89,7 @@ omnipath = data_formats.omnipath
 if 'unicode' not in globals():
     unicode = str
 
-__all__ = ['PyPath', 'Direction', 'Reference', '__version__', 'a',
+__all__ = ['PyPath', 'Direction', '__version__', 'a',
     'AttrHelper', 'ReferenceList']
 
 class Direction(object):
@@ -1532,7 +1533,7 @@ class PyPath(object):
         self.add_list_eattr(edge, 'sources', source)
         # adding references:
         # if len(refs) > 0:
-        refs = [input_formats.Reference(pmid) for pmid in refs]
+        refs = [_refs.Reference(pmid) for pmid in refs]
         self.add_list_eattr(edge, 'references', refs)
         # updating references-by-source dict:
         self.add_grouped_eattr(edge, 'refs_by_source', source, refs)

@@ -30,6 +30,7 @@ import imp
 import sys
 import os
 import shutil
+import struct
 
 import pycurl
 try:
@@ -601,6 +602,7 @@ class Curl(object):
     
     def open_tgz(self):
         self.files_multipart = {}
+        self.sizes = {}
         self.tarfile = tarfile.open(fileobj = self.fileobj, mode = 'r:gz')
         self.members = self.tarfile.getmembers()
         for m in self.members:
@@ -608,6 +610,7 @@ class Curl(object):
                 and m.size != 0:
                 # m.size is 0 for dierctories
                 this_file = self.tarfile.extractfile(m)
+                self.sizes[m.name] = m.size
                 if self.large:
                     self.files_multipart[m.name] = this_file
                 else:
@@ -619,6 +622,9 @@ class Curl(object):
     
     def open_gz(self):
         self.gzfile = gzip.GzipFile(fileobj = self.fileobj, mode = 'rb')
+        self.gzfile.seek(-4, 2)
+        self.size = struct.unpack('I', f.read(4))[0]
+        self.gzfile.seek(0)
         #try:
         if self.large:
             self.result = self.gzfile
@@ -630,9 +636,11 @@ class Curl(object):
     
     def open_zip(self):
         self.files_multipart = {}
+        self.sizes = {}
         self.zipfile = zipfile.ZipFile(self.fileobj, 'r')
         self.members = self.zipfile.namelist()
-        for m in self.members:
+        for i, m in enumerate(self.members):
+            self.sizes[m] = self.zipfile.filelist[i].file_size
             if self.files_needed is None or m in self.files_needed:
                 this_file = self.zipfile.open(m)
                 if self.large:
@@ -645,6 +653,7 @@ class Curl(object):
         self.result = self.files_multipart
     
     def open_plain(self):
+        self.size = os.path.getsize(self.fileobj.name)
         if self.large:
             self.result = self.fileobj
         else:
@@ -672,11 +681,16 @@ class Curl(object):
     
     def get_result_type(self):
         if type(self.result) is dict:
-            self.result_type = 'dict of %s' % (
-                'byte arrays' if type(next(iter(self.result.values()))) is bytes else \
-                'unicode strings' if type(next(iter(self.result.values()))) is unicode else \
-                'file objects'
-        )
+            if len(self.result):
+                self.result_type = 'dict of %s' % (
+                    'byte arrays' \
+                        if type(next(iter(self.result.values()))) is bytes \
+                    else 'unicode strings' \
+                        if type(next(iter(self.result.values()))) is unicode \
+                    else 'file objects'
+                )
+            else:
+                self.result_type = 'empty dict'
         else:
             self.result_type = '%s' % (
                 'byte array' if type(self.result) is bytes else \

@@ -203,7 +203,8 @@ urls = {
     'hprd_all': {
         'label': 'HPRD all data in flat files',
         'url': 'http://www.hprd.org/RELEASE9/HPRD_FLAT_FILES_041310.tar.gz',
-        'ptm_file': 'FLAT_FILES_072010/POST_TRANSLATIONAL_MODIFICATIONS.txt'
+        'ptm_file': 'FLAT_FILES_072010/POST_TRANSLATIONAL_MODIFICATIONS.txt',
+        'int_file': 'FLAT_FILES_072010/BINARY_PROTEIN_PROTEIN_INTERACTIONS.txt'
     },
     'p_elm': {
         'label': 'phosphoELM',
@@ -567,7 +568,7 @@ urls = {
     'dip': {
         'label': 'DIP PSI-MI tab',
         'login': 'http://dip.doe-mbi.ucla.edu/dip/Login.cgi',
-        'url': 'http://dip.mbi.ucla.edu/dip/file?ds=current&fn=Hsapi20160114CR&ff=txt',
+        'url': 'http://dip.mbi.ucla.edu/dip/file?ds=current&fn=Hsapi20160430%s&ff=txt',
         'ik': 'http://dip.doe-mbi.ucla.edu/dip/DIPview.cgi?IK=%u'
     },
     'vaquerizas2009': {
@@ -601,7 +602,9 @@ urls = {
     'string': {
         'label': 'STRING',
         'actions': 'http://string-db.org/download/'\
-            'protein.actions.v10/%u.protein.actions.v10.txt.gz'
+            'protein.actions.v10/%u.protein.actions.v10.txt.gz',
+        'links': 'http://string-db.org/download/protein.links.detailed.v10/%u'\
+            '.protein.links.detailed.v10.txt.gz'
     }
 }
 

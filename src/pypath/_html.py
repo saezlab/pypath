@@ -866,7 +866,7 @@ def main_page():
         notebooks = list(
             map(
                 lambda nb:
-                    '/'.join(notebook_dir + [nb])
+                    '/'.join(notebook_dir + [nb]),
                 os.listdir(os.path.join(notebook_dir))
             )
         )

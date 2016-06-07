@@ -2972,6 +2972,18 @@ def hprd_interactions(in_vivo = True):
     '''
     return [i for i in get_hprd(in_vivo = in_vivo) if i[6] != '-']
 
+def hprd_htp():
+    url = urls.urls['hprd_all']['url']
+    fname= urls.urls['hprd_all']['int_file']
+    c = curl.Curl(url, silent = False, large = True, files_needed = [fname])
+    return list(
+        map(
+            lambda l:
+                l.split('\t'),
+                c.result[fname].read().encode('ascii').split('\n')
+            )
+        )
+
 def get_hprd_ptms(in_vivo = True):
     '''
     Processes HPRD data and extracts PTMs.
@@ -4596,7 +4608,8 @@ def biogrid_interactions(organism = 9606, htp_limit = 1):
                 interactions.append([l[7], l[8], l[14]])
                 refc.append(l[14])
     refc = Counter(refc)
-    interactions = [i for i in interactions if refc[i[2]] <= htp_limit]
+    if htp_limit is not None:
+        interactions = [i for i in interactions if refc[i[2]] <= htp_limit]
     return interactions
 
 def acsn_ppi(keep_in_complex_interactions = True):
@@ -5005,7 +5018,8 @@ def get_dip(url = None, organism = 9606, core_only = True, direct_only = True,
     strDirect = 'direct interaction'
     strPhysInt = 'physical interaction'
     strSmallS = 'small scale'
-    url = urls.urls['dip']['url'] if url is None else url
+    url = urls.urls['dip']['url'] % ('CR' if core_only else '') \
+        if url is None else url
     c = curl.Curl(url, silent = False, large = True)
     f = c.result
     i = []
@@ -5352,8 +5366,11 @@ def intact_interactions(miscore = 0.6, organism = 9606, complex_expansion = Fals
     c = curl.Curl(url, silent = False, large = True, files_needed = ['intact.txt'])
     data = c.result
     f = data.values()[0]
+    size = c.sizes['intact.txt']
     lnum = 0
+    prg = progress.Progress(size, 'Reading IntAct MI-tab file', 99)
     for l in f:
+        prg.step(len(l))
         if lnum == 0:
             lnum += 1
             continue
@@ -5406,10 +5423,11 @@ def intact_interactions(miscore = 0.6, organism = 9606, complex_expansion = Fals
                         result[uniprots][2].add(
                             l[15].split('(')[1].replace(')', '')
                         )
-    result = map(lambda ups, a:
-        [ups[0], ups[1], ';'.join(list(a[0])), ';'.join(list(a[1])), ';'.join(list(a[2]))],
+    result = map(lambda d:
+        [d[0][0], d[0][1], ';'.join(list(d[1][0])), ';'.join(list(d[1][1])), ';'.join(list(d[1][2]))],
         iteritems(result)
     )
+    prg.terminate()
     return result
 
 def deathdomain_interactions():

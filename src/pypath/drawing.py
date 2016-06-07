@@ -280,7 +280,7 @@ class Plot(object):
             sf = cairo.PDFSurface(self.nextfile, self.dimensions[0], self.dimensions[1])
         else:
             # currently doing only pdf
-            sf = cairo.PDFSurface(self.nextfile, self.dimensions[0], self.dimensions[1])
+            sf = self.nextfile
         if self.vertex_label_size == "degree_label_size":
             # TODO
             dgr = g.vs.degree()
