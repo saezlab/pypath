@@ -4,7 +4,7 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2015 - EMBL-EBI
+#  Copyright (c) 2014-2016 - EMBL-EBI
 #
 #  File author(s): Dénes Türei (denes@ebi.ac.uk)
 #
@@ -20,10 +20,13 @@
 # http://stackoverflow.com/a/13781114/854988
 #
 
+import os
 import colorsys
 import itertools
 import math
 from fractions import Fraction
+
+import pypath.common as common
 
 def zenos_dichotomy():
     """
@@ -34,7 +37,9 @@ def zenos_dichotomy():
 
 def getfracs():
     """
-    [Fraction(0, 1), Fraction(1, 2), Fraction(1, 4), Fraction(3, 4), Fraction(1, 8), Fraction(3, 8), Fraction(5, 8), Fraction(7, 8), Fraction(1, 16), Fraction(3, 16), ...]
+    [Fraction(0, 1), Fraction(1, 2), Fraction(1, 4), Fraction(3, 4),
+     Fraction(1, 8), Fraction(3, 8), Fraction(5, 8), Fraction(7, 8),
+     Fraction(1, 16), Fraction(3, 16), ...]
     [0.0, 0.5, 0.25, 0.75, 0.125, 0.375, 0.625, 0.875, 0.0625, 0.1875, ...]
     """
     yield 0
@@ -69,8 +74,46 @@ getrgbs = lambda x: map(genrgb, gethsvs(x))
 
 gethexrgbs = lambda x: map(dec2hex, getrgbs(x))
 
+# color converting functions
+
+def rgb2hex(rgb):
+    return '#%02x%02x%02x' % rgb
+
+def hex2rgb(rgbhex):
+    rgbhex = rgbhex.lstrip('#')
+    lv = len(rgbhex)
+    return tuple(int(rgbhex[i:i + 2], 16) for i in range(0, lv, 2))
+
+def rgb1(rgb256):
+    return rgb256 if not any([i > 1 for i in rgb256]) \
+        else tuple([x / float(255) for x in rgb256])
+
+def rgb256(rgb1):
+    return rgb1 if any([i > 1.0 for i in rgb1]) \
+        else tuple([x * 255.0 for x in rgb1])
+
+# color mixing
+
 def colormix(colA,colB):
     rgbA = hex2dec(colA)
     rgbB = hex2dec(colB)
     rgbAB = ((rgbA[0]+rgbB[0])/510.0, (rgbA[1]+rgbB[1])/510.0, (rgbA[2]+rgbB[2])/510.0)
     return dec2hex(rgbAB)
+
+# read embl colors from file
+
+def read_palette(inFile):
+    cols = []
+    inFile = os.path.join(common.ROOT, 'data', inFile)
+    with open(inFile, 'r') as f:
+        series = []
+        for i, l in enumerate(f):
+            l = [x.strip() for x in l.split(',')]
+            series.append(rgb2hex(tuple([256 * float(x) for x in l[0:3]])))
+            if len(series) == 7:
+                cols.append(series)
+                series = []
+    return cols
+
+def embl_colors():
+    return read_palette('embl_colors')

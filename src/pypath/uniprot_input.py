@@ -15,8 +15,13 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
+from future.utils import iteritems
+
+import re
+
 import pypath.urls as urls
 import pypath.curl as curl
+import pypath.seq as se
 
 def all_uniprots(organism = 9606, swissprot = None):
     rev = '' if swissprot is None else ' AND reviewed:%s'%swissprot
@@ -55,4 +60,32 @@ def swissprot_seq(organism = 9606, isoforms = False):
             for isof, seq in iteritems(isoforms):
                 if unip in result:
                     result[unip].add_seq(seq, isof)
+    return result
+
+def get_isoforms(organism = 'Homo sapiens'):
+    reorg = re.compile(r'OS=([A-Z][a-z]+\s[a-z]+)')
+    result = {}
+    url = urls.urls['unip_iso']['url']
+    c = curl.Curl(url, silent = False)
+    data = c.result
+    data = read_fasta(data)
+    for header, seq in iteritems(data):
+        org = reorg.findall(header)
+        if len(org) > 0 and org[0] == organism:
+            prot = header.split('|')[1].split('-')
+            unip = prot[0]
+            isof = int(prot[1])
+            if unip not in result:
+                result[unip] = {}
+            result[unip][isof] = seq
+    return result
+
+def read_fasta(fasta):
+    result = {}
+    fasta = re.split(r'\n>', fasta)
+    for section in fasta:
+        section = section.strip().split('\n')
+        label = section.pop(0)
+        seq = ''.join(section)
+        result[label] = seq
     return result

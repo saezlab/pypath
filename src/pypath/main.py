@@ -71,6 +71,7 @@ import pypath.dataio as dataio
 import pypath.uniprot_input as uniprot_input
 import pypath.curl as curl
 import pypath.intera as intera
+import pypath.seq as se
 import pypath.go as go
 import pypath.gsea as gsea
 import pypath.drawing as bdrawing
@@ -86,7 +87,10 @@ from pypath.progress import *
 
 omnipath = data_formats.omnipath
 
-if 'unicode' not in globals():
+if 'long' not in __builtins__:
+    long = int
+
+if 'unicode' not in __builtins__:
     unicode = str
 
 __all__ = ['PyPath', 'Direction', '__version__', 'a',
@@ -1054,7 +1058,7 @@ class PyPath(object):
                         "attrsNodeA": attrsNodeA,
                         "attrsNodeB": attrsNodeB,
                         "attrsEdge": attrsEdge}
-                    newEdge = dict(chain(iteritems(newEdge), iteritems(nodeAttrs)))
+                    newEdge.update(nodeAttrs)
                 if readError != 0:
                     break
                 edgeList.append(newEdge)
@@ -1103,7 +1107,7 @@ class PyPath(object):
         # finding the largest referred column number, 
         # to avoid references out of index
         maxCol = max(
-            [   settings.nameCol, 
+            [   settings.nameCol,
                 self.get_max(settings.extraAttrs) ])
         # iterating lines from input file
         lnum = 1
@@ -1141,7 +1145,7 @@ class PyPath(object):
                 # getting additional attributes
                 attrsItem = self.get_attrs(line, settings.extraAttrs, lnum)
                 # merging dictionaries
-                newItem = iteritems(dict(chain(newItem), iteritems(attrsItem) ))
+                newItem.update(attrsItem)
             if readError != 0:
                 break
             itemList.append(newItem)
@@ -4575,7 +4579,7 @@ class PyPath(object):
             ]))
     
     def sequences(self, isoforms = True):
-        self.seq = dataio.swissprot_seq(self.ncbi_tax_id, isoforms)
+        self.seq = uniprot_input.swissprot_seq(self.ncbi_tax_id, isoforms)
     
     def load_ptms(self):
         self.load_depod_dmi()
@@ -4766,8 +4770,8 @@ class PyPath(object):
         reres = re.compile(r'([A-Z][a-z]+)-([0-9]+)')
         non_digit = re.compile(r'[^\d.-]+')
         data = dataio.get_depod()
-        aadict = dict(zip([a.lower().capitalize() for a in aaletters.keys()],
-            aaletters.values()))
+        aadict = dict(zip([a.lower().capitalize() for a in common.aaletters.keys()],
+            common.aaletters.values()))
         if self.seq is None:
             self.sequences()
         if 'ptm' not in self.graph.es.attributes():

@@ -92,7 +92,10 @@ from contextlib import closing
 
 import pypath.progress as progress
 
-if 'unicode' not in globals():
+if 'long' not in __builtins__:
+    long = int
+
+if 'unicode' not in __builtins__:
     unicode = str
 
 CURSOR_UP_ONE = '\x1b[1A'
@@ -181,7 +184,7 @@ class Curl(object):
         override_post = False, init_headers = False,
         return_headers = False, binary_data = None,
         write_cache = True, force_quote = False,
-        sftp_user = None, sftp_passwd = None, sftp_passwd_file = None,
+        sftp_user = None, sftp_passwd = None, sftp_passwd_file = '.secrets',
         sftp_port = 22, sftp_host = None, sftp_ask = None,
         setup = True, call = True, process = True,
         retries = 3, cache_dir = 'cache'):
@@ -621,10 +624,10 @@ class Curl(object):
         self.result = self.files_multipart
     
     def open_gz(self):
+        self.fileobj.seek(-4, 2)
+        self.size = struct.unpack('I', self.fileobj.read(4))[0]
+        self.fileobj.seek(0)
         self.gzfile = gzip.GzipFile(fileobj = self.fileobj, mode = 'rb')
-        self.gzfile.seek(-4, 2)
-        self.size = struct.unpack('I', f.read(4))[0]
-        self.gzfile.seek(0)
         #try:
         if self.large:
             self.result = self.gzfile
@@ -727,22 +730,22 @@ class Curl(object):
     # sftp part:
     
     def sftp_url(self):
-        if sftp_host is not None:
+        if self.sftp_host is not None:
             self.sftp_filename = self.url
             self.url = '%s%s' % (self.sftp_host, self.sftp_filename)
     
     def sftp_call(self):
         self.sftp_success = self.sftp_download()
-        if sftp_success:
+        if self.sftp_success:
             self.status = 200
         else:
             self.status = 501
     
-    def ask_passwd(ask, passwd_file, use_passwd_file = True):
-        if use_passwd_file and os.path.exists(self.passwd_file):
-            with open(passwd_file, 'r') as f:
+    def ask_passwd(self, use_passwd_file = True):
+        if use_passwd_file and os.path.exists(self.sftp_passwd_file):
+            with open(self.sftp_passwd_file, 'r') as f:
                 self.sftp_user = f.readline().strip()
-                self.passwd = f.readline().strip()
+                self.sftp_passwd = f.readline().strip()
             return None
         sys.stdout.write(self.sftp_ask)
         sys.stdout.flush()
@@ -761,10 +764,9 @@ class Curl(object):
             with open(self.sftp_passwd_file, 'w') as f:
                 f.write('%s\n%s' % (self.user, self.passwd))
 
-    def sftp_download(localpath, host, user = None,
-        passwd = None, passwd_file = None, ask = None, port = 22):
-        ask = 'Please enter your login details for %s\n' % host \
-            if ask is None else ask
+    def sftp_download(self):
+        self.sftp_ask = 'Please enter your login details for %s\n' % self.host \
+            if self.sftp_ask is None else self.sftp_ask
         self.sftp_passwd_file = os.path.join('cache', '%s.login' % self.sftp_host) \
             if self.sftp_passwd_file is None else self.sftp_passwd_file
         if self.sftp_user is None:

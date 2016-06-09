@@ -31,7 +31,7 @@ import sys
 from collections import Counter
 
 # from pypath:
-import pypath.common
+import pypath.common as common
 
 __all__ = ['Residue', 'Ptm', 'Motif', 'Domain', 
     'DomainDomain', 'DomainMotif', 'Interface']

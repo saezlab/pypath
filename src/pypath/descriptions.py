@@ -27,6 +27,12 @@ import pypath.data_formats as data_formats
 
 __all__ = ['descriptions', 'gen_html', 'write_html']
 
+if 'long' not in __builtins__:
+    long = int
+
+if 'unicode' not in __builtins__:
+    unicode = str
+
 descriptions = {
     'Lit13': {
         'year': 2013,

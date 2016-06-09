@@ -93,7 +93,10 @@ import pypath.intera as intera
 import pypath.residues as residues
 import pypath.seq as se
 
-if 'unicode' not in globals():
+if 'long' not in __builtins__:
+    long = int
+
+if 'unicode' not in __builtins__:
     unicode = str
 
 #
@@ -1630,7 +1633,7 @@ def get_comppi():
 
 def get_psite_phos(raw = True, organism = 'human'):
     url = urls.urls['psite_kin']['url']
-    c = curl.Curl(url, silent = False, compr = 'gz', encoding = 'iso-8859-1')
+    c = curl.Curl(url, silent = False, compr = 'gz', encoding = 'iso-8859-1', large = True)
     data = c.result
     cols = {
         'kinase': 1,
@@ -1640,9 +1643,9 @@ def get_psite_phos(raw = True, organism = 'human'):
         'residue': 9,
         'motif': 11
     }
-    buff = StringIO()
-    buff.write(data)
-    data = read_table(cols = cols, fileObject = buff, sep = '\t', hdr = 4)
+    #buff = StringIO()
+    #buff.write(data)
+    data = read_table(cols = cols, fileObject = data, sep = '\t', hdr = 4)
     result = []
     non_digit = re.compile(r'[^\d.-]+')
     motre = re.compile(r'(_*)([A-Za-z]+)(_*)')
@@ -2324,13 +2327,13 @@ def get_depod(organism = 'Homo sapiens'):
     reunip = re.compile(r'uniprotkb:([A-Z0-9]+)')
     url = urls.urls['depod']['urls'][0]
     url_mitab = urls.urls['depod']['urls'][1]
-    c = curl.Curl(url, silent = False)
+    c = curl.Curl(url, silent = False, encoding = 'ascii', large = True)
     data = c.result
-    data_c = curl.Curl(url_mitab, silent = False)
+    data_c = curl.Curl(url_mitab, silent = False, encoding = 'ascii')
     data_mitab = c.result
     data = [x.split('\t') for x in data.split('\n')]
     data_mitab = [x.split('\t') for x in data_mitab.split('\n')]
-    del data[0]
+    null = data.readline()
     del data_mitab[0]
     for i, l in enumerate(data):
         if len(l) > 6 and l[2] == 'protein substrate' and \
@@ -2409,34 +2412,6 @@ def phosphopoint_directions():
             l = l.split(';')
             directions.append([l[0], l[2]])
     return directions
-
-def get_isoforms(organism = 'Homo sapiens'):
-    reorg = re.compile(r'OS=([A-Z][a-z]+\s[a-z]+)')
-    result = {}
-    url = urls.urls['unip_iso']['url']
-    c = curl.Curl(url, silent = False)
-    data = c.result
-    data = read_fasta(data)
-    for header, seq in iteritems(data):
-        org = reorg.findall(header)
-        if len(org) > 0 and org[0] == organism:
-            prot = header.split('|')[1].split('-')
-            unip = prot[0]
-            isof = int(prot[1])
-            if unip not in result:
-                result[unip] = {}
-            result[unip][isof] = seq
-    return result
-
-def read_fasta(fasta):
-    result = {}
-    fasta = re.split(r'\n>', fasta)
-    for section in fasta:
-        section = section.strip().split('\n')
-        label = section.pop(0)
-        seq = ''.join(section)
-        result[label] = seq
-    return result
 
 def get_kinase_class():
     result = {
@@ -4912,8 +4887,21 @@ def get_cgc(user = None, passwd = None):
     c = curl.Curl(fname, sftp_host = host, sftp_ask = ask, sftp_user = user,
         sftp_passwd = passwd, large = True)
     data = c.result
+    null = data.readline()
     for line in data:
-        yield line.decode('utf-8')
+        next_line = line.decode('utf-8')
+        fields = []
+        field = ''
+        in_quotes = False
+        for char in next_line:
+            if char == ',' and not in_quotes:
+                fields.append(field)
+                field = ''
+            elif char == '"':
+                in_quotes = not in_quotes
+            else:
+                field += char
+        yield fields
 
 def get_matrixdb(organism = 9606):
     url = urls.urls['matrixdb']['url']

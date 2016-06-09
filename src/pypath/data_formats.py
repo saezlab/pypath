@@ -888,12 +888,12 @@ gdsc_lst = input_formats.ReadList(name="atg", separator=";", nameCol=0,
                 inFile=os.path.join(ROOT, 'data', 'autophagy.list'),
                 extraAttrs={'drugs': 2})
 
-cgc = input_formats.ReadList(name="CancerGeneCensus", separator=",", nameCol=2,
-                nameType="entrez", typ="protein",
+cgc = input_formats.ReadList(name = "CancerGeneCensus", nameCol = 2,
+                nameType = "entrez", typ = "protein",
                 inFile = 'get_cgc',
-                extraAttrs={})
+                extraAttrs = {})
 
-intogene_cancer = input_formats.ReadList(name = "IntOGen", separator = "\t", nameCol=1,
+intogen_cancer = input_formats.ReadList(name = "IntOGen", separator = "\t", nameCol=1,
                 nameType = "genesymbol", typ = "protein",
                 inFile = 'intogen_cancerdrivers.tsv',
                 extraAttrs={})

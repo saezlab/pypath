@@ -26,8 +26,8 @@ import textwrap
 import hashlib
 
 __all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes', 'uniqList', 'addToList', 
-           'gen_session_id', 'sorensen_index', 'console', 'wcl', 'flatList', 
-           'charTypes', 'delEmpty', '__version__', 'get_args', 
+           'gen_session_id', 'sorensen_index', 'console', 'wcl', 'flatList',
+           'charTypes', 'delEmpty', '__version__', 'get_args',
            'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs', 'md5']
 
 # get the location
@@ -76,19 +76,19 @@ aacodes = {
     'X': 'XAA'
 }
 
-if 'long' not in globals():
+if 'long' not in __builtins__:
     long = int
 
-if 'unicode' not in globals():
+if 'unicode' not in __builtins__:
     unicode = str
 
 aaletters = dict(zip(aacodes.values(),aacodes.keys()))
 
-simpleTypes = set([int, long, float, str, unicode])
+simpleTypes = set([int, long, float, str, unicode, bytes])
 
 numTypes = set([int, long, float])
 
-charTypes = set([str, unicode])
+charTypes = set([str, unicode, bytes])
 
 def uniqList(seq):
     # Not order preserving
