@@ -862,17 +862,31 @@ def default_template(content, page_title, title = ''):
 def main_page():
     notebooks = []
     notebook_dir = ['pypath-docs', 'notebooks']
+    
+    notebook_names = {
+        'pypath_build_networks.html': 'Introduction',
+        'pypath_mapping.html': 'ID conversion',
+        'pathway_extraction.html': 'Pathway annotations',
+        'node_neighbourhood.html': 'Extracting PKNs',
+        'TF_location.html': 'Finding transcription factors'
+    }
+    
     if os.path.exists(os.path.join(notebook_dir)):
-        notebooks = list(
-            map(
-                lambda nb:
-                    '/'.join(notebook_dir + [nb]),
-                os.listdir(os.path.join(notebook_dir))
-            )
-        )
+        notebooks = os.listdir(os.path.join(*notebook_dir))
+    
     with open(os.path.join(common.ROOT, 'data', 'main.html'), 'r') as f:
         doc = f.read()
-        
+    
+    doc += '<p>Check out our tutorials:</p>'
+    for nb in notebooks:
+        if nb in notebook_names:
+            doc += '<p><a href="%s" title="%s">%s</a></p>' % (
+                    'http://pypath.omnipathdb.org/notebooks/%s' % nb,
+                    notebook_names[nb],
+                    notebook_names[nb]
+                )
+    doc += '<p>Special thanks for Luis Tobalina for providing some of the tutorials.</p>'
+    
     return default_template(doc, 
         'OmniPath: literature curated human signaling pathways',
         'literature curated human signaling pathways')

@@ -2244,7 +2244,7 @@ def get_dbptm():
                         'typ': l[7].lower(),
                         'resaa': l[8][6],
                         'resnum': resnum,
-                        'instance': l[8],
+                        'instance': l[8].strip(),
                         'references': l[4].split(';'),
                         'source': l[5].split()[0],
                         'kinase': None if byre.match(l[3]) is None else \
@@ -2327,13 +2327,13 @@ def get_depod(organism = 'Homo sapiens'):
     reunip = re.compile(r'uniprotkb:([A-Z0-9]+)')
     url = urls.urls['depod']['urls'][0]
     url_mitab = urls.urls['depod']['urls'][1]
-    c = curl.Curl(url, silent = False, encoding = 'ascii', large = True)
+    c = curl.Curl(url, silent = False, encoding = 'ascii')
     data = c.result
     data_c = curl.Curl(url_mitab, silent = False, encoding = 'ascii')
     data_mitab = c.result
     data = [x.split('\t') for x in data.split('\n')]
     data_mitab = [x.split('\t') for x in data_mitab.split('\n')]
-    null = data.readline()
+    del data[0]
     del data_mitab[0]
     for i, l in enumerate(data):
         if len(l) > 6 and l[2] == 'protein substrate' and \
