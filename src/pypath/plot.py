@@ -4,7 +4,7 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2015 - EMBL-EBI
+#  Copyright (c) 2014-2016 - EMBL-EBI
 #
 #  File author(s): Dénes Türei (denes@ebi.ac.uk)
 #
@@ -32,28 +32,10 @@ import matplotlib.gridspec as gridspec
 from matplotlib import ticker
 from scipy import stats
 
-from progress import Progress
-from common import uniqList, ROOT
+import pypath.common as common
+import pypath.colorgen as colorgen
 
-# color converting functions
-
-def rgb2hex(rgb):
-    return '#%02x%02x%02x' % rgb
-
-def hex2rgb(rgbhex):
-    rgbhex = rgbhex.lstrip('#')
-    lv = len(rgbhex)
-    return tuple(int(rgbhex[i:i + 2], 16) for i in range(0, lv, 2))
-
-def rgb1(rgb256):
-    return rgb256 if not any([i > 1 for i in rgb256]) \
-        else tuple([x / float(255) for x in rgb256])
-
-def rgb256(rgb1):
-    return rgb1 if any([i > 1.0 for i in rgb1]) \
-        else tuple([x * 255.0 for x in rgb1])
-
-# other helper functions
+# helper functions
 
 def rotate_labels(angles = (0, -90, -135, -180, -270, -315)):
     i = 0
@@ -145,12 +127,12 @@ class Plot(object):
     
     def embl_palette(self, inFile = 'embl_colors'):
         cols = []
-        inFile = os.path.join(ROOT, 'data', inFile)
+        inFile = os.path.join(common.ROOT, 'data', inFile)
         with open(inFile, 'r') as f:
             series = []
             for i, l in enumerate(f):
                 l = [x.strip() for x in l.split(',')]
-                series.append(rgb2hex(tuple([256 * float(x) for x in l[0:3]])))
+                series.append(colorgen.rgb2hex(tuple([256 * float(x) for x in l[0:3]])))
                 if len(series) == 7:
                     cols.append(series)
                     series = []
@@ -184,12 +166,12 @@ class Barplot(Plot):
         for k, v in locals().iteritems():
             setattr(self, k, v)
         self.sns = sns
-        self.rc = self.rc or {'lines.linewidth': 1.0, 'patch.linewidth': 0.0, 
+        self.rc = self.rc or {'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
             'grid.linewidth': 1.0}
-        super(Barplot, self).__init__(fname = fname, font_family = font_family, 
-            font_style = font_style, font_weight = font_weight, 
+        super(Barplot, self).__init__(fname = fname, font_family = font_family,
+            font_style = font_style, font_weight = font_weight,
             font_variant = font_variant, font_stretch = font_stretch,
-            palette = palette, context = context, lab_size = self.lab_size, 
+            palette = palette, context = context, lab_size = self.lab_size,
             axis_lab_size = self.axis_lab_size, rc = self.rc)
         self.color = self.color or self.palette[0][0]
         if type(self.color) is list:
@@ -340,9 +322,9 @@ def boxplot(data, labels, xlab, ylab, fname, fontfamily = 'Helvetica Neue LT Std
     else:
         ax = sns.boxplot(data, names = labels, 
             color = embl_colors, linewidth = 0.1, saturation = 0.66)
-    ax.set_xlabel(xlab, weight = 'light', fontsize = 12, 
+    ax.set_xlabel(xlab, weight = 'light', fontsize = 12,
         variant = 'normal', color = textcol, stretch = 'normal')
-    ax.set_ylabel(ylab, weight = 'light', fontsize = 12, 
+    ax.set_ylabel(ylab, weight = 'light', fontsize = 12,
         variant = 'normal', color = textcol, stretch = 'normal')
     for tick in ax.xaxis.get_major_ticks():
         tick.label.set_fontsize(8)
@@ -719,3 +701,176 @@ class ScatterPlus(Plot):
                             # 'OK, these do not overlap: %s and %s' % (a1._text, a2._text)
                     if not overlaps:
                         break
+
+class Histogram(Plot):
+    
+    def __init__(self, data, labels, fname, font_family = 'Helvetica Neue LT Std',
+                font_style = 'normal', font_weight = 'normal',
+                font_variant = 'normal', font_stretch = 'normal',
+                xlab = '', ylab = '', title = '', axis_lab_size = 10.0,
+                lab_angle = 90, lab_size = (9, 9), color = None,
+                palette = None, rc = {}, context = 'poster',
+                figsize = (5.0, 3.0), bins = None, nbins = None,
+                x_log = False, y_log = False,
+                tone = 2, alpha = 0.5,
+                legend_size = 6, xlim = None,
+                kde_base = 0.2, kde_perc = 12.0,
+                **kwargs):
+        self.data = data
+        if type(self.data[0]) in common.numTypes:
+            self.data = [data]
+        for i, d in enumerate(self.data):
+            if type(d) is list: self.data[i] = np.array(d)
+        self.labels = labels
+        if type(self.labels) in common.charTypes:
+            self.labels = [labels]
+        for k, v in locals().iteritems():
+            setattr(self, k, v)
+        self.sns = sns
+        self.rc = self.rc or {'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
+            'grid.linewidth': 1.0}
+        super(Histogram, self).__init__(fname = fname, font_family = font_family,
+            font_style = font_style, font_weight = font_weight,
+            font_variant = font_variant, font_stretch = font_stretch,
+            palette = palette, context = context, lab_size = self.lab_size,
+            axis_lab_size = self.axis_lab_size, rc = self.rc)
+        if self.color is None:
+            self.set_palette()
+        self.data_range()
+        self.set_bins(bins)
+        self.plot_args = kwargs
+        self.plot(**kwargs)
+    
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    def set_bins(self, bins = None, nbins = None):
+        self.bins = bins
+        if self.bins is None:
+            self.bins_default()
+        self.nbins = nbins
+        if self.nbins is None:
+            self.nbins_default()
+    
+    def data_range(self):
+        self.lowest = min(map(lambda d: np.nanmin(d[np.where(d != 0.0)]), self.data))
+        self.highest = max(map(max, self.data))
+    
+    def nbins_default(self):
+        self.nbins = min(
+            map(
+                lambda d:
+                    len(d) / (150.0 + 3.0 * np.log10(len(d) / np.log10(len(d)))),
+                self.data
+            )
+        )
+    
+    def bins_default(self):
+        if self.x_log:
+            self.bin_limits = sorted([
+                np.log10(self.lowest) if self.lowest > 0.0 else np.log10(0.000001),
+                np.log10(self.highest)
+            ])
+        else:
+            self.bin_limits = [self.lowest, self.highest]
+        self.bins = \
+            np.logspace(self.bin_limits[0], self.bin_limits[1], self.nbins) \
+            if self.x_log else \
+            np.linspace(self.lowest, self.highest, self.nbins)
+    
+    def set_palette(self, palette = None):
+        self.palette = self.palette if palette is None else palette
+        self.colors = \
+            map(
+                lambda x:
+                    x if len(x) < 100 else '%s%s' % (x, '%02x' % (self.alpha * 255.0)),
+                map(
+                    lambda i:
+                        self.palette[i % len(self.palette)]\
+                            [min(len(self.palette[i]) - 1, self.tone)],
+                    xrange(len(self.data))
+                )
+            )
+    
+    def remove_borders(self):
+        for patches in self.hist[2]:
+            map(
+                lambda p:
+                    p.set_linewidth(0.0),
+                patches
+            )
+    
+    def set_labels(self):
+        self.ax.set_ylabel(self.ylab)
+        self.ax.set_xlabel(self.xlab)
+        self.ax.set_title(self.title)
+    
+    def add_density_lines(self, **kwargs):
+        for i, d in enumerate(self.data):
+            self.kde_bandwidth = self.kde_base / d.std(ddof = 1)
+            density = stats.gaussian_kde(d, bw_method = self.kde_bandwidth)
+            x = np.arange(self.lowest, self.highest,
+                          self.highest / len(self.hist[0][i]))
+            y = np.array(density(x))
+            limit = np.percentile(x, self.kde_perc)
+            y = y[np.where(x < limit)]
+            x = x[np.where(x < limit)]
+            #y2 = mpl.mlab.normpdf(x, np.mean(d), np.std(d))
+            ylim = self.ax.get_ylim()
+            xlim = self.ax.get_xlim()
+            self.ax.plot(x, y, ls = '--', lw = .5, c = self.palette[i][0],
+                label = '%s, density' % self.labels[i])
+            #self.ax.plot(x, y2, ls = ':', lw = .5, c = self.palette[i][0])
+            self.ax.set_ylim(ylim)
+            self.ax.set_xlim(xlim)
+    
+    def set_log(self):
+        if self.y_log:
+            self.ax.set_yscale('log')
+        if self.x_log:
+            self.ax.set_xscale('log')
+    
+    def set_ticklabels(self):
+        #self.ax.yaxis.set_ticklabels(
+            #map(
+                #lambda x:
+                    #'%.01f%%' % x if x >= 0.1 else '',
+                #self.ax.get_yticks()
+            #)
+        #)
+        self.ax.xaxis.set_ticklabels(
+            map(
+                lambda x:
+                    '{:,g}'.format(x),
+                self.ax.get_xticks()
+            )
+        )
+    
+    def set_xlim(self):
+        if self.xlim is not None:
+            self.ax.set_xlim(self.xlim)
+    
+    def add_legend(self):
+        self.ax.legend(prop = {'size': self.legend_size})
+    
+    def plot(self, **kwargs):
+        self.fig = mpl.figure.Figure(figsize = self.figsize)
+        self.ax = self.fig.add_subplot(111)
+        #for i, d in enumerate(self.data):
+        #    sns.distplot(d, ax = self.ax,
+        #                 axlabel = False, color = self.colors[i])
+        self.hist = self.ax.hist(self.data, bins = self.bins,
+                                label = self.labels, color = self.colors,
+                                log = self.y_log, alpha = self.alpha,
+                                **kwargs)
+        self.remove_borders()
+        self.set_labels()
+        self.set_log()
+        self.add_density_lines()
+        self.set_xlim()
+        self.set_ticklabels()
+        self.add_legend()

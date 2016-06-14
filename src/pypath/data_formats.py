@@ -475,7 +475,7 @@ ptm = {
         inFile = 'hprd_interactions', references = (10, ','), header = False,
         extraEdgeAttrs={'hprd_mechanism': 8},
         extraNodeAttrsA={},
-        extraNodeAttrsB={}),
+        extraNodeAttrsB={})
 }
 
 '''
@@ -623,27 +623,95 @@ interaction_misc = {
     'lit13': input_formats.ReadSettings(name = "Lit-BM-13", 
         separator = None, nameColA = 1,
         nameColB = 3, nameTypeA = "genesymbol", nameTypeB = "genesymbol",
-        typeA = "protein", typeB = "protein", 
-        isDirected = False, 
+        typeA = "protein", typeB = "protein",
+        isDirected = False,
         sign = False,
         ncbiTaxId = 9606,
-        inFile = 'get_lit_bm_13', 
+        inFile = 'get_lit_bm_13',
         references = False, header = False,
         extraEdgeAttrs = {},
         extraNodeAttrsA = {},
         extraNodeAttrsB = {}),
-    'cpdb': input_formats.ReadSettings(name="CPDB", 
+    'cpdb': input_formats.ReadSettings(name="CPDB",
         separator = None, nameColA = 0,
         nameColB = 1, nameTypeA="uniprot-entry", nameTypeB="uniprot-entry",
         typeA = "protein", typeB = "protein", 
-        isDirected = False, 
+        isDirected = False,
         sign = False,
         ncbiTaxId = 9606,
-        inFile = 'get_cpdb', 
+        inFile = 'get_cpdb',
         references = (3, ','), header = False,
         extraEdgeAttrs = {},
         extraNodeAttrsA = {},
         extraNodeAttrsB = {})
+}
+
+interaction_htp = {
+    'intact': input_formats.ReadSettings(name = "IntAct",
+        separator = ",", nameColA = 0, nameColB = 1,
+        nameTypeA  =  "uniprot", nameTypeB  =  "uniprot",
+        typeA  =  "protein", typeB  =  "protein", isDirected  =  False, sign  =  False,
+        inFile = 'intact_interactions',
+        references = (2, ";"), ncbiTaxId  =  9606,
+        extraEdgeAttrs = {
+            "intact_methods": (3, ';')
+            },
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {},
+        inputArgs = {'miscore': 0.0}),
+    'biogrid': input_formats.ReadSettings(name="BioGRID",
+        separator = None, nameColA = 0,
+        nameColB = 1, nameTypeA = "genesymbol", nameTypeB = "genesymbol",
+        typeA = "protein", typeB = "protein", isDirected = False, sign = False,
+        ncbiTaxId = 9606,
+        inFile = 'biogrid_interactions', references = (2, '|'), header = False,
+        extraEdgeAttrs={},
+        extraNodeAttrsA={},
+        extraNodeAttrsB={},
+        inputArgs = {'htp_limit': None}),
+    'dip': input_formats.ReadSettings(name="DIP",
+        nameColA=0, nameColB=1,
+        nameTypeA="uniprot", nameTypeB="uniprot",
+        typeA="protein", typeB="protein",isDirected=False,sign=False,
+        inFile = 'get_dip',
+        references=(2, ";"),ncbiTaxId=9606,
+        extraEdgeAttrs={
+            "dip_methods": (4, ";"),
+            "dip_type": (3, ";"),
+            'dip_id': 5
+        },
+        extraNodeAttrsA={},
+        extraNodeAttrsB={},
+        inputArgs = {'core_only': False, 'small_scale_only': False}),
+    'innatedb': input_formats.ReadSettings(name = "InnateDB",
+        nameColA = 0, nameColB = 2,
+        nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA = "protein", typeB = "protein", isDirected = False, sign = False,
+        inFile = 'get_innatedb',
+        references = (4, ":"),ncbiTaxId = 9606,
+        extraEdgeAttrs = {},
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {}),
+    'matrixdb': input_formats.ReadSettings(name = "MatrixDB",
+        nameColA = 0, nameColB = 1,
+        nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA = "protein", typeB = "protein", isDirected = False, sign = False,
+        inFile = 'get_matrixdb',
+        references = (2, "|"),ncbiTaxId = 9606,
+        extraEdgeAttrs = {
+            "matrixdb_methods": (3, '|')
+            },
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {}),
+    'hprd': input_formats.ReadSettings(name="HPRD", 
+        separator = None, nameColA = 0,
+        nameColB = 3, nameTypeA = "genesymbol", nameTypeB = "genesymbol",
+        typeA = "protein", typeB = "protein", isDirected = 0, sign = False,
+        ncbiTaxId = 9606,
+        inFile = 'hprd_htp', references = (7, ','), header = False,
+        extraEdgeAttrs={'hprd_methods': (6, ';')},
+        extraNodeAttrsA={},
+        extraNodeAttrsB={})
 }
 
 '''
@@ -820,12 +888,12 @@ gdsc_lst = input_formats.ReadList(name="atg", separator=";", nameCol=0,
                 inFile=os.path.join(ROOT, 'data', 'autophagy.list'),
                 extraAttrs={'drugs': 2})
 
-cgc = input_formats.ReadList(name="CancerGeneCensus", separator=",", nameCol=2,
-                nameType="entrez", typ="protein",
+cgc = input_formats.ReadList(name = "CancerGeneCensus", nameCol = 2,
+                nameType = "entrez", typ = "protein",
                 inFile = 'get_cgc',
-                extraAttrs={})
+                extraAttrs = {})
 
-intogene_cancer = input_formats.ReadList(name = "IntOGen", separator = "\t", nameCol=1,
+intogen_cancer = input_formats.ReadList(name = "IntOGen", separator = "\t", nameCol=1,
                 nameType = "genesymbol", typ = "protein",
                 inFile = 'intogen_cancerdrivers.tsv',
                 extraAttrs={})

@@ -40,16 +40,14 @@ except:
     import pickle
 
 # from pypath:
-from pypath import progress
-from pypath import logn
-from pypath import common
-from pypath.common import *
-from pypath import maps
-from pypath import mysql
-from pypath import urls
-
-from pypath import curl
-import pypath.dataio as dataio
+import pypath.progress as progress
+import pypath.logn as logn
+import pypath.common as common
+import pypath.maps as maps
+import pypath.mysql as mysql
+import pypath.urls as urls
+import pypath.curl as curl
+import pypath.mapping_input as mapping_input
 
 __all__ = ['MappingTable', 'Mapper', 'ReferenceList']
 
@@ -78,7 +76,7 @@ class MappingTable(object):
         self.cachedir = cachedir
         self.mapping = {"to": {}, "from": {}}
         if log.__class__.__name__ != 'logw':
-            self.session = gen_session_id()
+            self.session = common.gen_session_id()
             self.ownlog = logn.logw(self.session, 'INFO')
         else:
             self.ownlog = log
@@ -111,17 +109,17 @@ class MappingTable(object):
     
     def cleanDict(self,mapping):
         for key, value in iteritems(mapping):
-            mapping[key] = uniqList(value)
+            mapping[key] = common.uniqList(value)
         return mapping
     
     def read_mapping_file(self, param):
         if param.__class__.__name__ != "FileMapping":
             self.ownlog.msg(2, "Invalid parameter for read_mapping_file()", 'ERROR')
             return {}
-        if not os.path.exists(param.input) and not hasattr(dataio, param.input):
+        if not os.path.exists(param.input) and not hasattr(mapping_input, param.input):
             return {}
-        if hasattr(dataio, param.input):
-            toCall = getattr(dataio, param.input)
+        if hasattr(mapping_input, param.input):
+            toCall = getattr(mapping_input, param.input)
             infile = toCall()
             if type(infile) is map or type(infile) is filter:
                 infile = list(infile)
@@ -307,7 +305,7 @@ class Mapper(object):
         self.tables = {}
         self.uniprot_mapped = []
         if log.__class__.__name__ != 'logw':
-            self.session = gen_session_id()
+            self.session = common.gen_session_id()
             self.ownlog = logn.logw(self.session,'INFO')
         else:
             self.ownlog = log
@@ -416,7 +414,7 @@ class Mapper(object):
             for nt in nameType:
                 mappedNames += self.map_name(name, nt, targetNameType, 
                     strict, silent)
-            return uniqList(mappedNames)
+            return common.uniqList(mappedNames)
         if nameType == targetNameType:
             if targetNameType != 'uniprot':
                 return [ name ]
@@ -442,7 +440,7 @@ class Mapper(object):
                 self.uniprot_mapped.append((orig, mappedNames))
             mappedNames = [u for u in mappedNames if self.reup.match(u)]
         # print '\tmapped to %s' % str(mappedNames)
-        return uniqList(mappedNames)
+        return common.uniqList(mappedNames)
     
     def map_refseq(self, refseq, nameType, targetNameType, strict = False):
         mappedNames = []
@@ -540,7 +538,7 @@ class Mapper(object):
                 (mapName[0], mapName[1]))
             if param.__class__.__name__ == 'FileMapping' and \
                 not os.path.isfile(param.input) and \
-                not hasattr(dataio, param.input):
+                not hasattr(mapping_input, param.input):
                 self.ownlog.msg(2,"Error: no such file: %s" % \
                     param.input, "ERROR")
                 continue

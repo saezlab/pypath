@@ -23,7 +23,6 @@ except:
 import urllib
 import json
 
-from pypath.common import *
 import pypath.descriptions
 import pypath._html
 import pypath.data_formats

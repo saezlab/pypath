@@ -4,7 +4,7 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2015 - EMBL-EBI
+#  Copyright (c) 2014-2016 - EMBL-EBI
 #
 #  File author(s): Dénes Türei (denes@ebi.ac.uk)
 #
@@ -82,17 +82,21 @@ from xlrd.biffh import XLRDError
 
 # from this module
 
-import pypath.mapping
-from pypath import curl
-from pypath import urls
-from pypath import progress
-from pypath import common
-from pypath import intera
-from pypath import reaction
-from pypath import residues
-from pypath import seq as se
+import pypath.mapping as mapping
+import pypath.uniprot_input as uniprot_input
+import pypath.curl as curl
+import pypath.urls as urls
+import pypath.progress as progress
+import pypath.common as common
+import pypath.intera as intera
+#from pypath import reaction
+import pypath.residues as residues
+import pypath.seq as se
 
-if 'unicode' not in globals():
+if 'long' not in __builtins__:
+    long = int
+
+if 'unicode' not in __builtins__:
     unicode = str
 
 #
@@ -165,43 +169,7 @@ def read_table(cols, fileObject = None, data = None, sep = '\t', sep2 = None, re
     return res
 
 def all_uniprots(organism = 9606, swissprot = None):
-    rev = '' if swissprot is None else ' AND reviewed:%s'%swissprot
-    url = urls.urls['uniprot_basic']['url']
-    post = {'query': 'organism:%s%s' % (str(organism), rev), 
-        'format': 'tab', 'columns': 'id'}
-    c = curl.Curl(url, post = post, silent = False)
-    data = c.result
-    return list(filter(lambda x:
-        len(x) > 0,
-        map(lambda l:
-            l.strip(),
-            data.split('\n')[1:]
-        )
-    ))
-
-def swissprot_seq(organism = 9606, isoforms = False):
-    taxids = {
-        9606: 'Homo sapiens'
-    }
-    result = {}
-    url = urls.urls['uniprot_basic']['url']
-    post = {'query': 'organism:%s AND reviewed:yes'%str(organism), 
-        'format': 'tab', 'columns': 'id,sequence'}
-    c = curl.Curl(url, post = post, silent = False)
-    data = c.result
-    data = data.split('\n')
-    del data[0]
-    for l in data:
-        l = l.strip().split('\t')
-        if len(l) == 2:
-            result[l[0]] = se.Seq(l[0], l[1])
-    if isoforms:
-        data = get_isoforms()
-        for unip, isoforms in iteritems(data):
-            for isof, seq in iteritems(isoforms):
-                if unip in result:
-                    result[unip].add_seq(seq, isof)
-    return result
+    return uniprot_input.all_uniprots(organism, swissprot)
 
 def get_pdb():
     c = curl.Curl(urls.urls['uniprot_pdb']['url'], silent=False)
@@ -1108,7 +1076,7 @@ def get_3did(ddi_flat = None, res = True, organism = 9606, pickl = True):
     else:
         return None
     u_pdb, pdb_u = get_pdb_chains()
-    all_unip = set(all_uniprots(organism = organism))
+    all_unip = set(uniprot_inupt.all_uniprots(organism = organism))
     if all_unip is None or pdb_u is None:
         return None
     ddi = []
@@ -1665,7 +1633,7 @@ def get_comppi():
 
 def get_psite_phos(raw = True, organism = 'human'):
     url = urls.urls['psite_kin']['url']
-    c = curl.Curl(url, silent = False, compr = 'gz', encoding = 'iso-8859-1')
+    c = curl.Curl(url, silent = False, compr = 'gz', encoding = 'iso-8859-1', large = True)
     data = c.result
     cols = {
         'kinase': 1,
@@ -1675,9 +1643,9 @@ def get_psite_phos(raw = True, organism = 'human'):
         'residue': 9,
         'motif': 11
     }
-    buff = StringIO()
-    buff.write(data)
-    data = read_table(cols = cols, fileObject = buff, sep = '\t', hdr = 4)
+    #buff = StringIO()
+    #buff.write(data)
+    data = read_table(cols = cols, fileObject = data, sep = '\t', hdr = 4)
     result = []
     non_digit = re.compile(r'[^\d.-]+')
     motre = re.compile(r'(_*)([A-Za-z]+)(_*)')
@@ -2276,7 +2244,7 @@ def get_dbptm():
                         'typ': l[7].lower(),
                         'resaa': l[8][6],
                         'resnum': resnum,
-                        'instance': l[8],
+                        'instance': l[8].strip(),
                         'references': l[4].split(';'),
                         'source': l[5].split()[0],
                         'kinase': None if byre.match(l[3]) is None else \
@@ -2359,9 +2327,9 @@ def get_depod(organism = 'Homo sapiens'):
     reunip = re.compile(r'uniprotkb:([A-Z0-9]+)')
     url = urls.urls['depod']['urls'][0]
     url_mitab = urls.urls['depod']['urls'][1]
-    c = curl.Curl(url, silent = False)
+    c = curl.Curl(url, silent = False, encoding = 'ascii')
     data = c.result
-    data_c = curl.Curl(url_mitab, silent = False)
+    data_c = curl.Curl(url_mitab, silent = False, encoding = 'ascii')
     data_mitab = c.result
     data = [x.split('\t') for x in data.split('\n')]
     data_mitab = [x.split('\t') for x in data_mitab.split('\n')]
@@ -2444,34 +2412,6 @@ def phosphopoint_directions():
             l = l.split(';')
             directions.append([l[0], l[2]])
     return directions
-
-def get_isoforms(organism = 'Homo sapiens'):
-    reorg = re.compile(r'OS=([A-Z][a-z]+\s[a-z]+)')
-    result = {}
-    url = urls.urls['unip_iso']['url']
-    c = curl.Curl(url, silent = False)
-    data = c.result
-    data = read_fasta(data)
-    for header, seq in iteritems(data):
-        org = reorg.findall(header)
-        if len(org) > 0 and org[0] == organism:
-            prot = header.split('|')[1].split('-')
-            unip = prot[0]
-            isof = int(prot[1])
-            if unip not in result:
-                result[unip] = {}
-            result[unip][isof] = seq
-    return result
-
-def read_fasta(fasta):
-    result = {}
-    fasta = re.split(r'\n>', fasta)
-    for section in fasta:
-        section = section.strip().split('\n')
-        label = section.pop(0)
-        seq = ''.join(section)
-        result[label] = seq
-    return result
 
 def get_kinase_class():
     result = {
@@ -2613,25 +2553,6 @@ def get_cpdb(exclude = None):
             if not exclude or len(set(l[0].split(',')) - exclude) > 0:
                 result.append([participants[0], participants[1], l[0], l[1]])
     return result
-
-def get_uniprot_sec(organism = 9606):
-    if organism is not None:
-        proteome = all_uniprots(organism = organism)
-        proteome = set(proteome)
-    sec_pri = []
-    url = urls.urls['uniprot_sec']['url']
-    c = curl.Curl(url, silent = False, large = True)
-    data = c.result
-    return filter(lambda line:
-        len(line) == 2 and (organism is None or line[1] in proteome),
-        map(lambda i:
-            i[1].decode('utf-8').split(), 
-            filter(lambda i:
-                i[0] >= 30,
-                enumerate(data)
-            )
-        )
-    )
 
 def get_go(organism = 9606, swissprot = 'yes'):
     rev = '' if swissprot is None \
@@ -3026,6 +2947,18 @@ def hprd_interactions(in_vivo = True):
     '''
     return [i for i in get_hprd(in_vivo = in_vivo) if i[6] != '-']
 
+def hprd_htp():
+    url = urls.urls['hprd_all']['url']
+    fname= urls.urls['hprd_all']['int_file']
+    c = curl.Curl(url, silent = False, large = True, files_needed = [fname])
+    return list(
+        map(
+            lambda l:
+                l.split('\t'),
+                c.result[fname].read().encode('ascii').split('\n')
+            )
+        )
+
 def get_hprd_ptms(in_vivo = True):
     '''
     Processes HPRD data and extracts PTMs.
@@ -3095,7 +3028,7 @@ def load_lmpid(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
     with open(os.path.join(common.ROOT, 'data', fname), 'r') as f:
         data = f.read()
     soup = bs4.BeautifulSoup(data, 'html.parser')
-    uniprots = all_uniprots(organism = organism, swissprot = None)
+    uniprots = uniprot_inupt.all_uniprots(organism = organism, swissprot = None)
     prg = progress.Progress(len(soup.find_all('record')), 'Processing data from LMPID', 21)
     for rec in soup.find_all('record'):
         prg.step()
@@ -3221,7 +3154,7 @@ def li2012_dmi(mapper = None):
     '''
     result = {}
     nondigit = re.compile(r'[^\d]+')
-    se = swissprot_seq(isoforms = True)
+    se = uniprot_input.swissprot_seq(isoforms = True)
     if type(mapper) is not mapping.Mapper: mapper = mapping.Mapper(9606)
     data = get_li2012()
     for l in data:
@@ -4650,7 +4583,8 @@ def biogrid_interactions(organism = 9606, htp_limit = 1):
                 interactions.append([l[7], l[8], l[14]])
                 refc.append(l[14])
     refc = Counter(refc)
-    interactions = [i for i in interactions if refc[i[2]] <= htp_limit]
+    if htp_limit is not None:
+        interactions = [i for i in interactions if refc[i[2]] <= htp_limit]
     return interactions
 
 def acsn_ppi(keep_in_complex_interactions = True):
@@ -4953,8 +4887,21 @@ def get_cgc(user = None, passwd = None):
     c = curl.Curl(fname, sftp_host = host, sftp_ask = ask, sftp_user = user,
         sftp_passwd = passwd, large = True)
     data = c.result
+    null = data.readline()
     for line in data:
-        yield line.decode('utf-8')
+        next_line = line.decode('utf-8')
+        fields = []
+        field = ''
+        in_quotes = False
+        for char in next_line:
+            if char == ',' and not in_quotes:
+                fields.append(field)
+                field = ''
+            elif char == '"':
+                in_quotes = not in_quotes
+            else:
+                field += char
+        yield fields
 
 def get_matrixdb(organism = 9606):
     url = urls.urls['matrixdb']['url']
@@ -5059,7 +5006,8 @@ def get_dip(url = None, organism = 9606, core_only = True, direct_only = True,
     strDirect = 'direct interaction'
     strPhysInt = 'physical interaction'
     strSmallS = 'small scale'
-    url = urls.urls['dip']['url'] if url is None else url
+    url = urls.urls['dip']['url'] % ('CR' if core_only else '') \
+        if url is None else url
     c = curl.Curl(url, silent = False, large = True)
     f = c.result
     i = []
@@ -5406,8 +5354,11 @@ def intact_interactions(miscore = 0.6, organism = 9606, complex_expansion = Fals
     c = curl.Curl(url, silent = False, large = True, files_needed = ['intact.txt'])
     data = c.result
     f = data.values()[0]
+    size = c.sizes['intact.txt']
     lnum = 0
+    prg = progress.Progress(size, 'Reading IntAct MI-tab file', 99)
     for l in f:
+        prg.step(len(l))
         if lnum == 0:
             lnum += 1
             continue
@@ -5460,10 +5411,11 @@ def intact_interactions(miscore = 0.6, organism = 9606, complex_expansion = Fals
                         result[uniprots][2].add(
                             l[15].split('(')[1].replace(')', '')
                         )
-    result = map(lambda ups, a:
-        [ups[0], ups[1], ';'.join(list(a[0])), ';'.join(list(a[1])), ';'.join(list(a[2]))],
+    result = map(lambda d:
+        [d[0][0], d[0][1], ';'.join(list(d[1][0])), ';'.join(list(d[1][1])), ';'.join(list(d[1][2]))],
         iteritems(result)
     )
+    prg.terminate()
     return result
 
 def deathdomain_interactions():
@@ -5513,3 +5465,29 @@ def deathdomain_interactions():
                     ])
     
     return result
+
+def get_string_effects(ncbi_tax_id = 9606,
+                    stimulation = ['activation'],
+                    inhibition = ['inhibition'],
+                    exclude = ['expression'],
+                    score_threshold = 0):
+    effects = []
+    if type(stimulation) is list: stimulation = set(stimulation)
+    if type(inhibition) is list: inhibition = set(inhibition)
+    if type(exclude) is list: exclude = set(exclude)
+    url = urls.urls['string']['actions'] % ncbi_tax_id
+    c = curl.Curl(url, silent = False, large = True)
+    null = c.result.readline()
+    for l in c.result:
+        l = l.encode('ascii').split('\t')
+        if len(l) and l[4] == '1' \
+            and int(l[5]) >= score_threshold:
+            eff = '+' if l[2] in stimulation \
+                else '-' if l[2] in inhibition \
+                else '*' if l[2] not in exclude \
+                else None
+            if eff is not None:
+                effects.append([
+                    l[0][5:], l[1][5:], eff
+                ])
+    return effects

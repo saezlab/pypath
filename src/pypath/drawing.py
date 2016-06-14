@@ -103,6 +103,13 @@ class Plot(object):
         self.update_page()
         self.update_graph(graph)
     
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
     def _has_graph(self):
         return type(self.graph) is igraph.Graph
     
@@ -234,7 +241,7 @@ class Plot(object):
     
     def set_defaults(self, preset):
         if hasattr(self, preset):
-            for k, v in getattr(self, iteritems(preset)):
+            for k, v in iteritems(getattr(self, preset)):
                 self.set_param(k, v)
     
     def set_alpha(self, seq, alpha, attr):
@@ -273,7 +280,7 @@ class Plot(object):
             sf = cairo.PDFSurface(self.nextfile, self.dimensions[0], self.dimensions[1])
         else:
             # currently doing only pdf
-            sf = cairo.PDFSurface(self.nextfile, self.dimensions[0], self.dimensions[1])
+            sf = self.nextfile
         if self.vertex_label_size == "degree_label_size":
             # TODO
             dgr = g.vs.degree()

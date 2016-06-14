@@ -26,6 +26,8 @@
 import bs4
 import os
 
+import pypath.common as common
+
 _fonts = open('fonts.css', 'r').read().decode('utf-8') \
     if os.path.exists('fonts.css') else ''
 
@@ -858,20 +860,33 @@ def default_template(content, page_title, title = ''):
         .prettify().encode('utf-8')
 
 def main_page():
-    doc = u'<p>Welcome to the home of OmniPath, a comprehensive collection of '\
-        'literature curated human signaling pathways. And pypath, the powerful '\
-        'Python module for molecular networks and pathways analysis.</p>\n'\
-        '<h2><a class="omnipath" href="/info">Metainformation about signaling pathway resources'\
-        '</a></h2>\n'\
-        '<h2><a class="omnipath" href="http://github.com/saezlab/pypath" target="_blank">pypath'\
-        ' code</a></h2>\n'\
-        '<h2><a class="omnipath" href="http://pypath.omnipathdb.org/" target = "_blank">pypath'\
-        ' documentation</a></h2>\n'\
-        '<h2><a class="omnipath" href="" target="_blank">The article</a></h2>\n'\
-        '<p>D Turei, T Korcsmaros and J Saez-Rodriguez: Benchmark of literature'\
-        ' curated signaling pathway resources (submitted February 2016)</p>\n'\
-        '<h2><a class="omnipath" href="https://github.com/saezlab/pypath/blob/master/webservice.rst" '\
-        'target="_blank">How to access the data?</a></h2>\n'
+    notebooks = []
+    notebook_dir = ['pypath-docs', 'notebooks']
+    
+    notebook_names = {
+        'pypath_build_networks.html': 'Introduction',
+        'pypath_mapping.html': 'ID conversion',
+        'pathway_extraction.html': 'Pathway annotations',
+        'node_neighbourhood.html': 'Extracting PKNs',
+        'TF_location.html': 'Finding transcription factors'
+    }
+    
+    if os.path.exists(os.path.join(notebook_dir)):
+        notebooks = os.listdir(os.path.join(*notebook_dir))
+    
+    with open(os.path.join(common.ROOT, 'data', 'main.html'), 'r') as f:
+        doc = f.read()
+    
+    doc += '<p>Check out our tutorials:</p>'
+    for nb in notebooks:
+        if nb in notebook_names:
+            doc += '<p><a href="%s" title="%s">%s</a></p>' % (
+                    'http://pypath.omnipathdb.org/notebooks/%s' % nb,
+                    notebook_names[nb],
+                    notebook_names[nb]
+                )
+    doc += '<p>Special thanks for Luis Tobalina for providing some of the tutorials.</p>'
+    
     return default_template(doc, 
-        'OmniPath: literature curated human signaling pathways', 
+        'OmniPath: literature curated human signaling pathways',
         'literature curated human signaling pathways')

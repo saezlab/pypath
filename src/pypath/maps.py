@@ -4,7 +4,7 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2015 - EMBL-EBI
+#  Copyright (c) 2014-2016 - EMBL-EBI
 #
 #  File author(s): Dénes Türei (denes@ebi.ac.uk)
 #
@@ -17,8 +17,8 @@
 
 import os
 
-from pypath.common import ROOT
-from pypath import input_formats
+import pypath.common as common
+import pypath.input_formats as input_formats
 
 mapList = [
     {
@@ -26,7 +26,7 @@ mapList = [
         "two": "uniprot-pri",
         "typ": "protein",
         "src": "file",
-        "par": input_formats.FileMapping(os.path.join(ROOT, 'data',
+        "par": input_formats.FileMapping(os.path.join(common.ROOT, 'data',
                                                 'sec_ac.txt'),0,1,None,header=0)
     },
     {
@@ -34,7 +34,7 @@ mapList = [
         "two": "genesymbol",
         "typ": "protein",
         "src": "file",
-        "par": input_formats.FileMapping(os.path.join(ROOT, 'data',
+        "par": input_formats.FileMapping(os.path.join(common.ROOT, 'data',
                     'trembl3.tab'),0,1,"\t",header=0)
     },
     {
@@ -42,7 +42,7 @@ mapList = [
         "two": "swissprot",
         "typ": "protein",
         "src": "file",
-        "par": input_formats.FileMapping(os.path.join(ROOT, 'data',
+        "par": input_formats.FileMapping(os.path.join(common.ROOT, 'data',
                     'swissprot3.tab'),1,0,"\t",header=0)
     },
     {
@@ -50,7 +50,7 @@ mapList = [
         "two": "uniprot",
         "typ": "protein",
         "src": "file",
-        "par": input_formats.FileMapping(os.path.join(ROOT, 'data',
+        "par": input_formats.FileMapping(os.path.join(common.ROOT, 'data',
                 'uniprot3.tab'),1,0,"\t",header=0,bi=True)
     },
     {
@@ -58,7 +58,7 @@ mapList = [
         "two": "uniprot",
         "typ": "protein",
         "src": "file",
-        "par": input_formats.FileMapping(os.path.join(ROOT, 'data', 
+        "par": input_formats.FileMapping(os.path.join(common.ROOT, 'data', 
                     'human-genesymbol-all.tab'),1,0,"\t",header=0)
     },
     {
@@ -66,7 +66,7 @@ mapList = [
         "two": "uniprot",
         "typ": "protein",
         "src": "file",
-        "par": input_formats.FileMapping(os.path.join(ROOT, 'data', 
+        "par": input_formats.FileMapping(os.path.join(common.ROOT, 'data', 
                     'uniprot-refseq-human-1.tab'),1,0,"\t",header=0)
     },
     {
@@ -74,7 +74,7 @@ mapList = [
         "two": "uniprot",
         "typ": "protein",
         "src": "file",
-        "par": input_formats.FileMapping(os.path.join(ROOT, 'data', 'entrez_uniprot.csv'),1,0,";",header=0)
+        "par": input_formats.FileMapping(os.path.join(common.ROOT, 'data', 'entrez_uniprot.csv'),1,0,";",header=0)
     },
     {
         "one": "hgnc",
@@ -141,7 +141,7 @@ mapListUniprotOld = [
         "two": "uniprot-pri",
         "typ": "protein",
         "src": "file",
-        "par": input_formats.FileMapping(os.path.join(ROOT, 'data',
+        "par": input_formats.FileMapping(os.path.join(common.ROOT, 'data',
                                                 'sec_ac.txt'),0,1,None,header=0)
     },
     {
@@ -149,7 +149,7 @@ mapListUniprotOld = [
         "two": "genesymbol",
         "typ": "protein",
         "src": "file",
-        "par": input_formats.FileMapping(os.path.join(ROOT, 'data',
+        "par": input_formats.FileMapping(os.path.join(common.ROOT, 'data',
                     'trembl3.tab'),0,1,"\t",header=0)
     },
     {
@@ -157,7 +157,7 @@ mapListUniprotOld = [
         "two": "swissprot",
         "typ": "protein",
         "src": "file",
-        "par": input_formats.FileMapping(os.path.join(ROOT, 'data',
+        "par": input_formats.FileMapping(os.path.join(common.ROOT, 'data',
                     'swissprot3.tab'),1,0,"\t",header=0)
     },
     {
@@ -165,7 +165,7 @@ mapListUniprotOld = [
         "two": "uniprot",
         "typ": "protein",
         "src": "file",
-        "par": input_formats.FileMapping(os.path.join(ROOT, 'data', 
+        "par": input_formats.FileMapping(os.path.join(common.ROOT, 'data', 
                     'human-genesymbol-all.tab'),1,0,"\t",header=0)
     }
 ]

@@ -60,55 +60,41 @@ except:
     sys.stdout.flush()
 
 # from this module:
-from pypath import logn
+import pypath.logn as logn
 import pypath.data_formats as data_formats
 import pypath.mapping as mapping
-from pypath import descriptions
-from pypath import chembl
-from pypath import mysql
+import pypath.descriptions as descriptions
+import pypath.chembl as chembl
+import pypath.mysql as mysql
 
-from pypath import dataio
-from pypath import curl
-from pypath import intera
-from pypath import go
-from pypath import gsea
-from pypath import drawing as bdrawing
-from pypath import proteomicsdb
-from pypath import reflists
-from pypath.ig_drawing import *
-from pypath.common import *
-from pypath.common import __version__ as __version__
-from pypath.colorgen import *
+import pypath.dataio as dataio
+import pypath.uniprot_input as uniprot_input
+import pypath.curl as curl
+import pypath.intera as intera
+import pypath.seq as se
+import pypath.go as go
+import pypath.gsea as gsea
+import pypath.drawing as bdrawing
+import pypath.proteomicsdb as proteomicsdb
+import pypath.reflists as reflists
+import pypath.input_formats as input_formats
+import pypath.refs as _refs
+
+import pypath.ig_drawing as ig_drawing
+import pypath.common as common
 from pypath.gr_plot import *
 from pypath.progress import *
 
 omnipath = data_formats.omnipath
 
-if 'unicode' not in globals():
+if 'long' not in __builtins__:
+    long = int
+
+if 'unicode' not in __builtins__:
     unicode = str
 
-__all__ = ['PyPath', 'Direction', 'Reference', '__version__', 'a',
+__all__ = ['PyPath', 'Direction', '__version__', 'a',
     'AttrHelper', 'ReferenceList']
-
-class Reference(object):
-    
-    def __init__(self, pmid):
-        self.pmid = str(pmid.strip())
-        
-    def __eq__(self, other):
-        return type(other) == Reference and self.pmid == other.pmid
-    
-    def __hash__(self):
-        return hash(self.pmid)
-    
-    def open(self):
-        dataio.open_pubmed(self.pmid)
-    
-    def __str__(self):
-        return self.pmid
-    
-    def info(self):
-        return dataio.get_pubmeds([self.pmid])
 
 class Direction(object):
     
@@ -385,10 +371,10 @@ class Direction(object):
             self.negative[self.reverse] = self.negative[self.reverse] or \
                 other.negative[self.reverse]
             self.positive_sources[self.straight] = \
-                uniqList(self.positive_sources[self.straight] or \
+                common.uniqList(self.positive_sources[self.straight] or \
                 other.positive_sources[self.straight])
             self.negative_sources[self.reverse] = \
-                uniqList(self.negative_sources[self.reverse] + \
+                common.uniqList(self.negative_sources[self.reverse] + \
                 other.negative_sources[self.reverse])
 
 class AttrHelper(object):
@@ -423,7 +409,7 @@ class AttrHelper(object):
             sys.stdout.wrtie('No category for %s\n' % thisSources)
             sys.stdout.flush()
         # if value is constant:
-        elif type(self.value) in simpleTypes:
+        elif type(self.value) in common.simpleTypes:
             return self.value
         # if a dictionary given to map some igraph attribute to values:
         elif type(self.value) is dict and self.attr_name is not None:
@@ -513,7 +499,7 @@ class PyPath(object):
         @loops : bool
             Whether to allow loop edges in the graph. Default is False.
         '''
-        self.__version__ = __version__
+        self.__version__ = common.__version__
         for d in ['results', 'log', 'cache']:
             if not os.path.exists(d):
                 os.makedirs(d)
@@ -576,7 +562,7 @@ class PyPath(object):
             self.u_pfam = None
             self.seq = None
             self.palette = ['#6EA945', '#007B7F', '#FCCC06', '#DA0025', '#000000']
-            self.session = gen_session_id()
+            self.session = common.gen_session_id()
             self.session_name = ''.join([self.name,'-',self.session])
             self.loglevel = loglevel
             self.ownlog = logn.logw(self.session,self.loglevel)
@@ -874,7 +860,7 @@ class PyPath(object):
         if not reread and not redownload:
             infile, edgeListMapped = self.lookup_cache(_name, 
                 cache_files, int_cache, edges_cache)
-        if len(edgeListMapped) == 0:
+        if not len(edgeListMapped):
             if infile is None:
                 if settings.huge:
                     sys.stdout.write('\n\tProcessing %s requires huge memory.\n'\
@@ -955,7 +941,7 @@ class PyPath(object):
             elif type(sign) is tuple:
                 dirCol = sign[0]
                 dirVal = sign[1:3]
-                dirVal = dirVal if type(dirVal[0]) in simpleTypes else flatList(dirVal)
+                dirVal = dirVal if type(dirVal[0]) in common.simpleTypes else common.flatList(dirVal)
                 dirSep = sign[3] if len(sign) > 3 else None
             dirVal = set(dirVal if type(dirVal) is list else [dirVal])
             maxCol = max(
@@ -991,7 +977,7 @@ class PyPath(object):
                     split(settings.separator)
                 else:
                     line = [x.replace('\n','').replace('\r','') \
-                        if type(x) in charTypes else x 
+                        if type(x) in common.charTypes else x 
                         for x in line]
                 # in case line has less fields than needed
                 if len(line) < maxCol:
@@ -1014,7 +1000,7 @@ class PyPath(object):
                             dirVal, dirSep)
                     refs = []
                     if refCol is not None:
-                        refs = delEmpty(list(set(line[refCol].split(refSep))))
+                        refs = common.delEmpty(list(set(line[refCol].split(refSep))))
                     refs = dataio.only_pmids([r.strip() for r in refs])
                     if len(refs) == 0 and settings.must_have_references:
                         rFiltered += 1
@@ -1024,13 +1010,15 @@ class PyPath(object):
                         taxA = settings.ncbiTaxId
                         taxB = settings.ncbiTaxId
                     # to enable more sophisticated inputs:
-                    if type(settings.ncbiTaxId) is dict:
+                    elif type(settings.ncbiTaxId) is dict:
                         taxx = self.get_taxon(settings.ncbiTaxId, line)
                         if type(taxx) is tuple:
                             taxA = taxx[0]
                             taxB = taxx[1]
                         else:
                             taxA = taxB = taxx
+                    else:
+                        taxA = taxB = self.ncbi_tax_id
                     if taxA is None or taxB is None:
                         tFiltered += 1
                         continue
@@ -1039,13 +1027,13 @@ class PyPath(object):
                     if type(sign) is tuple:
                         stim, inh = self.process_sign(line[sign[0]], sign)
                     newEdge = {
-                        "nameA": line[settings.nameColA], 
-                        "nameB": line[settings.nameColB], 
-                        "nameTypeA": settings.nameTypeA, 
-                        "nameTypeB": settings.nameTypeB, 
-                        "typeA": settings.typeA, 
-                        "typeB": settings.typeB, 
-                        "source": settings.name, 
+                        "nameA": line[settings.nameColA].strip(),
+                        "nameB": line[settings.nameColB].strip(),
+                        "nameTypeA": settings.nameTypeA,
+                        "nameTypeB": settings.nameTypeB,
+                        "typeA": settings.typeA,
+                        "typeB": settings.typeB,
+                        "source": settings.name,
                         "isDirected": thisEdgeDir,
                         "references": refs,
                         "stim": stim,
@@ -1070,7 +1058,7 @@ class PyPath(object):
                         "attrsNodeA": attrsNodeA,
                         "attrsNodeB": attrsNodeB,
                         "attrsEdge": attrsEdge}
-                    newEdge = dict(chain(iteritems(newEdge), iteritems(nodeAttrs)))
+                    newEdge.update(nodeAttrs)
                 if readError != 0:
                     break
                 edgeList.append(newEdge)
@@ -1109,7 +1097,7 @@ class PyPath(object):
         originalNameType = settings.nameType
         defaultNameType = self.default_name_type[settings.typ]
         mapTbl = ''.join([originalNameType,"_",defaultNameType])
-        if type(_input) in charTypes and os.path.isfile(_input):
+        if type(_input) in common.charTypes and os.path.isfile(_input):
             _input = codecs.open(_input, encoding='utf-8', mode='r')
         if _input is None:
             self.ownlog.msg(2,("""Could not find '\
@@ -1119,7 +1107,7 @@ class PyPath(object):
         # finding the largest referred column number, 
         # to avoid references out of index
         maxCol = max(
-            [   settings.nameCol, 
+            [   settings.nameCol,
                 self.get_max(settings.extraAttrs) ])
         # iterating lines from input file
         lnum = 1
@@ -1131,7 +1119,7 @@ class PyPath(object):
                 # or header row
                 lnum += 1
                 continue
-            if type(line) in charTypes:
+            if type(line) in common.charTypes:
                 line = line.rstrip().split(settings.separator)
             # in case line has less fields than needed
             if len(line) < maxCol:
@@ -1157,7 +1145,7 @@ class PyPath(object):
                 # getting additional attributes
                 attrsItem = self.get_attrs(line, settings.extraAttrs, lnum)
                 # merging dictionaries
-                newItem = iteritems(dict(chain(newItem), iteritems(attrsItem) ))
+                newItem.update(attrsItem)
             if readError != 0:
                 break
             itemList.append(newItem)
@@ -1237,7 +1225,7 @@ class PyPath(object):
     def combine_signs(self,sigA,sigB):
         for out in [0,1]:
             for inn in [0,1]:
-                sigA[out][inn] = uniqList(sigA[out][inn]+sigB[out][inn])
+                sigA[out][inn] = common.uniqList(sigA[out][inn]+sigB[out][inn])
         return sigA
     
     def combine_dirs(self,dirA,dirB):
@@ -1248,7 +1236,7 @@ class PyPath(object):
     
     def combine_dirsrc(self,dirsA,dirsB):
         for i in [0,1,2]:
-            dirsA[i] = uniqList(dirsA[i]+dirsB[i])
+            dirsA[i] = common.uniqList(dirsA[i]+dirsB[i])
         return dirsA
     
     def combine_attr(self,lst):
@@ -1262,7 +1250,7 @@ class PyPath(object):
             return lst[1]
         if lst[1] is None:
             return lst[0]
-        if type(lst[0]) in numTypes and type(lst[1]) in numTypes:
+        if type(lst[0]) in common.numTypes and type(lst[1]) in common.numTypes:
             return max(lst)
         if type(lst[0]) is list and type(lst[1]) is list:
             try:
@@ -1278,14 +1266,14 @@ class PyPath(object):
             if len(lst[1]) == 0:
                 return lst[0]
             return [lst[0],lst[1]]
-        if (type(lst[0]) is list and type(lst[1]) in simpleTypes):
+        if (type(lst[0]) is list and type(lst[1]) in common.simpleTypes):
             if len(lst[1]) > 0:
-                return addToList(lst[0],lst[1])
+                return common.addToList(lst[0],lst[1])
             else:
                 return lst[0]
-        if (type(lst[1]) is list and type(lst[0]) in simpleTypes):
+        if (type(lst[1]) is list and type(lst[0]) in common.simpleTypes):
             if len(lst[0]) > 0:
-                return addToList(lst[1],lst[0])
+                return common.addToList(lst[1],lst[0])
             else:
                 return lst[1]
         if lst[0].__class__.__name__ == 'Direction' and \
@@ -1549,7 +1537,7 @@ class PyPath(object):
         self.add_list_eattr(edge, 'sources', source)
         # adding references:
         # if len(refs) > 0:
-        refs = [Reference(pmid) for pmid in refs]
+        refs = [_refs.Reference(pmid) for pmid in refs]
         self.add_list_eattr(edge, 'references', refs)
         # updating references-by-source dict:
         self.add_grouped_eattr(edge, 'refs_by_source', source, refs)
@@ -1592,7 +1580,7 @@ class PyPath(object):
             e[attr] = [e[attr]]
         # print(type(e[attr]))
         # print(type(value))
-        e[attr] = uniqList(e[attr] + value)
+        e[attr] = common.uniqList(e[attr] + value)
     
     def add_grouped_eattr(self, edge, attr, group, value):
         value = value if type(value) is list else [value]
@@ -1605,7 +1593,7 @@ class PyPath(object):
             e[attr][group] = []
         elif type(e[attr][group]) is not list:
             e[attr][group] = [e[attr][group]]
-        e[attr][group] = uniqList(e[attr][group] + value)
+        e[attr][group] = common.uniqList(e[attr][group] + value)
     
     def get_directed(self, graph = False, conv_edges = False, mutual = False, ret = False):
         toDel = []
@@ -1820,14 +1808,14 @@ class PyPath(object):
         for v in self.graph.vs:
             if v[attr] is None:
                 v[attr] = self.vertexAttrs[attr]()
-            if self.vertexAttrs[attr] is list and type(v[attr]) in simpleTypes:
+            if self.vertexAttrs[attr] is list and type(v[attr]) in common.simpleTypes:
                 v[attr] = [v[attr]] if len(v[attr]) > 0 else []
     
     def init_edge_attr(self, attr):
         for e in self.graph.es:
             if e[attr] is None:
                 e[attr] = self.edgeAttrs[attr]()
-            if self.edgeAttrs[attr] is list and type(e[attr]) in simpleTypes:
+            if self.edgeAttrs[attr] is list and type(e[attr]) in common.simpleTypes:
                 e[attr] = [e[attr]] if len(e[attr]) > 0 else []
     
     def attach_network(self, edgeList = False, regulator = False):
@@ -2369,7 +2357,7 @@ class PyPath(object):
                 g.vs[e.source][attr] += e[attr]
                 g.vs[e.target][attr] += e[attr]
             for v in g.vs:
-                v[attr] = uniqList(v[attr])
+                v[attr] = common.uniqList(v[attr])
     
     def basic_stats_intergroup(self,groupA,groupB,header=None):
         result = {}
@@ -2965,8 +2953,8 @@ class PyPath(object):
                             self.graph.vs[e.source]['label'].replace(' ','')]
                 thisEdge += [nameB.replace(' ',''),
                             self.graph.vs[e.target]['label']]
-                thisEdge += [';'.join(uniqList(e['sources'])),
-                             ';'.join(uniqList(e['references']))]
+                thisEdge += [';'.join(common.uniqList(e['sources'])),
+                             ';'.join(common.uniqList(e['references']))]
                 thisEdge += [';'.join(e['dirs'].get_dir('undirected',sources=True)),
                              ';'.join(e['dirs'].get_dir((nameA,nameB),sources=True)),
                              ';'.join(e['dirs'].get_dir((nameB,nameA),sources=True))]
@@ -3074,23 +3062,23 @@ class PyPath(object):
                        g.vs[e.source]['name'], g.vs[e.target]['name'],
                        isDirB))
                 f.write('\t<data key="Databases">%s</data>\n' % (
-                        ';'.join(uniqList(e['sources']))))
+                        ';'.join(common.uniqList(e['sources']))))
                 f.write('\t<data key="PubMedIDs">%s</data>\n' % (
-                        ';'.join(uniqList(e['references']))))
+                        ';'.join(common.uniqList(e['references']))))
                 f.write('\t<data key="Undirected">%s</data>\n' % (
-                        ';'.join(uniqList(e['dirs_by_source'][0]))))
+                        ';'.join(common.uniqList(e['dirs_by_source'][0]))))
                 f.write('\t<data key="DirectionAB">%s</data>\n' % (
-                        ';'.join(uniqList(e['dirs_by_source'][1]))))
+                        ';'.join(common.uniqList(e['dirs_by_source'][1]))))
                 f.write('\t<data key="DirectionBA">%s</data>\n' % (
-                        ';'.join(uniqList(e['dirs_by_source'][2]))))
+                        ';'.join(common.uniqList(e['dirs_by_source'][2]))))
                 f.write('\t<data key="StimulatoryAB">%s</data>\n' % (
-                        ';'.join(uniqList(e['signs'][0][0]))))
+                        ';'.join(common.uniqList(e['signs'][0][0]))))
                 f.write('\t<data key="InhibitoryAB">%s</data>\n' % (
-                        ';'.join(uniqList(e['signs'][0][1]))))
+                        ';'.join(common.uniqList(e['signs'][0][1]))))
                 f.write('\t<data key="StimulatoryBA">%s</data>\n' % (
-                        ';'.join(uniqList(e['signs'][1][0]))))
+                        ';'.join(common.uniqList(e['signs'][1][0]))))
                 f.write('\t<data key="InhibitoryBA">%s</data>\n' % (
-                        ';'.join(uniqList(e['signs'][1][1]))))
+                        ';'.join(common.uniqList(e['signs'][1][1]))))
                 f.write('\t<data key="InhibitoryBA">%s</data>\n' % (
                         e['type']))
                 f.write('</edge>\n')
@@ -3132,8 +3120,8 @@ class PyPath(object):
                 for comp in data:
                     node['compounds_chembl'].append(comp['chembl'])
                     node['compounds_names'] += comp['compound_names']
-                node['compounds_chembl'] = uniqList(node['compounds_chembl'])
-                node['compounds_names'] = uniqList(node['compounds_names'])
+                node['compounds_chembl'] = common.uniqList(node['compounds_chembl'])
+                node['compounds_names'] = common.uniqList(node['compounds_names'])
         prg.terminate()
         percent = hascomp/float(self.graph.vcount())
         sys.stdout.write('\n\tCompounds found for %u targets, (%.2f%% of all proteins).\n\n'\
@@ -3926,19 +3914,19 @@ class PyPath(object):
             self.nodNam, self.nodLab)
     
     def up_neighborhood(self, uniprot, order = 1, mode = 'ALL'):
-        if type(uniprots) in simpleTypes:
+        if type(uniprots) in common.simpleTypes:
             uniprots = [uniprots]
         vs = self.uniprots(uniprots)
         return self._neighborhood(vs, order = order, mode = mode)
     
     def gs_neighborhood(self, genesymbols, order = 1, mode = 'ALL'):
-        if type(genesymbols) in simpleTypes:
+        if type(genesymbols) in common.simpleTypes:
             genesymbols = [genesymbols]
         vs = self.genesymbols(genesymbols)
         return self._neighborhood(vs, order = order, mode = mode)
     
     def neighborhood(self, identifiers, order = 1, mode = 'ALL'):
-        if type(identifiers) in simpleTypes:
+        if type(identifiers) in common.simpleTypes:
             identifiers = [identifiers]
         vs = self.proteins(identifiers)
         return self._neighborhood(vs, order = order, mode = mode)
@@ -4118,7 +4106,7 @@ class PyPath(object):
     
     def load_domino_dmi(self, organism = None):
         organism = organism if organism is not None else self.ncbi_tax_id
-        #all_unip = dataio.all_uniprots(organism)
+        #all_unip = dataio.uniprot_input.all_uniprots(organism)
         domi = dataio.get_domino_ptms()
         if domi is None:
             self.ownlog.msg(2,
@@ -4591,7 +4579,7 @@ class PyPath(object):
             ]))
     
     def sequences(self, isoforms = True):
-        self.seq = dataio.swissprot_seq(self.ncbi_tax_id, isoforms)
+        self.seq = uniprot_input.swissprot_seq(self.ncbi_tax_id, isoforms)
     
     def load_ptms(self):
         self.load_depod_dmi()
@@ -4701,7 +4689,7 @@ class PyPath(object):
                 if source == 'HPRD':
                     substrate_ups_all = self.mapper.map_name(p['substrate_refseqp'], 
                         'refseqp', 'uniprot')
-                    substrate_ups_all = uniqList(substrate_ups_all)
+                    substrate_ups_all = common.uniqList(substrate_ups_all)
                 for k in p['kinase']:
                     if k not in kin_ambig:
                         kin_ambig[k] = kinase_ups
@@ -4782,8 +4770,8 @@ class PyPath(object):
         reres = re.compile(r'([A-Z][a-z]+)-([0-9]+)')
         non_digit = re.compile(r'[^\d.-]+')
         data = dataio.get_depod()
-        aadict = dict(zip([a.lower().capitalize() for a in aaletters.keys()],
-            aaletters.values()))
+        aadict = dict(zip([a.lower().capitalize() for a in common.aaletters.keys()],
+            common.aaletters.values()))
         if self.seq is None:
             self.sequences()
         if 'ptm' not in self.graph.es.attributes():
@@ -5363,7 +5351,7 @@ class PyPath(object):
         return all_paths
     
     def transcription_factors(self):
-        return uniqList([j for ssl in \
+        return common.uniqList([j for ssl in \
             [i for sl in \
                 [[e['dirs'].src_by_source(s) for s in e['sources_by_type']['TF']]\
                     for e in self.graph.es if 'TF' in e['type']] \
@@ -5544,9 +5532,9 @@ class PyPath(object):
         self.update_vname()
         self.graph.vs['tf'] = [False for _ in self.graph.vs]
         tfs = dataio.get_tfcensus(classes)
-        uniprots = flatList([self.mapper.map_name(e, 'ensg', 'uniprot') \
+        uniprots = common.flatList([self.mapper.map_name(e, 'ensg', 'uniprot') \
             for e in tfs['ensg']])
-        uniprots += flatList([self.mapper.map_name(e, 'hgnc', 'uniprot') \
+        uniprots += common.flatList([self.mapper.map_name(e, 'hgnc', 'uniprot') \
             for e in tfs['hgnc']])
         for uniprot in uniprots:
             if uniprot in self.nodDct:
@@ -5676,7 +5664,7 @@ class PyPath(object):
     
     def curation_stats(self):
         result = {}
-        all_refs = len(set(flatList([[r.pmid for r in e['references']] \
+        all_refs = len(set(common.flatList([[r.pmid for r in e['references']] \
             for e in self.graph.es])))
         for s in self.sources:
             src_edges = len([e.index for e in self.graph.es if s in e['sources']])
@@ -5690,23 +5678,23 @@ class PyPath(object):
                 float(self.graph.ecount()) * 100.0
             shared_edges = len([e.index for e in self.graph.es \
                 if s in e['sources'] and len(e['sources']) > 1])
-            src_refs = set(uniqList([r.pmid for r in flatList([e['refs_by_source'][s] \
+            src_refs = set(common.uniqList([r.pmid for r in common.flatList([e['refs_by_source'][s] \
                 for e in self.graph.es if s in e['refs_by_source']])]))
-            other_refs = set(flatList([[r.pmid for r in \
-                flatList([rr for sr, rr in iteritems(e['refs_by_source']) if sr != s])] \
+            other_refs = set(common.flatList([[r.pmid for r in \
+                common.flatList([rr for sr, rr in iteritems(e['refs_by_source']) if sr != s])] \
                 for e in self.graph.es]))
             only_src_refs = len(src_refs - other_refs)
             only_src_refs_pct = len(src_refs - other_refs) / float(all_refs) * 100.0
             src_refs_pct = len(src_refs) / float(all_refs) * 100.0
             shared_refs = len(src_refs & other_refs)
             shared_curation_effort = sum([len(x) for x in \
-                [set(flatList([[(r.pmid, e.index) for r in rr] \
+                [set(common.flatList([[(r.pmid, e.index) for r in rr] \
                     for sr, rr in iteritems(e['refs_by_source']) if sr != s])) & \
                 set([(rl.pmid, e.index) for rl in e['refs_by_source'][s]]) \
                 for e in self.graph.es if s in e['refs_by_source']] if len (x) != 0])
             src_only_curation_effort = sum([len(x) for x in \
                 [set([(rl.pmid, e.index) for rl in e['refs_by_source'][s]]) - \
-                set(flatList([[(r.pmid, e.index) for r in rr] \
+                set(common.flatList([[(r.pmid, e.index) for r in rr] \
                     for sr, rr in iteritems(e['refs_by_source']) if sr != s])) \
                 for e in self.graph.es if s in e['refs_by_source']] if len (x) != 0])
             src_curation_effort = sum([len(x) for x in \
@@ -5835,12 +5823,12 @@ class PyPath(object):
     
     def htp_stats(self):
         htdata = {}
-        refc = Counter(flatList((r.pmid for r in e['references']) for e in self.graph.es))
+        refc = Counter(common.flatList((r.pmid for r in e['references']) for e in self.graph.es))
         for htlim in reversed(xrange(5, 201)):
             htrefs = set([i[0] for i in refc.most_common() if i[1] > htlim])
             htedgs = [e.index for e in self.graph.es if \
                 len(set([r.pmid for r in e['references']]) - htrefs) == 0]
-            htsrcs = uniqList(flatList([self.graph.es[e]['sources'] for e in htedgs]))
+            htsrcs = common.uniqList(common.flatList([self.graph.es[e]['sources'] for e in htedgs]))
             htdata[htlim] = {
                 'rnum': len(htrefs),
                 'enum': len(htedgs),
@@ -5858,6 +5846,7 @@ class PyPath(object):
         for interactions already supported by literature 
         evidences from other sources.
         '''
+        self.string_effects(graph = graph)
         self.kegg_directions(graph = graph)
         self.laudanna_effects(graph = graph)
         self.laudanna_directions(graph = graph)
@@ -5903,6 +5892,12 @@ class PyPath(object):
         self.process_directions(laud, 'Laudanna_effects', stimulation = 'activation', 
             inhibition = 'inhibition', directed = 'docking', 
             id_type = 'genesymbol', graph = graph)
+    
+    def string_effects(self, graph = None):
+        string = dataio.get_string_effects()
+        self.process_directions(string, 'STRING', stimulation = '+',
+            inhibition = '-', directed = '*',
+            id_type = 'ensp', graph = graph)
     
     def acsn_effects(self, graph = None):
         acsnd = dataio.get_acsn_effects()
@@ -6152,7 +6147,7 @@ class PyPath(object):
         attrs = {}
         for gattr, fun in iteritems(_attrs['graph_callbacks']):
             attrs[gattr] = fun(g)
-        attrs = cleanDict(attrs)
+        attrs = common.cleanDict(attrs)
         for gattr, value in iteritems(attrs):
             dot.graph_attr[gattr] = value
         # vertices
@@ -6162,7 +6157,7 @@ class PyPath(object):
                 attrs[vattr] = fun(g.vs[vid])
             if vid in hide_nodes:
                 attrs['style'] = 'invis'
-            attrs = cleanDict(attrs)
+            attrs = common.cleanDict(attrs)
             dot.add_node(node, **attrs)
         # edges
         edge_callbacks = _attrs['edge_callbacks']
@@ -6222,7 +6217,7 @@ class PyPath(object):
                             else:
                                 attrs['style'] = 'invis'
                                 drawn_directed = False
-                            attrs = cleanDict(attrs)
+                            attrs = common.cleanDict(attrs)
                             dot.add_edge(sl, tl, **attrs)
                     if d.get_dir((tn, sn)):
                         sdir = d.get_dir((tn, sn), sources = True)
@@ -6260,7 +6255,7 @@ class PyPath(object):
                             else:
                                 attrs['style'] = 'invis'
                                 drawn_directed = False
-                            attrs = cleanDict(attrs)
+                            attrs = common.cleanDict(attrs)
                             dot.add_edge(tl, sl, **attrs)
                 if not directed or d.get_dir('undirected'):
                     attrs = {}
@@ -6277,7 +6272,7 @@ class PyPath(object):
                             'invis' in dot.get_edge(sl, tl).attr['style']:
                             dot.delete_edge(sl, tl)
                     if not dot.has_neighbor(sl, tl):
-                        attrs = cleanDict(attrs)
+                        attrs = common.cleanDict(attrs)
                         dot.add_edge((sl, tl), **attrs)
         if type(save_dot) in set([str, unicode]):
             with open(save_dot, 'w') as f:

@@ -31,10 +31,10 @@ except:
         sys.stdout.write('No `mysql` available.\n\n')
         sys.stdout.flush()
 
-from pypath import mapping
-from pypath import progress
-from pypath import data_formats
-from pypath.common import uniqList
+import pypath.mapping as mapping
+import pypath.progress as progress
+import pypath.data_formats as data_formats
+import pypath.common as common
 
 class Chembl(object):
     
@@ -444,11 +444,11 @@ class Chembl(object):
             for syn, results in like_results.iteritems():
                 # choosing the shortest returned list of ChEMBL IDs
                 if len(results) > 0 and syn not in self.result:
-                    results = [uniqList(r) for r in results]
+                    results = [common.uniqList(r) for r in results]
                     self.result[syn] = reduce(lambda x, y: x \
                         if len(y) == 0 or len(x) < len(y) and len(x) > 0 \
                         else y, results)
-        self.result = dict([(k, uniqList(v)) for k, v in self.result.iteritems()])
+        self.result = dict([(k, common.uniqList(v)) for k, v in self.result.iteritems()])
     
     def get_chembl_uniprots(self,originals):
         chembls = []

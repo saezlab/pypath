@@ -28,7 +28,7 @@ import hashlib
 from queue import Queue
 import threading
 
-from pypath import mysql_connect
+import pypath.mysql_connect as mysql_connect
 
 class MysqlRunner(object):
     

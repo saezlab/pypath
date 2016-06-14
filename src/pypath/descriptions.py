@@ -22,10 +22,16 @@ import codecs
 import bs4
 import textwrap
 
-from pypath import _html
-from pypath import data_formats
+import pypath._html as _html
+import pypath.data_formats as data_formats
 
 __all__ = ['descriptions', 'gen_html', 'write_html']
+
+if 'long' not in __builtins__:
+    long = int
+
+if 'unicode' not in __builtins__:
+    unicode = str
 
 descriptions = {
     'Lit13': {

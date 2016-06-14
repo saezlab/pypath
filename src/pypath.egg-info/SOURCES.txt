@@ -33,6 +33,7 @@ src/pypath/linkcomm.py
 src/pypath/logn.py
 src/pypath/main.py
 src/pypath/mapping.py
+src/pypath/mapping_input.py
 src/pypath/maps.py
 src/pypath/moduland.py
 src/pypath/mysql.py
@@ -44,11 +45,14 @@ src/pypath/plot.py
 src/pypath/progress.py
 src/pypath/proteomicsdb.py
 src/pypath/reaction.py
+src/pypath/reaction2.py
 src/pypath/reflists.py
+src/pypath/refs.py
 src/pypath/residues.py
 src/pypath/seq.py
 src/pypath/server.py
 src/pypath/unichem.py
+src/pypath/uniprot_input.py
 src/pypath/urls.py
 src/pypath.egg-info/PKG-INFO
 src/pypath.egg-info/SOURCES.txt
@@ -62,6 +66,7 @@ src/pypath/data/acsn_ppi.txt
 src/pypath/data/alzpw-ppi.csv
 src/pypath/data/arn_curated.csv
 src/pypath/data/embl_colors
+src/pypath/data/main.html
 src/pypath/data/nci-pid-strict.csv
 src/pypath/data/nrf2ome.csv
 src/pypath/data/phosphopoint.csv

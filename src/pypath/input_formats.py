@@ -18,7 +18,7 @@
 import codecs
 
 __all__ = ['MysqlMapping','FileMapping',
-           'PickleMapping','ReadSettings','ReadList']
+           'PickleMapping','ReadSettings','ReadList', 'Reference']
 
 class MysqlMapping(object):
         
@@ -106,13 +106,13 @@ class PickleMapping(object):
 
 class ReadSettings:
     
-    def __init__(self, name = "unknown", separator = None, nameColA = 0, nameColB = 1, 
-            nameTypeA = "uniprot", nameTypeB = "uniprot", typeA = "protein", 
-            typeB = "protein", isDirected = False, sign = False, inFile = None, 
-            references = False, extraEdgeAttrs = {}, extraNodeAttrsA = {}, 
-            extraNodeAttrsB = {}, header = False, taxonA = False, taxonB = False, 
-            ncbiTaxId = False, interactionType = 'PPI', 
-            positiveFilters = [], negativeFilters = [], inputArgs = {}, 
+    def __init__(self, name = "unknown", separator = None, nameColA = 0, nameColB = 1,
+            nameTypeA = "uniprot", nameTypeB = "uniprot", typeA = "protein",
+            typeB = "protein", isDirected = False, sign = False, inFile = None,
+            references = False, extraEdgeAttrs = {}, extraNodeAttrsA = {},
+            extraNodeAttrsB = {}, header = False, taxonA = 9606, taxonB = 9606,
+            ncbiTaxId = False, interactionType = 'PPI',
+            positiveFilters = [], negativeFilters = [], inputArgs = {},
             must_have_references = True, huge = False):
         self.typeA = typeA
         self.typeB = typeB

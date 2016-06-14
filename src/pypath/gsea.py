@@ -30,12 +30,12 @@ except ImportError:
 from collections import OrderedDict
 
 # from this module:
-from pypath import dataio
-from pypath import data_formats
-from pypath import enrich
-from pypath import mapping
-from pypath import progress
-from pypath.common import *
+import pypath.dataio as dataio
+import pypath.data_formats as data_formats
+import pypath.enrich as enrich
+import pypath.mapping as mapping
+import pypath.progress as progress
+import pypath.common as common
 
 class GSEA(object):
     
@@ -129,7 +129,7 @@ class GSEA(object):
             setname, 'symbol', map_ids)
     
     def write_set(self, id_list, setname, id_type, map_ids = True):
-        self.sets[setname] = set(uniqList(flatList( \
+        self.sets[setname] = set(common.uniqList(common.flatList( \
             self.mapper.map_name(n, self.ids[id_type], self.target_id) \
                 for n in id_list))) if map_ids \
             else set(id_list)
@@ -202,7 +202,7 @@ class GSEABinaryEnrichmentSet(enrich.EnrichmentSet):
         groups = None, filtr = lambda x: True, **kwargs):
         args = get_args(locals(), ['filtr', 'groups'])
         if groups is None: groups = self.gsea.groups.keys() # all by default
-        sets = set(flatList(s for g, s in iteritems(self.gsea.groups) if g in groups))
+        sets = set(common.flatList(s for g, s in iteritems(self.gsea.groups) if g in groups))
         return super(GSEABinaryEnrichmentSet, self).toplist(
             filtr = lambda x: x[0] in sets and filtr(x), **args)
     

@@ -15,7 +15,8 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
-from pypath import dataio
+import pypath.uniprot_input as uniprot_input
+import pypath.dataio as dataio
 
 class ReferenceList(object):
     

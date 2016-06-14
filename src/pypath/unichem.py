@@ -19,8 +19,8 @@ import json
 import sys
 import bs4
 
-import progress
-import dataio
+import pypath.progress as progress
+import pypath.dataio as dataio
 
 class Unichem(object):
     

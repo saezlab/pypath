@@ -4,7 +4,7 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2015 - EMBL-EBI
+#  Copyright (c) 2014-2016 - EMBL-EBI
 #
 #  File author(s): Dénes Türei (denes@ebi.ac.uk)
 #
@@ -30,6 +30,7 @@ import imp
 import sys
 import os
 import shutil
+import struct
 
 import pycurl
 try:
@@ -89,9 +90,12 @@ except:
 
 from contextlib import closing
 
-from pypath import progress
+import pypath.progress as progress
 
-if 'unicode' not in globals():
+if 'long' not in __builtins__:
+    long = int
+
+if 'unicode' not in __builtins__:
     unicode = str
 
 CURSOR_UP_ONE = '\x1b[1A'
@@ -173,14 +177,15 @@ class RemoteFile(object):
 class Curl(object):
     
     def __init__(self,
-        url, silent = True, post = None, req_headers = None, cache = True,
+        url, silent = True, get = None,
+        post = None, req_headers = None, cache = True,
         debug = False, outf = None, compr = None, encoding = None,
         files_needed = None, timeout = 300, init_url = None, 
         init_fun = 'get_jsessionid', follow = True, large = False,
         override_post = False, init_headers = False,
         return_headers = False, binary_data = None,
         write_cache = True, force_quote = False,
-        sftp_user = None, sftp_passwd = None, sftp_passwd_file = None,
+        sftp_user = None, sftp_passwd = None, sftp_passwd_file = '.secrets',
         sftp_port = 22, sftp_host = None, sftp_ask = None,
         setup = True, call = True, process = True,
         retries = 3, cache_dir = 'cache'):
@@ -195,6 +200,7 @@ class Curl(object):
         self.force_quote = force_quote
         self.process_url()
         self.url_fix()
+        self.set_get()
         self.compr = compr
         self.get_type()
         self.progress = None
@@ -208,6 +214,7 @@ class Curl(object):
         self.retries = retries
         self.req_headers = req_headers or []
         self.post = post
+        self.get = get
         self.binary_data = binary_data
         
         self.cache_dir = cache_dir
@@ -317,6 +324,28 @@ class Curl(object):
             self.curl.setopt(self.curl.POST, 1)
         else:
             self.postfields = None
+    
+    def set_get(self):
+        if self.get is not None:
+            self.qs = '&'.join(
+                map(
+                    lambda param:
+                        '%s=%s' % (param[0], param[1]),
+                    map(
+                        lambda param:
+                            (
+                                urllib.quote_plus(param[0]),
+                                urllib.quote_plus(param[1])
+                            ),
+                        iteritems(self.get)
+                    )
+                )
+            )
+            self.url = '%s%s%s' % (
+                self.url,
+                '&' if '?' in self.url else '?',
+                self.qs
+            )
     
     def set_binary_data(self):
         if self.binary_data:
@@ -601,6 +630,7 @@ class Curl(object):
     
     def open_tgz(self):
         self.files_multipart = {}
+        self.sizes = {}
         self.tarfile = tarfile.open(fileobj = self.fileobj, mode = 'r:gz')
         self.members = self.tarfile.getmembers()
         for m in self.members:
@@ -608,6 +638,7 @@ class Curl(object):
                 and m.size != 0:
                 # m.size is 0 for dierctories
                 this_file = self.tarfile.extractfile(m)
+                self.sizes[m.name] = m.size
                 if self.large:
                     self.files_multipart[m.name] = this_file
                 else:
@@ -618,6 +649,9 @@ class Curl(object):
         self.result = self.files_multipart
     
     def open_gz(self):
+        self.fileobj.seek(-4, 2)
+        self.size = struct.unpack('I', self.fileobj.read(4))[0]
+        self.fileobj.seek(0)
         self.gzfile = gzip.GzipFile(fileobj = self.fileobj, mode = 'rb')
         #try:
         if self.large:
@@ -630,9 +664,11 @@ class Curl(object):
     
     def open_zip(self):
         self.files_multipart = {}
+        self.sizes = {}
         self.zipfile = zipfile.ZipFile(self.fileobj, 'r')
         self.members = self.zipfile.namelist()
-        for m in self.members:
+        for i, m in enumerate(self.members):
+            self.sizes[m] = self.zipfile.filelist[i].file_size
             if self.files_needed is None or m in self.files_needed:
                 this_file = self.zipfile.open(m)
                 if self.large:
@@ -645,6 +681,7 @@ class Curl(object):
         self.result = self.files_multipart
     
     def open_plain(self):
+        self.size = os.path.getsize(self.fileobj.name)
         if self.large:
             self.result = self.fileobj
         else:
@@ -672,11 +709,16 @@ class Curl(object):
     
     def get_result_type(self):
         if type(self.result) is dict:
-            self.result_type = 'dict of %s' % (
-                'byte arrays' if type(next(iter(self.result.values()))) is bytes else \
-                'unicode strings' if type(next(iter(self.result.values()))) is unicode else \
-                'file objects'
-        )
+            if len(self.result):
+                self.result_type = 'dict of %s' % (
+                    'byte arrays' \
+                        if type(next(iter(self.result.values()))) is bytes \
+                    else 'unicode strings' \
+                        if type(next(iter(self.result.values()))) is unicode \
+                    else 'file objects'
+                )
+            else:
+                self.result_type = 'empty dict'
         else:
             self.result_type = '%s' % (
                 'byte array' if type(self.result) is bytes else \
@@ -713,22 +755,22 @@ class Curl(object):
     # sftp part:
     
     def sftp_url(self):
-        if sftp_host is not None:
+        if self.sftp_host is not None:
             self.sftp_filename = self.url
             self.url = '%s%s' % (self.sftp_host, self.sftp_filename)
     
     def sftp_call(self):
         self.sftp_success = self.sftp_download()
-        if sftp_success:
+        if self.sftp_success:
             self.status = 200
         else:
             self.status = 501
     
-    def ask_passwd(ask, passwd_file, use_passwd_file = True):
-        if use_passwd_file and os.path.exists(self.passwd_file):
-            with open(passwd_file, 'r') as f:
+    def ask_passwd(self, use_passwd_file = True):
+        if use_passwd_file and os.path.exists(self.sftp_passwd_file):
+            with open(self.sftp_passwd_file, 'r') as f:
                 self.sftp_user = f.readline().strip()
-                self.passwd = f.readline().strip()
+                self.sftp_passwd = f.readline().strip()
             return None
         sys.stdout.write(self.sftp_ask)
         sys.stdout.flush()
@@ -747,10 +789,9 @@ class Curl(object):
             with open(self.sftp_passwd_file, 'w') as f:
                 f.write('%s\n%s' % (self.user, self.passwd))
 
-    def sftp_download(localpath, host, user = None,
-        passwd = None, passwd_file = None, ask = None, port = 22):
-        ask = 'Please enter your login details for %s\n' % host \
-            if ask is None else ask
+    def sftp_download(self):
+        self.sftp_ask = 'Please enter your login details for %s\n' % self.host \
+            if self.sftp_ask is None else self.sftp_ask
         self.sftp_passwd_file = os.path.join('cache', '%s.login' % self.sftp_host) \
             if self.sftp_passwd_file is None else self.sftp_passwd_file
         if self.sftp_user is None:

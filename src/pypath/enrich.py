@@ -26,8 +26,6 @@ import fisher
 import statsmodels.stats.multitest as smm
 from collections import OrderedDict
 
-from pypath.common import *
-
 class Enrichment(object):
     
     def __init__(self, set_count, pop_count, set_size, pop_size, data):
