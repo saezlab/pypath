@@ -177,7 +177,8 @@ class RemoteFile(object):
 class Curl(object):
     
     def __init__(self,
-        url, silent = True, post = None, req_headers = None, cache = True,
+        url, silent = True, get = None,
+        post = None, req_headers = None, cache = True,
         debug = False, outf = None, compr = None, encoding = None,
         files_needed = None, timeout = 300, init_url = None, 
         init_fun = 'get_jsessionid', follow = True, large = False,
@@ -199,6 +200,7 @@ class Curl(object):
         self.force_quote = force_quote
         self.process_url()
         self.url_fix()
+        self.set_get()
         self.compr = compr
         self.get_type()
         self.progress = None
@@ -212,6 +214,7 @@ class Curl(object):
         self.retries = retries
         self.req_headers = req_headers or []
         self.post = post
+        self.get = get
         self.binary_data = binary_data
         
         self.cache_dir = cache_dir
@@ -321,6 +324,28 @@ class Curl(object):
             self.curl.setopt(self.curl.POST, 1)
         else:
             self.postfields = None
+    
+    def set_get(self):
+        if self.get is not None:
+            self.qs = '&'.join(
+                map(
+                    lambda param:
+                        '%s=%s' % (param[0], param[1]),
+                    map(
+                        lambda param:
+                            (
+                                urllib.quote_plus(param[0]),
+                                urllib.quote_plus(param[1])
+                            ),
+                        iteritems(self.get)
+                    )
+                )
+            )
+            self.url = '%s%s%s' % (
+                self.url,
+                '&' if '?' in self.url else '?',
+                self.qs
+            )
     
     def set_binary_data(self):
         if self.binary_data:
