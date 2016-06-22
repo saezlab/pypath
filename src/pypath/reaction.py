@@ -153,6 +153,8 @@ class BioPaxReader(object):
             f.seek(-4, 2)
             self.bp_filesize = struct.unpack('<I', f.read())[0]
             f.close()
+        elif type(self.biopax) is zipfile.ZipExtFile:
+            
         elif hasattr(self.biopax, 'name') and os.path.exists(self.biopax.name):
             self.bp_filesize = os.path.getsize(self.biopax.name)
     

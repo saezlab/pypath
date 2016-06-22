@@ -174,7 +174,101 @@ class RemoteFile(object):
                     for line in f:
                         yield line
 
-class Curl(object):
+class FileOpener(object):
+    
+    def __init__(self, f, compr = None, extract = True):
+        if not hasattr(self, 'compr'):
+            self.compr = compr
+        self.fname = f if type(f) is str else f.name
+        self.fileobj = None if type(f) is str else f
+        self.get_type()
+        self.open()
+        if extract:
+            self.extract()
+    
+    def open(self):
+        if self.fileobj is None and os.path.exists(self.fname):
+            self.fileobj = open(self.fname, 'rb')
+    
+    def extract(self):
+        getattr(self, 'open_%s' % self.type)()
+    
+    def open_tgz(self):
+        self.files_multipart = {}
+        self.sizes = {}
+        self.tarfile = tarfile.open(fileobj = self.fileobj, mode = 'r:gz')
+        self.members = self.tarfile.getmembers()
+        for m in self.members:
+            if (self.files_needed is None or m.name in self.files_needed) \
+                and m.size != 0:
+                # m.size is 0 for dierctories
+                this_file = self.tarfile.extractfile(m)
+                self.sizes[m.name] = m.size
+                if self.large:
+                    self.files_multipart[m.name] = this_file
+                else:
+                    self.files_multipart[m.name] = this_file.read()
+                    this_file.close()
+        if not self.large:
+            self.tarfile.close()
+        self.result = self.files_multipart
+    
+    def open_gz(self):
+        self.fileobj.seek(-4, 2)
+        self.size = struct.unpack('I', self.fileobj.read(4))[0]
+        self.fileobj.seek(0)
+        self.gzfile = gzip.GzipFile(fileobj = self.fileobj, mode = 'rb')
+        #try:
+        if self.large:
+            self.result = self.gzfile
+        else:
+            self.result = self.gzfile.read()
+            self.gzfile.close()
+        #except:
+        #    self.print_status('Error at extracting gzip file')
+    
+    def open_zip(self):
+        self.files_multipart = {}
+        self.sizes = {}
+        self.zipfile = zipfile.ZipFile(self.fileobj, 'r')
+        self.members = self.zipfile.namelist()
+        for i, m in enumerate(self.members):
+            self.sizes[m] = self.zipfile.filelist[i].file_size
+            if self.files_needed is None or m in self.files_needed:
+                this_file = self.zipfile.open(m)
+                if self.large:
+                    self.files_multipart[m] = this_file
+                else:
+                    self.files_multipart[m] = this_file.read()
+                    this_file.close()
+        if not self.large:
+            self.zipfile.close()
+        self.result = self.files_multipart
+    
+    def open_plain(self):
+        self.size = os.path.getsize(self.fileobj.name)
+        if self.large:
+            self.result = self.fileobj
+        else:
+            self.result = self.fileobj.read()
+            self.fileobj.close()
+    
+    def get_type(self):
+        self.multifile = False
+        if self.fname[-3:].lower() == 'zip' or self.compr == 'zip':
+            self.type = 'zip'
+            self.multifile = True
+        elif self.fname[-3:].lower() == 'tgz' or \
+            self.fname[-6:].lower() == 'tar.gz' or \
+            self.compr == 'tgz' or self.compr == 'tar.gz':
+            self.type = 'tgz'
+            self.multifile = True
+        elif self.fname[-2:].lower() == 'gz' or self.compr == 'gz':
+            self.type = 'gz'
+        else:
+            self.type = 'plain'
+
+class Curl(FileOpener):
     
     def __init__(self,
         url, silent = True, get = None,
@@ -193,6 +287,7 @@ class Curl(object):
         self.result = None
         self.download_failed = False
         self.status = 0
+        self.get = get
         self.large = large
         self.silent = silent
         self.debug = debug
@@ -202,7 +297,7 @@ class Curl(object):
         self.url_fix()
         self.set_get()
         self.compr = compr
-        self.get_type()
+        # self.get_type()
         self.progress = None
         
         self.encoding = encoding
@@ -296,21 +391,6 @@ class Curl(object):
         if self.force_quote or not self.is_quoted_plus(qs):
             qs = urllib.quote_plus(qs, '&=')
         self.url= urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
-    
-    def get_type(self):
-        self.multifile = False
-        if self.filename[-3:].lower() == 'zip' or self.compr == 'zip':
-            self.type = 'zip'
-            self.multifile = True
-        elif self.filename[-3:].lower() == 'tgz' or \
-            self.filename[-6:].lower() == 'tar.gz' or \
-            self.compr == 'tgz' or self.compr == 'tar.gz':
-            self.type = 'tgz'
-            self.multifile = True
-        elif self.filename[-2:].lower() == 'gz' or self.compr == 'gz':
-            self.type = 'gz'
-        else:
-            self.type = 'plain'
     
     def set_title(self):
         if self.title is None:
@@ -621,72 +701,12 @@ class Curl(object):
     def open_file(self):
         if not self.silent:
             self.print_status('Opening file `%s`' % self.outfile)
-        self.fileobj = open(self.outfile, 'rb')
+        super(Curl, self).__init__(self.outfile, extract = False)
     
     def extract_file(self):
         if not self.silent:
             self.print_status('Extracting %s data' % self.type)
-        getattr(self, 'open_%s' % self.type)()
-    
-    def open_tgz(self):
-        self.files_multipart = {}
-        self.sizes = {}
-        self.tarfile = tarfile.open(fileobj = self.fileobj, mode = 'r:gz')
-        self.members = self.tarfile.getmembers()
-        for m in self.members:
-            if (self.files_needed is None or m.name in self.files_needed) \
-                and m.size != 0:
-                # m.size is 0 for dierctories
-                this_file = self.tarfile.extractfile(m)
-                self.sizes[m.name] = m.size
-                if self.large:
-                    self.files_multipart[m.name] = this_file
-                else:
-                    self.files_multipart[m.name] = this_file.read()
-                    this_file.close()
-        if not self.large:
-            self.tarfile.close()
-        self.result = self.files_multipart
-    
-    def open_gz(self):
-        self.fileobj.seek(-4, 2)
-        self.size = struct.unpack('I', self.fileobj.read(4))[0]
-        self.fileobj.seek(0)
-        self.gzfile = gzip.GzipFile(fileobj = self.fileobj, mode = 'rb')
-        #try:
-        if self.large:
-            self.result = self.gzfile
-        else:
-            self.result = self.gzfile.read()
-            self.gzfile.close()
-        #except:
-        #    self.print_status('Error at extracting gzip file')
-    
-    def open_zip(self):
-        self.files_multipart = {}
-        self.sizes = {}
-        self.zipfile = zipfile.ZipFile(self.fileobj, 'r')
-        self.members = self.zipfile.namelist()
-        for i, m in enumerate(self.members):
-            self.sizes[m] = self.zipfile.filelist[i].file_size
-            if self.files_needed is None or m in self.files_needed:
-                this_file = self.zipfile.open(m)
-                if self.large:
-                    self.files_multipart[m] = this_file
-                else:
-                    self.files_multipart[m] = this_file.read()
-                    this_file.close()
-        if not self.large:
-            self.zipfile.close()
-        self.result = self.files_multipart
-    
-    def open_plain(self):
-        self.size = os.path.getsize(self.fileobj.name)
-        if self.large:
-            self.result = self.fileobj
-        else:
-            self.result = self.fileobj.read()
-            self.fileobj.close()
+        self.extract()
     
     def decode_result(self):
         if self.progress is not None:
