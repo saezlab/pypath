@@ -35,11 +35,14 @@ import pypath.curl as curl
 
 class BioPaxReader(object):
     
-    def __init__(self, biopax, source, cleanup_period = 800):
+    def __init__(self, biopax, source, cleanup_period = 800,
+        file_from_archive = None):
         self.biopax = biopax
         self.source = source
-        
+        self.file_from_archive = file_from_archive
         self.cleanup_period = cleanup_period
+        self.biopax_tmp_file = None
+        self.cachedir = 'cache'
     
         # string constants
         self.bppref = '{http://www.biopax.org/release/biopax-level3.owl#}'
@@ -138,51 +141,79 @@ class BioPaxReader(object):
         setattr(self, '__class__', new)
     
     def process(self):
+        self.open_biopax()
         self.biopax_size()
+        self.extract()
         self.set_progress()
         self.init_etree()
         self.iterate()
         self.close_biopax()
     
+    def open_biopax(self):
+        if type(self.biopax) is curl.FileOpener:
+            self.opener = biopax
+        else:
+            self.opener = curl.FileOpener(self.biopax)
+        if type(self.opener.result) is dict:
+            if self.file_from_archive is None or \
+                self.file_from_archive not in self.opener.result:
+                self.file_from_archive = \
+                    sorted(list(self.opener.result.keys()))[0]
+            self._biopax = self.opener.result[self.file_from_archive]
+        else:
+            self._biopax = self.opener.fileobj
+    
     def biopax_size(self):
-        self.bp_filesize = 0
-        if type(self.biopax) is tarfile.ExFileObject:
-            self.bp_filesize = biopax.size
-        elif type(self.biopax) is gzip.GzipFile:
-            f = open(self.biopax.name, 'rb')
-            f.seek(-4, 2)
-            self.bp_filesize = struct.unpack('<I', f.read())[0]
-            f.close()
-        elif type(self.biopax) is zipfile.ZipExtFile:
-            
-        elif hasattr(self.biopax, 'name') and os.path.exists(self.biopax.name):
-            self.bp_filesize = os.path.getsize(self.biopax.name)
+        self.bp_filesize = self.opener.sizes[self.file_from_archive] \
+            if hasattr(self.opener, 'sizes') else self.opener.size
+    
+    def extract(self):
+        if self.opener.type != 'plain':
+            self.biopax_tmp_file = os.path.join(
+                self.cachedir, 'biopax.processing.tmp.owl')
+            prg = progress.Progress(self.bp_filesize,
+                                    'Extracting %s from %s compressed file' % \
+                                        (self.file_from_archive,
+                                         self.opener.type),
+                                    1000000)
+            with open(self.biopax_tmp_file, 'wb') as tmpf:
+                while True:
+                    chunk = self._biopax.read(100000)
+                    prg.step(len(chunk))
+                    if not len(chunk):
+                        break
+                    tmpf.write(chunk)
+            self._biopax = open(self.biopax_tmp_file, 'rb')
+            prg.terminate()
     
     def init_etree(self):
-        self.bp = etree.iterparse(self.biopax, events = ('end',))
+        self.bp = etree.iterparse(self._biopax, events = ('start', 'end'))
+        _, self.root = next(self.bp)
         self.used_elements = []
     
     def set_progress(self):
         self.prg = progress.Progress(self.bp_filesize,
-            'Processing %s from BioPAX XML' % self.source, 1)
+            'Processing %s from BioPAX XML' % self.source, 33)
     
     def iterate(self):
-        self.fpos = self.biopax.tell()
+        self.fpos = self._biopax.tell()
         try:
             for ev, elem in self.bp:
                 # step the progressbar:
-                new_fpos = self.biopax.tell()
+                new_fpos = self._biopax.tell()
                 self.prg.step(new_fpos - self.fpos)
                 self.fpos = new_fpos
                 self.next_elem = elem
+                self.next_event = ev
                 self.next_id = self.next_elem.get(self.rdfid) \
                     if self.rdfid in elem.attrib \
                     else self.next_elem.get(self.rdfab)
-                if self.next_elem.tag in self.methods:
+                if ev == 'end' and self.next_elem.tag in self.methods:
                     method = getattr(self, self.methods[self.next_elem.tag])
                     method()
-                self.used_elements.append(self.next_elem)
-                self.cleanup_hook()
+                    self.root.clear()
+                #self.used_elements.append(self.next_elem)
+                #self.cleanup_hook()
         except etree.XMLSyntaxError as e:
             self.prg.terminate(status = 'failed')
             sys.stdout.write('\n\t:: Syntax error in BioPAX:\n\t\t%s\n' % str(e))
@@ -197,7 +228,7 @@ class BioPaxReader(object):
     
     def close_biopax(self):
         del self.bp
-        self.biopax.close()
+        self._biopax.close()
     
     def protein(self):
         entref = self.next_elem.find(self.bperef)
@@ -209,7 +240,7 @@ class BioPaxReader(object):
                 'modfeatures': self._bp_collect_resources(self.bpfeat)
             }
         else:
-            self.protein_families[self.next_id] = \
+            self.pfamilies[self.next_id] = \
                 self._bp_collect_resources(self.bpmphe)
     
     def pref(self):
@@ -218,11 +249,10 @@ class BioPaxReader(object):
     
     def uxref(self):
         db = self.next_elem.find(self.bpdb)
-        if db is not None:
-            id_type = db.text.lower()
-            i = self.next_elem.find(self.bpid)
-            if i is not None:
-                self.ids[self.next_id] = (id_type, i.text)
+        id_type = db.text.lower()
+        i = self.next_elem.find(self.bpid)
+        if i is not None:
+            self.ids[self.next_id] = (id_type, i.text)
     
     def cplex(self):
         if self.next_elem.find(self.bpcsto) is not None:
@@ -233,9 +263,10 @@ class BioPaxReader(object):
                 self._bp_collect_resources(self.bpmphe)
     
     def stoichiometry(self):
+        snum = self.next_elem.find(self.bpstoc).text
         self.stoichiometries[self.next_id] = (
             self.next_elem.find(self.bpphye).get(self.rdfres).replace('#', ''),
-            int(float(self.next_elem.find(self.bpstoc).text))
+            int(float(snum))
         )
     
     def reaction(self):
@@ -269,14 +300,14 @@ class BioPaxReader(object):
         if cter is not None and cted is not None:
             typ = self.next_elem.find(self.bpctyp)
             self.controls[self.next_id] = {
-                'refs': _bp_collect_resources(elem, bpxref),
-                'controller': cter.get(rdfres).replace('#', ''),
-                'controlled': cted.get(rdfres).replace('#', ''),
+                'refs': self._bp_collect_resources(self.bpxref),
+                'controller': cter.get(self.rdfres).replace('#', ''),
+                'controlled': cted.get(self.rdfres).replace('#', ''),
                 'type': '' if typ is None else typ.text
             }
     
     def pwstep(self):
-        self.pwsteps[_id] = self._bp_collect_resources(self.bppstp)
+        self.pwsteps[self.next_id] = self._bp_collect_resources(self.bppstp)
     
     def pubref(self):
         pmid = self.next_elem.find(self.bpid)
@@ -284,8 +315,8 @@ class BioPaxReader(object):
             self.pubrefs[self.next_id] = pmid.text
     
     def fragfea(self):
-        self.fragfeas[self.next_id] = \
-            self.next_elem.find(self.bpfelo).get(self.rdfres).replace('#', '')
+        felo = self.next_elem.find(self.bpfelo).get(self.rdfres)
+        self.fragfeas[self.next_id] = felo.replace('#', '')
     
     def seqint(self):
         beg = self.next_elem.find(self.bpibeg)
@@ -296,8 +327,8 @@ class BioPaxReader(object):
         )
     
     def seqsite(self):
-        eqp = self.next_elem.find(self.bpseqp)
-        if seqp is not None:
+        seqp = self.next_elem.find(self.bpseqp)
+        if seqp is not None and seqp.text is not None:
             self.seqsites[self.next_id] = int(seqp.text)
     
     def modfea(self):
@@ -313,8 +344,7 @@ class BioPaxReader(object):
     
     def seqmodvoc(self):
         term = self.next_elem.find(self.bpterm)
-        if term is not None:
-            self.seqmodvocs[self.next_id] = term.text
+        self.seqmodvocs[self.next_id] = term.text
     
     def pathway(self):
         try:
@@ -334,18 +364,40 @@ class BioPaxReader(object):
     
     def _bp_collect_resources(self, tag, restype = None):
         return \
-        map(
-            lambda e:
-                e.get(self.rdfres).replace('#', ''),
-            filter(
+        list(
+            map(
                 lambda e:
-                    self.rdfrs in e.attrib and (\
-                        restype is None or \
-                        e.get(self.rdfres).replace('#', '').startswith(restype)
-                    ),
-                self.next_elem.iterfind(tag)
+                    e.get(self.rdfres).replace('#', ''),
+                filter(
+                    lambda e:
+                        self.rdfres in e.attrib and (\
+                            restype is None or \
+                            e.get(self.rdfres).replace('#', '').startswith(restype)
+                        ),
+                    self.next_elem.iterfind(tag)
+                )
             )
         )
+
+class MolecularEntity(object):
+    
+    def __init__(self, identifier, id_type):
+        self.id = identifier
+        self.id_type = id_type
+    
+    def __str__(self):
+        return '%s (%s)' % (self.id, self.id_type)
+    
+    def __hash__(self):
+        return hash(self.__str__())
+    
+    def __eq__(self, other):
+        return self.__hash__() == other.__hash__()
+
+class Protein(MolecularEntity):
+    
+    __init__(self, uniprot):
+        super(Protein, self).__init__(uniprot, 'uniprot')
 
 class RePath(object):
     
@@ -374,3 +426,6 @@ class Species(object):
     
     def __init__(self):
         pass
+
+# Stoichiometry15
+# UnificationXref330

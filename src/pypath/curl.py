@@ -176,9 +176,14 @@ class RemoteFile(object):
 
 class FileOpener(object):
     
-    def __init__(self, f, compr = None, extract = True):
+    def __init__(self, f, compr = None, extract = True,
+        files_needed = None, large = True):
         if not hasattr(self, 'compr'):
             self.compr = compr
+        if not hasattr(self, 'files_needed'):
+            self.files_needed = files_needed
+        if not hasattr(self, 'large'):
+            self.large = large
         self.fname = f if type(f) is str else f.name
         self.fileobj = None if type(f) is str else f
         self.get_type()
