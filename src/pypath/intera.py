@@ -33,8 +33,13 @@ from collections import Counter
 # from pypath:
 import pypath.common as common
 
-__all__ = ['Residue', 'Ptm', 'Motif', 'Domain', 
+__all__ = ['Residue', 'Ptm', 'Motif', 'Domain',
     'DomainDomain', 'DomainMotif', 'Interface']
+
+
+if 'unicode' not in __builtins__:
+    unicode = str
+
 
 class Residue(object):
     
@@ -67,6 +72,9 @@ class Residue(object):
     def __str__(self):
         return 'Residue %s-%u in protein %s-%u%s\n' % (self.name, self.number, 
             self.protein, self.isoform, ' (mutated)' if self.mutated else '')
+    
+    def __repr__(self):
+        return self.__str__()
     
     def serialize(self):
         return '%s:%u' % (self.name, self.number)
@@ -133,8 +141,8 @@ class Mutation(object):
 
 class Ptm(object):
     
-    def __init__(self, protein, id_type = 'uniprot', typ = 'unknown', 
-            motif = None, residue = None, source = None, isoform = 1, 
+    def __init__(self, protein, id_type = 'uniprot', typ = 'unknown',
+            motif = None, residue = None, source = None, isoform = 1,
             seq = None):
         self.non_digit = re.compile(r'[^\d.-]+')
         self.protein = protein
@@ -264,7 +272,7 @@ class Motif(object):
     
     def __init__(self, protein, start, end, id_type = 'uniprot', regex = None, 
         instance = None, isoform = 1, motif_name = None, prob = None, elm = None,
-        description = None, seq = None):
+        description = None, seq = None, source = None):
         non_digit = re.compile(r'[^\d.-]+')
         self.protein = protein
         self.id_type = id_type
@@ -281,6 +289,9 @@ class Motif(object):
         self.prob = prob
         self.elm = elm
         self.description = description
+        self.sources = set([])
+        if source is not None:
+            self.add_source(source)
     
     def __hash__(self):
         return hash((self.protein, self.start, self.end))
@@ -307,6 +318,9 @@ class Motif(object):
             other == self.motif_name:
             return True
         return False
+    
+    def add_source(self, source):
+        self.sources.add(source)
     
     def serialize(self):
         return '%s:%s:%u-%u' % (

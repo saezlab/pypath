@@ -32,6 +32,8 @@ import pypath.mapping as mapping
 import pypath.common as common
 import pypath.progress as progress
 import pypath.curl as curl
+import pypath.intera as intera
+import pypath.uniprot_input as uniprot_input
 
 class BioPaxReader(object):
     
@@ -480,13 +482,19 @@ class ProteinFamily(EntitySet):
 class RePath(object):
     
     def __init__(self, mapper = None, ncbi_tax_id = 9606,
-                default_id_types = {}):
+                default_id_types = {}, modifications = True,
+                seq = None):
         self.ncbi_tax_id = ncbi_tax_id
+        self.modifications = modifications
         self.parsers = {}
         self.sources = set([])
+        self.seq = seq
         self.mapper = mapping.Mapper(ncbi_tax_id) if mapper is None else mapper
         self.species = {}
         self.proteins = {}
+        self.mods = {}
+        self.frags = {}
+        self.rproteins = {}
         self.reactions = {}
         self.references = {}
         self.id_types = {}
@@ -514,6 +522,8 @@ class RePath(object):
         self.sources.add(self.source)
         self.parsers[self.source] = self.parser
         self.merge_proteins()
+        if self.modifications:
+            self.merge_modifications()
         self.remove_defaults()
     
     def remove_defaults(self):
@@ -556,6 +566,7 @@ class RePath(object):
                 )
             return target_ids, id_attrs
         
+        self.rproteins[self.source] = {}
         for pid, p in iteritems(self.parser.proteins):
             ids = get_protein_ids(p['protein'])
             target_ids, id_attrs = map_protein_ids(ids)
@@ -581,6 +592,121 @@ class RePath(object):
                     self.proteins[target_id] += protein
                 else:
                     self.proteins[target_id] = protein
+                if pid not in self.rproteins[self.source]:
+                    self.rproteins[self.source][pid] = set([])
+                self.rproteins[self.source][pid].add(target_id)
+    
+    def preprocess_seqmodvoc(self):
+        kws = common.mod_keywords[self.source]
+        aas = common.aanames
+        self.seqmod_dict = {}
+        for modkey, modname in iteritems(self.parser.seqmodvocs):
+            for mod_std_name, kwlist in kws:
+                if all(map(lambda kw: kw in modname, kwlist)):
+                    this_aa = None
+                    for aan, aa in iteritems(aas):
+                        if aan in modname:
+                            this_aa = aa
+                            break
+                    self.seqmod_dict[modkey] = (mod_std_name, this_aa)
+    
+    def merge_modifications(self):
+        
+        self.load_sequences()
+        self.preprocess_seqmodvoc()
+        
+        def get_protein(pid):
+            proteins = []
+            if pid in self.rproteins[self.source]:
+                for _id in self.rproteins[self.source][pid]:
+                    if 'isoform' in \
+                        self.proteins[_id].attrs[self.source]['pids'][pid]:
+                        for isof in self.proteins[_id].attrs[self.source]\
+                            ['pids'][pid]['isoform']:
+                            proteins.append((_id, isof))
+                    else:
+                        proteins.append((_id, None))
+            return proteins
+        
+        def get_seqsite(seqsite):
+            if seqsite in self.parser.seqsites:
+                return int(self.parser.seqsites[seqsite])
+        
+        def get_residue(protein, isof, resnum, resname):
+            if protein in self.seq:
+                if isof is not None and isof in self.seq[protein].isof:
+                    sresname = self.seq[protein].get(resnum, isoform = isof)
+                    if sresname == resname or resname is None:
+                        return sresname, isof
+                for isof in self.seq[protein].isoforms():
+                    sresname = self.seq[protein].get(resnum, isoform = isof)
+                    if sresname == resname or resname is None:
+                        return sresname, isof
+            return resname, isof
+        
+        for pid, p in iteritems(self.parser.proteins):
+            proteins = get_protein(pid)
+            
+            for modfea in p['modfeatures']:
+                
+                if modfea in self.parser.fragfeas:
+                    seqint = self.parser.fragfeas[modfea]
+                    if seqint in self.parser.seqints:
+                        start = get_seqsite(self.parser.seqints[seqint][0])
+                        end = get_seqsite(self.parser.seqints[seqint][1])
+                    if start is not None and end is not None:
+                        for protein, isof in proteins:
+                            if protein in self.seq:
+                                if self.seq[protein].has_isoform(isof):
+                                    frag = (protein, isof, start, end)
+                                    if frag in self.frags:
+                                        self.frags[frag].add_source(self.source)
+                                    else:
+                                        instance = \
+                                            self.seq[protein].get(start, end, isof)
+                                        mot = intera.Motif(protein, start, end,
+                                                        isoform = isof,
+                                                        instance = instance,
+                                                        source = self.source)
+                                        self.frags[frag] = mot
+                                    self.proteins[protein].update_attr(
+                                        [self.source, 'pids', pid, 'frags', frag]
+                                    )
+                
+                if modfea in self.parser.modfeas:
+                    resnum = get_seqsite(self.parser.modfeas[modfea][0])
+                    seqmodvoc = self.parser.modfeas[modfea][1]
+                    if seqmodvoc in self.seqmod_dict:
+                        typ, resname = self.seqmod_dict[seqmodvoc]
+                        for protein, isof in proteins:
+                            if protein in self.seq:
+                                resname, isof = \
+                                    get_residue(protein, isof, resnum, resname)
+                                mod = (protein, isof, resnum, resname)
+                                if mod in self.mods:
+                                    self.mods[mod].add_source(self.source)
+                                else:
+                                    res = intera.Residue(resnum, resname,
+                                                            protein, isoform = isof)
+                                    start, end, instance = self.seq[protein].get_region(
+                                                            resnum, isoform = isof)
+                                    mot = intera.Motif(protein, start, end,
+                                                        isoform = isof,
+                                                        instance = instance)
+                                    ptm = intera.Ptm(protein, motif = mot,
+                                                        residue = res,
+                                                        source = self.source,
+                                                        isoform = isof,
+                                                        typ = typ)
+                                    self.mods[mod] = ptm
+                                self.proteins[protein].update_attr(
+                                    [self.source, 'pids', pid, 'mods', mod]
+                                )
+    
+    def load_sequences(self):
+        if self.seq is None:
+            self.seq = uniprot_input.swissprot_seq(self.ncbi_tax_id,
+                                                   isoforms = True)
 
 class Reaction(object):
     

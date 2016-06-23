@@ -28,7 +28,7 @@ import hashlib
 __all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes', 'uniqList', 'addToList', 
            'gen_session_id', 'sorensen_index', 'console', 'wcl', 'flatList',
            'charTypes', 'delEmpty', '__version__', 'get_args',
-           'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs', 'md5']
+           'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs', 'md5', 'mod_keywords']
 
 # get the location
 ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -74,6 +74,63 @@ aacodes = {
     'F': 'PHE',
     'J': 'XLE',
     'X': 'XAA'
+}
+
+aanames = {
+    'alanine': 'A',
+    'arginine': 'R',
+    'asparagine': 'N',
+    'aspartic acid': 'D',
+    'cysteine': 'C',
+    'glutamine': 'Q',
+    'glutamic acid': 'E',
+    'glycine': 'G',
+    'histidine': 'H',
+    'isoleucine': 'I',
+    'leucine': 'L',
+    'lysine': 'K',
+    'methionine': 'M',
+    'phenylalanine': 'F',
+    'proline': 'P',
+    'serine': 'S',
+    'threonine': 'T',
+    'tryptophan': 'W',
+    'tyrosine': 'Y',
+    'valine': 'V'
+}
+
+mod_keywords = {
+    'Reactome': [
+        ('phosphopantetheinylation', ['phosphopantet']),
+        ('phosphorylation', ['phospho']),
+        ('acetylneuraminylation', ['acetylneuraminyl']),
+        ('acetylation', ['acetyl']),
+        ('farnesylation', ['farnesyl']),
+        ('palmitoylation', ['palmito']),
+        ('methylation', ['methyl']),
+        ('tetradecanoylation', ['tetradecanoyl']),
+        ('decanoylation', ['decanoyl']),
+        ('palmitoleylation', ['palmytoleil']),
+        ('formylation', ['formyl']),
+        ('ubiquitination', ['ubiquitin']),
+        ('galactosylation', ['galactos']),
+        ('glutamylation', ['glutamyl']),
+        ('fucosylation', ['fucosyl']),
+        ('myristoylation', ['myristoyl']),
+        ('carboxylation', ['carboxyl']),
+        ('biotinylation', ['biotinyl']),
+        ('glycosylation', ['glycosyl']),
+        ('octanoylation', ['octanoyl']),
+        ('glycylation', ['glycyl']),
+        ('hydroxylation', ['hydroxy']),
+        ('sulfhydration', ['persulfid']),
+        ('thiolation', ['thio']),
+        ('amidation', ['amide']),
+        ('selenation', ['seleno']),
+        ('glucosylation', ['glucosyl']),
+        ('neddylation', ['neddyl']),
+        ('sumoylation', ['sumoyl'])
+    ]
 }
 
 if 'long' not in __builtins__:
