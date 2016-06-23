@@ -197,6 +197,7 @@ class Curl(object):
         self.silent = silent
         self.debug = debug
         self.url = url
+        self.get = get
         self.force_quote = force_quote
         self.process_url()
         self.url_fix()
