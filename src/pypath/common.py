@@ -220,3 +220,52 @@ igraph_graphics_attrs = {
     'vertex': ['size', ' color', 'frame_color', 'frame_width', 'shape', 'label', 'label_dist', 'label_color', 'label_size', 'label_angle'],
     'edge': ['curved', 'color', 'width', 'arrow_size', 'arrow_width']
 }
+
+def merge_dicts(d1, d2):
+    """
+    Merges dicts recursively
+    """
+    for k2, v2 in iteritems(d2):
+        if k2 not in d1:
+            d1[k2] = v2
+        elif type(v2) is dict:
+            d1[k2] = merge_dicts(d1[k2], v2)
+        elif type(v2) is list:
+            d1[k2].extend(v2)
+        elif type(v2) is set:
+            d1[k2] = d1[k2].union(v2)
+    return d1
+
+def dict_set_path(d, path):
+    """
+    In dict of dicts ``d`` looks up the keys following ``path``,
+    creates new subdicts and keys if those do not exist yet,
+    and sets/merges the leaf element according to simple heuristic.
+    """
+    val = path[-1]
+    key = path[-2]
+    subd = d
+    for k in path[:-2]:
+        if type(subd) is dict:
+            if k in subd:
+                subd = subd[k]
+            else:
+                subd[k] = {}
+                subd = subd[k]
+        else:
+            return d
+    if key not in subd:
+        subd[key] = val
+    elif type(val) is dict and type(subd[key]) is dict:
+        subd[key].update(val)
+    elif type(subd[key]) is list:
+        if type(val) is list:
+            subd[key].extend(val)
+        else:
+            subd[key].append(val)
+    elif type(subd[key]) is set:
+        if type(val) is set:
+            subd[key] = subd.union(val)
+        else:
+            subd[key].add(val)
+    return d

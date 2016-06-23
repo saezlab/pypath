@@ -381,11 +381,15 @@ class BioPaxReader(object):
 
 class MolecularEntity(object):
     
-    def __init__(self, identifier, id_type):
+    def __init__(self, identifier, id_type, sources = [], attrs = None):
         self.id = identifier
         self.id_type = id_type
         self.sources = set([])
         self.attrs = {}
+        for source in sources:
+            self.add_source(source)
+        if attrs is not None:
+            self.merge_attrs(attrs)
     
     def __str__(self):
         return '%s (%s)' % (self.id, self.id_type)
@@ -399,21 +403,26 @@ class MolecularEntity(object):
     def __repr__(self):
         return '%s (%s)' % (self.id, self.id_type)
     
+    def __iadd__(self, other):
+        self.sources = self.sources | other.sources
+        self.merge_attrs(other.attrs)
+        return self
+    
     def add_source(self, source):
         self.sources.add(source)
         if source not in self.attrs:
             self.attrs[source] = {}
     
-    def __iadd__(self, other):
-        self.sources = self.sources | other.sources
-        return self
+    def merge_attrs(self, attrs):
+        self.attrs = common.merge_dicts(self.attrs, attrs)
 
 class Protein(MolecularEntity):
     
-    def __init__(self, uniprot, sources = []):
-        super(Protein, self).__init__(uniprot, 'uniprot')
-        for source in sources:
-            self.add_source(source)
+    def __init__(self, protein_id, id_type = 'uniprot',
+                 sources = [], attrs = None):
+        super(Protein, self).__init__(protein_id, id_type,
+                                      sources = sources, attrs = attrs)
+        
 
 class EntitySet(object):
     
@@ -503,6 +512,11 @@ class RePath(object):
         self.sources.add(self.source)
         self.parsers[self.source] = self.parser
         self.merge_proteins()
+        self.remove_defaults()
+    
+    def remove_defaults(self):
+        self.parser = None
+        self.source = None
     
     def merge_proteins(self):
         def get_protein_ids(pref):
@@ -548,6 +562,11 @@ class RePath(object):
             print('got ids: %s' % target_ids)
             for target_id in target_ids:
                 print('target id: %s' % target_id)
+                attrs = {
+                    self.source: {
+                        'prefs': set([])
+                    }
+                }
                 protein = Protein(target_id, sources = set([self.source]))
                 if target_id in self.proteins:
                     self.proteins[target_id] += protein
