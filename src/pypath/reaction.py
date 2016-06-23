@@ -415,6 +415,9 @@ class MolecularEntity(object):
     
     def merge_attrs(self, attrs):
         self.attrs = common.merge_dicts(self.attrs, attrs)
+    
+    def update_attr(self, attr):
+        self.attrs = common.dict_set_path(self.attrs, attr)
 
 class Protein(MolecularEntity):
     
@@ -422,7 +425,6 @@ class Protein(MolecularEntity):
                  sources = [], attrs = None):
         super(Protein, self).__init__(protein_id, id_type,
                                       sources = sources, attrs = attrs)
-        
 
 class EntitySet(object):
     
@@ -539,7 +541,6 @@ class RePath(object):
             return pids
         
         def map_protein_ids(ids):
-            print('mapping ids: %s' % ids)
             target_ids = []
             id_attrs = {}
             for id_type, _id in ids:
@@ -549,7 +550,6 @@ class RePath(object):
                     std_id_type = id_type
                 id_a = self.id_processor(_id)
                 id_attrs[id_a['id']] = id_a
-                print('mapping from: %s, to: %s' % (std_id_type, self.default_id_types['protein']))
                 target_ids.extend(
                     self.mapper.map_name(id_a['id'], std_id_type,
                                         self.default_id_types['protein'])
@@ -559,15 +559,24 @@ class RePath(object):
         for pid, p in iteritems(self.parser.proteins):
             ids = get_protein_ids(p['protein'])
             target_ids, id_attrs = map_protein_ids(ids)
-            print('got ids: %s' % target_ids)
             for target_id in target_ids:
-                print('target id: %s' % target_id)
                 attrs = {
                     self.source: {
-                        'prefs': set([])
+                        'prefs': set([p['protein']]),
+                        'pids': {
+                            pid: {}
+                        },
+                        'originals': set([])
                     }
                 }
-                protein = Protein(target_id, sources = set([self.source]))
+                for original_id, id_a in iteritems(id_attrs):
+                    attrs[self.source]['originals'].add(original_id)
+                    for k, v in iteritems(id_a):
+                        if k != 'id':
+                            attrs[self.source]['pids'][pid][k] = set([])
+                            attrs[self.source]['pids'][pid][k].add(v)
+                protein = Protein(target_id,
+                                  sources = set([self.source]), attrs = attrs)
                 if target_id in self.proteins:
                     self.proteins[target_id] += protein
                 else:
