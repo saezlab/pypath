@@ -233,7 +233,7 @@ class BioPaxReader(object):
     def protein(self):
         entref = self.next_elem.find(self.bperef)
         if entref is not None:
-            protein = self.get_none(entref.get(self.rdfres))
+            protein = self.get_none(entref.get(self.rdfres)).replace('#', '')
             self.proteins[self.next_id] = {
                 'protein': protein,
                 'seqfeatures': self._bp_collect_resources(self.bpfeat),
@@ -384,6 +384,8 @@ class MolecularEntity(object):
     def __init__(self, identifier, id_type):
         self.id = identifier
         self.id_type = id_type
+        self.sources = set([])
+        self.attrs = {}
     
     def __str__(self):
         return '%s (%s)' % (self.id, self.id_type)
@@ -393,29 +395,164 @@ class MolecularEntity(object):
     
     def __eq__(self, other):
         return self.__hash__() == other.__hash__()
+    
+    def __repr__(self):
+        return '%s (%s)' % (self.id, self.id_type)
+    
+    def add_source(self, source):
+        self.sources.add(source)
+        if source not in self.attrs:
+            self.attrs[source] = {}
+    
+    def __iadd__(self, other):
+        self.sources = self.sources | other.sources
+        return self
 
 class Protein(MolecularEntity):
     
-    __init__(self, uniprot):
+    def __init__(self, uniprot, sources = []):
         super(Protein, self).__init__(uniprot, 'uniprot')
+        for source in sources:
+            self.add_source(source)
+
+class EntitySet(object):
+    
+    def __init__(self, members, sources = set([])):
+        self.members = sorted(common.uniqList(members))
+        self.sources = sources
+        self.originals = {}
+        self.type = None
+    
+    def __str__(self):
+        return ';'.join(
+                    sorted(
+                        map(
+                            lambda x:
+                                str(x),
+                            list(self.members)
+                        )
+                    )
+                )
+    
+    def __repr__(self):
+        return '%s: %s' (self.__class__.__name__, self.__str__())
+    
+    def __hash__(self):
+        return hash(self.__str__())
+    
+    def __iter__(self):
+        for m in self.members:
+            yield m
+    
+    def __iadd__(self, other):
+        self.members.extend(other.members)
+        self.sources = self.sources | other.sources
+        return globals()[self.__class__.__name](self.members)
+    
+    def add_source(self, source):
+        self.sources.add(source)
+
+class Complex(EntitySet):
+    
+    def __init__(self, members, source):
+        sources = set([source]) if type(source) is not set else source
+        super(Complex, self).__init__(members, sources)
+        self.type = 'complex'
+
+class ProteinFamily(EntitySet):
+    
+    def __init__(self, members, source):
+        sources = set([source]) if type(source) is not set else source
+        super(ProteinFamily, self).__init__(members, sources)
+        self.type = 'pfamily'
 
 class RePath(object):
     
-    def __init__(self, mapper = None, ncbi_tax_id = 9606):
+    def __init__(self, mapper = None, ncbi_tax_id = 9606,
+                default_id_types = {}):
         self.ncbi_tax_id = ncbi_tax_id
-        self.inputs = {}
+        self.parsers = {}
         self.sources = set([])
         self.mapper = mapping.Mapper(ncbi_tax_id) if mapper is None else mapper
         self.species = {}
+        self.proteins = {}
         self.reactions = {}
         self.references = {}
+        self.id_types = {}
+        self.default_id_types = {
+            'protein': 'uniprot'
+        }
+        self.default_id_types.update(default_id_types)
     
-    def add_source(self, source, infile):
-        self.sources.add(source)
-        self.inputs[source] = infile
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
     
-    def read_biopax(self, source):
-        pass
+    def add_dataset(self, parser, id_types = {},
+                    process_id = lambda x: {'id': x}):
+        self.id_types.update(id_types)
+        self.source = parser.source
+        self.parser = parser
+        self.id_processor = process_id
+        self.merge()
+    
+    def merge(self):
+        self.sources.add(self.source)
+        self.parsers[self.source] = self.parser
+        self.merge_proteins()
+    
+    def merge_proteins(self):
+        def get_protein_ids(pref):
+            
+            pids = []
+            if pref in self.parser.prefs:
+                uxrefs = self.parser.prefs[pref]
+                pids = \
+                    common.uniqList(
+                        map(
+                            lambda uxref:
+                                self.parser.ids[uxref],
+                            filter(
+                                lambda uxref:
+                                    uxref in self.parser.ids,
+                                uxrefs
+                            )
+                        )
+                    )
+            return pids
+        
+        def map_protein_ids(ids):
+            print('mapping ids: %s' % ids)
+            target_ids = []
+            id_attrs = {}
+            for id_type, _id in ids:
+                if id_type in self.id_types:
+                    std_id_type = self.id_types[id_type]
+                else:
+                    std_id_type = id_type
+                id_a = self.id_processor(_id)
+                id_attrs[id_a['id']] = id_a
+                print('mapping from: %s, to: %s' % (std_id_type, self.default_id_types['protein']))
+                target_ids.extend(
+                    self.mapper.map_name(id_a['id'], std_id_type,
+                                        self.default_id_types['protein'])
+                )
+            return target_ids, id_attrs
+        
+        for pid, p in iteritems(self.parser.proteins):
+            ids = get_protein_ids(p['protein'])
+            target_ids, id_attrs = map_protein_ids(ids)
+            print('got ids: %s' % target_ids)
+            for target_id in target_ids:
+                print('target id: %s' % target_id)
+                protein = Protein(target_id, sources = set([self.source]))
+                if target_id in self.proteins:
+                    self.proteins[target_id] += protein
+                else:
+                    self.proteins[target_id] = protein
 
 class Reaction(object):
     

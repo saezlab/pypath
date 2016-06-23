@@ -176,18 +176,28 @@ class RemoteFile(object):
 
 class FileOpener(object):
     
-    def __init__(self, f, compr = None, extract = True,
-        files_needed = None, large = True):
+    def __init__(self,
+                 file_param,
+                 compr = None,
+                 extract = True,
+                 _open = True,
+                 set_fileobj = True,
+                 files_needed = None,
+                 large = True):
         if not hasattr(self, 'compr'):
             self.compr = compr
         if not hasattr(self, 'files_needed'):
             self.files_needed = files_needed
         if not hasattr(self, 'large'):
             self.large = large
-        self.fname = f if type(f) is str else f.name
-        self.fileobj = None if type(f) is str else f
-        self.get_type()
-        self.open()
+        self.fname = file_param \
+            if type(file_param) is str else file_param.name
+        self.fileobj = None \
+            if type(file_param) is str else file_param
+        if not hasattr(self, 'type'):
+            self.get_type()
+        if _open:
+            self.open()
         if extract:
             self.extract()
     
@@ -257,21 +267,6 @@ class FileOpener(object):
         else:
             self.result = self.fileobj.read()
             self.fileobj.close()
-    
-    def get_type(self):
-        self.multifile = False
-        if self.fname[-3:].lower() == 'zip' or self.compr == 'zip':
-            self.type = 'zip'
-            self.multifile = True
-        elif self.fname[-3:].lower() == 'tgz' or \
-            self.fname[-6:].lower() == 'tar.gz' or \
-            self.compr == 'tgz' or self.compr == 'tar.gz':
-            self.type = 'tgz'
-            self.multifile = True
-        elif self.fname[-2:].lower() == 'gz' or self.compr == 'gz':
-            self.type = 'gz'
-        else:
-            self.type = 'plain'
 
 class Curl(FileOpener):
     
@@ -584,6 +579,21 @@ class Curl(FileOpener):
                     if match:
                         self.encoding = match.group(1)
     
+    def get_type(self):
+        self.multifile = False
+        if self.filename[-3:].lower() == 'zip' or self.compr == 'zip':
+            self.type = 'zip'
+            self.multifile = True
+        elif self.filename[-3:].lower() == 'tgz' or \
+            self.filename[-6:].lower() == 'tar.gz' or \
+            self.compr == 'tgz' or self.compr == 'tar.gz':
+            self.type = 'tgz'
+            self.multifile = True
+        elif self.filename[-2:].lower() == 'gz' or self.compr == 'gz':
+            self.type = 'gz'
+        else:
+            self.type = 'plain'
+    
     def get_jsessionid(self):
         self.jsessionid = [u'']
         rejsess = re.compile(r'.*(JSESSIONID=[A-Z0-9]*)')
@@ -697,6 +707,7 @@ class Curl(FileOpener):
             self.outfile = self.cache_file_name
     
     def process_file(self):
+        self.get_type()
         self.copy_file()
         self.open_file()
         self.extract_file()
