@@ -417,7 +417,13 @@ class MolecularEntity(AttributeHandler):
         return hash(self.__str__())
     
     def __eq__(self, other):
-        return self.__hash__() == other.__hash__()
+        return self.__str__() == other.__str__()
+    
+    def __gt__(self, other):
+        return self.__str__() > other.__str__()
+    
+    def __lt__(self, other):
+        return self.__str__() < other.__str__()
     
     def __repr__(self):
         return '%s (%s)' % (self.id, self.id_type)
@@ -463,6 +469,15 @@ class EntitySet(AttributeHandler):
     def __hash__(self):
         return hash(self.__str__())
     
+    def __eq__(self, other):
+        return self.__str__() == other.__str__()
+    
+    def __gt__(self, other):
+        return self.__str__() > other.__str__()
+    
+    def __lt__(self, other):
+        return self.__str__() < other.__str__()
+    
     def __iter__(self):
         for m in self.members:
             yield m
@@ -498,6 +513,20 @@ class Complex(EntitySet):
                     )
                 )
 
+class ReactionSide(AttributeHandler):
+    
+    def __init__(self, members, sources = []):
+        super(ReactionSide, self).__init__()
+        
+        self.members = members
+        self.source = set([])
+        self.attrs = {}
+        for source in sources:
+            self.add_source(source)
+    
+    def __hash__(self):
+        return hash()
+
 class ProteinFamily(EntitySet):
     
     def __init__(self, members, source):
@@ -510,23 +539,28 @@ class RePath(object):
     def __init__(self, mapper = None, ncbi_tax_id = 9606,
                 default_id_types = {}, modifications = True,
                 seq = None):
+        
         self.ncbi_tax_id = ncbi_tax_id
         self.modifications = modifications
         self.parsers = {}
         self.sources = set([])
         self.seq = seq
         self.mapper = mapping.Mapper(ncbi_tax_id) if mapper is None else mapper
+        
         self.species = {}
         self.proteins = {}
         self.pfamilies = {}
         self.complexes = {}
+        self.reactions = {}
         self.mods = {}
         self.frags = {}
+        
         self.rproteins = {}
         self.rpfamilies = {}
         self.rcomplexes = {}
-        self.reactions = {}
+        self.rreactions = {}
         self.references = {}
+        
         self.id_types = {}
         self.default_id_types = {
             'protein': 'uniprot'
@@ -878,10 +912,18 @@ class RePath(object):
             this_round = next_round
             next_round = []
     
+    def merge_reactions(self):
+        
+    
+    def iterate_reactions(self):
+        pass
+    
     def load_sequences(self):
         if self.seq is None:
             self.seq = uniprot_input.swissprot_seq(self.ncbi_tax_id,
                                                    isoforms = True)
+
+
 
 class Reaction(object):
     
