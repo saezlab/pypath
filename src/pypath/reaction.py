@@ -518,10 +518,12 @@ class RePath(object):
         self.mapper = mapping.Mapper(ncbi_tax_id) if mapper is None else mapper
         self.species = {}
         self.proteins = {}
+        self.pfamilies = {}
         self.complexes = {}
         self.mods = {}
         self.frags = {}
         self.rproteins = {}
+        self.rpfamilies = {}
         self.rcomplexes = {}
         self.reactions = {}
         self.references = {}
@@ -550,6 +552,7 @@ class RePath(object):
         self.sources.add(self.source)
         self.parsers[self.source] = self.parser
         self.merge_proteins()
+        self.merge_pfamilies()
         if self.modifications:
             self.merge_modifications()
         self.merge_complexes()
@@ -738,6 +741,71 @@ class RePath(object):
                                     [self.source, 'pids', pid, 'mods', mod]
                                 )
     
+    def merge_pfamilies(self):
+        self.rpfamilies[self.source] = {}
+        this_round = set(list(self.parser.pfamilies.keys()))
+        next_round = []
+        prev_round = -1
+        while len(this_round) - prev_round != 0:
+            prev_round = len(this_round)
+            for pfid in this_round:
+                pids = self.parser.pfamilies[pfid]
+                subpf_unproc = \
+                    any(map(lambda pid: pid in self.parser.pfamilies, pids))
+                if subpf_unproc:
+                    next_round.append(pfid)
+                    continue
+                proteins = \
+                    list(
+                        map(
+                            lambda pid:
+                                (self.rproteins[self.source][pid], pid),
+                            filter(
+                                lambda pid:
+                                    pid in self.rproteins[self.source],
+                                pids
+                            )
+                        )
+                    )
+                subpfs = \
+                    list(
+                        map(
+                            lambda pid:
+                                (self.rpfamilies[self.source][pid], pid),
+                            filter(
+                                lambda pid:
+                                    pid in self.rpfamilies[self.source],
+                                pids
+                            )
+                        )
+                    )
+                for spf, spfid in subpfs:
+                    spfmembs = \
+                        list(
+                            map(
+                                lambda p:
+                                    (p[0], p[1]['pid']),
+                                iteritems(self.pfamilies[spf].attrs[self.source][spfid])
+                            )
+                        )
+                    proteins.extend(spfmembs)
+                
+                members = sorted(common.uniqList(map(lambda p: p[0], proteins)))
+                pf = ProteinFamily(members, source = self.source)
+                members = tuple(members)
+                pf.attrs[self.source][pfid] = {}
+                for protein, pid in proteins:
+                    pf.attrs[self.source][pfid][protein] = {}
+                    pf.attrs[self.source][pfid][protein]['pid'] = pid
+                if members not in self.pfamilies:
+                    self.pfamilies[members] = pf
+                else:
+                    self.pfamilies[members] += pf
+                self.rpfamilies[self.source][pfid] = members
+                
+            this_round = next_round
+            next_round = []
+    
     def merge_complexes(self):
         self.rcomplexes[self.source] = {}
         this_round = set(list(self.parser.complexes.keys()))
@@ -789,6 +857,8 @@ class RePath(object):
                 for sc, scstoi, scid in subcplexs:
                     scmembs = sc.get_stoichiometries(self.source,
                                                      scid, with_pids = True)
+                    scmembs = list(map(lambda p:
+                                           (p[0], p[1] * scstoi, p[2]), scmembs))
                     proteins.extend(scmembs)
                 
                 members = sorted(common.uniqList(map(lambda p: p[0], proteins)))
