@@ -1050,3 +1050,28 @@ class Reaction(AttributeHandler):
         self.left += other.left
         self.right += other.left
         return self
+
+class ControlBase(AttributeHandler):
+    
+    def __init__(self, er, ed, source = []):
+        supet(ControlBase, self).__init__()
+        
+        self.controller = er
+        self.controlled = ed
+        self.attrs = {}
+        self.sources = set([])
+        self.add_source(source)
+    
+    def __str__(self):
+        return 'Control(%s): C.ER(%s) --> C.ED(%s)' % \
+            (
+             self.type
+             self.controller.__str__(),
+             self.controlled.__str__()
+            )
+    
+    def __repr__(self):
+        return self.__str__()
+    
+    def __hash__(self):
+        return hash(self.__str__())
