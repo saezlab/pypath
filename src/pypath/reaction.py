@@ -513,20 +513,6 @@ class Complex(EntitySet):
                     )
                 )
 
-class ReactionSide(AttributeHandler):
-    
-    def __init__(self, members, sources = []):
-        super(ReactionSide, self).__init__()
-        
-        self.members = members
-        self.source = set([])
-        self.attrs = {}
-        for source in sources:
-            self.add_source(source)
-    
-    def __hash__(self):
-        return hash()
-
 class ProteinFamily(EntitySet):
     
     def __init__(self, members, source):
@@ -923,7 +909,23 @@ class RePath(object):
             self.seq = uniprot_input.swissprot_seq(self.ncbi_tax_id,
                                                    isoforms = True)
 
-
+class ReactionSide(AttributeHandler):
+    
+    def __init__(self, members, sources = []):
+        super(ReactionSide, self).__init__()
+        
+        self.members = sorted(members)
+        self.source = set([])
+        self.attrs = {}
+        for source in sources:
+            self.add_source(source)
+    
+    def __hash__(self):
+        return hash(self.__str__())
+    
+    def __str__(self):
+        return 'ReactionSide: (%s)' % \
+            ('; '.join(map(lambda m: m.__str__(), self.members)))
 
 class Reaction(object):
     
