@@ -33,6 +33,7 @@ import pypath.common as common
 import pypath.progress as progress
 import pypath.curl as curl
 import pypath.intera as intera
+import pypath.refs as refs
 import pypath.uniprot_input as uniprot_input
 
 class BioPaxReader(object):
@@ -410,10 +411,10 @@ class AttributeHandler(object):
         self.merge_attrs(other.attrs)
         return self
 
-class MolecularEntity(AttributeHandler):
+class Entity(AttributeHandler):
     
     def __init__(self, identifier, id_type, sources = [], attrs = None):
-        super(MolecularEntity, self).__init__()
+        super(Entity, self).__init__()
         self.id = identifier
         self.id_type = id_type
         self.sources = set([])
@@ -441,12 +442,22 @@ class MolecularEntity(AttributeHandler):
     def __repr__(self):
         return '%s (%s)' % (self.id, self.id_type)
 
-class Protein(MolecularEntity):
+class Protein(Entity):
     
     def __init__(self, protein_id, id_type = 'uniprot',
                  sources = [], attrs = None):
         super(Protein, self).__init__(protein_id, id_type,
                                       sources = sources, attrs = attrs)
+
+class Reference(Entity):
+    
+    def __init__(self, ref_id, id_type = 'pubmed',
+                 sources = []):
+        super(Reference, self).__init__(ref_id, id_type,
+                                        sources = source)
+    
+    def get_ref(self):
+        return refs.Reference(self.ref_id)
 
 class EntitySet(AttributeHandler):
     
@@ -573,6 +584,7 @@ class RePath(object):
     def merge(self):
         self.sources.add(self.source)
         self.parsers[self.source] = self.parser
+        self.merge_refs()
         self.merge_proteins()
         self.merge_pfamilies()
         if self.modifications:
@@ -583,6 +595,19 @@ class RePath(object):
     def remove_defaults(self):
         self.parser = None
         self.source = None
+    
+    def merge_refs(self):
+        self.rrefs[self.source] = {}
+        for refid, pubmed in iteritems(self.parser.pubrefs):
+            
+            ref = Reference(pubmed, source = self.source)
+            ref.attrs[source]['refid'] = set([])
+            ref.attrs[source]['refid'].add(refid)
+            
+            if pubmed in self.refs:
+                self.refs[pubmed] += ref
+            else:
+                self.refs[pubmed] = ref
     
     def merge_proteins(self):
         def get_protein_ids(pref):
@@ -916,8 +941,14 @@ class RePath(object):
             right = get_side(reac['right'])
             
             reaction = Reaction(left, right, source = self.source)
+            key = reaction.__str__()
             
-            self.reactions
+            if key in self.reactions:
+                self.reactions[key] += reaction
+            else:
+                self.reactions[key] = reaction
+            
+            
     
     def iterate_reactions(self):
         pass
