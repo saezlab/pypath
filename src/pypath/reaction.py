@@ -396,6 +396,19 @@ class AttributeHandler(object):
     
     def update_attr(self, attr):
         self.attrs = common.dict_set_path(self.attrs, attr)
+    
+    def __iadd__(self, other):
+        '''
+        Members or ids of entities should never change, as
+        these are their unique, hashable and comparable
+        attributes.
+        
+        __iadd__ operator is for merging entities with
+        identical members or ids.
+        '''
+        self.sources = self.sources | other.sources
+        self.merge_attrs(other.attrs)
+        return self
 
 class MolecularEntity(AttributeHandler):
     
@@ -427,11 +440,6 @@ class MolecularEntity(AttributeHandler):
     
     def __repr__(self):
         return '%s (%s)' % (self.id, self.id_type)
-    
-    def __iadd__(self, other):
-        self.sources = self.sources | other.sources
-        self.merge_attrs(other.attrs)
-        return self
 
 class Protein(MolecularEntity):
     
@@ -481,13 +489,6 @@ class EntitySet(AttributeHandler):
     def __iter__(self):
         for m in self.members:
             yield m
-    
-    def __iadd__(self, other):
-        self.members.extend(other.members)
-        self.members = sorted(common.uniqList(self.members))
-        self.sources = self.sources | other.sources
-        self.merge_attrs(other.attrs)
-        return self
     
     def add_source(self, source):
         self.sources.add(source)
@@ -899,7 +900,22 @@ class RePath(object):
             next_round = []
     
     def merge_reactions(self):
+        def get_side(ids):
+            members = []
+            for _id in ids:
+                for typ in ('proteins', 'pfamilies', 'complexes'):
+                    r = getattr(self, 'r%s'%typ)[self.source]
+                    if _id in r:
+                        members.append(getattr(self, typ)[r[_id]])
+            return ReactionSide(members, source = self.source)
         
+        for rid, reac in iteritems(self.parser.reactions):
+            left = get_side(reac['left'])
+            right = get_side(reac['right'])
+            
+            reaction = Reaction(left, right, )
+            
+            self.reactions
     
     def iterate_reactions(self):
         pass
@@ -923,19 +939,33 @@ class ReactionSide(AttributeHandler):
     def __hash__(self):
         return hash(self.__str__())
     
+    def __repr__(self):
+        return self.__str__()
+    
     def __str__(self):
         return 'ReactionSide: (%s)' % \
             ('; '.join(map(lambda m: m.__str__(), self.members)))
-
-class Reaction(object):
     
-    def __init__(self):
-        pass
+    def __eq__(self, other):
+        return self.__str__() == other.__str__()
 
-class Species(object):
+class Reaction(AttributeHandler):
     
-    def __init__(self):
-        pass
-
-# Stoichiometry15
-# UnificationXref330
+    def __init__(self, left, right, source = []):
+        super(Reaction, self).__init__()
+        
+        self.left = ReactionSide(left, source)
+        self.right = ReactionSide(left, source)
+    
+    def __repr__(self):
+        return self.__str__()
+    
+    def __str__(self):
+        return 'Reaction: LEFT(%s) --> RIGHT(%s)' % \
+            (self.left.__str__(), self.right.__str__())
+    
+    def __hash__(self):
+        return hash(self.__str__())
+    
+    def __eq__(self, other):
+        return self.__str__() == other.__str__()
