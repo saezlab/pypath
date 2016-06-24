@@ -267,6 +267,21 @@ class FileOpener(object):
         else:
             self.result = self.fileobj.read()
             self.fileobj.close()
+    
+    def get_type(self):
+        self.multifile = False
+        if self.fname[-3:].lower() == 'zip' or self.compr == 'zip':
+            self.type = 'zip'
+            self.multifile = True
+        elif self.fname[-3:].lower() == 'tgz' or \
+            self.fname[-6:].lower() == 'tar.gz' or \
+            self.compr == 'tgz' or self.compr == 'tar.gz':
+            self.type = 'tgz'
+            self.multifile = True
+        elif self.fname[-2:].lower() == 'gz' or self.compr == 'gz':
+            self.type = 'gz'
+        else:
+            self.type = 'plain'
 
 class Curl(FileOpener):
     

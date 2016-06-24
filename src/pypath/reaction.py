@@ -381,9 +381,26 @@ class BioPaxReader(object):
             )
         )
 
-class MolecularEntity(object):
+class AttributeHandler(object):
+    
+    def __init__(self):
+        pass
+    
+    def add_source(self, source):
+        self.sources.add(source)
+        if source not in self.attrs:
+            self.attrs[source] = {}
+    
+    def merge_attrs(self, attrs):
+        self.attrs = common.merge_dicts(self.attrs, attrs)
+    
+    def update_attr(self, attr):
+        self.attrs = common.dict_set_path(self.attrs, attr)
+
+class MolecularEntity(AttributeHandler):
     
     def __init__(self, identifier, id_type, sources = [], attrs = None):
+        super(MolecularEntity, self).__init__()
         self.id = identifier
         self.id_type = id_type
         self.sources = set([])
@@ -409,17 +426,6 @@ class MolecularEntity(object):
         self.sources = self.sources | other.sources
         self.merge_attrs(other.attrs)
         return self
-    
-    def add_source(self, source):
-        self.sources.add(source)
-        if source not in self.attrs:
-            self.attrs[source] = {}
-    
-    def merge_attrs(self, attrs):
-        self.attrs = common.merge_dicts(self.attrs, attrs)
-    
-    def update_attr(self, attr):
-        self.attrs = common.dict_set_path(self.attrs, attr)
 
 class Protein(MolecularEntity):
     
@@ -428,11 +434,15 @@ class Protein(MolecularEntity):
         super(Protein, self).__init__(protein_id, id_type,
                                       sources = sources, attrs = attrs)
 
-class EntitySet(object):
+class EntitySet(AttributeHandler):
     
-    def __init__(self, members, sources = set([])):
+    def __init__(self, members, sources = []):
+        super(EntitySet, self).__init__()
         self.members = sorted(common.uniqList(members))
-        self.sources = sources
+        self.sources = set([])
+        self.attrs = {}
+        for source in sources:
+            self.add_source(source)
         self.originals = {}
         self.type = None
     
@@ -448,7 +458,7 @@ class EntitySet(object):
                 )
     
     def __repr__(self):
-        return '%s: %s' (self.__class__.__name__, self.__str__())
+        return '%s: %s' % (self.__class__.__name__, self.__str__())
     
     def __hash__(self):
         return hash(self.__str__())
@@ -459,11 +469,15 @@ class EntitySet(object):
     
     def __iadd__(self, other):
         self.members.extend(other.members)
+        self.members = sorted(common.uniqList(self.members))
         self.sources = self.sources | other.sources
-        return globals()[self.__class__.__name](self.members)
+        self.merge_attrs(other.attrs)
+        return self
     
     def add_source(self, source):
         self.sources.add(source)
+        if source not in self.attrs:
+            self.attrs[source] = {}
 
 class Complex(EntitySet):
     
@@ -471,6 +485,18 @@ class Complex(EntitySet):
         sources = set([source]) if type(source) is not set else source
         super(Complex, self).__init__(members, sources)
         self.type = 'complex'
+    
+    def get_stoichiometries(self, source, cid, with_pids = False):
+        if source in self.sources and cid in self.attrs[source]:
+            return \
+                list(
+                    map(
+                        lambda memb:
+                            (memb[0], memb['stoi'], memb['pid']) \
+                                if with_pids else (memb[0], memb['stoi']),
+                        iteritems(self.attrs[source][cid])
+                    )
+                )
 
 class ProteinFamily(EntitySet):
     
@@ -492,9 +518,11 @@ class RePath(object):
         self.mapper = mapping.Mapper(ncbi_tax_id) if mapper is None else mapper
         self.species = {}
         self.proteins = {}
+        self.complexes = {}
         self.mods = {}
         self.frags = {}
         self.rproteins = {}
+        self.rcomplexes = {}
         self.reactions = {}
         self.references = {}
         self.id_types = {}
@@ -524,6 +552,7 @@ class RePath(object):
         self.merge_proteins()
         if self.modifications:
             self.merge_modifications()
+        self.merge_complexes()
         self.remove_defaults()
     
     def remove_defaults(self):
@@ -564,37 +593,43 @@ class RePath(object):
                     self.mapper.map_name(id_a['id'], std_id_type,
                                         self.default_id_types['protein'])
                 )
+                target_ids = common.uniqList(target_ids)
+                if len(target_ids) > 1:
+                    sys.stdout.write('\t:: Ambiguous ID translation: from %s to %s\n' % (ids, target_ids))
+                elif len(target_ids) == 0:
+                    target_ids = None
+                else:
+                    target_ids = target_ids[0]
             return target_ids, id_attrs
         
         self.rproteins[self.source] = {}
         for pid, p in iteritems(self.parser.proteins):
             ids = get_protein_ids(p['protein'])
-            target_ids, id_attrs = map_protein_ids(ids)
-            for target_id in target_ids:
-                attrs = {
-                    self.source: {
-                        'prefs': set([p['protein']]),
-                        'pids': {
-                            pid: {}
-                        },
-                        'originals': set([])
-                    }
+            target_id, id_attrs = map_protein_ids(ids)
+            if target_id is None:
+                continue
+            attrs = {
+                self.source: {
+                    'prefs': set([p['protein']]),
+                    'pids': {
+                        pid: {}
+                    },
+                    'originals': set([])
                 }
-                for original_id, id_a in iteritems(id_attrs):
-                    attrs[self.source]['originals'].add(original_id)
-                    for k, v in iteritems(id_a):
-                        if k != 'id':
-                            attrs[self.source]['pids'][pid][k] = set([])
-                            attrs[self.source]['pids'][pid][k].add(v)
-                protein = Protein(target_id,
-                                  sources = set([self.source]), attrs = attrs)
-                if target_id in self.proteins:
-                    self.proteins[target_id] += protein
-                else:
-                    self.proteins[target_id] = protein
-                if pid not in self.rproteins[self.source]:
-                    self.rproteins[self.source][pid] = set([])
-                self.rproteins[self.source][pid].add(target_id)
+            }
+            for original_id, id_a in iteritems(id_attrs):
+                attrs[self.source]['originals'].add(original_id)
+                for k, v in iteritems(id_a):
+                    if k != 'id':
+                        attrs[self.source]['pids'][pid][k] = set([])
+                        attrs[self.source]['pids'][pid][k].add(v)
+            protein = Protein(target_id,
+                                sources = set([self.source]), attrs = attrs)
+            if target_id in self.proteins:
+                self.proteins[target_id] += protein
+            else:
+                self.proteins[target_id] = protein
+            self.rproteins[self.source][pid] = target_id
     
     def preprocess_seqmodvoc(self):
         kws = common.mod_keywords[self.source]
@@ -618,14 +653,14 @@ class RePath(object):
         def get_protein(pid):
             proteins = []
             if pid in self.rproteins[self.source]:
-                for _id in self.rproteins[self.source][pid]:
-                    if 'isoform' in \
-                        self.proteins[_id].attrs[self.source]['pids'][pid]:
-                        for isof in self.proteins[_id].attrs[self.source]\
-                            ['pids'][pid]['isoform']:
-                            proteins.append((_id, isof))
-                    else:
-                        proteins.append((_id, None))
+                _id = self.rproteins[self.source][pid]
+                if 'isoform' in \
+                    self.proteins[_id].attrs[self.source]['pids'][pid]:
+                    for isof in self.proteins[_id].attrs[self.source]\
+                        ['pids'][pid]['isoform']:
+                        proteins.append((_id, isof))
+                else:
+                    proteins.append((_id, None))
             return proteins
         
         def get_seqsite(seqsite):
@@ -702,6 +737,76 @@ class RePath(object):
                                 self.proteins[protein].update_attr(
                                     [self.source, 'pids', pid, 'mods', mod]
                                 )
+    
+    def merge_complexes(self):
+        self.rcomplexes[self.source] = {}
+        this_round = set(list(self.parser.complexes.keys()))
+        next_round = []
+        prev_round = -1
+        while len(this_round) - prev_round != 0:
+            prev_round = len(this_round)
+            for cid in this_round:
+                stois = self.parser.complexes[cid]
+                pids = list(map(lambda stoi:
+                                    self.parser.stoichiometries[stoi], stois))
+                subc_unproc = \
+                    any(
+                        map(
+                            lambda pid:
+                                pid[0] in self.parser.complexes,
+                            pids
+                        )
+                    )
+                if subc_unproc:
+                    next_round.append(cid)
+                    continue
+                proteins = \
+                    list(
+                        map(
+                            lambda pid:
+                                (self.rproteins[self.source][pid[0]],
+                                    pid[1], pid[0]),
+                            filter(
+                                lambda pid:
+                                    pid[0] in self.rproteins[self.source],
+                                pids
+                            )
+                        )
+                    )
+                subcplexs = \
+                    list(
+                        map(
+                            lambda pid:
+                                (self.rcomplexes[self.source][pid[0]],
+                                    pid[1], pid[0]),
+                            filter(
+                                lambda pid:
+                                    pid[0] in self.rcomplexes[self.source],
+                                pids
+                            )
+                        )
+                    )
+                for sc, scstoi, scid in subcplexs:
+                    scmembs = sc.get_stoichiometries(self.source,
+                                                     scid, with_pids = True)
+                    proteins.extend(scmembs)
+                
+                members = sorted(common.uniqList(map(lambda p: p[0], proteins)))
+                cplex = Complex(members, source = self.source)
+                members = tuple(members)
+                cplex.attrs[self.source][cid] = {}
+                for protein, stoi, pid in proteins:
+                    cplex.attrs[self.source][cid][protein] = {}
+                    cplex.attrs[self.source][cid][protein]['pid'] = pid
+                    cplex.attrs[self.source][cid][protein]['stoi'] = stoi
+                if members not in self.complexes:
+                    self.complexes[members] = cplex
+                else:
+                    self.complexes[members] += cplex
+                self.rcomplexes[self.source][cid] = members
+                
+            this_round = next_round
+            next_round = []
     
     def load_sequences(self):
         if self.seq is None:
