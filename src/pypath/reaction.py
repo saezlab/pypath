@@ -388,6 +388,13 @@ class AttributeHandler(object):
         pass
     
     def add_source(self, source):
+        if type(source) in common.charTypes:
+            self._add_source(source)
+        else:
+            for s in source:
+                self._add_source(s)
+    
+    def _add_source(self, source):
         self.sources.add(source)
         if source not in self.attrs:
             self.attrs[source] = {}
@@ -419,8 +426,7 @@ class Entity(AttributeHandler):
         self.id_type = id_type
         self.sources = set([])
         self.attrs = {}
-        for source in sources:
-            self.add_source(source)
+        self.add_source(sources)
         if attrs is not None:
             self.merge_attrs(attrs)
     
@@ -454,7 +460,7 @@ class Reference(Entity):
     def __init__(self, ref_id, id_type = 'pubmed',
                  sources = []):
         super(Reference, self).__init__(ref_id, id_type,
-                                        sources = source)
+                                        sources = sources)
     
     def get_ref(self):
         return refs.Reference(self.ref_id)
@@ -466,11 +472,7 @@ class EntitySet(AttributeHandler):
         self.members = sorted(common.uniqList(members))
         self.sources = set([])
         self.attrs = {}
-        if type(source) in common.charTypes:
-            self.add_source(source)
-        else:
-            for source in sources:
-                self.add_source(source)
+        self.add_source(sources)
         self.originals = {}
         self.type = None
     
@@ -546,6 +548,7 @@ class RePath(object):
         self.seq = seq
         self.mapper = mapping.Mapper(ncbi_tax_id) if mapper is None else mapper
         
+        self.refs = {}
         self.species = {}
         self.proteins = {}
         self.pfamilies = {}
@@ -554,6 +557,7 @@ class RePath(object):
         self.mods = {}
         self.frags = {}
         
+        self.rrefs = {}
         self.rproteins = {}
         self.rpfamilies = {}
         self.rcomplexes = {}
@@ -582,6 +586,7 @@ class RePath(object):
         self.merge()
     
     def merge(self):
+        
         self.sources.add(self.source)
         self.parsers[self.source] = self.parser
         self.merge_refs()
@@ -590,6 +595,7 @@ class RePath(object):
         if self.modifications:
             self.merge_modifications()
         self.merge_complexes()
+        self.merge_reactions()
         self.remove_defaults()
     
     def remove_defaults(self):
@@ -597,19 +603,24 @@ class RePath(object):
         self.source = None
     
     def merge_refs(self):
+        
         self.rrefs[self.source] = {}
+        
         for refid, pubmed in iteritems(self.parser.pubrefs):
             
-            ref = Reference(pubmed, source = self.source)
-            ref.attrs[source]['refid'] = set([])
-            ref.attrs[source]['refid'].add(refid)
+            ref = Reference(pubmed, sources = self.source)
+            ref.attrs[self.source]['refid'] = set([])
+            ref.attrs[self.source]['refid'].add(refid)
             
             if pubmed in self.refs:
                 self.refs[pubmed] += ref
             else:
                 self.refs[pubmed] = ref
+            
+            self.rrefs[self.source][refid] = pubmed
     
     def merge_proteins(self):
+        
         def get_protein_ids(pref):
             
             pids = []
@@ -929,26 +940,53 @@ class RePath(object):
         self.rreactions[self.source] = {}
         def get_side(ids):
             members = []
+            memb_ids = {}
             for _id in ids:
                 for typ in ('proteins', 'pfamilies', 'complexes'):
                     r = getattr(self, 'r%s'%typ)[self.source]
                     if _id in r:
                         members.append(getattr(self, typ)[r[_id]])
-            return ReactionSide(members, source = self.source)
+                        memb_ids[r[_id]] = _id
+            return members, memb_ids
         
         for rid, reac in iteritems(self.parser.reactions):
-            left = get_side(reac['left'])
-            right = get_side(reac['right'])
             
-            reaction = Reaction(left, right, source = self.source)
-            key = reaction.__str__()
+            left, l_ids = get_side(reac['left'])
+            right, r_ids = get_side(reac['right'])
+            left_attrs = {self.source: {rid: l_ids}}
+            right_attrs = {self.source: {rid: r_ids}}
             
-            if key in self.reactions:
-                self.reactions[key] += reaction
-            else:
-                self.reactions[key] = reaction
+            if len(left) or len(right):
             
-            
+                reaction = Reaction(left, right, left_attrs,
+                                    right_attrs, source = self.source)
+                reaction.attrs[self.source][rid] = {}
+                
+                this_refs = \
+                    set(
+                        list(
+                            map(
+                                lambda r:
+                                    self.rrefs[self.source][r],
+                                filter(
+                                    lambda r:
+                                        r in self.parser.pubrefs,
+                                    reac['refs']
+                                )
+                            )
+                        )
+                    )
+                
+                reaction.attrs[self.source][rid]['refs'] = this_refs
+                
+                key = reaction.__str__()
+                
+                if key in self.reactions:
+                    self.reactions[key] += reaction
+                else:
+                    self.reactions[key] = reaction
+                
+                self.rreactions[self.source][rid] = key
     
     def iterate_reactions(self):
         pass
@@ -960,14 +998,13 @@ class RePath(object):
 
 class ReactionSide(AttributeHandler):
     
-    def __init__(self, members, sources = []):
+    def __init__(self, members, source = []):
         super(ReactionSide, self).__init__()
         
         self.members = sorted(members)
-        self.source = set([])
+        self.sources = set([])
         self.attrs = {}
-        for source in sources:
-            self.add_source(source)
+        self.add_source(source)
     
     def __hash__(self):
         return hash(self.__str__())
@@ -984,11 +1021,16 @@ class ReactionSide(AttributeHandler):
 
 class Reaction(AttributeHandler):
     
-    def __init__(self, left, right, source = []):
+    def __init__(self, left, right, left_attrs, right_attrs, source = []):
         super(Reaction, self).__init__()
         
         self.left = ReactionSide(left, source)
         self.right = ReactionSide(left, source)
+        self.left.merge_attrs(left_attrs)
+        self.right.merge_attrs(right_attrs)
+        self.attrs = {}
+        self.sources = set([])
+        self.add_source(source)
     
     def __repr__(self):
         return self.__str__()
@@ -1002,3 +1044,9 @@ class Reaction(AttributeHandler):
     
     def __eq__(self, other):
         return self.__str__() == other.__str__()
+    
+    def __iadd__(self, other):
+        self = super(Reaction, self).__iadd__(other)
+        self.left += other.left
+        self.right += other.left
+        return self
