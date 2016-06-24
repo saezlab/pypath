@@ -1596,6 +1596,29 @@ class PyPath(object):
         e[attr][group] = common.uniqList(e[attr][group] + value)
     
     def get_directed(self, graph = False, conv_edges = False, mutual = False, ret = False):
+        """
+        Converts ``graph`` undirected ``igraph.Graph`` object to a directed one.
+        By default it converts the graph in ``PyPath.graph`` and places the directed
+        instance in ``PyPath.dgraph``.
+        
+        @graph : igraph.Graph
+            Undirected graph object.
+        
+        @conv_edges : bool
+            Whether to convert undirected edges (those without explicit
+            direction information) to an arbitrary direction edge or
+            a pair of opposite edges.
+            Otherwise those will be deleted. Default is ``False``.
+        
+        @mutual : bool
+            If ``conv_edges`` is ``True``, whether to convert the
+            undirected edges to a single, arbitrary directed edge,
+            or a pair of opposite directed edges. Default is ``False``.
+        
+        @ret : bool
+            Return the directed graph instance, or return ``None``.
+            Default is ``False`` (returns ``None``).
+        """
         toDel = []
         g = self.graph if not graph else graph
         d = g.as_directed(mutual = True)
@@ -1603,10 +1626,11 @@ class PyPath(object):
         d.es['directed_sources'] = [[] for _ in xrange(g.ecount())]
         d.es['undirected_sources'] = [[] for _ in xrange(g.ecount())]
         d.es['directed'] = [False for _ in xrange(g.ecount())]
-        prg = Progress(total=g.ecount(),name="Setting directions",interval=17)
+        prg = Progress(total = g.ecount(),
+                       name = "Setting directions", interval = 17)
         for e in g.es:
             '''
-            This works because in directed graphs get_eid() defaults to 
+            This works because in directed graphs get_eid() defaults to
             directed = True, so the source -> target edge is returned.
             '''
             dir_one = (g.vs['name'][e.source], g.vs['name'][e.target])

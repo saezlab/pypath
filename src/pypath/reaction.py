@@ -455,8 +455,11 @@ class EntitySet(AttributeHandler):
         self.members = sorted(common.uniqList(members))
         self.sources = set([])
         self.attrs = {}
-        for source in sources:
+        if type(source) in common.charTypes:
             self.add_source(source)
+        else:
+            for source in sources:
+                self.add_source(source)
         self.originals = {}
         self.type = None
     
@@ -498,8 +501,7 @@ class EntitySet(AttributeHandler):
 class Complex(EntitySet):
     
     def __init__(self, members, source):
-        sources = set([source]) if type(source) is not set else source
-        super(Complex, self).__init__(members, sources)
+        super(Complex, self).__init__(members, source)
         self.type = 'complex'
     
     def get_stoichiometries(self, source, cid, with_pids = False):
@@ -517,8 +519,7 @@ class Complex(EntitySet):
 class ProteinFamily(EntitySet):
     
     def __init__(self, members, source):
-        sources = set([source]) if type(source) is not set else source
-        super(ProteinFamily, self).__init__(members, sources)
+        super(ProteinFamily, self).__init__(members, source)
         self.type = 'pfamily'
 
 class RePath(object):
@@ -697,7 +698,7 @@ class RePath(object):
                     sresname = self.seq[protein].get(resnum, isoform = isof)
                     if sresname == resname or resname is None:
                         return sresname, isof
-                for isof in self.seq[protein].isoforms():
+                for isof in sorted(self.seq[protein].isoforms()):
                     sresname = self.seq[protein].get(resnum, isoform = isof)
                     if sresname == resname or resname is None:
                         return sresname, isof
@@ -741,7 +742,7 @@ class RePath(object):
                             if protein in self.seq:
                                 resname, isof = \
                                     get_residue(protein, isof, resnum, resname)
-                                mod = (protein, isof, resnum, resname)
+                                mod = (protein, isof, resnum, resname, typ)
                                 if mod in self.mods:
                                     self.mods[mod].add_source(self.source)
                                 else:
@@ -900,6 +901,7 @@ class RePath(object):
             next_round = []
     
     def merge_reactions(self):
+        self.rreactions[self.source] = {}
         def get_side(ids):
             members = []
             for _id in ids:
@@ -913,7 +915,7 @@ class RePath(object):
             left = get_side(reac['left'])
             right = get_side(reac['right'])
             
-            reaction = Reaction(left, right, )
+            reaction = Reaction(left, right, source = self.source)
             
             self.reactions
     
