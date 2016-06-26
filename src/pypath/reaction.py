@@ -614,7 +614,7 @@ class RePath(object):
         if self.modifications:
             self.merge_modifications()
         self.merge_complexes()
-        #self.merge_cvariations()
+        self.merge_cvariations()
         #self.merge_reactions()
         #self.merge_cassemblies()
         #self.merge_controls()
@@ -1034,43 +1034,31 @@ class RePath(object):
     
     def merge_cvariations(self):
         
-        if self.source not in self.rcvariations:
-            self.rcvariations[self.source] = {}
-        
         def get_cplex(cid):
             if cid in self.rcomplexes[self.source]:
-                key = self.rcomplexes[self.source][cid]
-                cplex = self.complexes[key]
-                return key, cplex, cplex.members
-            return None, None, None
+                return map(
+                    lambda key:
+                        (key, self.complexes[key], self.complexes[key].members),
+                    self.rcomplexes[self.source][cid]
+                )
         
         for cvid, cv in iteritems(self.parser.cvariations):
             
             attrs = {}
             members = []
             
-            for cid in cv:
-                key, cplex, membs = get_cplex(cid)
-                
-                if key is not None:
-                    members.append(cplex.__str__())
-                    
-                    attrs[cid] = {}
-                    attrs[cid]['cplex'] = cplex
-                    attrs[cid]['key'] = key
-                    attrs[cid]['name'] = cplex.__str__()
-            
-            if len(members):
-                cvar = ComplexFamily(members, source = self.source)
-                cvar.attrs[self.source] = attrs
-                cvkey = cvar.__str__()
-                
-                if cvkey in self.cvariations:
-                    self.cvariations[cvkey] += cvar
-                else:
-                    self.cvariations[cvkey] = cvar
-                
-                self.rcvariations[self.source][cvid] = cvkey
+            self.rcomplexes[self.source][cvid] = \
+                list(
+                    map(
+                        lambda cid:
+                            self.rcomplexes[self.source][cid],
+                        filter(
+                            lambda cid:
+                                cid in self.rcomplexes[self.source],
+                            cv
+                        )
+                    )
+                )
     
     def merge_reactions(self):
         self._merge_reactions(('reactions', 'reaction'))
