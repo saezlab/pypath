@@ -523,8 +523,8 @@ class Complex(EntitySet):
                 list(
                     map(
                         lambda memb:
-                            (memb[0], memb['stoi'], memb['pid']) \
-                                if with_pids else (memb[0], memb['stoi']),
+                            (memb[0], memb[1]['stoi'], memb[1]['pid']) \
+                                if with_pids else (memb[0], memb[1]['stoi']),
                         iteritems(self.attrs[source][cid])
                     )
                 )
@@ -554,6 +554,7 @@ class RePath(object):
         self.pfamilies = {}
         self.complexes = {}
         self.reactions = {}
+        self.controls = {}
         self.mods = {}
         self.frags = {}
         
@@ -562,6 +563,7 @@ class RePath(object):
         self.rpfamilies = {}
         self.rcomplexes = {}
         self.rreactions = {}
+        self.rcontrols = {}
         self.references = {}
         
         self.id_types = {}
@@ -596,6 +598,7 @@ class RePath(object):
             self.merge_modifications()
         self.merge_complexes()
         self.merge_reactions()
+        self.merge_controls()
         self.remove_defaults()
     
     def remove_defaults(self):
@@ -866,12 +869,14 @@ class RePath(object):
     
     def merge_complexes(self):
         self.rcomplexes[self.source] = {}
+        no_protein = set([])
         this_round = set(list(self.parser.complexes.keys()))
         next_round = []
         prev_round = -1
         while len(this_round) - prev_round != 0:
             prev_round = len(this_round)
             for cid in this_round:
+                
                 stois = self.parser.complexes[cid]
                 pids = list(map(lambda stoi:
                                     self.parser.stoichiometries[stoi], stois))
@@ -879,13 +884,16 @@ class RePath(object):
                     any(
                         map(
                             lambda pid:
-                                pid[0] in self.parser.complexes,
+                                pid[0] in self.parser.complexes \
+                                    and pid[0] not in self.rcomplexes[self.source] \
+                                    and pid[0] not in no_protein,
                             pids
                         )
                     )
                 if subc_unproc:
                     next_round.append(cid)
                     continue
+                
                 proteins = \
                     list(
                         map(
@@ -912,26 +920,33 @@ class RePath(object):
                             )
                         )
                     )
-                for sc, scstoi, scid in subcplexs:
-                    scmembs = sc.get_stoichiometries(self.source,
-                                                     scid, with_pids = True)
-                    scmembs = list(map(lambda p:
-                                           (p[0], p[1] * scstoi, p[2]), scmembs))
-                    proteins.extend(scmembs)
+                for sckey, scstoi, scid in subcplexs:
+                    if scid not in no_protein:
+                        sc = self.complexes[sckey]
+                        scmembs = sc.get_stoichiometries(self.source,
+                                                        scid, with_pids = True)
+                        scmembs = list(map(lambda p:
+                                            (p[0], p[1] * scstoi, p[2]), scmembs))
+                        proteins.extend(scmembs)
                 
-                members = sorted(common.uniqList(map(lambda p: p[0], proteins)))
-                cplex = Complex(members, source = self.source)
-                members = tuple(members)
-                cplex.attrs[self.source][cid] = {}
-                for protein, stoi, pid in proteins:
-                    cplex.attrs[self.source][cid][protein] = {}
-                    cplex.attrs[self.source][cid][protein]['pid'] = pid
-                    cplex.attrs[self.source][cid][protein]['stoi'] = stoi
-                if members not in self.complexes:
-                    self.complexes[members] = cplex
+                if len(proteins):
+                
+                    members = sorted(common.uniqList(map(lambda p: p[0], proteins)))
+                    cplex = Complex(members, source = self.source)
+                    members = tuple(members)
+                    cplex.attrs[self.source][cid] = {}
+                    for protein, stoi, pid in proteins:
+                        cplex.attrs[self.source][cid][protein] = {}
+                        cplex.attrs[self.source][cid][protein]['pid'] = pid
+                        cplex.attrs[self.source][cid][protein]['stoi'] = stoi
+                    if members not in self.complexes:
+                        self.complexes[members] = cplex
+                    else:
+                        self.complexes[members] += cplex
+                    self.rcomplexes[self.source][cid] = members
+                
                 else:
-                    self.complexes[members] += cplex
-                self.rcomplexes[self.source][cid] = members
+                    no_protein.add(cid)
                 
             this_round = next_round
             next_round = []
@@ -942,10 +957,10 @@ class RePath(object):
             members = []
             memb_ids = {}
             for _id in ids:
-                for typ in ('proteins', 'pfamilies', 'complexes'):
-                    r = getattr(self, 'r%s'%typ)[self.source]
+                for cls in ('proteins', 'pfamilies', 'complexes'):
+                    r = getattr(self, 'r%s'%cls)[self.source]
                     if _id in r:
-                        members.append(getattr(self, typ)[r[_id]])
+                        members.append(getattr(self, cls)[r[_id]])
                         memb_ids[r[_id]] = _id
             return members, memb_ids
         
@@ -957,7 +972,7 @@ class RePath(object):
             right_attrs = {self.source: {rid: r_ids}}
             
             if len(left) or len(right):
-            
+                
                 reaction = Reaction(left, right, left_attrs,
                                     right_attrs, source = self.source)
                 reaction.attrs[self.source][rid] = {}
@@ -987,6 +1002,57 @@ class RePath(object):
                     self.reactions[key] = reaction
                 
                 self.rreactions[self.source][rid] = key
+    
+    def merge_controls(self):
+        
+        self.rcontrols[self.source] = {}
+        
+        def get_party(_id):
+            for cls in ['proteins', 'complexes', 'reactions']:
+                # print('looking up %s' % _id)
+                if _id in getattr(self, 'r%s' % cls)[self.source]:
+                    key = getattr(self, 'r%s' % cls)[self.source][_id]
+                    # print('found %s' % key)
+                    entity = getattr(self, cls)[key]
+                    return (cls, key, entity)
+            return None, None, None
+        
+        for cid, ctrl in iteritems(self.parser.controls):
+            
+            erclass, erkey, erent = get_party(ctrl['controller'])
+            edclass, edkey, edent = get_party(ctrl['controlled'])
+            
+            if erent is not None and edent is not None:
+                
+                this_refs = \
+                    set(
+                        list(
+                            map(
+                                lambda r:
+                                    self.rrefs[self.source][r],
+                                filter(
+                                    lambda r:
+                                        r in self.parser.pubrefs,
+                                    ctrl['refs']
+                                )
+                            )
+                        )
+                    )
+                
+                control = Control(erent, edent, source = self.source)
+                control.attrs[self.source][cid] = {}
+                control.attrs[self.source][cid]['refs'] = this_refs
+                control.attrs[self.source][cid]['class'] = 'control'
+                control.attrs[self.source][cid]['type'] = ctrl['type']
+                
+                key = control.__str__()
+                
+                if key in self.controls:
+                    self.controls[key] += control
+                else:
+                    self.controls[key] = control
+                
+                self.rcontrols[self.source][cid] = key
     
     def iterate_reactions(self):
         pass
@@ -1025,7 +1091,7 @@ class Reaction(AttributeHandler):
         super(Reaction, self).__init__()
         
         self.left = ReactionSide(left, source)
-        self.right = ReactionSide(left, source)
+        self.right = ReactionSide(right, source)
         self.left.merge_attrs(left_attrs)
         self.right.merge_attrs(right_attrs)
         self.attrs = {}
@@ -1051,10 +1117,10 @@ class Reaction(AttributeHandler):
         self.right += other.left
         return self
 
-class ControlBase(AttributeHandler):
+class Control(AttributeHandler):
     
     def __init__(self, er, ed, source = []):
-        supet(ControlBase, self).__init__()
+        super(Control, self).__init__()
         
         self.controller = er
         self.controlled = ed
@@ -1063,9 +1129,8 @@ class ControlBase(AttributeHandler):
         self.add_source(source)
     
     def __str__(self):
-        return 'Control(%s): C.ER(%s) --> C.ED(%s)' % \
+        return 'Control: C.ER(%s) --> C.ED(%s)' % \
             (
-             self.type
              self.controller.__str__(),
              self.controlled.__str__()
             )
