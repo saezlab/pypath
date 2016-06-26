@@ -362,7 +362,7 @@ class BioPaxReader(object):
     
     def get_none(self, something):
         if something is not None:
-            something.replace('#', '')
+            return something.replace('#', '')
         return something
     
     def _bp_collect_resources(self, tag, restype = None):
@@ -598,7 +598,9 @@ class RePath(object):
             self.merge_modifications()
         self.merge_complexes()
         self.merge_reactions()
+        self.merge_cassemblies()
         self.merge_controls()
+        self.merge_catalyses()
         self.remove_defaults()
     
     def remove_defaults(self):
@@ -607,7 +609,8 @@ class RePath(object):
     
     def merge_refs(self):
         
-        self.rrefs[self.source] = {}
+        if self.source not in self.rrefs:
+            self.rrefs[self.source] = {}
         
         for refid, pubmed in iteritems(self.parser.pubrefs):
             
@@ -803,7 +806,10 @@ class RePath(object):
                                 )
     
     def merge_pfamilies(self):
-        self.rpfamilies[self.source] = {}
+        
+        if self.source not in self.rpfamilies:
+            self.rpfamilies[self.source] = {}
+        
         this_round = set(list(self.parser.pfamilies.keys()))
         next_round = []
         prev_round = -1
@@ -868,7 +874,10 @@ class RePath(object):
             next_round = []
     
     def merge_complexes(self):
-        self.rcomplexes[self.source] = {}
+        
+        if self.source not in self.rcomplexes:
+            self.rcomplexes[self.source] = {}
+        
         no_protein = set([])
         this_round = set(list(self.parser.complexes.keys()))
         next_round = []
@@ -952,7 +961,16 @@ class RePath(object):
             next_round = []
     
     def merge_reactions(self):
-        self.rreactions[self.source] = {}
+        self._merge_reactions(('reactions', 'reaction'))
+    
+    def merge_cassemblies(self):
+        self._merge_reactions(('cassemblies', 'cassembly'))
+    
+    def _merge_reactions(self, rclass):
+        
+        if self.source not in self.rreactions:
+            self.rreactions[self.source] = {}
+        
         def get_side(ids):
             members = []
             memb_ids = {}
@@ -964,7 +982,7 @@ class RePath(object):
                         memb_ids[r[_id]] = _id
             return members, memb_ids
         
-        for rid, reac in iteritems(self.parser.reactions):
+        for rid, reac in iteritems(getattr(self.parser, rclass[0])):
             
             left, l_ids = get_side(reac['left'])
             right, r_ids = get_side(reac['right'])
@@ -993,6 +1011,7 @@ class RePath(object):
                     )
                 
                 reaction.attrs[self.source][rid]['refs'] = this_refs
+                reaction.attrs[self.source][rid]['type'] = rclass[1]
                 
                 key = reaction.__str__()
                 
@@ -1004,23 +1023,30 @@ class RePath(object):
                 self.rreactions[self.source][rid] = key
     
     def merge_controls(self):
+        self._merge_controls(('controls', 'control'))
+    
+    def merge_catalyses(self):
+        self._merge_controls(('catalyses', 'catalysis'))
+    
+    def _merge_controls(self, cclass):
         
-        self.rcontrols[self.source] = {}
+        if self.source not in self.rcontrols:
+            self.rcontrols[self.source] = {}
         
         def get_party(_id):
-            for cls in ['proteins', 'complexes', 'reactions']:
-                # print('looking up %s' % _id)
+            for cls in ['proteins', 'pfamilies', 'complexes', 'reactions']:
                 if _id in getattr(self, 'r%s' % cls)[self.source]:
                     key = getattr(self, 'r%s' % cls)[self.source][_id]
-                    # print('found %s' % key)
                     entity = getattr(self, cls)[key]
                     return (cls, key, entity)
             return None, None, None
         
-        for cid, ctrl in iteritems(self.parser.controls):
+        for cid, ctrl in iteritems(getattr(self.parser, cclass[0])):
             
             erclass, erkey, erent = get_party(ctrl['controller'])
             edclass, edkey, edent = get_party(ctrl['controlled'])
+            
+            # print('n = %u, erclass: %s, edclass: %s, er: %s, ed: %s' % (n, erclass, edclass, ctrl['controller'], ctrl['controlled']))
             
             if erent is not None and edent is not None:
                 
@@ -1037,12 +1063,13 @@ class RePath(object):
                                 )
                             )
                         )
-                    )
+                    ) \
+                    if 'refs' in ctrl else set([])
                 
                 control = Control(erent, edent, source = self.source)
                 control.attrs[self.source][cid] = {}
                 control.attrs[self.source][cid]['refs'] = this_refs
-                control.attrs[self.source][cid]['class'] = 'control'
+                control.attrs[self.source][cid]['class'] = cclass[1]
                 control.attrs[self.source][cid]['type'] = ctrl['type']
                 
                 key = control.__str__()
