@@ -26,6 +26,7 @@ import gzip
 import tarfile
 import zipfile
 import struct
+import itertools
 from lxml import etree
 
 import pypath.mapping as mapping
@@ -73,6 +74,7 @@ class BioPaxReader(object):
         self.bpmphe = '%smemberPhysicalEntity' % self.bppref
         self.bperef = '%sentityReference' % self.bppref
         self.bpxref = '%sxref' % self.bppref
+        self.bpdinm = '%sdisplayName' % self.bppref
         self.bprelr = '%sRelationshipXref' % self.bppref
         self.bpcsto = '%scomponentStoichiometry' % self.bppref
         self.bpstoc = '%sstoichiometricCoefficient' % self.bppref
@@ -350,10 +352,17 @@ class BioPaxReader(object):
         self.seqmodvocs[self.next_id] = term.text
     
     def pathway(self):
+        name = self.next_elem.find(self.bpdinm)
+        if name is not None:
+            name = name.text
         try:
             self.pathways[self.next_id] = {
-                'reactions': self._bp_collect_resources(self.bppcom),
-                'pathways': self._bp_collect_resources(self.bppcom)
+                'reactions': self._bp_collect_resources(self.bppcom,
+                                                    'BiochemicalReaction') + \
+                             self._bp_collect_resources(self.bppcom,
+                                                    'ComplexAssembly'),
+                'pathways': self._bp_collect_resources(self.bppcom, 'Pathway'),
+                'name': name
             }
         except TypeError:
             sys.stdout.write('Wrong type at element:\n')
@@ -535,6 +544,12 @@ class ProteinFamily(EntitySet):
         super(ProteinFamily, self).__init__(members, source)
         self.type = 'pfamily'
 
+class ComplexFamily(EntitySet):
+    
+    def __init__(self, members, source):
+        super(ComplexFamily, self).__init__(members, source)
+        self.type = 'cfamily'
+
 class RePath(object):
     
     def __init__(self, mapper = None, ncbi_tax_id = 9606,
@@ -553,6 +568,7 @@ class RePath(object):
         self.proteins = {}
         self.pfamilies = {}
         self.complexes = {}
+        self.cvariations = {}
         self.reactions = {}
         self.controls = {}
         self.mods = {}
@@ -562,6 +578,7 @@ class RePath(object):
         self.rproteins = {}
         self.rpfamilies = {}
         self.rcomplexes = {}
+        self.rcvariations = {}
         self.rreactions = {}
         self.rcontrols = {}
         self.references = {}
@@ -597,10 +614,11 @@ class RePath(object):
         if self.modifications:
             self.merge_modifications()
         self.merge_complexes()
-        self.merge_reactions()
-        self.merge_cassemblies()
-        self.merge_controls()
-        self.merge_catalyses()
+        #self.merge_cvariations()
+        #self.merge_reactions()
+        #self.merge_cassemblies()
+        #self.merge_controls()
+        #self.merge_catalyses()
         self.remove_defaults()
     
     def remove_defaults(self):
@@ -882,6 +900,7 @@ class RePath(object):
         this_round = set(list(self.parser.complexes.keys()))
         next_round = []
         prev_round = -1
+        
         while len(this_round) - prev_round != 0:
             prev_round = len(this_round)
             for cid in this_round:
@@ -916,49 +935,142 @@ class RePath(object):
                             )
                         )
                     )
-                subcplexs = \
+                pfamilies = \
                     list(
                         map(
-                            lambda pid:
-                                (self.rcomplexes[self.source][pid[0]],
-                                    pid[1], pid[0]),
+                            lambda pfid:
+                                map(
+                                    lambda memb:
+                                        (memb[0], pfid[1], memb[1]['pid']),
+                                    iteritems(
+                                        self.pfamilies[
+                                            self.rpfamilies\
+                                            [self.source][pfid[0]]]\
+                                                .attrs[self.source][pfid[0]
+                                        ]
+                                    )
+                                ),
                             filter(
-                                lambda pid:
-                                    pid[0] in self.rcomplexes[self.source],
+                                lambda pfid:
+                                    pfid[0] in self.rpfamilies[self.source],
                                 pids
                             )
                         )
                     )
-                for sckey, scstoi, scid in subcplexs:
-                    if scid not in no_protein:
-                        sc = self.complexes[sckey]
-                        scmembs = sc.get_stoichiometries(self.source,
-                                                        scid, with_pids = True)
-                        scmembs = list(map(lambda p:
-                                            (p[0], p[1] * scstoi, p[2]), scmembs))
-                        proteins.extend(scmembs)
                 
-                if len(proteins):
+                subcplexs = \
+                    list(
+                        map(
+                            lambda scid:
+                                map(
+                                    lambda memb:
+                                        (memb, scid[1], scid[0]),
+                                    self.rcomplexes[self.source][scid[0]]
+                                ),
+                            filter(
+                                lambda scid:
+                                    scid[0] in self.rcomplexes[self.source],
+                                pids
+                            )
+                        )
+                    )
                 
-                    members = sorted(common.uniqList(map(lambda p: p[0], proteins)))
-                    cplex = Complex(members, source = self.source)
-                    members = tuple(members)
-                    cplex.attrs[self.source][cid] = {}
-                    for protein, stoi, pid in proteins:
-                        cplex.attrs[self.source][cid][protein] = {}
-                        cplex.attrs[self.source][cid][protein]['pid'] = pid
-                        cplex.attrs[self.source][cid][protein]['stoi'] = stoi
-                    if members not in self.complexes:
-                        self.complexes[members] = cplex
+                if len(subcplexs):
+                    
+                    subcplexs = itertools.product(*subcplexs)
+                    subcmembs = []
+                    
+                    for this_subcplex in subcplexs:
+                        for sckey, scstoi, scid in this_subcplex:
+                            if scid not in no_protein:
+                                sc = self.complexes[sckey]
+                                scmembs = sc.get_stoichiometries(self.source,
+                                                                scid, with_pids = True)
+                                scmembs = list(map(lambda p:
+                                                    (p[0], p[1] * scstoi, p[2]), scmembs))
+                                subcmembs.append(scmembs)
+                
+                else:
+                    subcmembs = [[]]
+                
+                if len(proteins) or len(pfamilies) or \
+                    type(subcplexs) is not list:
+                    
+                    if not len(pfamilies):
+                        pfamilies = [[]]
                     else:
-                        self.complexes[members] += cplex
-                    self.rcomplexes[self.source][cid] = members
+                        pfamilies = itertools.product(*pfamilies)
+                    
+                    for pfamily in pfamilies:
+                        
+                        for subc in subcmembs:
+                            
+                            this_proteins = proteins + list(pfamily) + list(subc)
+                            
+                            members = sorted(
+                                common.uniqList(
+                                    map(lambda p: p[0], this_proteins)
+                                ))
+                            cplex = Complex(members, source = self.source)
+                            members = tuple(members)
+                            cplex.attrs[self.source][cid] = {}
+                            for protein, stoi, pid in this_proteins:
+                                cplex.attrs[self.source][cid][protein] = {}
+                                cplex.attrs[self.source][cid][protein]['pid'] = pid
+                                cplex.attrs[self.source][cid][protein]['stoi'] = stoi
+                            if members not in self.complexes:
+                                self.complexes[members] = cplex
+                            else:
+                                self.complexes[members] += cplex
+                            if cid not in self.rcomplexes[self.source]:
+                                self.rcomplexes[self.source][cid] = set([])
+                                self.rcomplexes[self.source][cid].add(members)
                 
                 else:
                     no_protein.add(cid)
                 
             this_round = next_round
             next_round = []
+    
+    def merge_cvariations(self):
+        
+        if self.source not in self.rcvariations:
+            self.rcvariations[self.source] = {}
+        
+        def get_cplex(cid):
+            if cid in self.rcomplexes[self.source]:
+                key = self.rcomplexes[self.source][cid]
+                cplex = self.complexes[key]
+                return key, cplex, cplex.members
+            return None, None, None
+        
+        for cvid, cv in iteritems(self.parser.cvariations):
+            
+            attrs = {}
+            members = []
+            
+            for cid in cv:
+                key, cplex, membs = get_cplex(cid)
+                
+                if key is not None:
+                    members.append(cplex.__str__())
+                    
+                    attrs[cid] = {}
+                    attrs[cid]['cplex'] = cplex
+                    attrs[cid]['key'] = key
+                    attrs[cid]['name'] = cplex.__str__()
+            
+            if len(members):
+                cvar = ComplexFamily(members, source = self.source)
+                cvar.attrs[self.source] = attrs
+                cvkey = cvar.__str__()
+                
+                if cvkey in self.cvariations:
+                    self.cvariations[cvkey] += cvar
+                else:
+                    self.cvariations[cvkey] = cvar
+                
+                self.rcvariations[self.source][cvid] = cvkey
     
     def merge_reactions(self):
         self._merge_reactions(('reactions', 'reaction'))
@@ -975,7 +1087,7 @@ class RePath(object):
             members = []
             memb_ids = {}
             for _id in ids:
-                for cls in ('proteins', 'pfamilies', 'complexes'):
+                for cls in ('proteins', 'pfamilies', 'complexes', 'cvariations'):
                     r = getattr(self, 'r%s'%cls)[self.source]
                     if _id in r:
                         members.append(getattr(self, cls)[r[_id]])
@@ -1034,7 +1146,7 @@ class RePath(object):
             self.rcontrols[self.source] = {}
         
         def get_party(_id):
-            for cls in ['proteins', 'pfamilies', 'complexes', 'reactions']:
+            for cls in ['proteins', 'pfamilies', 'complexes', 'cvariations', 'reactions']:
                 if _id in getattr(self, 'r%s' % cls)[self.source]:
                     key = getattr(self, 'r%s' % cls)[self.source][_id]
                     entity = getattr(self, cls)[key]

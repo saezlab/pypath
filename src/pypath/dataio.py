@@ -3730,6 +3730,7 @@ def reactions_biopax(biopax_file, organism = 9606, protein_name_type = 'UniProt'
     bpmphe = '%smemberPhysicalEntity' % bppref
     bperef = '%sentityReference' % bppref
     bpxref = '%sxref' % bppref
+    bpdnam = '%sdisplayName' % bppref
     bprelr = '%sRelationshipXref' % bppref
     bpcsto = '%scomponentStoichiometry' % bppref
     bpstoc = '%sstoichiometricCoefficient' % bppref
