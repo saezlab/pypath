@@ -476,17 +476,19 @@ class Reference(Entity):
 
 class EntitySet(AttributeHandler):
     
-    def __init__(self, members, sources = []):
+    def __init__(self, members, sources = [], sep = ';'):
         super(EntitySet, self).__init__()
         self.members = sorted(common.uniqList(members))
+        self.set = set(members)
         self.sources = set([])
         self.attrs = {}
         self.add_source(sources)
         self.originals = {}
         self.type = None
+        self.sep = sep
     
     def __str__(self):
-        return ';'.join(
+        return self.sep.join(
                     sorted(
                         map(
                             lambda x:
@@ -544,11 +546,11 @@ class ProteinFamily(EntitySet):
         super(ProteinFamily, self).__init__(members, source)
         self.type = 'pfamily'
 
-class ComplexFamily(EntitySet):
+class ComplexVariations(EntitySet):
     
     def __init__(self, members, source):
-        super(ComplexFamily, self).__init__(members, source)
-        self.type = 'cfamily'
+        super(ComplexVariations, self).__init__(members, source, sep = '|')
+        self.type = 'cvariations'
 
 class RePath(object):
     
@@ -615,8 +617,9 @@ class RePath(object):
             self.merge_modifications()
         self.merge_complexes()
         self.merge_cvariations()
-        #self.merge_reactions()
-        #self.merge_cassemblies()
+        self.gen_cvariations()
+        self.merge_reactions()
+        self.merge_cassemblies()
         #self.merge_controls()
         #self.merge_catalyses()
         self.remove_defaults()
@@ -1011,6 +1014,8 @@ class RePath(object):
                                 common.uniqList(
                                     map(lambda p: p[0], this_proteins)
                                 ))
+                            if not len(members):
+                                continue
                             cplex = Complex(members, source = self.source)
                             members = tuple(members)
                             cplex.attrs[self.source][cid] = {}
@@ -1034,20 +1039,9 @@ class RePath(object):
     
     def merge_cvariations(self):
         
-        def get_cplex(cid):
-            if cid in self.rcomplexes[self.source]:
-                return map(
-                    lambda key:
-                        (key, self.complexes[key], self.complexes[key].members),
-                    self.rcomplexes[self.source][cid]
-                )
-        
         for cvid, cv in iteritems(self.parser.cvariations):
             
-            attrs = {}
-            members = []
-            
-            self.rcomplexes[self.source][cvid] = \
+            cplexes = \
                 list(
                     map(
                         lambda cid:
@@ -1059,6 +1053,33 @@ class RePath(object):
                         )
                     )
                 )
+            
+            if len(cplexes):
+                self.rcomplexes[self.source][cvid] = \
+                    reduce(
+                        lambda c1, c2:
+                            c1 | c2,
+                        cplexes
+                    )
+    
+    def gen_complexvariations(self):
+        
+        self.rcvariations[self.source] = {}
+        
+        for cid, keys in iteritems(self.rcomplexes[self.source]):
+            
+            membs = map(lambda key: self.complexes[key], keys)
+            
+            cvar = ComplexVariations(membs, source = self.source)
+            cvar.attrs[self.source]['cids'] = set([cid])
+            
+            key = cvar.__str__()
+            if key in self.cvariations:
+                self.cvariations[key] += cvar
+            else:
+                self.cvariations[key] = cvar
+            
+            self.rcvariations[self.source][cid] = key
     
     def merge_reactions(self):
         self._merge_reactions(('reactions', 'reaction'))
@@ -1073,54 +1094,85 @@ class RePath(object):
         
         def get_side(ids):
             members = []
-            memb_ids = {}
             for _id in ids:
-                for cls in ('proteins', 'pfamilies', 'complexes', 'cvariations'):
-                    r = getattr(self, 'r%s'%cls)[self.source]
-                    if _id in r:
-                        members.append(getattr(self, cls)[r[_id]])
-                        memb_ids[r[_id]] = _id
-            return members, memb_ids
+                if _id in self.rproteins[self.source]:
+                    key = self.rproteins[self.source][_id]
+                    members.append([(self.proteins[key], {key: _id})])
+            for _id in ids:
+                if _id in self.rpfamilies[self.source]:
+                    this_pfamily = []
+                    key = self.rpfamilies[self.source][_id]
+                    for pid, pattr in iteritems(self.pfamilies[key].attrs[self.source][_id]):
+                        this_pfamily.append((self.proteins[pid], {pid: pattr['pid']}))
+                    if len(this_pfamily):
+                        members.append(this_pfamily)
+            for _id in ids:
+                if _id in self.rcomplexes[self.source]:
+                    this_cplex = []
+                    for key in self.rcomplexes[self.source][_id]:
+                        this_cplex.append((self.complexes[key], {key: _id}))
+                    if len(this_cplex):
+                        members.append(this_cplex)
+            return itertools.product(*members)
+        
+        n = 0
         
         for rid, reac in iteritems(getattr(self.parser, rclass[0])):
             
-            left, l_ids = get_side(reac['left'])
-            right, r_ids = get_side(reac['right'])
-            left_attrs = {self.source: {rid: l_ids}}
-            right_attrs = {self.source: {rid: r_ids}}
+            lefts = get_side(reac['left'])
+            rights = get_side(reac['right'])
             
-            if len(left) or len(right):
+            for left in lefts:
                 
-                reaction = Reaction(left, right, left_attrs,
-                                    right_attrs, source = self.source)
-                reaction.attrs[self.source][rid] = {}
-                
-                this_refs = \
-                    set(
-                        list(
-                            map(
-                                lambda r:
-                                    self.rrefs[self.source][r],
-                                filter(
-                                    lambda r:
-                                        r in self.parser.pubrefs,
-                                    reac['refs']
+                for right in rights:
+                    
+                    left_membs = map(lambda e: e[0], left)
+                    left_attrs = {}
+                    map(lambda e: left_attrs.update(e[1]), left)
+                    left_attrs = {self.source: {rid: left_attrs}}
+                    
+                    right_membs = map(lambda e: e[0], right)
+                    right_attrs = {}
+                    map(lambda e: right_attrs.update(e[1]), right)
+                    right_attrs = {self.source: {rid: right_attrs}}
+                    
+                    if len(left) or len(right):
+                        n += 1
+                        
+                        continue
+                        
+                        reaction = Reaction(left_membs, right_membs, left_attrs,
+                                            right_attrs, source = self.source)
+                        reaction.attrs[self.source][rid] = {}
+                        
+                        this_refs = \
+                            set(
+                                list(
+                                    map(
+                                        lambda r:
+                                            self.rrefs[self.source][r],
+                                        filter(
+                                            lambda r:
+                                                r in self.parser.pubrefs,
+                                            reac['refs']
+                                        )
+                                    )
                                 )
                             )
-                        )
-                    )
-                
-                reaction.attrs[self.source][rid]['refs'] = this_refs
-                reaction.attrs[self.source][rid]['type'] = rclass[1]
-                
-                key = reaction.__str__()
-                
-                if key in self.reactions:
-                    self.reactions[key] += reaction
-                else:
-                    self.reactions[key] = reaction
-                
-                self.rreactions[self.source][rid] = key
+                        
+                        reaction.attrs[self.source][rid]['refs'] = this_refs
+                        reaction.attrs[self.source][rid]['type'] = rclass[1]
+                        
+                        key = reaction.__str__()
+                        
+                        if key in self.reactions:
+                            self.reactions[key] += reaction
+                        else:
+                            self.reactions[key] = reaction
+                        
+                        self.rreactions[self.source][rid] = key
+                        
+        print('%u reactions generated' % n)
     
     def merge_controls(self):
         self._merge_controls(('controls', 'control'))
