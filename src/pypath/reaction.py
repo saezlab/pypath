@@ -480,7 +480,7 @@ class EntitySet(AttributeHandler):
     def __init__(self, members, sources = [], sep = ';'):
         super(EntitySet, self).__init__()
         self.members = sorted(common.uniqList(members))
-        self.set = set(members)
+        self.set = set(self.members)
         self.sources = set([])
         self.attrs = {}
         self.add_source(sources)
@@ -553,15 +553,15 @@ class Complex(EntitySet):
 class ProteinFamily(Intersecting, EntitySet):
     
     def __init__(self, members, source):
-        EntitySet.__init__(members, source)
-        Intersecting.__init__()
+        EntitySet.__init__(self, members, source)
+        Intersecting.__init__(self)
         self.type = 'pfamily'
 
 class ComplexVariations(Intersecting, EntitySet):
     
     def __init__(self, members, source):
-        EntitySet.__init__(members, source, sep = '|')
-        Intersecting.__init__()
+        EntitySet.__init__(self, members, source, sep = '|')
+        Intersecting.__init__(self)
         self.type = 'cvariations'
 
 class RePath(object):
@@ -1228,7 +1228,6 @@ class ReactionSide(AttributeHandler):
         super(ReactionSide, self).__init__()
         
         self.members = sorted(members)
-        self.set = set(self.members)
         self.sources = set([])
         self.attrs = {}
         self.add_source(source)
@@ -1256,6 +1255,7 @@ class ReactionSide(AttributeHandler):
                                 lambda m2:
                                     m2.type == m1.type,
                                 two.members
+                            )
                         )
                     ),
                 filter(
@@ -1337,5 +1337,5 @@ class Control(AttributeHandler):
         return hash(self.__str__())
     
     def __eq__(self, other):
-        return self.controller = other.controller \
-            and self.controlled = other.controlled
+        return self.controller == other.controller \
+            and self.controlled == other.controlled
