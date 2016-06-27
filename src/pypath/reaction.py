@@ -463,6 +463,7 @@ class Protein(Entity):
                  sources = [], attrs = None):
         super(Protein, self).__init__(protein_id, id_type,
                                       sources = sources, attrs = attrs)
+        self.type = 'protein'
 
 class Reference(Entity):
     
@@ -522,6 +523,15 @@ class EntitySet(AttributeHandler):
         if source not in self.attrs:
             self.attrs[source] = {}
 
+class Intersecting(object):
+    
+    def __init__(self):
+        pass
+    
+    def __eq__(self, other):
+        return self.type == other.type and \
+            not self.set.isdisjoint(other.set)
+
 class Complex(EntitySet):
     
     def __init__(self, members, source):
@@ -540,16 +550,18 @@ class Complex(EntitySet):
                     )
                 )
 
-class ProteinFamily(EntitySet):
+class ProteinFamily(Intersecting, EntitySet):
     
     def __init__(self, members, source):
-        super(ProteinFamily, self).__init__(members, source)
+        EntitySet.__init__(members, source)
+        Intersecting.__init__()
         self.type = 'pfamily'
 
-class ComplexVariations(EntitySet):
+class ComplexVariations(Intersecting, EntitySet):
     
     def __init__(self, members, source):
-        super(ComplexVariations, self).__init__(members, source, sep = '|')
+        EntitySet.__init__(members, source, sep = '|')
+        Intersecting.__init__()
         self.type = 'cvariations'
 
 class RePath(object):
@@ -1216,6 +1228,7 @@ class ReactionSide(AttributeHandler):
         super(ReactionSide, self).__init__()
         
         self.members = sorted(members)
+        self.set = set(self.members)
         self.sources = set([])
         self.attrs = {}
         self.add_source(source)
@@ -1230,8 +1243,42 @@ class ReactionSide(AttributeHandler):
         return 'ReactionSide: (%s)' % \
             ('+'.join(map(lambda m: m.__str__(), self.members)))
     
+    def equality(self, one, two):
+        return \
+        all(
+            map(
+                lambda m1:
+                    any(
+                        map(
+                            lambda m2:
+                                not m1.set.isdisjoint(m2.set),
+                            filter(
+                                lambda m2:
+                                    m2.type == m1.type,
+                                two.members
+                        )
+                    ),
+                filter(
+                    lambda m1:
+                        m1.type == 'cvariations' or m1.type == 'pfamily',
+                    one.members
+                )
+            )
+        ) and \
+        all(
+            map(
+                lambda m1:
+                    m1 in two.set,
+                filter(
+                    lambda m1:
+                        m1.type == 'protein',
+                    one.members
+                )
+            )
+        )
+    
     def __eq__(self, other):
-        return self.__str__() == other.__str__()
+        return self.equality(self, other) and self.equality(other, self)
 
 class Reaction(AttributeHandler):
     
@@ -1257,7 +1304,7 @@ class Reaction(AttributeHandler):
         return hash(self.__str__())
     
     def __eq__(self, other):
-        return self.__str__() == other.__str__()
+        return self.left == other.left and self.right == other.right
     
     def __iadd__(self, other):
         self = super(Reaction, self).__iadd__(other)
@@ -1288,3 +1335,7 @@ class Control(AttributeHandler):
     
     def __hash__(self):
         return hash(self.__str__())
+    
+    def __eq__(self, other):
+        return self.controller = other.controller \
+            and self.controlled = other.controlled
