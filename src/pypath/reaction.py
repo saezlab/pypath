@@ -620,8 +620,8 @@ class RePath(object):
         self.gen_cvariations()
         self.merge_reactions()
         self.merge_cassemblies()
-        #self.merge_controls()
-        #self.merge_catalyses()
+        self.merge_controls()
+        self.merge_catalyses()
         self.remove_defaults()
     
     def remove_defaults(self):
@@ -1062,7 +1062,7 @@ class RePath(object):
                         cplexes
                     )
     
-    def gen_complexvariations(self):
+    def gen_cvariations(self):
         
         self.rcvariations[self.source] = {}
         
@@ -1094,85 +1094,54 @@ class RePath(object):
         
         def get_side(ids):
             members = []
+            memb_ids = {}
             for _id in ids:
-                if _id in self.rproteins[self.source]:
-                    key = self.rproteins[self.source][_id]
-                    members.append([(self.proteins[key], {key: _id})])
-            for _id in ids:
-                if _id in self.rpfamilies[self.source]:
-                    this_pfamily = []
-                    key = self.rpfamilies[self.source][_id]
-                    for pid, pattr in iteritems(self.pfamilies[key].attrs[self.source][_id]):
-                        this_pfamily.append((self.proteins[pid], {pid: pattr['pid']}))
-                    if len(this_pfamily):
-                        members.append(this_pfamily)
-            for _id in ids:
-                if _id in self.rcomplexes[self.source]:
-                    this_cplex = []
-                    for key in self.rcomplexes[self.source][_id]:
-                        this_cplex.append((self.complexes[key], {key: _id}))
-                    if len(this_cplex):
-                        members.append(this_cplex)
-            return itertools.product(*members)
-        
-        n = 0
+                for cls in ('proteins', 'pfamilies', 'cvariations'):
+                    r = getattr(self, 'r%s'%cls)[self.source]
+                    if _id in r:
+                        members.append(getattr(self, cls)[r[_id]])
+                        memb_ids[r[_id]] = _id
+            return members, memb_ids
         
         for rid, reac in iteritems(getattr(self.parser, rclass[0])):
             
-            lefts = get_side(reac['left'])
-            rights = get_side(reac['right'])
+            left, l_ids = get_side(reac['left'])
+            right, r_ids = get_side(reac['right'])
+            left_attrs = {self.source: {rid: l_ids}}
+            right_attrs = {self.source: {rid: r_ids}}
             
-            for left in lefts:
+            if len(left) or len(right):
                 
-                for right in rights:
-                    
-                    left_membs = map(lambda e: e[0], left)
-                    left_attrs = {}
-                    map(lambda e: left_attrs.update(e[1]), left)
-                    left_attrs = {self.source: {rid: left_attrs}}
-                    
-                    right_membs = map(lambda e: e[0], right)
-                    right_attrs = {}
-                    map(lambda e: right_attrs.update(e[1]), right)
-                    right_attrs = {self.source: {rid: right_attrs}}
-                    
-                    if len(left) or len(right):
-                        n += 1
-                        
-                        continue
-                        
-                        reaction = Reaction(left_membs, right_membs, left_attrs,
-                                            right_attrs, source = self.source)
-                        reaction.attrs[self.source][rid] = {}
-                        
-                        this_refs = \
-                            set(
-                                list(
-                                    map(
-                                        lambda r:
-                                            self.rrefs[self.source][r],
-                                        filter(
-                                            lambda r:
-                                                r in self.parser.pubrefs,
-                                            reac['refs']
-                                        )
-                                    )
+                reaction = Reaction(left, right, left_attrs,
+                                    right_attrs, source = self.source)
+                reaction.attrs[self.source][rid] = {}
+                
+                this_refs = \
+                    set(
+                        list(
+                            map(
+                                lambda r:
+                                    self.rrefs[self.source][r],
+                                filter(
+                                    lambda r:
+                                        r in self.parser.pubrefs,
+                                    reac['refs']
                                 )
                             )
-                        
-                        reaction.attrs[self.source][rid]['refs'] = this_refs
-                        reaction.attrs[self.source][rid]['type'] = rclass[1]
-                        
-                        key = reaction.__str__()
-                        
-                        if key in self.reactions:
-                            self.reactions[key] += reaction
-                        else:
-                            self.reactions[key] = reaction
-                        
-                        self.rreactions[self.source][rid] = key
-                        
-        print('%u reactions generated' % n)
+                        )
+                    )
+                
+                reaction.attrs[self.source][rid]['refs'] = this_refs
+                reaction.attrs[self.source][rid]['type'] = rclass[1]
+                
+                key = reaction.__str__()
+                
+                if key in self.reactions:
+                    self.reactions[key] += reaction
+                else:
+                    self.reactions[key] = reaction
+                
+                self.rreactions[self.source][rid] = key
     
     def merge_controls(self):
         self._merge_controls(('controls', 'control'))
@@ -1186,7 +1155,7 @@ class RePath(object):
             self.rcontrols[self.source] = {}
         
         def get_party(_id):
-            for cls in ['proteins', 'pfamilies', 'complexes', 'cvariations', 'reactions']:
+            for cls in ['proteins', 'pfamilies', 'cvariations', 'reactions']:
                 if _id in getattr(self, 'r%s' % cls)[self.source]:
                     key = getattr(self, 'r%s' % cls)[self.source][_id]
                     entity = getattr(self, cls)[key]
@@ -1259,7 +1228,7 @@ class ReactionSide(AttributeHandler):
     
     def __str__(self):
         return 'ReactionSide: (%s)' % \
-            ('; '.join(map(lambda m: m.__str__(), self.members)))
+            ('+'.join(map(lambda m: m.__str__(), self.members)))
     
     def __eq__(self, other):
         return self.__str__() == other.__str__()
