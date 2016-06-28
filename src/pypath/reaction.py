@@ -384,7 +384,6 @@ class BioPaxReader(object):
         try:
             self.pathways[self.next_id] = {
                 'components': self._bp_collect_resources(self.bppcom),
-                'pathways': self._bp_collect_resources(self.bppcom, 'Pathway'),
                 'name': name
             }
         except TypeError:
@@ -641,7 +640,7 @@ class RePath(object):
             _id = _id.split('-')
             return {'id': _id[0], 'isoform': int(_id[1]) if len(_id) > 1 else 1}
         
-        bpiopax = curl.Curl(urls.urls['reactome']['biopax_l3'],
+        biopax = curl.Curl(urls.urls['reactome']['biopax_l3'],
                             large = True, silent = False)
         parser = BioPaxReader(biopax.outfile, 'Reactome',
                               file_from_archive = 'Homo_sapiens.owl')
@@ -654,10 +653,19 @@ class RePath(object):
         biopax = curl.Curl(urls.urls['acsn']['biopax_l3'],
                            large = True, silent = False)
 
-        parser = BioPaxReader(acsn_bp.outfile, 'ACSN')
+        parser = BioPaxReader(biopax.outfile, 'ACSN')
         parser.process()
 
-        self.add_dataset(abpr, id_types = {'hgnc': 'genesymbol'})
+        self.add_dataset(parser, id_types = {'hgnc': 'genesymbol'})
+    
+    def load_wikipathways(self):
+        biopaxes = curl.Curl(urls.urls['wikipw']['biopax_l3'],
+                             large = True, silent = False)
+        for fname in biopaxes.files_multipart.keys():
+            parser = BioPaxReader(biopaxes.outfile, 'WikiPathways',
+                                  file_from_archive = fname)
+            parser.process()
+            self.add_dataset(parser, id_types = {'ensembl': 'ensg'})
 
     
     def add_dataset(self, parser, id_types = {},
@@ -673,7 +681,9 @@ class RePath(object):
         self.prg = progress.Progress(11, 'Processing %s' % self.source,
                                      1, percent = False)
         self.sources.add(self.source)
-        self.parsers[self.source] = self.parser
+        if self.source not in self.parsers:
+            self.parsers[self.source] = {}
+        self.parsers[self.source][self.parser.parser_id] = self.parser
         self.set_corrections()
         self.prg.step(status = 'processing references')
         self.merge_refs()
@@ -715,14 +725,14 @@ class RePath(object):
     def set_corrections(self):
         # because not all can follow the standards...
         if self.source == 'ACSN':
-            self.pref_correction = lambda l: filter(lambda e: e[:4] == 'HUGO', l)
+            self.pref_correction = lambda l: filter(lambda e: e[6:10] == 'HUGO', l)
         else:
             self.pref_correction = lambda l: l
         if self.source == 'ACSN':
-            self.pref_refs = lambda l: filter(lambda e: e[:6] == 'PubMed', l)
+            self.pref_refs = lambda l: filter(lambda e: e[6:12] == 'PubMed', l)
         else:
             self.pref_refs = lambda l: []
-        if self.source == 'ACSN':
+        if self.source == 'ACSN' or self.source == 'WikiPathways':
             self.ambiguous_ids_permitted = True
         else:
             self.ambiguous_ids_permitted = False
@@ -754,6 +764,7 @@ class RePath(object):
         def get_protein_ids(pref):
             
             pids = []
+            refs = []
             if pref in self.parser.prefs:
                 uxrefs = self.pref_correction(self.parser.prefs[pref])
                 pids = \
@@ -793,11 +804,12 @@ class RePath(object):
                     std_id_type = id_type
                 id_a = self.id_processor(_id)
                 id_attrs[id_a['id']] = id_a
-                target_ids.extend(
-                    self.mapper.map_name(id_a['id'], std_id_type,
-                                        self.default_id_types['protein'])
-                )
-                target_ids = common.uniqList(target_ids)
+                if id_a['id'] is not None:
+                    target_ids.extend(
+                        self.mapper.map_name(id_a['id'], std_id_type,
+                                            self.default_id_types['protein'])
+                    )
+            target_ids = common.uniqList(target_ids)
             if len(target_ids) > 1:
                 if not self.ambiguous_ids_permitted:
                     sys.stdout.write('\t:: Ambiguous ID '\
@@ -1286,6 +1298,7 @@ class RePath(object):
                 key = reaction.__str__()
                 
                 if key in self.reactions:
+                    # print(key, type(self.reactions[key]), self.reactions[key].__str__(), type(reaction), reaction.__str__())
                     self.reactions[key] += reaction
                 else:
                     self.reactions[key] = reaction
@@ -1450,7 +1463,7 @@ class Reaction(AttributeHandler):
         return self.left == other.left and self.right == other.right
     
     def __iadd__(self, other):
-        self = super(Reaction, self).__iadd__(other)
+        self = AttributeHandler.__iadd__(self, other)
         self.left += other.left
         self.right += other.left
         return self

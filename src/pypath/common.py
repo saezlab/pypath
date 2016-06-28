@@ -131,7 +131,8 @@ mod_keywords = {
         ('neddylation', ['neddyl']),
         ('sumoylation', ['sumoyl'])
     ],
-    'ACSN': []
+    'ACSN': [],
+    'WikiPathways': []
 }
 
 if 'long' not in __builtins__:

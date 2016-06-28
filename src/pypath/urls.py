@@ -604,7 +604,7 @@ urls = {
     },
     'wikipw': {
         'label': 'WikiPathways human biopax',
-        'biopax': 'http://wikipathways.org//wpi/cache/wikipathways_'\
+        'biopax_l3': 'http://wikipathways.org//wpi/cache/wikipathways_'\
             'Homo_sapiens_Curation-AnalysisCollection__owl.zip'
     }
 }
