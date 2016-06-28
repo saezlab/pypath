@@ -130,7 +130,8 @@ mod_keywords = {
         ('glucosylation', ['glucosyl']),
         ('neddylation', ['neddyl']),
         ('sumoylation', ['sumoyl'])
-    ]
+    ],
+    'ACSN': []
 }
 
 if 'long' not in __builtins__:

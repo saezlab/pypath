@@ -36,6 +36,7 @@ import pypath.curl as curl
 import pypath.intera as intera
 import pypath.refs as refs
 import pypath.uniprot_input as uniprot_input
+import pypath.urls as urls
 
 class BioPaxReader(object):
     
@@ -47,6 +48,7 @@ class BioPaxReader(object):
         self.cleanup_period = cleanup_period
         self.biopax_tmp_file = None
         self.cachedir = 'cache'
+        self.parser_id = common.gen_session_id()
     
         # string constants
         self.bppref = '{http://www.biopax.org/release/biopax-level3.owl#}'
@@ -77,6 +79,7 @@ class BioPaxReader(object):
         self.bpdinm = '%sdisplayName' % self.bppref
         self.bprelr = '%sRelationshipXref' % self.bppref
         self.bpcsto = '%scomponentStoichiometry' % self.bppref
+        self.bpcomp = '%scomponent' % self.bppref
         self.bpstoc = '%sstoichiometricCoefficient' % self.bppref
         self.bpphye = '%sphysicalEntity' % self.bppref
         self.bpcted = '%scontrolled' % self.bppref
@@ -122,7 +125,7 @@ class BioPaxReader(object):
             self.bpcplx: 'cplex',
             self.bpprre: 'pref',
             self.bpuxrf: 'uxref',
-            self.bprelr: 'uxref',
+            self.bprelr: 'rxref',
             self.bpstoi: 'stoichiometry',
             self.bpreac: 'reaction',
             self.bpcoma: 'cassembly',
@@ -210,9 +213,11 @@ class BioPaxReader(object):
                 self.fpos = new_fpos
                 self.next_elem = elem
                 self.next_event = ev
-                self.next_id = self.next_elem.get(self.rdfid) \
+                self.next_id = '%s@%s' % \
+                        (self.parser_id, self.next_elem.get(self.rdfid)) \
                     if self.rdfid in elem.attrib \
-                    else self.next_elem.get(self.rdfab)
+                    else '%s@%s' % \
+                        (self.parser_id, self.next_elem.get(self.rdfab))
                 if ev == 'end' and self.next_elem.tag in self.methods:
                     method = getattr(self, self.methods[self.next_elem.tag])
                     method()
@@ -240,7 +245,7 @@ class BioPaxReader(object):
         if entref is not None:
             protein = self.get_none(entref.get(self.rdfres)).replace('#', '')
             self.proteins[self.next_id] = {
-                'protein': protein,
+                'protein': '%s@%s' % (self.parser_id, protein),
                 'seqfeatures': self._bp_collect_resources(self.bpfeat),
                 'modfeatures': self._bp_collect_resources(self.bpfeat)
             }
@@ -258,19 +263,31 @@ class BioPaxReader(object):
         i = self.next_elem.find(self.bpid)
         if i is not None:
             self.ids[self.next_id] = (id_type, i.text)
+        
+    def rxref(self):
+        db = self.next_elem.find(self.bpdb)
+        if db is not None:
+            id_type = db.text.lower()
+            i = self.next_elem.find(self.bpid)
+            if i is not None:
+                self.ids[self.next_id] = (id_type, i.text)
     
     def cplex(self):
         if self.next_elem.find(self.bpcsto) is not None:
             self.complexes[self.next_id] = \
                 self._bp_collect_resources(self.bpcsto)
-        else:
+        elif self.next_elem.find(self.bpmphe) is not None:
             self.cvariations[self.next_id] = \
                 self._bp_collect_resources(self.bpmphe)
+        elif self.next_elem.find(self.bpcomp) is not None:
+            self.complexes[self.next_id] = \
+                self._bp_collect_resources(self.bpcomp)
     
     def stoichiometry(self):
         snum = self.next_elem.find(self.bpstoc).text
         self.stoichiometries[self.next_id] = (
-            self.next_elem.find(self.bpphye).get(self.rdfres).replace('#', ''),
+            '%s@%s' % (self.parser_id,
+            self.next_elem.find(self.bpphye).get(self.rdfres).replace('#', '')),
             int(float(snum))
         )
     
@@ -294,8 +311,10 @@ class BioPaxReader(object):
         if cter is not None and cted is not None:
             typ = self.next_elem.find(self.bpctyp)
             self.catalyses[self.next_id] = {
-                'controller': self.get_none(cter.get(self.rdfres)),
-                'controlled': self.get_none(cted.get(self.rdfres)),
+                'controller': '%s@%s' % \
+                    (self.parser_id, self.get_none(cter.get(self.rdfres))),
+                'controlled': '%s@%s' % \
+                    (self.parser_id, self.get_none(cted.get(self.rdfres))),
                 'type': '' if typ is None else typ.text
             }
     
@@ -306,8 +325,10 @@ class BioPaxReader(object):
             typ = self.next_elem.find(self.bpctyp)
             self.controls[self.next_id] = {
                 'refs': self._bp_collect_resources(self.bpxref),
-                'controller': cter.get(self.rdfres).replace('#', ''),
-                'controlled': cted.get(self.rdfres).replace('#', ''),
+                'controller': '%s@%s' % \
+                    (self.parser_id, cter.get(self.rdfres).replace('#', '')),
+                'controlled': '%s@%s' % \
+                    (self.parser_id, cted.get(self.rdfres).replace('#', '')),
                 'type': '' if typ is None else typ.text
             }
     
@@ -321,14 +342,17 @@ class BioPaxReader(object):
     
     def fragfea(self):
         felo = self.next_elem.find(self.bpfelo).get(self.rdfres)
-        self.fragfeas[self.next_id] = felo.replace('#', '')
+        self.fragfeas[self.next_id] = '%s@%s' % \
+            (self.parser_id, felo.replace('#', ''))
     
     def seqint(self):
         beg = self.next_elem.find(self.bpibeg)
         end = self.next_elem.find(self.bpiend)
         self.seqints[self.next_id] = (
-            beg.get(self.rdfres).replace('#', '') if beg is not None else None,
-            end.get(self.rdfres).replace('#', '') if end is not None else None
+            '%s@%s' % (self.parser_id, beg.get(self.rdfres).replace('#', '')) \
+                if beg is not None else None,
+            '%s@%s' % (self.parser_id, end.get(self.rdfres).replace('#', '')) \
+                if end is not None else None
         )
     
     def seqsite(self):
@@ -341,10 +365,12 @@ class BioPaxReader(object):
         moty = self.next_elem.find(self.bpmoty)
         if felo is not None and moty is not None:
             self.modfeas[self.next_id] = (
-                self.next_elem.find(self.bpfelo).\
-                    get(self.rdfres).replace('#', ''),
-                self.next_elem.find(self.bpmoty).\
-                    get(self.rdfres).replace('#', '')
+                '%s@%s' % (self.parser_id,
+                    self.next_elem.find(self.bpfelo).\
+                        get(self.rdfres).replace('#', '')),
+                '%s@%s' % (self.parser_id,
+                    self.next_elem.find(self.bpmoty).\
+                        get(self.rdfres).replace('#', ''))
             )
     
     def seqmodvoc(self):
@@ -357,16 +383,14 @@ class BioPaxReader(object):
             name = name.text
         try:
             self.pathways[self.next_id] = {
-                'reactions': self._bp_collect_resources(self.bppcom,
-                                                    'BiochemicalReaction') + \
-                             self._bp_collect_resources(self.bppcom,
-                                                    'ComplexAssembly'),
+                'components': self._bp_collect_resources(self.bppcom),
                 'pathways': self._bp_collect_resources(self.bppcom, 'Pathway'),
                 'name': name
             }
         except TypeError:
             sys.stdout.write('Wrong type at element:\n')
-            sys.stdout.write(etree.tostring(self.next_elem))
+            sys.stdout.write('%s %s' % \
+                (str(etree.tostring(self.next_elem))[:76], '...'))
             sys.stdout.flush()
     
     def get_none(self, something):
@@ -379,12 +403,14 @@ class BioPaxReader(object):
         list(
             map(
                 lambda e:
-                    e.get(self.rdfres).replace('#', ''),
+                    '%s@%s' % \
+                        (self.parser_id, e.get(self.rdfres).replace('#', '')),
                 filter(
                     lambda e:
                         self.rdfres in e.attrib and (\
                             restype is None or \
-                            e.get(self.rdfres).replace('#', '').startswith(restype)
+                            e.get(self.rdfres).replace('#', '')\
+                                .startswith(restype)
                         ),
                     self.next_elem.iterfind(tag)
                 )
@@ -610,6 +636,30 @@ class RePath(object):
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
     
+    def load_reactome(self):
+        def reactome_id_proc(_id):
+            _id = _id.split('-')
+            return {'id': _id[0], 'isoform': int(_id[1]) if len(_id) > 1 else 1}
+        
+        bpiopax = curl.Curl(urls.urls['reactome']['biopax_l3'],
+                            large = True, silent = False)
+        parser = BioPaxReader(biopax.outfile, 'Reactome',
+                              file_from_archive = 'Homo_sapiens.owl')
+        parser.process()
+
+        self.add_dataset(parser, id_types = {'uniprot isoform': 'uniprot'},
+                         process_id = reactome_id_proc)
+    
+    def load_acsn(self):
+        biopax = curl.Curl(urls.urls['acsn']['biopax_l3'],
+                           large = True, silent = False)
+
+        parser = BioPaxReader(acsn_bp.outfile, 'ACSN')
+        parser.process()
+
+        self.add_dataset(abpr, id_types = {'hgnc': 'genesymbol'})
+
+    
     def add_dataset(self, parser, id_types = {},
                     process_id = lambda x: {'id': x}):
         self.id_types.update(id_types)
@@ -620,27 +670,66 @@ class RePath(object):
     
     def merge(self):
         
+        self.prg = progress.Progress(11, 'Processing %s' % self.source,
+                                     1, percent = False)
         self.sources.add(self.source)
         self.parsers[self.source] = self.parser
+        self.set_corrections()
+        self.prg.step(status = 'processing references')
         self.merge_refs()
+        self.prg.step(status = 'processing proteins')
         self.merge_proteins()
+        self.prg.step(status = 'processing protein families')
         self.merge_pfamilies()
+        self.prg.step(status = 'processing protein modifications')
         if self.modifications:
             self.merge_modifications()
+        self.prg.step(status = 'processing complexes')
         self.merge_complexes()
+        self.prg.step(status = 'processing complex variations')
         self.merge_cvariations()
+        self.prg.step(status = 'generating complex variations')
         self.gen_cvariations()
+        self.prg.step(status = 'processing reactions')
         self.merge_reactions()
+        self.prg.step(status = 'processing complex asseblies')
         self.merge_cassemblies()
+        self.prg.step(status = 'processing controls')
         self.merge_controls()
+        self.prg.step(status = 'processing catalyses')
         self.merge_catalyses()
+        self.prg.terminate()
+        sys.stdout.write('\t:: %u proteins, %u complexes, %u reactions and %u'\
+            ' controls have been added.\n' % (
+                self.proteins_added,
+                self.complexes_added,
+                self.reactions_added + self.cassemblies_added,
+                self.controls_added + self.catalyses_added)
+        )
         self.remove_defaults()
     
     def remove_defaults(self):
         self.parser = None
         self.source = None
     
+    def set_corrections(self):
+        # because not all can follow the standards...
+        if self.source == 'ACSN':
+            self.pref_correction = lambda l: filter(lambda e: e[:4] == 'HUGO', l)
+        else:
+            self.pref_correction = lambda l: l
+        if self.source == 'ACSN':
+            self.pref_refs = lambda l: filter(lambda e: e[:6] == 'PubMed', l)
+        else:
+            self.pref_refs = lambda l: []
+        if self.source == 'ACSN':
+            self.ambiguous_ids_permitted = True
+        else:
+            self.ambiguous_ids_permitted = False
+    
     def merge_refs(self):
+        
+        self.refs_added = 0
         
         if self.source not in self.rrefs:
             self.rrefs[self.source] = {}
@@ -650,6 +739,8 @@ class RePath(object):
             ref = Reference(pubmed, sources = self.source)
             ref.attrs[self.source]['refid'] = set([])
             ref.attrs[self.source]['refid'].add(refid)
+            
+            self.refs_added += 1
             
             if pubmed in self.refs:
                 self.refs[pubmed] += ref
@@ -664,7 +755,7 @@ class RePath(object):
             
             pids = []
             if pref in self.parser.prefs:
-                uxrefs = self.parser.prefs[pref]
+                uxrefs = self.pref_correction(self.parser.prefs[pref])
                 pids = \
                     common.uniqList(
                         map(
@@ -677,7 +768,20 @@ class RePath(object):
                             )
                         )
                     )
-            return pids
+                refids = self.pref_refs(self.parser.prefs[pref])
+                refs = \
+                    common.uniqList(
+                        map(
+                            lambda refid:
+                                self.parser.ids[refid],
+                            filter(
+                                lambda refid:
+                                    refid in self.parser.ids,
+                                refids
+                            )
+                        )
+                    )
+            return pids, refs
         
         def map_protein_ids(ids):
             target_ids = []
@@ -694,19 +798,28 @@ class RePath(object):
                                         self.default_id_types['protein'])
                 )
                 target_ids = common.uniqList(target_ids)
-                if len(target_ids) > 1:
-                    sys.stdout.write('\t:: Ambiguous ID translation: from %s to %s\n' % (ids, target_ids))
-                elif len(target_ids) == 0:
-                    target_ids = None
-                else:
-                    target_ids = target_ids[0]
+            if len(target_ids) > 1:
+                if not self.ambiguous_ids_permitted:
+                    sys.stdout.write('\t:: Ambiguous ID '\
+                        'translation: from %s to %s\n' % (ids, target_ids))
+            elif len(target_ids) == 0:
+                target_ids = None
+            else:
+                target_ids = target_ids[0]
             return target_ids, id_attrs
         
         self.rproteins[self.source] = {}
+        self.proteins_added = 0
+        self.pfamilies_added = 0
+        
         for pid, p in iteritems(self.parser.proteins):
-            ids = get_protein_ids(p['protein'])
+            ids, pubmeds = get_protein_ids(p['protein'])
             target_id, id_attrs = map_protein_ids(ids)
             if target_id is None:
+                continue
+            if type(target_id) is list:
+                # go for a protein family:
+                self.add_pfamily(map(lambda t: (t, None), target_id), pid)
                 continue
             attrs = {
                 self.source: {
@@ -725,6 +838,7 @@ class RePath(object):
                         attrs[self.source]['pids'][pid][k].add(v)
             protein = Protein(target_id,
                                 sources = set([self.source]), attrs = attrs)
+            self.proteins_added += 1
             if target_id in self.proteins:
                 self.proteins[target_id] += protein
             else:
@@ -779,6 +893,9 @@ class RePath(object):
                         return sresname, isof
             return resname, isof
         
+        self.fragfeatures_added = 0
+        self.modfeatures_added = 0
+        
         for pid, p in iteritems(self.parser.proteins):
             proteins = get_protein(pid)
             
@@ -807,6 +924,7 @@ class RePath(object):
                                     self.proteins[protein].update_attr(
                                         [self.source, 'pids', pid, 'frags', frag]
                                     )
+                                    self.fragfeatures_added += 1
                 
                 if modfea in self.parser.modfeas:
                     resnum = get_seqsite(self.parser.modfeas[modfea][0])
@@ -837,6 +955,7 @@ class RePath(object):
                                 self.proteins[protein].update_attr(
                                     [self.source, 'pids', pid, 'mods', mod]
                                 )
+                                self.fragfeatures_added += 1
     
     def merge_pfamilies(self):
         
@@ -890,24 +1009,32 @@ class RePath(object):
                         )
                     proteins.extend(spfmembs)
                 
-                members = sorted(common.uniqList(map(lambda p: p[0], proteins)))
-                pf = ProteinFamily(members, source = self.source)
-                members = tuple(members)
-                pf.attrs[self.source][pfid] = {}
-                for protein, pid in proteins:
-                    pf.attrs[self.source][pfid][protein] = {}
-                    pf.attrs[self.source][pfid][protein]['pid'] = pid
-                if members not in self.pfamilies:
-                    self.pfamilies[members] = pf
-                else:
-                    self.pfamilies[members] += pf
-                self.rpfamilies[self.source][pfid] = members
+                self.add_pfamily(proteins, pfid)
                 
             this_round = next_round
             next_round = []
     
+    def add_pfamily(self, proteins, pfid):
+        if self.source not in self.rpfamilies:
+            self.rpfamilies[self.source] = {}
+        
+        members = sorted(common.uniqList(map(lambda p: p[0], proteins)))
+        pf = ProteinFamily(members, source = self.source)
+        members = tuple(members)
+        pf.attrs[self.source][pfid] = {}
+        for protein, pid in proteins:
+            pf.attrs[self.source][pfid][protein] = {}
+            pf.attrs[self.source][pfid][protein]['pid'] = pid
+        if members not in self.pfamilies:
+            self.pfamilies[members] = pf
+        else:
+            self.pfamilies[members] += pf
+        self.rpfamilies[self.source][pfid] = members
+        self.pfamilies_added += 1
+    
     def merge_complexes(self):
         
+        self.complexes_added = 0
         if self.source not in self.rcomplexes:
             self.rcomplexes[self.source] = {}
         
@@ -921,8 +1048,13 @@ class RePath(object):
             for cid in this_round:
                 
                 stois = self.parser.complexes[cid]
-                pids = list(map(lambda stoi:
-                                    self.parser.stoichiometries[stoi], stois))
+                
+                if len(self.parser.stoichiometries):
+                    pids = list(map(lambda stoi:
+                                        self.parser.stoichiometries[stoi], stois))
+                else:
+                    pids = list(map(lambda comp: (comp, 1), stois))
+                
                 subc_unproc = \
                     any(
                         map(
@@ -1039,6 +1171,7 @@ class RePath(object):
                                 self.complexes[members] = cplex
                             else:
                                 self.complexes[members] += cplex
+                            self.complexes_added += 1
                             if cid not in self.rcomplexes[self.source]:
                                 self.rcomplexes[self.source][cid] = set([])
                                 self.rcomplexes[self.source][cid].add(members)
@@ -1051,6 +1184,7 @@ class RePath(object):
     
     def merge_cvariations(self):
         
+        self.cvariations_added = 0
         for cvid, cv in iteritems(self.parser.cvariations):
             
             cplexes = \
@@ -1073,6 +1207,7 @@ class RePath(object):
                             c1 | c2,
                         cplexes
                     )
+                self.cvariations_added += 1
     
     def gen_cvariations(self):
         
@@ -1094,9 +1229,11 @@ class RePath(object):
             self.rcvariations[self.source][cid] = key
     
     def merge_reactions(self):
+        self.reactions_added = 0
         self._merge_reactions(('reactions', 'reaction'))
     
     def merge_cassemblies(self):
+        self.cassemblies_added = 0
         self._merge_reactions(('cassemblies', 'cassembly'))
     
     def _merge_reactions(self, rclass):
@@ -1152,13 +1289,17 @@ class RePath(object):
                     self.reactions[key] += reaction
                 else:
                     self.reactions[key] = reaction
+                setattr(self, '%s_added' % rclass[0],
+                        getattr(self, '%s_added' % rclass[0]) + 1)
                 
                 self.rreactions[self.source][rid] = key
     
     def merge_controls(self):
+        self.controls_added = 0
         self._merge_controls(('controls', 'control'))
     
     def merge_catalyses(self):
+        self.catalyses_added = 0
         self._merge_controls(('catalyses', 'catalysis'))
     
     def _merge_controls(self, cclass):
@@ -1211,6 +1352,8 @@ class RePath(object):
                     self.controls[key] += control
                 else:
                     self.controls[key] = control
+                setattr(self, '%s_added' % cclass[0],
+                        getattr(self, '%s_added' % cclass[0]) + 1)
                 
                 self.rcontrols[self.source][cid] = key
     

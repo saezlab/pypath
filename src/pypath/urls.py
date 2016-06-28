@@ -293,10 +293,6 @@ urls = {
         'label': 'Kinase families and groups',
         'url': 'http://kinase.com/static/colt/data/human/kinome/tables/Table%20S2.txt'
     },
-    'acsn': {
-        'label': 'Atlas of Cancer Signaling Networks',
-        'url': 'https://acsn.curie.fr/files/acsn_ppi.sif'
-    },
     'protdb_exp': {
         'label': 'Expression data from ProteomicsDB',
         'url': 'https://www.proteomicsdb.org/proteomicsdb/logic/api/'\
@@ -605,6 +601,11 @@ urls = {
             'protein.actions.v10/%u.protein.actions.v10.txt.gz',
         'links': 'http://string-db.org/download/protein.links.detailed.v10/%u'\
             '.protein.links.detailed.v10.txt.gz'
+    },
+    'wikipw': {
+        'label': 'WikiPathways human biopax',
+        'biopax': 'http://wikipathways.org//wpi/cache/wikipathways_'\
+            'Homo_sapiens_Curation-AnalysisCollection__owl.zip'
     }
 }
 
