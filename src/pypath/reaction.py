@@ -173,6 +173,8 @@ class BioPaxReader(object):
                 self.file_from_archive = \
                     sorted(list(self.opener.result.keys()))[0]
             self._biopax = self.opener.result[self.file_from_archive]
+        elif self.opener.type == 'gz':
+            self._biopax = self.opener.result
         else:
             self._biopax = self.opener.fileobj
     
@@ -677,6 +679,15 @@ class RePath(object):
 
         self.add_dataset(parser, id_types = {'hgnc': 'genesymbol'})
     
+    def load_pid(self):
+        biopax = curl.Curl(urls.urls['nci-pid']['biopax_l3'],
+                           large = True, silent = self.silent)
+
+        parser = BioPaxReader(biopax.outfile, 'NCI-PID')
+        parser.process()
+
+        self.add_dataset(parser)
+    
     def load_wikipathways(self):
         biopaxes = curl.Curl(urls.urls['wikipw']['biopax_l3'],
                              large = True, silent = self.silent)
@@ -774,6 +785,14 @@ class RePath(object):
                 result[num] = name
         return result
     
+    def load_all(self):
+        self.load_wikipathways()
+        self.load_netpath()
+        self.load_panther()
+        self.load_acsn()
+        self.load_pid()
+        self.load_reactome()
+    
     def add_dataset(self, parser, id_types = {},
                     process_id = lambda x: {'id': x}):
         self.id_types.update(id_types)
@@ -865,7 +884,7 @@ class RePath(object):
             self.pref_refs = lambda l: filter(lambda e: e[6:12] == 'PubMed', l)
         else:
             self.pref_refs = lambda l: []
-        if self.source in ['ACSN', 'WikiPathways', 'NetPath', 'PANTHER']:
+        if self.source in ['ACSN', 'WikiPathways', 'NetPath', 'PANTHER', 'NCI-PID']:
             self.ambiguous_ids_permitted = True
         else:
             self.ambiguous_ids_permitted = False

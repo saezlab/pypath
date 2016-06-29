@@ -129,9 +129,18 @@ mod_keywords = {
         ('selenation', ['seleno']),
         ('glucosylation', ['glucosyl']),
         ('neddylation', ['neddyl']),
-        ('sumoylation', ['sumoyl'])
+        ('sumoylation', ['sumoyl']),
+        ('prenylation', ['prenyl'])
     ],
-    'ACSN': [],
+    'ACSN': [
+        ('phosphorylation', ['phospho']),
+        ('glycylation', ['glycyl']),
+        ('ubiquitination', ['ubiquitin']),
+        ('acetylation', ['acetyl']),
+        ('myristoylation', ['myristoyl']),
+        ('prenylation', ['prenyl']),
+        ('hydroxylation', ['hydroxy'])
+    ],
     'WikiPathways': [],
     'NetPath': [
         ('phosphorylation', ['phospho']),
@@ -142,6 +151,19 @@ mod_keywords = {
     'PANTHER': [
         ('phosphorylation', ['phospho']),
         ('acetylation', ['acetyl'])
+    ],
+    'NCI-PID': [
+        ('phosphorylation', ['phospho']),
+        ('methylation', ['methyl']),
+        ('farnesylation', ['farnesyl']),
+        ('palmitoylation', ['palmito']),
+        ('myristoylation', ['myristoyl']),
+        ('glycylation', ['glycyl']),
+        ('ubiquitination', ['ubiquitin']),
+        ('acetylation', ['acetyl']),
+        ('glycosylation', ['glycosyl']),
+        ('geranylation', ['geranyl']),
+        ('hydroxylation', ['hydroxy'])
     ]
 }
 
