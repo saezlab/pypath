@@ -1535,6 +1535,37 @@ class RePath(object):
                 
                 self.rcontrols[self.source][cid] = key
     
+    def basic_stats(self):
+        self.stats = {'proteins': {}, 'complexes': {}, 'mods': {}, 'reactions': {}, 'controls': {}, 'refs': {}}
+        comb = []
+        for n in xrange(1, len(self.sources) + 1):
+            comb.extend(list(itertools.combinations(self.sources, n)))
+        comb = \
+            list(
+                map(
+                    lambda s:
+                        (tuple(sorted(s)), set(s)),
+                    comb
+                )
+            )
+        for etyp in self.stats.keys():
+            self.stats[etyp] = \
+            dict(
+                map(
+                    lambda s:
+                        (s[0], 0),
+                    comb
+                )
+            )
+            for e in getattr(self, etyp).values():
+                for c in comb:
+                    if type(e.sources) is list:
+                        _sources = set(e.sources)
+                    else:
+                        _sources = e.sources
+                    if c[1] < _sources:
+                        self.stats[etyp][c[0]] += 1
+    
     def iterate_reactions(self):
         pass
     
