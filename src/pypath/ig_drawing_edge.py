@@ -156,7 +156,7 @@ class AbstractEdgeDrawer(object):
         # Determine the midpoint
         pos = ((src_vertex.position[0] + dest_vertex.position[0]) / 2., \
                 (src_vertex.position[1] + dest_vertex.position[1]) / 2)
-
+        
         # Determine the alignment based on the angle
         pi4 = pi / 4
         if angle is None:

@@ -245,6 +245,7 @@ class FileOpener(object):
     def open_zip(self):
         self.files_multipart = {}
         self.sizes = {}
+        self.fileobj.seek(0)
         self.zipfile = zipfile.ZipFile(self.fileobj, 'r')
         self.members = self.zipfile.namelist()
         for i, m in enumerate(self.members):

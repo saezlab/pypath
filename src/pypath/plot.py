@@ -15,6 +15,9 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
+from future.utils import iteritems
+from past.builtins import xrange, range, reduce
+
 import re
 import sys
 import os
@@ -27,13 +30,21 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
 import scipy.cluster.hierarchy as hc
-import hcluster as hc2
+
+try:
+    import hcluster as hc2
+except:
+    sys.stdout.write('\t :: Module `hcluster` not available.\n')
 import matplotlib.gridspec as gridspec
 from matplotlib import ticker
 from scipy import stats
 
 import pypath.common as common
 import pypath.colorgen as colorgen
+
+if not 'next' in __builtins__:
+    def next(gen):
+        return gen.next()
 
 # helper functions
 
@@ -105,7 +116,7 @@ class Plot(object):
         font_stretch = 'normal',
         palette = None, context = 'poster', lab_size = (9, 9), 
         axis_lab_size = 10.0, rc = {}):
-        for k, v in locals().iteritems():
+        for k, v in iteritems(locals()):
             if not hasattr(self, k) or getattr(self, k) is not None:
                 setattr(self, k, v)
         if type(self.lab_size) is not tuple:
@@ -123,7 +134,7 @@ class Plot(object):
         self.rc['font.stretch'] = font_stretch
         self.palette = palette or self.embl_palette()
         self.fp = mpl.font_manager.FontProperties(family = font_family, style = font_style,
-            variant = font_variant, weight = font_weight, stretch = font_stretch)
+           variant = font_variant, weight = font_weight, stretch = font_stretch)
     
     def embl_palette(self, inFile = 'embl_colors'):
         cols = []
@@ -155,7 +166,8 @@ class Barplot(Plot):
         xlab = '', ylab = '', axis_lab_size = 10.0, 
         lab_angle = 90, lab_size = (9, 9), color = '#007b7f', 
         order = False, desc = True, legend = None, fin = True, 
-        y_break = None, rc = {}, palette = None, context = 'poster', **kwargs):
+        y_break = None, rc = {}, palette = None, context = 'poster',
+        do_plot = True, **kwargs):
         '''
         y_break : tuple
         If not None, the y-axis will have a break. 2 floats in the tuple, < 1.0, 
@@ -163,7 +175,7 @@ class Barplot(Plot):
         them will be hidden. E.g. y_break = (0.3, 0.1) shows the lower 30% and 
         upper 10%, but 60% in the middle will be cut out.
         '''
-        for k, v in locals().iteritems():
+        for k, v in iteritems(locals()):
             setattr(self, k, v)
         self.sns = sns
         self.rc = self.rc or {'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
@@ -179,7 +191,8 @@ class Barplot(Plot):
         elif self.color is not None:
             self.palette = sns.color_palette([self.color] * len(self.x))
         self.color = None
-        self.plot(**kwargs)
+        if self.do_plot:
+            self.plot(**kwargs)
     
     def plot(self, x = None, y = None, **kwargs):
         if x is not None:
@@ -196,7 +209,9 @@ class Barplot(Plot):
         if self.y_break:
             self._break_y_gs()
         self.ax = sns.barplot(self.x, y = self.y, data = None, color = self.color, 
-            order = self.ordr, ax = self.ax, palette = self.palette, **kwargs)
+            order = self.ordr, ax = self.ax, palette = self.palette,
+            #fontproperties = self.fp,
+            **kwargs)
         if self.y_break:
             self._break_y_axis(**kwargs)
         self.labels()
@@ -205,7 +220,7 @@ class Barplot(Plot):
     
     def sort(self):
         colcyc = itertools.cycle(list(self.palette))
-        palcyc = [colcyc.next() for _ in xrange(len(self.x))]
+        palcyc = [next(colcyc) for _ in xrange(len(self.x))]
         if self.order == 'x':
             self.ordr = np.array([self.x[i] for i in self.x.argsort()])
             self.palette = sns.color_palette([palcyc[i] for i in self.x.argsort()])
@@ -309,7 +324,7 @@ class Barplot(Plot):
         plt.setp(self.ax.xaxis.get_majorticklabels(), rotation = self.lab_angle)
         if type(self.legend) is dict:
             legend_patches = [mpatches.Patch(color = col, label = lab) \
-                for lab, col in self.legend.iteritems()]
+                for lab, col in iteritems(self.legend)]
             self.ax.legend(handles = legend_patches)
 
 def boxplot(data, labels, xlab, ylab, fname, fontfamily = 'Helvetica Neue LT Std',
@@ -415,7 +430,7 @@ class ScatterPlus(Plot):
         them will be hidden. E.g. y_break = (0.3, 0.1) shows the lower 30% and 
         upper 10%, but 60% in the middle will be cut out.
         '''
-        for k, v in locals().iteritems():
+        for k, v in iteritems(locals()):
             setattr(self, k, v)
         self.sns = sns
         self.rc = self.rc or {'lines.linewidth': 1.0, 'patch.linewidth': 0.0, 
@@ -724,7 +739,7 @@ class Histogram(Plot):
         self.labels = labels
         if type(self.labels) in common.charTypes:
             self.labels = [labels]
-        for k, v in locals().iteritems():
+        for k, v in iteritems(locals()):
             setattr(self, k, v)
         self.sns = sns
         self.rc = self.rc or {'lines.linewidth': 1.0, 'patch.linewidth': 0.0,

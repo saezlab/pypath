@@ -15,6 +15,7 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
+from __future__ import print_function
 from future.utils import iteritems
 from past.builtins import xrange, range, reduce
 
@@ -163,10 +164,12 @@ class BioPaxReader(object):
         self.close_biopax()
     
     def open_biopax(self):
+        opener_args = {} if self.file_from_archive is None \
+            else {'files_needed': [self.file_from_archive]}
         if type(self.biopax) is curl.FileOpener:
             self.opener = biopax
         else:
-            self.opener = curl.FileOpener(self.biopax)
+            self.opener = curl.FileOpener(self.biopax, **opener_args)
         if type(self.opener.result) is dict:
             if self.file_from_archive is None or \
                 self.file_from_archive not in self.opener.result:
@@ -611,7 +614,8 @@ class RePath(object):
     
     def __init__(self, mapper = None, ncbi_tax_id = 9606,
                 default_id_types = {}, modifications = True,
-                seq = None, silent = False):
+                seq = None, silent = False,
+                max_complex_combinations = 100):
         
         self.ncbi_tax_id = ncbi_tax_id
         self.modifications = modifications
@@ -621,6 +625,7 @@ class RePath(object):
         self.reflists = {}
         self.mapper = mapping.Mapper(ncbi_tax_id) if mapper is None else mapper
         self.silent = silent
+        self.max_complex_combinations = max_complex_combinations
         
         self.refs = {}
         self.species = {}
@@ -995,7 +1000,7 @@ class RePath(object):
                 continue
             if type(target_id) is list:
                 # go for a protein family:
-                self.add_pfamily(map(lambda t: (t, None), target_id), pid)
+                self.add_pfamily(list(map(lambda t: (t, pid), target_id)), pid)
                 continue
             attrs = {
                 self.source: {
@@ -1263,15 +1268,17 @@ class RePath(object):
                     list(
                         map(
                             lambda pfid:
-                                map(
-                                    lambda memb:
-                                        (memb[0], pfid[1], memb[1]['pid']),
-                                    iteritems(
-                                        self.pfamilies[
-                                            self.rpfamilies\
-                                            [self.source][pfid[0]]]\
-                                                .attrs[self.source][pfid[0]
-                                        ]
+                                list(
+                                    map(
+                                        lambda memb:
+                                            (memb[0], pfid[1], memb[1]['pid']),
+                                        iteritems(
+                                            self.pfamilies[
+                                                self.rpfamilies\
+                                                [self.source][pfid[0]]]\
+                                                    .attrs[self.source][pfid[0]
+                                            ]
+                                        )
                                     )
                                 ),
                             filter(
@@ -1281,6 +1288,16 @@ class RePath(object):
                             )
                         )
                     )
+                
+                pfnum = 0
+                if len(pfamilies):
+                    pfnum = reduce(lambda pf1l, pf2l: pf1l * pf2l, map(lambda pf: len(pf), pfamilies))
+                
+                if pfnum > self.max_complex_combinations:
+                    sys.stdout.write('\t:: Not extending complex'\
+                        ' %s with %u combinations\n' % (cid, pfnum))
+                    sys.stdout.flush()
+                    continue
                 
                 subcplexs = \
                     list(
@@ -1326,6 +1343,11 @@ class RePath(object):
                         pfamilies = itertools.product(*pfamilies)
                     
                     for pfamily in pfamilies:
+                        
+                        #print(self.parser.file_from_archive)
+                        #print(len(pfamily))
+                        #print(type(pfamily))
+                        #print(pfamily)
                         
                         for subc in subcmembs:
                             
@@ -1535,8 +1557,9 @@ class RePath(object):
                 
                 self.rcontrols[self.source][cid] = key
     
-    def basic_stats(self):
-        self.stats = {'proteins': {}, 'complexes': {}, 'mods': {}, 'reactions': {}, 'controls': {}, 'refs': {}}
+    def basic_stats(self, exclude_empty = False):
+        self.stats = {'proteins': {}, 'complexes': {}, 'mods': {},
+                      'reactions': {}, 'controls': {}, 'refs': {}}
         comb = []
         for n in xrange(1, len(self.sources) + 1):
             comb.extend(list(itertools.combinations(self.sources, n)))
@@ -1563,8 +1586,77 @@ class RePath(object):
                         _sources = set(e.sources)
                     else:
                         _sources = e.sources
-                    if c[1] < _sources:
-                        self.stats[etyp][c[0]] += 1
+                    if c[1] <= _sources:
+                        if \
+                            not exclude_empty \
+                                or (
+                            etyp not in \
+                            ['complexes', 'reactions', 'controls']
+                                ) or (
+                            etyp == 'complexes'
+                                    and
+                            len(e.members) > 1
+                                ) or (
+                            etyp == 'reactions'
+                                    and
+                            len(e.left.members)
+                                    and
+                            len(e.right.members)
+                                ) or (
+                            etyp == 'controls'
+                                    and (
+                                        (
+                                            (
+                            e.controller.__class__.__name__ == 'Complex'
+                                            or
+                            e.controller.__class__.__name__ == 'ProteinFamily'
+                                            ) and
+                            len(e.controller.members)
+                                        ) or (
+                            e.controller.__class__.__name__ == \
+                                'ComplexVariations'
+                                            and
+                            any(map(lambda m: bool(len(m.members)),
+                                    e.controller.members))
+                                        )
+                                    ) and (
+                            len(e.controlled.left.members)
+                                        and
+                            len(e.controlled.right.members)
+                                    )
+                                ):
+                            
+                            self.stats[etyp][c[0]] += 1
+    
+    def simpson_stats(self):
+        if not hasattr(self, 'stats'):
+            self.basic_stats()
+        self.simpson_sim = {'proteins': {}, 'complexes': {}, 'mods': {},
+                            'reactions': {}, 'controls': {}, 'refs': {}}
+        for etyp in self.simpson_sim.keys():
+            for s1 in self.sources:
+                for s2 in self.sources:
+                    if s1 != s2:
+                        self.simpson_sim[etyp][(s1, s2)] = \
+                            common.simpson_index_counts(
+                                self.stats[etyp][tuple([s1])],
+                                self.stats[etyp][tuple([s2])],
+                                self.stats[etyp][tuple(sorted([s1, s2]))]
+                            )
+    
+    def resource_graph_edges(self, etyp):
+        if not hasattr(self, 'simpson_sim'):
+            self.simpson_stats()
+        stats = self.stats[etyp]
+        sim = self.simpson_sim[etyp]
+        edges = []
+        nodes = {}
+        for s1 in self.sources:
+            nodes[s1] = stats[(s1,)]
+            for s2 in self.sources:
+                if s1 != s2 and sim[(s1, s2)] > 0.0:
+                    edges.append([s1, s2, sim[(s1, s2)]])
+        return edges, nodes
     
     def iterate_reactions(self):
         pass

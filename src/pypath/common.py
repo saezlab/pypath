@@ -25,8 +25,9 @@ import random
 import textwrap
 import hashlib
 
-__all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes', 'uniqList', 'addToList', 
-           'gen_session_id', 'sorensen_index', 'console', 'wcl', 'flatList',
+__all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes', 'uniqList', 'addToList',
+           'gen_session_id', 'sorensen_index', 'simpson_index', 'simpson_index_counts',
+           'jaccard_index', 'console', 'wcl', 'flatList',
            'charTypes', 'delEmpty', '__version__', 'get_args',
            'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs', 'md5', 'mod_keywords']
 
@@ -235,11 +236,14 @@ def gen_session_id(length=5):
     abc = '0123456789abcdefghijklmnopqrstuvwxyz'
     return ''.join(random.choice(abc) for i in range(length))
 
-def simpson_index(a, b):
+def simpson_index(a, b, c):
     a = set(a)
     b = set(b)
     ab = a & b
     return float(len(ab)) / float(min(len(a),len(b)))
+
+def simpson_index_counts(a, b, c):
+    return float(c) / float(min(a, b)) if min(a, b) > 0 else 0.0
 
 def sorensen_index(a, b):
     a = set(a)
