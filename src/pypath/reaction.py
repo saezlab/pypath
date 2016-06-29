@@ -235,7 +235,8 @@ class BioPaxReader(object):
                 #self.used_elements.append(self.next_elem)
                 #self.cleanup_hook()
         except etree.XMLSyntaxError as e:
-            self.prg.terminate(status = 'failed')
+            if not self.silent:
+                self.prg.terminate(status = 'failed')
             sys.stdout.write('\n\t:: Syntax error in BioPAX:\n\t\t%s\n' % str(e))
             sys.stdout.flush()
         if not self.silent:
@@ -644,6 +645,7 @@ class RePath(object):
             'protein': 'uniprot'
         }
         self.default_id_types.update(default_id_types)
+        self.load_reflists()
     
     def reload(self):
         modname = self.__class__.__module__
@@ -683,9 +685,11 @@ class RePath(object):
                                     'Processing multiple BioPAX files',
                                     1, percent = False)
         
+        silent_default = self.silent
+        self.silent = True
+        
         for fname in biopaxes.files_multipart.keys():
-            silent_default = self.silent
-            self.silent = True
+            
             if not silent_default:
                 prg.step()
             parser = BioPaxReader(biopaxes.outfile, 'WikiPathways',
@@ -695,9 +699,10 @@ class RePath(object):
             self.add_dataset(parser, id_types = {'ensembl': 'ensg',
                                                  'entrez gene': 'entrez',
                                                  'hgnc': 'genesymbol'})
-            if not silent_default:
-                prg.terminate()
-            self.silent = silent_default
+        
+        if not silent_default:
+            prg.terminate()
+        self.silent = silent_default
     
     def load_panther(self):
         biopaxes = curl.Curl(urls.urls['panther']['biopax_l3'],
@@ -707,24 +712,24 @@ class RePath(object):
                                     'Processing multiple BioPAX files',
                                     1, percent = False)
         
+        silent_default = self.silent
+        self.silent = True
+        
         for fname in biopaxes.files_multipart.keys():
-            silent_default = self.silent
-            self.silent = True
+            
             if not silent_default:
                 prg.step()
             parser = BioPaxReader(biopaxes.outfile, 'PANTHER',
                                   file_from_archive = fname)
-            if 'MAPK' in fname:
-                print(fname)
-                print(parser.parser_id)
             parser.process(silent = True)
             
             self.add_dataset(parser, id_types = {'ensembl': 'ensg',
                                                  'entrez gene': 'entrez',
                                                  'hgnc': 'genesymbol'})
-            if not silent_default:
-                prg.terminate()
-            self.silent = silent_default
+        
+        if not silent_default:
+            prg.terminate()
+        self.silent = silent_default
     
     def load_netpath(self):
         
@@ -735,9 +740,11 @@ class RePath(object):
                                     'Processing multiple BioPAX files',
                                     1, percent = False)
         
+        silent_default = self.silent
+        self.silent = True
+        
         for pwnum in names.keys():
-            silent_default = self.silent
-            self.silent = True
+            
             if not silent_default:
                 prg.step()
             biopax = curl.Curl(
@@ -748,9 +755,10 @@ class RePath(object):
             self.add_dataset(parser, id_types = {'ensembl': 'ensg',
                                                  'entrez gene': 'entrez',
                                                  'hgnc': 'genesymbol'})
-            if not silent_default:
-                prg.terminate()
-            self.silent = silent_default
+        
+        if not silent_default:
+            prg.terminate()
+        self.silent = silent_default
     
     def netpath_names(self):
         repwnum = re.compile(r'_([0-9]+)$')
@@ -857,7 +865,7 @@ class RePath(object):
             self.pref_refs = lambda l: filter(lambda e: e[6:12] == 'PubMed', l)
         else:
             self.pref_refs = lambda l: []
-        if self.source in ['ACSN', 'WikiPathways', 'NetPath']:
+        if self.source in ['ACSN', 'WikiPathways', 'NetPath', 'PANTHER']:
             self.ambiguous_ids_permitted = True
         else:
             self.ambiguous_ids_permitted = False
@@ -885,8 +893,6 @@ class RePath(object):
             self.rrefs[self.source][refid] = pubmed
     
     def merge_proteins(self):
-        
-        self.load_reflists()
         
         def get_protein_ids(pref):
             
@@ -1031,7 +1037,7 @@ class RePath(object):
         
         def get_seqsite(seqsite):
             if seqsite in self.parser.seqsites:
-                return int(self.parser.seqsites[seqsite])
+                return int(float(self.parser.seqsites[seqsite]))
         
         def get_residue(protein, isof, resnum, resname):
             if protein in self.seq:

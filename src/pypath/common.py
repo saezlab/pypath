@@ -138,6 +138,10 @@ mod_keywords = {
         ('glycylation', ['glycyl']),
         ('ubiquitination', ['ubiquitin']),
         ('acetylation', ['acetyl'])
+    ],
+    'PANTHER': [
+        ('phosphorylation', ['phospho']),
+        ('acetylation', ['acetyl'])
     ]
 }
 
