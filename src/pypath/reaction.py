@@ -27,9 +27,11 @@ import tarfile
 import zipfile
 import struct
 import itertools
+import bs4
 from lxml import etree
 
 import pypath.mapping as mapping
+import pypath.reflists as reflists
 import pypath.common as common
 import pypath.progress as progress
 import pypath.curl as curl
@@ -41,7 +43,7 @@ import pypath.urls as urls
 class BioPaxReader(object):
     
     def __init__(self, biopax, source, cleanup_period = 800,
-        file_from_archive = None):
+        file_from_archive = None, silent = False):
         self.biopax = biopax
         self.source = source
         self.file_from_archive = file_from_archive
@@ -49,6 +51,7 @@ class BioPaxReader(object):
         self.biopax_tmp_file = None
         self.cachedir = 'cache'
         self.parser_id = common.gen_session_id()
+        self.silent = silent
     
         # string constants
         self.bppref = '{http://www.biopax.org/release/biopax-level3.owl#}'
@@ -74,6 +77,7 @@ class BioPaxReader(object):
         self.bpmodf = '%sModificationFeature' % self.bppref
         self.bpmodv = '%sSequenceModificationVocabulary' % self.bppref
         self.bpmphe = '%smemberPhysicalEntity' % self.bppref
+        self.bpmerf = '%smemberEntityReference' % self.bppref
         self.bperef = '%sentityReference' % self.bppref
         self.bpxref = '%sxref' % self.bppref
         self.bpdinm = '%sdisplayName' % self.bppref
@@ -148,7 +152,8 @@ class BioPaxReader(object):
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
     
-    def process(self):
+    def process(self, silent = False):
+        self.silent = silent
         self.open_biopax()
         self.biopax_size()
         self.extract()
@@ -179,20 +184,23 @@ class BioPaxReader(object):
         if self.opener.type != 'plain':
             self.biopax_tmp_file = os.path.join(
                 self.cachedir, 'biopax.processing.tmp.owl')
-            prg = progress.Progress(self.bp_filesize,
-                                    'Extracting %s from %s compressed file' % \
-                                        (self.file_from_archive,
-                                         self.opener.type),
-                                    1000000)
+            if not self.silent:
+                prg = progress.Progress(self.bp_filesize,
+                                        'Extracting %s from %s compressed file' % \
+                                            (self.file_from_archive,
+                                            self.opener.type),
+                                        1000000)
             with open(self.biopax_tmp_file, 'wb') as tmpf:
                 while True:
                     chunk = self._biopax.read(100000)
-                    prg.step(len(chunk))
+                    if not self.silent:
+                        prg.step(len(chunk))
                     if not len(chunk):
                         break
                     tmpf.write(chunk)
             self._biopax = open(self.biopax_tmp_file, 'rb')
-            prg.terminate()
+            if not self.silent:
+                prg.terminate()
     
     def init_etree(self):
         self.bp = etree.iterparse(self._biopax, events = ('start', 'end'))
@@ -200,8 +208,9 @@ class BioPaxReader(object):
         self.used_elements = []
     
     def set_progress(self):
-        self.prg = progress.Progress(self.bp_filesize,
-            'Processing %s from BioPAX XML' % self.source, 33)
+        if not self.silent:
+            self.prg = progress.Progress(self.bp_filesize,
+                'Processing %s from BioPAX XML' % self.source, 33)
     
     def iterate(self):
         self.fpos = self._biopax.tell()
@@ -209,7 +218,8 @@ class BioPaxReader(object):
             for ev, elem in self.bp:
                 # step the progressbar:
                 new_fpos = self._biopax.tell()
-                self.prg.step(new_fpos - self.fpos)
+                if not self.silent:
+                    self.prg.step(new_fpos - self.fpos)
                 self.fpos = new_fpos
                 self.next_elem = elem
                 self.next_event = ev
@@ -228,7 +238,8 @@ class BioPaxReader(object):
             self.prg.terminate(status = 'failed')
             sys.stdout.write('\n\t:: Syntax error in BioPAX:\n\t\t%s\n' % str(e))
             sys.stdout.flush()
-        self.prg.terminate()
+        if not self.silent:
+            self.prg.terminate()
     
     def cleanup_hook(self):
         if len(self.used_elements) > self.cleanup_period:
@@ -254,8 +265,11 @@ class BioPaxReader(object):
                 self._bp_collect_resources(self.bpmphe)
     
     def pref(self):
-        self.prefs[self.next_id] = \
+        self.prefs[self.next_id] = {}
+        self.prefs[self.next_id]['uxrefs'] = \
             self._bp_collect_resources(self.bpxref)
+        self.prefs[self.next_id]['prefs'] = \
+            self._bp_collect_resources(self.bpmerf)
     
     def uxref(self):
         db = self.next_elem.find(self.bpdb)
@@ -375,7 +389,8 @@ class BioPaxReader(object):
     
     def seqmodvoc(self):
         term = self.next_elem.find(self.bpterm)
-        self.seqmodvocs[self.next_id] = term.text
+        if term is not None:
+            self.seqmodvocs[self.next_id] = term.text
     
     def pathway(self):
         name = self.next_elem.find(self.bpdinm)
@@ -593,14 +608,16 @@ class RePath(object):
     
     def __init__(self, mapper = None, ncbi_tax_id = 9606,
                 default_id_types = {}, modifications = True,
-                seq = None):
+                seq = None, silent = False):
         
         self.ncbi_tax_id = ncbi_tax_id
         self.modifications = modifications
         self.parsers = {}
         self.sources = set([])
         self.seq = seq
+        self.reflists = {}
         self.mapper = mapping.Mapper(ncbi_tax_id) if mapper is None else mapper
+        self.silent = silent
         
         self.refs = {}
         self.species = {}
@@ -641,7 +658,7 @@ class RePath(object):
             return {'id': _id[0], 'isoform': int(_id[1]) if len(_id) > 1 else 1}
         
         biopax = curl.Curl(urls.urls['reactome']['biopax_l3'],
-                            large = True, silent = False)
+                            large = True, silent = self.silent)
         parser = BioPaxReader(biopax.outfile, 'Reactome',
                               file_from_archive = 'Homo_sapiens.owl')
         parser.process()
@@ -651,7 +668,7 @@ class RePath(object):
     
     def load_acsn(self):
         biopax = curl.Curl(urls.urls['acsn']['biopax_l3'],
-                           large = True, silent = False)
+                           large = True, silent = self.silent)
 
         parser = BioPaxReader(biopax.outfile, 'ACSN')
         parser.process()
@@ -660,13 +677,94 @@ class RePath(object):
     
     def load_wikipathways(self):
         biopaxes = curl.Curl(urls.urls['wikipw']['biopax_l3'],
-                             large = True, silent = False)
+                             large = True, silent = self.silent)
+        if not self.silent:
+            prg = progress.Progress(len(biopaxes.files_multipart),
+                                    'Processing multiple BioPAX files',
+                                    1, percent = False)
+        
         for fname in biopaxes.files_multipart.keys():
+            silent_default = self.silent
+            self.silent = True
+            if not silent_default:
+                prg.step()
             parser = BioPaxReader(biopaxes.outfile, 'WikiPathways',
                                   file_from_archive = fname)
-            parser.process()
-            self.add_dataset(parser, id_types = {'ensembl': 'ensg'})
-
+            parser.process(silent = True)
+            
+            self.add_dataset(parser, id_types = {'ensembl': 'ensg',
+                                                 'entrez gene': 'entrez',
+                                                 'hgnc': 'genesymbol'})
+            if not silent_default:
+                prg.terminate()
+            self.silent = silent_default
+    
+    def load_panther(self):
+        biopaxes = curl.Curl(urls.urls['panther']['biopax_l3'],
+                             large = True, silent = self.silent)
+        if not self.silent:
+            prg = progress.Progress(len(biopaxes.files_multipart),
+                                    'Processing multiple BioPAX files',
+                                    1, percent = False)
+        
+        for fname in biopaxes.files_multipart.keys():
+            silent_default = self.silent
+            self.silent = True
+            if not silent_default:
+                prg.step()
+            parser = BioPaxReader(biopaxes.outfile, 'PANTHER',
+                                  file_from_archive = fname)
+            if 'MAPK' in fname:
+                print(fname)
+                print(parser.parser_id)
+            parser.process(silent = True)
+            
+            self.add_dataset(parser, id_types = {'ensembl': 'ensg',
+                                                 'entrez gene': 'entrez',
+                                                 'hgnc': 'genesymbol'})
+            if not silent_default:
+                prg.terminate()
+            self.silent = silent_default
+    
+    def load_netpath(self):
+        
+        names = self.netpath_names()
+        
+        if not self.silent:
+            prg = progress.Progress(len(names),
+                                    'Processing multiple BioPAX files',
+                                    1, percent = False)
+        
+        for pwnum in names.keys():
+            silent_default = self.silent
+            self.silent = True
+            if not silent_default:
+                prg.step()
+            biopax = curl.Curl(
+                urls.urls['netpath_bp']['biopax_l3'] % int(pwnum),
+                silent = True)
+            parser = BioPaxReader(biopax.outfile, 'NetPath')
+            parser.process(silent = True)
+            self.add_dataset(parser, id_types = {'ensembl': 'ensg',
+                                                 'entrez gene': 'entrez',
+                                                 'hgnc': 'genesymbol'})
+            if not silent_default:
+                prg.terminate()
+            self.silent = silent_default
+    
+    def netpath_names(self):
+        repwnum = re.compile(r'_([0-9]+)$')
+        result = {}
+        url = urls.urls['netpath_names']['url']
+        c = curl.Curl(url)
+        html = c.result
+        soup = bs4.BeautifulSoup(html, 'html.parser')
+        for a in soup.find_all('a'):
+            if a.attrs['href'].startswith('pathways'):
+                num = repwnum.findall(a.attrs['href'])[0]
+                name = a.text
+                result[num] = name
+        return result
     
     def add_dataset(self, parser, id_types = {},
                     process_id = lambda x: {'id': x}):
@@ -678,44 +776,71 @@ class RePath(object):
     
     def merge(self):
         
-        self.prg = progress.Progress(11, 'Processing %s' % self.source,
-                                     1, percent = False)
+        if not self.silent:
+            self.prg = progress.Progress(11, 'Processing %s' % self.source,
+                                        1, percent = False)
         self.sources.add(self.source)
         if self.source not in self.parsers:
             self.parsers[self.source] = {}
         self.parsers[self.source][self.parser.parser_id] = self.parser
         self.set_corrections()
-        self.prg.step(status = 'processing references')
+        
+        if not self.silent:
+            self.prg.step(status = 'processing references')
         self.merge_refs()
-        self.prg.step(status = 'processing proteins')
+        
+        if not self.silent:
+            self.prg.step(status = 'processing proteins')
         self.merge_proteins()
-        self.prg.step(status = 'processing protein families')
+        
+        if not self.silent:
+            self.prg.step(status = 'processing protein families')
         self.merge_pfamilies()
-        self.prg.step(status = 'processing protein modifications')
+        
+        if not self.silent:
+            self.prg.step(status = 'processing protein modifications')
         if self.modifications:
             self.merge_modifications()
-        self.prg.step(status = 'processing complexes')
+            
+        if not self.silent:
+            self.prg.step(status = 'processing complexes')
         self.merge_complexes()
-        self.prg.step(status = 'processing complex variations')
+        
+        if not self.silent:
+            self.prg.step(status = 'processing complex variations')
         self.merge_cvariations()
-        self.prg.step(status = 'generating complex variations')
+        
+        if not self.silent:
+            self.prg.step(status = 'generating complex variations')
         self.gen_cvariations()
-        self.prg.step(status = 'processing reactions')
+        
+        if not self.silent:
+            self.prg.step(status = 'processing reactions')
         self.merge_reactions()
-        self.prg.step(status = 'processing complex asseblies')
+        
+        if not self.silent:
+            self.prg.step(status = 'processing complex asseblies')
         self.merge_cassemblies()
-        self.prg.step(status = 'processing controls')
+        
+        if not self.silent:
+            self.prg.step(status = 'processing controls')
         self.merge_controls()
-        self.prg.step(status = 'processing catalyses')
+        
+        if not self.silent:
+            self.prg.step(status = 'processing catalyses')
         self.merge_catalyses()
-        self.prg.terminate()
-        sys.stdout.write('\t:: %u proteins, %u complexes, %u reactions and %u'\
-            ' controls have been added.\n' % (
-                self.proteins_added,
-                self.complexes_added,
-                self.reactions_added + self.cassemblies_added,
-                self.controls_added + self.catalyses_added)
-        )
+        
+        if not self.silent:
+            self.prg.terminate()
+            
+            sys.stdout.write('\t:: %u proteins, %u complexes, %u reactions and %u'\
+                ' controls have been added.\n' % (
+                    self.proteins_added,
+                    self.complexes_added,
+                    self.reactions_added + self.cassemblies_added,
+                    self.controls_added + self.catalyses_added)
+            )
+        
         self.remove_defaults()
     
     def remove_defaults(self):
@@ -732,7 +857,7 @@ class RePath(object):
             self.pref_refs = lambda l: filter(lambda e: e[6:12] == 'PubMed', l)
         else:
             self.pref_refs = lambda l: []
-        if self.source == 'ACSN' or self.source == 'WikiPathways':
+        if self.source in ['ACSN', 'WikiPathways', 'NetPath']:
             self.ambiguous_ids_permitted = True
         else:
             self.ambiguous_ids_permitted = False
@@ -761,12 +886,14 @@ class RePath(object):
     
     def merge_proteins(self):
         
+        self.load_reflists()
+        
         def get_protein_ids(pref):
             
             pids = []
             refs = []
             if pref in self.parser.prefs:
-                uxrefs = self.pref_correction(self.parser.prefs[pref])
+                uxrefs = self.pref_correction(self.parser.prefs[pref]['uxrefs'])
                 pids = \
                     common.uniqList(
                         map(
@@ -779,7 +906,7 @@ class RePath(object):
                             )
                         )
                     )
-                refids = self.pref_refs(self.parser.prefs[pref])
+                refids = self.pref_refs(self.parser.prefs[pref]['uxrefs'])
                 refs = \
                     common.uniqList(
                         map(
@@ -792,6 +919,12 @@ class RePath(object):
                             )
                         )
                     )
+                # in panther proteinreferences are children of
+                # other proteinreferences...
+                for subpref in self.parser.prefs[pref]['prefs']:
+                    subpids, subrefs = get_protein_ids(subpref)
+                    pids.extend(subpids)
+                    refs.extend(subrefs)
             return pids, refs
         
         def map_protein_ids(ids):
@@ -809,6 +942,12 @@ class RePath(object):
                         self.mapper.map_name(id_a['id'], std_id_type,
                                             self.default_id_types['protein'])
                     )
+            target_ids = filter(
+                lambda p:
+                    p in self.reflists[(self.default_id_types['protein'],
+                                        'protein', self.ncbi_tax_id)],
+                target_ids
+            )
             target_ids = common.uniqList(target_ids)
             if len(target_ids) > 1:
                 if not self.ambiguous_ids_permitted:
@@ -858,18 +997,19 @@ class RePath(object):
             self.rproteins[self.source][pid] = target_id
     
     def preprocess_seqmodvoc(self):
-        kws = common.mod_keywords[self.source]
-        aas = common.aanames
         self.seqmod_dict = {}
-        for modkey, modname in iteritems(self.parser.seqmodvocs):
-            for mod_std_name, kwlist in kws:
-                if all(map(lambda kw: kw in modname, kwlist)):
-                    this_aa = None
-                    for aan, aa in iteritems(aas):
-                        if aan in modname:
-                            this_aa = aa
-                            break
-                    self.seqmod_dict[modkey] = (mod_std_name, this_aa)
+        if self.source in common.mod_keywords:
+            kws = common.mod_keywords[self.source]
+            aas = common.aanames
+            for modkey, modname in iteritems(self.parser.seqmodvocs):
+                for mod_std_name, kwlist in kws:
+                    if all(map(lambda kw: kw in modname, kwlist)):
+                        this_aa = None
+                        for aan, aa in iteritems(aas):
+                            if aan in modname:
+                                this_aa = aa
+                                break
+                        self.seqmod_dict[modkey] = (mod_std_name, this_aa)
     
     def merge_modifications(self):
         
@@ -918,25 +1058,25 @@ class RePath(object):
                     if seqint in self.parser.seqints:
                         start = get_seqsite(self.parser.seqints[seqint][0])
                         end = get_seqsite(self.parser.seqints[seqint][1])
-                    if start is not None and end is not None:
-                        for protein, isof in proteins:
-                            if protein in self.seq:
-                                if self.seq[protein].has_isoform(isof):
-                                    frag = (protein, isof, start, end)
-                                    if frag in self.frags:
-                                        self.frags[frag].add_source(self.source)
-                                    else:
-                                        instance = \
-                                            self.seq[protein].get(start, end, isof)
-                                        mot = intera.Motif(protein, start, end,
-                                                        isoform = isof,
-                                                        instance = instance,
-                                                        source = self.source)
-                                        self.frags[frag] = mot
-                                    self.proteins[protein].update_attr(
-                                        [self.source, 'pids', pid, 'frags', frag]
-                                    )
-                                    self.fragfeatures_added += 1
+                        if start is not None and end is not None:
+                            for protein, isof in proteins:
+                                if protein in self.seq:
+                                    if self.seq[protein].has_isoform(isof):
+                                        frag = (protein, isof, start, end)
+                                        if frag in self.frags:
+                                            self.frags[frag].add_source(self.source)
+                                        else:
+                                            instance = \
+                                                self.seq[protein].get(start, end, isof)
+                                            mot = intera.Motif(protein, start, end,
+                                                            isoform = isof,
+                                                            instance = instance,
+                                                            source = self.source)
+                                            self.frags[frag] = mot
+                                        self.proteins[protein].update_attr(
+                                            [self.source, 'pids', pid, 'frags', frag]
+                                        )
+                                        self.fragfeatures_added += 1
                 
                 if modfea in self.parser.modfeas:
                     resnum = get_seqsite(self.parser.modfeas[modfea][0])
@@ -944,7 +1084,7 @@ class RePath(object):
                     if seqmodvoc in self.seqmod_dict:
                         typ, resname = self.seqmod_dict[seqmodvoc]
                         for protein, isof in proteins:
-                            if protein in self.seq:
+                            if protein in self.seq and resnum is not None:
                                 resname, isof = \
                                     get_residue(protein, isof, resnum, resname)
                                 mod = (protein, isof, resnum, resname, typ)
@@ -1377,6 +1517,17 @@ class RePath(object):
         if self.seq is None:
             self.seq = uniprot_input.swissprot_seq(self.ncbi_tax_id,
                                                    isoforms = True)
+    
+    def load_reflists(self, reflst = None):
+        if reflst is None:
+            reflst = reflists.get_reflists()
+        for rl in reflst:
+            self.load_reflist(rl)
+    
+    def load_reflist(self, reflist):
+        reflist.load()
+        idx = (reflist.nameType,reflist.typ,reflist.tax)
+        self.reflists[idx] = reflist
 
 class ReactionSide(AttributeHandler):
     

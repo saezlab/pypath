@@ -383,6 +383,10 @@ urls = {
         'label': 'Batch download of NetPath pathways in PSI-MI format',
         'url': 'http://www.netpath.org/download/zipped/PSI-MI.zip'
     },
+    'netpath_bp': {
+        'label': 'Netpath pathways one by one in BioPAX level 3 format',
+        'biopax_l3': 'http://www.netpath.org/data/biopax/NetPath_%u.owl'
+    },
     'proteomemap': {
         'label': 'Human Proteome Map: Mass-spec expression data in healthy human tissues',
         'url': 'http://www.humanproteomemap.org/Download_HPM/HPM_protein_level_'\

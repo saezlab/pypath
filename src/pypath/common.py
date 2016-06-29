@@ -132,7 +132,13 @@ mod_keywords = {
         ('sumoylation', ['sumoyl'])
     ],
     'ACSN': [],
-    'WikiPathways': []
+    'WikiPathways': [],
+    'NetPath': [
+        ('phosphorylation', ['phospho']),
+        ('glycylation', ['glycyl']),
+        ('ubiquitination', ['ubiquitin']),
+        ('acetylation', ['acetyl'])
+    ]
 }
 
 if 'long' not in __builtins__:
