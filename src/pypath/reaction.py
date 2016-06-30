@@ -66,7 +66,11 @@ class BioPaxReader(object):
         self.bpreac = '%sBiochemicalReaction' % self.bppref
         self.bpcata = '%sCatalysis' % self.bppref
         self.bpctrl = '%sControl' % self.bppref
+        self.bpmodu = '%sModulation' % self.bppref
         self.bpcoma = '%sComplexAssembly' % self.bppref
+        self.bptran = '%sTransport' % self.bppref
+        self.bptrbr = '%sTransportWithBiochemicalReaction' % self.bppref
+        self.bpmoli = '%sMolecularInteraction' % self.bppref
         self.bppstp = '%sPathwayStep' % self.bppref
         self.bpuxrf = '%sUnificationXref' % self.bppref
         self.bpstoi = '%sStoichiometry' % self.bppref
@@ -90,6 +94,7 @@ class BioPaxReader(object):
         self.bpcted = '%scontrolled' % self.bppref
         self.bpcter = '%scontroller' % self.bppref
         self.bpctyp = '%scontrolType' % self.bppref
+        self.bppart = '%sparticipant' % self.bppref
         self.bpleft = '%sleft' % self.bppref
         self.bprgth = '%sright' % self.bppref
         self.bpsprc = '%sstepProcess' % self.bppref
@@ -113,6 +118,9 @@ class BioPaxReader(object):
         self.ids = {}
         self.reactions = {}
         self.cassemblies = {}
+        self.interactions = {}
+        self.transports = {}
+        self.transwreas = {}
         self.stoichiometries = {}
         self.catalyses = {}
         self.controls = {}
@@ -134,7 +142,11 @@ class BioPaxReader(object):
             self.bpstoi: 'stoichiometry',
             self.bpreac: 'reaction',
             self.bpcoma: 'cassembly',
+            self.bptrbr: 'reaction',
+            self.bptran: 'reaction',
+            self.bpmoli: 'interaction',
             self.bpcata: 'catalysis',
+            self.bpmodu: 'catalysis',
             self.bpctrl: 'control',
             self.bppstp: 'pwstep',
             self.bppubr: 'pubref',
@@ -311,18 +323,40 @@ class BioPaxReader(object):
             int(float(snum))
         )
     
+    def interaction(self):
+        part = self._bp_collect_resources(self.bpleft)
+        if len(part) == 2:
+            self.interactions[self.next_id] = {
+                'refs': self._bp_collect_resources(self.bpxref),
+                'left': [part[0]],
+                'right': [part[1]],
+                'type': self.next_elem.tag.split('}')[-1]
+            }
+        else:
+            sys.stdout.write(
+                '\t:: Interaction has %s than '\
+                '2 participants: %s, parser: %s\n' % \
+                (
+                    'less' if len(part) < 2 else 'more',
+                    self.next_id,
+                    self.parser_id
+                )
+            )
+    
     def reaction(self):
         self.reactions[self.next_id] = {
             'refs': self._bp_collect_resources(self.bpxref),
             'left': self._bp_collect_resources(self.bpleft),
-            'right': self._bp_collect_resources(self.bprgth)
+            'right': self._bp_collect_resources(self.bprgth),
+            'type': self.next_elem.tag.split('}')[-1]
         }
     
     def cassembly(self):
         self.cassemblies[self.next_id] = {
             'refs': self._bp_collect_resources(self.bpxref),
             'left': self._bp_collect_resources(self.bpleft),
-            'right': self._bp_collect_resources(self.bprgth)
+            'right': self._bp_collect_resources(self.bprgth),
+            'type': self.next_elem.tag.split('}')[-1]
         }
     
     def catalysis(self):
