@@ -42,9 +42,59 @@ import pypath.uniprot_input as uniprot_input
 import pypath.urls as urls
 
 class BioPaxReader(object):
+    """
+    This class parses a BioPAX file and exposes its content easily accessible
+    for further processing. First it opens the file, if necessary it extracts
+    from the archive. Then an `lxml.etree.iterparse` object is created, so the
+    iteration is efficient and memory requirements are minimal. The iterparse
+    object is iterated then, and for each tag included in the
+    `BioPaxReader.methods` dict, the appropriate method is called. These me-
+    thods extract information from the BioPAX entity, and store it in arbit-
+    rary data structures: strings, lists or dicts. These are stored in dicts
+    where keys are the original IDs of the tags, prefixed with the unique ID
+    of the parser object. This is necessary to give a way to merge later the
+    result of parsing more BioPAX files. For example, `id42` may identify
+    EGFR in one file, but AKT1 in the other. Then, the parser of the first
+    file has a unique ID of a 5 letter random string, the second parser a
+    different one, and the molecules with the same ID can be distinguished
+    at merging, e.g. EGFR will be `ffjh2@id42` and AKT1 will be `tr9gy@id42`.
+    The methods and the resulted dicts are named after the BioPAX elements,
+    sometimes abbreviated. For example, `BioPaxReader.protein()` processes
+    the `<bp:Protein>` elements, and stores the results in
+    `BioPaxReader.proteins`.
+    
+    In its current state, this class does not parse every information and
+    all BioPax entities. For example, nucleic acid related entities and
+    interactions are omitted. But these easily can be added with minor mo-
+    difications.
+    """
     
     def __init__(self, biopax, source, cleanup_period = 800,
         file_from_archive = None, silent = False):
+        """
+        :param str,FileOpener biopax: either a filename, or a FileOpener
+        object; if string is supplied, the FileOpener will be created in-
+        ternally
+        
+        :param str source: the name of the data source, e.g. *Reactome*
+        
+        :param int cleanup_period: the number of last elements stored
+        during the iteration of lxml.etree.iterparse; lower number
+        results lower memory usage, but might risk that an element is
+        deleted before it has been processed. Default is 800, which is
+        a safe option.
+        
+        :param str file_from_archive: in case of processing an archive
+        which may contain multiple files (tar.gz or zip), the path of
+        the file to be processed needs to be supplied.
+        E.g. *BioPax/Homo_sapiens.owl*.
+        
+        :param bool silent: whether print status messages and progress
+        bars during processing. If you process large number of small
+        files, better to set False, in case of one large file, True.
+        The default is *False*.
+        """
+        
         self.biopax = biopax
         self.source = source
         self.file_from_archive = file_from_archive
@@ -166,6 +216,11 @@ class BioPaxReader(object):
         setattr(self, '__class__', new)
     
     def process(self, silent = False):
+        """
+        This method executes the total workflow of BioPax processing.
+        
+        :param bool silent: whether to print status messages and progress bars.
+        """
         self.silent = silent
         self.open_biopax()
         self.biopax_size()
@@ -176,6 +231,10 @@ class BioPaxReader(object):
         self.close_biopax()
     
     def open_biopax(self):
+        """
+        Opens the BioPax file. This method should not be called directly,
+        ``BioPaxReader.process()`` calls it.
+        """
         opener_args = {} if self.file_from_archive is None \
             else {'files_needed': [self.file_from_archive]}
         if type(self.biopax) is curl.FileOpener:
@@ -194,10 +253,22 @@ class BioPaxReader(object):
             self._biopax = self.opener.fileobj
     
     def biopax_size(self):
+        """
+        Gets the uncompressed size of the BioPax XML. This is needed in
+        order to have a progress bar. This method should not be called
+        directly, ``BioPaxReader.process()`` calls it.
+        """
         self.bp_filesize = self.opener.sizes[self.file_from_archive] \
             if hasattr(self.opener, 'sizes') else self.opener.size
     
     def extract(self):
+        """
+        Extracts the BioPax file from compressed archive. Creates a
+        temporary file. This is needed to trace the progress of
+        processing, which is useful in case of large files.
+        This method should not be called directly,
+        ``BioPaxReader.process()`` calls it.
+        """
         if self.opener.type != 'plain':
             self.biopax_tmp_file = os.path.join(
                 self.cachedir, 'biopax.processing.tmp.owl')
@@ -220,16 +291,32 @@ class BioPaxReader(object):
                 prg.terminate()
     
     def init_etree(self):
+        """
+        Creates the ``lxml.etree.iterparse`` object.
+        This method should not be called directly,
+        ``BioPaxReader.process()`` calls it.
+        """
         self.bp = etree.iterparse(self._biopax, events = ('start', 'end'))
         _, self.root = next(self.bp)
         self.used_elements = []
     
     def set_progress(self):
+        """
+        Initializes a progress bar.
+        This method should not be called directly,
+        ``BioPaxReader.process()`` calls it.
+        """
         if not self.silent:
             self.prg = progress.Progress(self.bp_filesize,
                 'Processing %s from BioPAX XML' % self.source, 33)
     
     def iterate(self):
+        """
+        Iterates the BioPax XML and calls the appropriate methods
+        for each element.
+        This method should not be called directly,
+        ``BioPaxReader.process()`` calls it.
+        """
         self.fpos = self._biopax.tell()
         try:
             for ev, elem in self.bp:
@@ -260,12 +347,22 @@ class BioPaxReader(object):
             self.prg.terminate()
     
     def cleanup_hook(self):
+        """
+        Removes the used elements to free up memory.
+        This method should not be called directly,
+        ``BioPaxReader.iterate()`` calls it.
+        """
         if len(self.used_elements) > self.cleanup_period:
             for _ in xrange(int(self.cleanup_period / 2)):
                 e = self.used_elements.pop()
                 e.clear()
     
     def close_biopax(self):
+        """
+        Deletes the iterator and closes the file object.
+        This method should not be called directly,
+        ``BioPaxReader.process()`` calls it.
+        """
         del self.bp
         self._biopax.close()
     
@@ -536,6 +633,32 @@ class Entity(AttributeHandler):
     
     def __repr__(self):
         return '%s (%s)' % (self.id, self.id_type)
+    
+    def __iter__(self):
+        """
+        With this method it is possible to iterate ``Entity`` objects
+        just like ``EntitySet`` objects.
+        
+        Yields the object.
+        """
+        for i in [self]:
+            yield i
+    
+    def expand(self):
+        """
+        With this method it is possible to iterate ``Entity`` objects
+        just like ``EntitySet`` objects.
+        
+        Yields string.
+        """
+        for i in [self.id]:
+            yield i
+    
+    def itermembers(self):
+        """
+        Synonym for ``__iter__()``.
+        """
+        return self.__iter__()
 
 class Protein(Entity):
     
@@ -557,8 +680,9 @@ class Reference(Entity):
 
 class EntitySet(AttributeHandler):
     
-    def __init__(self, members, sources = [], sep = ';'):
+    def __init__(self, members, sources = [], sep = ';', parent = None):
         super(EntitySet, self).__init__()
+        self.parent = parent
         self.members = sorted(common.uniqList(members))
         self.set = set(self.members)
         self.sources = set([])
@@ -614,8 +738,8 @@ class Intersecting(object):
 
 class Complex(EntitySet):
     
-    def __init__(self, members, source):
-        super(Complex, self).__init__(members, source)
+    def __init__(self, members, source, parent = None):
+        super(Complex, self).__init__(members, source, parent = parent)
         self.type = 'complex'
     
     def get_stoichiometries(self, source, cid, with_pids = False):
@@ -629,20 +753,56 @@ class Complex(EntitySet):
                         iteritems(self.attrs[source][cid])
                     )
                 )
+    
+    def expand(self):
+        for i, m1in enumerate(self.members):
+            for m2 in self.members[i + 1:]:
+                yield m1, m2
+    
+    def itermembers(self):
+        for m in members:
+            return self.parent.proteins[m]
 
 class ProteinFamily(Intersecting, EntitySet):
     
-    def __init__(self, members, source):
-        EntitySet.__init__(self, members, source)
+    def __init__(self, members, source, parent = None):
+        EntitySet.__init__(self, members, source, parent = parent)
         Intersecting.__init__(self)
         self.type = 'pfamily'
+    
+    def itermembers(self):
+        """
+        Iterates protein family, yields proteins.
+        """
+        for m in members:
+            if m in self.parent.proteins:
+                yield self.parent.proteins[m]
+            else:
+                this_attrs = dict(map(lambda s:
+                        (s, {'pids': {}, 'prefs': {}, 'originals': {}}),
+                    self.source))
+                for s, a in iteritems(self.attrs):
+                    for pfid, aa in iteritems(a):
+                        this_attrs[s]['pids'][pfid] = {}
+                yield Protein(m, sources = self.sources, attrs = this_attrs)
+    
+    def expand(self):
+        return self.__iter__()
 
 class ComplexVariations(Intersecting, EntitySet):
     
-    def __init__(self, members, source):
-        EntitySet.__init__(self, members, source, sep = '|')
+    def __init__(self, members, source, parent = None):
+        EntitySet.__init__(self, members, source, sep = '|', parent = parent)
         Intersecting.__init__(self)
         self.type = 'cvariations'
+    
+    def expand(self):
+        for m in self.members:
+            for m1, m2 in m.expand():
+                yield m1, m2
+    
+    def itermembers(self):
+        return self.__iter__()
 
 class RePath(object):
     
@@ -1235,7 +1395,7 @@ class RePath(object):
             self.rpfamilies[self.source] = {}
         
         members = sorted(common.uniqList(map(lambda p: p[0], proteins)))
-        pf = ProteinFamily(members, source = self.source)
+        pf = ProteinFamily(members, source = self.source, parent = self)
         members = tuple(members)
         pf.attrs[self.source][pfid] = {}
         for protein, pid in proteins:
@@ -1249,6 +1409,12 @@ class RePath(object):
         self.pfamilies_added += 1
     
     def merge_complexes(self):
+        """
+        Merges complexes from the active ``BioPaxReader`` object.
+        Protein families and subcomplexes are expanded, and all combinations
+        are created as separate complexes. The complexes from the same ID
+        are added to sets in the ``rcomplexes`` dict.
+        """
         
         self.complexes_added = 0
         if self.source not in self.rcomplexes:
@@ -1393,7 +1559,8 @@ class RePath(object):
                                 ))
                             if not len(members):
                                 continue
-                            cplex = Complex(members, source = self.source)
+                            cplex = Complex(members, source = self.source,
+                                            parent = self)
                             members = tuple(members)
                             cplex.attrs[self.source][cid] = {}
                             for protein, stoi, pid in this_proteins:
@@ -1416,7 +1583,9 @@ class RePath(object):
             next_round = []
     
     def merge_cvariations(self):
+        """
         
+        """
         self.cvariations_added = 0
         for cvid, cv in iteritems(self.parser.cvariations):
             
@@ -1443,6 +1612,14 @@ class RePath(object):
                 self.cvariations_added += 1
     
     def gen_cvariations(self):
+        """
+        Because one key from the BioPax file might represent more complexes,
+        complexvariations are created to give a way to represent sets of
+        combinations. These are created for all complexes, even with only
+        one unambiguous constitution. The keys are the constitutions of
+        all the combinations listed in alphabetic order, separated by ``|``.
+        For example, ``A,B,C|A,B,D|A,B,E``.
+        """
         
         self.rcvariations[self.source] = {}
         
@@ -1450,7 +1627,8 @@ class RePath(object):
             
             membs = map(lambda key: self.complexes[key], keys)
             
-            cvar = ComplexVariations(membs, source = self.source)
+            cvar = ComplexVariations(membs, source = self.source,
+                                     parent = self)
             cvar.attrs[self.source]['cids'] = set([cid])
             
             key = cvar.__str__()
@@ -1470,6 +1648,10 @@ class RePath(object):
         self._merge_reactions(('cassemblies', 'cassembly'))
     
     def _merge_reactions(self, rclass):
+        """
+        Merges reaction type entities from the active parser.
+        Here protein families and complex variations are not expanded.
+        """
         
         if self.source not in self.rreactions:
             self.rreactions[self.source] = {}
@@ -1482,7 +1664,7 @@ class RePath(object):
                     r = getattr(self, 'r%s'%cls)[self.source]
                     if _id in r:
                         members.append(getattr(self, cls)[r[_id]])
-                        memb_ids[r[_id]] = _id
+                        memb_ids[r[_id]] = {'id': _id, 'type': cls}
             return members, memb_ids
         
         for rid, reac in iteritems(getattr(self.parser, rclass[0])):
@@ -1494,8 +1676,8 @@ class RePath(object):
             
             if len(left) or len(right):
                 
-                reaction = Reaction(left, right, left_attrs,
-                                    right_attrs, source = self.source)
+                reaction = Reaction(left, right, left_attrs, right_attrs,
+                                    source = self.source, parent = self)
                 reaction.attrs[self.source][rid] = {}
                 
                 this_refs = \
@@ -1574,7 +1756,8 @@ class RePath(object):
                     ) \
                     if 'refs' in ctrl else set([])
                 
-                control = Control(erent, edent, source = self.source)
+                control = Control(erent, edent, source = self.source,
+                                  parent = self)
                 control.attrs[self.source][cid] = {}
                 control.attrs[self.source][cid]['refs'] = this_refs
                 control.attrs[self.source][cid]['class'] = cclass[1]
@@ -1713,13 +1896,14 @@ class RePath(object):
 
 class ReactionSide(AttributeHandler):
     
-    def __init__(self, members, source = []):
+    def __init__(self, members, source = [], parent = None):
         super(ReactionSide, self).__init__()
         
         self.members = sorted(members)
         self.sources = set([])
         self.attrs = {}
         self.add_source(source)
+        self.parent = parent
     
     def __hash__(self):
         return hash(self.__str__())
@@ -1768,14 +1952,33 @@ class ReactionSide(AttributeHandler):
     
     def __eq__(self, other):
         return self.equality(self, other) and self.equality(other, self)
+    
+    def __iter__(self):
+        for m in self.members:
+            yield m
+    
+    def expand(self):
+        """
+        Expands the ``ReactionSide`` by iterating over all combinations
+        of all ``ComplexVariation`` and ``ProteinFamily`` members, so
+        yields ``ReactionSide`` objects with only ``Protein`` and ``Complex``
+        members.
+        """
+        for c in itertools.product(map(lambda m: m.itermembers(), self.members())):
+            this_attrs = dict(map(lambda s: (s:
+                    dict(map(lambda rid: (rid: {}),
+                self.attrs[s].keys()))), self.sources))
+            
 
 class Reaction(AttributeHandler):
     
-    def __init__(self, left, right, left_attrs, right_attrs, source = []):
+    def __init__(self, left, right, left_attrs, right_attrs,
+                 source = [], parent = None):
         super(Reaction, self).__init__()
         
-        self.left = ReactionSide(left, source)
-        self.right = ReactionSide(right, source)
+        self.parent = parent
+        self.left = ReactionSide(left, source, parent = self.parent)
+        self.right = ReactionSide(right, source, parent = self.parent)
         self.left.merge_attrs(left_attrs)
         self.right.merge_attrs(right_attrs)
         self.attrs = {}
@@ -1803,7 +2006,7 @@ class Reaction(AttributeHandler):
 
 class Control(AttributeHandler):
     
-    def __init__(self, er, ed, source = []):
+    def __init__(self, er, ed, source = [], parent = parent):
         super(Control, self).__init__()
         
         self.controller = er
@@ -1811,6 +2014,7 @@ class Control(AttributeHandler):
         self.attrs = {}
         self.sources = set([])
         self.add_source(source)
+        self.parent = parent
     
     def __str__(self):
         return 'Control: C.ER(%s) --> C.ED(%s)' % \
