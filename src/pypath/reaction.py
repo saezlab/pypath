@@ -1717,6 +1717,7 @@ class RePath(object):
                                 continue
                             cplex = Complex(members, source = self.source,
                                             parent = self)
+                            
                             members = tuple(members)
                             cplex.attrs[self.source][cid] = {}
                             for protein, stoi, pid in this_proteins:
@@ -1730,7 +1731,7 @@ class RePath(object):
                             self.complexes_added += 1
                             if cid not in self.rcomplexes[self.source]:
                                 self.rcomplexes[self.source][cid] = set([])
-                                self.rcomplexes[self.source][cid].add(members)
+                            self.rcomplexes[self.source][cid].add(members)
                 
                 else:
                     no_protein.add(cid)
@@ -2287,14 +2288,18 @@ class Reaction(AttributeHandler):
             rAllProteins = self.right.proteins()
             lMissing = rAllProteins - lAllProteins
             rMissing = lAllProteins - rAllProteins
+            print('lMissing: %s' % lMissing)
+            print('rMissing: %s' % rMissing)
             lefts = self.left.expand()
             rights = list(self.right.expand())
             for left in lefts:
                 for right in rights:
                     r = Reaction(left[0], right[0], left[1], right[1],
                                  source = self.sources, parent = self.parent)
-                    lProteins = self.left.proteins()
-                    rProteins = self.right.proteins()
+                    lProteins = r.left.proteins()
+                    rProteins = r.right.proteins()
+                    print('--lMissing: %s' % (rProteins - lProteins))
+                    print('--rMissing: %s' % (lProteins - rProteins))
                     if lProteins - rProteins <= rMissing and \
                         rProteins - lProteins <= lMissing:
                         
