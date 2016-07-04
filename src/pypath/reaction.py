@@ -655,10 +655,8 @@ class Entity(AttributeHandler):
             yield i
     
     def itermembers(self):
-        """
-        Synonym for ``__iter__()``.
-        """
-        return self.__iter__()
+        for m in self.__iter__():
+            yield (m, {})
 
 class Protein(Entity):
     
@@ -667,6 +665,13 @@ class Protein(Entity):
         super(Protein, self).__init__(protein_id, id_type,
                                       sources = sources, attrs = attrs)
         self.type = 'protein'
+    
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
 
 class Reference(Entity):
     
@@ -742,6 +747,13 @@ class Complex(EntitySet):
         super(Complex, self).__init__(members, source, parent = parent)
         self.type = 'complex'
     
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
     def get_stoichiometries(self, source, cid, with_pids = False):
         if source in self.sources and cid in self.attrs[source]:
             return \
@@ -755,7 +767,7 @@ class Complex(EntitySet):
                 )
     
     def expand(self):
-        for i, m1in enumerate(self.members):
+        for i, m1in in enumerate(self.members):
             for m2 in self.members[i + 1:]:
                 yield m1, m2
     
@@ -769,6 +781,13 @@ class ProteinFamily(Intersecting, EntitySet):
         EntitySet.__init__(self, members, source, parent = parent)
         Intersecting.__init__(self)
         self.type = 'pfamily'
+    
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
     
     def itermembers(self):
         """
@@ -796,13 +815,47 @@ class ComplexVariations(Intersecting, EntitySet):
         Intersecting.__init__(self)
         self.type = 'cvariations'
     
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
     def expand(self):
         for m in self.members:
             for m1, m2 in m.expand():
                 yield m1, m2
     
     def itermembers(self):
-        return self.__iter__()
+        for m in self.__iter__():
+            attrs = dict(
+                map(
+                    lambda s:
+                        (
+                            s,
+                            reduce(
+                                lambda c1, c2:
+                                    c1 | c2,
+                                map(
+                                    lambda cid:
+                                        m.attrs[s][cid]['children'] \
+                                            if \
+                                        'children' in m.attrs[s][cid] \
+                                            else \
+                                        set([cid]),
+                                    filter(
+                                        lambda cid:
+                                            cid in m.attrs[s],
+                                        self.attrs[s]['cids']
+                                    )
+                                )
+                            )
+                        ),
+                    self.sources
+                )
+            )
+            yield (m, attrs)
 
 class RePath(object):
     
@@ -1590,10 +1643,10 @@ class RePath(object):
         for cvid, cv in iteritems(self.parser.cvariations):
             
             cplexes = \
-                list(
+                dict(
                     map(
                         lambda cid:
-                            self.rcomplexes[self.source][cid],
+                            (cid, self.rcomplexes[self.source][cid]),
                         filter(
                             lambda cid:
                                 cid in self.rcomplexes[self.source],
@@ -1602,12 +1655,19 @@ class RePath(object):
                     )
                 )
             
+            for cid, ckeys in iteritems(cplexes):
+                for ckey in ckeys:
+                    c = self.complexes[ckey]
+                    if cvid not in c.attrs[self.source]:
+                        c.attrs[self.source][cvid] = {'children': set([])}
+                    c.attrs[self.source][cvid]['children'].add(cid)
+            
             if len(cplexes):
                 self.rcomplexes[self.source][cvid] = \
                     reduce(
                         lambda c1, c2:
                             c1 | c2,
-                        cplexes
+                        cplexes.values()
                     )
                 self.cvariations_added += 1
     
@@ -1905,6 +1965,13 @@ class ReactionSide(AttributeHandler):
         self.add_source(source)
         self.parent = parent
     
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
     def __hash__(self):
         return hash(self.__str__())
     
@@ -1964,11 +2031,39 @@ class ReactionSide(AttributeHandler):
         yields ``ReactionSide`` objects with only ``Protein`` and ``Complex``
         members.
         """
+        # collecting protein attributes
+        pattrs = \
+            dict(
+                map(
+                    lambda m:
+                        (
+                            m.id,
+                            dict(
+                                map(
+                                    lambda s, d1:
+                                        dict(
+                                            map(
+                                                lambda rid, d2:
+                                                    (rid, d2[m.id]),
+                                                iteritems(d1)
+                                            )
+                                        ),
+                                    iteritems(self.attrs)
+                                )
+                            )
+                        ),
+                    filter(
+                        lambda m:
+                            m.type == 'protein',
+                        self.members
+                    )
+                )
+            )
         for c in itertools.product(map(lambda m: m.itermembers(), self.members())):
-            this_attrs = dict(map(lambda s: (s:
-                    dict(map(lambda rid: (rid: {}),
+            this_attrs = dict(map(lambda s: (s,
+                    dict(map(lambda rid: (rid, {}),
                 self.attrs[s].keys()))), self.sources))
-            
+        
 
 class Reaction(AttributeHandler):
     
@@ -1984,6 +2079,13 @@ class Reaction(AttributeHandler):
         self.attrs = {}
         self.sources = set([])
         self.add_source(source)
+    
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
     
     def __repr__(self):
         return self.__str__()
@@ -2006,7 +2108,7 @@ class Reaction(AttributeHandler):
 
 class Control(AttributeHandler):
     
-    def __init__(self, er, ed, source = [], parent = parent):
+    def __init__(self, er, ed, source = [], parent = None):
         super(Control, self).__init__()
         
         self.controller = er
@@ -2015,6 +2117,13 @@ class Control(AttributeHandler):
         self.sources = set([])
         self.add_source(source)
         self.parent = parent
+    
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
     
     def __str__(self):
         return 'Control: C.ER(%s) --> C.ED(%s)' % \
