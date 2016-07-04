@@ -2288,10 +2288,7 @@ class Reaction(AttributeHandler):
             
             lAllProteins = self.left.proteins()
             rAllProteins = self.right.proteins()
-            lMissing = rAllProteins - lAllProteins
-            rMissing = lAllProteins - rAllProteins
-            print('lMissing: %s' % lMissing)
-            print('rMissing: %s' % rMissing)
+            diffAllProteins = rAllProteins ^ lAllProteins
             lefts = self.left.expand()
             rights = list(self.right.expand())
             for left in lefts:
@@ -2300,12 +2297,10 @@ class Reaction(AttributeHandler):
                                  source = self.sources, parent = self.parent)
                     lProteins = r.left.proteins()
                     rProteins = r.right.proteins()
-                    print('--lMissing: %s' % (rProteins - lProteins))
-                    print('--rMissing: %s' % (lProteins - rProteins))
-                    if lProteins - rProteins <= rMissing and \
-                        rProteins - lProteins <= lMissing:
+                    diffProteins = lProteins ^ rProteins
+                    if diffProteins <= diffAllProteins:
                         
-                        diff = len(lProteins ^ rProteins)
+                        diff = len(diffProteins)
                         
                         r.left.is_expanded = True
                         r.right.is_expanded = True
