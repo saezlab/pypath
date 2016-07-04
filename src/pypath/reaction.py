@@ -672,6 +672,9 @@ class Protein(Entity):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
+    
+    def key(self):
+        return self.id
 
 class Reference(Entity):
     
@@ -774,6 +777,9 @@ class Complex(EntitySet):
     def itermembers(self):
         for m in members:
             return self.parent.proteins[m]
+    
+    def key(self):
+        return tuple(self.members)
 
 class ProteinFamily(Intersecting, EntitySet):
     
@@ -829,6 +835,9 @@ class ProteinFamily(Intersecting, EntitySet):
                     )
                 )
             yield (m, attrs)
+    
+    def key(self):
+        return tuple(self.members)
 
 class ComplexVariations(Intersecting, EntitySet):
     
@@ -878,6 +887,9 @@ class ComplexVariations(Intersecting, EntitySet):
                 )
             )
             yield (m, attrs)
+    
+    def key(self):
+        return self.__str__()
 
 class RePath(object):
     
@@ -1997,6 +2009,7 @@ class ReactionSide(AttributeHandler):
         self.attrs = {}
         self.add_source(source)
         self.parent = parent
+        self.is_expanded = False
     
     def reload(self):
         modname = self.__class__.__module__
@@ -2065,38 +2078,77 @@ class ReactionSide(AttributeHandler):
         members.
         """
         # collecting protein attributes
-        pattrs = \
-            dict(
-                map(
-                    lambda m:
-                        (
-                            m.id,
-                            dict(
-                                map(
-                                    lambda s, d1:
-                                        dict(
-                                            map(
-                                                lambda rid, d2:
-                                                    (rid, d2[m.id]),
-                                                iteritems(d1)
-                                            )
-                                        ),
-                                    iteritems(self.attrs)
-                                )
-                            )
-                        ),
-                    filter(
+        if self.is_expanded:
+            for i in [self]:
+                yield self.members, self.attrs
+        else:
+            pattrs = \
+                dict(
+                    map(
                         lambda m:
-                            m.type == 'protein',
-                        self.members
+                            (
+                                m.id,
+                                dict(
+                                    map(
+                                        lambda s, d1:
+                                            dict(
+                                                map(
+                                                    lambda rid, d2:
+                                                        (rid, d2[m.id]),
+                                                    iteritems(d1)
+                                                )
+                                            ),
+                                        iteritems(self.attrs)
+                                    )
+                                )
+                            ),
+                        filter(
+                            lambda m:
+                                m.type == 'protein',
+                            self.members
+                        )
                     )
                 )
-            )
-        for c in itertools.product(map(lambda m: m.itermembers(), self.members())):
-            this_attrs = dict(map(lambda s: (s,
-                    dict(map(lambda rid: (rid, {}),
-                self.attrs[s].keys()))), self.sources))
-        
+            for c in \
+                itertools.product(
+                    *list(
+                        map(
+                            lambda m:
+                                list(
+                                    zip(
+                                        m.itermembers(),
+                                        [m.key()] * len(m.members)
+                                    )
+                                ),
+                            self.members
+                        )
+                    )
+                ):
+                
+                attrs = dict(map(lambda s: (s,
+                        dict(map(lambda rid: (rid, {}),
+                    self.attrs[s].keys()))), self.sources))
+                members = []
+                # print(list(c))
+                for ((m, a), k) in c:
+                    members.append(m)
+                    if m.type == 'protein':
+                        if m.id in pattrs:
+                            for s, d1 in iteritems(pattrs[m.id]):
+                                for rid, d2 in iteritems(d1):
+                                    attrs[s][rid][m.id] = \
+                                        {'type': 'proteins', 'id': d2[m.id]}
+                        else:
+                            for s, r in iteritems(attrs):
+                                for rid, d in iteritems(r):
+                                    attrs[s][rid][m.key()] = \
+                                        {'type': 'proteins', 'id': a[s][self.attrs[s][rid][k]['id']]}
+                    elif m.type == 'complex':
+                        for s, r in iteritems(attrs):
+                            for rid, d in iteritems(r):
+                                attrs[s][rid][m.key()] = \
+                                    {'type': 'complexes', 'id': a[s]}
+                yield members, attrs
 
 class Reaction(AttributeHandler):
     
