@@ -2151,12 +2151,15 @@ class ReactionSide(AttributeHandler):
                                 m.id,
                                 dict(
                                     map(
-                                        lambda s, d1:
-                                            dict(
-                                                map(
-                                                    lambda rid, d2:
-                                                        (rid, d2[m.id]),
-                                                    iteritems(d1)
+                                        lambda d1:
+                                            (
+                                                d1[0],
+                                                dict(
+                                                    map(
+                                                        lambda d2:
+                                                            (d2[0], d2[1][m.id]),
+                                                        iteritems(d1[1])
+                                                    )
                                                 )
                                             ),
                                         iteritems(self.attrs)
@@ -2178,7 +2181,10 @@ class ReactionSide(AttributeHandler):
                                 list(
                                     zip(
                                         m.itermembers(),
-                                        [m.key()] * len(m.members)
+                                        [m.key()] * (
+                                            len(m.members) \
+                                                if hasattr(m, 'members') \
+                                            else 1)
                                     )
                                 ),
                             self.members
@@ -2197,7 +2203,7 @@ class ReactionSide(AttributeHandler):
                             for s, d1 in iteritems(pattrs[m.id]):
                                 for rid, d2 in iteritems(d1):
                                     attrs[s][rid][m.id] = \
-                                        {'type': 'proteins', 'id': d2[m.id]}
+                                        {'type': 'proteins', 'id': d2}
                         else:
                             for s, r in iteritems(attrs):
                                 for rid, d in iteritems(r):
