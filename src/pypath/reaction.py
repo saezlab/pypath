@@ -2284,6 +2284,8 @@ class Reaction(AttributeHandler):
             for i in [1]:
                 yield self
         else:
+            expanded = []
+            
             lAllProteins = self.left.proteins()
             rAllProteins = self.right.proteins()
             lMissing = rAllProteins - lAllProteins
@@ -2303,11 +2305,19 @@ class Reaction(AttributeHandler):
                     if lProteins - rProteins <= rMissing and \
                         rProteins - lProteins <= lMissing:
                         
+                        diff = len(lProteins ^ rProteins)
+                        
                         r.left.is_expanded = True
                         r.right.is_expanded = True
                         r.is_expanded = True
                         r.attrs = self.attrs
-                        yield r
+                        expanded.append((r, diff))
+            
+            mindiff = min(map(lambda e: e[1], expanded))
+            
+            for r, d in expanded:
+                if d == mindiff:
+                    yield r
 
 class Control(AttributeHandler):
     
