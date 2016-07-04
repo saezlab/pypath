@@ -806,7 +806,29 @@ class ProteinFamily(Intersecting, EntitySet):
                 yield Protein(m, sources = self.sources, attrs = this_attrs)
     
     def expand(self):
-        return self.__iter__()
+        for pkey in self.__iter__():
+            yield self.parent.proteins[pkey]
+    
+    def itermembers(self):
+        for m in self.expand():
+            attrs = \
+                dict(
+                    map(
+                        lambda s:
+                            (
+                                s,
+                                dict(
+                                    map(
+                                        lambda pf:
+                                            (pf[0], pf[1][m.id]['pid']),
+                                        iteritems(self.attrs[s])
+                                    )
+                                )
+                            ),
+                        self.sources
+                    )
+                )
+            yield (m, attrs)
 
 class ComplexVariations(Intersecting, EntitySet):
     
@@ -1448,6 +1470,17 @@ class RePath(object):
             self.rpfamilies[self.source] = {}
         
         members = sorted(common.uniqList(map(lambda p: p[0], proteins)))
+        
+        # this necessary if we add protein family because of
+        # ambiguous id mapping; we want to make sure protein
+        # exists for each member of the family.
+        for m in members:
+            if m not in self.proteins:
+                p = Protein(m, source = self.source)
+                p.attrs[self.source]['pids'] = {}
+                p.attrs[self.source]['pids'][pfid] = {}
+                self.proteins[m] = p
+        
         pf = ProteinFamily(members, source = self.source, parent = self)
         members = tuple(members)
         pf.attrs[self.source][pfid] = {}
