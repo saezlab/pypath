@@ -675,6 +675,18 @@ class Protein(Entity):
     
     def key(self):
         return self.id
+    
+    def proteins(self):
+        return set([self.id])
+    
+    def __ror__(self, other):
+        return self.proteins() | other
+    
+    def __rand__(self, other):
+        return self.proteins() & other
+    
+    def __rsub__(self, other):
+        return self.proteins() - other
 
 class Reference(Entity):
     
@@ -780,6 +792,18 @@ class Complex(EntitySet):
     
     def key(self):
         return tuple(self.members)
+    
+    def proteins(self):
+        return set(self.members)
+    
+    def __ror__(self, other):
+        return self.proteins() | other
+    
+    def __rand__(self, other):
+        return self.proteins() & other
+    
+    def __rsub__(self, other):
+        return self.proteins() - other
 
 class ProteinFamily(Intersecting, EntitySet):
     
@@ -838,6 +862,18 @@ class ProteinFamily(Intersecting, EntitySet):
     
     def key(self):
         return tuple(self.members)
+    
+    def proteins(self):
+        return set(self.members)
+    
+    def __ror__(self, other):
+        return self.proteins() | other
+    
+    def __rand__(self, other):
+        return self.proteins() & other
+    
+    def __rsub__(self, other):
+        return self.proteins() - other
 
 class ComplexVariations(Intersecting, EntitySet):
     
@@ -859,6 +895,10 @@ class ComplexVariations(Intersecting, EntitySet):
                 yield m1, m2
     
     def itermembers(self):
+        """
+        This is a convenient iterator for the expand methods
+        of higher classes like ``ReactionSide`` or ``Control``.
+        """
         for m in self.__iter__():
             attrs = dict(
                 map(
@@ -890,6 +930,24 @@ class ComplexVariations(Intersecting, EntitySet):
     
     def key(self):
         return self.__str__()
+    
+    def proteins(self):
+        return \
+            reduce(
+                lambda m1, m2:
+                    m1 | m2,
+                self.members,
+                set([])
+            )
+    
+    def __ror__(self, other):
+        return self.proteins() | other
+    
+    def __rand__(self, other):
+        return self.proteins() & other
+        
+    def __rsub__(self, other):
+        return self.proteins() - other
 
 class RePath(object):
     
@@ -2017,6 +2075,7 @@ class ReactionSide(AttributeHandler):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
+        map(lambda m: m.reload(), self.members)
     
     def __hash__(self):
         return hash(self.__str__())
@@ -2075,11 +2134,13 @@ class ReactionSide(AttributeHandler):
         Expands the ``ReactionSide`` by iterating over all combinations
         of all ``ComplexVariation`` and ``ProteinFamily`` members, so
         yields ``ReactionSide`` objects with only ``Protein`` and ``Complex``
-        members.
+        members. Yields tuple, because ``ReactionSide`` is initialized in
+        ``Reaction``, the tuple is suitable to serve as ``members`` and
+        ``attrs``.
         """
         # collecting protein attributes
         if self.is_expanded:
-            for i in [self]:
+            for i in [1]:
                 yield self.members, self.attrs
         else:
             pattrs = \
@@ -2129,7 +2190,6 @@ class ReactionSide(AttributeHandler):
                         dict(map(lambda rid: (rid, {}),
                     self.attrs[s].keys()))), self.sources))
                 members = []
-                # print(list(c))
                 for ((m, a), k) in c:
                     members.append(m)
                     if m.type == 'protein':
@@ -2149,6 +2209,24 @@ class ReactionSide(AttributeHandler):
                                 attrs[s][rid][m.key()] = \
                                     {'type': 'complexes', 'id': a[s]}
                 yield members, attrs
+    
+    def proteins(self):
+        return \
+            reduce(
+                lambda m1, m2:
+                    m1 | m2.proteins(),
+                self.members,
+                set([])
+            )
+    
+    def __ror__(self, other):
+        return self.proteins() | other
+    
+    def __rand__(self, other):
+        return self.proteins() & other
+    
+    def __rsub__(self, other):
+        return self.proteins() - other
 
 class Reaction(AttributeHandler):
     
@@ -2164,6 +2242,7 @@ class Reaction(AttributeHandler):
         self.attrs = {}
         self.sources = set([])
         self.add_source(source)
+        self.is_expanded = False
     
     def reload(self):
         modname = self.__class__.__module__
@@ -2171,6 +2250,8 @@ class Reaction(AttributeHandler):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
+        self.left.reload()
+        self.right.reload()
     
     def __repr__(self):
         return self.__str__()
@@ -2190,6 +2271,32 @@ class Reaction(AttributeHandler):
         self.left += other.left
         self.right += other.left
         return self
+    
+    def expand(self):
+        if self.is_expanded:
+            for i in [1]:
+                yield self
+        else:
+            lAllProteins = self.left.proteins()
+            rAllProteins = self.right.proteins()
+            lMissing = rAllProteins - lAllProteins
+            rMissing = lAllProteins - rAllProteins
+            lefts = self.left.expand()
+            rights = list(self.right.expand())
+            for left in lefts:
+                for right in rights:
+                    r = Reaction(left[0], right[0], left[1], right[1],
+                                 source = self.sources, parent = self.parent)
+                    lProteins = self.left.proteins()
+                    rProteins = self.right.proteins()
+                    if lProteins - rProteins <= rMissing and \
+                        rProteins - lProteins <= lMissing:
+                        
+                        r.left.is_expanded = True
+                        r.right.is_expanded = True
+                        r.is_expanded = True
+                        r.attrs = self.attrs
+                        yield r
 
 class Control(AttributeHandler):
     
