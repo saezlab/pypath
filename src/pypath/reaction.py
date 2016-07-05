@@ -974,6 +974,9 @@ class RePath(object):
         self.silent = silent
         self.max_complex_combinations = max_complex_combinations
         self.max_reaction_combinations = max_reaction_combinations
+        self.slow_complexes = {}
+        self.huge_complexes = {}
+        self.huge_reactions = {}
         
         self.refs = {}
         self.species = {}
@@ -1156,6 +1159,13 @@ class RePath(object):
     
     def merge(self):
         
+        if self.source not in self.huge_complexes:
+            self.huge_complexes[self.source] = {}
+        if self.source not in self.slow_complexes:
+            self.slow_complexes[self.source] = {}
+        if self.source not in self.huge_reactions:
+            self.huge_reactions[self.source] = {}
+        
         if not self.silent:
             self.prg = progress.Progress(12, 'Processing %s' % self.source,
                                         1, percent = False)
@@ -1204,26 +1214,41 @@ class RePath(object):
         
         if not self.silent:
             self.prg.step(status = 'processing complex asseblies')
-        #self.merge_cassemblies()
+        self.merge_cassemblies()
         
         if not self.silent:
             self.prg.step(status = 'processing controls')
-        #self.merge_controls()
+        self.merge_controls()
         
         if not self.silent:
             self.prg.step(status = 'processing catalyses')
-        #self.merge_catalyses()
+        self.merge_catalyses()
         
         if not self.silent:
             self.prg.terminate()
             
-            #sys.stdout.write('\t:: %u proteins, %u complexes, %u reactions and %u'\
-            #    ' controls have been added.\n' % (
-            #        self.proteins_added,
-            #        self.complexes_added,
-            #        self.reactions_added + self.cassemblies_added,
-            #        self.controls_added + self.catalyses_added)
-            #)
+            sys.stdout.write('\t:: %u proteins, %u complexes'\
+                ', %u reactions and %u'\
+                ' controls have been added.\n' % (
+                   self.proteins_added,
+                   self.complexes_added,
+                   self.reactions_added + self.cassemblies_added,
+                   self.controls_added + self.catalyses_added)
+            )
+            sys.stdout.write('\t:: %u complexes have not been expanded '\
+                'because number of combinations larger than %u.\n' % \
+                    (len(self.huge_complexes[self.source]),
+                     self.max_complex_combinations))
+            sys.stdout.write('\t:: %u complexes took longer '\
+                'to process than 5 seconds.\n' % \
+                    (len(self.slow_complexes[self.source])))
+            sys.stdout.write('\t:: %u reactions have not been expanded '\
+                'because number of combinations larger than %u.\n' % \
+                    (len(self.huge_reactions[self.source]),
+                     self.max_reaction_combinations))
+            sys.stdout.write('\t:: Access them in `huge_complexes`, '\
+                '`slow_complexes` and `huge_reactions`.\n')
+            sys.stdout.flush()
         
         self.remove_defaults()
     
@@ -1596,13 +1621,9 @@ class RePath(object):
         prev_round = -1
         
         while len(this_round) - prev_round != 0:
-            sys.stdout.write('.')
-            sys.stdout.flush()
             prev_round = len(this_round)
             for cid in this_round:
                 start_time = time.time()
-                sys.stdout.write('`')
-                sys.stdout.flush()
                 stois = self.parser.complexes[cid]
                 
                 if len(self.parser.stoichiometries):
@@ -1624,12 +1645,7 @@ class RePath(object):
                     )
                 if subc_unproc:
                     next_round.append(cid)
-                    if cid.endswith('Complex378'):
-                        print('Complex378: next round')
                     continue
-                
-                if cid.endswith('Complex378'):
-                    print('Complex378: this round')
                 
                 proteins = \
                     list(
@@ -1674,17 +1690,8 @@ class RePath(object):
                     pfnum = reduce(lambda pf1l, pf2l: pf1l * pf2l, map(lambda pf: len(pf), pfamilies))
                 
                 if pfnum > self.max_complex_combinations:
-                    sys.stdout.write('\t:: Not extending complex'\
-                        ' %s with %u combinations\n' % (cid, pfnum))
-                    sys.stdout.flush()
+                    self.huge_complexes[self.source][cid] = pfnum
                     continue
-                
-                if cid.endswith('Complex378'):
-                    print('Complex378 pids: %s' % pids)
-                    print('Complex378 pids[0][0] in rcomplexes: %s' % pids[0][0] in self.rcomplexes[self.source])
-                    print('Complex378 pids[1][0] in rcomplexes: %s' % pids[1][0] in self.rcomplexes[self.source])
-                    print('Complex378 pids[0][0] in parser.complexes: %s' % pids[0][0] in self.parser.complexes)
-                    print('Complex378 pids[1][0] in parser.complexes: %s' % pids[1][0] in self.parser.complexes)
                 
                 subcplexs = \
                     list(
@@ -1713,23 +1720,17 @@ class RePath(object):
                             if scid not in no_protein:
                                 sc = self.complexes[sckey]
                                 scmembs = sc.get_stoichiometries(self.source,
-                                                                scid, with_pids = True)
+                                                    scid, with_pids = True)
                                 scmembs = list(map(lambda p:
-                                                    (p[0], p[1] * scstoi, p[2]), scmembs))
+                                    (p[0], p[1] * scstoi, p[2]), scmembs))
                                 subcmembs.append(scmembs)
                 
                 else:
                     subcmembs = [[]]
                 
-                if cid.endswith('Complex378'):
-                    print('Complex378 proteins: %s' % proteins)
-                    print('Complex378 pfamilies: %s' % pfamilies)
-                    print('Complex378 subcplexs: %s' % subcplexs)
-                
                 if len(subcmembs) * pfnum > self.max_complex_combinations:
-                    sys.stdout.write('\t:: Not extending complex'\
-                        ' %s with %u combinations\n' % (cid, pfnum))
-                    sys.stdout.flush()
+                    self.huge_complexes[self.source][cid] = \
+                        len(subcmembs) * pfnum
                     continue
                 
                 if len(proteins) or len(pfamilies) or \
@@ -1742,17 +1743,10 @@ class RePath(object):
                     
                     for pfamily in pfamilies:
                         
-                        #print(self.parser.file_from_archive)
-                        #print(len(pfamily))
-                        #print(type(pfamily))
-                        #print(pfamily)
-                        
                         for subc in subcmembs:
                             
-                            this_proteins = proteins + list(pfamily) + list(subc)
-                            
-                            if cid.endswith('Complex378'):
-                                print('Complex378 members: %s' % this_proteins)
+                            this_proteins = \
+                                proteins + list(pfamily) + list(subc)
                             
                             members = sorted(
                                 common.uniqList(
@@ -1783,8 +1777,8 @@ class RePath(object):
                 
                 elapsed = time.time() - start_time
                 
-                if elapsed > 20:
-                    print('processing %s lasted %u seconds' % (cid, elapsed))
+                if elapsed > 5:
+                    self.slow_complexes[self.source][cid] = elapsed
                 
             this_round = next_round
             next_round = []
@@ -1793,7 +1787,13 @@ class RePath(object):
     
     def merge_cvariations(self):
         """
-        
+        This processes those complexes which are in fact a set of complex variations.
+        As simple complexes also are always extended to complex variations because
+        they might have not only simple proteins but protein families as members,
+        here we only add new records to the attributes of already existing complexes.
+        After ``merge_complexes`` will be called again, to process those simple
+        complexes which have any of the complex variations processed here among their
+        subcomplexes.
         """
         self.cvariations_added = 0
         for cvid, cv in iteritems(self.parser.cvariations):
@@ -1832,7 +1832,7 @@ class RePath(object):
     def gen_cvariations(self):
         """
         Because one key from the BioPax file might represent more complexes,
-        complexvariations are created to give a way to represent sets of
+        *complexvariations* are created to give a way to represent sets of
         combinations. These are created for all complexes, even with only
         one unambiguous constitution. The keys are the constitutions of
         all the combinations listed in alphabetic order, separated by ``|``.
@@ -1892,14 +1892,6 @@ class RePath(object):
             left_attrs = {self.source: {rid: l_ids}}
             right_attrs = {self.source: {rid: r_ids}}
             
-            if rid.endswith('BiochemicalReaction182') or \
-                rid.endswith('BiochemicalReaction183'):
-                print(left)
-                print(left_attrs)
-                print(right)
-                print(right_attrs)
-                pass
-            
             nleft = \
                 reduce(
                     lambda m1, m2:
@@ -1949,12 +1941,6 @@ class RePath(object):
                     reaction.attrs[self.source][rid]['refs'] = this_refs
                     reaction.attrs[self.source][rid]['type'] = rclass[1]
                     
-                    if rid.endswith('BiochemicalReaction182') or \
-                        rid.endswith('BiochemicalReaction183'):
-                        print(reaction.right.attrs)
-                        print(reaction.__str__())
-                        pass
-                    
                     key = reaction.__str__()
                     
                     if key in self.reactions:
@@ -1963,23 +1949,13 @@ class RePath(object):
                     else:
                         self.reactions[key] = reaction
                     
-                    if rid.endswith('BiochemicalReaction183') or \
-                        rid.endswith('BiochemicalReaction182'):
-                        print(self.reactions[key].right)
-                        print(self.reactions[key].right.attrs)
-                        pass
-                    
                     setattr(self, '%s_added' % rclass[0],
                             getattr(self, '%s_added' % rclass[0]) + 1)
                     
                     self.rreactions[self.source][rid] = key
                 
                 else:
-                    
-                    sys.stdout.write('\t:: Dropping reaction %s with'\
-                        ' %u combinations at one side\n' % \
-                            (rid, max(nleft, nright)))
-                    sys.stdout.flush()
+                    self.huge_reactions[self.source][rid] = max(nleft, nright)
     
     def merge_controls(self):
         self.controls_added = 0
