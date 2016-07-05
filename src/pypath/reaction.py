@@ -29,6 +29,7 @@ import zipfile
 import struct
 import itertools
 import bs4
+import time
 from lxml import etree
 
 import pypath.mapping as mapping
@@ -777,7 +778,13 @@ class Complex(EntitySet):
                         lambda memb:
                             (memb[0], memb[1]['stoi'], memb[1]['pid']) \
                                 if with_pids else (memb[0], memb[1]['stoi']),
-                        iteritems(self.attrs[source][cid])
+                        filter(
+                            lambda memb:
+                                type(memb[1]) is dict \
+                                    and 'stoi' in memb[1] \
+                                    and 'pid' in memb[1],
+                            iteritems(self.attrs[source][cid])
+                        )
                     )
                 )
     
@@ -954,7 +961,8 @@ class RePath(object):
     def __init__(self, mapper = None, ncbi_tax_id = 9606,
                 default_id_types = {}, modifications = True,
                 seq = None, silent = False,
-                max_complex_combinations = 100):
+                max_complex_combinations = 100,
+                max_reaction_combinations = 100):
         
         self.ncbi_tax_id = ncbi_tax_id
         self.modifications = modifications
@@ -965,6 +973,7 @@ class RePath(object):
         self.mapper = mapping.Mapper(ncbi_tax_id) if mapper is None else mapper
         self.silent = silent
         self.max_complex_combinations = max_complex_combinations
+        self.max_reaction_combinations = max_reaction_combinations
         
         self.refs = {}
         self.species = {}
@@ -1148,7 +1157,7 @@ class RePath(object):
     def merge(self):
         
         if not self.silent:
-            self.prg = progress.Progress(11, 'Processing %s' % self.source,
+            self.prg = progress.Progress(12, 'Processing %s' % self.source,
                                         1, percent = False)
         self.sources.add(self.source)
         if self.source not in self.parsers:
@@ -1175,11 +1184,15 @@ class RePath(object):
             
         if not self.silent:
             self.prg.step(status = 'processing complexes')
-        self.merge_complexes()
+        remaining = self.merge_complexes()
         
         if not self.silent:
             self.prg.step(status = 'processing complex variations')
         self.merge_cvariations()
+        
+        if not self.silent:
+            self.prg.step(status = 'processing complexes 2')
+        remaining = self.merge_complexes(this_round = remaining)
         
         if not self.silent:
             self.prg.step(status = 'generating complex variations')
@@ -1191,26 +1204,26 @@ class RePath(object):
         
         if not self.silent:
             self.prg.step(status = 'processing complex asseblies')
-        self.merge_cassemblies()
+        #self.merge_cassemblies()
         
         if not self.silent:
             self.prg.step(status = 'processing controls')
-        self.merge_controls()
+        #self.merge_controls()
         
         if not self.silent:
             self.prg.step(status = 'processing catalyses')
-        self.merge_catalyses()
+        #self.merge_catalyses()
         
         if not self.silent:
             self.prg.terminate()
             
-            sys.stdout.write('\t:: %u proteins, %u complexes, %u reactions and %u'\
-                ' controls have been added.\n' % (
-                    self.proteins_added,
-                    self.complexes_added,
-                    self.reactions_added + self.cassemblies_added,
-                    self.controls_added + self.catalyses_added)
-            )
+            #sys.stdout.write('\t:: %u proteins, %u complexes, %u reactions and %u'\
+            #    ' controls have been added.\n' % (
+            #        self.proteins_added,
+            #        self.complexes_added,
+            #        self.reactions_added + self.cassemblies_added,
+            #        self.controls_added + self.catalyses_added)
+            #)
         
         self.remove_defaults()
     
@@ -1325,7 +1338,7 @@ class RePath(object):
             elif len(target_ids) == 0:
                 target_ids = None
             else:
-                target_ids = target_ids[0]
+                target_ids = list(target_ids)[0]
             return target_ids, id_attrs
         
         self.rproteins[self.source] = {}
@@ -1564,7 +1577,7 @@ class RePath(object):
         self.rpfamilies[self.source][pfid] = members
         self.pfamilies_added += 1
     
-    def merge_complexes(self):
+    def merge_complexes(self, this_round = None):
         """
         Merges complexes from the active ``BioPaxReader`` object.
         Protein families and subcomplexes are expanded, and all combinations
@@ -1577,14 +1590,19 @@ class RePath(object):
             self.rcomplexes[self.source] = {}
         
         no_protein = set([])
-        this_round = set(list(self.parser.complexes.keys()))
+        this_round = set(list(self.parser.complexes.keys())) \
+            if this_round is None else this_round
         next_round = []
         prev_round = -1
         
         while len(this_round) - prev_round != 0:
+            sys.stdout.write('.')
+            sys.stdout.flush()
             prev_round = len(this_round)
             for cid in this_round:
-                
+                start_time = time.time()
+                sys.stdout.write('`')
+                sys.stdout.flush()
                 stois = self.parser.complexes[cid]
                 
                 if len(self.parser.stoichiometries):
@@ -1597,7 +1615,8 @@ class RePath(object):
                     any(
                         map(
                             lambda pid:
-                                pid[0] in self.parser.complexes \
+                                (pid[0] in self.parser.complexes or \
+                                    pid[0] in self.parser.cvariations) \
                                     and pid[0] not in self.rcomplexes[self.source] \
                                     and pid[0] not in no_protein,
                             pids
@@ -1605,7 +1624,12 @@ class RePath(object):
                     )
                 if subc_unproc:
                     next_round.append(cid)
+                    if cid.endswith('Complex378'):
+                        print('Complex378: next round')
                     continue
+                
+                if cid.endswith('Complex378'):
+                    print('Complex378: this round')
                 
                 proteins = \
                     list(
@@ -1655,6 +1679,13 @@ class RePath(object):
                     sys.stdout.flush()
                     continue
                 
+                if cid.endswith('Complex378'):
+                    print('Complex378 pids: %s' % pids)
+                    print('Complex378 pids[0][0] in rcomplexes: %s' % pids[0][0] in self.rcomplexes[self.source])
+                    print('Complex378 pids[1][0] in rcomplexes: %s' % pids[1][0] in self.rcomplexes[self.source])
+                    print('Complex378 pids[0][0] in parser.complexes: %s' % pids[0][0] in self.parser.complexes)
+                    print('Complex378 pids[1][0] in parser.complexes: %s' % pids[1][0] in self.parser.complexes)
+                
                 subcplexs = \
                     list(
                         map(
@@ -1690,6 +1721,17 @@ class RePath(object):
                 else:
                     subcmembs = [[]]
                 
+                if cid.endswith('Complex378'):
+                    print('Complex378 proteins: %s' % proteins)
+                    print('Complex378 pfamilies: %s' % pfamilies)
+                    print('Complex378 subcplexs: %s' % subcplexs)
+                
+                if len(subcmembs) * pfnum > self.max_complex_combinations:
+                    sys.stdout.write('\t:: Not extending complex'\
+                        ' %s with %u combinations\n' % (cid, pfnum))
+                    sys.stdout.flush()
+                    continue
+                
                 if len(proteins) or len(pfamilies) or \
                     type(subcplexs) is not list:
                     
@@ -1708,6 +1750,9 @@ class RePath(object):
                         for subc in subcmembs:
                             
                             this_proteins = proteins + list(pfamily) + list(subc)
+                            
+                            if cid.endswith('Complex378'):
+                                print('Complex378 members: %s' % this_proteins)
                             
                             members = sorted(
                                 common.uniqList(
@@ -1736,8 +1781,15 @@ class RePath(object):
                 else:
                     no_protein.add(cid)
                 
+                elapsed = time.time() - start_time
+                
+                if elapsed > 20:
+                    print('processing %s lasted %u seconds' % (cid, elapsed))
+                
             this_round = next_round
             next_round = []
+        
+        return this_round
     
     def merge_cvariations(self):
         """
@@ -1762,9 +1814,11 @@ class RePath(object):
             for cid, ckeys in iteritems(cplexes):
                 for ckey in ckeys:
                     c = self.complexes[ckey]
-                    if cvid not in c.attrs[self.source]:
+                    if cvid not in c.attrs[self.source] and cid in c.attrs[self.source]:
                         c.attrs[self.source][cvid] = {'children': set([])}
-                    c.attrs[self.source][cvid]['children'].add(cid)
+                    if cid in c.attrs[self.source]:
+                        c.attrs[self.source][cvid]['children'].add(cid)
+                        c.attrs[self.source][cvid].update(c.attrs[self.source][cid])
             
             if len(cplexes):
                 self.rcomplexes[self.source][cvid] = \
@@ -1838,41 +1892,94 @@ class RePath(object):
             left_attrs = {self.source: {rid: l_ids}}
             right_attrs = {self.source: {rid: r_ids}}
             
+            if rid.endswith('BiochemicalReaction182') or \
+                rid.endswith('BiochemicalReaction183'):
+                print(left)
+                print(left_attrs)
+                print(right)
+                print(right_attrs)
+                pass
+            
+            nleft = \
+                reduce(
+                    lambda m1, m2:
+                        m1 * m2,
+                    map(
+                        lambda m:
+                            len(m.members) if hasattr(m, 'members') else 1,
+                        left
+                    ),
+                    1
+                )
+            nright = \
+                reduce(
+                    lambda m1, m2:
+                        m1 * m2,
+                    map(
+                        lambda m:
+                            len(m.members) if hasattr(m, 'members') else 1,
+                        right
+                    ),
+                    1
+                )
+            
             if len(left) or len(right):
+                if nleft <= self.max_reaction_combinations and \
+                    nright <= self.max_reaction_combinations:
                 
-                reaction = Reaction(left, right, left_attrs, right_attrs,
-                                    source = self.source, parent = self)
-                reaction.attrs[self.source][rid] = {}
-                
-                this_refs = \
-                    set(
-                        list(
-                            map(
-                                lambda r:
-                                    self.rrefs[self.source][r],
-                                filter(
+                    reaction = Reaction(left, right, left_attrs, right_attrs,
+                                        source = self.source, parent = self)
+                    reaction.attrs[self.source][rid] = {}
+                    
+                    this_refs = \
+                        set(
+                            list(
+                                map(
                                     lambda r:
-                                        r in self.parser.pubrefs,
-                                    reac['refs']
+                                        self.rrefs[self.source][r],
+                                    filter(
+                                        lambda r:
+                                            r in self.parser.pubrefs,
+                                        reac['refs']
+                                    )
                                 )
                             )
                         )
-                    )
+                    
+                    reaction.attrs[self.source][rid]['refs'] = this_refs
+                    reaction.attrs[self.source][rid]['type'] = rclass[1]
+                    
+                    if rid.endswith('BiochemicalReaction182') or \
+                        rid.endswith('BiochemicalReaction183'):
+                        print(reaction.right.attrs)
+                        print(reaction.__str__())
+                        pass
+                    
+                    key = reaction.__str__()
+                    
+                    if key in self.reactions:
+                        # print(key, type(self.reactions[key]), self.reactions[key].__str__(), type(reaction), reaction.__str__())
+                        self.reactions[key] += reaction
+                    else:
+                        self.reactions[key] = reaction
+                    
+                    if rid.endswith('BiochemicalReaction183') or \
+                        rid.endswith('BiochemicalReaction182'):
+                        print(self.reactions[key].right)
+                        print(self.reactions[key].right.attrs)
+                        pass
+                    
+                    setattr(self, '%s_added' % rclass[0],
+                            getattr(self, '%s_added' % rclass[0]) + 1)
+                    
+                    self.rreactions[self.source][rid] = key
                 
-                reaction.attrs[self.source][rid]['refs'] = this_refs
-                reaction.attrs[self.source][rid]['type'] = rclass[1]
-                
-                key = reaction.__str__()
-                
-                if key in self.reactions:
-                    # print(key, type(self.reactions[key]), self.reactions[key].__str__(), type(reaction), reaction.__str__())
-                    self.reactions[key] += reaction
                 else:
-                    self.reactions[key] = reaction
-                setattr(self, '%s_added' % rclass[0],
-                        getattr(self, '%s_added' % rclass[0]) + 1)
-                
-                self.rreactions[self.source][rid] = key
+                    
+                    sys.stdout.write('\t:: Dropping reaction %s with'\
+                        ' %u combinations at one side\n' % \
+                            (rid, max(nleft, nright)))
+                    sys.stdout.flush()
     
     def merge_controls(self):
         self.controls_added = 0
@@ -2144,36 +2251,39 @@ class ReactionSide(AttributeHandler):
             for i in [1]:
                 yield self.members, self.attrs
         else:
-            pattrs = \
-                dict(
-                    map(
-                        lambda m:
-                            (
-                                m.id,
-                                dict(
-                                    map(
-                                        lambda d1:
-                                            (
-                                                d1[0],
-                                                dict(
-                                                    map(
-                                                        lambda d2:
-                                                            (d2[0], d2[1][m.id]),
-                                                        iteritems(d1[1])
-                                                    )
-                                                )
-                                            ),
-                                        iteritems(self.attrs)
-                                    )
-                                )
-                            ),
-                        filter(
+            try:
+                pattrs = \
+                    dict(
+                        map(
                             lambda m:
-                                m.type == 'protein',
-                            self.members
+                                (
+                                    m.id,
+                                    dict(
+                                        map(
+                                            lambda d1:
+                                                (
+                                                    d1[0],
+                                                    dict(
+                                                        map(
+                                                            lambda d2:
+                                                                (d2[0], d2[1][m.id]),
+                                                            iteritems(d1[1])
+                                                        )
+                                                    )
+                                                ),
+                                            iteritems(self.attrs)
+                                        )
+                                    )
+                                ),
+                            filter(
+                                lambda m:
+                                    m.type == 'protein',
+                                self.members
+                            )
                         )
                     )
-                )
+            except:
+                print(self.attrs)
             for c in \
                 itertools.product(
                     *list(
@@ -2208,8 +2318,12 @@ class ReactionSide(AttributeHandler):
                         else:
                             for s, r in iteritems(attrs):
                                 for rid, d in iteritems(r):
-                                    attrs[s][rid][m.key()] = \
-                                        {'type': 'proteins', 'id': a[s][self.attrs[s][rid][k]['id']]}
+                                    try:
+                                        attrs[s][rid][m.key()] = \
+                                            {'type': 'proteins', 'id': a[s][self.attrs[s][rid][k]['id']]}
+                                    except:
+                                        print(self.__str__())
+                                        print(rid)
                     elif m.type == 'complex':
                         for s, r in iteritems(attrs):
                             for rid, d in iteritems(r):
@@ -2276,7 +2390,7 @@ class Reaction(AttributeHandler):
     def __iadd__(self, other):
         self = AttributeHandler.__iadd__(self, other)
         self.left += other.left
-        self.right += other.left
+        self.right += other.right
         return self
     
     def expand(self):
@@ -2289,30 +2403,40 @@ class Reaction(AttributeHandler):
             lAllProteins = self.left.proteins()
             rAllProteins = self.right.proteins()
             diffAllProteins = rAllProteins ^ lAllProteins
-            lefts = self.left.expand()
+            
+            lefts = list(self.left.expand())
             rights = list(self.right.expand())
-            for left in lefts:
-                for right in rights:
-                    r = Reaction(left[0], right[0], left[1], right[1],
-                                 source = self.sources, parent = self.parent)
-                    lProteins = r.left.proteins()
-                    rProteins = r.right.proteins()
-                    diffProteins = lProteins ^ rProteins
-                    if diffProteins <= diffAllProteins:
+            
+            diffs = set([])
+            for t in xrange(2):
+                if t == 1:
+                    minDiff = min(diffs)
+                for left in lefts:
+                    for right in rights:
+                        r = Reaction(left[0], right[0], left[1], right[1],
+                                    source = self.sources, parent = self.parent)
+                        lProteins = r.left.proteins()
+                        rProteins = r.right.proteins()
+                        diffProteins = lProteins ^ rProteins
                         
                         diff = len(diffProteins)
-                        
-                        r.left.is_expanded = True
-                        r.right.is_expanded = True
-                        r.is_expanded = True
-                        r.attrs = self.attrs
-                        expanded.append((r, diff))
+                        diffs.add(diff)
+                        if t == 1 and diff == minDiff:
+                            r.left.is_expanded = True
+                            r.right.is_expanded = True
+                            r.is_expanded = True
+                            r.attrs = self.attrs
+                            
+                            yield r
+                            
+                        else:
+                            del r
+            #
+            #minDiff = min(map(lambda e: e[1], expanded))
             
-            mindiff = min(map(lambda e: e[1], expanded))
-            
-            for r, d in expanded:
-                if d == mindiff:
-                    yield r
+            #for r, d in expanded:
+                #if d == minDiff:
+                    #yield r
 
 class Control(AttributeHandler):
     

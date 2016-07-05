@@ -183,15 +183,27 @@ numTypes = set([int, long, float])
 charTypes = set([str, unicode, bytes])
 
 def uniqList(seq):
-    # Not order preserving
-    # from http://www.peterbe.com/plog/uniqifiers-benchmark
+    """
+    Not order preserving
+    From http://www.peterbe.com/plog/uniqifiers-benchmark
+    """
+    return {}.fromkeys(seq).keys()
+
+def uniqList1(seq):
+    """
+    Not order preserving
+    From http://www.peterbe.com/plog/uniqifiers-benchmark
+    """
+    return list(set(seq))
+
+def uniqList2(seq):
+    """
+    Not order preserving
+    From http://www.peterbe.com/plog/uniqifiers-benchmark
+    """
     keys = {}
     for e in seq:
-        try:
-            keys[e] = 1
-        except:
-            print('ERROR in pypath.common.uniqList(): unhashable type:')
-            print(e)
+        keys[e] = 1
     return list(keys.keys())
 
 def flatList(lst):
@@ -200,9 +212,11 @@ def flatList(lst):
 def delEmpty(lst):
     return [i for i in lst if len(i) > 0]
 
-def uniqOrdList(seq, idfun = None): 
-    # Order preserving
-    # from http://www.peterbe.com/plog/uniqifiers-benchmark
+def uniqOrdList(seq, idfun = None):
+    """
+    Order preserving
+    From http://www.peterbe.com/plog/uniqifiers-benchmark
+    """
     if idfun is None:
         def idfun(x): return x
     seen = {}
@@ -210,19 +224,19 @@ def uniqOrdList(seq, idfun = None):
     for item in seq:
         marker = idfun(item)
         if marker in seen: continue
-        try:
-            seen[marker] = 1
-        except:
-            print('ERROR in pypath.common.uniqOrdList(): unhashable type:')
-            print(marker)
+        seen[marker] = 1
         result.append(item)
     return result
 
 def addToList(lst, toadd):
-    if isinstance(toadd, list):
-        lst += toadd
-    else:
+    if type(lst) is not list:
+        lst = list(lst)
+    if type(toadd) in simpleTypes:
         lst.append(toadd)
+    else:
+        if type(toadd) is not list:
+            toadd = list(toadd)
+        lst.extend(toadd)
     if None in lst:
         lst.remove(None)
     return uniqList(lst)
@@ -297,14 +311,23 @@ def rotate(point, angle, center = (0.0, 0.0)):
     return temp_point
 
 def cleanDict(dct):
-    for k, v in dct.items():
+    """
+    Removes ``None`` values from dict and casts everything else to ``str``.
+    """
+    toDel = []
+    for k, v in iteritems(dct):
         if v is None:
-            del dct[k]
+            toDel.append(k)
         else:
             dct[k] = str(v)
+    for k in toDel:
+        del dct[k]
     return dct
 
 def md5(value):
+    """
+    Returns the ms5sum of ``value`` as string.
+    """
     try:
         string = str(value).encode('ascii')
     except:
@@ -321,14 +344,15 @@ def merge_dicts(d1, d2):
     Merges dicts recursively
     """
     for k2, v2 in iteritems(d2):
+        t = type(v2)
         if k2 not in d1:
             d1[k2] = v2
-        elif type(v2) is dict:
+        elif t is dict:
             d1[k2] = merge_dicts(d1[k2], v2)
-        elif type(v2) is list:
+        elif t is list:
             d1[k2].extend(v2)
-        elif type(v2) is set:
-            d1[k2] = d1[k2].union(v2)
+        elif t is set:
+            d1[k2].update(v2)
     return d1
 
 def dict_set_path(d, path):

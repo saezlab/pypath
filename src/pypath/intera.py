@@ -153,7 +153,7 @@ class Ptm(object):
         self.residue = residue
         self.isoform = isoform if type(isoform) is int \
             else int(self.non_digit.sub('', isoform))
-        self.sources = []
+        self.sources = set([])
         self.add_source(source)
         self.isoforms = set([])
         self.add_isoform(isoform)
@@ -211,7 +211,14 @@ class Ptm(object):
             return False
     
     def add_source(self, source):
-        self.sources = common.addToList(self.sources, source)
+        if type(source) in common.charTypes:
+            self._add_source(source)
+        else:
+            for s in source:
+                self._add_source(s)
+    
+    def _add_source(self, source):
+        self.sources.add(source)
     
     def serialize(self):
         return '%s-%u:%s:%s:%s:%s:%u' % (self.protein, self.isoform, 
@@ -320,6 +327,13 @@ class Motif(object):
         return False
     
     def add_source(self, source):
+        if type(source) in common.charTypes:
+            self._add_source(source)
+        else:
+            for s in source:
+                self._add_source(s)
+    
+    def _add_source(self, source):
         self.sources.add(source)
     
     def serialize(self):
@@ -481,7 +495,7 @@ class DomainDomain(object):
     def __init__(self, domain_a, domain_b, pdbs = None, 
         sources = None, refs = None, contact_residues = None):
         self.domains = [domain_a, domain_b]
-        self.sources = []
+        self.sources = set([])
         self.refs = []
         self.pdbs = []
         self.add_sources(sources)
@@ -507,8 +521,15 @@ class DomainDomain(object):
     def __contains__(self, other):
         return other in self.domains[0] or other in self.domains[1]
     
-    def add_sources(self, sources):
-        self.sources = common.addToList(self.sources, sources)
+    def add_sources(self, source):
+        if type(source) in common.charTypes:
+            self._add_source(source)
+        else:
+            for s in source:
+                self._add_source(s)
+    
+    def _add_source(self, source):
+        self.sources.add(source)
     
     def add_refs(self, refs):
         self.refs = common.addToList(self.refs, refs)
@@ -536,7 +557,7 @@ class DomainMotif(object):
     def __init__(self, domain, ptm, sources = None, refs = None, pdbs = None):
         self.ptm = ptm
         self.domain = domain
-        self.sources = []
+        self.sources = set([])
         self.refs = []
         self.pdbs = []
         self.add_sources(sources)
@@ -572,8 +593,15 @@ class DomainMotif(object):
     def get_proteins(self):
         return [self.domain.protein, self.ptm.protein]
     
-    def add_sources(self, sources):
-        self.sources = common.addToList(self.sources, sources)
+    def add_sources(self, source):
+        if type(source) in common.charTypes:
+            self._add_source(source)
+        else:
+            for s in source:
+                self._add_source(s)
+    
+    def _add_source(self, source):
+        self.sources.add(source)
     
     def add_refs(self, refs):
         self.refs = common.addToList(self.refs, refs)
@@ -607,7 +635,7 @@ class Regulation(object):
         self.source = source
         self.target = target
         self.effect = effect
-        self.sources = []
+        self.sources = set([])
         self.refs = []
         self.add_sources(sources)
         self.add_refs(refs)
@@ -628,8 +656,15 @@ class Regulation(object):
     def __ne__(self, other):
         return not self.__eq__(other)
     
-    def add_sources(self, sources):
-        self.sources = common.addToList(self.sources, sources)
+    def add_sources(self, source):
+        if type(source) in common.charTypes:
+            self._add_source(source)
+        else:
+            for s in source:
+                self._add_source(s)
+    
+    def _add_source(self, source):
+        self.sources.add(source)
     
     def add_refs(self, refs):
         self.refs = common.addToList(self.refs, refs)
