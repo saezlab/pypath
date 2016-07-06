@@ -187,7 +187,7 @@ def uniqList(seq):
     Not order preserving
     From http://www.peterbe.com/plog/uniqifiers-benchmark
     """
-    return {}.fromkeys(seq).keys()
+    return list({}.fromkeys(seq).keys())
 
 def uniqList1(seq):
     """

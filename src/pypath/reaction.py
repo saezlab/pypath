@@ -1588,19 +1588,19 @@ class RePath(object):
                 p.attrs[self.source]['pids'] = {}
                 p.attrs[self.source]['pids'][pfid] = {}
                 self.proteins[m] = p
-        
-        pf = ProteinFamily(members, source = self.source, parent = self)
-        members = tuple(members)
-        pf.attrs[self.source][pfid] = {}
-        for protein, pid in proteins:
-            pf.attrs[self.source][pfid][protein] = {}
-            pf.attrs[self.source][pfid][protein]['pid'] = pid
-        if members not in self.pfamilies:
-            self.pfamilies[members] = pf
-        else:
-            self.pfamilies[members] += pf
-        self.rpfamilies[self.source][pfid] = members
-        self.pfamilies_added += 1
+        if len(members):
+            pf = ProteinFamily(members, source = self.source, parent = self)
+            members = tuple(members)
+            pf.attrs[self.source][pfid] = {}
+            for protein, pid in proteins:
+                pf.attrs[self.source][pfid][protein] = {}
+                pf.attrs[self.source][pfid][protein]['pid'] = pid
+            if members not in self.pfamilies:
+                self.pfamilies[members] = pf
+            else:
+                self.pfamilies[members] += pf
+            self.rpfamilies[self.source][pfid] = members
+            self.pfamilies_added += 1
     
     def merge_complexes(self, this_round = None):
         """
@@ -1881,8 +1881,9 @@ class RePath(object):
                 for cls in ('proteins', 'pfamilies', 'cvariations'):
                     r = getattr(self, 'r%s'%cls)[self.source]
                     if _id in r:
-                        members.append(getattr(self, cls)[r[_id]])
-                        memb_ids[r[_id]] = {'id': _id, 'type': cls}
+                        e = getattr(self, cls)[r[_id]]
+                        members.append(e)
+                        memb_ids[e.key()] = {'id': _id, 'type': cls}
             return members, memb_ids
         
         for rid, reac in iteritems(getattr(self.parser, rclass[0])):
@@ -2286,25 +2287,34 @@ class ReactionSide(AttributeHandler):
                 for ((m, a), k) in c:
                     members.append(m)
                     if m.type == 'protein':
+                        # if it was a protein, we just copy
                         if m.id in pattrs:
                             for s, d1 in iteritems(pattrs[m.id]):
                                 for rid, d2 in iteritems(d1):
                                     attrs[s][rid][m.id] = \
                                         {'type': 'proteins', 'id': d2}
+                        # if it is from a protein family
                         else:
+                            # for each resource
                             for s, r in iteritems(attrs):
-                                for rid, d in iteritems(r):
-                                    try:
-                                        attrs[s][rid][m.key()] = \
+                                # for each original reaction id
+                                for rid, d in iteritems(self.attrs[s]):
+                                    # the key of the new entity (here: str, uniprot id)
+                                    if k in self.attrs[s][rid]:
+                                        attrs[s][rid][m.key()] = (
+                                            # the type is obvious, the id is from the `a` dict supplied
+                                            # by the ProteinFamily object, and we look up the id belonging
+                                            # to the key of the original entity
                                             {'type': 'proteins', 'id': a[s][self.attrs[s][rid][k]['id']]}
-                                    except:
-                                        print(self.__str__())
-                                        print(rid)
+                                        )
+                    # if it is a complex from a complex variations
                     elif m.type == 'complex':
                         for s, r in iteritems(attrs):
                             for rid, d in iteritems(r):
-                                attrs[s][rid][m.key()] = \
-                                    {'type': 'complexes', 'id': a[s]}
+                                if k in self.attrs[s][rid]:
+                                    cid = self.attrs[s][rid][k]['id']
+                                    attrs[s][rid][m.key()] = \
+                                        {'type': 'complexes', 'id': cid}
                 yield members, attrs
     
     def proteins(self):
@@ -2386,7 +2396,10 @@ class Reaction(AttributeHandler):
             diffs = set([])
             for t in xrange(2):
                 if t == 1:
-                    minDiff = min(diffs)
+                    try:
+                        minDiff = min(diffs)
+                    except ValueError:
+                        print('Empty sequence error: %s' % self.__str__())
                 for left in lefts:
                     for right in rights:
                         r = Reaction(left[0], right[0], left[1], right[1],
