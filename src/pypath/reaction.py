@@ -826,7 +826,7 @@ class ProteinFamily(Intersecting, EntitySet):
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
     
-    def itermembers(self):
+    def _itermembers1(self):
         """
         Iterates protein family, yields proteins.
         """
@@ -2438,6 +2438,7 @@ class Control(AttributeHandler):
         self.sources = set([])
         self.add_source(source)
         self.parent = parent
+        self.is_expanded = False
     
     def reload(self):
         modname = self.__class__.__module__
@@ -2462,3 +2463,15 @@ class Control(AttributeHandler):
     def __eq__(self, other):
         return self.controller == other.controller \
             and self.controlled == other.controlled
+    
+    def expand(self):
+        if self.is_expanded:
+            for i in [self]:
+                yield self
+        else:
+            for ed in self.controlled.expand():
+                for er, erattrs in self.controller.itermembers():
+                    c = Control(er, ed, source = self.sources,
+                                parent = self.parent)
+                    c.attrs = self.attrs
+                    yield c
