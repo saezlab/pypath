@@ -268,7 +268,9 @@ urls = {
     'kegg_pws': {
         'label': 'KEGG Pathways',
         'list_url': 'http://www.genome.jp/kegg/pathway.html',
-        'kgml_url': 'http://www.kegg.jp/kegg-bin/download?entry=%s&format=kgml'
+        'kgml_url': 'http://www.kegg.jp/kegg-bin/download?entry=%s&format=kgml',
+        'biopax_l3': 'http://www.pathwaycommons.org/archives/PC2/'\
+            'v8/PathwayCommons.8.kegg.BIOPAX.owl.gz'
     },
     'depod': {
         'label': 'Dephosphorylation substrates and sites',

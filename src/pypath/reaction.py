@@ -1032,6 +1032,15 @@ class RePath(object):
 
         self.add_dataset(parser, id_types = {'hgnc': 'genesymbol'})
     
+    def load_kegg(self):
+        biopax = curl.Curl(urls.urls['kegg_pws']['biopax_l3'],
+                           large = True, silent = self.silent)
+        
+        parser = BioPaxReader(biopax.outfile, 'KEGG')
+        parser.process()
+        
+        self.add_dataset(parser, {'uniprot knowledgebase': 'uniprot'})
+    
     def load_pid(self):
         biopax = curl.Curl(urls.urls['nci-pid']['biopax_l3'],
                            large = True, silent = self.silent)
@@ -1263,7 +1272,8 @@ class RePath(object):
             self.pref_refs = lambda l: filter(lambda e: e[6:12] == 'PubMed', l)
         else:
             self.pref_refs = lambda l: []
-        if self.source in ['ACSN', 'WikiPathways', 'NetPath', 'PANTHER', 'NCI-PID']:
+        if self.source in ['ACSN', 'WikiPathways', 'NetPath',
+                           'PANTHER', 'NCI-PID', 'KEGG']:
             self.ambiguous_ids_permitted = True
         else:
             self.ambiguous_ids_permitted = False
@@ -1478,7 +1488,7 @@ class RePath(object):
                                                             source = self.source)
                                             self.frags[frag] = mot
                                         self.proteins[protein].update_attr(
-                                            [self.source, 'pids', pid, 'frags', frag]
+                                            [self.source, 'pids', pid, 'frags', {frag}]
                                         )
                                         self.fragfeatures_added += 1
                 
@@ -1508,10 +1518,13 @@ class RePath(object):
                                                         isoform = isof,
                                                         typ = typ)
                                     self.mods[mod] = ptm
-                                self.proteins[protein].update_attr(
-                                    [self.source, 'pids', pid, 'mods', mod]
-                                )
-                                self.fragfeatures_added += 1
+                                try:
+                                    self.proteins[protein].update_attr(
+                                        [self.source, 'pids', pid, 'mods', set([mod])]
+                                    )
+                                except:
+                                    print(protein, pid)
+                                self.modfeatures_added += 1
     
     def merge_pfamilies(self):
         
@@ -2151,7 +2164,7 @@ class RePath(object):
             i += 1
         return i
     
-    def component_of(self):
+    def in_same_component(self):
         """
         For all complexes connects all members of the complex with each other.
         """
@@ -2164,7 +2177,7 @@ class RePath(object):
                         aggregate[key] = set([])
                     aggregate[key].update(c.sources)
         for (p1, p2), s in iteritems(aggregate):
-            yield [p1, p2, 'COMPONENT_OF', False, s]
+            yield [p1, p2, 'IN_SAME_COMPONENT', False, s]
     
     def co_control(self):
         aggregate = {}
@@ -2183,30 +2196,26 @@ class RePath(object):
     def interacts_with(self):
         aggregate = {}
         for rs in self.reactions.values():
-            try:
-                isrc = \
-                    set(list(
-                        map(
+            isrc = \
+                set(list(
+                    map(
+                        lambda s:
+                            s[0],
+                        filter(
                             lambda s:
-                                s[0],
-                            filter(
-                                lambda s:
-                                    len(
-                                        list(
-                                            map(
-                                                lambda rr:
-                                                    rr['type'] == 'interaction',
-                                                s[1].values()
-                                            )
+                                len(
+                                    list(
+                                        map(
+                                            lambda rr:
+                                                rr['type'] == 'interaction',
+                                            s[1].values()
                                         )
-                                    ),
-                                iteritems(rs.attrs)
-                            )
+                                    )
+                                ),
+                            iteritems(rs.attrs)
                         )
-                    ))
-            except KeyError:
-                print(rs.sources)
-                print(rs.attrs)
+                    )
+                ))
             if len(isrc):
                 for r in rs.expand():
                     for i, p1 in enumerate(r.left.proteins()):
@@ -2217,6 +2226,50 @@ class RePath(object):
                             aggregate[key].update(isrc)
         for (p1, p2), s in iteritems(aggregate):
             yield [p1, p2, 'INTERACTS_WITH', False, s]
+    
+    def state_change(self):
+        aggregate = {}
+        for cos in self.controls.values():
+            for co in cos.expand():
+                pass
+    
+    def reaction_mod_diff(self, reaction, react_elem):
+        rea = self.reactions[self.rreactions[react_elem]]
+        for s, la in iteritems(reaction.left.attrs):
+            for rid, lr in iteritems(la):
+            ra = reaction.right.attrs[s]
+    
+    def reaction_side_get_mods(self, source, rside, by_rid = False):
+        mods = {}
+        for rid, rd in iteritems(rside.attrs[source]):
+            for ent_key, data in iteritems(rd):
+                if data['type'] == 'proteins':
+                    next_mods = protein_get_mods(source, data['id'])
+                elif data['type'] == 'complexes':
+                    next_mods = complex_get_mods(source, data['id'])
+                if by_rid:
+                    if rid not in mods:
+                        mods[rid] = {}
+                    common.merge_dicts(mods[rid], {rid: next_mods})
+                else:
+                    common.merge_dicts(mods, next_mods)
+        return mods
+    
+    def protein_get_mods(self, source, protein_elem):
+        protein = self.proteins[self.rproteins[source][protein_elem]]
+        elem = self.proteins[protein].attrs[source]['pids'][protein_elem]
+            if 'mods' in elem:
+                return {protein: elem['mods']}
+            else:
+                return {protein: set([])}
+    
+    def complex_get_mods(self, source, complex_elem):
+        mods = {}
+        cplex = self.complexes[self.rcomplexes[source][complex_elem]]
+        elem = self.complexes[cplex][source][complex_elem]
+        for protein, pdata in iteritems(elem):
+            mods[protein] = self.protein_get_mods(source, elem[protein]['pid'])
+        return mods
 
 # ## ## ## ## ## ##
 

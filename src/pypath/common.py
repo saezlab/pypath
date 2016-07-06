@@ -165,6 +165,20 @@ mod_keywords = {
         ('glycosylation', ['glycosyl']),
         ('geranylation', ['geranyl']),
         ('hydroxylation', ['hydroxy'])
+    ],
+    'KEGG': [
+        ('phosphorylation', ['hospho']),
+        ('methylation', ['methyl']),
+        ('ubiquitination', ['ubiquitin']),
+        ('acetylation', ['acetyl']),
+        ('hydroxylation', ['hydroxy']),
+        ('carboxyethylation', ['carboxyethyl']),
+        ('ribosylation', ['ribosyl']),
+        ('nitrosylation', ['nitrosyl']),
+        ('sulfoylation', ['ulfo']),
+        ('biotinylation', ['biotinyl']),
+        ('malonylation', ['malonyl']),
+        ('glutarylation', ['lutaryl'])
     ]
 }
 
@@ -384,7 +398,7 @@ def dict_set_path(d, path):
             subd[key].append(val)
     elif type(subd[key]) is set:
         if type(val) is set:
-            subd[key] = subd.union(val)
+            subd[key].update(val)
         else:
             subd[key].add(val)
     return d
