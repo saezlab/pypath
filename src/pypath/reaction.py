@@ -183,6 +183,7 @@ class BioPaxReader(object):
         self.modfeas = {}
         self.seqmodvocs = {}
         self.pathways = {}
+        self.interactions_not2 = {}
         
         self.methods = {
             self.bpprot: 'protein',
@@ -230,6 +231,10 @@ class BioPaxReader(object):
         self.init_etree()
         self.iterate()
         self.close_biopax()
+        if len(self.interactions_not2):
+            sys.stdout.write('\n\t:: %u interactions have not exactly 2 '\
+                'participants\n' % len(self.interactions_not2))
+            sys.stdout.flush()
     
     def open_biopax(self):
         """
@@ -431,15 +436,7 @@ class BioPaxReader(object):
                 'type': self.next_elem.tag.split('}')[-1]
             }
         else:
-            sys.stdout.write(
-                '\t:: Interaction has %s than '\
-                '2 participants: %s, parser: %s\n' % \
-                (
-                    'less' if len(part) < 2 else 'more',
-                    self.next_id,
-                    self.parser_id
-                )
-            )
+            self.interactions_not2[self.next_id] = len(part)
     
     def reaction(self):
         self.reactions[self.next_id] = {
@@ -1584,7 +1581,7 @@ class RePath(object):
         # exists for each member of the family.
         for m in members:
             if m not in self.proteins:
-                p = Protein(m, source = self.source)
+                p = Protein(m, sources = self.source)
                 p.attrs[self.source]['pids'] = {}
                 p.attrs[self.source]['pids'][pfid] = {}
                 self.proteins[m] = p
@@ -2141,6 +2138,87 @@ class RePath(object):
         reflist.load()
         idx = (reflist.nameType,reflist.typ,reflist.tax)
         self.reflists[idx] = reflist
+    
+    # interaction iterators from here
+    
+    def count(fun):
+        """
+        Decorator to iterate over a generator and return only the count of
+        the generated list.
+        """
+        i = 0
+        for _ in fun():
+            i += 1
+        return i
+    
+    def component_of(self):
+        """
+        For all complexes connects all members of the complex with each other.
+        """
+        aggregate = {}
+        for c in self.complexes.values():
+            for i, p1 in enumerate(c):
+                for p2 in list(c)[i + 1:]:
+                    key = (p1, p2)
+                    if key not in aggregate:
+                        aggregate[key] = set([])
+                    aggregate[key].update(c.sources)
+        for (p1, p2), s in iteritems(aggregate):
+            yield [p1, p2, 'COMPONENT_OF', False, s]
+    
+    def co_control(self):
+        aggregate = {}
+        for co in self.controls.values():
+            if co.controller.type != 'pfamily':
+                proteins = sorted(list(co.controller.proteins()))
+                for i, p1 in enumerate(proteins):
+                    for p2 in proteins[i + 1:]:
+                        key = (p1, p2)
+                        if key not in aggregate:
+                            aggregate[key] = set([])
+                        aggregate[key].update(co.sources)
+        for (p1, p2), s in iteritems(aggregate):
+            yield [p1, p2, 'CO_CONTROL', False, s]
+    
+    def interacts_with(self):
+        aggregate = {}
+        for rs in self.reactions.values():
+            try:
+                isrc = \
+                    set(list(
+                        map(
+                            lambda s:
+                                s[0],
+                            filter(
+                                lambda s:
+                                    len(
+                                        list(
+                                            map(
+                                                lambda rr:
+                                                    rr['type'] == 'interaction',
+                                                s[1].values()
+                                            )
+                                        )
+                                    ),
+                                iteritems(rs.attrs)
+                            )
+                        )
+                    ))
+            except KeyError:
+                print(rs.sources)
+                print(rs.attrs)
+            if len(isrc):
+                for r in rs.expand():
+                    for i, p1 in enumerate(r.left.proteins()):
+                        for p2 in list(r.right.proteins())[i + 1:]:
+                            key = tuple(sorted([p1, p2]))
+                            if key not in aggregate:
+                                aggregate[key] = set([])
+                            aggregate[key].update(isrc)
+        for (p1, p2), s in iteritems(aggregate):
+            yield [p1, p2, 'INTERACTS_WITH', False, s]
+
+# ## ## ## ## ## ##
 
 class ReactionSide(AttributeHandler):
     
