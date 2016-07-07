@@ -5492,3 +5492,26 @@ def get_string_effects(ncbi_tax_id = 9606,
                     l[0][5:], l[1][5:], eff
                 ])
     return effects
+
+def get_reactions(types = None, sources = None):
+    if type(types) is list:
+        types = set(types)
+    if type(sources) is list:
+        sources = set(sources)
+    cachefile = os.path.join('cache', 'reaction_interactions_by_source.pickle')
+    if os.path.exists(cachefile):
+        interactions = pickle.load(open(cachefile, 'rb'))
+    else:
+        import pypath.reaction as reaction
+        rea = reaction.RePath()
+        rea.load_all()
+        rea.expand_by_source()
+        interactions = rea.interactions_by_source
+    for i in interactions:
+        if (sources is None or i[4] in sources) and \
+            (types is None or len(i[2] & types)):
+            yield [i[0], i[1],
+                ';'.join(list(i[2] if types is None else i[2] & types)),
+                str(int(i[3])),
+                i[4],
+                ';'.join(list(i[5]))]

@@ -26,6 +26,7 @@ import textwrap
 import hashlib
 
 __all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes', 'uniqList', 'addToList',
+           'addToSet',
            'gen_session_id', 'sorensen_index', 'simpson_index', 'simpson_index_counts',
            'jaccard_index', 'console', 'wcl', 'flatList',
            'charTypes', 'delEmpty', '__version__', 'get_args',
@@ -244,7 +245,12 @@ def uniqOrdList(seq, idfun = None):
 
 def addToList(lst, toadd):
     if type(lst) is not list:
-        lst = list(lst)
+        if type(lst) in simpleTypes:
+            lst = [lst]
+        else:
+            lst = list(lst)
+    if toadd is None:
+        return lst
     if type(toadd) in simpleTypes:
         lst.append(toadd)
     else:
@@ -254,6 +260,15 @@ def addToList(lst, toadd):
     if None in lst:
         lst.remove(None)
     return uniqList(lst)
+
+def addToSet(st, toadd):
+    if type(toadd) in simpleTypes:
+        st.add(toadd)
+    if type(toadd) is list:
+        toadd = set(toadd)
+    if type(toadd) is set:
+        st.update(toadd)
+    return st
 
 def something(anything):
     return not (anything is None or \
@@ -402,3 +417,24 @@ def dict_set_path(d, path):
         else:
             subd[key].add(val)
     return d
+
+def dict_diff(d1, d2):
+    ldiff = {}
+    rdiff = {}
+    keys = set(d1.keys()) & set(d2.keys())
+    for k in keys:
+        if type(d1[k]) is dict and type(d2[k]) is dict:
+            ldiff[k], rdiff[k] = dict_diff(d1[k], d2[k])
+        elif type(d1[k]) is set and type(d2[k]) is set:
+            ldiff[k], rdiff[k] = (d1[k] - d2[k], d2[k] - d1[k])
+    return ldiff, rdiff
+
+def dict_sym_diff(d1, d2):
+    diff = {}
+    keys = set(d1.keys()) & set(d2.keys())
+    for k in keys:
+        if type(d1[k]) is dict and type(d2[k]) is dict:
+            diff[k] = dict_sym_diff(d1[k], d2[k])
+        elif type(d1[k]) is set and type(d2[k]) is set:
+            diff[k] = d1[k] ^ d2[k]
+    return diff

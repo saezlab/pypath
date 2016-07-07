@@ -91,6 +91,7 @@ except:
 from contextlib import closing
 
 import pypath.progress as progress
+import pypath.common as common
 
 if 'long' not in __builtins__:
     long = int
@@ -191,9 +192,9 @@ class FileOpener(object):
         if not hasattr(self, 'large'):
             self.large = large
         self.fname = file_param \
-            if type(file_param) is str else file_param.name
+            if type(file_param) in common.charTypes else file_param.name
         self.fileobj = None \
-            if type(file_param) is str else file_param
+            if type(file_param) in common.charTypes else file_param
         if not hasattr(self, 'type'):
             self.get_type()
         if _open:

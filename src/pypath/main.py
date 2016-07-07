@@ -171,7 +171,9 @@ class Direction(object):
         '''
         if self.check_param(direction):
             self.dirs[direction] = True
-            source = set(source) if type(source) is list else set([source])
+            source = source if type(source) is set \
+                else set(source) if type(source) is list \
+                else set([source])
             self.sources[direction] = self.sources[direction] | source
     
     def get_dir(self, direction, sources = False):
@@ -518,7 +520,7 @@ class PyPath(object):
             g.vs['originalNames'] = [[] for _ in xrange(self.graph.vcount())]
             g.vs['ncbi_tax_id'] = []
             g.vs['exp'] = [{}]
-            g.es['sources'] = [[] for _ in xrange(self.graph.ecount())]
+            g.es['sources'] = [set([]) for _ in xrange(self.graph.ecount())]
             g.es['type'] = [[] for _ in xrange(self.graph.ecount())]
             g.es['references'] = [[] for _ in xrange(self.graph.ecount())]
             g.es['refs_by_source'] = [{} for _ in xrange(self.graph.ecount())]
@@ -862,6 +864,10 @@ class PyPath(object):
                 cache_files, int_cache, edges_cache)
         if not len(edgeListMapped):
             if infile is None:
+                if settings.__class__.__name__ != "ReadSettings":
+                    self.ownlog.msg(2,("""No proper input file definition!\n\'settings\'
+                        should be a \'ReadSettings\' instance\n"""), 'ERROR')
+                    return None
                 if settings.huge:
                     sys.stdout.write('\n\tProcessing %s requires huge memory.\n'\
                         '\tPlease hit `y` if you have at least 2G free memory,\n'\
@@ -883,17 +889,14 @@ class PyPath(object):
                 inputFunc = self.get_function(settings.inFile)
                 if inputFunc is None and hasattr(dataio, settings.inFile):
                     inputFunc = getattr(dataio, settings.inFile)
-                if settings.__class__.__name__ != "ReadSettings":
-                    self.ownlog.msg(2,("""No proper input file definition!\n\'settings\'
-                        should be a \'ReadSettings\' instance\n"""), 'ERROR')
-                    return None
                 # reading from remote or local file, or executing import function:
                 if settings.inFile.startswith('http') or \
                     settings.inFile.startswith('ftp'):
                     curl_use_cache = not redownload
-                    infile = dataio.curl(settings.inFile, silent = False,
+                    c = curl.Curl(settings.inFile, silent = False, large = True,
                         cache = curl_use_cache)
-                    infile = [x for x in infile.replace('\r', '').split('\n') \
+                    infile = c.result
+                    infile = [x for x in infile.read().replace('\r', '').split('\n') \
                         if len(x) > 0]
                     self.ownlog.msg(2, "Retrieving data from%s ..." % \
                         settings.inFile)
@@ -1026,6 +1029,8 @@ class PyPath(object):
                     inh = False
                     if type(sign) is tuple:
                         stim, inh = self.process_sign(line[sign[0]], sign)
+                    resource = line[settings.resource] \
+                        if type(settings.resource) is int else settings.resource
                     newEdge = {
                         "nameA": line[settings.nameColA].strip(),
                         "nameB": line[settings.nameColB].strip(),
@@ -1033,7 +1038,7 @@ class PyPath(object):
                         "nameTypeB": settings.nameTypeB,
                         "typeA": settings.typeA,
                         "typeB": settings.typeB,
-                        "source": settings.name,
+                        "source": resource,
                         "isDirected": thisEdgeDir,
                         "references": refs,
                         "stim": stim,
@@ -1257,6 +1262,10 @@ class PyPath(object):
                 return list(set(lst[0] + lst[1]))
             except:
                 return lst[0] + lst[1]
+        if type(lst[0]) is set:
+            return common.addToSet(lst[0], lst[1])
+        if type(lst[1]) is set:
+            return common.addToSet(lst[1], lst[0])
         if type(lst[0]) is dict and type(lst[1]) is dict:
             return dict(lst[0].items() + lst[1].items())
         if (type(lst[0]) is str or type(lst[0]) is unicode) and \
@@ -1534,32 +1543,32 @@ class PyPath(object):
             g.add_edge(edge[0], edge[1])
             edge = self.edge_exists(nameA, nameB)
         # assigning source:
-        self.add_list_eattr(edge, 'sources', source)
+        self.add_set_eattr(edge, 'sources', source)
         # adding references:
         # if len(refs) > 0:
         refs = [_refs.Reference(pmid) for pmid in refs]
         self.add_list_eattr(edge, 'references', refs)
         # updating references-by-source dict:
-        self.add_grouped_eattr(edge, 'refs_by_source', source, refs)
+        self.add_grouped_set_eattr(edge, 'refs_by_source', source, refs)
         # updating refrences-by-type dict:
-        self.add_grouped_eattr(edge, 'refs_by_type', typ, refs)
+        self.add_grouped_set_eattr(edge, 'refs_by_type', typ, refs)
         # setting directions:
         if not g.es[edge]['dirs']:
             g.es[edge]['dirs'] = Direction(nameA,nameB)
         if isDir:
             g.es[edge]['dirs'].set_dir((nameA,nameB),source)
             # updating references-by-direction dict:
-            self.add_grouped_eattr(edge, 'refs_by_dir', (nameA, nameB), refs)
+            self.add_grouped_set_eattr(edge, 'refs_by_dir', (nameA, nameB), refs)
         else:
             g.es[edge]['dirs'].set_dir('undirected',source)
-            self.add_grouped_eattr(edge, 'refs_by_dir', 'undirected', refs)
+            self.add_grouped_set_eattr(edge, 'refs_by_dir', 'undirected', refs)
         # setting signs:
         if stim:
             g.es[edge]['dirs'].set_sign((nameA,nameB),'positive',source)
         if inh:
             g.es[edge]['dirs'].set_sign((nameA,nameB),'negative',source)
         # updating sources-by-type dict:
-        self.add_grouped_eattr(edge, 'sources_by_type', typ, source)
+        self.add_grouped_set_eattr(edge, 'sources_by_type', typ, source)
         # adding type:
         self.add_list_eattr(edge, 'type', typ)
         # adding extra attributes:
@@ -1578,11 +1587,22 @@ class PyPath(object):
             e[attr] = []
         elif type(e[attr]) is not list:
             e[attr] = [e[attr]]
-        # print(type(e[attr]))
-        # print(type(value))
         e[attr] = common.uniqList(e[attr] + value)
     
-    def add_grouped_eattr(self, edge, attr, group, value):
+    def add_set_eattr(self, edge, attr, value):
+        value = value if type(value) is set \
+            else set(value) if type(value) is list \
+            else set([value])
+        e = self.graph.es[edge]
+        if attr not in self.graph.es.attributes():
+            self.graph.es[attr] = [set([]) for _ in xrange(0, self.graph.ecount())]
+        if e[attr] is None:
+            e[attr] = set([])
+        elif type(e[attr]) is not set:
+            e[attr] = set(e[attr]) if type(e[attr]) is list else set([e[attr]])
+        e[attr].update(value)
+    
+    def add_grouped_eattr(self, edge, attr, group, value, ):
         value = value if type(value) is list else [value]
         e = self.graph.es[edge]
         if attr not in self.graph.es.attributes():
@@ -1594,6 +1614,22 @@ class PyPath(object):
         elif type(e[attr][group]) is not list:
             e[attr][group] = [e[attr][group]]
         e[attr][group] = common.uniqList(e[attr][group] + value)
+    
+    def add_grouped_set_eattr(self, edge, attr, group, value):
+        value = value if type(value) is set \
+            else set(value) if type(value) is list \
+            else set([value])
+        e = self.graph.es[edge]
+        if attr not in self.graph.es.attributes():
+            self.graph.es[attr] = [{} for _ in xrange(0, self.graph.ecount())]
+        if type(e[attr]) is not dict:
+            e[attr] = {}
+        if group not in e[attr] or type(e[attr][group]) is None:
+            e[attr][group] = set([])
+        elif type(e[attr][group]) is not set:
+            e[attr][group] = set(e[attr][group]) \
+                if type(e[attr][group]) is list else set([e[attr][group]])
+        e[attr][group].update(value)
     
     def get_directed(self, graph = False, conv_edges = False, mutual = False, ret = False):
         """
@@ -2376,12 +2412,10 @@ class PyPath(object):
     def update_vertex_sources(self):
         g = self.graph
         for attr in ['sources', 'references']:
-            g.vs[attr] = [[] for _ in g.vs]
+            g.vs[attr] = [set([]) for _ in g.vs]
             for e in g.es:
-                g.vs[e.source][attr] += e[attr]
-                g.vs[e.target][attr] += e[attr]
-            for v in g.vs:
-                v[attr] = common.uniqList(v[attr])
+                g.vs[e.source][attr].update(e[attr])
+                g.vs[e.target][attr].update(e[attr])
     
     def basic_stats_intergroup(self,groupA,groupB,header=None):
         result = {}
@@ -2389,7 +2423,7 @@ class PyPath(object):
         for k in xrange(0,len(self.sources)+1):
             s = "All" if k == len(self.sources) else self.sources[k]
             f = self.graph if k == len(self.sources) else self.get_network(
-                {"edge": {"sources": [s]}, "node": {}})
+                {"edge": {"sources": set([s])}, "node": {}})
             deg = f.vs.degree()
             bw = f.vs.betweenness()
             vnum = f.vcount()
@@ -2499,15 +2533,15 @@ class PyPath(object):
         g = self.graph
         verticesToDel = []
         for v in g.vs:
-            if len(set(v['sources']) - set([source])) == 0:
+            if len(v['sources'] - set([source])) == 0:
                 verticesToDel.append(v.index)
         g.delete_vertices(verticesToDel)
         edgesToDel = []
         for e in g.es:
-            if len(set(e['sources']) - set([source])) == 0:
+            if len(e['sources'] - set([source])) == 0:
                 edgesToDel.append(e.index)
             else:
-                e['sources'] = list(set(e['sources']) - set([source]))
+                e['sources'] = set(e['sources']) - set([source])
         g.delete_edges(edgesToDel)
         if vertexAttrsToDel is not None:
             for vAttr in vertexAttrsToDel:
@@ -2816,8 +2850,8 @@ class PyPath(object):
                         g.vs[e.target]['name'],
                         g.vs[e.source]['label'],
                         g.vs[e.target]['label'],
-                        ';'.join(e['sources']),
-                        ';'.join(e['references']),
+                        ';'.join(list(e['sources'])),
+                        ';'.join(map(lambda r: r.pmid, e['references'])),
                         ';'.join(e['negative']),
                         ';'.join(e['negative_refs'])]) + '\n'
                 if lst:
@@ -2977,8 +3011,8 @@ class PyPath(object):
                             self.graph.vs[e.source]['label'].replace(' ','')]
                 thisEdge += [nameB.replace(' ',''),
                             self.graph.vs[e.target]['label']]
-                thisEdge += [';'.join(common.uniqList(e['sources'])),
-                             ';'.join(common.uniqList(e['references']))]
+                thisEdge += [';'.join(list(e['sources'])),
+                             ';'.join(map(lambda r: r.pmid, e['references']))]
                 thisEdge += [';'.join(e['dirs'].get_dir('undirected',sources=True)),
                              ';'.join(e['dirs'].get_dir((nameA,nameB),sources=True)),
                              ';'.join(e['dirs'].get_dir((nameB,nameA),sources=True))]
@@ -3086,9 +3120,9 @@ class PyPath(object):
                        g.vs[e.source]['name'], g.vs[e.target]['name'],
                        isDirB))
                 f.write('\t<data key="Databases">%s</data>\n' % (
-                        ';'.join(common.uniqList(e['sources']))))
+                        ';'.join(list(e['sources']))))
                 f.write('\t<data key="PubMedIDs">%s</data>\n' % (
-                        ';'.join(common.uniqList(e['references']))))
+                        ';'.join(list(map(lambda r: r.pmid, e['references'])))))
                 f.write('\t<data key="Undirected">%s</data>\n' % (
                         ';'.join(common.uniqList(e['dirs_by_source'][0]))))
                 f.write('\t<data key="DirectionAB">%s</data>\n' % (
@@ -6197,7 +6231,7 @@ class PyPath(object):
             evis = edges_filter(g.es[eid]) and \
                 nodes_filter(g.vs[s]) and nodes_filter(g.vs[t]) and \
                 (edge_sources is None or \
-                    len(set(g.es[eid]['sources']) & edge_sources) > 0) and \
+                    len(g.es[eid]['sources'] & edge_sources) > 0) and \
                 g.es[eid].source not in hide_nodes and g.es[eid].target not in hide_nodes
             if evis or hide:
                 drawn_directed = False
@@ -6222,7 +6256,7 @@ class PyPath(object):
                                     ssign[0] & dir_sources
                                 for eattr, fun in iteritems(edge_callbacks):
                                     attrs[eattr] = fun(g.es[eid], 
-                                        thisDir, thisSign, thisDirSources, set(g.es[eid]['sources']))
+                                        thisDir, thisSign, thisDirSources, g.es[eid]['sources'])
                             elif vis and (sign[1] and dir_sources is None or \
                                 dir_sources is not None and \
                                 len(ssign[1] & dir_sources) > 0):
@@ -6231,13 +6265,13 @@ class PyPath(object):
                                     ssign[1] & dir_sources
                                 for eattr, fun in iteritems(edge_callbacks):
                                     attrs[eattr] = fun(g.es[eid], 
-                                        thisDir, thisSign, thisSources, set(g.es[eid]['sources']))
+                                        thisDir, thisSign, thisSources, g.es[eid]['sources'])
                             elif vis:
                                 thisSign = 'unknown'
                                 thisSources = sdir
                                 for eattr, fun in iteritems(edge_callbacks):
                                     attrs[eattr] = fun(g.es[eid], 
-                                        thisDir, thisSign, thisSources, set(g.es[eid]['sources']))
+                                        thisDir, thisSign, thisSources, g.es[eid]['sources'])
                             else:
                                 attrs['style'] = 'invis'
                                 drawn_directed = False
@@ -6259,8 +6293,8 @@ class PyPath(object):
                                 thisSources = ssign[0] if dir_sources is None else \
                                     ssign[0] & dir_sources
                                 for eattr, fun in iteritems(edge_callbacks):
-                                    attrs[eattr] = fun(g.es[eid], 
-                                        thisDir, thisSign, thisSources, set(g.es[eid]['sources']))
+                                    attrs[eattr] = fun(g.es[eid],
+                                        thisDir, thisSign, thisSources, (g.es[eid]['sources']))
                             elif vis and (sign[1] and dir_sources is None or \
                                 dir_sources is not None and \
                                 len(ssign[1] & dir_sources) > 0):
@@ -6268,14 +6302,14 @@ class PyPath(object):
                                 thisSources = ssign[1] if dir_sources is None else \
                                     ssign[1] & dir_sources
                                 for eattr, fun in iteritems(edge_callbacks):
-                                    attrs[eattr] = fun(g.es[eid], 
-                                        thisDir, thisSign, thisSources, set(g.es[eid]['sources']))
+                                    attrs[eattr] = fun(g.es[eid],
+                                        thisDir, thisSign, thisSources, g.es[eid]['sources'])
                             elif vis:
                                 thisSign = 'unknown'
                                 thisSources = sdir
                                 for eattr, fun in iteritems(edge_callbacks):
-                                    attrs[eattr] = fun(g.es[eid], 
-                                        thisDir, thisSign, thisSources, set(g.es[eid]['sources']))
+                                    attrs[eattr] = fun(g.es[eid],
+                                        thisDir, thisSign, thisSources, g.es[eid]['sources'])
                             else:
                                 attrs['style'] = 'invis'
                                 drawn_directed = False
@@ -6288,7 +6322,7 @@ class PyPath(object):
                     thisSources = d.get_dir('undirected', sources = True)
                     for eattr, fun in iteritems(edge_callbacks):
                         attrs[eattr] = fun(g.es[eid], thisDir, thisSign, 
-                            thisSources, set(g.es[eid]['sources']))
+                            thisSources, g.es[eid]['sources'])
                     if (not evis and hide) or drawn_directed:
                         attrs['style'] = 'invis'
                     if dot.has_neighbor(sl, tl):

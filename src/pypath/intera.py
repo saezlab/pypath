@@ -496,8 +496,8 @@ class DomainDomain(object):
         sources = None, refs = None, contact_residues = None):
         self.domains = [domain_a, domain_b]
         self.sources = set([])
-        self.refs = []
-        self.pdbs = []
+        self.refs = set([])
+        self.pdbs = set([])
         self.add_sources(sources)
         self.add_refs(refs)
         self.add_pdbs(pdbs)
@@ -532,10 +532,10 @@ class DomainDomain(object):
         self.sources.add(source)
     
     def add_refs(self, refs):
-        self.refs = common.addToList(self.refs, refs)
+        self.refs = common.addToSet(self.refs, refs)
     
     def add_pdbs(self, pdbs):
-        self.pdbs = common.addToList(self.pdbs, pdbs)
+        self.pdbs = common.addToSet(self.pdbs, pdbs)
     
     def serialize(self):
         return '|'.join([self.domains[0].serialize(), self.domains[1].serialize(), 
@@ -558,8 +558,8 @@ class DomainMotif(object):
         self.ptm = ptm
         self.domain = domain
         self.sources = set([])
-        self.refs = []
-        self.pdbs = []
+        self.refs = set([])
+        self.pdbs = set([])
         self.add_sources(sources)
         self.add_refs(refs)
         self.add_pdbs(pdbs)
@@ -604,10 +604,10 @@ class DomainMotif(object):
         self.sources.add(source)
     
     def add_refs(self, refs):
-        self.refs = common.addToList(self.refs, refs)
+        self.refs = common.addToSet(self.refs, refs)
     
     def add_pdbs(self, pdbs):
-        self.pdbs = common.addToList(self.pdbs, pdbs)
+        self.refs = common.addToSet(self.pdbs, pdbs)
     
     def serialize(self):
         return '|'.join([self.domain.serialize(), self.ptm.serialize(), 
@@ -636,7 +636,7 @@ class Regulation(object):
         self.target = target
         self.effect = effect
         self.sources = set([])
-        self.refs = []
+        self.refs = set([])
         self.add_sources(sources)
         self.add_refs(refs)
     
@@ -667,7 +667,7 @@ class Regulation(object):
         self.sources.add(source)
     
     def add_refs(self, refs):
-        self.refs = common.addToList(self.refs, refs)
+        self.refs = common.addToSet(self.refs, refs)
     
     def serialize(self):
         return '|'.join([self.effect, self.ptm.serialize(), self.target, 

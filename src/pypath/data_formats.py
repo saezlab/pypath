@@ -77,6 +77,25 @@ part of their content can be used when processing along
 strict conditions to have only binary interactions with
 references.
 '''
+reaction = {
+    'Reaction resources': input_formats.ReadSettings(
+        name = "reaction resources",
+        separator = None, nameColA = 0, nameColB = 1,
+        nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA = "protein", typeB = "protein", isDirected = (3, '1'),
+        sign = None,
+        resource = 4,
+        inFile = 'get_reactions',
+        references = (5, ';'), ncbiTaxId = 9606,
+        extraEdgeAttrs = {
+            "sif_rule": (2, ";")
+            },
+        extraNodeAttrsA={},
+        extraNodeAttrsB={},
+        must_have_references = False
+    )
+}
+
 reaction_misc = {
     'nci_pid': input_formats.ReadSettings(name = "NCI-PID", 
         separator = None, nameColA = 0,
@@ -110,7 +129,7 @@ reaction_misc = {
         extraNodeAttrsB={})
 }
 
-reaction = {
+reaction_pc = {
     'acsn': input_formats.ReadSettings(name="ACSN", 
         separator = None, nameColA=0,
         nameColB=1, nameTypeA="genesymbol", nameTypeB="genesymbol",
@@ -467,7 +486,7 @@ ptm = {
         extraNodeAttrsA={},
         extraNodeAttrsB={},
         must_have_references = True),
-    'hprd': input_formats.ReadSettings(name="HPRD", 
+    'hprd': input_formats.ReadSettings(name="HPRD",
         separator = None, nameColA = 6,
         nameColB = 3, nameTypeA = "genesymbol", nameTypeB = "refseqp",
         typeA = "protein", typeB = "protein", isDirected = 1, sign = False,
@@ -703,7 +722,7 @@ interaction_htp = {
             },
         extraNodeAttrsA = {},
         extraNodeAttrsB = {}),
-    'hprd': input_formats.ReadSettings(name="HPRD", 
+    'hprd': input_formats.ReadSettings(name="HPRD",
         separator = None, nameColA = 0,
         nameColB = 3, nameTypeA = "genesymbol", nameTypeB = "genesymbol",
         typeA = "protein", typeB = "protein", isDirected = 0, sign = False,
@@ -1011,7 +1030,12 @@ categories = {
     'NCI-PID': 'r',
     'DeathDomain': 'p',
     'ARN': 'p',
-    'BioGRID': 'i'
+    'BioGRID': 'i',
+    'IntAct': 'i',
+    'Reactome': 'r',
+    'ACSN': 'r',
+    'WikiPathways': 'r',
+    'PANTHER': 'r'
 }
 
 p = set([])

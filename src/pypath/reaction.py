@@ -31,6 +31,10 @@ import itertools
 import bs4
 import time
 from lxml import etree
+try:
+    import cPickle as pickle
+except:
+    import pickle
 
 import pypath.mapping as mapping
 import pypath.reflists as reflists
@@ -760,6 +764,9 @@ class Complex(EntitySet):
         super(Complex, self).__init__(members, source, parent = parent)
         self.type = 'complex'
     
+    def __str__(self):
+        return '<%s>' % EntitySet.__str__(self)
+    
     def reload(self):
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
@@ -815,6 +822,9 @@ class ProteinFamily(Intersecting, EntitySet):
         EntitySet.__init__(self, members, source, parent = parent)
         Intersecting.__init__(self)
         self.type = 'pfamily'
+    
+    def __str__(self):
+        return '|%s|' % EntitySet.__str__(self)
     
     def reload(self):
         modname = self.__class__.__module__
@@ -885,6 +895,9 @@ class ComplexVariations(Intersecting, EntitySet):
         EntitySet.__init__(self, members, source, sep = '|', parent = parent)
         Intersecting.__init__(self)
         self.type = 'cvariations'
+    
+    def __str__(self):
+        return '<%s>' % EntitySet.__str__(self)
     
     def reload(self):
         modname = self.__class__.__module__
@@ -1392,6 +1405,7 @@ class RePath(object):
                     'pids': {
                         pid: {}
                     },
+                    'refs': set(pubmeds),
                     'originals': set([])
                 }
             }
@@ -2154,48 +2168,131 @@ class RePath(object):
     
     # interaction iterators from here
     
-    def count(fun):
-        """
-        Decorator to iterate over a generator and return only the count of
-        the generated list.
-        """
-        i = 0
-        for _ in fun():
-            i += 1
-        return i
+    def expand(self):
+        def add_interactions(gen):
+            for i in gen:
+                key = (i[0], i[1])
+                if key not in aggregate:
+                    aggregate[key] = i
+                    aggregate[key][2] = set([i[2]])
+                else:
+                    aggregate[key][4].update(i[4])
+                    aggregate[key][5].update(i[5])
+                    aggregate[key][2].add(i[2])
+                    aggregate[key][3] = aggregate[key][3] or i[3]
+        
+        aggregate = {}
+        add_interactions(self.in_same_component())
+        add_interactions(self.co_control())
+        add_interactions(self.interacts_with())
+        add_interactions(self.state_change())
+        self.interactions = list(aggregate.values())
     
-    def in_same_component(self):
+    def expand_by_source(self):
+        def add_interactions(gen):
+            for i in gen:
+                key = (i[0], i[1], i[4])
+                if key not in aggregate:
+                    aggregate[key] = i
+                    aggregate[key][2] = set([i[2]])
+                else:
+                    aggregate[key][5].update(i[5])
+                    aggregate[key][2].add(i[2])
+                    aggregate[key][3] = aggregate[key][3] or i[3]
+        
+        aggregate = {}
+        add_interactions(self.in_same_component(by_source = True))
+        add_interactions(self.co_control(by_source = True))
+        add_interactions(self.interacts_with(by_source = True))
+        add_interactions(self.state_change(by_source = True))
+        self.interactions_by_source = list(aggregate.values())
+        pickle.dump(self.interactions_by_source,
+                    open('cache/reaction_interactions_by_source.pickle', 'wb'),
+                    protocol = 2)
+    
+    def in_same_component(self, by_source = False):
         """
         For all complexes connects all members of the complex with each other.
         """
-        aggregate = {}
+        self.prg = progress.Progress(len(self.complexes),
+            'Expanding `in same component` interactions', 1)
+        aggregate_src = {}
         for c in self.complexes.values():
+            self.prg.step()
             for i, p1 in enumerate(c):
                 for p2 in list(c)[i + 1:]:
                     key = (p1, p2)
-                    if key not in aggregate:
-                        aggregate[key] = set([])
-                    aggregate[key].update(c.sources)
-        for (p1, p2), s in iteritems(aggregate):
-            yield [p1, p2, 'IN_SAME_COMPONENT', False, s]
+                    if key not in aggregate_src:
+                        aggregate_src[key] = set([])
+                    aggregate_src[key].update(c.sources)
+        self.prg.terminate()
+        for (p1, p2), s in iteritems(aggregate_src):
+            if by_source:
+                for ss in s:
+                    yield [p1, p2, 'IN_SAME_COMPONENT', False, ss, set([])]
+            else:
+                yield [p1, p2, 'IN_SAME_COMPONENT', False, s, set([])]
     
-    def co_control(self):
-        aggregate = {}
+    def protein_get_refs(self, source, protein_elem):
+        if protein_elem in self.rproteins[source]:
+            protein = self.proteins[self.rproteins[source][protein_elem]]
+            elem = protein.attrs[source]['pids'][protein_elem]
+            if 'refs' in elem:
+                return elem['refs']
+        return set([])
+    
+    def complex_get_refs(self, source, cplex_elem):
+        refs = set([])
+        for cplex_key in self.rcomplexes[source][cplex_elem]:
+            cplex = self.complexes[cplex_key]
+            if cplex_elem in cplex.attrs[source]:
+                elem = cplex.attrs[source][cplex_elem]
+                for protein, pdata in iteritems(elem):
+                    if protein != 'children':
+                        refs.update(self.protein_get_refs(source, elem[protein]['pid']))
+        return refs
+    
+    def co_control(self, by_source = False):
+        self.prg = progress.Progress(len(self.controls), 'Expanding `co-control` interactions', 1)
+        aggregate_src = {}
+        aggregate_ref = {}
         for co in self.controls.values():
+            self.prg.step()
             if co.controller.type != 'pfamily':
                 proteins = sorted(list(co.controller.proteins()))
                 for i, p1 in enumerate(proteins):
                     for p2 in proteins[i + 1:]:
                         key = (p1, p2)
-                        if key not in aggregate:
-                            aggregate[key] = set([])
-                        aggregate[key].update(co.sources)
-        for (p1, p2), s in iteritems(aggregate):
-            yield [p1, p2, 'CO_CONTROL', False, s]
+                        if key not in aggregate_src:
+                            aggregate_src[key] = set([])
+                        aggregate_src[key].update(co.sources)
+                        for s, codata in iteritems(co.attrs):
+                            for coid, d in iteritems(codata):
+                                if by_source:
+                                    if s not in aggregate_ref:
+                                        aggregate_ref[s] = {}
+                                    if key not in aggregate_ref[s]:
+                                        aggregate_ref[s][key] = set([])
+                                    aggregate_ref[s][key].update(d['refs'])
+                                else:
+                                    if key not in aggregate_ref:
+                                        aggregate_ref[key] = set([])
+                                    aggregate_ref[key].update(d['refs'])
+        self.prg.terminate()
+        for (p1, p2), s in iteritems(aggregate_src):
+            if by_source:
+                for ss in s:
+                    yield [p1, p2, 'CO_CONTROL', False, ss, aggregate_ref[ss][(p1, p2)]]
+            else:
+                yield [p1, p2, 'CO_CONTROL', False, s, aggregate_ref[(p1, p2)]]
     
-    def interacts_with(self):
-        aggregate = {}
+    def interacts_with(self, by_source = False):
+        aggregate_src = {}
+        aggregate_ref = {}
+        self.prg = progress.Progress(len(self.reactions),
+                                     'Expanding `interacts with` interactions', 1)
         for rs in self.reactions.values():
+            self.prg.step()
             isrc = \
                 set(list(
                     map(
@@ -2205,7 +2302,7 @@ class RePath(object):
                             lambda s:
                                 len(
                                     list(
-                                        map(
+                                        filter(
                                             lambda rr:
                                                 rr['type'] == 'interaction',
                                             s[1].values()
@@ -2221,32 +2318,83 @@ class RePath(object):
                     for i, p1 in enumerate(r.left.proteins()):
                         for p2 in list(r.right.proteins())[i + 1:]:
                             key = tuple(sorted([p1, p2]))
-                            if key not in aggregate:
-                                aggregate[key] = set([])
-                            aggregate[key].update(isrc)
-        for (p1, p2), s in iteritems(aggregate):
-            yield [p1, p2, 'INTERACTS_WITH', False, s]
+                            if key not in aggregate_src:
+                                aggregate_src[key] = set([])
+                            aggregate_src[key].update(isrc)
+                            for s in isrc:
+                                if by_source:
+                                    if s not in aggregate_ref:
+                                        aggregate_ref[s] = {}
+                                    if key not in aggregate_ref[s]:
+                                        aggregate_ref[s][key] = set([])
+                                    for rid, rdata in iteritems(r.attrs[s]):
+                                        if rdata['type'] == 'interaction':
+                                            aggregate_ref[s][key].update(rdata['refs'])
+                                else:
+                                    if key not in aggregate_ref:
+                                        aggregate_ref[key] = set([])
+                                    for rid, rdata in iteritems(r.attrs[s]):
+                                        if rdata['type'] == 'interaction':
+                                            aggregate_ref[key].update(rdata['refs'])
+        self.prg.terminate()
+        for (p1, p2), s in iteritems(aggregate_src):
+            if by_source:
+                for ss in s:
+                    yield [p1, p2, 'INTERACTS_WITH', False, ss, aggregate_ref[ss][(p1, p2)]]
+            else:
+                yield [p1, p2, 'INTERACTS_WITH', False, s, aggregate_ref[(p1, p2)]]
     
-    def state_change(self):
-        aggregate = {}
+    def state_change(self, by_source = False):
+        self.prg = progress.Progress(len(self.controls), 'Expanding `state change` interactions', 1)
+        aggregate_src = {}
+        aggregate_ref = {}
         for cos in self.controls.values():
+            self.prg.step()
             for co in cos.expand():
-                pass
+                er_proteins = co.controller.proteins()
+                for s in co.sources:
+                    ldiff, rdiff = self.reaction_mod_diff(s, co.controlled)
+                    for p2 in ldiff.keys():
+                        if ldiff[p2] != rdiff[p2]:
+                            for p1 in er_proteins:
+                                key = (p1, p2)
+                                if key not in aggregate_src:
+                                    aggregate_src[key] = set([])
+                                aggregate_src[key].add(s)
+                                refs = set([])
+                                for rid, rdata in iteritems(co.controlled.attrs[s]):
+                                    refs.update(rdata['refs'])
+                                if by_source:
+                                    if s not in aggregate_ref:
+                                        aggregate_ref[s] = {}
+                                    if key not in aggregate_ref[s]:
+                                        aggregate_ref[s][key] = set([])
+                                    aggregate_ref[s][key].update(refs)
+                                else:
+                                    if key not in aggregate_ref:
+                                        aggregate_ref[key] = set([])
+                                    aggregate_ref[key].update(refs)
+        self.prg.terminate()
+        for (p1, p2), s in iteritems(aggregate_src):
+            if by_source:
+                for ss in s:
+                    yield [p1, p2, 'STATE_CHANGE', True, ss, aggregate_ref[ss][(p1, p2)]]
+            else:
+                yield [p1, p2, 'STATE_CHANGE', True, s, aggregate_ref[(p1, p2)]]
     
-    def reaction_mod_diff(self, reaction, react_elem):
-        rea = self.reactions[self.rreactions[react_elem]]
-        for s, la in iteritems(reaction.left.attrs):
-            for rid, lr in iteritems(la):
-            ra = reaction.right.attrs[s]
+    def reaction_mod_diff(self, source, reaction, by_rid = False):
+        left = self.reaction_side_get_mods(source, reaction.left, by_rid)
+        right = self.reaction_side_get_mods(source, reaction.right, by_rid)
+        return common.dict_diff(left, right)
     
     def reaction_side_get_mods(self, source, rside, by_rid = False):
         mods = {}
         for rid, rd in iteritems(rside.attrs[source]):
             for ent_key, data in iteritems(rd):
                 if data['type'] == 'proteins':
-                    next_mods = protein_get_mods(source, data['id'])
+                    next_mods = {ent_key: self.protein_get_mods(source, data['id'])}
                 elif data['type'] == 'complexes':
-                    next_mods = complex_get_mods(source, data['id'])
+                    next_mods = self.complex_get_mods(source, data['id'])
                 if by_rid:
                     if rid not in mods:
                         mods[rid] = {}
@@ -2256,19 +2404,22 @@ class RePath(object):
         return mods
     
     def protein_get_mods(self, source, protein_elem):
-        protein = self.proteins[self.rproteins[source][protein_elem]]
-        elem = self.proteins[protein].attrs[source]['pids'][protein_elem]
+        if protein_elem in self.rproteins[source]:
+            protein = self.proteins[self.rproteins[source][protein_elem]]
+            elem = protein.attrs[source]['pids'][protein_elem]
             if 'mods' in elem:
-                return {protein: elem['mods']}
-            else:
-                return {protein: set([])}
+                return elem['mods']
+        return set([])
     
     def complex_get_mods(self, source, complex_elem):
         mods = {}
-        cplex = self.complexes[self.rcomplexes[source][complex_elem]]
-        elem = self.complexes[cplex][source][complex_elem]
-        for protein, pdata in iteritems(elem):
-            mods[protein] = self.protein_get_mods(source, elem[protein]['pid'])
+        for cplex_key in self.rcomplexes[source][complex_elem]:
+            cplex = self.complexes[cplex_key]
+            if complex_elem in cplex.attrs[source]:
+                elem = cplex.attrs[source][complex_elem]
+                for protein, pdata in iteritems(elem):
+                    if protein != 'children':
+                        mods[protein] = self.protein_get_mods(source, elem[protein]['pid'])
         return mods
 
 # ## ## ## ## ## ##
@@ -2422,8 +2573,7 @@ class ReactionSide(AttributeHandler):
                         if m.id in pattrs:
                             for s, d1 in iteritems(pattrs[m.id]):
                                 for rid, d2 in iteritems(d1):
-                                    attrs[s][rid][m.id] = \
-                                        {'type': 'proteins', 'id': d2}
+                                    attrs[s][rid][m.id] = d2
                         # if it is from a protein family
                         else:
                             # for each resource
