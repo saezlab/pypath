@@ -114,10 +114,10 @@ class Plot(object):
     def __init__(self, fname = None, font_family = 'Helvetica Neue LT Std', 
         font_style = 'normal', font_weight = 'normal', font_variant = 'normal',
         font_stretch = 'normal',
-        palette = None, context = 'poster', lab_size = (9, 9), 
+        palette = None, context = 'poster', lab_size = (9, 9),
         axis_lab_size = 10.0, rc = {}):
         for k, v in iteritems(locals()):
-            if not hasattr(self, k) or getattr(self, k) is not None:
+            if not hasattr(self, k) or getattr(self, k) is None:
                 setattr(self, k, v)
         if type(self.lab_size) is not tuple:
             self.lab_size = (self.lab_size, ) * 2
@@ -157,15 +157,211 @@ class Plot(object):
         self.fig.savefig(self.fname)
         plt.close(self.fig)
 
+class Barplots(Plot):
+    
+    def __init__(self, x, y, categories = None, cat_names = None, cat_ordr = None,
+        fname = None, font_family = 'Helvetica Neue LT Std', 
+        font_style = 'normal', font_weight = 'normal', font_variant = 'normal',
+        font_stretch = 'normal', figsize = (12, 8),
+        xlab = '', ylab = '', axis_lab_size = 10.0,
+        lab_angle = 90, lab_size = (9, 9), color = '#007b7f',
+        order = False, desc = True, legend = None, fin = True,
+        y_break = None, rc = {}, palette = None,):
+        for k, v in iteritems(locals()):
+            setattr(self, k, v)
+        super(Barplots, self).__init__()
+        self.axes = {}
+        self.bar_args = {
+            'width': 0.8
+            'edgecolor': 'none',
+            'linewidth': 0.0
+        }
+    
+    def pre_plot(self):
+        """
+        Executes all necessary tasks before plotting in the correct order.
+        """
+        self.set_categories()
+        self.plots_order()
+        self.set_colors()
+        self.sort()
+        self.by_plot()
+    
+    def plot(self):
+        self.set_figsize()
+        self.init_fig()
+        self.make_plots()
+    
+    def post_plot(self):
+        self.finish()
+    
+    def set_categories(self):
+        """
+        Sets a list with category indices (integers) of length equal of x,
+        and sets dicts to translate between category names and indices.
+        """
+        self.cnames = None
+        if type(self.categories) is dict:
+            # self.cnames: name -> number dict
+            self.cnames = dict(map(reversed, enumerate(sorted(list(set(self.categories.values()))))))
+            self.cats = map(lambda name: self.cnames[self.categories[name]], self.x)
+        elif type(self.categories) is list:
+            if type(self.categories[0]) is int:
+                self.cats = self.categories
+            else:
+                self.cnames = dict(map(reversed, enumerate(sorted(list(set(self.categories))))))
+            self.cats = map(lambda name: self.cnames[self.categories[name]], self.x)
+        elif type(self.x[0]) is list:
+            self.cats = []
+            _x = []
+            for i, c in enumerate(self.x):
+                self.cats.extend([i] * len(c))
+                _x.extend(c)
+            self.x = _x
+        else:
+            self.cats = [0] * len(self.x)
+        self.numof_cats = len(set(self.cats))
+        if self.cnames is None:
+            if self.cat_names is not None:
+                self.cnames = dict(zip(self.cat_names, list(set(self.cats))))
+            else:
+                self.cnames = dict(map(lambda c: (c, '#%u'%c), self.cats))
+        self.cnums = dict(map(reversed, iteritems(self.cnames)))
+    
+    def set_colors(self):
+        """
+        Compiles an array of colors equal length of x.
+        """
+        self.ccol = None
+        if type(self.colors) is str:
+            self.ccol = dict(map(lambda name:
+                            (name, self.colors), self.cat_ordr))
+        elif len(self.colors) == len(self.cnames):
+            if type(self.colors[0]) is str:
+                self.ccol = dict(map(lambda name:
+                                (name, self.colors), self.cat_ordr))
+            elif type(self.colors[0]) is list:
+                self.col = []
+                for ccols in self.colors:
+                    self.col.extend(ccols)
+                self.col = np.array(self.col)
+        if type(self.colors) not in common.simpleTypes and \
+            len(self.colors) == len(categories):
+            self.col = np.array(self.colors)
+        elif self.ccol is not None:
+            self.col = \
+                np.array(list(map(
+                    lambda cnum:
+                        self.ccol[self.cnums[cnum]],
+                    self.categories
+                )))
+    
+    def plots_order(self):
+        """
+        Defines the order of the subplots.
+        """
+        if self.cat_ordr is None and self.cat_names is not None:
+            self.cat_ordr = common.uniqOrdList(self.cat_names)
+        elif self.cat_ordr is None:
+            self.cat_ordr = common.uniqList(self.cnames.keys())
+    
+    def by_plot(self):
+        """
+        Sets list of lists with x and y values and colors by category.
+        """
+        for dim in ['x', 'y', 'col']
+        setattr(self, 'cat_%s' % dim,
+            list(map(
+                lambda name:
+                    list(map(
+                        lambda n_lab:
+                            n_lab[1],
+                        filter(
+                            lambda n_lab:
+                                n_lab[0] == self.cnames[name],
+                            zip(self.cats, getattr(self, dim))
+                        )
+                    )),
+                self.cat_ordr
+            ))
+        )
+    
+    def sort(self):
+        """
+        Finds the defined or default order, and
+        sorts the arrays x, y and col accordingly.
+        """
+        if self.order == 'x':
+            self.ordr = self.x.argsort()
+        elif self.order == 'y':
+            self.ordr = self.y.argsort()
+        elif len(set(self.order) & set(self.x)) == len(self.x):
+            self.ordr = np.array(map(lambda i: np.where(self.x == i)[0][0], self.order))
+        else:
+            self.ordr = np.array(xrange(len(self.x)))
+        if self.desc:
+            self.ordr = self.ordr[::-1]
+        self.x = self.x[self.ordr]
+        self.y = self.y[self.ordr]
+        self.col = self.col[self.ordr]
+    
+    def set_figsize(self):
+        """
+        Converts width and height to a tuple so can be used for figsize.
+        """
+        if hasattr(self, 'width') and hasattr(self, 'height'):
+            self.figsize = (self.width, selg.height)
+    
+    def init_fig(self):
+        """
+        Creates a figure using the object oriented matplotlib interface.
+        """
+        self.fig = mpl.figure.Figure(figsize = self.figsize)
+        self.cvs = mpl.backends.backend_pdf.FigureCanvasPdf(self.fig)
+    
+    def set_grid(self):
+        """
+        Sets up a grid according to the number of subplots,
+        with proportions according to the number of elements
+        in each subplot.
+        """
+        self.gs = mpl.gridspec.GridSpec(self.numof_cats, 1,
+                height_ratios = [1], width_ratios = map(len, self.cats))
+    
+    def get_subplot(self, i):
+        self.axes[i] = fig.add_subplot(gs[0,i])
+        self.ax = self.axes[i]
+    
+    def make_plots(self):
+        for i, x in enumerate(self.cat_x):
+            self.get_subplot(i)
+            xcoo = arange(len(x)) - self.bar_args['width'] / 2.0
+            self.ax.bar(left = xcoo,
+                        height = self.cat_y[i],
+                        color = self.cat_col[i],
+                        tick_label = x,
+                        **self.bar_args)
+            self.labels()
+    
+    def labels(self):
+        map(lambda tick: tick.label.set_fontsize(self.lab_size[0]) and \
+            tick.label.set_rotation(self.lab_angle),
+            self.ax.xaxis.get_major_ticks())
+        map(lambda tick: tick.label.set_fontsize(self.lab_size[1]),
+            self.ax.yaxis.get_major_ticks())
+        self.ax.set_ylabel(self.ylab, fontproperties = self.fp,
+                           size = self.axis_lab_size)
+        self.ax.set_xlabel(self.xlab, fontproperties = self.fp,
+                           size = self.axis_lab_size)
 
 class Barplot(Plot):
     
-    def __init__(self, x, y, data = None, fname = None, font_family = 'Helvetica Neue LT Std', 
+    def __init__(self, x, y, data = None, fname = None, font_family = 'Helvetica Neue LT Std',
         font_style = 'normal', font_weight = 'normal', font_variant = 'normal',
         font_stretch = 'normal',
-        xlab = '', ylab = '', axis_lab_size = 10.0, 
-        lab_angle = 90, lab_size = (9, 9), color = '#007b7f', 
-        order = False, desc = True, legend = None, fin = True, 
+        xlab = '', ylab = '', axis_lab_size = 10.0,
+        lab_angle = 90, lab_size = (9, 9), color = '#007b7f',
+        order = False, desc = True, legend = None, fin = True,
         y_break = None, rc = {}, palette = None, context = 'poster',
         do_plot = True, **kwargs):
         '''
@@ -180,11 +376,7 @@ class Barplot(Plot):
         self.sns = sns
         self.rc = self.rc or {'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
             'grid.linewidth': 1.0}
-        super(Barplot, self).__init__(fname = fname, font_family = font_family,
-            font_style = font_style, font_weight = font_weight,
-            font_variant = font_variant, font_stretch = font_stretch,
-            palette = palette, context = context, lab_size = self.lab_size,
-            axis_lab_size = self.axis_lab_size, rc = self.rc)
+        super(Barplot, self).__init__()
         self.color = self.color or self.palette[0][0]
         if type(self.color) is list:
             self.palette = sns.color_palette(self.color)
@@ -208,7 +400,7 @@ class Barplot(Plot):
         self.sort()
         if self.y_break:
             self._break_y_gs()
-        self.ax = sns.barplot(self.x, y = self.y, data = None, color = self.color, 
+        self.ax = sns.barplot(self.x, y = self.y, data = None, color = self.color,
             order = self.ordr, ax = self.ax, palette = self.palette,
             #fontproperties = self.fp,
             **kwargs)
@@ -238,7 +430,7 @@ class Barplot(Plot):
             self.palette = sns.color_palette(list(self.palette)[::-1])
     
     def _break_y_gs(self):
-        self.gs = gridspec.GridSpec(2, 1, 
+        self.gs = gridspec.GridSpec(2, 1,
             height_ratios = [self.y_break[1] / sum(self.y_break),
                 self.y_break[0] / sum(self.y_break)])
         self.fig = plt.figure()
