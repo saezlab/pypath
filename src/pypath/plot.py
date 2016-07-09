@@ -22,6 +22,7 @@ import re
 import sys
 import os
 import itertools
+import imp
 
 import math
 import numpy as np
@@ -127,14 +128,15 @@ class Plot(object):
             self.rc['ytick.labelsize'] = self.lab_size[0]
         if 'ytick.labelsize' not in self.rc:
             self.rc['ytick.labelsize'] = self.lab_size[1]
-        self.rc['font.family'] = font_family
-        self.rc['font.style'] = font_style
-        self.rc['font.variant'] = font_variant
-        self.rc['font.weight'] = font_weight
-        self.rc['font.stretch'] = font_stretch
+        self.rc['font.family'] = self.font_family
+        self.rc['font.style'] = self.font_style
+        self.rc['font.variant'] = self.font_variant
+        self.rc['font.weight'] = self.font_weight
+        self.rc['font.stretch'] = self.font_stretch
         self.palette = palette or self.embl_palette()
-        self.fp = mpl.font_manager.FontProperties(family = font_family, style = font_style,
-           variant = font_variant, weight = font_weight, stretch = font_stretch)
+        self.fp = mpl.font_manager.FontProperties(family = self.font_family,
+            style = self.font_style, variant = self.font_variant,
+            weight = self.font_weight, stretch = self.font_stretch)
     
     def embl_palette(self, inFile = 'embl_colors'):
         cols = []
@@ -157,25 +159,89 @@ class Plot(object):
         self.fig.savefig(self.fname)
         plt.close(self.fig)
 
-class Barplots(Plot):
+class MultiBarplot(Plot):
     
     def __init__(self, x, y, categories = None, cat_names = None, cat_ordr = None,
-        fname = None, font_family = 'Helvetica Neue LT Std', 
-        font_style = 'normal', font_weight = 'normal', font_variant = 'normal',
-        font_stretch = 'normal', figsize = (12, 8),
-        xlab = '', ylab = '', axis_lab_size = 10.0,
-        lab_angle = 90, lab_size = (9, 9), color = '#007b7f',
+        fname = None, figsize = (12, 4),
+        xlab = '', ylab = '', title = '',
+        lab_angle = 90, lab_size = (24, 24), color = '#007b7f',
         order = False, desc = True, legend = None, fin = True,
-        y_break = None, rc = {}, palette = None,):
+        rc = {}, palette = None, axis_lab_font = {},
+        bar_args = {}, ticklabel_font = {}, title_font = {},
+        title_halign = 'center', title_valign = 'top'):
+        
         for k, v in iteritems(locals()):
             setattr(self, k, v)
+        
         super(Barplots, self).__init__()
+        
         self.axes = {}
-        self.bar_args = {
-            'width': 0.8
+        
+        self.bar_args_default = {
+            'width': 0.8,
             'edgecolor': 'none',
-            'linewidth': 0.0
+            'linewidth': 0.0,
+            'align': 'center'
         }
+        self.axis_lab_font_default = {
+            'family': ['Helvetica Neue LT Std', 'sans'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'bold',
+            'variant': 'normal',
+            'size': 'x-large'
+        }
+        self.ticklabel_font_default = {
+            'family': ['Helvetica Neue LT Std', 'sans'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'roman',
+            'variant': 'normal',
+            'size': 'large'
+        }
+        self.title_font_default = {
+            'family': ['Helvetica Neue LT Std', 'sans'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'heavy',
+            'variant': 'normal',
+            'size': 'xx-large'
+        }
+        
+        self.bar_args = common.merge_dicts(bar_args, self.bar_args_default)
+        self.axis_lab_font = common.merge_dicts(axis_lab_font,
+                                                self.axis_lab_font_default)
+        self.ticklabel_font = common.merge_dicts(ticklabel_font,
+                                                 self.ticklabel_font_default)
+        self.title_font = common.merge_dicts(title_font,
+                                             self.title_font_default)
+        self.fp_axis_lab = \
+            mpl.font_manager.FontProperties(**self.axis_lab_font)
+        self.fp_ticklabel = \
+            mpl.font_manager.FontProperties(**self.ticklabel_font)
+        self.fp_title = \
+            mpl.font_manager.FontProperties(**self.title_font)
+        
+        self.x = np.array(self.x)
+        self.y = np.array(self.y)
+        
+        self.plot()
+    
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    def plot(self):
+        """
+        The total workflow of this class.
+        Calls all methods in the correct order.
+        """
+        self.pre_plot()
+        self.do_plot()
+        self.post_plot()
     
     def pre_plot(self):
         """
@@ -187,12 +253,20 @@ class Barplots(Plot):
         self.sort()
         self.by_plot()
     
-    def plot(self):
+    def do_plot(self):
+        """
+        Calls the plotting methods in the correct order.
+        """
         self.set_figsize()
         self.init_fig()
+        self.set_grid()
         self.make_plots()
+        self.set_title()
     
     def post_plot(self):
+        """
+        Saves the plot into file, and closes the figure.
+        """
         self.finish()
     
     def set_categories(self):
@@ -233,27 +307,33 @@ class Barplots(Plot):
         Compiles an array of colors equal length of x.
         """
         self.ccol = None
-        if type(self.colors) is str:
-            self.ccol = dict(map(lambda name:
-                            (name, self.colors), self.cat_ordr))
-        elif len(self.colors) == len(self.cnames):
-            if type(self.colors[0]) is str:
-                self.ccol = dict(map(lambda name:
-                                (name, self.colors), self.cat_ordr))
-            elif type(self.colors[0]) is list:
+        if type(self.color) is str:
+            self.ccol = dict(map(
+                            lambda name:
+                                (name, self.color),
+                            self.cat_ordr)
+                        )
+        elif len(self.color) == len(self.cnames):
+            if type(self.color[0]) is str:
+                self.ccol = dict(map(
+                                lambda c:
+                                    (c[1], self.color[c[0]]),
+                                enumerate(self.cat_ordr)
+                            ))
+            elif type(self.color[0]) is list:
                 self.col = []
                 for ccols in self.colors:
                     self.col.extend(ccols)
                 self.col = np.array(self.col)
-        if type(self.colors) not in common.simpleTypes and \
-            len(self.colors) == len(categories):
-            self.col = np.array(self.colors)
+        if type(self.color) not in common.simpleTypes and \
+            len(self.color) == len(self.categories):
+            self.col = np.array(self.color)
         elif self.ccol is not None:
             self.col = \
                 np.array(list(map(
                     lambda cnum:
                         self.ccol[self.cnums[cnum]],
-                    self.categories
+                    self.cats
                 )))
     
     def plots_order(self):
@@ -269,22 +349,22 @@ class Barplots(Plot):
         """
         Sets list of lists with x and y values and colors by category.
         """
-        for dim in ['x', 'y', 'col']
-        setattr(self, 'cat_%s' % dim,
-            list(map(
-                lambda name:
-                    list(map(
-                        lambda n_lab:
-                            n_lab[1],
-                        filter(
+        for dim in ['x', 'y', 'col']:
+            setattr(self, 'cat_%s' % dim,
+                list(map(
+                    lambda name:
+                        list(map(
                             lambda n_lab:
-                                n_lab[0] == self.cnames[name],
-                            zip(self.cats, getattr(self, dim))
-                        )
-                    )),
-                self.cat_ordr
-            ))
-        )
+                                n_lab[1],
+                            filter(
+                                lambda n_lab:
+                                    n_lab[0] == self.cnames[name],
+                                zip(self.cats, getattr(self, dim))
+                            )
+                        )),
+                    self.cat_ordr
+                ))
+            )
     
     def sort(self):
         """
@@ -292,11 +372,15 @@ class Barplots(Plot):
         sorts the arrays x, y and col accordingly.
         """
         if self.order == 'x':
-            self.ordr = self.x.argsort()
+            self.ordr = np.array(self.x.argsort())
         elif self.order == 'y':
-            self.ordr = self.y.argsort()
-        elif len(set(self.order) & set(self.x)) == len(self.x):
-            self.ordr = np.array(map(lambda i: np.where(self.x == i)[0][0], self.order))
+            self.ordr = np.array(self.y.argsort())
+        elif self.order and len(set(self.order) & set(self.x)) == len(self.x):
+            self.ordr = np.array(map(
+                            lambda i:
+                                np.where(self.x == i)[0][0],
+                            self.order
+                        ))
         else:
             self.ordr = np.array(xrange(len(self.x)))
         if self.desc:
@@ -316,6 +400,7 @@ class Barplots(Plot):
         """
         Creates a figure using the object oriented matplotlib interface.
         """
+        self.pdf = mpl.backends.backend_pdf.PdfPages(self.fname)
         self.fig = mpl.figure.Figure(figsize = self.figsize)
         self.cvs = mpl.backends.backend_pdf.FigureCanvasPdf(self.fig)
     
@@ -325,34 +410,50 @@ class Barplots(Plot):
         with proportions according to the number of elements
         in each subplot.
         """
-        self.gs = mpl.gridspec.GridSpec(self.numof_cats, 1,
-                height_ratios = [1], width_ratios = map(len, self.cats))
+        self.gs = mpl.gridspec.GridSpec(1, self.numof_cats,
+                height_ratios = [1], width_ratios = map(len, self.cat_x))
     
     def get_subplot(self, i):
-        self.axes[i] = fig.add_subplot(gs[0,i])
+        self.axes[i] = self.fig.add_subplot(self.gs[0,i])
         self.ax = self.axes[i]
     
     def make_plots(self):
         for i, x in enumerate(self.cat_x):
             self.get_subplot(i)
-            xcoo = arange(len(x)) - self.bar_args['width'] / 2.0
+            xcoo = np.arange(len(x)) - self.bar_args['width'] / 2.0
             self.ax.bar(left = xcoo,
                         height = self.cat_y[i],
                         color = self.cat_col[i],
                         tick_label = x,
                         **self.bar_args)
             self.labels()
+            self.ax.set_xlabel(self.cnums[i], fontproperties = self.fp_axis_lab)
     
     def labels(self):
-        map(lambda tick: tick.label.set_fontsize(self.lab_size[0]) and \
-            tick.label.set_rotation(self.lab_angle),
+        map(lambda tick:
+                tick.label.set_fontproperties(self.fp_ticklabel) or \
+                tick.label.set_rotation(self.lab_angle),
             self.ax.xaxis.get_major_ticks())
-        map(lambda tick: tick.label.set_fontsize(self.lab_size[1]),
+        map(lambda tick:
+                tick.label.set_fontproperties(self.fp_ticklabel),
             self.ax.yaxis.get_major_ticks())
-        self.ax.set_ylabel(self.ylab, fontproperties = self.fp,
-                           size = self.axis_lab_size)
-        self.ax.set_xlabel(self.xlab, fontproperties = self.fp,
-                           size = self.axis_lab_size)
+        self.ax.set_ylabel(self.ylab, fontproperties = self.fp_axis_lab)
+        #self.ax.yaxis.label.set_fontproperties(self)
+    
+    def set_title(self):
+        self.title_text = self.fig.suptitle(self.title)
+        self.title_text.set_fontproperties(self.fp_title)
+        self.title_text.set_horizontalalignment(self.title_halign)
+        self.title_text.set_verticalalignment(self.title_valign)
+    
+    def finish(self):
+        self.cvs.draw()
+        self.fig.tight_layout()
+        self.fig.subplots_adjust(top = 0.85)
+        
+        self.cvs.print_figure(self.pdf)
+        self.pdf.close()
+        self.fig.clf()
 
 class Barplot(Plot):
     
