@@ -173,7 +173,7 @@ class MultiBarplot(Plot):
         for k, v in iteritems(locals()):
             setattr(self, k, v)
         
-        super(Barplots, self).__init__()
+        super(MultiBarplot, self).__init__()
         
         self.axes = {}
         
