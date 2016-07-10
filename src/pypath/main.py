@@ -1155,7 +1155,7 @@ class PyPath(object):
                 break
             itemList.append(newItem)
             lnum += 1
-        if type(_input) is file:
+        if hasattr(_input, 'close'):
             _input.close()
         itemListMapped = self.map_list(itemList,singleList=True)
         itemListMapped = list(set(itemListMapped))
@@ -2208,6 +2208,13 @@ class PyPath(object):
         return dict([(s, self.get_network({'edge': {'sources': [s]}, 'node': {}})) \
             for s in self.sources])
     
+    def separate_by_category(self):
+        cats = dict(map(lambda c: (c, []), set(data_formats.categories.values())))
+        for s, c in iteritems(data_formats.categories):
+            cats[c].append(s)
+        return dict([(c, self.get_network({'edge': {'sources': s}, 'node': {}})) \
+            for c, s in iteritems(cats)])
+    
     def update_pathway_types(self):
         g = self.graph
         pwTyp = []
@@ -2416,6 +2423,24 @@ class PyPath(object):
             for e in g.es:
                 g.vs[e.source][attr].update(e[attr])
                 g.vs[e.target][attr].update(e[attr])
+    
+    def set_categories(self):
+        self.graph.vs['cat'] = [set([]) for _ in self.graph.vs]
+        self.graph.es['cat'] = [set([]) for _ in self.graph.es]
+        self.graph.es['refs_by_cat'] = [{} for _ in self.graph.es]
+        for v in self.graph.vs:
+            for s in v['sources']:
+                if s in data_formats.categories:
+                    v['cat'].add(data_formats.categories[s])
+        for e in self.graph.es:
+            for s in e['sources']:
+                if s in data_formats.categories:
+                    cat = data_formats.categories[s]
+                    e['cat'].add(cat)
+                    if cat not in e['refs_by_cat']:
+                        e['refs_by_cat'][cat] = set([])
+                    if s in e['refs_by_source']:
+                        e['refs_by_cat'][cat].update(e['refs_by_source'][s])
     
     def basic_stats_intergroup(self,groupA,groupB,header=None):
         result = {}
@@ -5720,46 +5745,85 @@ class PyPath(object):
                     if up in self.nodInd:
                         self.graph.vs[self.nodDct[up]]['dis'].append(d['disease'])
     
-    def curation_stats(self):
+    def curation_stats(self, by_category = True):
         result = {}
         all_refs = len(set(common.flatList([[r.pmid for r in e['references']] \
             for e in self.graph.es])))
-        for s in self.sources:
-            src_edges = len([e.index for e in self.graph.es if s in e['sources']])
-            src_edges_pct = len([e.index \
-                for e in self.graph.es if s in e['sources']]) / \
-                    float(self.graph.ecount()) * 100.0
-            only_src_edges = len([e.index for e in self.graph.es \
-                if s in e['sources'] and len(e['sources']) == 1])
-            only_src_edges_pct = len([e.index for e in self.graph.es \
-                if s in e['sources'] and len(e['sources']) == 1]) / \
-                float(self.graph.ecount()) * 100.0
+        
+        for s in list(self.sources) + \
+            (list(data_formats.catnames.keys()) if by_category else []):
+            
+            sattr = 'cat' if s in data_formats.catnames else 'sources'
+            rattr = 'refs_by_cat' if s in data_formats.catnames else 'refs_by_source'
+            cat = None if s in data_formats.catnames \
+                or s not in data_formats.categories \
+                else data_formats.categories[s]
+            catmembers = set(data_formats.catnames.keys()) \
+                if s in data_formats.catnames \
+                else set(self.sources) if not hasattr(data_formats, cat) \
+                else getattr(data_formats, cat)
+            
+            src_nodes = len([_ for v in self.graph.vs if s in v[sattr]])
+            cat_nodes = self.graph.vcount() if cat is None \
+                else len([v for v in self.graph.vs if len(v[sattr] & catmembers)])
+            src_nodes_pct = src_nodes / float(cat_nodes) * 100.0
+            only_src_nodes = len([_ for v in self.graph.vs \
+                if s in v[sattr] and len(v[sattr] & catmembers) == 1])
+            only_src_nodes_pct = only_src_nodes / float(cat_nodes) * 100.0
+            shared_nodes = len([_ for v in self.graph.vs \
+                if s in v[sattr] and len(v[sattr] & catmembers) > 1])
+            
+            src_edges = len([e for e in self.graph.es if s in e[sattr]])
+            cat_edges = self.graph.ecount() if cat is None \
+                else len([e for e in self.graph.es if len(e[sattr] & catmembers)])
+            src_edges_pct = src_edges / \
+                    float(cat_edges) * 100.0
+            only_src_edges = len([e for e in self.graph.es \
+                if s in e[sattr] and len(e[sattr] & catmembers) == 1])
+            only_src_edges_pct = only_src_edges / float(cat_edges) * 100.0
             shared_edges = len([e.index for e in self.graph.es \
-                if s in e['sources'] and len(e['sources']) > 1])
-            src_refs = set(common.uniqList([r.pmid for r in common.flatList([e['refs_by_source'][s] \
-                for e in self.graph.es if s in e['refs_by_source']])]))
+                if s in e[sattr] and len(e[sattr] & catmembers) > 1])
+            
+            src_refs = set(common.uniqList([r.pmid for r in common.flatList([e[rattr][s] \
+                for e in self.graph.es if s in e[rattr]])]))
             other_refs = set(common.flatList([[r.pmid for r in \
-                common.flatList([rr for sr, rr in iteritems(e['refs_by_source']) if sr != s])] \
+                    common.flatList([rr for sr, rr in iteritems(e[rattr]) \
+                        if sr != s and sr in catmembers])] \
                 for e in self.graph.es]))
             only_src_refs = len(src_refs - other_refs)
             only_src_refs_pct = len(src_refs - other_refs) / float(all_refs) * 100.0
             src_refs_pct = len(src_refs) / float(all_refs) * 100.0
             shared_refs = len(src_refs & other_refs)
+            
             shared_curation_effort = sum([len(x) for x in \
                 [set(common.flatList([[(r.pmid, e.index) for r in rr] \
-                    for sr, rr in iteritems(e['refs_by_source']) if sr != s])) & \
-                set([(rl.pmid, e.index) for rl in e['refs_by_source'][s]]) \
-                for e in self.graph.es if s in e['refs_by_source']] if len (x) != 0])
+                    for sr, rr in iteritems(e[rattr]) \
+                        if sr != s and sr in catmembers])) \
+                & \
+                set([(rl.pmid, e.index) for rl in e[rattr][s]]) \
+                for e in self.graph.es if s in e[rattr]]])
+            
             src_only_curation_effort = sum([len(x) for x in \
-                [set([(rl.pmid, e.index) for rl in e['refs_by_source'][s]]) - \
+                [set([(rl.pmid, e.index) for rl in e[rattr][s]]) - \
                 set(common.flatList([[(r.pmid, e.index) for r in rr] \
-                    for sr, rr in iteritems(e['refs_by_source']) if sr != s])) \
-                for e in self.graph.es if s in e['refs_by_source']] if len (x) != 0])
+                    for sr, rr in iteritems(e[rattr]) \
+                        if sr != s if sr in catmembers])) \
+                for e in self.graph.es if s in e[rattr]]])
+            
             src_curation_effort = sum([len(x) for x in \
-                [set([(rl.pmid, e.index) for rl in e['refs_by_source'][s]]) \
-                    for e in self.graph.es if s in e['refs_by_source']] if len (x) != 0])
+                [set([(rl.pmid, e.index) for rl in e[rattr][s]]) \
+                    for e in self.graph.es if s in e[rattr]]])
             ratio = len(src_refs) / float(src_edges)
+            
+            if s in data_formats.catnames:
+                s = data_formats.catnames[s]
+            
             result[s] = {
+                'source_nodes': src_nodes,
+                'source_nodes_percentage': src_nodes_pct,
+                'specific_nodes': only_src_nodes,
+                'specific_nodes_percentage': only_src_nodes_pct,
+                'shared_nodes': shared_nodes,
                 'source_edges': src_edges,
                 'source_edges_percentage': src_edges_pct,
                 'specific_edges': only_src_edges,
@@ -5776,11 +5840,12 @@ class PyPath(object):
                 'refs_edges_ratio': ratio,
                 'corrected_curation_effort': src_curation_effort * ratio
             }
+        
         return result
     
-    def table_latex(self, fname, header, data, sum_row = True, row_order = None, 
-        latex_hdr = True, caption = '', font = 'HelveticaNeueLTStd-Lt', fontsize = 10,
-        sum_label = 'Total', sum_cols = None, header_format = '%s'):
+    def table_latex(self, fname, header, data, sum_row = True, row_order = None,
+        latex_hdr = True, caption = '', font = 'HelveticaNeueLTStd-Lt', fontsize = 8,
+        sum_label = 'Total', sum_cols = None, header_format = '%s', by_category = True):
         non_digit = re.compile(r'[^\d.-]+')
         row_order = sorted(data.keys(), key = lambda x: x.upper()) \
             if row_order is None else row_order
@@ -5794,7 +5859,7 @@ class PyPath(object):
                 \end{tabularx}
                 %s
             '''
-        _latex_hdr = r'''\documentclass[a4paper,%upt]{article}
+        _latex_hdr = r'''\documentclass[a4wide,%upt]{extarticle}
                 \usepackage{fontspec}
                 \usepackage{xunicode}
                 \usepackage{polyglossia}
@@ -5822,16 +5887,35 @@ class PyPath(object):
                 \end{document}
             ''' % caption if latex_hdr else ''
         _hdr_row = ' & '.join([''] + [header_format%h[1].replace(r'%', r'\%') \
-            for h in header]) + '\\\\\n'
+            for h in header]) + '\\\\'
         formatter = lambda x: locale.format('%.2f', x, grouping = True) \
-            if type(x) is float else locale.format('%d', x, grouping = True)
+            if type(x) is float \
+            else locale.format('%d', x, grouping = True) \
+            if type(x) is int \
+            else x
         intfloat = lambda x: float(x) if '.' in x else int(x)
-        _rows = '\\\\\n'.join([' & '.join([k] + [formatter(data[k][h[0]]) \
-            for h in header]) for k in row_order]) + '\\\\\n'
+        _rows = ''
+        for i, k in enumerate(row_order):
+            
+            row = ' & '.join([k[0] if type(k) is tuple else k] + \
+                [formatter(data[k][h[0]]) for h in header]) + '\\\\'
+            
+            if type(k) is tuple and k[1] == 'subtitle':
+                row = '\n'.join([
+                    r'\midrule' if i > 0 else '',
+                    row,
+                    r'\midrule',
+                    ''
+                ])
+            else:
+                row = row + '\n'
+            
+            _rows += row
+        
         sum_cols = xrange(len(header)) if sum_cols is None \
             else sum_cols
         _sum_row = ' & '.join([sum_label] + ['' if i not in sum_cols else formatter(sum([ \
-            intfloat(filter(lambda x: len(x) > 0, [non_digit.sub('', str(v[h[0]])), '0'])[0]) \
+            intfloat(list(filter(lambda x: len(x) > 0, [non_digit.sub('', str(v[h[0]])), '0']))[0]) \
             for v in data.values()])) \
             for i, h in enumerate(header)]) + '\\\\\n'
         _latex_tab = _latex_tab % (_latex_hdr, 'X' + 'r'*len(header), _hdr_row, _rows, 
@@ -5839,8 +5923,17 @@ class PyPath(object):
         with open(fname, 'w') as f:
             f.write(_latex_tab)
     
-    def curation_tab(self, fname = 'curation_stats.tex', **kwargs):
+    def curation_tab(self, fname = 'curation_stats.tex', by_category = True, **kwargs):
+        
+        if by_category and 'cat' not in self.graph.es.attributes():
+            self.set_categories()
+        
         header = [
+            ('source_nodes', 'Proteins'),
+            ('source_nodes_percentage', r'Proteins [%]'),
+            ('shared_nodes', 'Shared proteins'),
+            ('specific_nodes', 'Specific proteins'),
+            ('specific_nodes_percentage', r'Specific proteins [%]'),
             ('source_edges', 'Edges'),
             ('source_edges_percentage', r'Edges [%]'),
             ('shared_edges', 'Shared edges'),
@@ -5858,8 +5951,44 @@ class PyPath(object):
             ('corrected_curation_effort', 'Corrected curation effort')
         ]
         header_format = r'\rotatebox{90}{\footnotesize %s}'
-        cs = self.curation_stats()
-        self.table_latex(fname, header, cs, header_format = header_format, 
+        
+        cs = self.curation_stats(by_category = by_category)
+        
+        for name, data in iteritems(cs):
+            if data['specific_refs'] == 0 and data['shared_refs'] == 0:
+                data['source_refs'] = 'N/A'
+                data['specific_refs'] = 'N/A'
+                data['shared_refs'] = 'N/A'
+                data['source_refs_percentage'] = 'N/A'
+                data['specific_refs_percentage'] = 'N/A'
+                data['source_curation_effort'] = 'N/A'
+                data['shared_curation_effort'] = 'N/A'
+                data['source_specific_curation_effort'] = 'N/A'
+                data['refs_edges_ratio'] = 'N/A'
+                data['corrected_curation_effort'] = 'N/A'
+        
+        for name in data_formats.catnames.values():
+            if by_category:
+                cs[(name, 'subtitle')] = cs[name]
+            else:
+                if name in cs:
+                    del cs[name]
+            row_order = []
+        if by_category:
+            for cat in ['p', 'm', 'i', 'r']:
+                row_order.append((data_formats.catnames[cat], 'subtitle'))
+                row_order.extend(
+                    sorted(
+                        filter(
+                            lambda name:
+                                name in data_formats.categories and \
+                                    data_formats.categories[name] == cat,
+                            cs.keys()
+                        )
+                    )
+                )
+        self.table_latex(fname, header, cs, header_format = header_format,
+            row_order = row_order if by_category else None, by_category = by_category,
             sum_row = False, **kwargs)
     
     def remove_htp(self, threshold = 50):

@@ -120,7 +120,9 @@ def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
         sys.stdout.write('No such file: %s\n' % xls_file)
     sys.stdout.flush()
 
-def read_table(cols, fileObject = None, data = None, sep = '\t', sep2 = None, rem = [], hdr = None):
+def read_table(cols, fileObject = None, data = None,
+                sep = '\t', sep2 = None, rem = [], hdr = None,
+                encoding = 'ascii'):
     '''
     Generic function to read data tables.
     
@@ -154,6 +156,8 @@ def read_table(cols, fileObject = None, data = None, sep = '\t', sep2 = None, re
         data = [l.strip() for l in data.split('\n') if len(l) > 0][hdr:]
     res = []
     for l in data:
+        if type(l) is bytes:
+            l = l.decode(encoding)
         for r in rem:
             l = l.replace(r,'')
         l = [f.strip() for f in l.split(sep)]
@@ -1643,8 +1647,6 @@ def get_psite_phos(raw = True, organism = 'human'):
         'residue': 9,
         'motif': 11
     }
-    #buff = StringIO()
-    #buff.write(data)
     data = read_table(cols = cols, fileObject = data, sep = '\t', hdr = 4)
     result = []
     non_digit = re.compile(r'[^\d.-]+')
@@ -3009,7 +3011,7 @@ def get_disgenet(dataset = 'curated'):
         'assoc_typ': 7,
         'source': 8
     }
-    data = read_table(cols = cols, data = data.values()[0], hdr = 1, sep = '\t')
+    data = read_table(cols = cols, data = list(data.values())[0], hdr = 1, sep = '\t')
     for i, d in enumerate(data):
         data[i]['score'] = float(data[i]['score'])
         data[i]['assoc_typ'] = [x.strip() for x in data[i]['assoc_typ'].split(',')]
@@ -3570,6 +3572,27 @@ def rolland_hi_ii_14():
         ),
         tbl
     )[1:]
+
+def vidal_hi_iii(fname):
+    '''
+    Loads the HI-III  unbiased interactome from preliminary data of
+    the next large scale screening of Vidal Lab.
+    
+    The data is accessible here:
+        http://interactome.dfci.harvard.edu/H_sapiens/dload_trk.php
+    You need to register and accept the license terms.
+    
+    Returns list of interactions.
+    '''
+    f = curl.FileOpener(fname)
+    return \
+        list(
+            map(
+                lambda l:
+                    l.decode('ascii').strip().split('\t'),
+                f.result
+            )
+        )[1:]
 
 def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
     '''
@@ -5354,7 +5377,7 @@ def intact_interactions(miscore = 0.6, organism = 9606, complex_expansion = Fals
         organism = '%u' % organism
     c = curl.Curl(url, silent = False, large = True, files_needed = ['intact.txt'])
     data = c.result
-    f = data.values()[0]
+    f = data['intact.txt']
     size = c.sizes['intact.txt']
     lnum = 0
     prg = progress.Progress(size, 'Reading IntAct MI-tab file', 99)
@@ -5390,22 +5413,26 @@ def intact_interactions(miscore = 0.6, organism = 9606, complex_expansion = Fals
                     uniprots = tuple(sorted([u1, u2]))
                     if uniprots not in result:
                         result[uniprots] = [set([]), set([]), set([])]
-                    null = map(result[uniprots][0].add,
-                        map(lambda ref:
-                            ref[1],
-                            filter(lambda ref:
-                                ref[0] == 'pubmed',
-                                map(lambda pm:
-                                    pm.split(':'),
-                                    l[8].split('|')
+                    list(
+                        map(result[uniprots][0].add,
+                            map(lambda ref:
+                                ref[1],
+                                filter(lambda ref:
+                                    ref[0] == 'pubmed',
+                                    map(lambda pm:
+                                        pm.split(':'),
+                                        l[8].split('|')
+                                    )
                                 )
                             )
                         )
                     )
-                    null = map(result[uniprots][1].add,
-                        map(lambda m:
-                            m.split('(')[1].replace(')', '').replace('"', ''),
-                            l[6].split('|')
+                    list(
+                        map(result[uniprots][1].add,
+                            map(lambda m:
+                                m.split('(')[1].replace(')', '').replace('"', ''),
+                                l[6].split('|')
+                            )
                         )
                     )
                     if l[15] != '-':
@@ -5417,7 +5444,7 @@ def intact_interactions(miscore = 0.6, organism = 9606, complex_expansion = Fals
         iteritems(result)
     )
     prg.terminate()
-    return result
+    return list(result)
 
 def deathdomain_interactions():
     result = []

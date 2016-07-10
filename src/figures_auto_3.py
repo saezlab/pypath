@@ -23,9 +23,11 @@
 from collections import Counter
 import locale
 locale.setlocale(locale.LC_ALL, 'en_GB.UTF-8')
+from future.utils import iteritems
 
 # stats and plotting modules #
 
+import imp
 import math
 import numpy as np
 import pandas as pd
@@ -114,7 +116,7 @@ omnipath = 'All'
 prefix = "3"
 lab_size = (18, 21)
 axis_lab_size = 36
-table2file = '3_curation_stats_stripped.tex'
+table2file = 'cat_curation_stats_stripped.tex'
 fisherFile = 'fisher_tests_int'
 fontW = 'medium'
 
@@ -232,15 +234,17 @@ fi.write('Transcription factors:\t%s\t%s' % stats.fisher_exact(contTf))
 fi.close()
 
 # source-vcount barplot
-d = zip(*[(s, len([v for v in net.graph.vs if s in v['sources']])) for s in sorted(net.sources)] + \
-    [(omnipath, net.graph.vcount())])
+d = list(zip(*[(s, len([v for v in net.graph.vs if s in v['sources']])) for s in sorted(net.sources)] + \
+    [(omnipath, net.graph.vcount())]))
 labcol = \
-    map(
-        lambda lab:
-            ccolors[data_formats.categories[lab]] \
-                if lab in data_formats.categories \
-                else '#818284',
-        d[0]
+    list(
+        map(
+            lambda lab:
+                ccolors[data_formats.categories[lab]] \
+                    if lab in data_formats.categories \
+                    else ccolors[lab[1]],
+            d[0]
+        )
     )
 bp = plot.Barplot(x = d[0], y = d[1],
     data = None, fname = 'proteins_3-by-db.pdf', lab_size = lab_size, 
@@ -251,6 +255,32 @@ bp = plot.Barplot(x = d[0], y = d[1],
 vcount_ordr = list(bp.ordr)
 
 bp.finish()
+
+csep = net.separate_by_category()
+cats = dict(map(lambda c: (c[0], data_formats.catnames[c[1]]), iteritems(data_formats.categories)))
+cats.update(dict(map(lambda c: (('All', c[0]), c[1]), iteritems(data_formats.catnames))))
+
+get_data = lambda fun: \
+    list(zip(*[(s, fun(sep[s])) for s in sorted(net.sources)] + \
+        list(map(lambda c: (('All', c[0]), fun(csep[c[0]])), sorted(data_formats.catnames.keys())))))
+
+bplotsettings = [
+    ('Number of proteins', 'Number of proteins', 'proteins', lambda g: g.vcount(), vcount_ordr)
+]
+d = list(zip(*[(s, len([v for v in net.graph.vs if s in v['sources']])) for s in sorted(net.sources)] + \
+    list(map(lambda c: (('All', c[0]), csep[c[0]].vcount()), iteritems(data_formats.catnames)))))
+
+bp = plot.MultiBarplot(
+    d[0], d[1],
+    categories = cats,
+    color = labcol,
+    cat_ordr = ['Activity flow', 'Enzyme-substrate', 'Interaction', 'Process description'],
+    ylab = 'Number of proteins',
+    title = 'Number of proteins',
+    desc = True,
+    fname = 'proteins_cat-by-db2.pdf',
+    order = 'y'
+)
 
 # source-ecount barplot
 console(':: Plotting `Number of proteins` barplot')

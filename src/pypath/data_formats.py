@@ -24,10 +24,11 @@ import os
 import pypath.input_formats as input_formats
 from pypath import common
 
-__all__ = ['urls', 'mapList', 'otherMappings', 'refLists', 
-           'reaction', 'interaction', 'interaction_misc', 'pathway', 
+__all__ = ['urls', 'mapList', 'otherMappings', 'refLists',
+           'reaction', 'interaction', 'interaction_misc', 'pathway',
+           'interaction_htp',
            'ptm', 'ptm_misc', 'obsolate', 'transcription_deprecated',
-           'omnipath', 'transcription', 'negative', 'gdsc_comp_target', 'cgc', 
+           'omnipath', 'transcription', 'negative', 'gdsc_comp_target', 'cgc',
            'mapListUniprot', 'mapListBasic', 'reactome_modifications',
            'reaction_misc']
 
@@ -730,7 +731,26 @@ interaction_htp = {
         inFile = 'hprd_htp', references = (7, ','), header = False,
         extraEdgeAttrs={'hprd_methods': (6, ';')},
         extraNodeAttrsA={},
-        extraNodeAttrsB={})
+        extraNodeAttrsB={}),
+    'hi3': input_formats.ReadSettings(
+        name = "Vidal HI-III",
+        separator = None,
+        nameColA = 1,
+        nameColB = 3,
+        nameTypeA = "genesymbol",
+        nameTypeB = "genesymbol",
+        typeA = "protein",
+        typeB = "protein",
+        isDirected = False,
+        sign = False,
+        ncbiTaxId = 9606,
+        inFile = 'vidal_hi_iii',
+        references = False,
+        extraEdgeAttrs = {},
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {},
+        must_have_references = False,
+        inputArgs = {'fname': '/home/denes/Documents/pw/data/hi3-2.3.tsv'})
 }
 
 '''
@@ -1002,6 +1022,7 @@ reactome_modifications = {
 }
 
 categories = {
+    'Vidal HI-III': 'i',
     'CancerCellMap': 'p',
     'InnateDB': 'i',
     'SPIKE': 'p',
@@ -1045,6 +1066,13 @@ m = set([])
 
 for db, c in iteritems(categories):
     locals()[c].add(db)
+
+catnames = {
+    'm': 'Enzyme-substrate',
+    'p': 'Activity flow',
+    'i': 'Interaction',
+    'r': 'Process description'
+}
 
 pathway_resources = p
 interaction_resources = i

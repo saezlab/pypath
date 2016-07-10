@@ -37,11 +37,32 @@ try:
 except:
     sys.stdout.write('\t :: Module `hcluster` not available.\n')
 import matplotlib.gridspec as gridspec
+import matplotlib.backends.backend_pdf
 from matplotlib import ticker
 from scipy import stats
 
 import pypath.common as common
 import pypath.colorgen as colorgen
+
+def is_opentype_cff_font(filename):
+    """
+    This is necessary to fix a bug in matplotlib:
+    https://github.com/matplotlib/matplotlib/pull/6714
+    Returns True if the given font is a Postscript Compact Font Format
+    Font embedded in an OpenType wrapper.  Used by the PostScript and
+    PDF backends that can not subset these fonts.
+    """
+    if os.path.splitext(filename)[1].lower() == '.otf':
+        result = _is_opentype_cff_font_cache.get(filename)
+        if result is None:
+            with open(filename, 'rb') as fd:
+                tag = fd.read(4)
+            result = (tag == b'OTTO')
+            _is_opentype_cff_font_cache[filename] = result
+        return result
+    return False
+
+mpl.font_manager.is_opentype_cff_font = is_opentype_cff_font
 
 if not 'next' in __builtins__:
     def next(gen):
@@ -184,7 +205,7 @@ class MultiBarplot(Plot):
             'align': 'center'
         }
         self.axis_lab_font_default = {
-            'family': ['Helvetica Neue LT Std', 'sans'],
+            'family': ['Helvetica Neue LT Std'],
             'style': 'normal',
             'stretch': 'condensed',
             'weight': 'bold',
@@ -192,7 +213,7 @@ class MultiBarplot(Plot):
             'size': 'x-large'
         }
         self.ticklabel_font_default = {
-            'family': ['Helvetica Neue LT Std', 'sans'],
+            'family': ['Helvetica Neue LT Std'],
             'style': 'normal',
             'stretch': 'condensed',
             'weight': 'roman',
@@ -200,10 +221,10 @@ class MultiBarplot(Plot):
             'size': 'large'
         }
         self.title_font_default = {
-            'family': ['Helvetica Neue LT Std', 'sans'],
+            'family': ['Helvetica Neue LT Std'],
             'style': 'normal',
             'stretch': 'condensed',
-            'weight': 'heavy',
+            'weight': 'bold',
             'variant': 'normal',
             'size': 'xx-large'
         }
@@ -222,7 +243,7 @@ class MultiBarplot(Plot):
         self.fp_title = \
             mpl.font_manager.FontProperties(**self.title_font)
         
-        self.x = np.array(self.x)
+        self.x = np.array(self.x, dtype = np.object)
         self.y = np.array(self.y)
         
         self.plot()
@@ -278,13 +299,13 @@ class MultiBarplot(Plot):
         if type(self.categories) is dict:
             # self.cnames: name -> number dict
             self.cnames = dict(map(reversed, enumerate(sorted(list(set(self.categories.values()))))))
-            self.cats = map(lambda name: self.cnames[self.categories[name]], self.x)
+            self.cats = list(map(lambda name: self.cnames[self.categories[name]], self.x))
         elif type(self.categories) is list:
             if type(self.categories[0]) is int:
                 self.cats = self.categories
             else:
                 self.cnames = dict(map(reversed, enumerate(sorted(list(set(self.categories))))))
-            self.cats = map(lambda name: self.cnames[self.categories[name]], self.x)
+            self.cats = list(map(lambda name: self.cnames[self.categories[name]], self.x))
         elif type(self.x[0]) is list:
             self.cats = []
             _x = []
@@ -301,6 +322,7 @@ class MultiBarplot(Plot):
             else:
                 self.cnames = dict(map(lambda c: (c, '#%u'%c), self.cats))
         self.cnums = dict(map(reversed, iteritems(self.cnames)))
+        self.cats = np.array(self.cats)
     
     def set_colors(self):
         """
@@ -326,7 +348,7 @@ class MultiBarplot(Plot):
                     self.col.extend(ccols)
                 self.col = np.array(self.col)
         if type(self.color) not in common.simpleTypes and \
-            len(self.color) == len(self.categories):
+            len(self.color) == len(self.x):
             self.col = np.array(self.color)
         elif self.ccol is not None:
             self.col = \
@@ -371,23 +393,28 @@ class MultiBarplot(Plot):
         Finds the defined or default order, and
         sorts the arrays x, y and col accordingly.
         """
-        if self.order == 'x':
-            self.ordr = np.array(self.x.argsort())
-        elif self.order == 'y':
-            self.ordr = np.array(self.y.argsort())
-        elif self.order and len(set(self.order) & set(self.x)) == len(self.x):
-            self.ordr = np.array(map(
+        print(np.where(self.x == 'IntAct')[0][0])
+        if type(self.order) is str:
+            if self.order == 'x':
+                self.ordr = np.array(self.x.argsort())
+            elif self.order == 'y':
+                self.ordr = np.array(self.y.argsort())
+        elif hasattr(self.order, '__iter__') and \
+            len(set(self.order) & set(self.x)) == len(self.x):
+            self.ordr = np.array(list(map(
                             lambda i:
                                 np.where(self.x == i)[0][0],
                             self.order
-                        ))
+                        )))
         else:
             self.ordr = np.array(xrange(len(self.x)))
         if self.desc:
             self.ordr = self.ordr[::-1]
+        print(self.ordr)
         self.x = self.x[self.ordr]
         self.y = self.y[self.ordr]
         self.col = self.col[self.ordr]
+        self.cats = self.cats[self.ordr]
     
     def set_figsize(self):
         """
@@ -410,33 +437,43 @@ class MultiBarplot(Plot):
         with proportions according to the number of elements
         in each subplot.
         """
-        self.gs = mpl.gridspec.GridSpec(1, self.numof_cats,
-                height_ratios = [1], width_ratios = map(len, self.cat_x))
+        self.gs = mpl.gridspec.GridSpec(2, self.numof_cats,
+                height_ratios = [1, 0], width_ratios = list(map(len, self.cat_x)))
     
-    def get_subplot(self, i):
-        self.axes[i] = self.fig.add_subplot(self.gs[0,i])
+    def get_subplot(self, i, j = 0):
+        self.axes[i] = self.fig.add_subplot(self.gs[j,i])
         self.ax = self.axes[i]
     
     def make_plots(self):
         for i, x in enumerate(self.cat_x):
             self.get_subplot(i)
             xcoo = np.arange(len(x)) - self.bar_args['width'] / 2.0
+            xtlabs = np.array(list(map(lambda l: l[0] if type(l) is tuple else l, x)))
             self.ax.bar(left = xcoo,
                         height = self.cat_y[i],
                         color = self.cat_col[i],
-                        tick_label = x,
+                        tick_label = xtlabs,
                         **self.bar_args)
             self.labels()
+            self.ax.xaxis.grid(False)
+            self.ax.set_xlim([-1, max(xcoo) + 0.5])
+            self.get_subplot(i, 1)
+            self.ax.xaxis.set_ticklabels([])
+            self.ax.yaxis.set_ticklabels([])
             self.ax.set_xlabel(self.cnums[i], fontproperties = self.fp_axis_lab)
+            self.ax.xaxis.label.set_verticalalignment('bottom')
+            # self.ax.xaxis._autolabelpos = False
     
     def labels(self):
-        map(lambda tick:
+        list(map(lambda tick:
                 tick.label.set_fontproperties(self.fp_ticklabel) or \
-                tick.label.set_rotation(self.lab_angle),
-            self.ax.xaxis.get_major_ticks())
-        map(lambda tick:
+                self.lab_angle == 0 or self.lab_angle == 90 or \
+                    tick.label.set_rotation(self.lab_angle) or \
+                    tick.label.set_horizontalalignment('right'),
+            self.ax.xaxis.get_major_ticks()))
+        list(map(lambda tick:
                 tick.label.set_fontproperties(self.fp_ticklabel),
-            self.ax.yaxis.get_major_ticks())
+            self.ax.yaxis.get_major_ticks()))
         self.ax.set_ylabel(self.ylab, fontproperties = self.fp_axis_lab)
         #self.ax.yaxis.label.set_fontproperties(self)
     
@@ -446,11 +483,28 @@ class MultiBarplot(Plot):
         self.title_text.set_horizontalalignment(self.title_halign)
         self.title_text.set_verticalalignment(self.title_valign)
     
+    def align_x_labels(self):
+        self.lowest_ax = min(self.axes.values(), key = lambda ax: ax.xaxis.label.get_position()[1])
+        self.minxlabcoo = self.lowest_ax.xaxis.label.get_position()[1]
+        self.lowest_xlab_dcoo = self.lowest_ax.transData.transform(self.lowest_ax.xaxis.label.get_position())
+        list(
+            map(
+                    lambda ax: \
+                        ax.xaxis.set_label_coords(
+                        self.fig.transFigure.inverted().transform(ax.transAxes.transform((0.5, 0.5)))[0],
+                        self.fig.transFigure.inverted().transform(self.lowest_xlab_dcoo)[1],
+                        transform = self.fig.transFigure
+                        ),
+                    self.axes.values()
+                )
+        )
+        for ax in self.axes.values():
+            ax.xaxis._autolabelpos = False
+    
     def finish(self):
-        self.cvs.draw()
         self.fig.tight_layout()
         self.fig.subplots_adjust(top = 0.85)
-        
+        self.cvs.draw()
         self.cvs.print_figure(self.pdf)
         self.pdf.close()
         self.fig.clf()

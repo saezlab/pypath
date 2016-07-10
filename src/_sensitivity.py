@@ -31,7 +31,10 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
 import scipy.cluster.hierarchy as hc
-import hcluster as hc2
+try:
+    import hcluster as hc2
+except:
+    pass
 import matplotlib.gridspec as gridspec
 
 from pypath.progress import Progress
@@ -413,7 +416,7 @@ def complexes_in_network(g, csource = 'corum'):
     return [c for c, memb in cdict.iteritems() if len(memb - allv) == 0]
 
 def rgb2hex(rgb):
-    return '#%02x%02x%02x' % rgb
+    return '#%02x%02x%02x' % tuple(map(int, rgb))
 
 def hex2rgb(self, rgbhex):
     rgbhex = rgbhex.lstrip('#')
