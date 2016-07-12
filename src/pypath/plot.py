@@ -190,7 +190,14 @@ class MultiBarplot(Plot):
         rc = {}, palette = None, axis_lab_font = {},
         bar_args = {}, ticklabel_font = {}, title_font = {},
         title_halign = 'center', title_valign = 'top',
-        y2 = None, color2 = None):
+        y2 = None, color2 = None, ylim = None,
+        grouped = False, group_labels = []):
+        """
+        Plots multiple barplots side-by-side.
+        Not all options are compatible with each other.
+        
+        
+        """
         
         for k, v in iteritems(locals()):
             setattr(self, k, v)
@@ -245,13 +252,26 @@ class MultiBarplot(Plot):
             mpl.font_manager.FontProperties(**self.title_font)
         
         self.x = np.array(self.x, dtype = np.object)
+        
+        if self.grouped:
+            self.grouped_y = self.y
+            self.y = self.y[0]
+            for i, gy in enumerate(self.grouped_y):
+                self.grouped_y[i] = np.array(gy)
+            self.grouped_colors = self.color
+            self.color = self.color[0]
+        
         self.y = np.array(self.y)
+        
         if hasattr(self, 'y2') and self.y2 is not None:
             self.y2 = np.array(self.y2)
         
         self.plot()
     
     def reload(self):
+        """
+        Reloads the module and updates the class instance.
+        """
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
         imp.reload(mod)
@@ -331,10 +351,20 @@ class MultiBarplot(Plot):
         """
         Compiles an array of colors equal length of x.
         """
+        
+        # calls for each group at grouped barplot
+        if self.grouped and colseries == '':
+            for i, gcol in enumerate(self.grouped_colors):
+                setattr(self, 'color_g%u', gcol)
+                self.set_colors(colseries = '_g%u' % i)
+            self.col = self.col_g0
+            return None
+        
         colorattr = 'color%s' % colseries
         colattr = 'col%s' % colseries
         color = getattr(self, colorattr)
         ccol = None
+        
         if type(color) is str:
             ccol = dict(map(
                             lambda name:
@@ -366,6 +396,8 @@ class MultiBarplot(Plot):
                     self.cats
                 )))
             )
+        
+        # if got a second data series:
         if colseries == '' \
             and hasattr(self, 'color2') \
             and self.color2 is not None:
@@ -387,6 +419,10 @@ class MultiBarplot(Plot):
         attrs = ['x', 'y', 'col']
         if hasattr(self, 'y2') and self.y2 is not None:
             attrs.extend(['y2', 'col2'])
+        if self.grouped:
+            for i in xrange(len(self.grouped_y)):
+                attrs.append('y_g%u' % i)
+                attrs.append('col_g%u' % i)
         for dim in attrs:
             setattr(self, 'cat_%s' % dim,
                 list(map(
@@ -435,6 +471,12 @@ class MultiBarplot(Plot):
             self.y2 = self.y2[self.ordr]
         if hasattr(self, 'col2'):
             self.col2 = self.col2[self.ordr]
+        if self.grouped:
+            for g in xrange(len(self.grouped_y)):
+                yattr = 'y_g%u' % g
+                colattr = 'col_g%u' % g
+                setattr(self, yattr, getattr(self, yattr)[self.ordr])
+                setattr(self, colattr, getattr(self, colattr)[self.ordr])
     
     def set_figsize(self):
         """
@@ -465,6 +507,14 @@ class MultiBarplot(Plot):
         self.ax = self.axes[i]
     
     def make_plots(self):
+        """
+        Does the actual plotting.
+        """
+        if self.grouped:
+            self.bar_args['width'] = self.bar_args['width'] / float(len(self.grouped_y))
+        
+        width = self.bar_args['width']
+        
         for i, x in enumerate(self.cat_x):
             self.get_subplot(i)
             xcoo = np.arange(len(x)) - self.bar_args['width'] / 2.0
@@ -474,6 +524,12 @@ class MultiBarplot(Plot):
                         color = self.cat_col[i],
                         tick_label = xtlabs,
                         **self.bar_args)
+            if self.grouped:
+                for j in xrange(1, len(self.grouped_y)):
+                    self.ax.bar(left = xcoo + width * j,
+                        height = getattr(self, 'cat_y_g%u' % j)[i],
+                        color = getattr(self, 'cat_col_g%u' % j)[i],
+                        **self.bar_args)
             if hasattr(self, 'y2') and self.y2 is not None:
                 self.ax.bar(left = xcoo,
                             height = self.cat_y2[i],
@@ -482,6 +538,9 @@ class MultiBarplot(Plot):
             self.labels()
             self.ax.xaxis.grid(False)
             self.ax.set_xlim([-1, max(xcoo) + 0.5])
+            if self.ylime is not None:
+                self.ax.set_ylim(self.ylim)
+            
             self.get_subplot(i, 1)
             self.ax.xaxis.set_ticklabels([])
             self.ax.yaxis.set_ticklabels([])
@@ -489,6 +548,9 @@ class MultiBarplot(Plot):
             self.ax.xaxis.label.set_verticalalignment('bottom')
     
     def labels(self):
+        """
+        Sets properties of axis labels and ticklabels.
+        """
         list(map(lambda tick:
                 tick.label.set_fontproperties(self.fp_ticklabel) or \
                 (self.lab_angle == 0 or self.lab_angle == 90) and \
@@ -502,6 +564,9 @@ class MultiBarplot(Plot):
         #self.ax.yaxis.label.set_fontproperties(self)
     
     def set_title(self):
+        """
+        Sets the main title.
+        """
         self.title_text = self.fig.suptitle(self.title)
         self.title_text.set_fontproperties(self.fp_title)
         self.title_text.set_horizontalalignment(self.title_halign)
@@ -530,6 +595,9 @@ class MultiBarplot(Plot):
             ax.xaxis._autolabelpos = False
     
     def finish(self):
+        """
+        Applies tight layout, draws the figure, writes the file and closes.
+        """
         self.fig.tight_layout()
         self.fig.subplots_adjust(top = 0.85)
         self.cvs.draw()
