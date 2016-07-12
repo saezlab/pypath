@@ -632,7 +632,7 @@ class Mapper(object):
             prg = progress.Progress(c.size, "Processing ID conversion list", 99)
             for l in c.result:
                 prg.step(len(l))
-                l = l.decode('ascii').split('\t')
+                l = l.decode('ascii').strip().split('\t')
                 for ac_typ in ac_types:
                     if len(l) > 2 and self.name_types[ac_typ] == l[1]:
                         other = l[2].split('.')[0]

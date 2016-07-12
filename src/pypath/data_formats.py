@@ -19,6 +19,7 @@
 from future.utils import iteritems
 
 import os
+import copy
 
 # from pypath:
 import pypath.input_formats as input_formats
@@ -390,7 +391,7 @@ interaction = {
         extraEdgeAttrs = {},
         extraNodeAttrsA = {},
         extraNodeAttrsB = {}),
-    'alz': input_formats.ReadSettings(name="AlzPathway", 
+    'alz': input_formats.ReadSettings(name="AlzPathway",
         separator="\t", nameColA=0, nameColB=1,
         nameTypeA="uniprot", nameTypeB="uniprot",
         typeA="protein", typeB="protein", isDirected=False, sign=False,
@@ -487,7 +488,7 @@ ptm = {
         extraNodeAttrsA={},
         extraNodeAttrsB={},
         must_have_references = True),
-    'hprd': input_formats.ReadSettings(name="HPRD",
+    'hprd_p': input_formats.ReadSettings(name="HPRD-phos",
         separator = None, nameColA = 6,
         nameColB = 3, nameTypeA = "genesymbol", nameTypeB = "refseqp",
         typeA = "protein", typeB = "protein", isDirected = 1, sign = False,
@@ -564,6 +565,9 @@ ptm_misc = {
         extraNodeAttrsA = {},
         extraNodeAttrsB = {})
 }
+
+ptm_all = copy.deepcopy(ptm_misc)
+ptm_all.update(ptm)
 
 '''
 Interaction databases not included in OmniPath.
@@ -688,7 +692,7 @@ interaction_htp = {
         extraEdgeAttrs={},
         extraNodeAttrsA={},
         extraNodeAttrsB={},
-        inputArgs = {'htp_limit': None}),
+        inputArgs = {'htp_limit': None, 'ltp': False}),
     'dip': input_formats.ReadSettings(name="DIP",
         nameColA=0, nameColB=1,
         nameTypeA="uniprot", nameTypeB="uniprot",
@@ -703,6 +707,16 @@ interaction_htp = {
         extraNodeAttrsA={},
         extraNodeAttrsB={},
         inputArgs = {'core_only': False, 'small_scale_only': False}),
+    'ccmap': input_formats.ReadSettings(name="CancerCellMap", 
+        nameColA = 0, nameColB = 1,
+        nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA = "protein", typeB = "protein",
+        isDirected = (2, 'directed'), sign = False, ncbiTaxId = 9606,
+        inFile = 'get_ccmap',
+        references = (3, ";"),
+        extraEdgeAttrs={},
+        extraNodeAttrsA={},
+        extraNodeAttrsB={}),
     'innatedb': input_formats.ReadSettings(name = "InnateDB",
         nameColA = 0, nameColB = 2,
         nameTypeA = "uniprot", nameTypeB = "uniprot",
@@ -750,7 +764,17 @@ interaction_htp = {
         extraNodeAttrsA = {},
         extraNodeAttrsB = {},
         must_have_references = False,
-        inputArgs = {'fname': '/home/denes/Documents/pw/data/hi3-2.3.tsv'})
+        inputArgs = {'fname': '/home/denes/Documents/pw/data/hi3-2.3.tsv'}),
+    'mppi': input_formats.ReadSettings(name = "MPPI", 
+        separator = "|", nameColA = 2, nameColB = 6,
+        nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA = "protein", typeB = "protein", isDirected = False, sign = False,
+        inFile = 'mppi_interactions',
+        references = (0, ";"), ncbiTaxId = 9606,
+        extraEdgeAttrs = {
+            "mppi_evidences": (1, ";")},
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {})
 }
 
 '''
@@ -937,17 +961,12 @@ intogen_cancer = input_formats.ReadList(name = "IntOGen", separator = "\t", name
                 inFile = 'intogen_cancerdrivers.tsv',
                 extraAttrs={})
 
-aidan_list = input_formats.ReadList(name="aidan_list", separator=";", nameCol=0,
-                nameType="uniprot", typ="protein",
-                inFile=os.path.join(ROOT, 'data', 'aidan_list_uniprot'),
-                extraAttrs={})
-
 reactome_modifications = {
     'phosphorylated': ('phosphorylation', 'X'),
     'glycosylated': ('glycosylation', 'X'),
     'acetylated': ('acetylated', 'X'),
     'prenylated': ('prenylation', 'X'),
-    'ubiquitinated': ('ubiquitination', 'X'), 
+    'ubiquitinated': ('ubiquitination', 'X'),
     'myristoylated': ('myristoylation', 'X'),
     'hydroxylated': ('hydroxylation', 'X'),
     'acetylated residue': ('acetylation', 'X'),
@@ -1028,7 +1047,8 @@ categories = {
     'SPIKE': 'p',
     'LMPID': 'm',
     'DIP': 'i',
-    'HPRD': 'm',
+    'HPRD': 'i',
+    'HPRD-phos': 'm',
     'PDZBase': 'p',
     'dbPTM': 'm',
     'MatrixDB': 'i',
@@ -1056,13 +1076,20 @@ categories = {
     'Reactome': 'r',
     'ACSN': 'r',
     'WikiPathways': 'r',
-    'PANTHER': 'r'
+    'PANTHER': 'r',
+    'ABS': 't',
+    'ENCODE_distal': 't',
+    'PAZAR': 't',
+    'ENCODE_proximal': 't',
+    'ORegAnno': 't',
+    'HTRI': 't'
 }
 
 p = set([])
 i = set([])
 r = set([])
 m = set([])
+t = set([])
 
 for db, c in iteritems(categories):
     locals()[c].add(db)
@@ -1071,10 +1098,12 @@ catnames = {
     'm': 'Enzyme-substrate',
     'p': 'Activity flow',
     'i': 'Interaction',
-    'r': 'Process description'
+    'r': 'Process description',
+    't': 'Transcription'
 }
 
 pathway_resources = p
 interaction_resources = i
 ptm_resources = m
 reaction_resources = r
+transctiption_resources = t

@@ -18,6 +18,8 @@
     # from GDSC drug sensitivity screening.
 #
 
+from future.utils import iteritems
+
 import re
 import random
 import sys
@@ -227,7 +229,7 @@ def scatterplot(x, y, xlab, ylab, fname, colors,
         tick.label.set_color(textcol)
     if type(legend) is dict:
         legend_patches = [mpatches.Patch(color=col, label=lab) \
-            for lab, col in legend.iteritems()]
+            for lab, col in iteritems(legend)]
         ax.legend(handles = legend_patches)
         xlm = ax.get_xlim()
         ax.set_xlim((xlm[0], xlm[1]*1.2))
@@ -388,7 +390,7 @@ def barplot(x, y, data, fname, font_family = 'Helvetica Neue LT Std',
     plt.setp(ax.xaxis.get_majorticklabels(), rotation = lab_angle)
     if type(legend) is dict:
         legend_patches = [mpatches.Patch(color = col, label = lab) \
-            for lab, col in legend.iteritems()]
+            for lab, col in iteritems(legend.iteritems)]
         ax.legend(handles = legend_patches)
     if fin:
         finish(fig, fname)
@@ -410,10 +412,10 @@ def complexes_in_network(g, csource = 'corum'):
     cdict = {}
     allv = set(g.vs['name'])
     for v in g.vs:
-        for c, cdata in v['complexes'][csource].iteritems():
+        for c, cdata in iteritems(v['complexes'][csource]):
             if c not in cdict:
                 cdict[c] = set(cdata['all_members'])
-    return [c for c, memb in cdict.iteritems() if len(memb - allv) == 0]
+    return [c for c, memb in iteritems(cdict) if len(memb - allv) == 0]
 
 def rgb2hex(rgb):
     return '#%02x%02x%02x' % tuple(map(int, rgb))

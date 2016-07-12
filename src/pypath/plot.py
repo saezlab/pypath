@@ -189,7 +189,8 @@ class MultiBarplot(Plot):
         order = False, desc = True, legend = None, fin = True,
         rc = {}, palette = None, axis_lab_font = {},
         bar_args = {}, ticklabel_font = {}, title_font = {},
-        title_halign = 'center', title_valign = 'top'):
+        title_halign = 'center', title_valign = 'top',
+        y2 = None, color2 = None):
         
         for k, v in iteritems(locals()):
             setattr(self, k, v)
@@ -245,6 +246,8 @@ class MultiBarplot(Plot):
         
         self.x = np.array(self.x, dtype = np.object)
         self.y = np.array(self.y)
+        if hasattr(self, 'y2') and self.y2 is not None:
+            self.y2 = np.array(self.y2)
         
         self.plot()
     
@@ -324,39 +327,49 @@ class MultiBarplot(Plot):
         self.cnums = dict(map(reversed, iteritems(self.cnames)))
         self.cats = np.array(self.cats)
     
-    def set_colors(self):
+    def set_colors(self, colseries = ''):
         """
         Compiles an array of colors equal length of x.
         """
-        self.ccol = None
-        if type(self.color) is str:
-            self.ccol = dict(map(
+        colorattr = 'color%s' % colseries
+        colattr = 'col%s' % colseries
+        color = getattr(self, colorattr)
+        ccol = None
+        if type(color) is str:
+            ccol = dict(map(
                             lambda name:
-                                (name, self.color),
+                                (name, color),
                             self.cat_ordr)
                         )
-        elif len(self.color) == len(self.cnames):
-            if type(self.color[0]) is str:
-                self.ccol = dict(map(
+        elif len(color) == len(self.cnames):
+            if type(color[0]) is str:
+                ccol = dict(map(
                                 lambda c:
-                                    (c[1], self.color[c[0]]),
+                                    (c[1], color[c[0]]),
                                 enumerate(self.cat_ordr)
                             ))
-            elif type(self.color[0]) is list:
-                self.col = []
+            elif type(color[0]) is list:
+                setattr(self, colattr, [])
                 for ccols in self.colors:
-                    self.col.extend(ccols)
-                self.col = np.array(self.col)
-        if type(self.color) not in common.simpleTypes and \
-            len(self.color) == len(self.x):
-            self.col = np.array(self.color)
-        elif self.ccol is not None:
-            self.col = \
+                    getattr(self, colattr).extend(ccols)
+                setattr(self, colattr, np.array(getattr(self, colattr)))
+        if type(color) not in common.simpleTypes and \
+            len(color) == len(self.x):
+            setattr(self, colattr, np.array(color))
+        elif ccol is not None:
+            setattr(
+                self,
+                colattr,
                 np.array(list(map(
                     lambda cnum:
-                        self.ccol[self.cnums[cnum]],
+                        ccol[self.cnums[cnum]],
                     self.cats
                 )))
+            )
+        if colseries == '' \
+            and hasattr(self, 'color2') \
+            and self.color2 is not None:
+            self.set_colors(colseries = '2')
     
     def plots_order(self):
         """
@@ -371,7 +384,10 @@ class MultiBarplot(Plot):
         """
         Sets list of lists with x and y values and colors by category.
         """
-        for dim in ['x', 'y', 'col']:
+        attrs = ['x', 'y', 'col']
+        if hasattr(self, 'y2') and self.y2 is not None:
+            attrs.extend(['y2', 'col2'])
+        for dim in attrs:
             setattr(self, 'cat_%s' % dim,
                 list(map(
                     lambda name:
@@ -393,7 +409,6 @@ class MultiBarplot(Plot):
         Finds the defined or default order, and
         sorts the arrays x, y and col accordingly.
         """
-        print(np.where(self.x == 'IntAct')[0][0])
         if type(self.order) is str:
             if self.order == 'x':
                 self.ordr = np.array(self.x.argsort())
@@ -403,18 +418,23 @@ class MultiBarplot(Plot):
             len(set(self.order) & set(self.x)) == len(self.x):
             self.ordr = np.array(list(map(
                             lambda i:
-                                np.where(self.x == i)[0][0],
+                                # this is ugly, but needed a quick
+                                # solution when introducing tuples...
+                                list(self.x).index(i),
                             self.order
                         )))
         else:
             self.ordr = np.array(xrange(len(self.x)))
         if self.desc:
             self.ordr = self.ordr[::-1]
-        print(self.ordr)
         self.x = self.x[self.ordr]
         self.y = self.y[self.ordr]
         self.col = self.col[self.ordr]
         self.cats = self.cats[self.ordr]
+        if hasattr(self, 'y2') and self.y2 is not None:
+            self.y2 = self.y2[self.ordr]
+        if hasattr(self, 'col2'):
+            self.col2 = self.col2[self.ordr]
     
     def set_figsize(self):
         """
@@ -454,6 +474,11 @@ class MultiBarplot(Plot):
                         color = self.cat_col[i],
                         tick_label = xtlabs,
                         **self.bar_args)
+            if hasattr(self, 'y2') and self.y2 is not None:
+                self.ax.bar(left = xcoo,
+                            height = self.cat_y2[i],
+                            color = self.cat_col2[i],
+                            **self.bar_args)
             self.labels()
             self.ax.xaxis.grid(False)
             self.ax.set_xlim([-1, max(xcoo) + 0.5])
@@ -462,14 +487,13 @@ class MultiBarplot(Plot):
             self.ax.yaxis.set_ticklabels([])
             self.ax.set_xlabel(self.cnums[i], fontproperties = self.fp_axis_lab)
             self.ax.xaxis.label.set_verticalalignment('bottom')
-            # self.ax.xaxis._autolabelpos = False
     
     def labels(self):
         list(map(lambda tick:
                 tick.label.set_fontproperties(self.fp_ticklabel) or \
-                self.lab_angle == 0 or self.lab_angle == 90 or \
-                    tick.label.set_rotation(self.lab_angle) or \
-                    tick.label.set_horizontalalignment('right'),
+                (self.lab_angle == 0 or self.lab_angle == 90) and \
+                    (tick.label.set_rotation(self.lab_angle) or \
+                    tick.label.set_horizontalalignment('center')),
             self.ax.xaxis.get_major_ticks()))
         list(map(lambda tick:
                 tick.label.set_fontproperties(self.fp_ticklabel),
@@ -484,16 +508,20 @@ class MultiBarplot(Plot):
         self.title_text.set_verticalalignment(self.title_valign)
     
     def align_x_labels(self):
-        self.lowest_ax = min(self.axes.values(), key = lambda ax: ax.xaxis.label.get_position()[1])
+        self.lowest_ax = min(self.axes.values(),
+                             key = lambda ax: ax.xaxis.label.get_position()[1])
         self.minxlabcoo = self.lowest_ax.xaxis.label.get_position()[1]
-        self.lowest_xlab_dcoo = self.lowest_ax.transData.transform(self.lowest_ax.xaxis.label.get_position())
+        self.lowest_xlab_dcoo = self.lowest_ax.transData.transform(
+            self.lowest_ax.xaxis.label.get_position())
         list(
             map(
                     lambda ax: \
                         ax.xaxis.set_label_coords(
-                        self.fig.transFigure.inverted().transform(ax.transAxes.transform((0.5, 0.5)))[0],
-                        self.fig.transFigure.inverted().transform(self.lowest_xlab_dcoo)[1],
-                        transform = self.fig.transFigure
+                            self.fig.transFigure.inverted().transform(
+                                ax.transAxes.transform((0.5, 0.5)))[0],
+                            self.fig.transFigure.inverted().transform(
+                                self.lowest_xlab_dcoo)[1],
+                            transform = self.fig.transFigure
                         ),
                     self.axes.values()
                 )
@@ -508,6 +536,9 @@ class MultiBarplot(Plot):
         self.cvs.print_figure(self.pdf)
         self.pdf.close()
         self.fig.clf()
+
+# ## ## ##
+# ## ## ##
 
 class Barplot(Plot):
     

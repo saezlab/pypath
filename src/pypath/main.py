@@ -5068,12 +5068,16 @@ class PyPath(object):
     
     def get_dirs_signs(self):
         result = {}
-        for db in data_formats.omnipath.values() + data_formats.good.values() \
-            + data_formats.ugly.values():
-            result[db.name] = [bool(db.isDirected), bool(db.sign)]
+        for dbs in [data_formats.ptm.values(), data_formats.interaction_htp.values(),
+            data_formats.pathway.values(), data_formats.transcription.values()]:
+            for db in dbs:
+                result[db.name] = [bool(db.isDirected), bool(db.sign)]
         return result
     
-    def basic_stats(self, latex = False):
+    def basic_stats(self, latex = False, caption = '', latex_hdr = True,
+                    fontsize = 8, font = 'HelveticaNeueLTStd-LtCn',
+                    header_format = '%s', row_order = None, by_category = True,
+                    use_cats = ['p', 'm', 'i', 'r']):
         '''
         Returns basic numbers about the network resources, e.g. edge and 
         node counts. 
@@ -5087,12 +5091,22 @@ class PyPath(object):
             if latex else os.path.join('results', 'databases-%s.tsv'%self.session)
         stats = self.sources_overlap()
         dirs = self.get_dirs_signs()
-        header = ['Database', 'Node count', 'Edge count', 'Directions', 'Signs']
+        header = ['Database', 'Node count', 'Edge count', 'Directions', 'Signs', 'Annotations', 'Notes']
         out = [header]
+        
+        desc = descriptions.descriptions
         for s in sorted(stats['single']['nodes'].keys()):
-            out.append([x for x in [s, stats['single']['nodes'][s], 
-            stats['single']['edges'][s], 
-                int(dirs[s][0]), int(dirs[s][1])]])
+            annot = ', '.join(desc[s]['annot']) if s in desc and 'annot' in desc[s] else ''
+            recom = desc[s]['recommend'] if s in desc and 'recommend' in desc[s] else ''
+            out.append([x for x in [
+                s,
+                stats['single']['nodes'][s],
+                stats['single']['edges'][s],
+                int(dirs[s][0]) if s in dirs else '',
+                int(dirs[s][1]) if s in dirs else '',
+                annot,
+                recom,
+            ]])
         if not latex:
             out = '\n'.join(['\t'.join(x) for x in out])
             with open(outf, 'w') as f:
@@ -5100,36 +5114,108 @@ class PyPath(object):
             sys.stdout.write('\t:: Output written to file `%s`\n'%outf)
             sys.stdout.flush()
         else:
+            
+            cats = list(reduce(lambda e1, e2: e1 | e2['cat'], self.graph.es, set([]))) \
+                if by_category else []
+            
+            cats = set(cats) & set(use_cats)
+            use_cats = list(filter(lambda c: c in cats, use_cats))
+            
+            out = dict(map(lambda l: (l[0], l[1:]), out[1:]))
+            
+            if not by_category:
+                row_order = sorted(self.sources, key = lambda s: s.lower())
+            else:
+                row_order = []
+                for cat in use_cats:
+                    row_order.append((data_formats.catnames[cat], 'subtitle'))
+                    row_order.extend(
+                        sorted(
+                            filter(
+                                lambda s:
+                                    data_formats.categories[s] == cat,
+                                self.sources
+                            ),
+                            key = lambda s: s.lower()
+                        )
+                    )
+            
             texnewline = r'\\' + '\n'
-            tex = r'''\documentclass[12pt,a4paper]{article}
-                \usepackage[T1]{fontenc}
-                \usepackage[utf8]{inputenc}
-                \usepackage[english]{babel}
-                \usepackage[landscape]{geometry}
-                \usepackage{booktabs}
-                \usepackage{microtype}
-                \usepackage{tabularx}
-                \begin{document}
-                \thispagestyle{empty}
+            
+            _latex_tab = r'''%s
+                    \begin{tabularx}{\textwidth}{%s}
+                    \toprule
+                        %s
+                    \midrule
+                        %s
+                    \bottomrule
+                    \end{tabularx}
+                    %s
                 '''
-            tex += r'\begin{table}[h]' + '\n'
-            tex += r'\begin{tabularx}{\textwidth}{' \
-                + 'X%s'%''.join(['r']*(len(header) - 1)) + r'}' + '\n' \
-                + r'\toprule' + '\n'
-            tex += r' & '.join(header) + texnewline
-            tex += r'\midrule' + '\n'
-            tex += texnewline.join([' & '.join([ \
-                xx.replace('_', r'\_') if type(xx) is not int else \
-                '{:,}'.format(xx) \
-                for xx in x]) for x in out[1:]]) + texnewline
-            tex += r'\bottomrule' + '\n'
-            tex += r'\caption{' + 'Node and edge counts of pathway databases' \
-                + r'}' + '\n'
-            tex += r'\end{tabularx}' + '\n'
-            tex += r'\end{table}' + '\n'
-            tex += r'\end{document}' + '\n'
+            _latex_hdr = r'''\documentclass[a4paper,%upt]{extarticle}
+                    \usepackage{fontspec}
+                    \usepackage{xunicode}
+                    \usepackage{polyglossia}
+                    \setdefaultlanguage{english}
+                    \usepackage{xltxtra}
+                    \usepackage{microtype}
+                    \usepackage[margin=5pt,portrait,paperwidth=24cm,paperheight=30cm]{geometry}
+                    \usepackage{amsmath}
+                    \usepackage{amssymb}
+                    \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+                    \usepackage{color}
+                    \usepackage{booktabs}
+                    \usepackage{tabularx}
+                    \setmainfont{%s}
+                    \definecolor{grey875}{gray}{0.125}
+                    \begin{document}
+                    \color{grey875}
+                    \thispagestyle{empty}
+                    \vfill
+                    \begin{table}[h]
+                ''' % (fontsize, font) if latex_hdr else ''
+            _latex_end = r'''
+                    \caption{%s}
+                    \end{table}
+                    \end{document}
+                ''' % caption if latex_hdr else ''
+            
+            _hdr_row = ' & '.join([header_format%h.replace(r'%', r'\%') \
+                for h in header]) + '\\\\'
+            formatter = lambda x: locale.format('%.2f', x, grouping = True) \
+                if type(x) is float \
+                else locale.format('%d', x, grouping = True) \
+                if type(x) is int \
+                else x
+            intfloat = lambda x: float(x) if '.' in x else int(x)
+            _rows = ''
+            for i, k in enumerate(row_order):
+                
+                
+                
+                if type(k) is tuple and k[1] == 'subtitle':
+                    row = '\n'.join([
+                        r'\midrule' if i > 0 else '',
+                        r'\multicolumn{6}{l}{%s}\\' % k[0],
+                        r'\midrule',
+                        ''
+                    ])
+                else:
+                    out[k][2] = r'$\bigstar$' if bool(out[k][2]) else ''
+                    out[k][3] = r'$\bigstar$' if bool(out[k][3]) else ''
+                    row = ' & '.join([k] + [
+                        xx.replace('_', r'\_') \
+                            if type(xx) is not int \
+                            else '{:,}'.format(xx) \
+                        for xx in out[k]]
+                    ) + '\\\\\n'
+                
+                _rows += row
+            
+            _latex_tab = _latex_tab % (_latex_hdr, 'r'*(len(header) - 2) + r'p{2.7cm}<{\raggedright}X<{\flushleft}', _hdr_row, _rows, _latex_end)
+            
             with open(outf, 'w') as f:
-                f.write(tex)
+                f.write(_latex_tab)
             sys.stdout.write('\t:: Output written to file `%s`\n'%outf)
             sys.stdout.flush()
     
@@ -5617,8 +5703,8 @@ class PyPath(object):
         tfs = dataio.get_tfcensus(classes)
         uniprots = common.flatList([self.mapper.map_name(e, 'ensg', 'uniprot') \
             for e in tfs['ensg']])
-        uniprots += common.flatList([self.mapper.map_name(e, 'hgnc', 'uniprot') \
-            for e in tfs['hgnc']])
+        uniprots += common.flatList([self.mapper.map_name(h, 'hgnc', 'uniprot') \
+            for h in tfs['hgnc']])
         for uniprot in uniprots:
             if uniprot in self.nodDct:
                 self.graph.vs[self.nodDct[uniprot]]['tf'] = True
@@ -5750,11 +5836,14 @@ class PyPath(object):
         all_refs = len(set(common.flatList([[r.pmid for r in e['references']] \
             for e in self.graph.es])))
         
-        for s in list(self.sources) + \
-            (list(data_formats.catnames.keys()) if by_category else []):
+        cats = list(reduce(lambda e1, e2: e1 | e2['cat'], self.graph.es, set([]))) \
+            if by_category else []
+        
+        for s in list(self.sources) + cats:
             
             sattr = 'cat' if s in data_formats.catnames else 'sources'
             rattr = 'refs_by_cat' if s in data_formats.catnames else 'refs_by_source'
+            
             cat = None if s in data_formats.catnames \
                 or s not in data_formats.categories \
                 else data_formats.categories[s]
@@ -5844,7 +5933,7 @@ class PyPath(object):
         return result
     
     def table_latex(self, fname, header, data, sum_row = True, row_order = None,
-        latex_hdr = True, caption = '', font = 'HelveticaNeueLTStd-Lt', fontsize = 8,
+        latex_hdr = True, caption = '', font = 'HelveticaNeueLTStd-LtCn', fontsize = 8,
         sum_label = 'Total', sum_cols = None, header_format = '%s', by_category = True):
         non_digit = re.compile(r'[^\d.-]+')
         row_order = sorted(data.keys(), key = lambda x: x.upper()) \
@@ -5923,10 +6012,18 @@ class PyPath(object):
         with open(fname, 'w') as f:
             f.write(_latex_tab)
     
-    def curation_tab(self, fname = 'curation_stats.tex', by_category = True, **kwargs):
+    def curation_tab(self, fname = 'curation_stats.tex', by_category = True, 
+                     use_cats = ['p', 'm', 'i', 'r'],
+                     header_size = 'normalsize', **kwargs):
         
         if by_category and 'cat' not in self.graph.es.attributes():
             self.set_categories()
+        
+        cats = list(reduce(lambda e1, e2: e1 | e2['cat'], self.graph.es, set([]))) \
+            if by_category else []
+        
+        cats = set(cats) & set(use_cats)
+        use_cats = list(filter(lambda c: c in cats, use_cats))
         
         header = [
             ('source_nodes', 'Proteins'),
@@ -5950,7 +6047,7 @@ class PyPath(object):
             ('refs_edges_ratio', 'References-edges ratio'),
             ('corrected_curation_effort', 'Corrected curation effort')
         ]
-        header_format = r'\rotatebox{90}{\footnotesize %s}'
+        header_format = (r'\rotatebox{90}{\%s ' % header_size) + '%s}'
         
         cs = self.curation_stats(by_category = by_category)
         
@@ -5967,15 +6064,19 @@ class PyPath(object):
                 data['refs_edges_ratio'] = 'N/A'
                 data['corrected_curation_effort'] = 'N/A'
         
-        for name in data_formats.catnames.values():
-            if by_category:
-                cs[(name, 'subtitle')] = cs[name]
-            else:
-                if name in cs:
-                    del cs[name]
-            row_order = []
+        for key in use_cats:
+            if key in data_formats.catnames:
+                name = data_formats.catnames[key]
+                if by_category:
+                    cs[(name, 'subtitle')] = cs[name]
+                else:
+                    if name in cs:
+                        del cs[name]
+        
+        row_order = []
+        
         if by_category:
-            for cat in ['p', 'm', 'i', 'r']:
+            for cat in use_cats:
                 row_order.append((data_formats.catnames[cat], 'subtitle'))
                 row_order.extend(
                     sorted(
@@ -5987,6 +6088,7 @@ class PyPath(object):
                         )
                     )
                 )
+        
         self.table_latex(fname, header, cs, header_format = header_format,
             row_order = row_order if by_category else None, by_category = by_category,
             sum_row = False, **kwargs)

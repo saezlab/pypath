@@ -2957,7 +2957,7 @@ def hprd_htp():
         map(
             lambda l:
                 l.split('\t'),
-                c.result[fname].read().encode('ascii').split('\n')
+                c.result[fname].read().decode('ascii').split('\n')
             )
         )
 
@@ -4580,7 +4580,7 @@ def get_wang_effects():
             reading_edges = True
     return effects
 
-def biogrid_interactions(organism = 9606, htp_limit = 1):
+def biogrid_interactions(organism = 9606, htp_limit = 1, ltp = True):
     '''
     Downloads and processes BioGRID interactions.
     Keeps only the "low throughput" interactions.
@@ -4603,7 +4603,7 @@ def biogrid_interactions(organism = 9606, htp_limit = 1):
         l = l.decode('utf-8')
         l = l.split('\t')
         if len(l) > 17:
-            if l[17].startswith('Low') and l[15] == organism and l[16] == organism:
+            if l[17].startswith('Low') or not ltp and l[15] == organism and l[16] == organism:
                 interactions.append([l[7], l[8], l[14]])
                 refc.append(l[14])
     refc = Counter(refc)
