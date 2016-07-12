@@ -188,8 +188,8 @@ class MultiBarplot(Plot):
         lab_angle = 90, lab_size = (24, 24), color = '#007b7f',
         order = False, desc = True, legend = None, fin = True,
         rc = {}, palette = None, axis_lab_font = {},
-        bar_args = {}, ticklabel_font = {}, title_font = {},
-        title_halign = 'center', title_valign = 'top',
+        bar_args = {}, ticklabel_font = {}, legend_font = {},
+        title_font = {}, title_halign = 'center', title_valign = 'top',
         y2 = None, color2 = None, ylim = None,
         grouped = False, group_labels = []):
         """
@@ -204,7 +204,7 @@ class MultiBarplot(Plot):
         
         super(MultiBarplot, self).__init__()
         
-        self.axes = {}
+        self.axes = []
         
         self.bar_args_default = {
             'width': 0.8,
@@ -228,6 +228,14 @@ class MultiBarplot(Plot):
             'variant': 'normal',
             'size': 'large'
         }
+        self.legend_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'roman',
+            'variant': 'normal',
+            'size': 'small'
+        }
         self.title_font_default = {
             'family': ['Helvetica Neue LT Std'],
             'style': 'normal',
@@ -242,12 +250,16 @@ class MultiBarplot(Plot):
                                                 self.axis_lab_font_default)
         self.ticklabel_font = common.merge_dicts(ticklabel_font,
                                                  self.ticklabel_font_default)
+        self.legend_font = common.merge_dicts(legend_font,
+                                             self.legend_font_default)
         self.title_font = common.merge_dicts(title_font,
                                              self.title_font_default)
         self.fp_axis_lab = \
             mpl.font_manager.FontProperties(**self.axis_lab_font)
         self.fp_ticklabel = \
             mpl.font_manager.FontProperties(**self.ticklabel_font)
+        self.fp_legend = \
+            mpl.font_manager.FontProperties(**self.legend_font)
         self.fp_title = \
             mpl.font_manager.FontProperties(**self.title_font)
         
@@ -258,6 +270,7 @@ class MultiBarplot(Plot):
             self.y = self.y[0]
             for i, gy in enumerate(self.grouped_y):
                 self.grouped_y[i] = np.array(gy)
+                setattr(self, 'y_g%u' % i, self.grouped_y[i])
             self.grouped_colors = self.color
             self.color = self.color[0]
         
@@ -306,6 +319,7 @@ class MultiBarplot(Plot):
         self.set_grid()
         self.make_plots()
         self.set_title()
+        self.groups_legend()
     
     def post_plot(self):
         """
@@ -355,7 +369,7 @@ class MultiBarplot(Plot):
         # calls for each group at grouped barplot
         if self.grouped and colseries == '':
             for i, gcol in enumerate(self.grouped_colors):
-                setattr(self, 'color_g%u', gcol)
+                setattr(self, 'color_g%u' % i, gcol)
                 self.set_colors(colseries = '_g%u' % i)
             self.col = self.col_g0
             return None
@@ -501,10 +515,12 @@ class MultiBarplot(Plot):
         """
         self.gs = mpl.gridspec.GridSpec(2, self.numof_cats,
                 height_ratios = [1, 0], width_ratios = list(map(len, self.cat_x)))
+        self.axes = [[None] * self.numof_cats, [None] * self.numof_cats]
     
     def get_subplot(self, i, j = 0):
-        self.axes[i] = self.fig.add_subplot(self.gs[j,i])
-        self.ax = self.axes[i]
+        if self.axes[j][i] is None:
+            self.axes[j][i] = self.fig.add_subplot(self.gs[j,i])
+        self.ax = self.axes[j][i]
     
     def make_plots(self):
         """
@@ -514,32 +530,35 @@ class MultiBarplot(Plot):
             self.bar_args['width'] = self.bar_args['width'] / float(len(self.grouped_y))
         
         width = self.bar_args['width']
+        correction = len(self.grouped_y) * width / 2.0 if self.grouped else 0.0
         
         for i, x in enumerate(self.cat_x):
             self.get_subplot(i)
             xcoo = np.arange(len(x)) - self.bar_args['width'] / 2.0
             xtlabs = np.array(list(map(lambda l: l[0] if type(l) is tuple else l, x)))
-            self.ax.bar(left = xcoo,
+            self.ax.bar(left = xcoo - correction,
                         height = self.cat_y[i],
                         color = self.cat_col[i],
                         tick_label = xtlabs,
                         **self.bar_args)
             if self.grouped:
                 for j in xrange(1, len(self.grouped_y)):
-                    self.ax.bar(left = xcoo + width * j,
+                    self.ax.bar(left = xcoo + width * j - correction,
                         height = getattr(self, 'cat_y_g%u' % j)[i],
                         color = getattr(self, 'cat_col_g%u' % j)[i],
                         **self.bar_args)
             if hasattr(self, 'y2') and self.y2 is not None:
-                self.ax.bar(left = xcoo,
+                self.ax.bar(left = xcoo - correction,
                             height = self.cat_y2[i],
                             color = self.cat_col2[i],
                             **self.bar_args)
             self.labels()
             self.ax.xaxis.grid(False)
             self.ax.set_xlim([-1, max(xcoo) + 0.5])
-            if self.ylime is not None:
+            if self.ylim is not None:
                 self.ax.set_ylim(self.ylim)
+            if self.grouped:
+                self.ax.set_xticks(self.ax.get_xticks() + correction)
             
             self.get_subplot(i, 1)
             self.ax.xaxis.set_ticklabels([])
@@ -572,8 +591,21 @@ class MultiBarplot(Plot):
         self.title_text.set_horizontalalignment(self.title_halign)
         self.title_text.set_verticalalignment(self.title_valign)
     
+    def groups_legend(self):
+        if self.grouped:
+            lhandles = \
+                list(
+                    map(
+                        lambda g:
+                            mpl.patches.Patch(color = g[1], label = g[0]),
+                        zip(self.group_labels, self.grouped_colors)
+                    )
+                )
+            broadest_ax = max(self.axes[0], key = lambda ax: len(ax.get_xticks()))
+            broadest_ax.legend(handles = lhandles, prop = self.fp_legend)
+    
     def align_x_labels(self):
-        self.lowest_ax = min(self.axes.values(),
+        self.lowest_ax = min(self.axes[0],
                              key = lambda ax: ax.xaxis.label.get_position()[1])
         self.minxlabcoo = self.lowest_ax.xaxis.label.get_position()[1]
         self.lowest_xlab_dcoo = self.lowest_ax.transData.transform(
@@ -588,10 +620,10 @@ class MultiBarplot(Plot):
                                 self.lowest_xlab_dcoo)[1],
                             transform = self.fig.transFigure
                         ),
-                    self.axes.values()
+                    self.axes[0]
                 )
         )
-        for ax in self.axes.values():
+        for ax in self.axes[0]:
             ax.xaxis._autolabelpos = False
     
     def finish(self):
@@ -852,47 +884,202 @@ def stacked_barplot(x, y, data, fname, names, font_family = 'Helvetica Neue LT S
 
 ## ## ##
 
-class ScatterPlus(Plot):
+class ScatterPlus(object):
     
-    def __init__(self, x, y, sizes = None, labels = None, data = None,
-        xlog = False, ylog = False, xlim = None, ylim = None, 
-        xtickscale = None, ytickscale = None, legscale = None, 
-        fname = None, font_family = 'Helvetica Neue LT Std', 
-        font_style = 'normal', font_weight = 'normal', font_variant = 'normal',
-        font_stretch = 'normal', confi = True, 
-        xlab = '', ylab = '', axis_lab_size = 10.0, 
-        annotation_size = 9, size = 20.0, size_scaling = 0.8, 
-        lab_angle = 90, lab_size = (9, 9), color = '#007b7f', 
-        order = False, desc = True, legend = True, legtitle = None,
-        legstrip = (None, None), legloc = 4, 
-        size_to_value = lambda x: x,
-        value_to_size = lambda x: x,
-        fin = True, 
-        rc = {}, palette = None, context = 'poster', **kwargs):
-        '''
-        y_break : tuple
-        If not None, the y-axis will have a break. 2 floats in the tuple, < 1.0, 
-        mean the lower and upper proportion of the plot shown. The part between
-        them will be hidden. E.g. y_break = (0.3, 0.1) shows the lower 30% and 
-        upper 10%, but 60% in the middle will be cut out.
-        '''
+    def __init__(self,
+            x, y,
+            size = None,
+            color = '#007b7f',
+            labels = None,
+            xlog = False,
+            ylog = False,
+            xlim = None,
+            ylim = None,
+            xtickscale = None,
+            ytickscale = None,
+            legscale = None,
+            fname = None,
+            confi = True,
+            title_font = {},
+            ticklabel_font = {},
+            legend_font = {},
+            axis_lab_font = {},
+            annot_font = {},
+            xlab = '',
+            ylab = '',
+            axis_lab_size = 10.0,
+            min_size = 5.0,
+            max_size = 30.0,
+            log_size = False,
+            alpha = 0.5,
+            size_scaling = 0.8,
+            lab_angle = 90,
+            order = False,
+            desc = True,
+            legend = True,
+            legtitle = '',
+            legstrip = (None, None),
+            color_labels = [],
+            legloc = 4,
+            size_to_value = lambda x: x,
+            value_to_size = lambda x: x,
+            figsize = (12, 9),
+            title = '',
+            title_halign = 'center',
+            title_valign = 'top',
+            fin = True,
+            rc = {},
+            **kwargs):
+        
         for k, v in iteritems(locals()):
             setattr(self, k, v)
-        self.sns = sns
-        self.rc = self.rc or {'lines.linewidth': 1.0, 'patch.linewidth': 0.0, 
-            'grid.linewidth': 1.0}
-        super(ScatterPlus, self).__init__(fname = fname, font_family = font_family, 
-            font_style = font_style, font_weight = font_weight, 
-            font_variant = font_variant, font_stretch = font_stretch,
-            palette = palette, context = context, lab_size = self.lab_size, 
-            axis_lab_size = self.axis_lab_size, rc = self.rc)
-        self.color = self.color or self.palette[0][0]
-        if type(self.color) is list:
-            self.palette = sns.color_palette(self.color)
-        elif self.color is not None:
-            self.palette = sns.color_palette([self.color] * len(self.x))
-        self.color = None
-        self.plot(**kwargs)
+        self.rc_default = {
+        
+            'lines.linewidth': 1.0,
+            'patch.linewidth': 0.0,
+            'grid.linewidth': 1.0
+        }
+        self.rc = common.merge_dicts(self.rc, self.rc_default)
+        
+        self.axis_lab_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'bold',
+            'variant': 'normal',
+            'size': 'x-large'
+        }
+        self.ticklabel_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'roman',
+            'variant': 'normal',
+            'size': 'large'
+        }
+        self.legend_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'roman',
+            'variant': 'normal',
+            'size': 'small'
+        }
+        self.title_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'bold',
+            'variant': 'normal',
+            'size': 'xx-large'
+        }
+        self.annot_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'bold',
+            'variant': 'normal',
+            'size': 'small'
+        }
+        
+        self.axis_lab_font = common.merge_dicts(axis_lab_font,
+                                                self.axis_lab_font_default)
+        self.ticklabel_font = common.merge_dicts(ticklabel_font,
+                                                 self.ticklabel_font_default)
+        self.legend_font = common.merge_dicts(legend_font,
+                                             self.legend_font_default)
+        self.title_font = common.merge_dicts(title_font,
+                                             self.title_font_default)
+        self.title_font = common.merge_dicts(annot_font,
+                                             self.annot_font_default)
+        
+        self.x = np.array(x)
+        self.y = np.array(y)
+        self.labels = np.array(labels)
+        
+        self.plot()
+    
+    def plot(self):
+        self.pre_plot()
+        self.do_plot()
+        self.post_plot()
+    
+    def pre_plot(self):
+        self.set_colors()
+        self.set_fontproperties()
+        self.set_size()
+    
+    def do_plot(self):
+        self.set_figsize()
+        self.init_fig()
+        self.set_log()
+        self.make_plot()
+        self.confidence_interval()
+        self.axes_limits()
+        self.set_ticklocs()
+        self.annotations()
+        self.make_legend()
+        self.axes_labels()
+        self.axes_limits()
+        self.axes_ticklabels()
+        self.set_title()
+        self.axes_limits()
+        self.fig.tight_layout()
+        self.axes_limits()
+        self.remove_annotation_overlaps()
+    
+    def post_plot(self):
+        self.finish()
+    
+    def set_figsize(self):
+        """
+        Converts width and height to a tuple so can be used for figsize.
+        """
+        if hasattr(self, 'width') and hasattr(self, 'height'):
+            self.figsize = (self.width, self.height)
+    
+    def init_fig(self):
+        """
+        Creates a figure using the object oriented matplotlib interface.
+        """
+        self.pdf = mpl.backends.backend_pdf.PdfPages(self.fname)
+        self.fig = mpl.figure.Figure(figsize = self.figsize)
+        self.cvs = mpl.backends.backend_pdf.FigureCanvasPdf(self.fig)
+        self.ax = self.fig.add_subplot(1, 1, 1)
+    
+    def set_colors(self):
+        if type(self.color) is str:
+            self.color = [self.color] * len(self.x)
+        if type(self.color) is dict:
+            self.color = \
+                list(
+                    map(
+                        lambda c:
+                            self.color[c],
+                        self.categories
+                    )
+                )
+    
+    def set_fontproperties(self):
+        self.fp_axis_lab = \
+            mpl.font_manager.FontProperties(**self.axis_lab_font)
+        self.fp_ticklabel = \
+            mpl.font_manager.FontProperties(**self.ticklabel_font)
+        self.fp_legend = \
+            mpl.font_manager.FontProperties(**self.legend_font)
+        self.fp_title = \
+            mpl.font_manager.FontProperties(**self.title_font)
+        self.fp_annot = \
+            mpl.font_manager.FontProperties(**self.annot_font)
+    
+    def set_title(self):
+        """
+        Sets the main title.
+        """
+        self.title_text = self.fig.suptitle(self.title)
+        self.title_text.set_fontproperties(self.fp_title)
+        self.title_text.set_horizontalalignment(self.title_halign)
+        self.title_text.set_verticalalignment(self.title_valign)
     
     def scale(self, scale = None, q = 1):
         scale = [1, 2, 5] if scale is None else scale
@@ -904,83 +1091,50 @@ class ScatterPlus(Plot):
         _scale = _scaler(scale, q)
         return _scale
     
-    def plot(self, x = None, y = None, sizes = None, size = None,
-        labels = None, data = None, xlab = None, ylab = None, 
-        legtitle = None, size_scaling = None, **kwargs):
-        # optionally update the dataset at calling plot():
-        for attr in ['x', 'y', 'sizes', 'size', 'labels', 'data', 
-            'xlab', 'ylab', 'legtitle', 'size_scaling']:
-            if locals()[attr] is not None:
-                setattr(self, attr, locals()[attr])
-        # if x, y or sizes are data frame colnames, attempt to 
-        # get the variable labels by them:
-        if type(self.x) in [str, unicode] and self.xlab is None:
-            self.xlab = self.x.capitalize()
-        if type(self.y) in [str, unicode] and self.ylab is None:
-            self.ylab = self.y.capitalize()
-        if type(self.sizes) in [str, unicode] and self.legtitle is None:
-            self.legtitle = self.sizes.capitalize()
-        # get the 
-        if self.data is not None and type(self.x) in [str, unicode] \
-            and self.x in self.data:
-            self.x = list(self.data[self.x])
-        if self.data is not None and type(self.y) in [str, unicode] \
-            and self.y in self.data:
-            self.y = list(self.data[self.y])
-        if self.data is not None and type(self.sizes) in [str, unicode] \
-            and self.sizes in self.data:
-            self.sizes = list(self.data[self.sizes])
-        if self.data is not None and type(self.labels) in [str, unicode] \
-            and self.labels in self.data:
-            self.labels = list(self.data[self.labels])
-        if type(self.x) is list or type(self.x) is tuple:
-            self.x = np.array(self.x)
-        if type(self.y) is list or type(self.y) is tuple:
-            self.y = np.array(self.y)
-        if type(self.sizes) is list or type(self.sizes) is tuple:
-            self.sizes = np.array(self.sizes)
-        if type(self.labels) is list or type(self.labels) is tuple:
-            self.labels = np.array(self.labels)
-        self.seaborn_style()
-        self.fig, self.ax = plt.subplots()
-        if type(sizes) in [int, float]:
-            self.sizes = sizes
-        if self.sizes is not None and type(self.sizes) not in [int, float]:
-            self.rads = self.size * (self.sizes / float(max(self.sizes)))**self.size_scaling
-        if self.sizes is None:
-            self.rads = np.array([self.size] * len(self.x))
+    def set_size(self):
+        if self.size is None:
+            self.size = self.min_size
+        
+        if type(self.size) in common.numTypes:
+            self.size = [self.size] * len(self.x)
+        
+        self.size_values = self.size
+        
+        if self.log_size:
+            self.size = np.log2(self.size)
+        
+        self.size = np.array(self.size)
+        
+        self.size = self.size - min(self.size)
+        
+        self.size = self.size / float(max(self.size)) \
+            * (self.max_size - self.min_size) \
+            + self.min_size
+    
+    def set_log(self):
         if self.ylog:
             self.ax.set_yscale('symlog' if self.ylog == 'symlog' else 'log')
         if self.xlog:
             self.ax.set_xscale('symlog' if self.xlog == 'symlog' else 'log')
-        self.scatter = self.ax.scatter(self.x, self.y, \
-            s = self.rads if self.sizes is None \
-                else [np.pi * r**2 for r in self.rads], \
-            c = '#6ea945', alpha = 0.5, \
-            edgecolors = 'none')
-        if self.confi:
-            self._confidence_interval()
-        self.axes_limits()
-        self.set_ticklocs()
-        self.annotations()
-        self._legend()
-        self.axes_labels()
-        self.axes_limits()
-        self.axes_ticklabels()
-        self.axes_limits()
-        self.fig.tight_layout()
-        self.axes_limits()
-        self.remove_annotation_overlaps()
-        if self.fin:
-            self.finish()
+    
+    def make_plot(self):
+        
+        self.scatter = self.ax.scatter(
+            self.x,
+            self.y,
+            s = self.size,
+            c = self.color,
+            alpha = self.alpha,
+            edgecolors = 'none'
+        )
     
     def annotations(self):
         if self.labels is not None:
             self.annots = []
             dists = move_labels()
-            for label, xx, yy, yf, o in \
-                zip(self.labels, self.x, self.y, self.y_fit, self.rads):
-                dst = dists.next()
+            for label, xx, yy, yf in \
+                zip(self.labels, self.x, self.y, self.y_fit):
+                dst = next(dists)
                 d = 1.0 if yy > 10**yf else -1.0
                 coo = ((-7 - dst) * d / 3.0, (21 + dst) * d)
                 self.annots.append(self.ax.annotate(
@@ -993,14 +1147,14 @@ class ScatterPlus(Plot):
                         visible = True, linewidth = 0.2), 
                 ))
             for ann in self.annots:
-                ann.set_fontsize(self.annotation_size)
+                ann.set_fontproperties(self.fp_annot)
     
     def set_ticklocs(self):
         if self.xlog:
             xscaler = self.scale(self.xtickscale)
             self.xtickloc = []
             while True:
-                tickloc = xscaler.next()
+                tickloc = next(xscaler)
                 if tickloc >= self._xlim[0]:
                     self.xtickloc.append(tickloc)
                 if tickloc > self._xlim[1]:
@@ -1010,7 +1164,7 @@ class ScatterPlus(Plot):
             yscaler = self.scale(self.ytickscale)
             self.ytickloc = []
             while True:
-                tickloc = yscaler.next()
+                tickloc = next(yscaler)
                 if tickloc >= self._ylim[0]:
                     self.ytickloc.append(tickloc)
                 if tickloc > self._ylim[1]:
@@ -1027,9 +1181,6 @@ class ScatterPlus(Plot):
         if ylim is not None:
             self._ylim = self.ax.set_ylim(ylim)
     
-    def seaborn_style(self, context = None, rc = None):
-        self.sns.set(font = self.font_family, rc = rc or self.rc)
-    
     def axes_ticklabels(self):
         if self.xlog:
             self.xticklabs = []
@@ -1044,18 +1195,28 @@ class ScatterPlus(Plot):
                 self.yticklabs.append(tlab[:-2] if tlab.endswith('.0') else tlab)
             self._yticklabels = self.ax.set_yticklabels(self.yticklabs)
         for t in self.ax.xaxis.get_major_ticks():
-            t.label.set_fontsize(self.lab_size[0])
+            t.label.set_fontproperties(self.fp_ticklabel)
         for t in self.ax.yaxis.get_major_ticks():
-            t.label.set_fontsize(self.lab_size[1])
+            t.label.set_fontproperties(self.fp_ticklabel)
     
-    def _confidence_interval(self):
+    def confidence_interval(self):
         # the points:
-        self._x = np.array([i if not np.isinf(i) else 0.0 \
-                for i in np.log10(self.x)]) \
-            if self.xlog else self.x
-        self._y = np.array([i if not np.isinf(i) else 0.0 \
-                for i in np.log10(self.y)]) \
-            if self.ylog else self.y
+        def remove_inf(a, log = False):
+            return \
+                np.array(
+                    list(
+                        map(
+                            lambda i:
+                                0.0 if np.isinf(i) \
+                                    else np.log10(i) if log \
+                                    else i,
+                            a
+                        )
+                    )
+                )
+        
+        self._x = remove_inf(self.x, self.xlog)
+        self._y = remove_inf(self.y, self.ylog)
         # (log)linear fit with confidence and prediction interval:
         (self.m, self.b), self.V = np.polyfit(self._x, self._y, 1, cov = True)
         self.n = self._x.size
@@ -1094,51 +1255,89 @@ class ScatterPlus(Plot):
             if self.ylog else self.y2 + self.pi
         self.pi_y_lower = [10**yy for yy in (self.y2 - self.pi)] \
             if self.ylog else self.y2 - self.pi
-        self.pilowerline = self.ax.plot(self.ci_rfill_x, 
-            self.pi_y_lower, 
-            '--', color = '#B6B7B9', linewidth = 0.5)
-        self.piupperline = self.ax.plot(self.ci_rfill_x, 
-            self.pi_y_upper, 
-            '--', color = '#B6B7B9', linewidth = 0.5)
+        self.pilowerline = self.ax.plot(
+            self.ci_rfill_x,
+            self.pi_y_lower,
+            '--',
+            color = '#B6B7B9',
+            linewidth = 0.5)
+        self.piupperline = self.ax.plot(
+            self.ci_rfill_x,
+            self.pi_y_upper,
+            '--',
+            color = '#B6B7B9',
+            linewidth = 0.5)
     
-    def _legend(self):
-        if self.sizes is not None and self.legend:
-            legtitle = '' if self.legtitle is None else self.legtitle
+    def make_legend(self):
+        if self.size is not None and self.legend:
+            
             self.lhandles = []
             self.llabels = []
-            self.legvalues = [self.size_to_value(i) for i in self.sizes]
-            self.leglower = 10**int(math.floor(math.log10(min(self.legvalues))))
+            self.leglower = 10**int(math.floor(math.log10(min(self.size_values))))
             self.legscaler = self.scale(self.legscale, q = self.leglower)
             self.legsizes = []
+            
             while True:
-                legvalue = self.legscaler.next()
+                legvalue = next(self.legscaler)
                 self.legsizes.append(legvalue)
-                if legvalue >= max(self.legvalues):
+                if legvalue >= max(self.size_values):
                     break
+            
             self.legsizes = self.legsizes[self.legstrip[0]:\
                 -self.legstrip[1] if self.legstrip[1] is not None else None]
-            for s in self.legsizes:
-                self.lhandles.append(mpl.legend.Line2D(range(1), range(1), 
-                    color = 'none', marker = 'o', 
-                    markersize = self.size * (self.value_to_size(s) / \
-                        float(max(self.sizes)))**self.size_scaling, 
-                    markerfacecolor = '#6ea945', markeredgecolor = 'none', alpha = .5, 
-                    label = str(int(s)) if s - int(s) == 0 or s >= 10.0 else str(s)))
+            
+            self.real_legsizes = np.array(self.legsizes)
+            
+            self.legsizes = np.array(self.legsizes)
+            
+            self.legsizes = (self.legsizes - min(self.size_values)) / max(self.size_values)
+            
+            self.size = self.size - min(self.size)
+            
+            self.legsizes = \
+                self.legsizes - min(self.size_values) \
+                / float(max(self.size_values - min(self.size_values))) \
+                * (self.max_size - self.min_size) \
+                + self.min_size
+            
+            for lab, col in self.color_labels:
+                self.lhandles.append(mpl.patches.Patch(color = col, label = lab))
+                self.llabels.append(lab)
+            
+            for i, s in enumerate(self.legsizes):
+                self.lhandles.append(
+                    mpl.legend.Line2D(
+                        range(1),
+                        range(1),
+                        color = 'none',
+                        marker = 'o',
+                        markersize = self.real_legsizes[i],
+                        markerfacecolor = '#6ea945',
+                        markeredgecolor = 'none',
+                        alpha = .5,
+                        label = str(int(s)) if s - int(s) == 0 or s >= 10.0 else str(s)
+                    )
+                )
                 self.llabels.append(str(int(s)) if s - int(s) == 0 or s >= 10.0 else str(s))
-            self.leg = self.ax.legend(self.lhandles, self.llabels, 
-                title = legtitle, labelspacing = .9,
-                borderaxespad = .9, loc = self.legloc)
-            self.leg.get_title().set_fontweight(self.font_weight)
+            
+            self.leg = self.ax.legend(
+                self.lhandles,
+                self.llabels,
+                title = self.legtitle,
+                labelspacing = .9,
+                borderaxespad = .9,
+                loc = self.legloc,
+                prop = self.fp_legend
+            )
+            self.leg.get_title().set_fontproperties(self.fp_legend)
     
     def axes_labels(self):
         if self.xlab is not None:
             self._xlab = self.ax.set_xlabel(self.xlab)
-            self.ax.xaxis.label.set_fontweight(self.font_weight)
-            self.ax.xaxis.label.set_size(self.axis_lab_size)
+            self.ax.xaxis.label.set_fontproperties(self.fp_axis_lab)
         if self.ylab is not None:
             self._ylab = self.ax.set_ylabel(self.ylab)
-            self.ax.yaxis.label.set_fontweight(self.font_weight)
-            self.ax.yaxis.label.set_size(self.axis_lab_size)
+            self.ax.yaxis.label.set_fontproperties(self.fp_axis_lab)
     
     def remove_annotation_overlaps(self):
         if self.labels is not None:
@@ -1162,6 +1361,17 @@ class ScatterPlus(Plot):
                             # 'OK, these do not overlap: %s and %s' % (a1._text, a2._text)
                     if not overlaps:
                         break
+    
+    def finish(self):
+        """
+        Applies tight layout, draws the figure, writes the file and closes.
+        """
+        self.fig.tight_layout()
+        self.fig.subplots_adjust(top = 0.85)
+        self.cvs.draw()
+        self.cvs.print_figure(self.pdf)
+        self.pdf.close()
+        self.fig.clf()
 
 class Histogram(Plot):
     
