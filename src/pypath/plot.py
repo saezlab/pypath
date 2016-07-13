@@ -827,60 +827,240 @@ def boxplot(data, labels, xlab, ylab, fname, fontfamily = 'Helvetica Neue LT Std
         tick.label.set_color(textcol)
     fig.savefig(fname)
 
-def stacked_barplot(x, y, data, fname, names, font_family = 'Helvetica Neue LT Std', 
-    xlab = '', ylab = '', lab_angle = 90, lab_size = (18, 21), axis_lab_size = 36, 
-    legend = True, font_weight = None, leg_label_size = 18, 
-    colors = ['#7AA0A1', '#C6909C', '#92C1D6', '#C5B26E', '#da0025'], 
-    order = False, desc = True):
-    plt.close('all')
-    if type(x) is list or type(x) is tuple:
-        x = np.array(x)
-    for i, yi in enumerate(y):
-        if type(yi) is list or type(yi) is tuple:
-            y[i] = np.array(yi)
-    total = np.array([sum([y[j][i] for j in xrange(len(y))]) for i in xrange(len(y[0]))])
-    if order == 'x':
-        ordr = np.array([x[i] for i in x.argsort()])
-    elif order == 'y':
-        ordr = np.array([x[i] for i in total.argsort()])
-    elif type(order) is int:
-        ordr = np.array([x[i] for i in y[order].argsort()])
-    elif len(set(order) & set(x)) == len(x):
-        ordr = order
-    else:
-        ordr = x
-    if desc:
-        ordr = ordr[::-1]
-    fig, ax = plt.subplots()
-    sns.set(font = font_family)
-    sns.set_context('talk', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
-        'grid.linewidth': 1.0, 'axes.labelsize': axis_lab_size})
-    for j in xrange(len(y), 0, -1):
-        this_level = np.array([sum([y[jj][i] for jj in xrange(j)]) \
-            for i in xrange(len(y[0]))])
-        ax = sns.barplot(x, y = this_level, data = data, 
-            color = colors[j-1], order = ordr)
-    sns.set_context('talk', rc={'lines.linewidth': 1.0, 'patch.linewidth': 0.0,
-        'grid.linewidth': 1.0, 'axes.labelsize': axis_lab_size})
-    for tick in ax.xaxis.get_major_ticks():
-        tick.label.set_fontsize(lab_size[0])
-    for tick in ax.yaxis.get_major_ticks():
-        tick.label.set_fontsize(lab_size[1])
-    ax.set_ylabel(ylab)
-    ax.set_xlabel(xlab)
-    if font_weight is not None:
-        ax.xaxis.label.set_fontweight(font_weight)
-        ax.yaxis.label.set_fontweight(font_weight)
-    ax.xaxis.get_label().set_fontsize(axis_lab_size)
-    ax.yaxis.get_label().set_fontsize(axis_lab_size)
-    plt.setp(ax.xaxis.get_majorticklabels(), rotation = lab_angle)
-    if legend:
-        lhandles = [mpl.patches.Patch(color = colors[i], label = names[i]) for i in xrange(len(y))]
-    leg = ax.legend(handles = lhandles)
-    nul = [t.set_fontsize(leg_label_size) for t in leg.texts]
-    fig.tight_layout()
-    fig.savefig(fname)
-    plt.close('all')
+class StackedBarplot(object):
+    
+    def __init__(self,
+        x, y,
+        fname,
+        names,
+        xlab = '',
+        ylab = '',
+        title = '',
+        title_halign = 'center',
+        title_valign = 'top',
+        bar_args = {},
+        axis_lab_font = {},
+        ticklabel_font = {},
+        title_font = {},
+        legend_font = {},
+        lab_angle = 90,
+        figsize = (9,6),
+        legend = True,
+        colors = ['#7AA0A1', '#C6909C', '#92C1D6', '#C5B26E', '#da0025'],
+        order = False,
+        desc = True):
+        
+        for k, v in iteritems(locals()):
+            setattr(self, k, v)
+        
+        self.bar_args_default = {
+            'width': 0.8,
+            'edgecolor': 'none',
+            'linewidth': 0.0,
+            'align': 'center'
+        }
+        self.axis_lab_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'bold',
+            'variant': 'normal',
+            'size': 'x-large'
+        }
+        self.ticklabel_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'roman',
+            'variant': 'normal',
+            'size': 'large'
+        }
+        self.legend_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'roman',
+            'variant': 'normal',
+            'size': 'small'
+        }
+        self.title_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'bold',
+            'variant': 'normal',
+            'size': 'xx-large'
+        }
+        
+        self.bar_args = common.merge_dicts(bar_args, self.bar_args_default)
+        self.axis_lab_font = common.merge_dicts(axis_lab_font,
+                                                self.axis_lab_font_default)
+        self.ticklabel_font = common.merge_dicts(ticklabel_font,
+                                                 self.ticklabel_font_default)
+        self.legend_font = common.merge_dicts(legend_font,
+                                             self.legend_font_default)
+        self.title_font = common.merge_dicts(title_font,
+                                             self.title_font_default)
+        
+        self.plot()
+    
+    def reload(self):
+        """
+        Reloads the module and updates the class instance.
+        """
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    def plot(self):
+        """
+        The total workflow of this class.
+        Calls all methods in the correct order.
+        """
+        self.pre_plot()
+        self.do_plot()
+        self.post_plot()
+    
+    def pre_plot(self):
+        self.set_fontproperties()
+        self.sort()
+        self.set_figsize()
+        self.init_fig()
+    
+    def do_plot(self):
+        self.set_background()
+        self.set_gridlines()
+        self.make_plot()
+        self.make_legend()
+        self.set_ticklabels()
+        self.set_axis_labels()
+        self.set_title()
+    
+    def post_plot(self):
+        self.finish()
+    
+    def set_fontproperties(self):
+        self.fp_axis_lab = \
+            mpl.font_manager.FontProperties(**self.axis_lab_font)
+        self.fp_ticklabel = \
+            mpl.font_manager.FontProperties(**self.ticklabel_font)
+        self.fp_legend = \
+            mpl.font_manager.FontProperties(**self.legend_font)
+        self.fp_title = \
+            mpl.font_manager.FontProperties(**self.title_font)
+    
+    def set_figsize(self):
+        """
+        Converts width and height to a tuple so can be used for figsize.
+        """
+        if hasattr(self, 'width') and hasattr(self, 'height'):
+            self.figsize = (self.width, selg.height)
+    
+    def init_fig(self):
+        """
+        Creates a figure using the object oriented matplotlib interface.
+        """
+        self.pdf = mpl.backends.backend_pdf.PdfPages(self.fname)
+        self.fig = mpl.figure.Figure(figsize = self.figsize)
+        self.cvs = mpl.backends.backend_pdf.FigureCanvasPdf(self.fig)
+        self.ax = self.fig.add_subplot(1, 1, 1)
+    
+    def set_background(self):
+        self.ax.yaxis.grid(True, color = '#FFFFFF', lw = 1, ls = 'solid')
+        self.ax.xaxis.grid(False)
+        #self.ax.yaxis.grid(True, color = '#FFFFFF', linewidth = 2)
+        self.ax.set_axisbelow(True)
+    
+    def set_gridlines(self):
+        self.ax.set_axis_bgcolor('#EAEAF2')
+        list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
+        self.ax.tick_params(which = 'both', length = 0)
+    
+    def sort(self):
+        self.x = np.array(self.x)
+        self.y = list(map(np.array, self.y))
+        self.total = reduce(lambda l1, l2: l1.__add__(l2), self.y)
+
+        if self.order == 'x':
+            self.ordr = self.x.argsort()
+        elif self.order == 'y':
+            self.ordr = self.total.argsort()
+        elif type(self.order) is int:
+            self.ordr = self.y[i].argsort()
+        elif len(set(self.order) & set(self.x)) == len(self.x):
+            self.ordr = np.array(list(map(lambda l: np.where(self.x == l)[0][0], self.order)))
+        else:
+            self.ordr = np.arange(len(self.x))
+        if self.desc:
+            self.ordr = self.ordr[::-1]
+        self.x = self.x[self.ordr]
+        self.y = list(map(lambda iy: iy[self.ordr], self.y))
+    
+    def make_plot(self):
+        
+        self.xcoo = np.arange(len(self.x))
+        
+        for j in xrange(len(self.y), 0, -1):
+            this_level = reduce(lambda l1, l2: l1.__add__(l2), self.y[:j])
+            self.ax.bar(
+                left = self.xcoo,
+                height = this_level,
+                tick_label = self.x,
+                color = self.colors[j - 1],
+                label = self.names[j - 1],
+                **self.bar_args
+            )
+    
+    def set_ticklabels(self):
+        list(map(lambda l:
+                    l.set_fontproperties(self.fp_ticklabel) or \
+                    l.set_rotation(self.lab_angle),
+                self.ax.xaxis.get_majorticklabels()))
+        list(map(lambda l:
+                     l.set_fontproperties(self.fp_ticklabel),
+                self.ax.yaxis.get_majorticklabels()))
+    
+    def set_axis_labels(self):
+        self.ax.set_ylabel(self.ylab, fontproperties = self.fp_axis_lab)
+        self.ax.set_xlabel(self.xlab, fontproperties = self.fp_axis_lab)
+    
+    def set_xlim(self):
+        self.ax.set_xlim([-1, max(self.xcoo) + 0.5])
+    
+    def set_title(self):
+        """
+        Sets the main title.
+        """
+        self.title_text = self.fig.suptitle(self.title)
+        self.title_text.set_fontproperties(self.fp_title)
+        self.title_text.set_horizontalalignment(self.title_halign)
+        self.title_text.set_verticalalignment(self.title_valign)
+    
+    def make_legend(self):
+        if self.legend:
+            self.lhandles = \
+                list(
+                    map(
+                        lambda i:
+                            mpl.patches.Patch(color = self.colors[i], label = self.names[i]),
+                        xrange(len(self.y))
+                    )
+                )
+            self.leg = self.ax.legend(handles = self.lhandles, prop = self.fp_legend)
+            self.leg.get_title().set_fontproperties(self.fp_axis_lab)
+    
+    def finish(self):
+        """
+        Applies tight layout, draws the figure, writes the file and closes.
+        """
+        self.fig.tight_layout()
+        self.fig.subplots_adjust(top = 0.85)
+        self.cvs.draw()
+        self.cvs.print_figure(self.pdf)
+        self.pdf.close()
+        self.fig.clf()
 
 ## ## ##
 

@@ -254,8 +254,6 @@ bp = plot.Barplot(x = d[0], y = d[1],
 
 vcount_ordr = list(bp.ordr)
 
-bp.finish()
-
 csep = net.separate_by_category()
 cats = dict(map(lambda c: (c[0], data_formats.catnames[c[1]]), iteritems(data_formats.categories)))
 cats.update(dict(map(lambda c: (('All', c[0]), c[1]), iteritems(data_formats.catnames))))
