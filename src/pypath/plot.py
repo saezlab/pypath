@@ -990,7 +990,7 @@ class ScatterPlus(object):
                                              self.legend_font_default)
         self.title_font = common.merge_dicts(title_font,
                                              self.title_font_default)
-        self.title_font = common.merge_dicts(annot_font,
+        self.annot_font = common.merge_dicts(annot_font,
                                              self.annot_font_default)
         
         self.x = np.array(x)
@@ -998,6 +998,16 @@ class ScatterPlus(object):
         self.labels = np.array(labels)
         
         self.plot()
+    
+    def reload(self):
+        """
+        Reloads the module and updates the class instance.
+        """
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
     
     def plot(self):
         self.pre_plot()
@@ -1017,8 +1027,9 @@ class ScatterPlus(object):
         self.confidence_interval()
         self.axes_limits()
         self.set_ticklocs()
+        self.set_background()
+        self.set_gridlines()
         self.annotations()
-        self.make_legend()
         self.axes_labels()
         self.axes_limits()
         self.axes_ticklabels()
@@ -1027,6 +1038,7 @@ class ScatterPlus(object):
         self.fig.tight_layout()
         self.axes_limits()
         self.remove_annotation_overlaps()
+        self.make_legend()
     
     def post_plot(self):
         self.finish()
@@ -1098,18 +1110,9 @@ class ScatterPlus(object):
         if type(self.size) in common.numTypes:
             self.size = [self.size] * len(self.x)
         
-        self.size_values = self.size
+        self.size_values = np.array(self.size)
         
-        if self.log_size:
-            self.size = np.log2(self.size)
-        
-        self.size = np.array(self.size)
-        
-        self.size = self.size - min(self.size)
-        
-        self.size = self.size / float(max(self.size)) \
-            * (self.max_size - self.min_size) \
-            + self.min_size
+        self.size = self.values_to_sizes(self.size)
     
     def set_log(self):
         if self.ylog:
@@ -1181,6 +1184,16 @@ class ScatterPlus(object):
         if ylim is not None:
             self._ylim = self.ax.set_ylim(ylim)
     
+    def set_background(self):
+        self.ax.grid(True, color = '#FFFFFF', lw = 1, ls = 'solid')
+        #self.ax.yaxis.grid(True, color = '#FFFFFF', linewidth = 2)
+        self.ax.set_axisbelow(True)
+    
+    def set_gridlines(self):
+        self.ax.set_axis_bgcolor('#EAEAF2')
+        list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
+        self.ax.tick_params(which = 'both', length = 0)
+    
     def axes_ticklabels(self):
         if self.xlog:
             self.xticklabs = []
@@ -1207,7 +1220,7 @@ class ScatterPlus(object):
                     list(
                         map(
                             lambda i:
-                                0.0 if np.isinf(i) \
+                                0.0 if np.isinf(i) or i == 0.0 \
                                     else np.log10(i) if log \
                                     else i,
                             a
@@ -1268,12 +1281,39 @@ class ScatterPlus(object):
             color = '#B6B7B9',
             linewidth = 0.5)
     
+    def values_to_sizes(self, values):
+        """
+        Transformation converts from size values in data dimension
+        to dimension of the size graphical parameter.
+        """
+        values = np.array(values)
+        svals = self.size_values
+        mins = self.min_size
+        maxs = self.max_size
+        
+        if self.log_size:
+            values = np.log2(values)
+            svals = np.log2(svals)
+            mins = np.log2(mins)
+            maxs = np.log2(maxs)
+        
+        return \
+            (np.array(values) - min(svals)) / \
+                float(max(svals) - min(svals)) * \
+            (self.max_size - self.min_size) + self.min_size
+    
     def make_legend(self):
         if self.size is not None and self.legend:
             
-            self.lhandles = []
-            self.llabels = []
-            self.leglower = 10**int(math.floor(math.log10(min(self.size_values))))
+            self.lhandles1 = []
+            self.llabels1 = []
+            self.lhandles2 = []
+            self.llabels2 = []
+            sizemin = min(self.size_values)
+            self.leglower = 10**int(np.floor(np.log10(sizemin)))
+            self.leglower = self.leglower \
+                if abs(sizemin - self.leglower) < abs(sizemin - self.leglower * 10) \
+                else self.leglower * 10
             self.legscaler = self.scale(self.legscale, q = self.leglower)
             self.legsizes = []
             
@@ -1286,50 +1326,74 @@ class ScatterPlus(object):
             self.legsizes = self.legsizes[self.legstrip[0]:\
                 -self.legstrip[1] if self.legstrip[1] is not None else None]
             
+            if len(self.legsizes) > 1 and \
+                abs(max(self.size_values) - self.legsizes[-1]) > \
+                abs(max(self.size_values) - self.legsizes[-2]):
+                self.legsizes = self.legsizes[:-1]
+            
             self.real_legsizes = np.array(self.legsizes)
             
-            self.legsizes = np.array(self.legsizes)
+            self.legsizes = self.values_to_sizes(self.legsizes)
             
-            self.legsizes = (self.legsizes - min(self.size_values)) / max(self.size_values)
-            
-            self.size = self.size - min(self.size)
-            
-            self.legsizes = \
-                self.legsizes - min(self.size_values) \
-                / float(max(self.size_values - min(self.size_values))) \
-                * (self.max_size - self.min_size) \
-                + self.min_size
+            self.legsizes = np.sqrt(self.legsizes / np.pi)
             
             for lab, col in self.color_labels:
-                self.lhandles.append(mpl.patches.Patch(color = col, label = lab))
-                self.llabels.append(lab)
+               self.lhandles1.append(mpl.patches.Patch(color = col, label = lab))
+               self.llabels1.append(lab)
             
             for i, s in enumerate(self.legsizes):
-                self.lhandles.append(
+                rs = self.real_legsizes[i]
+                self.lhandles2.append(
                     mpl.legend.Line2D(
                         range(1),
                         range(1),
                         color = 'none',
                         marker = 'o',
-                        markersize = self.real_legsizes[i],
+                        markersize = s,
                         markerfacecolor = '#6ea945',
                         markeredgecolor = 'none',
                         alpha = .5,
-                        label = str(int(s)) if s - int(s) == 0 or s >= 10.0 else str(s)
+                        label = str(int(rs)) if rs - int(rs) == 0 or rs >= 10.0 else str(rs)
                     )
                 )
-                self.llabels.append(str(int(s)) if s - int(s) == 0 or s >= 10.0 else str(s))
+                self.llabels2.append(str(int(rs)) if rs - int(rs) == 0 or rs >= 10.0 else str(rs))
             
-            self.leg = self.ax.legend(
-                self.lhandles,
-                self.llabels,
+            self.leg2 = self.ax.legend(
+                self.lhandles2 + self.lhandles1,
+                self.llabels2 + self.llabels1,
                 title = self.legtitle,
                 labelspacing = .9,
                 borderaxespad = .9,
                 loc = self.legloc,
-                prop = self.fp_legend
+                prop = self.fp_legend,
+                markerscale = 1.0,
+                frameon = False,
+                numpoints = 1
             )
-            self.leg.get_title().set_fontproperties(self.fp_legend)
+            
+            #self.ax.add_artist(self.leg2)
+            
+            #bbleg2 = self.leg2.legendPatch.get_bbox().inverse_transformed(self.fig.transFigure)
+            
+            #upperright = bbleg2.corners()[3]
+            
+            #print(upperright)
+            
+            #self.leg1 = self.ax.legend(
+                #self.lhandles1,
+                #self.llabels1,
+                #labelspacing = .9,
+                #borderaxespad = .9,
+                #prop = self.fp_legend,
+                #markerscale = 1.0,
+                #frameon = False,
+                #numpoints = 1,
+                #loc = 'upper left',
+                #bbox_to_anchor =list(upperright),
+                #bbox_transform = self.fig.transFigure
+            #)
+            
+            self.leg2.get_title().set_fontproperties(self.fp_axis_lab)
     
     def axes_labels(self):
         if self.xlab is not None:
@@ -1349,7 +1413,7 @@ class ScatterPlus(object):
                 for z in xrange(100):
                     for a1 in self.annots[:i]:
                         if overlap(a1.get_window_extent(), a2.get_window_extent()):
-                            # 'Overlapping labels: %s and %s' % (a1._text, a2._text)
+                            #print('Overlapping labels: %s and %s' % (a1._text, a2._text))
                             mv = get_moves(a1.get_window_extent(), a2.get_window_extent())
                             if steps[i] % 2 == 0:
                                 a2.xyann = (a2.xyann[0] + mv[0] * 1.1 * (z / 2 + 1), a2.xyann[1])
@@ -1357,9 +1421,10 @@ class ScatterPlus(object):
                                 a2.xyann = (a2.xyann[0], a2.xyann[1] + mv[1] * 1.1* (z / 2 + 1))
                             steps[i] += 1
                         else:
+                            #print('OK, these do not overlap: %s and %s' % (a1._text, a2._text))
                             pass
-                            # 'OK, these do not overlap: %s and %s' % (a1._text, a2._text)
                     if not overlaps:
+                        #print('No more overlaps')
                         break
     
     def finish(self):
@@ -1367,7 +1432,7 @@ class ScatterPlus(object):
         Applies tight layout, draws the figure, writes the file and closes.
         """
         self.fig.tight_layout()
-        self.fig.subplots_adjust(top = 0.85)
+        self.fig.subplots_adjust(top = 0.92)
         self.cvs.draw()
         self.cvs.print_figure(self.pdf)
         self.pdf.close()

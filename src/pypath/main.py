@@ -2843,18 +2843,17 @@ class PyPath(object):
         prg = Progress(
         total=len(neg),name="Matching interactions",interval=11)
         matches = 0
-        for e in g.es:
-            e['negative'] = [] if e['negative'] is None else e['negative']
-            e['negative_refs'] = [] if e['negative_refs'] is None else e['negative_refs']
+        g.es['negative'] = [set([]) if e['negative'] is None else e['negative'] for e in g.es]
+        g.es['negative_refs'] = [set([]) if e['negative_refs'] is None else e['negative_refs'] for e in g.es]
         for n in neg:
             aexists = n["defaultNameA"] in g.vs['name']
             bexists = n["defaultNameB"] in g.vs['name']
             if aexists and bexists:
                 edge = self.edge_exists(n["defaultNameA"],n["defaultNameB"])
                 if type(edge) is int:
-                    if settings.name not in g.es[edge]['negative']:
-                        g.es[edge]['negative'].append(settings.name)
-                    g.es[edge]['negative_refs'] += n['attrsEdge']['references']
+                    g.es[edge]['negative'].add(settings.name)
+                    refs = set(list(map(lambda r: _refs.Reference(int(r)), n['attrsEdge']['references'])))
+                    g.es[edge]['negative_refs'].add(refs)
                     matches += 1
             prg.step()
         prg.terminate()
