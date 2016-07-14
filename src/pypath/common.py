@@ -279,7 +279,7 @@ def gen_session_id(length=5):
     abc = '0123456789abcdefghijklmnopqrstuvwxyz'
     return ''.join(random.choice(abc) for i in range(length))
 
-def simpson_index(a, b, c):
+def simpson_index(a, b):
     a = set(a)
     b = set(b)
     ab = a & b

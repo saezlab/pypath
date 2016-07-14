@@ -23,6 +23,8 @@ import sys
 import os
 import itertools
 import imp
+import subprocess
+from datetime import date
 
 import math
 import numpy as np
@@ -31,6 +33,8 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
 import scipy.cluster.hierarchy as hc
+import cairo
+import igraph
 
 try:
     import hcluster as hc2
@@ -43,6 +47,8 @@ from scipy import stats
 
 import pypath.common as common
 import pypath.colorgen as colorgen
+from pypath.ig_drawing import DefaultGraphDrawerFFsupport
+import pypath.descriptions
 
 def is_opentype_cff_font(filename):
     """
@@ -1790,3 +1796,577 @@ class Histogram(Plot):
         self.set_xlim()
         self.set_ticklabels()
         self.add_legend()
+
+class SimilarityGraph(object):
+    
+    def __init__(self,
+                pp,
+                fname,
+                similarity,
+                size,
+                layout_method = 'fruchterman_reingold',
+                layout_param = {},
+                width = 1024,
+                height = 1024,
+                margin = 124,
+                **kwargs
+                ):
+        
+        for k, v in iteritems(locals()):
+            setattr(self, k, v)
+        
+        self.graph = self.pp.graph
+        self.size_param_defaults = {
+            'vertex': (1.12, 0.55, 0.040),
+            'edge': (1.25, 0.48, 0.065),
+            'curation': (0.22, 0.55, 0.016)
+        }
+        self.scale_defaults = {
+            'vertex': {
+                'vscale': [50, 100, 500, 1000, 5000],
+                'escale': [0.05, 0.1, 0.2, 0.5]
+            },
+            'edge': {
+                'vscale': [50, 100, 500, 1000, 2000],
+                'escale': [0.05, 0.1, 0.2, 0.5]
+            },
+            'curation': {
+                'vscale': [100, 1000, 5000, 10000, 20000],
+                'escale': [5.0, 7.5, 10.0, 15.0, 30.0]
+            }
+        }
+        
+        #self.plot()
+    
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    def plot(self):
+        self.pre_plot()
+        self.do_plot()
+        self.post_plot()
+    
+    def pre_plot(self):
+        self.get_similarity()
+        self.init_sgraph()
+        self.get_size()
+        self.make_layout()
+        self.layout_limits()
+        self.build_legend()
+        self.legend_coordinates()
+        self.init_pdf()
+    
+    def do_plot(self):
+        self.make_plot()
+    
+    def post_plot(self):
+        self.finish()
+    
+    def get_similarity(self):
+        if type(self.similarity) is str and hasattr(self, '%s_sim' % self.similarity):
+            self.size_param = self.size_param_defaults[self.similarity]
+            self.vscale = self.scale_defaults[self.similarity]['vscale']
+            self.escale = self.scale_defaults[self.similarity]['escale']
+            getattr(self, '%s_sim' % self.similarity)()
+        elif hasattr(self.similarity, '__call__'):
+            self.edges = self.similarity(self.pp)
+    
+    def get_size(self):
+        if type(self.size) is str and hasattr(self, 'sizes_%s' % self.size):
+            getattr(self, 'sizes_%s' % self.size)()
+        elif hasattr(self.similarity, '__call__'):
+            self.sgraph.vs['size'] = self.size(self.pp)
+
+    def vertex_sim(self):
+        self.sim = self.pp.databases_similarity()
+        self.edges = [e for e in [(it[0], iit[0], iit[1], self.sim['nodes'][it[0]][iit[0]]) \
+            for it in self.sim['edges'].items() for iit in it[1].items()] \
+            if (e[2] > 0.15 or (e[0] == 'MatrixDB' and e[2] > 0.02) or \
+            (e[0] == 'NRF2ome' and e[2] > 0.07) or (e[0] == 'ACSN' and e[2] > 0.10)) \
+            and e[0] != e[1]]
+    
+    def edge_sim(self):
+        self.edges = [
+            (
+                s1,
+                s2,
+                pypath.common.simpson_index(
+                    list(map(lambda e: e.index, filter(lambda e: s1 in e['sources'], self.graph.es))),
+                    list(map(lambda e: e.index, filter(lambda e: s2 in e['sources'], self.graph.es))),
+                )
+            ) \
+            for s1 in self.pp.sources \
+            for s2 in self.pp.sources
+        ]
+        
+        self.edges = [e for e in self.edges if e[2] > 0.0545 and e[0] != e[1]]
+    
+    def refs_sim(self):
+        self.edges = [
+            (
+                s1,
+                s2,
+                pypath.common.simpson_index(
+                    [r.pmid for r in common.uniqList(common.flatList([[] if s1 not in e['refs_by_source'] \
+                        else e['refs_by_source'][s1] \
+                        for e in self.graph.es]))],
+                    [r.pmid for r in common.uniqList(common.flatList([[] if s2 not in e['refs_by_source'] \
+                        else e['refs_by_source'][s2] \
+                        for e in self.graph.es]))]
+                )
+            ) \
+            for s1 in self.pp.sources \
+            for s2 in self.pp.sources
+        ]
+        
+        self.edges = [e for e in self.edges if e[2] > 0.0545 and e[0] != e[1]]
+    
+    def curation_sim(self):
+        self.edges = [(s1, s2, sum([0.0 if s1 not in e['refs_by_source'] or \
+            s2 not in e['refs_by_source'] \
+            else len(set([r1.pmid for r1 in e['refs_by_source'][s1]]).\
+            symmetric_difference(set([r2.pmid for r2 in e['refs_by_source'][s2]]))) \
+            for e in self.graph.es]) / \
+            float(len([e for e in self.graph.es \
+                if s1 in e['sources'] and s2 in e['sources']]) + 0.001)) \
+            for s1 in self.pp.sources for s2 in self.pp.sources]
+        
+        self.edges = [e for e in self.edges if e[2] > 5.9 and e[0] != e[1]]
+    
+    def init_sgraph(self):
+        self.sgraph = igraph.Graph.TupleList(self.edges, edge_attrs = ['weight'])
+        self.sgraph.simplify(combine_edges = 'mean')
+    
+    def make_layout(self):
+        self.layout_param_defaults = {
+            'fruchterman_reingold': {
+                'weights': 'weight',
+                'repulserad': self.sgraph.vcount() ** 2.8,
+                'maxiter': 1000,
+                'area': self.sgraph.vcount() ** 2.3
+            }
+        }
+        if self.layout_method in self.layout_param_defaults:
+            self.layout_param = common.merge_dicts(
+                self.layout_param_defaults[self.layout_method],
+                self.layout_param
+            )
+        self.layout = getattr(self.sgraph, 'layout_%s' % self.layout_method)(**self.layout_param)
+    
+    def sizes_vertex(self):
+        self.sgraph.vs['size'] = \
+            list(
+                map(
+                    lambda v:
+                        len(
+                            list(
+                                filter(
+                                    lambda e:
+                                        v['name'] in e['sources'],
+                                    self.graph.es
+                                )
+                            )
+                        )**self.size_param[1],
+                    self.sgraph.vs
+                )
+            )
+    
+    def sizes_edge(self):
+        """
+        Sets the size according to number of edges for each resource.
+        """
+        self.sgraph.vs['size'] = \
+            list(
+                map(
+                    lambda v:
+                        len(
+                            list(
+                                filter(
+                                    lambda e:
+                                        v['name'] in e['sources'],
+                                    self.graph.es
+                                )
+                            )
+                        )**0.48,
+                    self.sgraph.vs
+                )
+            )
+    
+    def sizes_refs(self):
+        self.sgraph.vs['size'] = \
+            [len(
+                common.uniqList(
+                    common.flatList([
+                        e['refs_by_source'][v['name']] \
+                            for e in self.graph.es \
+                            if v['name'] in e['refs_by_source']
+                    ])
+                )
+            )**0.48 for v in self.sgraph.vs]
+    
+    def sizes_curation(self):
+        sizes = []
+        for v in self.sgraph.vs:
+            allrefs = \
+                len(
+                    common.uniqList(
+                        common.flatList(
+                            [[r.pmid for r in e1['refs_by_source'][v['name']]] \
+                                for e1 in self.graph.es \
+                                if v['name'] in e1['refs_by_source']
+                            ]
+                        )
+                    )
+                )
+            alledges = float(len([e2.index for e2 in self.graph.es if v['name'] in e2['sources']]))
+            uniqcits = sum([len([rr.pmid for rr in e3['refs_by_source'][v['name']]]) \
+                        for e3 in net.graph.es \
+                        if v['name'] in e3['refs_by_source']])
+            
+            sizes.append(allrefs / alledges * uniqcits)
+        
+        self.sgraph.vs['size'] = sizes
+    
+    def build_legend(self):
+        self.sgraph.add_vertices([str(i) for i in self.vscale])
+        self.sgraph.add_vertices(['%.2f_%u' % (i, a) for i in self.escale for a in [0, 1]])
+        self.sgraph.add_edges([('%.2f_%u' % (i, 0), '%.2f_%u' % (i, 1)) for i in self.escale])
+
+    def layout_limits(self):
+        self.xmax = max([c[0] for c in self.layout._coords])
+        self.ymin = min([c[1] for c in self.layout._coords])
+        self.xrng = self.xmax - min([c[0] for c in self.layout._coords])
+        self.yrng = max([c[1] for c in self.layout._coords]) - self.ymin
+        self.xleg = self.xmax + self.xrng * 0.2
+    
+    def legend_coordinates(self):
+        for i, s in enumerate(self.vscale):
+            v = self.sgraph.vs[self.sgraph.vs['name'].index(str(s))]
+            v['size'] = s**self.size_param[1]
+            self.layout._coords.append([
+                self.xleg,
+                # start from ymin
+                self.ymin \
+                    # plus a constant distance at each step
+                    # scaled by size_ param[0]
+                    + i * self.size_param[0] \
+                    # add discances dependent on the marker size
+                    # this is scaled by size_param[1], just like
+                    # the graph's vertices
+                    + sum(self.vscale[:i + 1])**self.size_param[1] \
+                        # and the ratio between the constant and
+                        # the increasing component set by
+                        # size_param[2]:
+                        * self.size_param[2]]
+            )
+        
+        self.sgraph.es['label'] = ['' for _ in self.sgraph.es]
+        
+        for i, s in enumerate(self.escale):
+            v1 = self.sgraph.vs[self.sgraph.vs['name'].index('%.2f_%u' % (s, 0))]
+            v2 = self.sgraph.vs[self.sgraph.vs['name'].index('%.2f_%u' % (s, 1))]
+            e = self.sgraph.es[self.sgraph.get_eid(v1.index, v2.index)]
+            e['weight'] = s
+            e['label'] = '%.2f' % s
+            ycoo =  self.ymin + self.yrng * 0.7 + i * 1.8
+            self.layout._coords.append([self.xleg - self.xrng * 0.07, ycoo])
+            self.layout._coords.append([self.xleg + self.xrng * 0.07, ycoo])
+            v1['size'] = 0.0
+            v2['size'] = 0.0
+            v1['name'] = ''
+            v2['name'] = ''
+    
+    def init_pdf(self):
+        self.surface = cairo.PDFSurface(self.fname, self.width, self.height)
+        self.bbox = igraph.drawing.utils.BoundingBox(
+            self.margin,
+            self.margin,
+            self.width - self.margin,
+            self.height - self.margin
+        )
+    
+    def make_plot(self):
+        self.fig = igraph.plot(
+            self.sgraph,
+            vertex_label = self.sgraph.vs['name'],
+            layout = self.layout,
+            bbox = self.bbox,
+            target = self.surface,
+            drawer_factory = DefaultGraphDrawerFFsupport,
+            vertex_size = self.sgraph.vs['size'],
+            vertex_frame_width = 0,
+            vertex_color = '#6EA945',
+            vertex_label_color = '#777777FF',
+            vertex_label_family = 'Sentinel Book',
+            edge_label_color = '#777777FF',
+            edge_label_family = 'Sentinel Book',
+            vertex_label_size = 24,
+            vertex_label_dist = 1.4,
+            edge_label_size = 24,
+            edge_label = self.sgraph.es['label'],
+            edge_width = list(map(lambda x: (x * 10.0)**1.8, self.sgraph.es['weight'])),
+            edge_color = '#007B7F55',
+            edge_curved = False
+        )
+    
+    def finish(self):
+        self.fig.redraw()
+        self.fig.save()
+
+class HistoryTree(object):
+    
+    def __init__(self, fname, latex = '/usr/bin/xelatex'):
+        
+        for k, v in iteritems(locals()):
+            setattr(self, k, v)
+        
+        self.tikzfname = fname
+    
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    def plot(self):
+        self.compose_tikz()
+        self.write_tex()
+        self.run_latex()
+    
+    def get_years(self):
+        self.d = pypath.descriptions.descritpions
+        firstyear = min(flatList([[r['year']] for r in d.values() if 'year' in r] + \
+            [r['releases'] for r in d.values() if 'releases' in r]))
+    
+    def compose_tikz(self):
+        self.get_years()
+        
+        lastyear = date.today().year
+        years = range(lastyear - firstyear + 1)
+        yearbarwidth = 0.4
+        sepwidth = 0.04
+        lineheight = [1.0] * len(years)
+        labelbg = 'twilightblue'
+        labelfg = 'teal'
+        nodelabbg = 'teal'
+        nodelabfg = 'white'
+        dotcol = 'teal'
+        linecol = 'teal'
+        dataimportcol = 'mantis'
+        dotsize = 3.0
+        linewidth = 1.0
+        rowbg = 'twilightblue'
+        width = 20.0
+        xoffset = 0.5
+        dotlineopacity = 0.7
+        horizontal = True # whether the timeline should be the horizontal axis
+        
+        # TikZ styles
+        tikzstyles = r'''
+            \tikzstyle{omnipath}=[rectangle, anchor = center, inner sep = 2pt, fill = %s, 
+                rotate = 90, text = %s, draw = %s]
+            \tikzstyle{others}=[rectangle, anchor = center, inner sep = 2pt, fill = %s, 
+                rotate = 90, text = %s, draw = %s]
+        ''' % (
+                nodelabfg,
+                nodelabbg,
+                nodelabbg,
+                nodelabbg,
+                nodelabfg,
+                nodelabbg
+            )
+        
+        # LaTeX preamble for XeLaTeX
+        self.tikz = r'''\documentclass[a4paper,10pt]{article}
+            \usepackage{fontspec}
+            \usepackage{xunicode}
+            \usepackage{polyglossia}
+            \setdefaultlanguage{english}
+            \usepackage{xltxtra}
+            \usepackage{microtype}
+            \usepackage[cm]{fullpage}
+            \usepackage{rotating}
+            \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+            \usepackage{color}
+            \setmainfont{HelveticaNeueLTStd-Roman}
+            \usepackage{tikz}
+            \definecolor{zircon}{RGB}{228, 236, 236}
+            \definecolor{teal}{RGB}{0, 123, 127}
+            \definecolor{twilightblue}{RGB}{239, 244, 233}
+            \definecolor{mantis}{RGB}{110, 169, 69}%s
+            \begin{document}
+            \thispagestyle{empty}
+            \pgfdeclarelayer{background}
+            \pgfdeclarelayer{nodes}
+            \pgfdeclarelayer{lines}
+            \pgfsetlayers{background,lines,nodes}%s
+            \begin{tikzpicture}
+            \begin{pgfonlayer}{background}
+        ''' % (tikzstyles, 
+            r'''
+            \begin{turn}{-90}''' if horizontal else '')
+        
+        ordr = sorted([(lab, r['releases'] if 'releases' in r else [] + \
+                    [r['year']] if 'year' in r else [], r['label'] if 'label' in r else lab, 
+                    r['data_import'] if 'data_import' in r else [],
+                    'omnipath' if 'omnipath' in r and r['omnipath'] else 'others') \
+                for lab, r in d.iteritems() \
+                if 'year' in r or 'releases' in r], \
+            key = lambda x: min(x[1]))
+        
+        # the background grid and year labels
+        for i in years:
+            self.tikz += r'''        \fill[anchor = south west, fill = %s, 
+                inner sep = 0pt, outer sep = 0pt] '''\
+                r'''(%f, %f) rectangle (%f, %f);
+                \node[anchor = north west, rotate = 90, text width = %fcm, 
+                    fill = %s, inner sep = 0pt, outer sep = 0pt, align = center, 
+                    minimum size = %fcm] at (0.0, %f) {\small{\color{%s}%u}};
+                \fill[fill = red] (%f, %f) circle (0.0pt);
+        ''' % (
+            rowbg, # background of row
+            yearbarwidth + sepwidth, # left edge of row
+            sum(lineheight[:i]), # top edge of row
+            width, # right edge of the row
+            sum(lineheight[:i + 1]) - sepwidth, # bottom edge of row
+            lineheight[i] - sepwidth, # height of year label
+            labelbg, # background of label
+            yearbarwidth, # width of year label
+            sum(lineheight[:i]), # top of year label
+            labelfg, # text color of label
+            firstyear + i, # year
+            0.0, sum(lineheight[:i]) # red dot
+            )
+        
+        # new layer for nodes
+        self.tikz += r'''    \end{pgfonlayer}
+            \begin{pgfonlayer}{nodes}
+            '''
+        
+        # horizontal distance between vertical columns
+        xdist = (width - yearbarwidth - sepwidth - xoffset) / float(len(ordr))
+        nodelabels = []
+        
+        # drawing vertical dots, labels and connecting lines:
+        for i, r in enumerate(ordr):
+            coox = xdist * i + yearbarwidth + sepwidth + xdist / 2.0 + xoffset
+            ymax = max(r[1])
+            ydots = [y for y in r[1] if y != ymax]
+            ylaby = ymax - firstyear
+            cooylab = sum(lineheight[:ylaby]) + lineheight[ylaby] / 2.0
+            ydots = [sum(lineheight[:y - firstyear]) + lineheight[y - firstyear] / 2.0 for y in ydots]
+            for j, cooy in enumerate(ydots):
+                self.tikz += r'''        \node[circle, fill = %s, minimum size = %f, opacity = %f] 
+                    (%s) at (%f, %f) {};
+                ''' % (
+                    dotcol, # fill color for dot
+                    dotsize, # size of the dot
+                    dotlineopacity, # opacity of dot
+                    '%s%u' % (r[0].lower(), j), # label
+                    coox, # x coordinate
+                    cooy # y coordinate
+                )
+            self.tikz += r'''        \node[%s] 
+                    (%s) at (%f, %f) 
+                    {\footnotesize %s};
+            ''' % (
+                r[4], # node style
+                r[0].lower(), # node name
+                coox, # node x coordinate
+                cooylab, # node y coordinate
+                r[0] # label text
+            )
+            nodelabels.append(r[0].lower())
+            if len(r[1]) > 1:
+                self.tikz += r'''        \draw[draw = %s, line width = %fpt, opacity = %f] (%s%s);
+                ''' % (
+                    linecol, 
+                    linewidth,
+                    dotlineopacity, 
+                    '%s) -- (' % r[0].lower(), 
+                    ') -- ('.join( \
+                        ['%s%u' % (r[0].lower(), j) for j in xrange(len(ydots))])
+                )
+        
+        # legend
+        self.tikz += r'''        \node[circle, anchor = south, minimum size = %f, 
+                opacity = %f, fill = %s] at (%f, %f) {};
+        ''' % (
+        dotsize,
+        dotlineopacity,
+        dotcol,
+        width - 1.5,
+        0.5
+        )
+        self.tikz += r'''        \node[anchor = west, rotate = 90] at (%f, %f) {\color{teal} Release/update year};
+        ''' % (
+        width - 1.5,
+        1.2
+        )
+        
+        self.tikz += r'''
+                \draw[-latex, draw = %s, line width = %fpt, opacity = %f] 
+                (%f, %f) -- (%f, %f);
+                \node[anchor = west, rotate = 90] at (%f, %f) {\color{teal} Data transfer};
+        ''' % (
+            dataimportcol,
+            linewidth,
+            dotlineopacity,
+            width - 0.9,
+            0.5,
+            width - 0.9,
+            1.0,
+            width - 0.9,
+            1.2
+        )
+        
+        self.tikz += r'''        \node[others, anchor = west] at (%f, %f) {Other resource};
+        ''' % (
+        width - 2.1,
+        0.5
+        )
+        self.tikz += r'''        \node[omnipath, anchor = west] at (%f, %f) {Resource in OmniPath};
+        ''' % (
+        width - 2.7,
+        0.5
+        )
+        
+        # new layer for crossing lines showing data transfers:
+        self.tikz += r'''\end{pgfonlayer}
+            \begin{pgfonlayer}{lines}
+            '''
+        
+        # drawing data transfer lines:
+        for r in ordr:
+            for s in r[3]:
+                if r[0].lower() in nodelabels and s.lower() in nodelabels:
+                    self.tikz += r'''        \draw[-latex, draw = %s, line width = %fpt, opacity = %f] 
+                        (%s) -- (%s);
+                    ''' % (
+                        dataimportcol,
+                        linewidth,
+                        dotlineopacity,
+                        s.lower(),
+                        r[0].lower()
+                    )
+        
+        # closing layer, tikzpicture and LaTeX document:
+        self.tikz += r'''    \end{pgfonlayer}
+            \end{tikzpicture}%s
+            \end{document}
+        ''' % (r'''
+            \end{turn}''' if horizontal else '')
+    
+    def write_tex(self):
+        # writing to file:
+        with open(self.tikzfname, 'w') as f:
+            f.write(self.tikz)
+    
+    def run_latex(self):
+        # compiling with XeLaTeX:
+        subprocess.call([self.latex, self.tikzfname])

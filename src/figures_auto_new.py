@@ -763,9 +763,52 @@ sb = plot.StackedBarplot(
     xlab = 'Resources',
     title = 'Interactions with direction or sign',
     order = vcount_ordr,
-    fname = 'dirs-signes-by-db-o-st.pdf',
+    fname = 'dirs-signes_cat-by-db-o-st.pdf',
     desc = False
 )
+
+vcount_ordr.remove(omnipath)
+d = list(zip(*[(s, 
+    sum([sum([s in e['dirs'].positive_sources[e['dirs'].straight],
+        s in e['dirs'].positive_sources[e['dirs'].reverse]]) for e in g.es]),
+    sum([sum([s in e['dirs'].negative_sources[e['dirs'].straight],
+        s in e['dirs'].negative_sources[e['dirs'].reverse]]) for e in g.es]),
+    sum([sum([s in ((e['dirs'].sources[e['dirs'].straight] - \
+        e['dirs'].positive_sources[e['dirs'].straight]) - \
+        e['dirs'].negative_sources[e['dirs'].straight]),
+        s in ((e['dirs'].sources[e['dirs'].reverse] - \
+        e['dirs'].positive_sources[e['dirs'].reverse]) - \
+        e['dirs'].negative_sources[e['dirs'].reverse])]) for e in g.es]),
+    sum([s in e['dirs'].sources['undirected'] for e in g.es])
+        ) \
+    for s, g in iteritems(sep)]))
+
+sb = plot.StackedBarplot(
+    x = d[0],
+    y = d[1:],
+    names = ['Positive', 'Negative', 'Unknown effect', 'Unknown direction'],
+    colors = ['#0EACD3', '#FE5222', '#CDEC25', '#413632'],
+    ylab = 'Interactions',
+    xlab = 'Resources',
+    title = 'Interactions with direction or sign',
+    order = vcount_ordr,
+    fname = 'dirs-signes_cat-by-db-wo-op-st.pdf',
+    desc = False
+)
+
+sg = plot.SimilarityGraph(
+        net,
+        fname = 'sources_similarity_vertex.pdf',
+        similarity = 'vertex',
+        size = 'vertex',
+    )
+
+sg = plot.SimilarityGraph(
+        net,
+        fname = 'sources_similarity_edge.pdf',
+        similarity = 'edge',
+        size = 'edge',
+    )
 
 sens.stacked_barplot(x = d[0], y = d[1:], 
     names = ['Positive', 'Negative', 'Unknown effect', 'Unknown direction'],
