@@ -79,6 +79,7 @@ import pypath.proteomicsdb as proteomicsdb
 import pypath.reflists as reflists
 import pypath.input_formats as input_formats
 import pypath.refs as _refs
+import pypath.plot as plot
 
 import pypath.ig_drawing as ig_drawing
 import pypath.common as common
@@ -5710,8 +5711,8 @@ class PyPath(object):
     
     def get_pathways(self, source):
         attrname = '%s_pathways'%source
-        protein_pws = None
-        interaction_pws = None
+        proteins_pws = None
+        interactions_pws = None
         if hasattr(dataio, attrname):
             fun = getattr(dataio, attrname)
             proteins_pws, interactions_pws = fun(mapper = self.mapper)

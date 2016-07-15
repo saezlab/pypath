@@ -22,6 +22,7 @@ import re
 import sys
 import os
 import itertools
+import collections
 import imp
 import subprocess
 from datetime import date
@@ -30,8 +31,6 @@ import math
 import numpy as np
 from numpy.random import randn
 import matplotlib as mpl
-import matplotlib.pyplot as plt
-import seaborn as sns
 import scipy.cluster.hierarchy as hc
 import cairo
 import igraph
@@ -49,6 +48,7 @@ import pypath.common as common
 import pypath.colorgen as colorgen
 from pypath.ig_drawing import DefaultGraphDrawerFFsupport
 import pypath.descriptions
+import pypath.progress as progress
 
 def is_opentype_cff_font(filename):
     """
@@ -346,9 +346,10 @@ class MultiBarplot(Plot):
         elif type(self.categories) is list:
             if type(self.categories[0]) is int:
                 self.cats = self.categories
+                self.cnames = dict(map(reversed, enumerate(self.cat_names)))
             else:
                 self.cnames = dict(map(reversed, enumerate(sorted(list(set(self.categories))))))
-            self.cats = list(map(lambda name: self.cnames[self.categories[name]], self.x))
+                self.cats = list(map(lambda name: self.cnames[name], self.categories))
         elif type(self.x[0]) is list:
             self.cats = []
             _x = []
@@ -2119,12 +2120,41 @@ class SimilarityGraph(object):
 
 class HistoryTree(object):
     
-    def __init__(self, fname, latex = '/usr/bin/xelatex'):
+    def __init__(self, fname, **kwargs):
         
         for k, v in iteritems(locals()):
             setattr(self, k, v)
         
         self.tikzfname = fname
+        
+        self.get_years()
+        
+        self.defaults = {
+            'yearbarwidth': 0.4,
+            'sepwidth': 0.04,
+            'lineheight': [1.0] * len(self.years),
+            'labelbg': 'twilightblue',
+            'labelfg': 'teal',
+            'nodelabbg': 'teal',
+            'nodelabfg': 'white',
+            'dotcol': 'teal',
+            'linecol': 'teal',
+            'dataimportcol': 'mantis',
+            'dotsize': 3.0,
+            'linewidth': 1.0,
+            'rowbg': 'twilightblue',
+            'width': 20.0,
+            'xoffset': 0.5,
+            'dotlineopacity': 0.7,
+            'horizontal': True, # whether the timeline should be the horizontal axis,
+            'latex': '/usr/bin/xelatex'
+        }
+        
+        for attr, val in iteritems(self.defaults):
+            if not hasattr(self, attr):
+                setattr(self, attr, val)
+        
+        self.plot()
     
     def reload(self):
         modname = self.__class__.__module__
@@ -2134,55 +2164,60 @@ class HistoryTree(object):
         setattr(self, '__class__', new)
     
     def plot(self):
+        self.build_elements()
         self.compose_tikz()
         self.write_tex()
         self.run_latex()
     
     def get_years(self):
-        self.d = pypath.descriptions.descritpions
-        firstyear = min(flatList([[r['year']] for r in d.values() if 'year' in r] + \
-            [r['releases'] for r in d.values() if 'releases' in r]))
+        self.d = pypath.descriptions.descriptions
+        self.firstyear = min(common.flatList([[r['year']] for r in self.d.values() if 'year' in r] + \
+            [r['releases'] for r in self.d.values() if 'releases' in r]))
+        self.lastyear = self.lastyear if hasattr(self, 'lastyear') else date.today().year
+        self.years = list(range(self.lastyear - self.firstyear + 1))
+    
+    def build_elements(self):
+        self.set_styles()
+        self.set_latex_header()
+        self.sort()
+        self.set_grid()
+        self.get_timelines()
+        self.get_layer_nodes()
+        self.get_layer_lines()
+        self.get_connections()
+        self.get_legend()
+        self.get_closing()
     
     def compose_tikz(self):
-        self.get_years()
-        
-        lastyear = date.today().year
-        years = range(lastyear - firstyear + 1)
-        yearbarwidth = 0.4
-        sepwidth = 0.04
-        lineheight = [1.0] * len(years)
-        labelbg = 'twilightblue'
-        labelfg = 'teal'
-        nodelabbg = 'teal'
-        nodelabfg = 'white'
-        dotcol = 'teal'
-        linecol = 'teal'
-        dataimportcol = 'mantis'
-        dotsize = 3.0
-        linewidth = 1.0
-        rowbg = 'twilightblue'
-        width = 20.0
-        xoffset = 0.5
-        dotlineopacity = 0.7
-        horizontal = True # whether the timeline should be the horizontal axis
-        
+        self.tikz = \
+            self.latex_header + \
+            self.grid + \
+            self.layer_nodes + \
+            self.timelines + \
+            self.legend + \
+            self.layer_lines + \
+            self.connections + \
+            self.closing
+    
+    def set_styles(self):
         # TikZ styles
-        tikzstyles = r'''
+        self.tikzstyles = r'''
             \tikzstyle{omnipath}=[rectangle, anchor = center, inner sep = 2pt, fill = %s, 
                 rotate = 90, text = %s, draw = %s]
             \tikzstyle{others}=[rectangle, anchor = center, inner sep = 2pt, fill = %s, 
                 rotate = 90, text = %s, draw = %s]
         ''' % (
-                nodelabfg,
-                nodelabbg,
-                nodelabbg,
-                nodelabbg,
-                nodelabfg,
-                nodelabbg
+                self.nodelabfg,
+                self.nodelabbg,
+                self.nodelabbg,
+                self.nodelabbg,
+                self.nodelabfg,
+                self.nodelabbg
             )
-        
+    
+    def set_latex_header(self):
         # LaTeX preamble for XeLaTeX
-        self.tikz = r'''\documentclass[a4paper,10pt]{article}
+        self.latex_header = r'''\documentclass[a4paper,10pt]{article}
             \usepackage{fontspec}
             \usepackage{xunicode}
             \usepackage{polyglossia}
@@ -2207,21 +2242,24 @@ class HistoryTree(object):
             \pgfsetlayers{background,lines,nodes}%s
             \begin{tikzpicture}
             \begin{pgfonlayer}{background}
-        ''' % (tikzstyles, 
+        ''' % (self.tikzstyles,
             r'''
-            \begin{turn}{-90}''' if horizontal else '')
-        
-        ordr = sorted([(lab, r['releases'] if 'releases' in r else [] + \
-                    [r['year']] if 'year' in r else [], r['label'] if 'label' in r else lab, 
+            \begin{turn}{-90}''' if self.horizontal else '')
+    
+    def sort(self):
+        self.ordr = sorted([(lab, r['releases'] if 'releases' in r else [] + \
+                    [r['year']] if 'year' in r else [], r['label'] if 'label' in r else lab,
                     r['data_import'] if 'data_import' in r else [],
                     'omnipath' if 'omnipath' in r and r['omnipath'] else 'others') \
-                for lab, r in d.iteritems() \
+                for lab, r in iteritems(self.d) \
                 if 'year' in r or 'releases' in r], \
             key = lambda x: min(x[1]))
         
+    def set_grid(self):
         # the background grid and year labels
-        for i in years:
-            self.tikz += r'''        \fill[anchor = south west, fill = %s, 
+        self.grid = ''
+        for i in self.years:
+            self.grid += r'''        \fill[anchor = south west, fill = %s, 
                 inner sep = 0pt, outer sep = 0pt] '''\
                 r'''(%f, %f) rectangle (%f, %f);
                 \node[anchor = north west, rotate = 90, text width = %fcm, 
@@ -2229,50 +2267,52 @@ class HistoryTree(object):
                     minimum size = %fcm] at (0.0, %f) {\small{\color{%s}%u}};
                 \fill[fill = red] (%f, %f) circle (0.0pt);
         ''' % (
-            rowbg, # background of row
-            yearbarwidth + sepwidth, # left edge of row
-            sum(lineheight[:i]), # top edge of row
-            width, # right edge of the row
-            sum(lineheight[:i + 1]) - sepwidth, # bottom edge of row
-            lineheight[i] - sepwidth, # height of year label
-            labelbg, # background of label
-            yearbarwidth, # width of year label
-            sum(lineheight[:i]), # top of year label
-            labelfg, # text color of label
-            firstyear + i, # year
-            0.0, sum(lineheight[:i]) # red dot
+            self.rowbg, # background of row
+            self.yearbarwidth + self.sepwidth, # left edge of row
+            sum(self.lineheight[:i]), # top edge of row
+            self.width, # right edge of the row
+            sum(self.lineheight[:i + 1]) - self.sepwidth, # bottom edge of row
+            self.lineheight[i] - self.sepwidth, # height of year label
+            self.labelbg, # background of label
+            self.yearbarwidth, # width of year label
+            sum(self.lineheight[:i]), # top of year label
+            self.labelfg, # text color of label
+            self.firstyear + i, # year
+            0.0, sum(self.lineheight[:i]) # red dot
             )
-        
+    
+    def get_layer_nodes(self):
         # new layer for nodes
-        self.tikz += r'''    \end{pgfonlayer}
+        self.layer_nodes = r'''    \end{pgfonlayer}
             \begin{pgfonlayer}{nodes}
             '''
-        
+    
+    def get_timelines(self):
         # horizontal distance between vertical columns
-        xdist = (width - yearbarwidth - sepwidth - xoffset) / float(len(ordr))
-        nodelabels = []
-        
+        self.xdist = (self.width - self.yearbarwidth - self.sepwidth - self.xoffset) / float(len(self.ordr))
+        self.nodelabels = []
         # drawing vertical dots, labels and connecting lines:
-        for i, r in enumerate(ordr):
-            coox = xdist * i + yearbarwidth + sepwidth + xdist / 2.0 + xoffset
+        self.timelines = ''
+        for i, r in enumerate(self.ordr):
+            coox = self.xdist * i + self.yearbarwidth + self.sepwidth + self.xdist / 2.0 + self.xoffset
             ymax = max(r[1])
             ydots = [y for y in r[1] if y != ymax]
-            ylaby = ymax - firstyear
-            cooylab = sum(lineheight[:ylaby]) + lineheight[ylaby] / 2.0
-            ydots = [sum(lineheight[:y - firstyear]) + lineheight[y - firstyear] / 2.0 for y in ydots]
+            ylaby = ymax - self.firstyear
+            cooylab = sum(self.lineheight[:ylaby]) + self.lineheight[ylaby] / 2.0
+            ydots = [sum(self.lineheight[:y - self.firstyear]) + self.lineheight[y - self.firstyear] / 2.0 for y in ydots]
             for j, cooy in enumerate(ydots):
-                self.tikz += r'''        \node[circle, fill = %s, minimum size = %f, opacity = %f] 
+                self.timelines += r'''        \node[circle, fill = %s, minimum size = %f, opacity = %f] 
                     (%s) at (%f, %f) {};
                 ''' % (
-                    dotcol, # fill color for dot
-                    dotsize, # size of the dot
-                    dotlineopacity, # opacity of dot
+                    self.dotcol, # fill color for dot
+                    self.dotsize, # size of the dot
+                    self.dotlineopacity, # opacity of dot
                     '%s%u' % (r[0].lower(), j), # label
                     coox, # x coordinate
                     cooy # y coordinate
                 )
-            self.tikz += r'''        \node[%s] 
-                    (%s) at (%f, %f) 
+            self.timelines += r'''        \node[%s]
+                    (%s) at (%f, %f)
                     {\footnotesize %s};
             ''' % (
                 r[4], # node style
@@ -2281,92 +2321,320 @@ class HistoryTree(object):
                 cooylab, # node y coordinate
                 r[0] # label text
             )
-            nodelabels.append(r[0].lower())
+            self.nodelabels.append(r[0].lower())
             if len(r[1]) > 1:
-                self.tikz += r'''        \draw[draw = %s, line width = %fpt, opacity = %f] (%s%s);
+                self.timelines += r'''        \draw[draw = %s, line width = %fpt, opacity = %f] (%s%s);
                 ''' % (
-                    linecol, 
-                    linewidth,
-                    dotlineopacity, 
+                    self.linecol,
+                    self.linewidth,
+                    self.dotlineopacity,
                     '%s) -- (' % r[0].lower(), 
                     ') -- ('.join( \
                         ['%s%u' % (r[0].lower(), j) for j in xrange(len(ydots))])
                 )
         
+    def get_legend(self):
         # legend
-        self.tikz += r'''        \node[circle, anchor = south, minimum size = %f, 
+        self.legend = ''
+        self.legend += r'''        \node[circle, anchor = south, minimum size = %f, 
                 opacity = %f, fill = %s] at (%f, %f) {};
-        ''' % (
-        dotsize,
-        dotlineopacity,
-        dotcol,
-        width - 1.5,
-        0.5
-        )
-        self.tikz += r'''        \node[anchor = west, rotate = 90] at (%f, %f) {\color{teal} Release/update year};
-        ''' % (
-        width - 1.5,
-        1.2
-        )
+            ''' % (
+            self.dotsize,
+            self.dotlineopacity,
+            self.dotcol,
+            self.width - 1.5,
+            0.5
+            )
+        self.legend += r'''        \node[anchor = west, rotate = 90] at (%f, %f) {\color{teal} Release/update year};
+            ''' % (
+            self.width - 1.5,
+            1.2
+            )
         
-        self.tikz += r'''
+        self.legend += r'''
                 \draw[-latex, draw = %s, line width = %fpt, opacity = %f] 
                 (%f, %f) -- (%f, %f);
                 \node[anchor = west, rotate = 90] at (%f, %f) {\color{teal} Data transfer};
-        ''' % (
-            dataimportcol,
-            linewidth,
-            dotlineopacity,
-            width - 0.9,
-            0.5,
-            width - 0.9,
-            1.0,
-            width - 0.9,
-            1.2
-        )
+            ''' % (
+                self.dataimportcol,
+                self.linewidth,
+                self.dotlineopacity,
+                self.width - 0.9,
+                0.5,
+                self.width - 0.9,
+                1.0,
+                self.width - 0.9,
+                1.2
+            )
         
-        self.tikz += r'''        \node[others, anchor = west] at (%f, %f) {Other resource};
-        ''' % (
-        width - 2.1,
-        0.5
-        )
-        self.tikz += r'''        \node[omnipath, anchor = west] at (%f, %f) {Resource in OmniPath};
-        ''' % (
-        width - 2.7,
-        0.5
-        )
-        
+        self.legend += r'''        \node[others, anchor = west] at (%f, %f) {Other resource};
+            ''' % (
+            self.width - 2.1,
+            0.5
+            )
+        self.legend += r'''        \node[omnipath, anchor = west] at (%f, %f) {Resource in OmniPath};
+            ''' % (
+            self.width - 2.7,
+            0.5
+            )
+    
+    def get_layer_lines(self):
         # new layer for crossing lines showing data transfers:
-        self.tikz += r'''\end{pgfonlayer}
+        self.layer_lines = r'''\end{pgfonlayer}
             \begin{pgfonlayer}{lines}
             '''
-        
+    
+    def get_connections(self):
         # drawing data transfer lines:
-        for r in ordr:
+        self.connections = ''
+        for r in self.ordr:
             for s in r[3]:
-                if r[0].lower() in nodelabels and s.lower() in nodelabels:
-                    self.tikz += r'''        \draw[-latex, draw = %s, line width = %fpt, opacity = %f] 
+                if r[0].lower() in self.nodelabels and s.lower() in self.nodelabels:
+                    self.connections += r'''        \draw[-latex, draw = %s, line width = %fpt, opacity = %f] 
                         (%s) -- (%s);
                     ''' % (
-                        dataimportcol,
-                        linewidth,
-                        dotlineopacity,
+                        self.dataimportcol,
+                        self.linewidth,
+                        self.dotlineopacity,
                         s.lower(),
                         r[0].lower()
                     )
-        
+    
+    def get_closing(self):
         # closing layer, tikzpicture and LaTeX document:
-        self.tikz += r'''    \end{pgfonlayer}
+        self.closing = r'''    \end{pgfonlayer}
             \end{tikzpicture}%s
             \end{document}
         ''' % (r'''
-            \end{turn}''' if horizontal else '')
+            \end{turn}''' if self.horizontal else '')
     
     def write_tex(self):
-        # writing to file:
+        """
+        Writes the TeX markup to file.
+        """
         with open(self.tikzfname, 'w') as f:
             f.write(self.tikz)
     
     def run_latex(self):
-        # compiling with XeLaTeX:
+        """
+        Runs LaTeX to compile the TeX file.
+        """
         subprocess.call([self.latex, self.tikzfname])
+        sys.stdout.write('\t:: TeX has been written to `%s`, PDF to `%s.pdf`.\n' % \
+            (self.tikzfname, '.'.join(self.tikzfname.split('.')[:-1])))
+
+class HtpCharacteristics(object):
+    
+    def __init__(self,
+                 pp,
+                 fname,
+                 upper = 200,
+                 lower = 5,
+                 axis_lab_font = {},
+                 ticklabel_font = {},
+                 title_font = {},
+                 title = ''):
+        
+        for k, v in iteritems(locals()):
+            setattr(self, k, v)
+        
+        self.defaults = {
+            'figsize': (10, 20),
+            'title_halign': 'center',
+            'title_valign': 'top'
+        }
+        
+        for k, v in iteritems(self.defaults):
+            if not hasattr(self, k):
+                setattr(self, k, v)
+        
+        self.plot_param = [
+            ('rnum', 'Number of references', '#007B7F'),
+            ('enum', 'Number of edges', '#6EA945'),
+            ('snum', 'Number of resources', '#DA0025'),
+            ('lenum', 'LT interactions', '#996A44'),
+            ('lvnum', 'LT proteins', '#FCCC06')
+        ]
+        
+        self.graph = pp.graph
+        
+        self.axis_lab_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'bold',
+            'variant': 'normal',
+            'size': 'x-large'
+        }
+        self.ticklabel_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'roman',
+            'variant': 'normal',
+            'size': 'large'
+        }
+        self.title_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'bold',
+            'variant': 'normal',
+            'size': 'xx-large'
+        }
+        
+        self.axis_lab_font = common.merge_dicts(axis_lab_font,
+                                                self.axis_lab_font_default)
+        self.ticklabel_font = common.merge_dicts(ticklabel_font,
+                                                 self.ticklabel_font_default)
+        self.title_font = common.merge_dicts(title_font,
+                                             self.title_font_default)
+        
+        self.plot()
+    
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    def plot(self):
+        self.pre_plot()
+        self.do_plot()
+        self.post_plot()
+    
+    def pre_plot(self):
+        self.set_fontproperties()
+        self.htp_calculations()
+        self.set_figsize()
+    
+    def do_plot(self):
+        self.init_fig()
+        self.set_grid()
+        self.make_plots()
+        self.set_ticklabels()
+        self.set_title()
+    
+    def post_plot(self):
+        self.finish()
+        if hasattr(self, 'prg'):
+            self.prg.terminate()
+    
+    def set_fontproperties(self):
+        self.fp_axis_lab = \
+            mpl.font_manager.FontProperties(**self.axis_lab_font)
+        self.fp_ticklabel = \
+            mpl.font_manager.FontProperties(**self.ticklabel_font)
+        self.fp_title = \
+            mpl.font_manager.FontProperties(**self.title_font)
+    
+    def htp_calculations(self):
+        self.refc = collections.Counter(
+            common.flatList((r.pmid for r in e['references']) for e in self.pp.graph.es)
+        )
+        
+        # percentage of high throughput interactions
+        self.htdata = {}
+        htsrcs_prev = set(self.pp.sources)
+        self.prg = progress.Progress(self.upper - self.lower, 'Analysing HTP refs/interactions', 1)
+        for htlim in reversed(xrange(self.lower, self.upper + 1)):
+            self.prg.step()
+            htrefs = set([i[0] for i in self.refc.most_common() if i[1] > htlim])
+            htedgs = set([e.index for e in self.graph.es if \
+                len(set([r.pmid for r in e['references']]) - htrefs) == 0])
+            htvtcs = [v.index for v in self.graph.vs if len(set(self.graph.incident(v.index, mode = 'ALL')) - htedgs) == 0]
+            htsrcs = common.uniqList(common.flatList([self.graph.es[e]['sources'] for e in htedgs]))
+            htsrcs_new = set(common.uniqList(common.flatList([self.graph.es[e]['sources'] for e in htedgs])))
+            diff = htsrcs_new - htsrcs_prev
+            htsrcs_prev = htsrcs_new
+            self.htdata[htlim] = {
+                'rnum': len(htrefs),
+                'enum': len(htedgs),
+                'snum': len(htsrcs),
+                'htrefs': htrefs,
+                'lenum': self.graph.ecount() - len(htedgs),
+                'lvnum': self.graph.vcount() - len(htvtcs)
+            }
+    
+    def set_figsize(self):
+        """
+        Converts width and height to a tuple so can be used for figsize.
+        """
+        if hasattr(self, 'width') and hasattr(self, 'height'):
+            self.figsize = (self.width, selg.height)
+    
+    def init_fig(self):
+        """
+        Creates a figure using the object oriented matplotlib interface.
+        """
+        self.pdf = mpl.backends.backend_pdf.PdfPages(self.fname)
+        self.fig = mpl.figure.Figure(figsize = self.figsize)
+        self.cvs = mpl.backends.backend_pdf.FigureCanvasPdf(self.fig)
+        self.axes = {}
+    
+    def set_grid(self):
+        """
+        Sets up a grid according to the number of subplots,
+        with one additional column of zero width on the left
+        to have aligned y axis labels.
+        """
+        self.nrows = len(self.plot_param)
+        self.gs = mpl.gridspec.GridSpec(self.nrows, 2,
+                height_ratios = [1] * self.nrows, width_ratios = [0, 1])
+        self.axes = [[None] * self.nrows, [None] * self.nrows]
+    
+    def get_subplot(self, i, j = 1):
+        if self.axes[j][i] is None:
+            self.axes[j][i] = self.fig.add_subplot(self.gs[i,j])
+        self.ax = self.axes[j][i]
+    
+    def make_plots(self):
+        if hasattr(self, 'prg'):
+            self.prg.set_status('drawing plots')
+        for i, (key, ylab, col) in enumerate(self.plot_param):
+            self.get_subplot(i)
+            self.ax.plot(sorted(self.htdata.keys()),
+                         list(map(lambda h: self.htdata[h][key], sorted(self.htdata.keys()))),
+                         '-', color = col
+                    )
+            
+            if i == self.nrows - 1:
+                # xlabel only for the lowest subplot
+                self.ax.set_xlabel('HT limit [interaction/reference]', fontproperties = self.fp_axis_lab)
+            
+            self.get_subplot(i, 0)
+            self.ax.set_ylabel(ylab, fontproperties = self.fp_axis_lab)
+    
+    def set_ticklabels(self):
+        for ax in self.axes[1]:
+            list(map(lambda l:
+                        l.set_fontproperties(self.fp_ticklabel),
+                    ax.xaxis.get_majorticklabels()))
+            list(map(lambda l:
+                        l.set_fontproperties(self.fp_ticklabel),
+                    ax.yaxis.get_majorticklabels()))
+        for ax in self.axes[0]:
+            ax.xaxis.set_ticklabels([])
+            ax.yaxis.set_ticklabels([])
+            ax.yaxis.label.set_verticalalignment('bottom')
+    
+    def set_title(self):
+        """
+        Sets the main title.
+        """
+        self.title_text = self.fig.suptitle(self.title)
+        self.title_text.set_fontproperties(self.fp_title)
+        self.title_text.set_horizontalalignment(self.title_halign)
+        self.title_text.set_verticalalignment(self.title_valign)
+    
+    def finish(self):
+        """
+        Applies tight layout, draws the figure, writes the file and closes.
+        """
+        self.fig.tight_layout()
+        self.fig.subplots_adjust(top = 0.92)
+        self.cvs.draw()
+        self.cvs.print_figure(self.pdf)
+        self.pdf.close()
+        self.fig.clf()
