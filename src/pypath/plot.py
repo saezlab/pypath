@@ -3093,3 +3093,248 @@ class RefsComposite(object):
         self.cvs.print_figure(self.pdf)
         self.pdf.close()
         self.fig.clf()
+
+class BarplotsGrid(object):
+    
+    def __init__(self,
+            pp,
+            x,
+            by,
+            fname,
+            ylab,
+            data = None,
+            color = '#97BE73',
+            xlim = None,
+            uniform_xlim = True,
+            full_range_x = True,
+            ylog = False,
+            axis_lab_font = {},
+            ticklabel_font = {},
+            title_font = {},
+            bar_args = {},
+            htp_threshold = 20,
+            **kwargs):
+        
+        for k, v in iteritems(locals()):
+            if not hasattr(self, k):
+                setattr(self, k, v)
+        
+        for k, v in iteritems(kwargs):
+            if not hasattr(self, k):
+                setattr(self, k, v)
+        
+        self.defaults = {
+            'title_halign': 'center',
+            'title_valign': 'top'
+        }
+        
+        for k, v in iteritems(self.defaults):
+            if not hasattr(self, k):
+                setattr(self, k, v)
+        
+        self.bar_args_default = {
+            'align': 'center'
+        }
+        
+        self.axis_lab_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'bold',
+            'variant': 'normal',
+            'size': 'x-large'
+        }
+        self.ticklabel_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'roman',
+            'variant': 'normal',
+            'size': 'medium'
+        }
+        self.title_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'bold',
+            'variant': 'normal',
+            'size': 'xx-large'
+        }
+        
+        self.bar_args = common.merge_dicts(self.bar_args, self.bar_args_default)
+        
+        self.axis_lab_font = common.merge_dicts(axis_lab_font,
+                                                self.axis_lab_font_default)
+        self.ticklabel_font = common.merge_dicts(ticklabel_font,
+                                                 self.ticklabel_font_default)
+        self.title_font = common.merge_dicts(title_font,
+                                             self.title_font_default)
+        
+        self.x_by_plots = []
+        self.y_by_plots = []
+        self.level_by_plots = []
+        
+        self.plot()
+    
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    def plot(self):
+        self.pre_plot()
+        self.do_plot()
+        self.post_plot()
+    
+    def pre_plot(self):
+        self.set_fontproperties()
+        self.get_data()
+        self.number_of_plots()
+        self.set_figsize()
+        self.set_xlim()
+    
+    def do_plot(self):
+        self.init_fig()
+        self.set_grid()
+        self.make_plots()
+        self.set_title()
+    
+    def post_plot(self):
+        self.finish()
+    
+    def set_fontproperties(self):
+        self.fp_axis_lab = \
+            mpl.font_manager.FontProperties(**self.axis_lab_font)
+        self.fp_ticklabel = \
+            mpl.font_manager.FontProperties(**self.ticklabel_font)
+        self.fp_title = \
+            mpl.font_manager.FontProperties(**self.title_font)
+    
+    def get_data(self):
+        if self.data is None:
+            self.data, none = _refs.get_pubmed_data(self.pp,
+                                        htp_threshold = self.htp_threshold)
+        self.levels = np.array(sorted(getattr(self.data, self.by).unique()))
+        self.ilevels = np.array(list(map(lambda l: getattr(self.data, self.by) == l, self.levels)))
+    
+    def set_figsize(self):
+        """
+        Converts width and height to a tuple so can be used for figsize.
+        """
+        if hasattr(self, 'width') and hasattr(self, 'height'):
+            self.figsize = (self.width, selg.height)
+    
+    def number_of_plots(self):
+        self.numof_plots = len(getattr(self.data, self.by).unique())
+        self.nrows = 1
+        self.ncols = 1
+        while True:
+            if self.nrows * self.ncols >= self.numof_plots:
+                break
+            self.nrows += 1
+            if self.nrows * self.ncols >= self.numof_plots:
+                break
+            self.ncols += 1
+        self.figsize = (8 + self.ncols * 2, 8 + self.nrows * 2)
+    
+    def init_fig(self):
+        """
+        Creates a figure using the object oriented matplotlib interface.
+        """
+        self.pdf = mpl.backends.backend_pdf.PdfPages(self.fname)
+        self.fig = mpl.figure.Figure(figsize = self.figsize)
+        self.cvs = mpl.backends.backend_pdf.FigureCanvasPdf(self.fig)
+        self.axes = {}
+    
+    def set_grid(self):
+        """
+        Sets up a grid according to the number of subplots,
+        with one additional column of zero width on the left
+        to have aligned y axis labels.
+        """
+        self.gs = mpl.gridspec.GridSpec(self.nrows, self.ncols,
+                height_ratios = [1] * self.nrows, width_ratios = [1] * self.ncols)
+        self.axes = list(map(lambda _: [None] * self.ncols, xrange(self.nrows)))
+    
+    def get_subplot(self, i, j):
+        if self.axes[i][j] is None:
+            self.axes[i][j] = self.fig.add_subplot(self.gs[i,j])
+        self.ax = self.axes[i][j]
+    
+    def get_color(self, x):
+        if type(self.color) is dict:
+            return np.array(list(map(lambda l: self.color[l], x)))
+        elif type(self.color) is list:
+            return self.color[:len(x)]
+        else:
+            return self.color
+    
+    def set_xlim(self):
+        if self.xlim is None and self.uniform_xlim:
+            self.xlim = [-1.0, len(getattr(self.data, self.x).unique()) + 1.5]
+    
+    def make_plots(self):
+        for row in xrange(self.nrows):
+            for col in xrange(self.ncols):
+                nplot = row * self.ncols + col
+                if nplot >= len(self.levels):
+                    continue
+                self.get_subplot(row, col)
+                level = self.levels[nplot]
+                if self.uniform_xlim:
+                    x = np.array(sorted(getattr(self.data, self.x).unique()))
+                else:
+                    x = np.array(sorted(getattr(self.data, self.x)[np.where(self.ilevels[nplot])[0]].unique()))
+                if self.full_range_x and x.dtype == np.int:
+                    x = np.arange(min(x), max(x) + 1)
+                y = dict(getattr(self.data, self.x)[self.ilevels[nplot]].value_counts())
+                y = np.array(list(map(lambda l: y[l] if l in y else 0.0, x)))
+                self.ax.bar(
+                    left = np.arange(len(x)),
+                    height = y,
+                    tick_label = x,
+                    color = self.get_color(x),
+                    **self.bar_args
+                )
+                self.level_by_plots.append(level)
+                self.x_by_plots.append(x)
+                self.y_by_plots.append(y)
+                if self.uniform_xlim or self.xlim is not None:
+                    self.ax.set_xlim(self.xlim)
+                self.ax.set_xlabel(level, fontproperties = self.fp_axis_lab)
+                if self.full_range_x:
+                    step = 10 if max(x) - min(x) > 50 else 5
+                    xticks = list(filter(lambda i: i[0] % step == 0,
+                                            zip(x, np.arange(len(x)))))
+                    self.ax.set_xticks(list(map(lambda i: i[1], xticks)))
+                    self.ax.set_xticklabels(list(map(lambda i: i[0], xticks)))
+                list(map(lambda tl: tl.set_fontproperties(self.fp_ticklabel) or \
+                                    tl.set_rotation(90),
+                        self.ax.get_xticklabels()))
+                list(map(lambda tl: tl.set_fontproperties(self.fp_ticklabel),
+                        self.ax.get_yticklabels()))
+                if col == 0:
+                    self.ax.set_ylabel(self.ylab)
+                self.ax.xaxis.grid(True)
+    
+    def set_title(self):
+        """
+        Sets the main title.
+        """
+        self.title_text = self.fig.suptitle(self.title)
+        self.title_text.set_fontproperties(self.fp_title)
+        self.title_text.set_horizontalalignment(self.title_halign)
+        self.title_text.set_verticalalignment(self.title_valign)
+    
+    def finish(self):
+        """
+        Applies tight layout, draws the figure, writes the file and closes.
+        """
+        self.fig.tight_layout()
+        self.fig.subplots_adjust(top = 0.92)
+        self.cvs.draw()
+        self.cvs.print_figure(self.pdf)
+        self.pdf.close()
+        self.fig.clf()
