@@ -49,6 +49,7 @@ import pypath.colorgen as colorgen
 from pypath.ig_drawing import DefaultGraphDrawerFFsupport
 import pypath.descriptions
 import pypath.progress as progress
+import pypath.refs as _refs
 
 def is_opentype_cff_font(filename):
     """
@@ -188,16 +189,38 @@ class Plot(object):
 
 class MultiBarplot(Plot):
     
-    def __init__(self, x, y, categories = None, cat_names = None, cat_ordr = None,
-        fname = None, figsize = (12, 4),
-        xlab = '', ylab = '', title = '',
-        lab_angle = 90, lab_size = (24, 24), color = '#007b7f',
-        order = False, desc = True, legend = None, fin = True,
-        rc = {}, palette = None, axis_lab_font = {},
-        bar_args = {}, ticklabel_font = {}, legend_font = {},
-        title_font = {}, title_halign = 'center', title_valign = 'top',
-        y2 = None, color2 = None, ylim = None,
-        grouped = False, group_labels = []):
+    def __init__(self,
+                 x, y,
+                 categories = None,
+                 cat_names = None,
+                 cat_ordr = None,
+                 fname = None,
+                 figsize = (12, 4),
+                 xlab = '',
+                 ylab = '',
+                 title = '',
+                 lab_angle = 90,
+                 color = '#007b7f',
+                 order = False,
+                 desc = True,
+                 ylog = False,
+                 legend = None,
+                 fin = True,
+                 rc = {},
+                 axis_lab_font = {},
+                 bar_args = {},
+                 ticklabel_font = {},
+                 legend_font = {},
+                 title_font = {},
+                 title_halign = 'center',
+                 title_valign = 'top',
+                 y2 = None,
+                 color2 = None,
+                 ylim = None,
+                 grouped = False,
+                 group_labels = [],
+                 **kwargs
+                 ):
         """
         Plots multiple barplots side-by-side.
         Not all options are compatible with each other.
@@ -206,6 +229,9 @@ class MultiBarplot(Plot):
         """
         
         for k, v in iteritems(locals()):
+            setattr(self, k, v)
+        
+        for k, v in iteritems(kwargs):
             setattr(self, k, v)
         
         super(MultiBarplot, self).__init__()
@@ -268,6 +294,12 @@ class MultiBarplot(Plot):
             mpl.font_manager.FontProperties(**self.legend_font)
         self.fp_title = \
             mpl.font_manager.FontProperties(**self.title_font)
+        if hasattr(self, 'xticklabel_font'):
+            self.fp_xticklabel = \
+            mpl.font_manager.FontProperties(**(
+                common.merge_dicts(self.xticklabel_font, self.ticklabel_font)))
+        else:
+            self.fp_xticklabel = self.fp_ticklabel
         
         self.x = np.array(self.x, dtype = np.object)
         
@@ -364,7 +396,9 @@ class MultiBarplot(Plot):
             if self.cat_names is not None:
                 self.cnames = dict(zip(self.cat_names, list(set(self.cats))))
             else:
-                self.cnames = dict(map(lambda c: (c, '#%u'%c), self.cats))
+                self.cnames = dict(map(lambda c: ('#%u'%c, c), sorted(common.uniqList(self.cats))))
+                if len(self.cnames) == 1:
+                    self.cnames = {self.xlab: 0}
         self.cnums = dict(map(reversed, iteritems(self.cnames)))
         self.cats = np.array(self.cats)
     
@@ -566,6 +600,9 @@ class MultiBarplot(Plot):
                 self.ax.set_ylim(self.ylim)
             if self.grouped:
                 self.ax.set_xticks(self.ax.get_xticks() + correction)
+            if self.ylog:
+                self.ax.set_yscale('symlog')
+                self.ax.yaxis.set_major_formatter(mpl.ticker.ScalarFormatter())
             
             self.get_subplot(i, 1)
             self.ax.xaxis.set_ticklabels([])
@@ -578,7 +615,7 @@ class MultiBarplot(Plot):
         Sets properties of axis labels and ticklabels.
         """
         list(map(lambda tick:
-                tick.label.set_fontproperties(self.fp_ticklabel) or \
+                tick.label.set_fontproperties(self.fp_xticklabel) or \
                 (self.lab_angle == 0 or self.lab_angle == 90) and \
                     (tick.label.set_rotation(self.lab_angle) or \
                     tick.label.set_horizontalalignment('center')),
@@ -2618,6 +2655,424 @@ class HtpCharacteristics(object):
             ax.xaxis.set_ticklabels([])
             ax.yaxis.set_ticklabels([])
             ax.yaxis.label.set_verticalalignment('bottom')
+    
+    def set_title(self):
+        """
+        Sets the main title.
+        """
+        self.title_text = self.fig.suptitle(self.title)
+        self.title_text.set_fontproperties(self.fp_title)
+        self.title_text.set_horizontalalignment(self.title_halign)
+        self.title_text.set_verticalalignment(self.title_valign)
+    
+    def finish(self):
+        """
+        Applies tight layout, draws the figure, writes the file and closes.
+        """
+        self.fig.tight_layout()
+        self.fig.subplots_adjust(top = 0.92)
+        self.cvs.draw()
+        self.cvs.print_figure(self.pdf)
+        self.pdf.close()
+        self.fig.clf()
+
+class RefsComposite(object):
+    
+    def __init__(self,
+                 pp,
+                 fname,
+                 axis_lab_font = {},
+                 ticklabel_font = {},
+                 title_font = {},
+                 legend_font = {},
+                 title = '',
+                 color = '#007B7F',
+                 hcolor = '#007B7F',
+                 all_color = '#6EA945',
+                 htp_threshold = 20,
+                 figsize = (12.8, 8.8),
+                 all_name = 'All',
+                 curation_plot = False,
+                 **kwargs):
+    
+        for k, v in iteritems(locals()):
+            if not hasattr(self, k):
+                setattr(self, k, v)
+        
+        for k, v in iteritems(kwargs):
+            if not hasattr(self, k):
+                setattr(self, k, v)
+        
+        self.defaults = {
+            'title_halign': 'center',
+            'title_valign': 'top'
+        }
+        
+        for k, v in iteritems(self.defaults):
+            if not hasattr(self, k):
+                setattr(self, k, v)
+        
+        self.graph = self.pp.graph
+        
+        self.boxplot_whiskerprops = {
+            'linewidth': 0.5,
+            'color': '#777777',
+            'linestyle': '-'
+        }
+        self.boxplot_medianprops = {
+            'linewidth': 0.5,
+            'color': '#CCCCCC'
+        }
+        self.boxplot_capprops = {
+            'linewidth': 0.5,
+            'color': '#777777'
+        }
+        self.boxplot_flierprops = {
+            'markersize': 3,
+            'marker': 'D',
+            'markerfacecolor': '#777777'
+        }
+        
+        self.axis_lab_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'bold',
+            'variant': 'normal',
+            'size': 'x-large'
+        }
+        self.ticklabel_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'roman',
+            'variant': 'normal',
+            'size': 'medium'
+        }
+        self.title_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'bold',
+            'variant': 'normal',
+            'size': 'xx-large'
+        }
+        self.legend_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'roman',
+            'variant': 'normal',
+            'size': 'small'
+        }
+        
+        self.axis_lab_font = common.merge_dicts(axis_lab_font,
+                                                self.axis_lab_font_default)
+        self.ticklabel_font = common.merge_dicts(ticklabel_font,
+                                                 self.ticklabel_font_default)
+        self.title_font = common.merge_dicts(title_font,
+                                             self.title_font_default)
+        self.legend_font = common.merge_dicts(legend_font,
+                                             self.legend_font_default)
+        
+        self.plot()
+    
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    def plot(self):
+        self.pre_plot()
+        self.do_plot()
+        self.post_plot()
+    
+    def pre_plot(self):
+        self.set_fontproperties()
+        self.set_figsize()
+        self.get_data()
+    
+    def do_plot(self):
+        self.init_fig()
+        self.set_grid()
+        self.plot_npubmeds_db()
+        self.plot_npubmeds_y()
+        self.plot_newint()
+        self.plot_boxplot()
+        self.plot_curation()
+        self.set_title()
+    
+    def post_plot(self):
+        self.finish()
+    
+    def set_fontproperties(self):
+        self.fp_axis_lab = \
+            mpl.font_manager.FontProperties(**self.axis_lab_font)
+        self.fp_ticklabel = \
+            mpl.font_manager.FontProperties(**self.ticklabel_font)
+        self.fp_title = \
+            mpl.font_manager.FontProperties(**self.title_font)
+        self.fp_legend = \
+            mpl.font_manager.FontProperties(**self.legend_font)
+    
+    def get_data(self):
+        self.pubmeds, self.earliest = _refs.get_pubmed_data(self.pp,
+                                        htp_threshold = self.htp_threshold)
+    
+    def set_figsize(self):
+        """
+        Converts width and height to a tuple so can be used for figsize.
+        """
+        if hasattr(self, 'width') and hasattr(self, 'height'):
+            self.figsize = (self.width, selg.height)
+    
+    def init_fig(self):
+        """
+        Creates a figure using the object oriented matplotlib interface.
+        """
+        self.pdf = mpl.backends.backend_pdf.PdfPages(self.fname)
+        self.fig = mpl.figure.Figure(figsize = self.figsize)
+        self.cvs = mpl.backends.backend_pdf.FigureCanvasPdf(self.fig)
+        self.axes = {}
+    
+    def set_grid(self):
+        """
+        Sets up a grid according to the number of subplots,
+        with one additional column of zero width on the left
+        to have aligned y axis labels.
+        """
+        self.gs = mpl.gridspec.GridSpec(2, 3,
+                height_ratios = [2, 8], width_ratios = [1.1, 1.1, 8])
+        self.axes = [[None, None, None], [None, None, None]]
+    
+    def get_subplot(self, i, j):
+        if self.axes[i][j] is None:
+            self.axes[i][j] = self.fig.add_subplot(self.gs[i,j])
+        self.ax = self.axes[i][j]
+    
+    def get_hcolor(self, names):
+        for name in names:
+            if type(self.hcolor) is dict and name in self.hcolor:
+                yield self.hcolor[name]
+            elif name == self.all_name and self.all_color is not None:
+                yield self.all_color
+            else:
+                yield self.hcolor
+    
+    def plot_npubmeds_db(self):
+        
+        self.refc_by_db = dict(self.pubmeds.database.value_counts())
+        
+        # all means all refs in the array
+        self.refc_by_db[self.all_name] = self.pubmeds.shape[0]
+        self.medpubyr = \
+            [(s, np.median(self.pubmeds[(self.pubmeds.database == s)]['year']),
+              np.mean(self.pubmeds[(self.pubmeds.database == s)]['year'])) \
+                for s in self.pubmeds.database.unique()] \
+            + [(self.all_name, np.median(self.pubmeds.year), np.mean(self.pubmeds.year))]
+        
+        # order by median of publications years
+        self.medpubyr = sorted(self.medpubyr, key = lambda x: (x[1], x[2]))
+        self.boxplot_ordr = list(map(lambda x: x[0], self.medpubyr))
+        self.refc_db = list(map(lambda s: self.refc_by_db[s], self.boxplot_ordr))
+        
+        self.get_subplot(0, 2)
+        self.ax.bar(
+            np.arange(len(self.refc_db)) + 0.25,
+            self.refc_db,
+            width = 0.5,
+            color = list(self.get_hcolor(self.boxplot_ordr))
+        )
+        self.ax.set_xticks(np.arange(len(self.boxplot_ordr)) + 0.56)
+        self.ax.set_xticklabels(self.boxplot_ordr,
+                                rotation = 90,
+                                fontproperties = self.fp_axis_lab)
+        self.ax.set_yscale('symlog')
+        self.ax.set_xlim([0.0, len(self.boxplot_ordr)])
+        self.ax.set_xlabel('Number of PubMed IDs', fontproperties = self.fp_axis_lab)
+        self.ax.xaxis.set_label_position('top')
+        self.ax.xaxis.grid(False)
+        self.ax.set_ylim([1, 100000])
+        self.ax.set_yticks([1, 10, 100, 1000, 10000])
+        self.ax.yaxis.set_major_formatter(mpl.ticker.ScalarFormatter())
+        
+        list(map(lambda tl: tl.set_fontproperties(self.fp_ticklabel) or \
+                            tl.set_fontsize('small'),
+                 self.ax.get_yticklabels()))
+        list(map(lambda tl: tl.set_fontproperties(self.fp_ticklabel),
+                 self.ax.get_xticklabels()))
+    
+    def plot_npubmeds_y(self):
+        
+        # the refs by year barplot
+        self.get_subplot(1, 1)
+        
+        self.refc_by_y = self.pubmeds.year.value_counts()
+        self.refc_y = \
+            list(
+                map(
+                    lambda y:
+                        self.refc_by_y[y] if y in self.refc_by_y else 0.0,
+                    np.arange(min(self.refc_by_y.index),
+                              max(self.refc_by_y.index) + 1)
+                )
+            )
+        
+        self.ax.barh(
+                np.arange(len(self.refc_y)) + 0.7,
+                self.refc_y,
+                tick_label = np.arange(min(self.refc_by_y.index),
+                              max(self.refc_by_y.index) + 1),
+                color = [self.color] * len(self.refc_y),
+                align = 'center'
+            )
+        self.ax.set_xscale('log')
+        self.ax.set_ylim([-0.3, len(self.refc_y) + 0.7])
+        self.ax.set_xlim([10000, 1])
+        self.ax.set_yticklabels([])
+        self.ax.set_ylabel('Number of PubMed IDs', fontproperties = self.fp_axis_lab)
+        self.ax.yaxis.set_label_position('left')
+        self.ax.set_xticks([1, 100, 1000])
+        self.ax.xaxis.set_major_formatter(mpl.ticker.ScalarFormatter())
+        list(map(lambda tl: tl.set_fontproperties(self.fp_ticklabel)  or tl.set_rotation(90),
+                 self.ax.get_xticklabels()))
+        self.ax.yaxis.grid(False)
+    
+    def plot_newint(self):
+        
+        # refs adding new interaction by year barplot [%]
+        self.get_subplot(1, 0)
+        
+        self.newr_by_y = self.earliest.year.value_counts()
+        self.refc_y_n = \
+            list(
+                map(
+                    lambda y:
+                        self.newr_by_y[y] / float(self.refc_by_y[y]) * 100.0 \
+                            if y in self.newr_by_y \
+                            else 100.0 if y > min(self.refc_by_y.index) \
+                            else 0.0,
+                    np.arange(min(self.refc_by_y.index),
+                              max(self.refc_by_y.index) + 1)
+                )
+            )
+        self.ax.barh(
+            np.arange(len(self.refc_y_n)) + 0.7,
+            self.refc_y_n,
+            color = [self.color] * len(self.refc_y_n),
+            align = 'center')
+        self.ax.set_ylim([-0.3, len(self.refc_y_n) + 0.7])
+        self.ax.set_yticklabels([])
+        self.ax.set_ylabel('%s of PubMed IDs\nadding new interactions' % r'%',
+                           fontproperties = self.fp_axis_lab)
+        self.ax.yaxis.set_label_position('left')
+        self.ax.set_xlim(self.ax.get_xlim()[::-1])
+        self.ax.set_xticks([0, 50, 100])
+        list(map(lambda tl: tl.set_fontproperties(self.fp_ticklabel) or tl.set_rotation(90),
+                 self.ax.get_xticklabels()))
+        self.ax.yaxis.grid(False)
+    
+    def plot_boxplot(self):
+        
+        # here the boxplot
+        self.get_subplot(1, 2)
+        data = \
+            list(
+                map(
+                    lambda s:
+                        list(self.pubmeds.year[self.pubmeds.database == s]) \
+                            if s in self.pubmeds.database.values else \
+                            list(self.pubmeds.year) if s == self.all_name else \
+                            [],
+                    self.boxplot_ordr
+                )
+            )
+        self.boxplot = self.ax.boxplot(data,
+                                       patch_artist = True,
+                                       whiskerprops = self.boxplot_whiskerprops,
+                                       capprops = self.boxplot_capprops,
+                                       medianprops = self.boxplot_medianprops,
+                                       flierprops = self.boxplot_flierprops)
+        
+        for patch, col in zip(self.boxplot['boxes'],
+                              list(self.get_hcolor(self.boxplot_ordr))):
+            patch.set_facecolor(col)
+            patch.set_linewidth(0.0)
+        
+        self.ax.set_xlabel('Resources', fontproperties = self.fp_axis_lab)
+        self.ax.xaxis.set_ticklabels([])
+        self.ax.set_ylabel('Years', fontproperties = self.fp_axis_lab)
+        self.ax.yaxis.set_label_position('right')
+        self.ax.set_ylim(min(self.pubmeds.year), max(self.pubmeds.year))
+        self.ax.xaxis.grid(False)
+        self.ax.set_ylim([self.ax.get_ylim()[0] - 1, self.ax.get_ylim()[1] + 1])
+        list(map(lambda tl: tl.set_fontproperties(self.fp_ticklabel),
+                 self.ax.get_yticklabels()))
+
+    def plot_curation(self):
+        
+        if not self.curation_plot:
+            return None
+        
+        self.numof_curated = dict((y, 0) for y in np.unique(self.pubmeds.year))
+        self.all_by_y = dict((y, 0) for y in np.unique(self.pubmeds.year))
+        
+        for y in np.unique(self.pubmeds.year):
+            ydata = self.pubmeds[self.pubmeds.year==y]
+            for e in np.unique(ydata.eid):
+                edata = ydata[ydata.eid==e]
+                if edata.shape[1] > 1:
+                    ndb = len(np.unique(edata.database))
+                    self.all_by_y[y] += ((ndb - 1)**2)/2.0
+                    for pm in np.unique(edata.pmid):
+                        pmdata = edata[edata.pmid==pm]
+                        if pmdata.shape[1] > 1:
+                            ndb = len(np.unique(pmdata.database))
+                            self.numof_curated[y] += ((ndb - 1)**2)/2.0
+        
+        self.ratio_curated = dict((y, self.numof_curated[y]/total) if total > 0.0 else (y, 0.0) \
+            for y, total in iteritems(self.all_by_y))
+        
+        self.first_y_edges = dict(self.pubmeds.groupby(['eid']).year.min())
+        
+        self.ecount_y = dict((y, len([_ for fy in self.first_y_edges.values() if fy <= y])) \
+            for y in np.unique(self.pubmeds.year))
+        
+        self.vcount_y = dict((y, len(set([p for e, fy in iteritems(self.first_y_edges) if fy <= y \
+                for p in [self.graph.es[e].source, self.graph.es[e].target]]))) \
+            for y in np.unique(self.pubmeds.year))
+        
+        self.ccount_by_y = dict((y, self.pubmeds[self.pubmeds.year==y].shape[0]) \
+            for y in np.unique(self.pubmeds.year))
+        
+        self.ax = self.fig.add_subplot(self.gs[0,:2])
+        self.axes[0][0] = self.ax
+        self.axes[0][1] = self.ax
+        
+        self.ax.plot(
+            np.unique(self.pubmeds.year),
+            [self.ecount_y[y] for y in np.unique(self.pubmeds.year)], marker = '.', color = '#6EA945',
+            label = 'Interactions', alpha = 0.4)
+        self.ax.plot(np.unique(self.pubmeds.year),
+            [self.vcount_y[y] for y in np.unique(self.pubmeds.year)], marker = '.', color = '#007B7F',
+            label = 'Proteins', alpha = 0.4)
+        self.ax.plot(np.unique(self.pubmeds.year),
+            [self.ccount_by_y[y] for y in np.unique(self.pubmeds.year)], marker = '.', color = '#FCCC06',
+            label = 'Curation effort', alpha = 0.4)
+        
+        self.leg = self.ax.legend(loc = 2)
+        list(map(lambda t: t.set_fontproperties(self.fp_legend), self.leg.get_texts()))
+        
+        self.ax.set_xlabel('Year', fontproperties = self.fp_axis_lab)
+        self.ax.set_xlim([min(self.pubmeds.year), 2014])
+        self.ax.yaxis.set_major_locator(mpl.ticker.MultipleLocator(5000))
+        self.ax.xaxis.grid(False)
+        list(map(lambda tl: tl.set_rotation(90) or tl.set_fontproperties(self.fp_ticklabel),
+                 self.ax.get_xticklabels()))
+        list(map(lambda tl: tl.set_fontproperties(self.fp_ticklabel),
+                 self.ax.get_yticklabels()))
     
     def set_title(self):
         """
