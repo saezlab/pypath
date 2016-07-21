@@ -26,13 +26,13 @@ import pypath.main as main
 import pypath.plot as plot
 import pypath.data_formats as data_formats
 import pypath.dataio as dataio
+from pypath.common import *
 
 class Workflow(object):
     
     def __init__(self,
                  name,
                  network_datasest = [],
-                 protein_lists = [],
                  do_multi_barplots = True,
                  do_coverage_groups = True,
                  do_htp_char = True,
@@ -42,11 +42,12 @@ class Workflow(object):
                  do_compile_history_tree = True,
                  do_refs_journals_grid = True,
                  do_refs_years_grid = True,
+                 do_dirs_stacked = True,
                  title = None,
                  **kwargs):
         
         for k, v in iteritems(locals()):
-            self.k = v
+            setattr(self, k, v)
         
         self.title = self.name if self.title is None else self.title
         
@@ -73,7 +74,7 @@ class Workflow(object):
                 'disease_genes': 'DisGeNet disease related genes',
                 'signaling_proteins': 'signaling proteins'
             },
-            intogen_file = None,
+            'intogen_file': None,
             'set_annots': {
                 'receptors': 'receptors',
                 'tfs': 'transcription factors',
@@ -103,7 +104,7 @@ class Workflow(object):
             'simgraph_edge_fname': 'sources_similarity_edge_%s.pdf' % self.name,
             'refs_journal_grid_fname': 'refs_by_db_journal_%s.pdf' % self.name,
             'refs_year_grid_fname': 'refs_by_db_year_%s.pdf' % self.name,
-            'dirs_stacked_fname': 'dirs-signes-by-db_%s.pdf' % self.name,
+            'dirs_stacked_fname': 'dirs-signes-by-db-%s_%s.pdf',
         }
         
         self.barplots_settings = [
@@ -113,7 +114,7 @@ class Workflow(object):
                 'proteins',
                 lambda gs: gs[0].vcount(),
                 lambda gs: len(self.specific(gs[1], gs[0].vs)),
-                self.vcount_ordr
+                'vcount'
             ),
             (
                 'Interactions',
@@ -121,7 +122,7 @@ class Workflow(object):
                 'interactions',
                 lambda gs: gs[0].ecount(),
                 lambda gs: len(self.specific(gs[1], gs[0].es)),
-                self.vcount_ordr
+                'vcount'
             ),
             (
                 'Density',
@@ -129,7 +130,7 @@ class Workflow(object):
                 'density',
                 lambda gs: gs[0].density(),
                 None,
-                self.vcount_ordr
+                'vcount'
             ),
             (
                 'Transitivity',
@@ -137,7 +138,7 @@ class Workflow(object):
                 'transitivity',
                 lambda gs: gs[0].transitivity_undirected(),
                 None,
-                self.vcount_ordr
+                'vcount'
             ),
             (
                 'Diameter',
@@ -145,7 +146,7 @@ class Workflow(object):
                 'diameter',
                 lambda gs: gs[0].diameter(),
                 None,
-                self.vcount_ordr
+                'vcount'
             ),
             (
                 'Receptors',
@@ -153,7 +154,7 @@ class Workflow(object):
                 'receptors',
                 lambda gs: len([v for v in gs[0].vs if v['rec']]),
                 lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['rec']]),
-                self.vcount_ordr
+                'vcount'
             ),
             (
                 r'Receptors [%]',
@@ -163,7 +164,7 @@ class Workflow(object):
                     float(gs[0].vcount()) * 100.0,
                 lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['rec']]) / \
                     float(gs[0].vcount()) * 100.0,
-                self.vcount_ordr
+                'vcount'
             ),
             (
                 r'Receptors [%]',
@@ -173,7 +174,7 @@ class Workflow(object):
                     float(len(self.pp.lists['rec'])) * 100.0,
                 lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['rec']]) / \
                     float(len(self.pp.lists['rec'])) * 100.0,
-                self.vcount_ordr
+                'vcount'
             ),
             (
                 'TFs',
@@ -181,7 +182,7 @@ class Workflow(object):
                 'tfs',
                 lambda gs: len([v for v in gs[0].vs if v['tf']]),
                 lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['tf']]),
-                self.vcount_ordr
+                'vcount'
             ),
             (
                 r'TFs [%]',
@@ -191,7 +192,7 @@ class Workflow(object):
                     float(gs[0].vcount()) * 100.0,
                 lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['tf']]) / \
                     float(gs[0].vcount()) * 100.0,
-                self.vcount_ordr
+                'vcount'
             ),
             (
                 r'TFs [%]',
@@ -201,7 +202,7 @@ class Workflow(object):
                     float(len(self.pp.lists['tfs'])) * 100.0,
                 lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['tf']]) / \
                     float(len(self.pp.lists['tfs'])) * 100.0,
-                self.vcount_ordr
+                'vcount'
             ),
             (
                 r'Kinases [%]',
@@ -211,7 +212,7 @@ class Workflow(object):
                     float(len(self.pp.lists['kin'])) * 100.0,
                 lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['kin']]) / \
                     float(len(self.pp.lists['kin'])) * 100.0,
-                self.vcount_ordr
+                'vcount'
             ),
             (
                 r'Druggable proteins [%]',
@@ -221,7 +222,7 @@ class Workflow(object):
                     float(len(self.pp.lists['dgb'])) * 100.0,
                 lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['dgb']]) / \
                     float(len(self.pp.lists['dgb'])) * 100.0,
-                self.vcount_ordr
+                'vcount'
             ),
             (
                 r'Disease genes [%]',
@@ -231,7 +232,7 @@ class Workflow(object):
                     float(sum(len(x) for x in dis.values())) * 100.0,
                 lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['dis']]) / \
                     float(sum(len(x) for x in dis.values())) * 100.0,
-                self.vcount_ordr
+                'vcount'
             ),
             (
                 'Complexes',
@@ -239,7 +240,7 @@ class Workflow(object):
                 'complexes',
                 lambda gs: len(sens.complexes_in_network(gs[0])),
                 None,
-                self.vcount_ordr
+                'vcount'
             ),
             (
                 'E-S interactions',
@@ -247,7 +248,7 @@ class Workflow(object):
                 'ptms',
                 lambda gs: sum(map(lambda e: len(e['ptm']), gs[0].es)),
                 lambda gs: sum(map(lambda e: len(e['ptm']), self.specific(gs[1], gs[0].es))),
-                self.vcount_ordr
+                'vcount'
             ),
             (
                 'E-S interactions',
@@ -255,7 +256,7 @@ class Workflow(object):
                 'havingptm',
                 lambda gs: sum(map(lambda e: len(e['ptm']) > 0, gs[0].es)),
                 lambda gs: sum(map(lambda e: len(e['ptm']) > 0, self.specific(gs[1], gs[0].es))),
-                self.vcount_ordr
+                'vcount'
             ),
             (
                 r'CGC genes [%]',
@@ -268,7 +269,7 @@ class Workflow(object):
                                 set(self.pp.lists['cgc'])
                             ) / \
                             float(len(self.pp.lists['cgc'])) * 100.0,
-                self.vcount_ordr
+                'vcount'
             ),
             (
                 r'IntOGen genes [%]',
@@ -281,7 +282,7 @@ class Workflow(object):
                                 set(self.pp.lists['IntOGen'])
                             ) / \
                             float(len(self.pp.lists['IntOGen'])) * 100.0,
-                self.vcount_ordr
+                'vcount'
             ),
             (
                 r'Signaling proteins [%]',
@@ -294,7 +295,7 @@ class Workflow(object):
                                 set(self.pp.lists['sig'])
                             ) / \
                             float(len(self.pp.lists['sig'])) * 100.0,
-                self.vcount_ordr
+                'vcount'
             ),
             (
                 r'Signaling proteins [%]',
@@ -307,7 +308,7 @@ class Workflow(object):
                                 set(self.pp.lists['sig'])
                             ) / \
                             float(gs[0].vcount()) * 100.0,
-                self.vcount_ordr
+                'vcount'
             )
         ]
         
@@ -384,11 +385,17 @@ class Workflow(object):
                 False
             )
         ]
-
         
-        for k, v in iteritems(self.defauls):
+        for k, v in iteritems(self.defaults):
             if not hasattr(self, k):
                 setattr(self, k, v)
+    
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
     
     def run(self):
         
@@ -414,12 +421,15 @@ class Workflow(object):
             self.make_htp_characteristics()
         if self.do_history_tree:
             self.make_history_tree()
-            if self.do_compile_history_tree()
+            if self.do_compile_history_tree:
                 self.compile_history_tree()
         if self.do_refs_years_grid:
             self.make_refs_years_grid()
         if self.do_refs_journals_grid:
             self.make_refs_journals_grid()
+        if self.do_dirs_stacked:
+            self.make_dirs_stacked()
+            self.make_dirs_stacked(include_all = False)
     
     def init_pypath(self):
         
@@ -473,7 +483,7 @@ class Workflow(object):
                 fi.write('%s:' % name)
                 fi.write('\t%s\t%s\n' % stats.fisher_exact(contDisg))
     
-    def get_data(self, fun, attr): \
+    def get_data(self, fun, attr):
         if not hasattr(self, attr):
             setattr(self, attr,
                 list(
@@ -498,7 +508,9 @@ class Workflow(object):
                 or s in w['cat'] and len(w['cat']) == 1 \
             ]
     
-    def multi_barplots(self):
+    def make_multi_barplots(self):
+        
+        self.multi_barplots = {}
         
         for par in self.barplots_settings:
             
@@ -515,19 +527,22 @@ class Workflow(object):
             data = getattr(self, data_attr)
             data2 = getattr(self, data_attr2)
             
-            bp = plot.MultiBarplot(
-                data[0], data[1],
-                categories = self.cats,
-                color = self.labcol,
-                cat_ordr = self.cat_ordr,
-                ylab = par[0],
-                title = par[1],
-                desc = False,
-                fname = '%s_%s-by-db.pdf' % (par[2], self.name),
-                order = par[5],
-                y2 = None if par[4] is None else data2[1],
-                color2 = None if par[4] is None else self.labcol2
-            )
+            ordr = self.vcount_ordr if par[5] == 'vcount' else par[5]
+            
+            self.multi_barplots[par[2]] = \
+                plot.MultiBarplot(
+                    data[0], data[1],
+                    categories = self.cats,
+                    color = self.labcol,
+                    cat_ordr = self.cat_ordr,
+                    ylab = par[0],
+                    title = par[1],
+                    desc = False,
+                    fname = '%s_%s-by-db.pdf' % (par[2], self.name),
+                    order = ordr,
+                    y2 = None if par[4] is None else data2[1],
+                    color2 = None if par[4] is None else self.labcol2
+                )
     
     def barplot_colors(self):
         
@@ -827,21 +842,31 @@ class Workflow(object):
                 size = 'edge',
             )
     
-    def make_dirs_stacked(self):
+    def make_dirs_stacked(self, include_all = True):
         
-        self.dirs_stacked = \
+        if include_all:
+            x = self.data_dirs[0]
+            y = self.data_dirs[1:]
+            ordr = self.vcount_ordr
+        else:
+            x = self.data_dirs[0][:-1]
+            y = list(map(lambda yy: yy[:-1],  self.data_dirs[1:]))
+            ordr = list(filter(lambda l: l != 'All', self.vcount_ordr))
+        
+        setattr(self, 'dirs_stacked%s' % ('_all' if include_all else ''),
             plot.StackedBarplot(
-                x = self.data_dirs[0],
-                y = self.data_dirs[1:],
+                x = x,
+                y = y,
                 names = ['Positive', 'Negative', 'Unknown effect', 'Unknown direction'],
                 colors = self.group_colors,
                 ylab = 'Interactions',
                 xlab = 'Resources',
                 title = 'Interactions with direction or sign',
-                order = self.vcount_ordr,
-                fname = self.dirs_stacked_fname,
+                order = ordr,
+                fname = self.dirs_stacked_fname % \
+                    ('all' if include_all else 'wo-all', self.name),
                 desc = False
-            )
+            ))
     
     def get_dirs_data(self):
         

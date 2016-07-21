@@ -500,22 +500,6 @@ ptm = {
 }
 
 '''
-The default set of resources in OmniPath.
-'''
-omnipath = {}
-omnipath.update(pathway)
-omnipath.update(ptm)
-omnipath.update(interaction)
-
-del omnipath['netpath']
-#del omnipath['innatedb']
-del omnipath['alz']
-#del omnipath['biogrid']
-omnipath['intact'] = interaction_htp['intact']
-omnipath['biogrid'] = interaction_htp['biogrid']
-omnipath['hprd'] = interaction_htp['hprd']
-
-'''
 Other PTM datasets which are not used because the lack of
 references.
 '''
@@ -889,6 +873,24 @@ transcription_deprecated = {
                 extraNodeAttrsA = {},
                 extraNodeAttrsB = {})
 }
+
+
+'''
+The default set of resources in OmniPath.
+'''
+omnipath = {}
+omnipath.update(pathway)
+omnipath.update(ptm)
+omnipath.update(interaction)
+
+del omnipath['netpath']
+#del omnipath['innatedb']
+del omnipath['alz']
+#del omnipath['biogrid']
+omnipath['intact'] = interaction_htp['intact']
+omnipath['biogrid'] = interaction_htp['biogrid']
+omnipath['hprd'] = interaction_htp['hprd']
+
 
 '''
 Manually curated negative interactions, i.e. pairs of
