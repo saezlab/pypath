@@ -5507,7 +5507,7 @@ def get_string_effects(ncbi_tax_id = 9606,
     c = curl.Curl(url, silent = False, large = True)
     null = c.result.readline()
     for l in c.result:
-        l = l.encode('ascii').split('\t')
+        l = l.decode('ascii').split('\t')
         if len(l) and l[4] == '1' \
             and int(l[5]) >= score_threshold:
             eff = '+' if l[2] in stimulation \

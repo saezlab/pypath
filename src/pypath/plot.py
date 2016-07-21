@@ -2527,6 +2527,8 @@ class HtpCharacteristics(object):
         self.title_font = common.merge_dicts(title_font,
                                              self.title_font_default)
         
+        self.reset()
+        
         self.plot()
     
     def reload(self):
@@ -2566,33 +2568,45 @@ class HtpCharacteristics(object):
         self.fp_title = \
             mpl.font_manager.FontProperties(**self.title_font)
     
+    def reset(self):
+        self.htdata = {}
+    
+    def get_point(self, htlim):
+        
+        if htlim not in self.htdata:
+            htrefs = set([i[0] for i in self.refc.most_common() if i[1] > htlim])
+            htedgs = set([e.index for e in self.graph.es if \
+                len(set([r.pmid for r in e['references']]) - htrefs) == 0])
+            htvtcs = [v.index for v in self.graph.vs if len(set(self.graph.incident(v.index, mode = 'ALL')) - htedgs) == 0]
+            htsrcs = common.uniqList(common.flatList([self.graph.es[e]['sources'] for e in htedgs]))
+            self.htdata[htlim] = {
+                'rnum': len(htrefs),
+                'enum': len(htedgs),
+                'snum': len(htsrcs),
+                'htsrcs': set(htsrcs),
+                'htrefs': htrefs,
+                'lenum': self.graph.ecount() - len(htedgs),
+                'lvnum': self.graph.vcount() - len(htvtcs)
+            }
+    
     def htp_calculations(self):
         self.refc = collections.Counter(
             common.flatList((r.pmid for r in e['references']) for e in self.pp.graph.es)
         )
         
         # percentage of high throughput interactions
-        self.htdata = {}
         htsrcs_prev = set(self.pp.sources)
         self.prg = progress.Progress(self.upper - self.lower, 'Analysing HTP refs/interactions', 1)
         for htlim in reversed(xrange(self.lower, self.upper + 1)):
             self.prg.step()
-            htrefs = set([i[0] for i in self.refc.most_common() if i[1] > htlim])
-            htedgs = set([e.index for e in self.graph.es if \
-                len(set([r.pmid for r in e['references']]) - htrefs) == 0])
-            htvtcs = [v.index for v in self.graph.vs if len(set(self.graph.incident(v.index, mode = 'ALL')) - htedgs) == 0]
-            htsrcs = common.uniqList(common.flatList([self.graph.es[e]['sources'] for e in htedgs]))
-            htsrcs_new = set(common.uniqList(common.flatList([self.graph.es[e]['sources'] for e in htedgs])))
+            self.get_point(htlim)
+            htsrcs_new = self.htdata[htlim]['htsrcs']
             diff = htsrcs_new - htsrcs_prev
             htsrcs_prev = htsrcs_new
-            self.htdata[htlim] = {
-                'rnum': len(htrefs),
-                'enum': len(htedgs),
-                'snum': len(htsrcs),
-                'htrefs': htrefs,
-                'lenum': self.graph.ecount() - len(htedgs),
-                'lvnum': self.graph.vcount() - len(htvtcs)
-            }
+            if len(diff):
+                sys.stdout.write('\n\t:: %s: no references with more interaction than %u\n' % \
+                    (', '.join(list(diff)), htlim - 1))
+                sys.stdout.flush()
     
     def set_figsize(self):
         """

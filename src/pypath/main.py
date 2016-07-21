@@ -41,6 +41,8 @@ import threading
 import traceback
 from itertools import chain
 from collections import Counter
+from scipy import stats
+import numpy as np
 try:
     import cPickle as pickle
 except ImportError:
@@ -695,6 +697,32 @@ class PyPath(object):
             else:
                 return None
     
+    def numof_references(self):
+        return len(common.uniqList(common.flatList(
+            list(map(lambda e: e['references'], self.graph.es)))))
+    
+    def mean_reference_per_interaction(self):
+        return np.mean(list(map(lambda e: len(e['references']), self.graph.es)))
+    
+    def numof_reference_interaction_pairs(self):
+        return len(common.uniqList(common.flatList(
+            list(map(lambda e:
+                list(map(lambda r:
+                    (e.index, r), e['references'])),
+            self.graph.es)))))
+    
+    def curators_work(self):
+        curation_effort = self.numof_reference_interaction_pairs()
+        sys.stdout.write('\t:: Curators worked %.01f-%.01f years to accomplish '\
+                         'what currently you have incorporated in this network!'\
+                         '\n\n\tAmazing, isn\'t it?\n' % \
+            (curation_effort * 15 / 60.0 / 2087.0,
+             curation_effort * 60 / 60.0 / 2087.0))
+        sys.stdout.flush()
+    
+    def reference_edge_ratio(self):
+        return self.numof_references() / float(self.graph.ecount())
+    
     def get_giant(self, replace = False, graph = None):
         '''
         Returns the giant component of the graph, or 
@@ -707,10 +735,10 @@ class PyPath(object):
         cl_sizes = cl.sizes()
         giant_component_index = cl_sizes.index(max(cl_sizes))
         in_giant = [x == giant_component_index for x in cl.membership]
-        console(':: Nodes in giant component: %u' % in_giant.count(True))
+        common.console(':: Nodes in giant component: %u' % in_giant.count(True))
         toDel = [i for i in xrange(0, gg.vcount()) if not in_giant[i]]
         gg.delete_vertices(toDel)
-        console(':: Giant component size: %u edges, %u nodes' % \
+        common.console(':: Giant component size: %u edges, %u nodes' % \
             (gg.ecount(), gg.vcount()))
         if not replace:
             return gg
@@ -1085,6 +1113,64 @@ class PyPath(object):
         if keep_raw:
             self.data[settings.name] = edgeListMapped
         self.raw_data = edgeListMapped
+    
+    def load_list(self, lst, name):
+        self.lists[name] = lst
+    
+    def receptors_list(self):
+        self.lists['rec'] = common.uniqList(common.flatList([
+            self.mapper.map_name(rec, 'genesymbol', 'uniprot') \
+            for rec in dataio.get_hpmr()]))
+    
+    def druggability_list(self):
+        self.lists['dgb'] = common.uniqList(common.flatList([
+            self.mapper.map_name(dgb, 'genesymbol', 'uniprot') \
+            for dgb in dataio.get_dgidb()]))
+    
+    def kinases_list(self):
+        self.lists['kin'] = common.uniqList(common.flatList([
+            self.mapper.map_name(kin, 'genesymbol', 'uniprot') \
+            for kin in dataio.get_kinases()]))
+    
+    def tfs_list(self):
+        tfs = dataio.get_tfcensus()
+        utfs = [self.mapper.map_name(tf, 'ensg', 'uniprot') \
+            for tf in tfs['ensg']]
+        utfs += [self.mapper.map_name(h, 'hgnc', 'uniprot') \
+            for h in tfs['hgnc']]
+        self.lists['tfs'] = common.uniqList(common.flatList(utfs))
+    
+    def disease_genes_list(self, dataset = 'curated'):
+        self.lists['dis'] = common.uniqList(common.flatList([
+            self.mapper.map_name(dis['genesymbol'], 'genesymbol', 'uniprot') \
+            for dis in dataio.get_disgenet(dataset = dataset)]))
+    
+    def proteome_list(self, swissprot = True):
+        swissprot = 'yes' if swissprot else None
+        self.lists['proteome'] = \
+            dataio.all_uniprots(self.ncbi_tax_id, swissprot = swissprot)
+    
+    def coverage(self, lst):
+        lst = lst if type(lst) is set \
+            else set(lst) if type(lst) is list \
+            else set(self.lists[lst]) \
+                if type(lst) is str and lst in self.lists \
+            else set([])
+        return len(set(self.graph.vs['name']) & lst) / float(len(lst))
+    
+    def fisher_enrichment(self, lst, attr, ref = 'proteome'):
+        cont = \
+            np.array([
+                [
+                    len(self.lists[ref]),
+                    self.graph.vcount()
+                ],
+                [
+                    len(self.lists[lst]),
+                    len([1 for v in self.graph.vs if len(v[attr]) > 0])
+                ]
+            ])
+        return stats.fisher_exact(cont)
     
     def read_list_file(self, settings, **kwargs):
         _input = None
@@ -5641,12 +5727,11 @@ class PyPath(object):
         '''
         self.update_vname()
         self.graph.vs['rec'] = [False for _ in self.graph.vs]
-        receptors = dataio.get_hpmr()
-        for rec in receptors:
-            urec = self.mapper.map_name(rec, 'genesymbol', 'uniprot')
-            for uniprot in urec:
-                if uniprot in self.nodDct:
-                    self.graph.vs[self.nodDct[uniprot]]['rec'] = True
+        if 'rec' not in self.lists:
+            self.receptors_list()
+        for rec in self.lists['rec']:
+            if rec in self.nodDct:
+                self.graph.vs[self.nodDct[rec]]['rec'] = True
     
     def set_kinases(self):
         '''
@@ -5655,12 +5740,10 @@ class PyPath(object):
         '''
         self.update_vname()
         self.graph.vs['kin'] = [False for _ in self.graph.vs]
-        kinases = dataio.get_kinases()
-        for kin in kinases:
-            ukin = self.mapper.map_name(kin, 'genesymbol', 'uniprot')
-            for uniprot in ukin:
-                if uniprot in self.nodDct:
-                    self.graph.vs[self.nodDct[uniprot]]['kin'] = True
+        if 'kin' not in self.lists:
+            self.kinases_list()
+        for kin in self.lists['kin']:
+            self.graph.vs[self.nodDct[kin]]['kin'] = True
     
     def set_druggability(self):
         '''
@@ -5669,12 +5752,10 @@ class PyPath(object):
         '''
         self.update_vname()
         self.graph.vs['dgb'] = [False for _ in self.graph.vs]
-        druggables = dataio.get_dgidb()
-        for dgb in druggables:
-            udgb = self.mapper.map_name(dgb, 'genesymbol', 'uniprot')
-            for uniprot in udgb:
-                if uniprot in self.nodDct:
-                    self.graph.vs[self.nodDct[uniprot]]['dgb'] = True
+        if 'dgb' not in self.lists:
+            self.druggability_list()
+        for dgb in self.lists['dgb']:
+            self.graph.vs[self.nodDct[dgb]]['dgb'] = True
     
     def set_drugtargets(self, pchembl = 5.0):
         '''
@@ -5700,14 +5781,11 @@ class PyPath(object):
         '''
         self.update_vname()
         self.graph.vs['tf'] = [False for _ in self.graph.vs]
-        tfs = dataio.get_tfcensus(classes)
-        uniprots = common.flatList([self.mapper.map_name(e, 'ensg', 'uniprot') \
-            for e in tfs['ensg']])
-        uniprots += common.flatList([self.mapper.map_name(h, 'hgnc', 'uniprot') \
-            for h in tfs['hgnc']])
-        for uniprot in uniprots:
-            if uniprot in self.nodDct:
-                self.graph.vs[self.nodDct[uniprot]]['tf'] = True
+        if 'tfs' not in self.lists:
+            self.tfs_list()
+        for tf in self.lists['tfs']:
+            if tf in self.nodDct:
+                self.graph.vs[self.nodDct[tf]]['tf'] = True
     
     def get_pathways(self, source):
         attrname = '%s_pathways'%source
@@ -6093,27 +6171,59 @@ class PyPath(object):
             row_order = row_order if by_category else None, by_category = by_category,
             sum_row = False, **kwargs)
     
-    def remove_htp(self, threshold = 50):
+    def load_omnipath(self, threshold = 1):
+        self.load_resources(data_formats.omnipath)
+        self.third_source_directions()
+        self.remove_htp(threshold = threshold, keep_directed = True)
+    
+    def remove_htp(self, threshold = 50, keep_directed = False):
         self.htp_stats()
         vcount_before = self.graph.vcount()
         ecount_before = self.graph.ecount()
         htedgs = [e.index for e in self.graph.es if \
-            len(set([r.pmid for r in e['references']]) - self.htp[threshold]['htrefs']) == 0]
+            len(set([r.pmid for r in e['references']]) - self.htp[threshold]['htrefs']) == 0 \
+                and (not keep_directed or not e['dirs'].is_directed())]
         self.graph.delete_edges(htedgs)
         zerodeg = [v.index for v in self.graph.vs if v.degree() == 0]
         self.graph.delete_vertices(zerodeg)
         self.update_vname()
-        sys.stdout.write('\t:: Interactions from only high-throughput resources '\
+        sys.stdout.write('\t:: Interactions with only high-throughput references '\
             'have been removed.\n\t   %u interactions removed.\n\t   Number of edges '\
             'decreased from %u to %u, number of vertices from %u to %u.\n' % \
             (len(htedgs), ecount_before, self.graph.ecount(), 
              vcount_before, self.graph.vcount()))
         sys.stdout.flush()
     
+    def remove_undirected(self, min_refs = None):
+        vcount_before = self.graph.vcount()
+        ecount_before = self.graph.ecount()
+        udedgs = [e.index for e in self.graph.es if \
+                not e['dirs'].is_directed() and (
+                    min_refs is None or \
+                    len(set([r.pmid for r in e['references']])) < min_refs
+                )]
+        self.graph.delete_edges(udedgs)
+        zerodeg = [v.index for v in self.graph.vs if v.degree() == 0]
+        self.graph.delete_vertices(zerodeg)
+        self.update_vname()
+        sys.stdout.write('\t:: Undirected interactions %s '\
+            'have been removed.\n\t   %u interactions removed.\n\t   Number of edges '\
+            'decreased from %u to %u, number of vertices from %u to %u.\n' % \
+            ('' if min_refs is None else 'with less than %u references' % min_refs,
+            len(udedgs), ecount_before, self.graph.ecount(),
+             vcount_before, self.graph.vcount()))
+        sys.stdout.flush()
+    
+    def numof_directed_edges(self):
+        return len(list(filter(lambda e: e['dirs'].is_directed(), self.graph.es)))
+    
+    def numof_undirected_edges(self):
+        return len(list(filter(lambda e: not e['dirs'].is_directed(), self.graph.es)))
+    
     def htp_stats(self):
         htdata = {}
         refc = Counter(common.flatList((r.pmid for r in e['references']) for e in self.graph.es))
-        for htlim in reversed(xrange(5, 201)):
+        for htlim in reversed(xrange(1, 201)):
             htrefs = set([i[0] for i in refc.most_common() if i[1] > htlim])
             htedgs = [e.index for e in self.graph.es if \
                 len(set([r.pmid for r in e['references']]) - htrefs) == 0]
@@ -6785,6 +6895,12 @@ class PyPath(object):
                         for v in edge.tuple]), sep))
                 fid.write('%s\n' % sep.join(['{}'.format(edge[eattr])
                     for eattr in edge_attributes]))
+    
+    def in_complex(self, csources = ['corum']):
+        self.graph.es['in_complex'] = \
+            [sum([len(set(self.graph.vs[e.source]['complexes'][cs].keys()) & \
+                set(self.graph.vs[e.target]['complexes'][cs].keys())) for cs in csources]) > 0 \
+                for e in self.graph.es]
     
     def reload(self):
         modname = self.__class__.__module__
