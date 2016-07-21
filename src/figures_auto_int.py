@@ -128,7 +128,7 @@ net.init_network(data_formats.interaction_htp, exclude = ['hi3'])
 hc = plot.HtpCharacteristics(net, fname = 'htp_int_10000.pdf', title = 'Interaction resources', lower = 2, upper = 10000)
 
 
-hc = plot.HtpCharacteristics(net2, fname = 'htp_causal_1000.pdf', title = 'Interactions resources', lower = 2, upper = 10000)
+hc = plot.HtpCharacteristics(net2, fname = 'htp_causal_1000.pdf', title = 'Causal resources', lower = 1, upper = 1000)
 
 # Table 2 for the article
 console(':: Table 2: statistics of interaction and curation content and overlaps,'\

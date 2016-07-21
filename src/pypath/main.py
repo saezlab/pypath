@@ -1138,17 +1138,65 @@ class PyPath(object):
             for tf in tfs['ensg']]
         utfs += [self.mapper.map_name(h, 'hgnc', 'uniprot') \
             for h in tfs['hgnc']]
-        self.lists['tfs'] = common.uniqList(common.flatList(utfs))
+        self.lists['tf'] = common.uniqList(common.flatList(utfs))
     
     def disease_genes_list(self, dataset = 'curated'):
-        self.lists['dis'] = common.uniqList(common.flatList([
-            self.mapper.map_name(dis['genesymbol'], 'genesymbol', 'uniprot') \
-            for dis in dataio.get_disgenet(dataset = dataset)]))
+        diss = dataio.get_disgenet(dataset = dataset)
+        dis = []
+        for di in diss:
+            dis.extend(net.mapper.map_name(di['entrez'], 'entrez', 'uniprot'))
+        self.lists['dis'] = common.uniqList(dis)
+    
+    def signaling_proteins_list(self):
+        goq = dataio.get_go_quick()
+        
+        gosig = set([])
+        
+        for term, name in iteritems(goq['names']):
+            if 'signal' in name or 'regulat' in name:
+                gosig.add(term)
+        
+        upsig = set([])
+        
+        if 'proteome' not in self.lists:
+            self.proteome_list()
+        
+        for up, term in iteritems(goq['terms']['P']):
+            if len(term & gosig):
+                upsig.add(up)
+        
+        spsig = set([])
+        for u in upsig:
+            spsig.update(set(self.mapper.map_name(u, 'uniprot', 'uniprot')))
+        
+        upsig = spsig & set(self.lists['proteome'])
+        
+        self.lists['sig'] = list(upsig)
+
     
     def proteome_list(self, swissprot = True):
         swissprot = 'yes' if swissprot else None
         self.lists['proteome'] = \
             dataio.all_uniprots(self.ncbi_tax_id, swissprot = swissprot)
+    
+    def cancer_gene_census_list(self):
+        self.read_list_file(pypath.data_formats.cgc)
+    
+    def intogen_cancer_drivers_list(self, intogen_file):
+        data_formats.intogen_cancer.inFile = intogen_file
+        self.read_list_file(pypath.data_formats.intogen_file)
+    
+    def cancer_drivers_list(self, intogen_file = None):
+        self.cancer_gene_census_list()
+        if intogen_file is not None:
+            self.intogen_cancer_drivers_list(intogen_file = intogen_file)
+            self.lists['cdv'] = list(set(self.lists['cgc']) | set(self.lists['IntOGen']))
+        else:
+            self.lists['cdv'] = self.lists['cgc']
+        
+        self.graph.vs['cdv'] = list(map(lambda v:
+                True if v['name'] in self.lists['cdv'] else False,
+            self.graph.vs))
     
     def coverage(self, lst):
         lst = lst if type(lst) is set \
@@ -4101,6 +4149,16 @@ class PyPath(object):
         return self._neighborhood(vs, order = order, mode = mode)
     
     # compexes
+    
+    def complexes_in_network(self, csource = 'corum', graph = None):
+        graph = self.graph if graph is None else graph
+        cdict = {}
+        allv = set(graph.vs['name'])
+        for v in graph.vs:
+            for c, cdata in iteritems(v['complexes'][csource]):
+                if c not in cdict:
+                    cdict[c] = set(cdata['all_members'])
+        return [c for c, memb in iteritems(cdict) if len(memb - allv) == 0]
     
     def complex_comembership_network(self,graph=None,resources=None):
         graph = graph if graph is not None else self.graph
