@@ -604,11 +604,20 @@ class MultiBarplot(Plot):
                 self.ax.set_yscale('symlog')
                 self.ax.yaxis.set_major_formatter(mpl.ticker.ScalarFormatter())
             
+            self.ax.yaxis.grid(True, color = '#FFFFFF', lw = 1, ls = 'solid')
+            self.ax.xaxis.grid(False)
+            self.ax.set_axisbelow(True)
+            self.ax.set_axis_bgcolor('#EAEAF2')
+            list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
+            self.ax.tick_params(which = 'both', length = 0)
+
             self.get_subplot(i, 1)
             self.ax.xaxis.set_ticklabels([])
             self.ax.yaxis.set_ticklabels([])
             self.ax.set_xlabel(self.cnums[i], fontproperties = self.fp_axis_lab)
             self.ax.xaxis.label.set_verticalalignment('bottom')
+            list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
+            self.ax.tick_params(which = 'both', length = 0)
     
     def labels(self):
         """
@@ -646,7 +655,7 @@ class MultiBarplot(Plot):
                     )
                 )
             broadest_ax = max(self.axes[0], key = lambda ax: len(ax.get_xticks()))
-            broadest_ax.legend(handles = lhandles, prop = self.fp_legend)
+            broadest_ax.legend(handles = lhandles, prop = self.fp_legend, frameon = False)
     
     def align_x_labels(self):
         self.lowest_ax = min(self.axes[0],
@@ -2268,9 +2277,9 @@ class HistoryTree(object):
             \setmainfont{HelveticaNeueLTStd-Roman}
             \usepackage{tikz}
             \definecolor{zircon}{RGB}{228, 236, 236}
-            \definecolor{teal}{RGB}{0, 123, 127}
-            \definecolor{twilightblue}{RGB}{239, 244, 233}
-            \definecolor{mantis}{RGB}{110, 169, 69}%s
+            \definecolor{teal}{RGB}{51, 34, 136}
+            \definecolor{twilightblue}{RGB}{136, 204, 238}
+            \definecolor{mantis}{RGB}{68, 170, 153}%s
             \begin{document}
             \thispagestyle{empty}
             \pgfdeclarelayer{background}
@@ -2537,6 +2546,8 @@ class HtpCharacteristics(object):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
+        if hasattr(self, 'pp'):
+            self.pp.reload()
     
     def plot(self):
         self.pre_plot()
@@ -3121,9 +3132,14 @@ class BarplotsGrid(object):
             xlim = None,
             uniform_xlim = True,
             full_range_x = True,
+            sort = False,
+            desc = False,
             ylog = False,
+            hoffset = 0.0,
+            woffset = 0.0,
             axis_lab_font = {},
             ticklabel_font = {},
+            small_ticklabel_font = {},
             title_font = {},
             bar_args = {},
             htp_threshold = 20,
@@ -3139,7 +3155,8 @@ class BarplotsGrid(object):
         
         self.defaults = {
             'title_halign': 'center',
-            'title_valign': 'top'
+            'title_valign': 'top',
+            'small_xticklabels': False
         }
         
         for k, v in iteritems(self.defaults):
@@ -3147,7 +3164,9 @@ class BarplotsGrid(object):
                 setattr(self, k, v)
         
         self.bar_args_default = {
-            'align': 'center'
+            'align': 'center',
+            'edgecolor': 'none',
+            'linewidth': 0.0,
         }
         
         self.axis_lab_font_default = {
@@ -3159,6 +3178,14 @@ class BarplotsGrid(object):
             'size': 'x-large'
         }
         self.ticklabel_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'roman',
+            'variant': 'normal',
+            'size': 'large'
+        }
+        self.small_ticklabel_font_default = {
             'family': ['Helvetica Neue LT Std'],
             'style': 'normal',
             'stretch': 'condensed',
@@ -3181,6 +3208,8 @@ class BarplotsGrid(object):
                                                 self.axis_lab_font_default)
         self.ticklabel_font = common.merge_dicts(ticklabel_font,
                                                  self.ticklabel_font_default)
+        self.small_ticklabel_font = common.merge_dicts(small_ticklabel_font,
+                                                 self.small_ticklabel_font_default)
         self.title_font = common.merge_dicts(title_font,
                                              self.title_font_default)
         
@@ -3223,6 +3252,8 @@ class BarplotsGrid(object):
             mpl.font_manager.FontProperties(**self.axis_lab_font)
         self.fp_ticklabel = \
             mpl.font_manager.FontProperties(**self.ticklabel_font)
+        self.fp_small_ticklabel = \
+            mpl.font_manager.FontProperties(**self.small_ticklabel_font)
         self.fp_title = \
             mpl.font_manager.FontProperties(**self.title_font)
     
@@ -3251,7 +3282,8 @@ class BarplotsGrid(object):
             if self.nrows * self.ncols >= self.numof_plots:
                 break
             self.ncols += 1
-        self.figsize = (8 + self.ncols * 2, 8 + self.nrows * 2)
+        self.figsize = (8 + self.woffset + self.ncols * 2,
+                        8 + self.hoffset + self.nrows * 2)
     
     def init_fig(self):
         """
@@ -3268,9 +3300,9 @@ class BarplotsGrid(object):
         with one additional column of zero width on the left
         to have aligned y axis labels.
         """
-        self.gs = mpl.gridspec.GridSpec(self.nrows, self.ncols,
-                height_ratios = [1] * self.nrows, width_ratios = [1] * self.ncols)
-        self.axes = list(map(lambda _: [None] * self.ncols, xrange(self.nrows)))
+        self.gs = mpl.gridspec.GridSpec(self.nrows, self.ncols + 1,
+                height_ratios = [1.0] * self.nrows, width_ratios = [0.0] + [1.0] * self.ncols)
+        self.axes = list(map(lambda _: [None] * (self.ncols + 1), xrange(self.nrows * 2)))
     
     def get_subplot(self, i, j):
         if self.axes[i][j] is None:
@@ -3290,12 +3322,13 @@ class BarplotsGrid(object):
             self.xlim = [-1.0, len(getattr(self.data, self.x).unique()) + 1.5]
     
     def make_plots(self):
+        
         for row in xrange(self.nrows):
             for col in xrange(self.ncols):
                 nplot = row * self.ncols + col
                 if nplot >= len(self.levels):
                     continue
-                self.get_subplot(row, col)
+                self.get_subplot(row, col + 1)
                 level = self.levels[nplot]
                 if self.uniform_xlim:
                     x = np.array(sorted(getattr(self.data, self.x).unique()))
@@ -3305,6 +3338,12 @@ class BarplotsGrid(object):
                     x = np.arange(min(x), max(x) + 1)
                 y = dict(getattr(self.data, self.x)[self.ilevels[nplot]].value_counts())
                 y = np.array(list(map(lambda l: y[l] if l in y else 0.0, x)))
+                if self.sort:
+                    ordr = y.argsort()
+                    if self.desc:
+                        ordr = ordr[::-1]
+                    y = y[ordr]
+                    x = x[ordr]
                 self.ax.bar(
                     left = np.arange(len(x)),
                     height = y,
@@ -3317,21 +3356,51 @@ class BarplotsGrid(object):
                 self.y_by_plots.append(y)
                 if self.uniform_xlim or self.xlim is not None:
                     self.ax.set_xlim(self.xlim)
-                self.ax.set_xlabel(level, fontproperties = self.fp_axis_lab)
                 if self.full_range_x:
                     step = 10 if max(x) - min(x) > 50 else 5
                     xticks = list(filter(lambda i: i[0] % step == 0,
                                             zip(x, np.arange(len(x)))))
                     self.ax.set_xticks(list(map(lambda i: i[1], xticks)))
                     self.ax.set_xticklabels(list(map(lambda i: i[0], xticks)))
-                list(map(lambda tl: tl.set_fontproperties(self.fp_ticklabel) or \
+                list(map(lambda tl: tl.set_fontproperties(
+                                        self.fp_small_ticklabel if self.small_xticklabels \
+                                            else self.fp_ticklabel
+                                    ) or \
                                     tl.set_rotation(90),
                         self.ax.get_xticklabels()))
                 list(map(lambda tl: tl.set_fontproperties(self.fp_ticklabel),
                         self.ax.get_yticklabels()))
-                if col == 0:
-                    self.ax.set_ylabel(self.ylab)
+                
                 self.ax.xaxis.grid(True)
+                self.ax.yaxis.grid(True, color = '#FFFFFF', lw = 1, ls = 'solid')
+                self.ax.xaxis.grid(False)
+                self.ax.set_axisbelow(True)
+                self.ax.set_axis_bgcolor('#EAEAF2')
+                list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
+                self.ax.tick_params(which = 'both', length = 0)
+                self.ax.set_title(level, fontproperties = self.fp_axis_lab)
+                
+                ## this adds huge whitespace because matplotlib's
+                ## tight_layout does not explicitely consider ticklabels
+                ## this for the aligned xlabels
+                #self.get_subplot(row * 2 + 1, col + 1)
+                #self.ax.xaxis.set_ticklabels([])
+                #self.ax.yaxis.set_ticklabels([])
+                #self.ax.set_xlabel(level, fontproperties = self.fp_axis_lab)
+                #self.ax.xaxis.label.set_verticalalignment('bottom')
+                #list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
+                #self.ax.tick_params(which = 'both', length = 0)
+                #self.ax.set_axis_bgcolor('#CCCCCC')
+                
+                if col == 0:
+                    self.get_subplot(row, 0)
+                    self.ax.yaxis.set_ticklabels([])
+                    self.ax.xaxis.set_ticklabels([])
+                    self.ax.set_ylabel(self.ylab, fontproperties = self.fp_axis_lab)
+                    self.ax.yaxis.label.set_verticalalignment('top')
+                    list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
+                    self.ax.tick_params(which = 'both', length = 0)
+
     
     def set_title(self):
         """
@@ -3346,6 +3415,7 @@ class BarplotsGrid(object):
         """
         Applies tight layout, draws the figure, writes the file and closes.
         """
+        #self.gs.update(wspace=0.1, hspace=0.1)
         self.fig.tight_layout()
         self.fig.subplots_adjust(top = 0.92)
         self.cvs.draw()

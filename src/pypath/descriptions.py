@@ -245,7 +245,7 @@ descriptions = {
     },
     'Guide2Pharma': {
         'year': 2015,
-        'releases': [2007, 2008, 2009, 2011, 2015],
+        'releases': [2007, 2008, 2009, 2011, 2013, 2014, 2015, 2016],
         'size': None,
         'authors': None,
         'label': 'Guide to Pharmacology',
@@ -370,13 +370,32 @@ descriptions = {
             ]
         },
         'pubmeds': [17135199],
-        'taxons': ['human', 'Metazoa', 'yeast'],
+        'taxons': [
+            'human',
+            'yeast',
+            'C. elegans',
+            'mouse',
+            'rat',
+            'HIV',
+            'D. melanogaster',
+            'A. thaliana',
+            'X. laevis',
+            'B. taurus',
+            'G. gallus',
+            'O. cuniculus',
+            'Plasmodium falciparum'
+        ],
         'annot': ['experiment'],
         'recommend': 'rich details and many unique information; discontinued, Signor from the same lab is larger and newer, and contains most of its data',
         'descriptions': [
             u'''
             DOMINO aims at annotating all the available information about domain-peptide and domain–domain interactions. The core of DOMINO, of July 24, 2006 consists of more than 3900 interactions extracted from peer-reviewed articles and annotated by expert biologists. A total of 717 manuscripts have been processed, thus covering a large fraction of the published information about domain–peptide interactions. The curation effort has focused on the following domains: SH3, SH2, 14-3-3, PDZ, PTB, WW, EVH, VHS, FHA, EH, FF, BRCT, Bromo, Chromo and GYF. However, interactions mediated by as many as 150 different domain families are stored in DOMINO.
-            The curation process follows the PSI-MI 2.5 standard but with special emphasis on the mapping of the interaction to specific protein domains of both participating proteins. This is achieved by paying special attention to the shortest protein fragment that was experimentally verified as sufficient for the interaction. Whenever the authors report only the name of the domain mediating the interaction (i.e. SH3, SH2...), without stating the coordinates of the experimental binding range, the curator may choose to enter the coordinates of the Pfam domain match in the protein sequence. Finally whenever the information is available, any mutation or post-translational modification affecting the interaction affinity is noted in the database.
+            ''',
+            u'''
+            DOMINO is an open-access database comprising more than 3900 annotated experiments describing interactions mediated by protein-interaction domains. The curation effort aims at covering the interactions mediated by the following domains (SH3, SH2, 14-3-3, PDZ, PTB, WW, EVH, VHS, FHA, EH, FF, BRCT, Bromo, Chromo, GYF). However, interactions mediated by as many as 150 different domain families are stored in DOMINO.
+            ''',
+            u'''
+            The curation process follows the PSI-MI 2.5 standard but with special emphasis on the mapping of the interaction to specific protein domains of both participating proteins. This is achieved by paying special attention to the shortest protein fragment that was experimentally verified as sufficient for the interaction. Whenever the authors report only the name of the domain mediating the interaction (i.e. SH3, SH2 ...), without stating the coordinates of the experimental binding range, the curator may choose to enter the coordinates of the Pfam domain match in the protein sequence. Finally whenever the information is available, any mutation or posttranslational modification affecting the interaction affinity is noted in the database.
             '''
         ],
         'emails': [('giovanni.cesareni@uniroma2.it', 'Gianni Cesareni')],
@@ -387,30 +406,33 @@ descriptions = {
             'name': 'CC-Attribution-2.5',
             'url': 'http://creativecommons.org/licenses/by/2.5'
         },
-        'pathguide': 239,
         'pypath': {
             'data': [
                 'pypath.data_formats.urls[\'domino\'][\'url\']'
-            ],
-            'format': [
-                'pypath.data_formats.ptm[\'domino\']',
-                'pypath.data_formats.omnipath[\'domino\']'
             ],
             'input': [
                 'pypath.dataio.get_domino()',
                 'pypath.dataio.get_domino_ddi()'
             ],
+            'format': [
+                'pypath.data_formats.ptm[\'domino\']',
+                'pypath.data_formats.omnipath[\'domino\']'
+            ],
             'intr': [
-                'pypath.dataio.get_domino_interactions()'
+                'pypath.dataio.domino_interactions()'
             ],
             'ptm': [
-                'pypath.dataio.get_domino_ptms()',
-                'pypath.dataio.load_domino_ptms()'
+                'pypath.dataio.get_domino_ptms()'
             ],
             'dmi': [
-                'pypath.dataio.load_domino_dmi()'
+                'pypath.dataio.get_domino_dmi()',
+                'pypath.pypath.PyPath().load_domino_dmi()'
+            ],
+            'ddi': [
+                'pypath.dataio.get_domino_ddi()'
             ]
-        }
+        },
+        'pathguide': 239
     },
     'dbPTM': {
         'year': 2015,
@@ -558,7 +580,7 @@ descriptions = {
     },
     'SignaLink3': {
         'year': 2015,
-        'releases': [2010, 2012, 2015],
+        'releases': [2010, 2012, 2016],
         'size': 0,
         'authors': ['NetBiol Group'],
         'label': 'SignaLink3',
@@ -735,7 +757,7 @@ descriptions = {
     },
     'ACSN': {
         'year': 2015,
-        'releases': [2008, 2015],
+        'releases': [2008, 2014, 2015, 2016],
         'authors': ['Curie'],
         'urls': {
             'webpages': [
@@ -792,75 +814,6 @@ descriptions = {
                 'pypath.data_formats.reaction_misc[\'acsn\']'
             ]
         }
-    },
-    'DOMINO': {
-        'urls': {
-            'articles': [
-                'http://nar.oxfordjournals.org/content/35/suppl_1/D557.full'
-            ],
-            'webpages': [
-                'http://mint.bio.uniroma2.it/domino/'
-            ],
-            'omictools': [
-                'http://omictools.com/domino-tool'
-            ]
-        },
-        'pubmeds': [17135199],
-        'recommend': 'rich details and many unique information; discontinued, Signor from the same lab is larger and newer, and contains most of its data',
-        'descriptions': [
-            u'''
-            DOMINO is an open-access database comprising more than 3900 annotated experiments describing interactions mediated by protein-interaction domains. The curation effort aims at covering the interactions mediated by the following domains (SH3, SH2, 14-3-3, PDZ, PTB, WW, EVH, VHS, FHA, EH, FF, BRCT, Bromo, Chromo, GYF). However, interactions mediated by as many as 150 different domain families are stored in DOMINO.
-            ''',
-            u'''
-            The curation process follows the PSI-MI 2.5 standard but with special emphasis on the mapping of the interaction to specific protein domains of both participating proteins. This is achieved by paying special attention to the shortest protein fragment that was experimentally verified as sufficient for the interaction. Whenever the authors report only the name of the domain mediating the interaction (i.e. SH3, SH2 ...), without stating the coordinates of the experimental binding range, the curator may choose to enter the coordinates of the Pfam domain match in the protein sequence. Finally whenever the information is available, any mutation or posttranslational modification affecting the interaction affinity is noted in the database.
-            '''
-        ],
-        'taxons': [
-            'human',
-            'yeast',
-            'C. elegans',
-            'mouse',
-            'rat',
-            'HIV',
-            'D. melanogaster',
-            'A. thaliana',
-            'X. laevis',
-            'B. taurus',
-            'G. gallus',
-            'O. cuniculus',
-            'Plasmodium falciparum'
-        ],
-        'emails': [('Cesareni@uniroma2.it', 'Gianni Cesareni')],
-        'type': 'literature curated',
-        'subtype': 'post-translational modification',
-        'omnipath': True,
-        'license': {
-            'name': 'CC-Attribution-2.5',
-            'url': 'http://creativecommons.org/licenses/by/2.5'
-        },
-        'pypath': {
-            'data': [
-                'pypath.data_formats.urls[\'domino\'][\'url\']'
-            ],
-            'format': [
-                'pypath.data_formats.ptm[\'domino\']',
-                'pypath.data_formats.omnipath[\'domino\']'
-            ],
-            'intr': [
-                'pypath.dataio.domino_interactions()'
-            ],
-            'ptm': [
-                'pypath.dataio.get_domino_ptms()'
-            ],
-            'dmi': [
-                'pypath.dataio.get_domino_dmi()',
-                'pypath.pypath.PyPath().load_domino_dmi()'
-            ],
-            'ddi': [
-                'pypath.dataio.get_domino_ddi()'
-            ]
-        },
-        'pathguide': 239
     },
     'DeathDomain': {
         'year': 2012,
@@ -1407,8 +1360,8 @@ descriptions = {
         }
     },
     'Reactome': {
-        'year': 2015,
-        'releases': [2004, 2008, 2010, 2012, 2014],
+        'year': 2016,
+        'releases': [2004, 2008, 2010, 2012, 2014, 2015],
         'urls': {
             'webpages': [
                 'http://reactome.org/'
@@ -1964,7 +1917,7 @@ descriptions = {
         }
     },
     'DIP': {
-        'year': 2015,
+        'year': 2016,
         'releases': [2000, 2001, 2002, 2003, 2004, 2005, 2006,
             2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015],
         'size': {
@@ -2026,7 +1979,7 @@ descriptions = {
         'pathguide': 3
     },
     'DEPOD': {
-        'year': 2014,
+        'year': 2016,
         'releases': [2013, 2014],
         'size': {
             'nodes': None,
@@ -2143,7 +2096,7 @@ descriptions = {
         'pathguide': 252
     },
     'PANTHER': {
-        'year': 2014,
+        'year': 2016,
         'releases': [2000, 2001, 2002, 2003, 2005, 2006, 2010, 2011, 2012, 2014],
         'urls': {
             'articles': [
@@ -2178,7 +2131,7 @@ descriptions = {
         'pathguide': 164
     },
     'PhosphoSite': {
-        'year': 2015,
+        'year': 2016,
         'releases': [2011, 2015],
         'size': {
             'nodes': None,
@@ -2378,6 +2331,8 @@ descriptions = {
         'pathguide': 119
     },
     'WikiPathways': {
+        'year': 2016,
+        'releases': [2009, 2010, 2011, 2012, 2013, 2014, 2015],
         'urls': {
             'webpages': [
                 'http://www.wikipathways.org/index.php/WikiPathways'
@@ -2453,7 +2408,7 @@ descriptions = {
         'pathguide': 275
     },
     'KEGG': {
-        'year': 2015,
+        'year': 2016,
         'releases': [2000, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015],
         'urls': {
             'webpages': [
@@ -2495,7 +2450,7 @@ descriptions = {
         }
     },
     'BioGRID': {
-        'year': 2015,
+        'year': 2016,
         'releases': [2003, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015],
         'label': 'BioGRID',
         'authors': ['Tyers Lab'],
@@ -2541,7 +2496,7 @@ descriptions = {
         'pathguide': 7
     },
     'STRING': {
-        'year': 2015,
+        'year': 2016,
         'releases': [2015, 2013, 2011, 2009, 2007, 2005, 2003, 2000],
         'urls': {
             'webpages': [
@@ -2600,7 +2555,7 @@ descriptions = {
         'pathguide': 17
     },
     'IntAct': {
-        'year': 2015,
+        'year': 2016,
         'releases': [2003, 2006, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015],
         'size': {
             'nodes': None,
@@ -2668,7 +2623,7 @@ descriptions = {
                 'http://nar.oxfordjournals.org/content/39/suppl_1/D235.long'
             ],
             'webpages': [
-                'http://matrixdb.ibcp.fr/'
+                'http://matrixdb.univ-lyon1.fr/'
             ],
             'omictools': [
                 'http://omictools.com/matrixdb-tool'
@@ -2717,7 +2672,7 @@ descriptions = {
         'pathguide': 298
     },
     'PathwayCommons': {
-        'year': 2015,
+        'year': 2016,
         'urls': {
             'webpages': [
                 'http://www.pathwaycommons.org/pc2/',
@@ -2752,13 +2707,14 @@ descriptions = {
         'type': 'combined',
         'subtype': 'interaction',
         'pubmeds': [21071392],
-        'releases': [2010, 2011, 2012, 2013, 2014],
+        'releases': [2010, 2011, 2012, 2013, 2014, 2015],
         'omnipath': False,
         'emails': [('gary.bader@utoronto.ca', 'Gary Bader')],
         'pathguide': 293
     },
     'Laudanna': {
         'year': 2014,
+        'releases': [2014],
         'urls': {
             'webpages': [
                 'http://dp.univr.it/~laudanna/LCTST/downloads/'

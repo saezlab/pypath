@@ -21,18 +21,24 @@ from past.builtins import xrange, range, reduce
 import os
 import sys
 import subprocess
+import imp
+import locale
+import numpy as np
 
 import pypath.main as main
 import pypath.plot as plot
 import pypath.data_formats as data_formats
 import pypath.dataio as dataio
 from pypath.common import *
+import pypath.refs as _refs
 
 class Workflow(object):
     
     def __init__(self,
                  name,
-                 network_datasest = [],
+                 network_datasets = [],
+                 do_curation_table = True,
+                 do_compile_curation_table = True,
                  do_multi_barplots = True,
                  do_coverage_groups = True,
                  do_htp_char = True,
@@ -53,25 +59,24 @@ class Workflow(object):
         
         self.defaults = {
             'ccolors': {
-                'p': '#A9C98B',
-                'r': '#E87A62',
-                'm': '#FEEA9C',
-                'i': '#6FA6A9'
+                'p': '#77AADD',
+                'm': '#77CCCC',
+                'i': '#CC99BB',
+                'r': '#DD7788'
             },
             'ccolors2': {
-                'p': '#84B45C',
-                'r': '#DE3B34',
-                'm': '#FCCC06',
-                'i': '#00888B'
+                'p': '#114477',
+                'm': '#117777',
+                'i': '#771155',
+                'r': '#771122'
             },
-            'group_colors': ['#FE5222', '#F5FC8A', '#0EACD3', '#CDEC25'],
+            'group_colors': ['#332288', '#44AA99', '#882255', '#AA4499'],
             'table2file': 'curation_tab_%s.tex' % self.name,
             'stable2file': 'curation_tab_stripped_%s.tex' % self.name,
             'latex': '/usr/bin/xelatex',
             'compile_latex': True,
             'protein_lists': {
                 'proteome': 'human proteome',
-                'disease_genes': 'DisGeNet disease related genes',
                 'signaling_proteins': 'signaling proteins'
             },
             'intogen_file': None,
@@ -79,11 +84,12 @@ class Workflow(object):
                 'receptors': 'receptors',
                 'tfs': 'transcription factors',
                 'kinases': 'kinases',
-                'druggability': 'druggable proteins'
+                'druggability': 'druggable proteins',
+                'disease_genes': 'DisGeNet disease related genes'
             },
             'load_annots' : {
                 'corum': 'CORUM complexes',
-                'pmts': 'post-translational modifications',
+                'ptms': 'post-translational modifications',
                 'disgenet': 'DisGeNet disease related genes'
             },
             'fiher_file': 'fisher_%s' % self.name,
@@ -199,9 +205,9 @@ class Workflow(object):
                 'Percentage of all human TFs covered',
                 'tfcov',
                 lambda gs: len([v for v in gs[0].vs if v['tf']]) / \
-                    float(len(self.pp.lists['tfs'])) * 100.0,
+                    float(len(self.pp.lists['tf'])) * 100.0,
                 lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['tf']]) / \
-                    float(len(self.pp.lists['tfs'])) * 100.0,
+                    float(len(self.pp.lists['tf'])) * 100.0,
                 'vcount'
             ),
             (
@@ -350,7 +356,7 @@ class Workflow(object):
             ),
             (
                 lambda gs: len(set(gs[0].vs['name']) & set(self.pp.lists['rec'])),
-                lambda gs: len(set(gs[0].vs['name']) & set(self.pp.lists['tfs'])),
+                lambda gs: len(set(gs[0].vs['name']) & set(self.pp.lists['tf'])),
                 lambda gs: gs[0].vcount(),
                 {
                     'ylim': [0.5, 2000.0],
@@ -399,13 +405,25 @@ class Workflow(object):
     
     def run(self):
         
+        self.load_data()
+        self.make_plots()
+    
+    def load_data(self):
+        
         self.init_pypath()
         self.load_protein_lists()
         self.load_annotations()
         self.set_categories()
-        self.curation_table()
-        self.compile_curation_table()
+        self.separate()
         self.barplot_colors()
+        self.load_pubmed_data()
+    
+    def make_plots(self):
+        
+        if self.do_curation_table:
+            self.curation_table()
+            if self.do_compile_curation_table:
+                self.compile_curation_table()
         self.get_multibarplot_ordr()
         if self.do_multi_barplots:
             self.make_multi_barplots()
@@ -434,7 +452,7 @@ class Workflow(object):
     def init_pypath(self):
         
         self.pp = main.PyPath(9606)
-        for netdata in self.network_datasest:
+        for netdata in self.network_datasets:
             self.pp.load_resources(getattr(data_formats, netdata))
     
     def load_protein_lists(self):
@@ -466,9 +484,11 @@ class Workflow(object):
     def separate(self):
         self.sep = self.pp.separate()
         self.csep = self.pp.separate_by_category()
-        del self.csep['t']
         self.cats = dict(map(lambda c: (c[0], data_formats.catnames[c[1]]), iteritems(data_formats.categories)))
-        self.cats.update(dict(map(lambda c: (('All', c[0]), c[1]), iteritems(data_formats.catnames))))
+        self.cats.update(dict(map(lambda c: (('All', c[0]), c[1]),
+            filter(lambda c: c[0] in self.pp.has_cats,
+                iteritems(data_formats.catnames)))))
+        self.cat_ordr = list(filter(lambda c: data_formats.catletters[c] in self.pp.has_cats, self.cat_ordr))
     
     def fisher_tests(self):
         
@@ -484,8 +504,8 @@ class Workflow(object):
                 fi.write('\t%s\t%s\n' % stats.fisher_exact(contDisg))
     
     def get_data(self, fun, attr):
-        if not hasattr(self, attr):
-            setattr(self, attr,
+        if attr is None or not hasattr(self, attr):
+            result = \
                 list(
                     zip(
                         *[(s, fun((self.sep[s], s))) for s in sorted(self.pp.sources)] + \
@@ -498,7 +518,10 @@ class Workflow(object):
                         )
                     )
                 )
-            )
+            if attr is None:
+                return result
+            else:
+                setattr(self, attr, result)
     
     def specific(self, s, seq):
         return [w for w in seq \
@@ -547,8 +570,13 @@ class Workflow(object):
     def barplot_colors(self):
         
         self.data_protein_counts = \
-            list(zip(*[(s, len([v for v in net.graph.vs if s in v['sources']])) for s in sorted(net.sources)] + \
-            list(map(lambda c: (('All', c), csep[c].vcount()), sorted(csep.keys())))))
+            list(zip(*[(s,
+                        len([v for v in self.pp.graph.vs \
+                            if s in v['sources']])) \
+                        for s in sorted(self.pp.sources)] + \
+            list(map(lambda c: (('All', c),
+                            self.csep[c].vcount()),
+                        sorted(self.csep.keys())))))
         
         self.labcol = \
             list(
@@ -596,16 +624,16 @@ class Workflow(object):
         covdata = list(
             map(
                 lambda fun:
-                    dict(zip(*self.get_data(fun))),
+                    dict(zip(*self.get_data(fun, None))),
                 [
                     lambda gs: len([v for v in gs[0].vs if v['rec']]) / \
-                                float(len(net.lists['rec'])) * 100.0,
+                                float(len(self.pp.lists['rec'])) * 100.0,
                     lambda gs: len([v for v in gs[0].vs if v['tf']]) / \
-                                float(len(net.lists['tfs'])) * 100.0,
+                                float(len(self.pp.lists['tf'])) * 100.0,
                     lambda gs: len([v for v in gs[0].vs if v['kin']]) / \
-                                float(len(net.lists['kin'])) * 100.0,
+                                float(len(self.pp.lists['kin'])) * 100.0,
                     lambda gs: len([v for v in gs[0].vs if v['dgb']]) / \
-                                float(len(net.lists['dgb'])) * 100.0
+                                float(len(self.pp.lists['dgb'])) * 100.0
                 ]
             )
         )
@@ -620,18 +648,18 @@ class Workflow(object):
                                 map(
                                 lambda k:
                                     d[k],
-                                keys
+                                self.labels_coverage_groups
                             )
                         ),
-                    self.covdata
+                    covdata
                 )
             )
         
-        self.grouped_parplot_group_labels = [
+        self.coverage_groups_group_labels = [
             'Receptors (all: %s)' % \
                 locale.format('%d', len(self.pp.lists['rec']), grouping = True),
             'TFs (all: %s)' % \
-                locale.format('%d', len(self.pp.lists['tfs']), grouping = True),
+                locale.format('%d', len(self.pp.lists['tf']), grouping = True),
             'Kinases (all: %s)' % \
                 locale.format('%d', len(self.pp.lists['kin']), grouping = True),
             'Druggable proteins (all: %s)' % \
@@ -639,6 +667,7 @@ class Workflow(object):
         ]
     
     def get_multibarplot_ordr(self):
+        
         self.vcount_ordr_barplot = \
             plot.MultiBarplot(
                 self.data_protein_counts[0],
@@ -721,14 +750,14 @@ class Workflow(object):
         
         self.ptms = {
             #'DEPOD': net.load_depod_dmi(return_raw = True),
-            'Signor': net.load_signor_ptms(return_raw = True),
-            'Li2012': net.load_li2012_ptms(return_raw = True),
-            'HPRD': net.load_hprd_ptms(return_raw = True),
-            'MIMP': net.load_mimp_dmi(return_raw = True),
-            'PhosphoNetworks': net.load_pnetworks_dmi(return_raw = True),
-            'PhosphoELM': net.load_phosphoelm(return_raw = True),
-            'dbPTM': net.load_dbptm(return_raw = True),
-            'PhosphoSite': net.load_psite_phos(return_raw = True)
+            'Signor': self.pp.load_signor_ptms(return_raw = True),
+            'Li2012': self.pp.load_li2012_ptms(return_raw = True),
+            'HPRD': self.pp.load_hprd_ptms(return_raw = True),
+            'MIMP': self.pp.load_mimp_dmi(return_raw = True),
+            'PhosphoNetworks': self.pp.load_pnetworks_dmi(return_raw = True),
+            'PhosphoELM': self.pp.load_phosphoelm(return_raw = True),
+            'dbPTM': self.pp.load_dbptm(return_raw = True),
+            'PhosphoSite': self.pp.load_psite_phos(return_raw = True)
         }
     
     def make_ptms_barplot(self):
@@ -809,19 +838,27 @@ class Workflow(object):
                 by = 'database',
                 fname = self.refs_year_grid_fname,
                 ylab = 'References',
-                title = 'Number of references by databases and years'
+                title = 'Number of references by databases and years',
+                data = self.pubmeds
             )
     
     def make_refs_journals_grid(self):
         
-        self.refs_years_grid = \
+        self.refs_journals_grid = \
             plot.BarplotsGrid(
                 self.pp,
                 'journal',
                 by = 'database',
                 fname = self.refs_journal_grid_fname,
                 ylab = 'References',
-                title = 'Number of references by databases and journals'
+                title = 'Number of references by databases and journals',
+                full_range_x = False,
+                xlim = [-0.5,10.5],
+                sort = True,
+                desc = True,
+                hoffset = 10,
+                data = self.pubmeds,
+                small_xticklabels = True
             )
     
     def make_simgraph_vertex(self):
@@ -926,10 +963,13 @@ class Workflow(object):
             self.curation_tab_latex_return = \
                 self.curation_tab_latex_proc.returncode
             
-            self.console('LaTeX ' % (
+            self.console('LaTeX %s' % (
                 'compiled successfully' \
                     if self.curation_tab_latex_return == 0 \
                 else 'compilation failed'))
+    
+    def load_pubmed_data(self):
+        self.pubmeds, self.pubmeds_earliest = _refs.get_pubmed_data(self.pp, htp_threshold = None)
     
     def console(self, msg):
         _ = sys.stdout.write('\t:: %s\n' % msg)

@@ -559,6 +559,7 @@ class PyPath(object):
             self.proteomicsdb = None
             self.exp_samples = set([])
             self.sources = []
+            self.has_cats = set([])
             self.db_dict = {}
             self.pathway_types = []
             self.pathways = {}
@@ -1144,7 +1145,7 @@ class PyPath(object):
         diss = dataio.get_disgenet(dataset = dataset)
         dis = []
         for di in diss:
-            dis.extend(net.mapper.map_name(di['entrez'], 'entrez', 'uniprot'))
+            dis.extend(self.mapper.map_name(di['entrez'], 'entrez', 'uniprot'))
         self.lists['dis'] = common.uniqList(dis)
     
     def signaling_proteins_list(self):
@@ -1180,11 +1181,11 @@ class PyPath(object):
             dataio.all_uniprots(self.ncbi_tax_id, swissprot = swissprot)
     
     def cancer_gene_census_list(self):
-        self.read_list_file(pypath.data_formats.cgc)
+        self.read_list_file(data_formats.cgc)
     
     def intogen_cancer_drivers_list(self, intogen_file):
         data_formats.intogen_cancer.inFile = intogen_file
-        self.read_list_file(pypath.data_formats.intogen_file)
+        self.read_list_file(data_formats.intogen_cancer)
     
     def cancer_drivers_list(self, intogen_file = None):
         self.cancer_gene_census_list()
@@ -2344,9 +2345,33 @@ class PyPath(object):
             for s in self.sources])
     
     def separate_by_category(self):
-        cats = dict(map(lambda c: (c, []), set(data_formats.categories.values())))
-        for s, c in iteritems(data_formats.categories):
-            cats[c].append(s)
+        cats = \
+            dict(
+                list(
+                    map(
+                        lambda c:
+                            (
+                                c,
+                                list(
+                                    filter(
+                                        lambda s:
+                                            s in self.sources,
+                                        map(
+                                            lambda cs:
+                                                cs[0],
+                                            filter(
+                                                lambda cs:
+                                                    cs[1] == c,
+                                                iteritems(data_formats.categories)
+                                            )
+                                        )
+                                    )
+                                )
+                            ),
+                        self.has_cats
+                    )
+                )
+            )
         return dict([(c, self.get_network({'edge': {'sources': s}, 'node': {}})) \
             for c, s in iteritems(cats)])
     
@@ -2379,6 +2404,11 @@ class PyPath(object):
         for e in g.es:
             src += e["sources"]
         self.sources = list(set(src))
+        self.update_cats()
+    
+    def update_cats(self):
+        self.has_cats = set(list(map(lambda s: data_formats.categories[s],
+            filter(lambda s: s in data_formats.categories, self.sources))))
     
     def update_pathways(self):
         g = self.graph
@@ -5801,7 +5831,8 @@ class PyPath(object):
         if 'kin' not in self.lists:
             self.kinases_list()
         for kin in self.lists['kin']:
-            self.graph.vs[self.nodDct[kin]]['kin'] = True
+            if kin in self.nodDct:
+                self.graph.vs[self.nodDct[kin]]['kin'] = True
     
     def set_druggability(self):
         '''
@@ -5813,7 +5844,8 @@ class PyPath(object):
         if 'dgb' not in self.lists:
             self.druggability_list()
         for dgb in self.lists['dgb']:
-            self.graph.vs[self.nodDct[dgb]]['dgb'] = True
+            if dgb in self.nodDct:
+                self.graph.vs[self.nodDct[dgb]]['dgb'] = True
     
     def set_drugtargets(self, pchembl = 5.0):
         '''
@@ -5839,11 +5871,19 @@ class PyPath(object):
         '''
         self.update_vname()
         self.graph.vs['tf'] = [False for _ in self.graph.vs]
-        if 'tfs' not in self.lists:
+        if 'tf' not in self.lists:
             self.tfs_list()
-        for tf in self.lists['tfs']:
+        for tf in self.lists['tf']:
             if tf in self.nodDct:
                 self.graph.vs[self.nodDct[tf]]['tf'] = True
+    
+    def set_disease_genes(self, dataset = 'curated'):
+        self.update_vname()
+        self.graph.vs['dis'] = [False for _ in self.graph.vs]
+        self.disease_genes_list(dataset = dataset)
+        for tf in self.lists['dis']:
+            if tf in self.nodDct:
+                self.graph.vs[self.nodDct[tf]]['dis'] = True
     
     def get_pathways(self, source):
         attrname = '%s_pathways'%source

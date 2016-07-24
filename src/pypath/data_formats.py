@@ -1112,6 +1112,8 @@ catnames = {
     't': 'Transcription'
 }
 
+catletters = dict(map(reversed, iteritems(catnames)))
+
 pathway_resources = p
 interaction_resources = i
 ptm_resources = m
