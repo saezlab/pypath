@@ -24,6 +24,7 @@ import os
 import itertools
 import collections
 import imp
+import copy
 import subprocess
 from datetime import date
 
@@ -291,17 +292,21 @@ class MultiBarplot(Plot):
         self.title_font = common.merge_dicts(title_font,
                                              self.title_font_default)
         self.fp_axis_lab = \
-            mpl.font_manager.FontProperties(**self.axis_lab_font)
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.axis_lab_font))
         self.fp_ticklabel = \
-            mpl.font_manager.FontProperties(**self.ticklabel_font)
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.ticklabel_font))
         self.fp_legend = \
-            mpl.font_manager.FontProperties(**self.legend_font)
+            mpl.font_manager.FontProperties(**copy.deepcopy(self.legend_font))
         self.fp_title = \
-            mpl.font_manager.FontProperties(**self.title_font)
+            mpl.font_manager.FontProperties(**copy.deepcopy(self.title_font))
         if hasattr(self, 'xticklabel_font'):
+            self.xticklabel_font = \
+                common.merge_dicts(self.xticklabel_font, self.ticklabel_font)
             self.fp_xticklabel = \
-            mpl.font_manager.FontProperties(**(
-                common.merge_dicts(self.xticklabel_font, self.ticklabel_font)))
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.xticklabel_font))
         else:
             self.fp_xticklabel = self.fp_ticklabel
         
@@ -648,18 +653,18 @@ class MultiBarplot(Plot):
                         height = self.cat_y[i],
                         color = self.cat_col[i],
                         tick_label = xtlabs,
-                        **self.bar_args)
+                        **copy.deepcopy(self.bar_args))
             if self.grouped:
                 for j in xrange(1, len(self.grouped_y)):
                     self.ax.bar(left = xcoo + width * j - correction,
                         height = getattr(self, 'cat_y_g%u' % j)[i],
                         color = getattr(self, 'cat_col_g%u' % j)[i],
-                        **self.bar_args)
+                        **copy.deepcopy(self.bar_args))
             if hasattr(self, 'y2') and self.y2 is not None:
                 self.ax.bar(left = xcoo - correction,
                             height = self.cat_y2[i],
                             color = self.cat_col2[i],
-                            **self.bar_args)
+                            **copy.deepcopy(self.bar_args))
             self.labels()
             self.ax.xaxis.grid(False)
             self.ax.set_xlim([-1, max(xcoo) + 0.5])
@@ -1068,13 +1073,15 @@ class StackedBarplot(object):
     
     def set_fontproperties(self):
         self.fp_axis_lab = \
-            mpl.font_manager.FontProperties(**self.axis_lab_font)
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.axis_lab_font))
         self.fp_ticklabel = \
-            mpl.font_manager.FontProperties(**self.ticklabel_font)
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.ticklabel_font))
         self.fp_legend = \
-            mpl.font_manager.FontProperties(**self.legend_font)
+            mpl.font_manager.FontProperties(**copy.deepcopy(self.legend_font))
         self.fp_title = \
-            mpl.font_manager.FontProperties(**self.title_font)
+            mpl.font_manager.FontProperties(**copy.deepcopy(self.title_font))
     
     def set_figsize(self):
         """
@@ -1136,7 +1143,7 @@ class StackedBarplot(object):
                 tick_label = self.x,
                 color = self.colors[j - 1],
                 label = self.names[j - 1],
-                **self.bar_args
+                **copy.deepcopy(self.bar_args)
             )
     
     def set_ticklabels(self):
@@ -1380,15 +1387,18 @@ class ScatterPlus(object):
     
     def set_fontproperties(self):
         self.fp_axis_lab = \
-            mpl.font_manager.FontProperties(**self.axis_lab_font)
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.axis_lab_font))
         self.fp_ticklabel = \
-            mpl.font_manager.FontProperties(**self.ticklabel_font)
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.ticklabel_font))
         self.fp_legend = \
-            mpl.font_manager.FontProperties(**self.legend_font)
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.legend_font))
         self.fp_title = \
-            mpl.font_manager.FontProperties(**self.title_font)
+            mpl.font_manager.FontProperties(**copy.deepcopy(self.title_font))
         self.fp_annot = \
-            mpl.font_manager.FontProperties(**self.annot_font)
+            mpl.font_manager.FontProperties(**copy.deepcopy(self.annot_font))
     
     def set_title(self):
         """
@@ -2651,11 +2661,13 @@ class HtpCharacteristics(object):
     
     def set_fontproperties(self):
         self.fp_axis_lab = \
-            mpl.font_manager.FontProperties(**self.axis_lab_font)
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.axis_lab_font))
         self.fp_ticklabel = \
-            mpl.font_manager.FontProperties(**self.ticklabel_font)
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.ticklabel_font))
         self.fp_title = \
-            mpl.font_manager.FontProperties(**self.title_font)
+            mpl.font_manager.FontProperties(**copy.deepcopy(self.title_font))
     
     def reset(self):
         self.htdata = {}
@@ -2936,13 +2948,17 @@ class RefsComposite(object):
     
     def set_fontproperties(self):
         self.fp_axis_lab = \
-            mpl.font_manager.FontProperties(**self.axis_lab_font)
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.axis_lab_font))
         self.fp_ticklabel = \
-            mpl.font_manager.FontProperties(**self.ticklabel_font)
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.ticklabel_font))
         self.fp_title = \
-            mpl.font_manager.FontProperties(**self.title_font)
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.title_font))
         self.fp_legend = \
-            mpl.font_manager.FontProperties(**self.legend_font)
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.legend_font))
     
     def get_data(self):
         if self.pubmeds is None or self.earliest is None:
@@ -3012,7 +3028,7 @@ class RefsComposite(object):
             self.refc_db,
             width = 0.5,
             color = list(self.get_hcolor(self.boxplot_ordr)),
-            **self.bar_args
+            **copy.deepcopy(self.bar_args)
         )
         self.ax.set_xticks(np.arange(len(self.boxplot_ordr)) + 0.56)
         self.ax.set_xticklabels(self.boxplot_ordr,
@@ -3062,7 +3078,7 @@ class RefsComposite(object):
                 tick_label = np.arange(min(self.refc_by_y.index),
                               max(self.refc_by_y.index) + 1),
                 color = [self.color] * len(self.refc_y),
-                **self.bar_args
+                **copy.deepcopy(self.bar_args)
             )
         self.ax.set_xscale('log')
         self.ax.set_ylim([-0.3, len(self.refc_y) + 0.7])
@@ -3104,7 +3120,7 @@ class RefsComposite(object):
             np.arange(len(self.refc_y_n)) + 0.7,
             self.refc_y_n,
             color = [self.color] * len(self.refc_y_n),
-            **self.bar_args)
+            **copy.deepcopy(self.bar_args))
         self.ax.set_ylim([-0.3, len(self.refc_y_n) + 0.7])
         self.ax.set_yticklabels([])
         self.ax.set_ylabel('%s of PubMed IDs\nadding new interactions' % r'%',
@@ -3386,13 +3402,17 @@ class BarplotsGrid(object):
     
     def set_fontproperties(self):
         self.fp_axis_lab = \
-            mpl.font_manager.FontProperties(**self.axis_lab_font)
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.axis_lab_font))
         self.fp_ticklabel = \
-            mpl.font_manager.FontProperties(**self.ticklabel_font)
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.ticklabel_font))
         self.fp_small_ticklabel = \
-            mpl.font_manager.FontProperties(**self.small_ticklabel_font)
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.small_ticklabel_font))
         self.fp_title = \
-            mpl.font_manager.FontProperties(**self.title_font)
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.title_font))
     
     def get_data(self):
         if self.data is None:
@@ -3486,7 +3506,7 @@ class BarplotsGrid(object):
                     height = y,
                     tick_label = x,
                     color = self.get_color(x),
-                    **self.bar_args
+                    **copy.deepcopy(self.bar_args)
                 )
                 self.level_by_plots.append(level)
                 self.x_by_plots.append(x)
