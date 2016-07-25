@@ -379,15 +379,11 @@ class MultiBarplot(Plot):
         self.cnames = None
         if type(self.categories) is dict:
             # self.cnames: name -> number dict
-            self.cnames = dict(map(reversed, enumerate(sorted(list(set(self.categories.values()))))))
-            self.cats = list(map(lambda name: self.cnames[self.categories[name]], self.x))
             if self.summary and any(map(lambda c: type(c) is tuple, self.categories.keys())):
                 self.cnames = dict(map(reversed, enumerate([self.summary_name] + sorted(list(set(self.categories.values()))))))
-                self.cats = list(map(lambda name:
-                        self.cnames[self.summary_name] \
-                            if type(name) is tuple \
-                            else self.cnames[self.categories[name]],
-                    self.x))
+            else:
+                self.cnames = dict(map(reversed, enumerate(sorted(list(set(self.categories.values()))))))
+            self.cats = list(map(lambda name: self.cnames[self.categories[name]], self.x))
         elif type(self.categories) is list:
             if type(self.categories[0]) is int:
                 self.cats = self.categories
@@ -404,7 +400,7 @@ class MultiBarplot(Plot):
             self.x = _x
         else:
             self.cats = [0] * len(self.x)
-        self.numof_cats = len(set(self.cats))
+        self.numof_cats = len(set(self.cats)) + (1 if self.summary else 0)
         if self.cnames is None:
             if self.cat_names is not None:
                 self.cnames = dict(zip(self.cat_names, list(set(self.cats))))
@@ -490,6 +486,11 @@ class MultiBarplot(Plot):
         """
         Sets list of lists with x and y values and colors by category.
         """
+        #print(self.cnames)
+        #print(self.cnums)
+        #print(self.cats)
+        #print(self.cat_ordr)
+        #print(list(sorted(filter(lambda s: type(s[1]) is tuple, zip(self.cats, self.x, self.y)), key = lambda s: self.cat_ordr.index(self.cnums[s[0]]))))
         attrs = ['x', 'y', 'col', 'cats']
         if hasattr(self, 'y2') and self.y2 is not None:
             attrs.extend(['y2', 'col2'])
@@ -498,7 +499,41 @@ class MultiBarplot(Plot):
                 attrs.append('y_g%u' % i)
                 attrs.append('col_g%u' % i)
         for dim in attrs:
-            setattr(self, 'cat_%s' % dim,
+            attr = 'cat_%s' % dim
+            # this only if we do summary plot:
+            if self.summary:
+                setattr(self, attr,
+                    [list(
+                        map(
+                            lambda s:
+                                s[2],
+                            sorted(
+                                filter(
+                                    lambda s:
+                                        type(s[1]) is tuple,
+                                    zip(self.cats, self.x, getattr(self, dim))
+                                ),
+                                key = lambda s:
+                                    self.cat_ordr.index(self.cnums[s[0]])
+                            )
+                        )
+                    )]
+                )
+            else:
+                setattr(self, attr, [])
+        if self.summary:
+            # only here we set the elements of the summary subplot
+            # to the dummy category of summary
+            self.cats = list(map(lambda name:
+                            self.cnames[self.summary_name] \
+                                if type(name) is tuple \
+                                else self.cnames[self.categories[name]],
+                        self.x))
+        for dim in attrs:
+            attr = 'cat_%s' % dim
+            # this is what is always necessary:
+            setattr(self, attr,
+                getattr(self, attr) + \
                 list(map(
                     lambda name:
                         list(map(
@@ -513,26 +548,7 @@ class MultiBarplot(Plot):
                     self.cat_ordr
                 ))
             )
-            if self.summary:
-                setattr(self, 'cat_%s' % dim,
-                    [list(
-                        map(
-                            lambda s:
-                                s[2],
-                            sorted(
-                                filter(
-                                    lambda s:
-                                        type(s[1]) is tuple,
-                                    zip(self.cats, self.x, getattr(self, dim))
-                                ),
-                                key = lambda s:
-                                    0 if self.cnums[s[0]] == self.summary_name \
-                                      else self.cat_ordr.index(self.cnums[s[0]])
-                            )
-                        )
-                    )] + \
-                    getattr(self, 'cat_%s' % dim)
-                )
+        self.xlabs = ([self.summary_name] if self.summary else []) + self.cat_ordr
     
     def sort(self):
         """
@@ -665,7 +681,7 @@ class MultiBarplot(Plot):
             self.get_subplot(i, 1)
             self.ax.xaxis.set_ticklabels([])
             self.ax.yaxis.set_ticklabels([])
-            self.ax.set_xlabel(self.cnums[self.cat_cats[i][0]], fontproperties = self.fp_axis_lab)
+            self.ax.set_xlabel(self.xlabs[i], fontproperties = self.fp_axis_lab)
             self.ax.xaxis.label.set_verticalalignment('bottom')
             list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
             self.ax.tick_params(which = 'both', length = 0)
