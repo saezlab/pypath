@@ -1092,7 +1092,8 @@ categories = {
     'PAZAR': 't',
     'ENCODE_proximal': 't',
     'ORegAnno': 't',
-    'HTRI': 't'
+    'HTRI': 't',
+    'MIMP': 'm'
 }
 
 p = set([])
@@ -1107,7 +1108,7 @@ for db, c in iteritems(categories):
 catnames = {
     'm': 'Enzyme-substrate',
     'p': 'Activity flow',
-    'i': 'Interaction',
+    'i': 'Undirected PPI',
     'r': 'Process description',
     't': 'Transcription'
 }

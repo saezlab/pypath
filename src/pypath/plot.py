@@ -219,6 +219,10 @@ class MultiBarplot(Plot):
                  ylim = None,
                  grouped = False,
                  group_labels = [],
+                 summary = False,
+                 summary_name = '',
+                 uniform_ylim = False,
+                 do = True,
                  **kwargs
                  ):
         """
@@ -317,7 +321,8 @@ class MultiBarplot(Plot):
         if hasattr(self, 'y2') and self.y2 is not None:
             self.y2 = np.array(self.y2)
         
-        self.plot()
+        if self.do:
+            self.plot()
     
     def reload(self):
         """
@@ -356,6 +361,7 @@ class MultiBarplot(Plot):
         self.init_fig()
         self.set_grid()
         self.make_plots()
+        self.set_ylims()
         self.set_title()
         self.groups_legend()
     
@@ -375,6 +381,13 @@ class MultiBarplot(Plot):
             # self.cnames: name -> number dict
             self.cnames = dict(map(reversed, enumerate(sorted(list(set(self.categories.values()))))))
             self.cats = list(map(lambda name: self.cnames[self.categories[name]], self.x))
+            if self.summary and any(map(lambda c: type(c) is tuple, self.categories.keys())):
+                self.cnames = dict(map(reversed, enumerate([self.summary_name] + sorted(list(set(self.categories.values()))))))
+                self.cats = list(map(lambda name:
+                        self.cnames[self.summary_name] \
+                            if type(name) is tuple \
+                            else self.cnames[self.categories[name]],
+                    self.x))
         elif type(self.categories) is list:
             if type(self.categories[0]) is int:
                 self.cats = self.categories
@@ -421,27 +434,33 @@ class MultiBarplot(Plot):
         ccol = None
         
         if type(color) is str:
+            # only one color is given, all bars are the same color
             ccol = dict(map(
                             lambda name:
                                 (name, color),
                             self.cat_ordr)
                         )
         elif len(color) == len(self.cnames):
+            # one color given for each category
             if type(color[0]) is str:
+                # one color for one bar
                 ccol = dict(map(
                                 lambda c:
                                     (c[1], color[c[0]]),
                                 enumerate(self.cat_ordr)
                             ))
             elif type(color[0]) is list:
+                # 2 different colored bars overlayed
                 setattr(self, colattr, [])
                 for ccols in self.colors:
                     getattr(self, colattr).extend(ccols)
                 setattr(self, colattr, np.array(getattr(self, colattr)))
         if type(color) not in common.simpleTypes and \
             len(color) == len(self.x):
+            # color is a list of colors for each bar
             setattr(self, colattr, np.array(color))
         elif ccol is not None:
+            # ccol is dict of colors for each category
             setattr(
                 self,
                 colattr,
@@ -463,15 +482,15 @@ class MultiBarplot(Plot):
         Defines the order of the subplots.
         """
         if self.cat_ordr is None and self.cat_names is not None:
-            self.cat_ordr = common.uniqOrdList(self.cat_names)
+            self.cat_ordr = common.uniqOrdList(sorted(self.cat_names))
         elif self.cat_ordr is None:
-            self.cat_ordr = common.uniqList(self.cnames.keys())
+            self.cat_ordr = common.uniqList(sorted(self.cnames.keys()))
     
     def by_plot(self):
         """
         Sets list of lists with x and y values and colors by category.
         """
-        attrs = ['x', 'y', 'col']
+        attrs = ['x', 'y', 'col', 'cats']
         if hasattr(self, 'y2') and self.y2 is not None:
             attrs.extend(['y2', 'col2'])
         if self.grouped:
@@ -494,6 +513,26 @@ class MultiBarplot(Plot):
                     self.cat_ordr
                 ))
             )
+            if self.summary:
+                setattr(self, 'cat_%s' % dim,
+                    [list(
+                        map(
+                            lambda s:
+                                s[2],
+                            sorted(
+                                filter(
+                                    lambda s:
+                                        type(s[1]) is tuple,
+                                    zip(self.cats, self.x, getattr(self, dim))
+                                ),
+                                key = lambda s:
+                                    0 if self.cnums[s[0]] == self.summary_name \
+                                      else self.cat_ordr.index(self.cnums[s[0]])
+                            )
+                        )
+                    )] + \
+                    getattr(self, 'cat_%s' % dim)
+                )
     
     def sort(self):
         """
@@ -576,7 +615,19 @@ class MultiBarplot(Plot):
         for i, x in enumerate(self.cat_x):
             self.get_subplot(i)
             xcoo = np.arange(len(x)) - self.bar_args['width'] / 2.0
-            xtlabs = np.array(list(map(lambda l: l[0] if type(l) is tuple else l, x)))
+            xtlabs = \
+                np.array(
+                    list(
+                        map(
+                            lambda l:
+                                l if type(l) is not tuple \
+                                    else self.categories[l] \
+                                    if self.summary \
+                                    else l[0],
+                            x
+                        )
+                    )
+                )
             self.ax.bar(left = xcoo - correction,
                         height = self.cat_y[i],
                         color = self.cat_col[i],
@@ -614,10 +665,15 @@ class MultiBarplot(Plot):
             self.get_subplot(i, 1)
             self.ax.xaxis.set_ticklabels([])
             self.ax.yaxis.set_ticklabels([])
-            self.ax.set_xlabel(self.cnums[i], fontproperties = self.fp_axis_lab)
+            self.ax.set_xlabel(self.cnums[self.cat_cats[i][0]], fontproperties = self.fp_axis_lab)
             self.ax.xaxis.label.set_verticalalignment('bottom')
             list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
             self.ax.tick_params(which = 'both', length = 0)
+    
+    def set_ylims(self):
+        if self.uniform_ylim:
+            maxy = max(map(lambda ax: ax.get_ylim()[1], self.axes[0][(1 if self.summary else 0):]))
+            _ = list(map(lambda ax: ax.set_ylim([0, maxy]), self.axes[0][(1 if self.summary else 0):]))
     
     def labels(self):
         """
@@ -1035,11 +1091,12 @@ class StackedBarplot(object):
         self.x = np.array(self.x)
         self.y = list(map(np.array, self.y))
         self.total = reduce(lambda l1, l2: l1.__add__(l2), self.y)
-
-        if self.order == 'x':
-            self.ordr = self.x.argsort()
-        elif self.order == 'y':
-            self.ordr = self.total.argsort()
+        
+        if type(self.order) is str:
+            if self.order == 'x':
+                self.ordr = self.x.argsort()
+            elif self.order == 'y':
+                self.ordr = self.total.argsort()
         elif type(self.order) is int:
             self.ordr = self.y[i].argsort()
         elif len(set(self.order) & set(self.x)) == len(self.x):
@@ -1101,7 +1158,7 @@ class StackedBarplot(object):
                         xrange(len(self.y))
                     )
                 )
-            self.leg = self.ax.legend(handles = self.lhandles, prop = self.fp_legend)
+            self.leg = self.ax.legend(handles = self.lhandles, prop = self.fp_legend, frameon = False)
             self.leg.get_title().set_fontproperties(self.fp_axis_lab)
     
     def finish(self):
@@ -2146,7 +2203,7 @@ class SimilarityGraph(object):
             drawer_factory = DefaultGraphDrawerFFsupport,
             vertex_size = self.sgraph.vs['size'],
             vertex_frame_width = 0,
-            vertex_color = '#6EA945',
+            vertex_color = '#77AADD',
             vertex_label_color = '#777777FF',
             vertex_label_family = 'Sentinel Book',
             edge_label_color = '#777777FF',
@@ -2156,7 +2213,7 @@ class SimilarityGraph(object):
             edge_label_size = 24,
             edge_label = self.sgraph.es['label'],
             edge_width = list(map(lambda x: (x * 10.0)**1.8, self.sgraph.es['weight'])),
-            edge_color = '#007B7F55',
+            edge_color = '#CC99BB55',
             edge_curved = False
         )
     
@@ -2169,6 +2226,9 @@ class HistoryTree(object):
     def __init__(self, fname, **kwargs):
         
         for k, v in iteritems(locals()):
+            setattr(self, k, v)
+        
+        for k, v in iteritems(kwargs):
             setattr(self, k, v)
         
         self.tikzfname = fname
@@ -2191,6 +2251,7 @@ class HistoryTree(object):
             'rowbg': 'twilightblue',
             'width': 20.0,
             'xoffset': 0.5,
+            'compile': True,
             'dotlineopacity': 0.7,
             'horizontal': True, # whether the timeline should be the horizontal axis,
             'latex': '/usr/bin/xelatex'
@@ -2274,7 +2335,7 @@ class HistoryTree(object):
             \usepackage{rotating}
             \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
             \usepackage{color}
-            \setmainfont{HelveticaNeueLTStd-Roman}
+            \setmainfont{HelveticaNeueLTStd-LtCn}
             \usepackage{tikz}
             \definecolor{zircon}{RGB}{228, 236, 236}
             \definecolor{teal}{RGB}{51, 34, 136}
@@ -2465,9 +2526,10 @@ class HistoryTree(object):
         """
         Runs LaTeX to compile the TeX file.
         """
-        subprocess.call([self.latex, self.tikzfname])
-        sys.stdout.write('\t:: TeX has been written to `%s`, PDF to `%s.pdf`.\n' % \
-            (self.tikzfname, '.'.join(self.tikzfname.split('.')[:-1])))
+        if self.compile:
+            subprocess.call([self.latex, self.tikzfname])
+            sys.stdout.write('\t:: TeX has been written to `%s`, PDF to `%s.pdf`.\n' % \
+                (self.tikzfname, '.'.join(self.tikzfname.split('.')[:-1])))
 
 class HtpCharacteristics(object):
     
@@ -2495,11 +2557,11 @@ class HtpCharacteristics(object):
                 setattr(self, k, v)
         
         self.plot_param = [
-            ('rnum', 'Number of references', '#007B7F'),
-            ('enum', 'Number of edges', '#6EA945'),
-            ('snum', 'Number of resources', '#DA0025'),
-            ('lenum', 'LT interactions', '#996A44'),
-            ('lvnum', 'LT proteins', '#FCCC06')
+            ('rnum', 'Number of references', '#332288'),
+            ('enum', 'Number of edges', '#44AA99'),
+            ('snum', 'Number of resources', '#117733'),
+            ('lenum', 'LT interactions', '#882255'),
+            ('lvnum', 'LT proteins', '#AA4499')
         ]
         
         self.graph = pp.graph
@@ -2665,8 +2727,21 @@ class HtpCharacteristics(object):
                 # xlabel only for the lowest subplot
                 self.ax.set_xlabel('HT limit [interaction/reference]', fontproperties = self.fp_axis_lab)
             
+            self.ax.yaxis.grid(True, color = '#FFFFFF', lw = 2, ls = 'solid')
+            self.ax.xaxis.grid(False)
+            self.ax.set_axisbelow(True)
+            self.ax.set_axis_bgcolor('#EAEAF2')
+            list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
+            self.ax.tick_params(which = 'both', length = 0)
+            
             self.get_subplot(i, 0)
             self.ax.set_ylabel(ylab, fontproperties = self.fp_axis_lab)
+            self.ax.xaxis.set_ticklabels([])
+            self.ax.yaxis.set_ticklabels([])
+            self.ax.xaxis.label.set_verticalalignment('bottom')
+            list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
+            self.ax.tick_params(which = 'both', length = 0)
+            
     
     def set_ticklabels(self):
         for ax in self.axes[1]:
@@ -2710,14 +2785,17 @@ class RefsComposite(object):
                  ticklabel_font = {},
                  title_font = {},
                  legend_font = {},
+                 bar_args = {},
                  title = '',
-                 color = '#007B7F',
-                 hcolor = '#007B7F',
-                 all_color = '#6EA945',
+                 color = '#88CCEE',
+                 hcolor = '#88CCEE',
+                 all_color = '#44AA99',
                  htp_threshold = 20,
                  figsize = (12.8, 8.8),
                  all_name = 'All',
                  curation_plot = False,
+                 pubmeds = None,
+                 earliest = None,
                  **kwargs):
     
         for k, v in iteritems(locals()):
@@ -2746,7 +2824,7 @@ class RefsComposite(object):
         }
         self.boxplot_medianprops = {
             'linewidth': 0.5,
-            'color': '#CCCCCC'
+            'color': '#777777'
         }
         self.boxplot_capprops = {
             'linewidth': 0.5,
@@ -2755,7 +2833,13 @@ class RefsComposite(object):
         self.boxplot_flierprops = {
             'markersize': 3,
             'marker': 'D',
-            'markerfacecolor': '#777777'
+            'markerfacecolor': '#777777',
+            'markeredgecolor': 'none'
+        }
+        self.bar_args_default = {
+            'align': 'center',
+            'edgecolor': 'none',
+            'linewidth': 0.0,
         }
         
         self.axis_lab_font_default = {
@@ -2800,6 +2884,8 @@ class RefsComposite(object):
         self.legend_font = common.merge_dicts(legend_font,
                                              self.legend_font_default)
         
+        self.bar_args = common.merge_dicts(self.bar_args, self.bar_args_default)
+        
         self.plot()
     
     def reload(self):
@@ -2843,8 +2929,9 @@ class RefsComposite(object):
             mpl.font_manager.FontProperties(**self.legend_font)
     
     def get_data(self):
-        self.pubmeds, self.earliest = _refs.get_pubmed_data(self.pp,
-                                        htp_threshold = self.htp_threshold)
+        if self.pubmeds is None or self.earliest is None:
+            self.pubmeds, self.earliest = _refs.get_pubmed_data(self.pp,
+                                            htp_threshold = self.htp_threshold)
     
     def set_figsize(self):
         """
@@ -2905,10 +2992,11 @@ class RefsComposite(object):
         
         self.get_subplot(0, 2)
         self.ax.bar(
-            np.arange(len(self.refc_db)) + 0.25,
+            np.arange(len(self.refc_db)) + 0.5,
             self.refc_db,
             width = 0.5,
-            color = list(self.get_hcolor(self.boxplot_ordr))
+            color = list(self.get_hcolor(self.boxplot_ordr)),
+            **self.bar_args
         )
         self.ax.set_xticks(np.arange(len(self.boxplot_ordr)) + 0.56)
         self.ax.set_xticklabels(self.boxplot_ordr,
@@ -2923,11 +3011,18 @@ class RefsComposite(object):
         self.ax.set_yticks([1, 10, 100, 1000, 10000])
         self.ax.yaxis.set_major_formatter(mpl.ticker.ScalarFormatter())
         
-        list(map(lambda tl: tl.set_fontproperties(self.fp_ticklabel) or \
+        _ = list(map(lambda tl: tl.set_fontproperties(self.fp_ticklabel) or \
                             tl.set_fontsize('small'),
                  self.ax.get_yticklabels()))
-        list(map(lambda tl: tl.set_fontproperties(self.fp_ticklabel),
+        _ = list(map(lambda tl: tl.set_fontproperties(self.fp_ticklabel),
                  self.ax.get_xticklabels()))
+        
+        self.ax.yaxis.grid(True, color = '#FFFFFF', lw = 1, ls = 'solid')
+        self.ax.xaxis.grid(False)
+        self.ax.set_axisbelow(True)
+        self.ax.set_axis_bgcolor('#EAEAF2')
+        list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
+        self.ax.tick_params(which = 'both', length = 0)
     
     def plot_npubmeds_y(self):
         
@@ -2951,7 +3046,7 @@ class RefsComposite(object):
                 tick_label = np.arange(min(self.refc_by_y.index),
                               max(self.refc_by_y.index) + 1),
                 color = [self.color] * len(self.refc_y),
-                align = 'center'
+                **self.bar_args
             )
         self.ax.set_xscale('log')
         self.ax.set_ylim([-0.3, len(self.refc_y) + 0.7])
@@ -2963,7 +3058,13 @@ class RefsComposite(object):
         self.ax.xaxis.set_major_formatter(mpl.ticker.ScalarFormatter())
         list(map(lambda tl: tl.set_fontproperties(self.fp_ticklabel)  or tl.set_rotation(90),
                  self.ax.get_xticklabels()))
+        
+        self.ax.xaxis.grid(True, color = '#FFFFFF', lw = 1, ls = 'solid')
         self.ax.yaxis.grid(False)
+        self.ax.set_axisbelow(True)
+        self.ax.set_axis_bgcolor('#EAEAF2')
+        list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
+        self.ax.tick_params(which = 'both', length = 0)
     
     def plot_newint(self):
         
@@ -2987,7 +3088,7 @@ class RefsComposite(object):
             np.arange(len(self.refc_y_n)) + 0.7,
             self.refc_y_n,
             color = [self.color] * len(self.refc_y_n),
-            align = 'center')
+            **self.bar_args)
         self.ax.set_ylim([-0.3, len(self.refc_y_n) + 0.7])
         self.ax.set_yticklabels([])
         self.ax.set_ylabel('%s of PubMed IDs\nadding new interactions' % r'%',
@@ -2997,7 +3098,13 @@ class RefsComposite(object):
         self.ax.set_xticks([0, 50, 100])
         list(map(lambda tl: tl.set_fontproperties(self.fp_ticklabel) or tl.set_rotation(90),
                  self.ax.get_xticklabels()))
+        
+        self.ax.xaxis.grid(True, color = '#FFFFFF', lw = 1, ls = 'solid')
         self.ax.yaxis.grid(False)
+        self.ax.set_axisbelow(True)
+        self.ax.set_axis_bgcolor('#EAEAF2')
+        list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
+        self.ax.tick_params(which = 'both', length = 0)
     
     def plot_boxplot(self):
         
@@ -3035,6 +3142,13 @@ class RefsComposite(object):
         self.ax.set_ylim([self.ax.get_ylim()[0] - 1, self.ax.get_ylim()[1] + 1])
         list(map(lambda tl: tl.set_fontproperties(self.fp_ticklabel),
                  self.ax.get_yticklabels()))
+        
+        self.ax.yaxis.grid(True, color = '#FFFFFF', lw = 1, ls = 'solid')
+        self.ax.xaxis.grid(False)
+        self.ax.set_axisbelow(True)
+        self.ax.set_axis_bgcolor('#EAEAF2')
+        list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
+        self.ax.tick_params(which = 'both', length = 0)
 
     def plot_curation(self):
         
@@ -3098,6 +3212,13 @@ class RefsComposite(object):
                  self.ax.get_xticklabels()))
         list(map(lambda tl: tl.set_fontproperties(self.fp_ticklabel),
                  self.ax.get_yticklabels()))
+        
+        self.ax.yaxis.grid(True, color = '#FFFFFF', lw = 1, ls = 'solid')
+        self.ax.xaxis.grid(False)
+        self.ax.set_axisbelow(True)
+        self.ax.set_axis_bgcolor('#EAEAF2')
+        list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
+        self.ax.tick_params(which = 'both', length = 0)
     
     def set_title(self):
         """
@@ -3128,7 +3249,7 @@ class BarplotsGrid(object):
             fname,
             ylab,
             data = None,
-            color = '#97BE73',
+            color = '#44AA99',
             xlim = None,
             uniform_xlim = True,
             full_range_x = True,

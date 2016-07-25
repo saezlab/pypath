@@ -6028,14 +6028,14 @@ class PyPath(object):
                 else set(self.sources) if not hasattr(data_formats, cat) \
                 else getattr(data_formats, cat)
             
-            src_nodes = len([_ for v in self.graph.vs if s in v[sattr]])
+            src_nodes = len([v for v in self.graph.vs if s in v[sattr]])
             cat_nodes = self.graph.vcount() if cat is None \
                 else len([v for v in self.graph.vs if len(v[sattr] & catmembers)])
             src_nodes_pct = src_nodes / float(cat_nodes) * 100.0
-            only_src_nodes = len([_ for v in self.graph.vs \
+            only_src_nodes = len([v for v in self.graph.vs \
                 if s in v[sattr] and len(v[sattr] & catmembers) == 1])
             only_src_nodes_pct = only_src_nodes / float(cat_nodes) * 100.0
-            shared_nodes = len([_ for v in self.graph.vs \
+            shared_nodes = len([v for v in self.graph.vs \
                 if s in v[sattr] and len(v[sattr] & catmembers) > 1])
             
             src_edges = len([e for e in self.graph.es if s in e[sattr]])

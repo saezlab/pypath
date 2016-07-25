@@ -583,7 +583,7 @@ descriptions = {
         'releases': [2010, 2012, 2016],
         'size': 0,
         'authors': ['NetBiol Group'],
-        'label': 'SignaLink3',
+        'label': 'SignaLink',
         'color': '',
         'pubmeds': [20542890, 23331499],
         'urls': {
@@ -1361,7 +1361,7 @@ descriptions = {
     },
     'Reactome': {
         'year': 2016,
-        'releases': [2004, 2008, 2010, 2012, 2014, 2015],
+        'releases': [2004, 2008, 2010, 2012, 2014, 2015, 2016],
         'urls': {
             'webpages': [
                 'http://reactome.org/'
@@ -1537,7 +1537,7 @@ descriptions = {
         'type': 'literature curated',
         'data_integration': 'static',
         'subtype': 'pathway',
-        'omnipath': True,
+        'omnipath': False,
         'pypath': {
             'data': [
                 'pypath.data/alzpw-ppi.csv'
@@ -1749,7 +1749,7 @@ descriptions = {
         'type': 'literature curated',
         'subtype': 'reaction network',
         'data_integration': 'dynamic',
-        'omnipath': True,
+        'omnipath': False,
         'license': {
             'name': 'CC-Attribution-2.5',
             'url': 'http://creativecommons.org/licenses/by/2.5/'
@@ -1919,7 +1919,7 @@ descriptions = {
     'DIP': {
         'year': 2016,
         'releases': [2000, 2001, 2002, 2003, 2004, 2005, 2006,
-            2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015],
+            2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016],
         'size': {
             'nodes': None,
             'edges': None
@@ -1980,7 +1980,7 @@ descriptions = {
     },
     'DEPOD': {
         'year': 2016,
-        'releases': [2013, 2014],
+        'releases': [2013, 2014, 2016],
         'size': {
             'nodes': None,
             'edges': None
@@ -2097,7 +2097,7 @@ descriptions = {
     },
     'PANTHER': {
         'year': 2016,
-        'releases': [2000, 2001, 2002, 2003, 2005, 2006, 2010, 2011, 2012, 2014],
+        'releases': [2000, 2001, 2002, 2003, 2005, 2006, 2010, 2011, 2012, 2014, 2016],
         'urls': {
             'articles': [
                 'http://link.springer.com/protocol/10.1007%2F978-1-60761-175-2_7#section=82252&page=1',
@@ -2132,7 +2132,7 @@ descriptions = {
     },
     'PhosphoSite': {
         'year': 2016,
-        'releases': [2011, 2015],
+        'releases': [2011, 2015, 2016],
         'size': {
             'nodes': None,
             'edges': None
@@ -2174,7 +2174,7 @@ descriptions = {
         'subtype': 'post-translational modification',
         'data_integration': 'dynamic',
         'omnipath': True,
-        'emails': [('phornbeck@cellsignal.com', 'Paul Hornbeck'), ('EditorPhosphoSite@cellsignal.com', 'PhosphoSite Team')],
+        'emails': [('phornbeck@cellsignal.com', 'Peter V Hornbeck'), ('EditorPhosphoSite@cellsignal.com', 'PhosphoSite Team')],
         'license': {
             'name': 'CC-NonCommercial-ShareAlike',
             'url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/'
@@ -2308,7 +2308,7 @@ descriptions = {
         ],
         'type': 'literature curated',
         'subtype': 'reaction network',
-        'omnipath': True,
+        'omnipath': False,
         'emails': [('yanch@mail.nih.gov', 'Chunhua Yan')],
         'license': {
             'name': 'No license',
@@ -2332,7 +2332,7 @@ descriptions = {
     },
     'WikiPathways': {
         'year': 2016,
-        'releases': [2009, 2010, 2011, 2012, 2013, 2014, 2015],
+        'releases': [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016],
         'urls': {
             'webpages': [
                 'http://www.wikipathways.org/index.php/WikiPathways'
@@ -2409,7 +2409,7 @@ descriptions = {
     },
     'KEGG': {
         'year': 2016,
-        'releases': [2000, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015],
+        'releases': [2000, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016],
         'urls': {
             'webpages': [
                 'http://www.genome.jp/kegg/'
@@ -2451,7 +2451,7 @@ descriptions = {
     },
     'BioGRID': {
         'year': 2016,
-        'releases': [2003, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015],
+        'releases': [2003, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016],
         'label': 'BioGRID',
         'authors': ['Tyers Lab'],
         'urls': {
@@ -2497,7 +2497,7 @@ descriptions = {
     },
     'STRING': {
         'year': 2016,
-        'releases': [2015, 2013, 2011, 2009, 2007, 2005, 2003, 2000],
+        'releases': [2016, 2015, 2013, 2011, 2009, 2007, 2005, 2003, 2000],
         'urls': {
             'webpages': [
                 'http://string-db.org/'
@@ -2556,7 +2556,7 @@ descriptions = {
     },
     'IntAct': {
         'year': 2016,
-        'releases': [2003, 2006, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015],
+        'releases': [2003, 2006, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016],
         'size': {
             'nodes': None,
             'edges': None
@@ -2597,7 +2597,7 @@ descriptions = {
         ],
         'type': 'literature curated and high-throughput',
         'subtype': 'interaction',
-        'omnipath': False,
+        'omnipath': True,
         'emails': [('orchard@ebi.ac.uk', 'Sandra Orchard'), ('hhe@ebi.ac.uk', 'Henning Hermjakob')],
         'license': {
             'name': 'Apache License, Version 2.0',
@@ -2673,6 +2673,7 @@ descriptions = {
     },
     'PathwayCommons': {
         'year': 2016,
+        'releases': [2010, 2011, 2012, 2013, 2014, 2015, 2016],
         'urls': {
             'webpages': [
                 'http://www.pathwaycommons.org/pc2/',
@@ -2707,7 +2708,6 @@ descriptions = {
         'type': 'combined',
         'subtype': 'interaction',
         'pubmeds': [21071392],
-        'releases': [2010, 2011, 2012, 2013, 2014, 2015],
         'omnipath': False,
         'emails': [('gary.bader@utoronto.ca', 'Gary Bader')],
         'pathguide': 293
@@ -2786,7 +2786,10 @@ def gen_html():
         'OmniPath. <span class="code">pypath</span> methods are listed '\
         ' where available, to know more please look at <a '\
         'target="_blank" href="http://pypath.omnipathdb.org/">'\
-        'pypath documentation.</a></p>'\
+        'pypath documentation.</a> This list is only about network '\
+        'resources. <span class="code">pypath</span> is able to '\
+        'process and integrate many other resources, please see '\
+        'the paper and the documentation to know more.</p>'\
         '<p class="small">We searched for license information '\
         'in the main, About, Download and FAQ sections of the webpages, '\
         'and run Google searches for the database name and license. '\
