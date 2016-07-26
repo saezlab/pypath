@@ -18,6 +18,8 @@
 #http://www.ijbs.com/v06p0051.htm
 #http://www.nature.com/cddis/journal/v4/n8/full/cddis2013292a.html
 
+from future.utils import iteritems
+
 import codecs
 import bs4
 import textwrap
@@ -34,6 +36,29 @@ if 'unicode' not in __builtins__:
     unicode = str
 
 descriptions = {
+    'Vidal HI-III': {
+        'year': 2016,
+        'releases': [2012, 2014, 2016],
+        'recommend': 'very large, quality controlled, unbiased yeast-2-hybrid screening',
+        'label': 'Vidal HI-III',
+        'urls': {
+            'articles': [
+                'http://www.cell.com/cell/abstract/S0092-8674(14)01422-6'
+            ],
+            'webpages': [
+                'http://interactome.dfci.harvard.edu/H_sapiens/'
+            ]
+        },
+        'pubmeds': [25416956],
+        'emails': [('Michael_Calderwood@dfci.harvard.edu', 'Michael Calderwood')],
+        'type': 'high-throughput',
+        'subtype': 'yeast 2 hybrid',
+        'omnipath': False,
+        'license': {
+            'name': 'No license. "This dataset is freely available to the research community through the search engine or via download."',
+            'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
+        }
+    },
     'Lit13': {
         'year': 2013,
         'label': 'Lit-BM-13',
@@ -213,7 +238,7 @@ descriptions = {
         'color': None,
         'label': 'PDZBase',
         'annot': ['domain'],
-        'recommend': 'a handful unique interactions for proteins with PDZ domain',
+        'recommend': 'a handful specific interactions for proteins with PDZ domain',
         'descriptions': [
             u'''
             PDZBase is a database that aims to contain all known PDZ-domain-mediated protein-protein interactions. Currently, PDZBase contains approximately 300 such interactions, which have been manually extracted from &gt;200 articles.
@@ -308,7 +333,7 @@ descriptions = {
         },
         'pubmeds': [15212693, 17962309, 21062810],
         'annot': ['mechanism', 'residue'],
-        'recommend': 'one of the largest kinase-substrate databases; substantial number of unique proteins and interactions, with more receptors than PhosphoSite',
+        'recommend': 'one of the largest kinase-substrate databases; substantial number of specific proteins and interactions, with more receptors than PhosphoSite',
         'descriptions': [
             u'''
             Phospho.ELM http://phospho.elm.eu.org is a new resource containing experimentally verified phosphorylation sites manually curated from the literature and is developed as part of the ELM (Eukaryotic Linear Motif) resource. Phospho.ELM constitutes the largest searchable collection of phosphorylation sites available to the research community. The Phospho.ELM entries store information about substrate proteins with the exact positions of residues known to be phosphorylated by cellular kinases. Additional annotation includes literature references, subcellular compartment, tissue distribution, and information about the signaling pathways involved as well as links to the molecular interaction database MINT. Phospho.ELM version 2.0 contains 1,703 phosphorylation site instances for 556 phosphorylated proteins. (Diella 2004)
@@ -386,7 +411,7 @@ descriptions = {
             'Plasmodium falciparum'
         ],
         'annot': ['experiment'],
-        'recommend': 'rich details and many unique information; discontinued, Signor from the same lab is larger and newer, and contains most of its data',
+        'recommend': 'rich details and many specific information; discontinued, Signor from the same lab is larger and newer, and contains most of its data',
         'descriptions': [
             u'''
             DOMINO aims at annotating all the available information about domain-peptide and domain–domain interactions. The core of DOMINO, of July 24, 2006 consists of more than 3900 interactions extracted from peer-reviewed articles and annotated by expert biologists. A total of 717 manuscripts have been processed, thus covering a large fraction of the published information about domain–peptide interactions. The curation effort has focused on the following domains: SH3, SH2, 14-3-3, PDZ, PTB, WW, EVH, VHS, FHA, EH, FF, BRCT, Bromo, Chromo and GYF. However, interactions mediated by as many as 150 different domain families are stored in DOMINO.
@@ -511,7 +536,7 @@ descriptions = {
         'full_name': 'Signaling Network Open Resource',
         'pubmeds': [26467481],
         'annot': ['mechanism', 'pathway'],
-        'recommend': 'provides effect sign for an unprecedented number of interactions; large and recent curation effort; many unique entities; PTMs with enzymes',
+        'recommend': 'provides effect sign for an unprecedented number of interactions; large and recent curation effort; many specific entities; PTMs with enzymes',
         'descriptions': [
             u'''
             SIGNOR, the SIGnaling Network Open Resource, organizes and stores in a structured format signaling information published in the scientific literature. The captured information is stored as binary causative relationships between biological entities and can be represented graphically as activity flow. The entire network can be freely downloaded and used to support logic modeling or to interpret high content datasets. The core of this project is a collection of more than 11000 manually-annotated causal relationships between proteins that participate in signal transduction. Each relationship is linked to the literature reporting the experimental evidence. In addition each node is annotated with the chemical inhibitors that modulate its activity. The signaling information is mapped to the human proteome even if the experimental evidence is based on experiments on mammalian model organisms.
@@ -604,7 +629,7 @@ descriptions = {
             'C. elegans'
         ],
         'annot': ['pathway'],
-        'recommend': 'one of the largest resources with effect sign; due to its unique, biochemically defined pathways suitable for cross-talk analysis',
+        'recommend': 'one of the largest resources with effect sign; due to its specific, biochemically defined pathways suitable for cross-talk analysis',
         'descriptions': [
             u'''
             In each of the three organisms, we first listed signaling proteins and interactions from reviews (and from WormBook in C.elegans) and then added further signaling interactions of the listed proteins. To identify additional interactions in C.elegans, we examined all interactions (except for transcription regulation) of the signaling proteins listed in WormBase and added only those to SignaLink that we could manually identify in the literature as an experimentally verified signaling interaction. For D.melanogaster, we added to SignaLink those genetic interactions from FlyBase that were also reported in at least one yeast-2-hybrid experiment. For humans, we manually checked the reliability and directions for the PPIs found with the search engines iHop and Chilibot. 
@@ -650,7 +675,7 @@ descriptions = {
         'taxons': [
             'human'
         ],
-        'recommend': 'unique details about NRF2 related oxidative stress signaling; connections to transcription factors',
+        'recommend': 'specific details about NRF2 related oxidative stress signaling; connections to transcription factors',
         'descriptions': [
             u'''
             From Korcsmaros 2010: ... we first listed signaling proteins and interactions from reviews and then added further signaling interactions of the listed proteins. We used reviews as a starting point, manually looked up interactions three times, and manually searched for interactions of known signaling proteins with no signaling interactions so far in the database.
@@ -717,7 +742,7 @@ descriptions = {
             ]
         },
         'annot': ['mechanism'],
-        'recommend': 'one of the largest kinase-substrate resources; provides large amount of unique information; discontinued',
+        'recommend': 'one of the largest kinase-substrate resources; provides large amount of specific information; discontinued',
         'pubmeds': [14525934, 16381900, 18988627],
         'descriptions': [
             u'''
@@ -866,7 +891,7 @@ descriptions = {
             'GeneSymbol'
         ],
         'annot': ['experiment'],
-        'recommend': 'focused deep curation effort on death domain superfamily proteins; many unique relationships',
+        'recommend': 'focused deep curation effort on death domain superfamily proteins; many specific relationships',
         'descriptions': [
             u'''
             The PubMed database was used as the primary source for collecting information and constructing the DD database. After finding synonyms for each of the 99 DD superfamily proteins using UniProtKB and Entrez Gene, we obtained a list of articles using each name of the proteins and its synonyms on a PubMed search, and we selected the articles that contained evidence for physical binding among the proteins denoted. We also manually screened information that was in other databases, such as DIP, IntAct, MINT, STRING and Entrez Gene. All of the 295 articles used for database construction are listed on our database website.
@@ -939,7 +964,7 @@ descriptions = {
         'identifiers': [
             'GeneSymbol'
         ],
-        'recommend': 'high number of unique interactions; focused on TRP channels',
+        'recommend': 'high number of specific interactions; focused on TRP channels',
         'descriptions': [
             u'''
             The literature on TRP channel PPIs found in the PubMed database serve as the primary information source for constructing the TRIP Database. First, a list of synonyms for the term ‘TRP channels’ was constructed from UniprotKB, Entrez Gene, membrane protein databases (Supplementary Table S2) and published review papers for nomenclature. Second, using these synonyms, a list of articles was obtained through a PubMed search. Third, salient articles were collected through a survey of PubMed abstracts and subsequently by search of full-text papers. Finally, we selected articles that contain evidence for physical binding among the proteins denoted. To prevent omission of relevant papers, we manually screened information in other databases, such as DIP, IntAct, MINT, STRING, BioGRID, Entrez Gene, IUPHAR-DB and ISI Web of Knowledge (from Thomson Reuters). All 277 articles used for database construction are listed in our database website.
@@ -1669,7 +1694,7 @@ descriptions = {
         'emails': [('tom.freeman@roslin.ed.ac.uk', 'Tom Freeman')],
         'pubmeds': [20470404],
         'annot': ['localization', 'mechanism'],
-        'recommend': 'medium size resource with effect signs; high ratio of unique interactions; interactions confirmed in macrophages',
+        'recommend': 'medium size resource with effect signs; high ratio of specific interactions; interactions confirmed in macrophages',
         'descriptions': [
             u'''
             Ongoing analysis of macrophage-related datasets and an interest in consolidating our knowledge of a number of signalling pathways directed our choice of pathways to be mapped (see Figure 1). Public and propriety databases were initially used as resources for data mining, but ultimately all molecular interaction data was sourced from published literature. Manual curation of the literature was performed to firstly evaluate the quality of the evidence supporting an interaction and secondly, to extract the necessary and additional pieces of information required to 'understand' the pathway and construct an interaction diagram. We have drawn pathways based on our desire to model pathways active in a human macrophage and therefore all components have been depicted using standard human gene nomenclature (HGNC). However, our understanding of the pathway components and the interactions between them, have been drawn largely from a consensus view of literature knowledge. As such the pathways presented here are based on data derived from a range of different cellular systems and mammalian species (human and mouse).
@@ -2344,7 +2369,7 @@ descriptions = {
                 'http://omictools.com/wikipathways-tool'
             ]
         },
-        'recommend': 'process description resource developed in a community effort; high proportion of unique proteins',
+        'recommend': 'process description resource developed in a community effort; high proportion of specific proteins',
         'descriptions': [
             u'''
             The goal of WikiPathways is to capture knowledge about biological pathways (the elements, their interactions and layout) in a form that is both human readable and amenable to computational analysis.
@@ -2927,31 +2952,59 @@ def write_html(filename = 'resources.html'):
     with open(filename, 'w') as f:
         f.write(html)
 
-def resource_list_latex(filename = 'resource-list.tex'):
+def resource_list_latex(filename = 'resource-list.tex', latex_hdr = True,
+                        fontsize = 8, font = 'HelveticaNeueLTStd-LtCn'):
     '''
     Generates Supplementary Table 3 (The list of the 52 resources considered) for the article.
     '''
-    tex = r'''\begin{tabularx}{\textwidth}{>{\raggedright\scriptsize\arraybackslash}X>{\raggedright\scriptsize\arraybackslash}X>{\raggedright\scriptsize\arraybackslash}X>{\raggedright\scriptsize\arraybackslash}X}
+    _latex_hdr = r'''\documentclass[a4paper,%upt]{extarticle}
+        \usepackage{fontspec}
+        \usepackage{xunicode}
+        \usepackage{polyglossia}
+        \setdefaultlanguage{english}
+        \usepackage{xltxtra}
+        \usepackage{microtype}
+        \usepackage[margin=5pt,portrait,paperwidth=15cm,paperheight=12cm]{geometry}
+        \usepackage{amsmath}
+        \usepackage{amssymb}
+        \usepackage{textcomp}
+        \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+        \usepackage{color}
+        \usepackage{booktabs}
+        \usepackage{tabularx}
+        \setmainfont{%s}
+        \definecolor{grey875}{gray}{0.125}
+        \begin{document}
+        \color{grey875}
+        \thispagestyle{empty}
+        \vfill
+    ''' % (fontsize, font) if latex_hdr else ''
+    _latex_end = r'''
+            \end{document}
+        ''' if latex_hdr else ''
+    tex = r'''\begin{tabularx}{0.94\textwidth}{>{\raggedright\scriptsize\arraybackslash}X>{\raggedright\scriptsize\arraybackslash}X>{\raggedright\scriptsize\arraybackslash}X>{\raggedright\scriptsize\arraybackslash}X}
     \toprule
     Resource name & Class, subclass & Resource name & Class, subclass \\
     \midrule
     '''
-    res = sorted([(v['label'] if 'label' in v else k, 
+    res = sorted([(v['label'] if 'label' in v else k,
             '%s, %s'%(v['type'].capitalize(), v['subtype'].capitalize()) if 'type' in v and 'subtype' in v else '') 
-        for k, v in descriptions.iteritems()], key = lambda x: x[0].lower())
+        for k, v in iteritems(descriptions)], key = lambda x: x[0].lower())
     if len(res) % 2 != 0:
         res.append('')
-    res2 = zip(res[:len(res)/2], res[len(res)/2:])
+    res2 = zip(res[:int(len(res)/2)], res[int(len(res)/2):])
     for r in res2:
         tex += r'%s & %s & %s & %s \\' % (
-            r[0][0], 
+            r[0][0],
             r[0][1],
-            r[1][0],
-            r[1][1]) + '\n'
+            r[1][0] if len(r[1]) else '',
+            r[1][1] if len(r[1]) else '') + '\n'
     tex += r'\bottomrule' + '\n'
     tex += r'\end{tabularx}' + '\n'
     with open(filename, 'w') as f:
-        f.write(tex)
+        f.write('%s%s%s' % (_latex_hdr if latex_hdr else '',
+                            tex,
+                            _latex_end if latex_hdr else ''))
 
 def licenses_emails(outfile = 'licenses_emails.txt'):
     emails = []

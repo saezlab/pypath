@@ -5249,9 +5249,9 @@ class PyPath(object):
         return result
     
     def basic_stats(self, latex = False, caption = '', latex_hdr = True,
-                    fontsize = 8, font = 'HelveticaNeueLTStd-LtCn',
+                    fontsize = 8, font = 'HelveticaNeueLTStd-LtCn', fname = None,
                     header_format = '%s', row_order = None, by_category = True,
-                    use_cats = ['p', 'm', 'i', 'r']):
+                    use_cats = ['p', 'm', 'i', 'r'], urls = True, annots = False):
         '''
         Returns basic numbers about the network resources, e.g. edge and 
         node counts. 
@@ -5261,26 +5261,48 @@ class PyPath(object):
             PDFLaTeX: 
             latex stats.tex
         '''
-        outf = os.path.join('results', 'databases-%s.tex'%self.session) \
+        url_strip = {'SPIKE': 4, 'PDZbase': 4, 'DEPOD': 4, 'LMPID': 5, 'DIP': 4, 'MPPI': 5}
+        outf = fname if fname is not None else \
+            os.path.join('results', 'databases-%s.tex'%self.session) \
             if latex else os.path.join('results', 'databases-%s.tsv'%self.session)
         stats = self.sources_overlap()
         dirs = self.get_dirs_signs()
-        header = ['Database', 'Node count', 'Edge count', 'Directions', 'Signs', 'Annotations', 'Notes']
+        header = ['Database', 'Node count', 'Edge count', 'Directions', 'Signs'] 
+        if urls: header.append('URL')
+        if annots: header.append('Annotations')
+        header.append('Notes')
         out = [header]
         
         desc = descriptions.descriptions
         for s in sorted(stats['single']['nodes'].keys()):
-            annot = ', '.join(desc[s]['annot']) if s in desc and 'annot' in desc[s] else ''
-            recom = desc[s]['recommend'] if s in desc and 'recommend' in desc[s] else ''
-            out.append([x for x in [
+            d = desc[s] if s in desc else desc['HPRD'] if s == 'HPRD-phos' else {}
+            annot = ', '.join(d['annot']) if 'annot' in d else ''
+            recom = d['recommend'] if 'recommend' in d else ''
+            url = d['urls']['webpages'][0] \
+                if 'urls' in d \
+                    and 'webpages' in d['urls'] \
+                    and len(d['urls']['webpages']) \
+                else ''
+            if len(url):
+                _url = url.split('/')[:(3 if s not in url_strip else url_strip[s])]
+                url = '/'.join(_url[:3])
+                if len(_url) > 3:
+                    url += r'/\-'
+                    url += '/'.join(_url[3:])
+            url = url.replace('~', r'\textasciitilde ')
+            row = [
                 s,
                 stats['single']['nodes'][s],
                 stats['single']['edges'][s],
                 int(dirs[s][0]) if s in dirs else '',
-                int(dirs[s][1]) if s in dirs else '',
-                annot,
-                recom,
-            ]])
+                int(dirs[s][1]) if s in dirs else ''
+            ]
+            if urls:
+                row.append(url)
+            if annots:
+                row.append(annot)
+            row.append(recom)
+            out.append(row)
         if not latex:
             out = '\n'.join(['\t'.join(x) for x in out])
             with open(outf, 'w') as f:
@@ -5317,15 +5339,13 @@ class PyPath(object):
             texnewline = r'\\' + '\n'
             
             _latex_tab = r'''%s
-                    \begin{tabularx}{\textwidth}{%s}
+                    \begin{tabularx}{0.95\textwidth}{%s}
                     \toprule
                         %s
                     \midrule
                         %s
                     \bottomrule
-                    \end{tabularx}
-                    %s
-                '''
+                    \end{tabularx}%s'''
             _latex_hdr = r'''\documentclass[a4paper,%upt]{extarticle}
                     \usepackage{fontspec}
                     \usepackage{xunicode}
@@ -5333,9 +5353,10 @@ class PyPath(object):
                     \setdefaultlanguage{english}
                     \usepackage{xltxtra}
                     \usepackage{microtype}
-                    \usepackage[margin=5pt,portrait,paperwidth=24cm,paperheight=30cm]{geometry}
+                    \usepackage[margin=5pt,portrait,paperwidth=23cm,paperheight=30cm]{geometry}
                     \usepackage{amsmath}
                     \usepackage{amssymb}
+                    \usepackage{textcomp}
                     \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
                     \usepackage{color}
                     \usepackage{booktabs}
@@ -5346,13 +5367,10 @@ class PyPath(object):
                     \color{grey875}
                     \thispagestyle{empty}
                     \vfill
-                    \begin{table}[h]
                 ''' % (fontsize, font) if latex_hdr else ''
             _latex_end = r'''
-                    \caption{%s}
-                    \end{table}
                     \end{document}
-                ''' % caption if latex_hdr else ''
+                ''' if latex_hdr else ''
             
             _hdr_row = ' & '.join([header_format%h.replace(r'%', r'\%') \
                 for h in header]) + '\\\\'
@@ -5365,12 +5383,10 @@ class PyPath(object):
             _rows = ''
             for i, k in enumerate(row_order):
                 
-                
-                
                 if type(k) is tuple and k[1] == 'subtitle':
                     row = '\n'.join([
                         r'\midrule' if i > 0 else '',
-                        r'\multicolumn{6}{l}{%s}\\' % k[0],
+                        r'\multicolumn{%u}{l}{%s}\\' % (6 + int(annots) + int(urls), k[0]),
                         r'\midrule',
                         ''
                     ])
@@ -5386,7 +5402,17 @@ class PyPath(object):
                 
                 _rows += row
             
-            _latex_tab = _latex_tab % (_latex_hdr, 'r'*(len(header) - 2) + r'p{2.7cm}<{\raggedright}X<{\flushleft}', _hdr_row, _rows, _latex_end)
+            _latex_tab = _latex_tab % \
+                (
+                    _latex_hdr,
+                        'r'*(len(header) - 2) + \
+                        (r'p{3.7cm}<{\raggedright}' if urls else '') + \
+                        (r'p{2.7cm}<{\raggedright}' if annots else '') + \
+                        r'X<{\raggedright}',
+                    _hdr_row,
+                    _rows,
+                    _latex_end
+                )
             
             with open(outf, 'w') as f:
                 f.write(_latex_tab)
@@ -6785,11 +6811,11 @@ class PyPath(object):
                     ((s1, s2), dict(
                         map(lambda a: (a, set([]) if t.endswith('edges') else 0), \
                             ['total', 'minor', 'major']))) \
-                        for s1 in net.sources for s2 in net.sources)), \
+                        for s1 in self.sources for s2 in self.sources)), \
                 ['directions', 'directions_edges', 'signs', 'signs_edges']))), \
             ['consistency', 'inconsistency']))
         # inconsistency #
-        prg = progress.Progress(len(self.sources)**2, 'Counting inconsistency', 1)
+        prg = Progress(len(self.sources)**2, 'Counting inconsistency', 1)
         for s1 in self.sources:
             for s2 in self.sources:
                 prg.step()
@@ -6875,7 +6901,7 @@ class PyPath(object):
                                 con['inconsistency']['signs_edges'][(s2, s1)]['minor'].add(e.index)
         prg.terminate()
         # consistency #
-        prg = progress.Progress(len(self.sources)**2, 'Counting consistency', 1)
+        prg = Progress(len(self.sources)**2, 'Counting consistency', 1)
         for s1 in self.sources:
             for s2 in self.sources:
                 prg.step()
@@ -6883,71 +6909,71 @@ class PyPath(object):
                 for e in self.graph.es:
                     d = e['dirs']
                     if s12 <= d.sources_straight():
-                        con['consistency']['signs']['directions'][(s1, s2)]['total'] += 1
-                        con['consistency']['signs']['directions_edges'][(s1, s2)]['total'].add(e.index)
+                        con['consistency']['directions'][(s1, s2)]['total'] += 1
+                        con['consistency']['directions_edges'][(s1, s2)]['total'].add(e.index)
                         if len(d.sources_straight()) > len(d.sources_reverse()) and \
                             len(s12 & d.sources_reverse()) == 0:
-                            con['consistency']['signs']['directions'][(s1, s2)]['major'] += 1
-                            con['consistency']['signs']['directions_edges'][(s1, s2)]['major'].add(e.index)
+                            con['consistency']['directions'][(s1, s2)]['major'] += 1
+                            con['consistency']['directions_edges'][(s1, s2)]['major'].add(e.index)
                         elif len(d.sources_straight()) < len(d.sources_reverse()) and \
                             len(s12 & d.sources_reverse()) == 0:
-                            con['consistency']['signs']['directions'][(s1, s2)]['minor'] += 1
-                            con['consistency']['signs']['directions_edges'][(s1, s2)]['minor'].add(e.index)
+                            con['consistency']['directions'][(s1, s2)]['minor'] += 1
+                            con['consistency']['directions_edges'][(s1, s2)]['minor'].add(e.index)
                     if s12 <= d.sources_reverse():
-                        con['consistency']['signs']['directions'][(s1, s2)]['total'] += 1
-                        con['consistency']['signs']['directions_edges'][(s1, s2)]['total'].add(e.index)
+                        con['consistency']['directions'][(s1, s2)]['total'] += 1
+                        con['consistency']['directions_edges'][(s1, s2)]['total'].add(e.index)
                         if len(d.sources_reverse()) > len(d.sources_straight()) and \
                             len(s12 & d.sources_straight()) == 0:
-                            con['consistency']['signs']['directions'][(s1, s2)]['major'] += 1
-                            con['consistency']['signs']['directions_edges'][(s1, s2)]['major'].add(e.index)
+                            con['consistency']['directions'][(s1, s2)]['major'] += 1
+                            con['consistency']['directions_edges'][(s1, s2)]['major'].add(e.index)
                         elif len(d.sources_reverse()) < len(d.sources_straight()) and \
                             len(s12 & d.sources_straight()) == 0:
-                            con['consistency']['signs']['directions'][(s1, s2)]['minor'] += 1
-                            con['consistency']['signs']['directions_edges'][(s1, s2)]['minor'].add(e.index)
+                            con['consistency']['directions'][(s1, s2)]['minor'] += 1
+                            con['consistency']['directions_edges'][(s1, s2)]['minor'].add(e.index)
                     if s12 <= d.positive_sources_straight():
                         con['consistency']['signs'][(s1, s2)]['total'] += 1
-                        con['consistency']['signs']['signs_edges'][(s1, s2)]['total'].add(e.index)
+                        con['consistency']['signs_edges'][(s1, s2)]['total'].add(e.index)
                         if len(d.positive_sources_straight()) > len(d.positive_sources_reverse()) and \
                             len(s12 & d.positive_sources_reverse()) == 0:
                             con['consistency']['signs'][(s1, s2)]['major'] += 1
-                            con['consistency']['signs']['signs_edges'][(s1, s2)]['major'].add(e.index)
+                            con['consistency']['signs_edges'][(s1, s2)]['major'].add(e.index)
                         elif len(d.positive_sources_straight()) < len(d.positive_sources_reverse()) and \
                             len(s12 & d.positive_sources_reverse()) == 0:
                             con['consistency']['signs'][(s1, s2)]['minor'] += 1
-                            con['consistency']['signs']['signs_edges'][(s1, s2)]['minor'].add(e.index)
+                            con['consistency']['signs_edges'][(s1, s2)]['minor'].add(e.index)
                     if s12 <= d.negative_sources_straight():
                         con['consistency']['signs'][(s1, s2)]['total'] += 1
-                        con['consistency']['signs']['signs_edges'][(s1, s2)]['total'].add(e.index)
+                        con['consistency']['signs_edges'][(s1, s2)]['total'].add(e.index)
                         if len(d.negative_sources_straight()) > len(d.negative_sources_reverse()) and \
                             len(s12 & d.negative_sources_reverse()) == 0:
                             con['consistency']['signs'][(s1, s2)]['major'] += 1
-                            con['consistency']['signs']['signs_edges'][(s1, s2)]['major'].add(e.index)
+                            con['consistency']['signs_edges'][(s1, s2)]['major'].add(e.index)
                         elif len(d.negative_sources_straight()) < len(d.negative_sources_reverse()) and \
                             len(s12 & d.negative_sources_reverse()) == 0:
                             con['consistency']['signs'][(s1, s2)]['minor'] += 1
-                            con['consistency']['signs']['signs_edges'][(s1, s2)]['minor'].add(e.index)
+                            con['consistency']['signs_edges'][(s1, s2)]['minor'].add(e.index)
                     if s12 <= d.positive_sources_reverse():
                         con['consistency']['signs'][(s1, s2)]['total'] += 1
-                        con['consistency']['signs']['signs_edges'][(s1, s2)]['total'].add(e.index)
+                        con['consistency']['signs_edges'][(s1, s2)]['total'].add(e.index)
                         if len(d.positive_sources_reverse()) > len(d.positive_sources_straight()) and \
                             len(s12 & d.positive_sources_straight()) == 0:
                             con['consistency']['signs'][(s1, s2)]['major'] += 1
-                            con['consistency']['signs']['signs_edges'][(s1, s2)]['major'].add(e.index)
+                            con['consistency']['signs_edges'][(s1, s2)]['major'].add(e.index)
                         elif len(d.positive_sources_reverse()) < len(d.positive_sources_straight()) and \
                             len(s12 & d.positive_sources_straight()) == 0:
                             con['consistency']['signs'][(s1, s2)]['minor'] += 1
-                            con['consistency']['signs']['signs_edges'][(s1, s2)]['minor'].add(e.index)
+                            con['consistency']['signs_edges'][(s1, s2)]['minor'].add(e.index)
                     if s12 <= d.negative_sources_reverse():
                         con['consistency']['signs'][(s1, s2)]['total'] += 1
-                        con['consistency']['signs']['signs_edges'][(s1, s2)]['total'].add(e.index)
+                        con['consistency']['signs_edges'][(s1, s2)]['total'].add(e.index)
                         if len(d.negative_sources_reverse()) > len(d.negative_sources_straight()) and \
                             len(s12 & d.negative_sources_straight()) == 0:
                             con['consistency']['signs'][(s1, s2)]['major'] += 1
-                            con['consistency']['signs']['signs_edges'][(s1, s2)]['major'].add(e.index)
+                            con['consistency']['signs_edges'][(s1, s2)]['major'].add(e.index)
                         elif len(d.negative_sources_reverse()) < len(d.negative_sources_straight()) and \
                             len(s12 & d.negative_sources_straight()) == 0:
                             con['consistency']['signs'][(s1, s2)]['minor'] += 1
-                            con['consistency']['signs']['signs_edges'][(s1, s2)]['minor'].add(e.index)
+                            con['consistency']['signs_edges'][(s1, s2)]['minor'].add(e.index)
         prg.terminate()
         return con
     

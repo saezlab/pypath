@@ -224,6 +224,8 @@ class MultiBarplot(Plot):
                  summary_name = '',
                  uniform_ylim = False,
                  do = True,
+                 legloc = 0,
+                 maketitle = True,
                  **kwargs
                  ):
         """
@@ -627,6 +629,7 @@ class MultiBarplot(Plot):
         """
         Does the actual plotting.
         """
+        original_width = self.bar_args['width']
         if self.grouped:
             self.bar_args['width'] = self.bar_args['width'] / float(len(self.grouped_y))
         
@@ -690,6 +693,8 @@ class MultiBarplot(Plot):
             self.ax.xaxis.label.set_verticalalignment('bottom')
             list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
             self.ax.tick_params(which = 'both', length = 0)
+        
+        self.bar_args['width'] = original_width
     
     def set_ylims(self):
         if self.uniform_ylim:
@@ -716,10 +721,11 @@ class MultiBarplot(Plot):
         """
         Sets the main title.
         """
-        self.title_text = self.fig.suptitle(self.title)
-        self.title_text.set_fontproperties(self.fp_title)
-        self.title_text.set_horizontalalignment(self.title_halign)
-        self.title_text.set_verticalalignment(self.title_valign)
+        if self.maketitle:
+            self.title_text = self.fig.suptitle(self.title)
+            self.title_text.set_fontproperties(self.fp_title)
+            self.title_text.set_horizontalalignment(self.title_halign)
+            self.title_text.set_verticalalignment(self.title_valign)
     
     def groups_legend(self):
         if self.grouped:
@@ -732,7 +738,10 @@ class MultiBarplot(Plot):
                     )
                 )
             broadest_ax = max(self.axes[0], key = lambda ax: len(ax.get_xticks()))
-            broadest_ax.legend(handles = lhandles, prop = self.fp_legend, frameon = False)
+            broadest_ax.legend(handles = lhandles,
+                               prop = self.fp_legend,
+                               frameon = False,
+                               loc = self.legloc)
     
     def align_x_labels(self):
         self.lowest_ax = min(self.axes[0],
@@ -761,7 +770,8 @@ class MultiBarplot(Plot):
         Applies tight layout, draws the figure, writes the file and closes.
         """
         self.fig.tight_layout()
-        self.fig.subplots_adjust(top = 0.85)
+        if self.maketitle:
+            self.fig.subplots_adjust(top = 0.85)
         self.cvs.draw()
         self.cvs.print_figure(self.pdf)
         self.pdf.close()
@@ -963,6 +973,7 @@ class StackedBarplot(object):
         x, y,
         fname,
         names,
+        colors,
         xlab = '',
         ylab = '',
         title = '',
@@ -976,7 +987,6 @@ class StackedBarplot(object):
         lab_angle = 90,
         figsize = (9,6),
         legend = True,
-        colors = ['#7AA0A1', '#C6909C', '#92C1D6', '#C5B26E', '#da0025'],
         order = False,
         desc = True):
         
@@ -1181,7 +1191,9 @@ class StackedBarplot(object):
                         xrange(len(self.y))
                     )
                 )
-            self.leg = self.ax.legend(handles = self.lhandles, prop = self.fp_legend, frameon = False)
+            self.leg = self.ax.legend(handles = self.lhandles,
+                                      prop = self.fp_legend,
+                                      frameon = False)
             self.leg.get_title().set_fontproperties(self.fp_axis_lab)
     
     def finish(self):
@@ -1202,7 +1214,7 @@ class ScatterPlus(object):
     def __init__(self,
             x, y,
             size = None,
-            color = '#007b7f',
+            color = '#114477',
             labels = None,
             xlog = False,
             ylog = False,
@@ -1236,7 +1248,7 @@ class ScatterPlus(object):
             legloc = 4,
             size_to_value = lambda x: x,
             value_to_size = lambda x: x,
-            figsize = (12, 9),
+            figsize = (10.0, 7.5),
             title = '',
             title_halign = 'center',
             title_valign = 'top',
@@ -1460,9 +1472,9 @@ class ScatterPlus(object):
                     label, 
                     xy = (xx, yy), xytext = coo,
                     xycoords = 'data',
-                    textcoords = 'offset points', ha = 'center', va = 'bottom', color = '#007B7F',
+                    textcoords = 'offset points', ha = 'center', va = 'bottom', color = '#114477',
                     arrowprops = dict(arrowstyle = '-', connectionstyle = 'arc,rad=.0',
-                        color = '#007B7F', edgecolor = '#007B7F', alpha = 1.0, 
+                        color = '#114477', edgecolor = '#114477', alpha = 1.0, 
                         visible = True, linewidth = 0.2), 
                 ))
             for ann in self.annots:
@@ -1654,7 +1666,7 @@ class ScatterPlus(object):
             self.legsizes = np.sqrt(self.legsizes / np.pi)
             
             for lab, col in self.color_labels:
-               self.lhandles1.append(mpl.patches.Patch(color = col, label = lab))
+               self.lhandles1.append(mpl.patches.Patch(color = col, label = lab, alpha = .5, linewidth = 0.0))
                self.llabels1.append(lab)
             
             for i, s in enumerate(self.legsizes):
@@ -1666,7 +1678,7 @@ class ScatterPlus(object):
                         color = 'none',
                         marker = 'o',
                         markersize = s,
-                        markerfacecolor = '#6ea945',
+                        markerfacecolor = '#114477',
                         markeredgecolor = 'none',
                         alpha = .5,
                         label = str(int(rs)) if rs - int(rs) == 0 or rs >= 10.0 else str(rs)
@@ -2278,7 +2290,7 @@ class HistoryTree(object):
             'width': 20.0,
             'xoffset': 0.5,
             'compile': True,
-            'dotlineopacity': 0.7,
+            'dotlineopacity': 1.0,
             'horizontal': True, # whether the timeline should be the horizontal axis,
             'latex': '/usr/bin/xelatex'
         }
@@ -2315,9 +2327,9 @@ class HistoryTree(object):
         self.sort()
         self.set_grid()
         self.get_timelines()
-        self.get_layer_nodes()
         self.get_layer_lines()
         self.get_connections()
+        self.get_layer_nodes()
         self.get_legend()
         self.get_closing()
     
@@ -2350,7 +2362,7 @@ class HistoryTree(object):
     
     def set_latex_header(self):
         # LaTeX preamble for XeLaTeX
-        self.latex_header = r'''\documentclass[a4paper,10pt]{article}
+        self.latex_header = r'''\documentclass[10pt]{extarticle}
             \usepackage{fontspec}
             \usepackage{xunicode}
             \usepackage{polyglossia}
@@ -2359,14 +2371,28 @@ class HistoryTree(object):
             \usepackage{microtype}
             \usepackage[cm]{fullpage}
             \usepackage{rotating}
+            \usepackage{fullpage}
             \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+            \usepackage[
+                voffset=0cm,
+                hoffset=0cm,
+                left=0cm,
+                top=0cm,
+                bottom=0cm,
+                right=0cm,
+                paperwidth=18cm,
+                paperheight=23cm,
+                footskip=0pt,
+                headheight=0pt,
+                headsep=0pt
+                ]{geometry}
             \usepackage{color}
             \setmainfont{HelveticaNeueLTStd-LtCn}
             \usepackage{tikz}
             \definecolor{zircon}{RGB}{228, 236, 236}
-            \definecolor{teal}{RGB}{51, 34, 136}
-            \definecolor{twilightblue}{RGB}{136, 204, 238}
-            \definecolor{mantis}{RGB}{68, 170, 153}%s
+            \definecolor{teal}{RGB}{17, 68, 119}
+            \definecolor{twilightblue}{RGB}{227, 238, 248}
+            \definecolor{mantis}{RGB}{119, 204, 204}%s
             \begin{document}
             \thispagestyle{empty}
             \pgfdeclarelayer{background}
@@ -2567,13 +2593,19 @@ class HtpCharacteristics(object):
                  axis_lab_font = {},
                  ticklabel_font = {},
                  title_font = {},
-                 title = ''):
+                 title = '',
+                 htdata = {},
+                 **kwargs):
         
         for k, v in iteritems(locals()):
             setattr(self, k, v)
         
+        for k, v in iteritems(kwargs):
+            if not hasattr(self, k):
+                setattr(self, k, v)
+        
         self.defaults = {
-            'figsize': (10, 20),
+            'figsize': (7, 14),
             'title_halign': 'center',
             'title_valign': 'top'
         }
@@ -2623,8 +2655,6 @@ class HtpCharacteristics(object):
                                                  self.ticklabel_font_default)
         self.title_font = common.merge_dicts(title_font,
                                              self.title_font_default)
-        
-        self.reset()
         
         self.plot()
     
@@ -2691,23 +2721,24 @@ class HtpCharacteristics(object):
             }
     
     def htp_calculations(self):
-        self.refc = collections.Counter(
-            common.flatList((r.pmid for r in e['references']) for e in self.pp.graph.es)
-        )
-        
-        # percentage of high throughput interactions
-        htsrcs_prev = set(self.pp.sources)
-        self.prg = progress.Progress(self.upper - self.lower, 'Analysing HTP refs/interactions', 1)
-        for htlim in reversed(xrange(self.lower, self.upper + 1)):
-            self.prg.step()
-            self.get_point(htlim)
-            htsrcs_new = self.htdata[htlim]['htsrcs']
-            diff = htsrcs_new - htsrcs_prev
-            htsrcs_prev = htsrcs_new
-            if len(diff):
-                sys.stdout.write('\n\t:: %s: no references with more interaction than %u\n' % \
-                    (', '.join(list(diff)), htlim - 1))
-                sys.stdout.flush()
+        if not len(self.htdata):
+            self.refc = collections.Counter(
+                common.flatList((r.pmid for r in e['references']) for e in self.pp.graph.es)
+            )
+            
+            # percentage of high throughput interactions
+            htsrcs_prev = set(self.pp.sources)
+            self.prg = progress.Progress(self.upper - self.lower, 'Analysing HTP refs/interactions', 1)
+            for htlim in reversed(xrange(self.lower, self.upper + 1)):
+                self.prg.step()
+                self.get_point(htlim)
+                htsrcs_new = self.htdata[htlim]['htsrcs']
+                diff = htsrcs_new - htsrcs_prev
+                htsrcs_prev = htsrcs_new
+                if len(diff):
+                    sys.stdout.write('\n\t:: %s: no references with more interaction than %u\n' % \
+                        (', '.join(list(diff)), htlim - 1))
+                    sys.stdout.flush()
     
     def set_figsize(self):
         """
@@ -2748,13 +2779,19 @@ class HtpCharacteristics(object):
             self.get_subplot(i)
             self.ax.plot(sorted(self.htdata.keys()),
                          list(map(lambda h: self.htdata[h][key], sorted(self.htdata.keys()))),
-                         '-', color = col
+                         '-', color = col, linewidth = 2
                     )
             
             if i == self.nrows - 1:
                 # xlabel only for the lowest subplot
                 self.ax.set_xlabel('HT limit [interaction/reference]', fontproperties = self.fp_axis_lab)
             
+            if i == 0:
+                self.ax.set_yscale('symlog')
+                self.ax.yaxis.set_major_formatter(mpl.ticker.ScalarFormatter())
+            
+            self.ax.set_xscale('log')
+            self.ax.xaxis.set_major_formatter(mpl.ticker.ScalarFormatter())
             self.ax.yaxis.grid(True, color = '#FFFFFF', lw = 2, ls = 'solid')
             self.ax.xaxis.grid(False)
             self.ax.set_axisbelow(True)
@@ -2798,7 +2835,7 @@ class HtpCharacteristics(object):
         Applies tight layout, draws the figure, writes the file and closes.
         """
         self.fig.tight_layout()
-        self.fig.subplots_adjust(top = 0.92)
+        self.fig.subplots_adjust(top = 0.94)
         self.cvs.draw()
         self.cvs.print_figure(self.pdf)
         self.pdf.close()
@@ -3039,8 +3076,8 @@ class RefsComposite(object):
         self.ax.set_xlabel('Number of PubMed IDs', fontproperties = self.fp_axis_lab)
         self.ax.xaxis.set_label_position('top')
         self.ax.xaxis.grid(False)
-        self.ax.set_ylim([1, 100000])
-        self.ax.set_yticks([1, 10, 100, 1000, 10000])
+        self.ax.set_ylim([1, (100000 if max(self.refc_db) < 100000 else max(self.refc_db))])
+        self.ax.set_yticks([1, 10, 100, 1000, 10000] + ([100000] if max(self.refc_db) > 100000 else []))
         self.ax.yaxis.set_major_formatter(mpl.ticker.ScalarFormatter())
         
         _ = list(map(lambda tl: tl.set_fontproperties(self.fp_ticklabel) or \
@@ -3082,11 +3119,11 @@ class RefsComposite(object):
             )
         self.ax.set_xscale('log')
         self.ax.set_ylim([-0.3, len(self.refc_y) + 0.7])
-        self.ax.set_xlim([10000, 1])
+        self.ax.set_xlim([max(self.refc_y), 1])
         self.ax.set_yticklabels([])
         self.ax.set_ylabel('Number of PubMed IDs', fontproperties = self.fp_axis_lab)
         self.ax.yaxis.set_label_position('left')
-        self.ax.set_xticks([1, 100, 1000])
+        self.ax.set_xticks([1, 100, 1000] + ([10000] if max(self.refc_y) > 10000 else []))
         self.ax.xaxis.set_major_formatter(mpl.ticker.ScalarFormatter())
         list(map(lambda tl: tl.set_fontproperties(self.fp_ticklabel)  or tl.set_rotation(90),
                  self.ax.get_xticklabels()))
@@ -3272,6 +3309,190 @@ class RefsComposite(object):
         self.pdf.close()
         self.fig.clf()
 
+class CurationPlot(object):
+    
+    def __init__(self,
+                 pp,
+                 fname,
+                 colors,
+                 pubmeds = None,
+                 earliest = None,
+                 axis_lab_font = {},
+                 ticklabel_font = {},
+                 legend_font = {},
+                 **kwargs):
+        
+        for k, v in iteritems(locals()):
+            if not hasattr(self, k):
+                setattr(self, k, v)
+        
+        for k, v in iteritems(kwargs):
+            if not hasattr(self, k):
+                setattr(self, k, v)
+        
+        self.defaults = {
+            'title_halign': 'center',
+            'title_valign': 'top',
+            'figsize': (4, 3)
+        }
+        
+        for k, v in iteritems(self.defaults):
+            if not hasattr(self, k):
+                setattr(self, k, v)
+        
+        self.graph = self.pp.graph
+        
+        self.axis_lab_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'bold',
+            'variant': 'normal',
+            'size': 'x-large'
+        }
+        self.ticklabel_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'roman',
+            'variant': 'normal',
+            'size': 'medium'
+        }
+        self.legend_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'roman',
+            'variant': 'normal',
+            'size': 'small'
+        }
+        
+        self.axis_lab_font = common.merge_dicts(axis_lab_font,
+                                                self.axis_lab_font_default)
+        self.ticklabel_font = common.merge_dicts(ticklabel_font,
+                                                 self.ticklabel_font_default)
+        self.legend_font = common.merge_dicts(legend_font,
+                                             self.legend_font_default)
+        
+        self.plot()
+    
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    def plot(self):
+        self.pre_plot()
+        self.do_plot()
+        self.post_plot()
+    
+    def pre_plot(self):
+        self.set_fontproperties()
+        self.get_data()
+        self.set_figsize()
+    
+    def do_plot(self):
+        self.init_fig()
+        self.make_plot()
+    
+    def post_plot(self):
+        self.finish()
+    
+    def set_fontproperties(self):
+        self.fp_axis_lab = \
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.axis_lab_font))
+        self.fp_ticklabel = \
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.ticklabel_font))
+        self.fp_legend = \
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.legend_font))
+    
+    def get_data(self):
+        if self.pubmeds is None:
+            self.pubmeds, self.earliest = _refs.get_pubmed_data(self.pp,
+                                            htp_threshold = self.htp_threshold)
+    
+    def set_figsize(self):
+        """
+        Converts width and height to a tuple so can be used for figsize.
+        """
+        if hasattr(self, 'width') and hasattr(self, 'height'):
+            self.figsize = (self.width, selg.height)
+    
+    def init_fig(self):
+        """
+        Creates a figure using the object oriented matplotlib interface.
+        """
+        self.pdf = mpl.backends.backend_pdf.PdfPages(self.fname)
+        self.fig = mpl.figure.Figure(figsize = self.figsize)
+        self.cvs = mpl.backends.backend_pdf.FigureCanvasPdf(self.fig)
+    
+    def make_plot(self):
+        
+        self.numof_curated = dict((y, 0) for y in np.unique(self.pubmeds.year))
+        self.all_by_y = dict((y, 0) for y in np.unique(self.pubmeds.year))
+        
+        self.first_y_edges = dict(self.pubmeds.groupby(['eid']).year.min())
+        
+        self.ecount_y = dict((y, len([_ for fy in self.first_y_edges.values() if fy <= y])) \
+            for y in np.unique(self.pubmeds.year))
+        
+        self.vcount_y = dict((y, len(set([p for e, fy in iteritems(self.first_y_edges) if fy <= y \
+                for p in [self.graph.es[e].source, self.graph.es[e].target]]))) \
+            for y in np.unique(self.pubmeds.year))
+        
+        self.ccount_by_y = dict((y, self.pubmeds[self.pubmeds.year==y].shape[0]) \
+            for y in np.unique(self.pubmeds.year))
+        
+        self.ax = self.fig.add_subplot(1, 1, 1)
+        
+        self.ax.plot(
+            np.unique(self.pubmeds.year),
+            [self.ecount_y[y] for y in np.unique(self.pubmeds.year)], marker = '.', color = self.colors[0],
+            label = 'Interactions', alpha = 1.0, markeredgecolor = 'none', markersize = 10)
+        self.ax.plot(np.unique(self.pubmeds.year),
+            [self.vcount_y[y] for y in np.unique(self.pubmeds.year)], marker = '.', color = self.colors[1],
+            label = 'Proteins', alpha = 1.0, markeredgecolor = 'none', markersize = 10)
+        self.ax.plot(np.unique(self.pubmeds.year),
+            [self.ccount_by_y[y] for y in np.unique(self.pubmeds.year)], marker = '.', color = self.colors[2],
+            label = 'Curated papers', alpha = 1.0, markeredgecolor = 'none', markersize = 10)
+        
+        self.leg = self.ax.legend(loc = 2, frameon = False)
+        list(map(lambda t: t.set_fontproperties(self.fp_legend), self.leg.get_texts()))
+        
+        self.ax.set_xlabel('Year', fontproperties = self.fp_axis_lab)
+        #self.ax.set_ylabel('Number of proteins\nor interactions', fontproperties = self.fp_axis_lab)
+        self.ax.set_xlim([1980, 2015])
+        ymax = max(self.ecount_y.values())
+        self.ax.yaxis.set_major_locator(mpl.ticker.MultipleLocator(
+            20000 if ymax > 80000 else 10000 if ymax > 50000 else 5000))
+        self.ax.xaxis.grid(False)
+        list(map(lambda tl: tl.set_rotation(90) or tl.set_fontproperties(self.fp_ticklabel),
+                 self.ax.get_xticklabels()))
+        list(map(lambda tl: tl.set_fontproperties(self.fp_ticklabel),
+                 self.ax.get_yticklabels()))
+        
+        self.ax.yaxis.grid(True, color = '#FFFFFF', lw = 1, ls = 'solid')
+        self.ax.xaxis.grid(False)
+        self.ax.set_axisbelow(True)
+        self.ax.set_axis_bgcolor('#EAEAF2')
+        list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
+        self.ax.tick_params(which = 'both', length = 0)
+    
+    def finish(self):
+        """
+        Applies tight layout, draws the figure, writes the file and closes.
+        """
+        self.fig.tight_layout()
+        self.cvs.draw()
+        self.cvs.print_figure(self.pdf)
+        self.pdf.close()
+        self.fig.clf()
+
 class BarplotsGrid(object):
     
     def __init__(self,
@@ -3281,7 +3502,7 @@ class BarplotsGrid(object):
             fname,
             ylab,
             data = None,
-            color = '#44AA99',
+            color = '#77AADD',
             xlim = None,
             uniform_xlim = True,
             full_range_x = True,
@@ -3296,6 +3517,7 @@ class BarplotsGrid(object):
             title_font = {},
             bar_args = {},
             htp_threshold = 20,
+            xmin = None,
             **kwargs):
         
         for k, v in iteritems(locals()):
@@ -3476,7 +3698,9 @@ class BarplotsGrid(object):
     
     def set_xlim(self):
         if self.xlim is None and self.uniform_xlim:
-            self.xlim = [-1.0, len(getattr(self.data, self.x).unique()) + 1.5]
+            allx = getattr(self.data, self.x).unique()
+            xlen = allx.max() - allx.min() if self.full_range_x else len(allx)
+            self.xlim = [-1.0, xlen + 1.5]
     
     def make_plots(self):
         
@@ -3519,6 +3743,8 @@ class BarplotsGrid(object):
                                             zip(x, np.arange(len(x)))))
                     self.ax.set_xticks(list(map(lambda i: i[1], xticks)))
                     self.ax.set_xticklabels(list(map(lambda i: i[0], xticks)))
+                if self.xmin is not None:
+                    self.ax.set_xlim([list(x).index(self.xmin), self.ax.get_xlim()[1]])
                 list(map(lambda tl: tl.set_fontproperties(
                                         self.fp_small_ticklabel if self.small_xticklabels \
                                             else self.fp_ticklabel
@@ -3574,7 +3800,142 @@ class BarplotsGrid(object):
         """
         #self.gs.update(wspace=0.1, hspace=0.1)
         self.fig.tight_layout()
-        self.fig.subplots_adjust(top = 0.92)
+        self.fig.subplots_adjust(top = 0.94)
+        self.cvs.draw()
+        self.cvs.print_figure(self.pdf)
+        self.pdf.close()
+        self.fig.clf()
+
+class Dendrogram(object):
+    
+    def __init__(self,
+                 fname,
+                 data,
+                 color = '#4477AA',
+                 axis_lab_font = {},
+                 ticklabel_font = {},
+                 **kwargs):
+        
+        
+        for k, v in iteritems(locals()):
+            if not hasattr(self, k):
+                setattr(self, k, v)
+        
+        for k, v in iteritems(kwargs):
+            if not hasattr(self, k):
+                setattr(self, k, v)
+        
+        self.defaults = {
+            'title_halign': 'center',
+            'title_valign': 'top',
+            'figsize': (6, 4)
+        }
+        
+        for k, v in iteritems(self.defaults):
+            if not hasattr(self, k):
+                setattr(self, k, v)
+        
+        self.axis_lab_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'bold',
+            'variant': 'normal',
+            'size': 'x-large'
+        }
+        self.ticklabel_font_default = {
+            'family': ['Helvetica Neue LT Std'],
+            'style': 'normal',
+            'stretch': 'condensed',
+            'weight': 'roman',
+            'variant': 'normal',
+            'size': 'medium'
+        }
+        
+        self.axis_lab_font = common.merge_dicts(axis_lab_font,
+                                                self.axis_lab_font_default)
+        self.ticklabel_font = common.merge_dicts(ticklabel_font,
+                                                 self.ticklabel_font_default)
+        
+        self.plot()
+    
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    def plot(self):
+        self.pre_plot()
+        self.do_plot()
+        self.post_plot()
+    
+    def pre_plot(self):
+        self.set_fontproperties()
+        self.set_figsize()
+    
+    def do_plot(self):
+        self.init_fig()
+        self.make_plot()
+    
+    def post_plot(self):
+        self.finish()
+    
+    def set_fontproperties(self):
+        self.fp_axis_lab = \
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.axis_lab_font))
+        self.fp_ticklabel = \
+            mpl.font_manager.FontProperties(
+                **copy.deepcopy(self.ticklabel_font))
+    
+    def set_figsize(self):
+        """
+        Converts width and height to a tuple so can be used for figsize.
+        """
+        if hasattr(self, 'width') and hasattr(self, 'height'):
+            self.figsize = (self.width, selg.height)
+    
+    def init_fig(self):
+        """
+        Creates a figure using the object oriented matplotlib interface.
+        """
+        self.pdf = mpl.backends.backend_pdf.PdfPages(self.fname)
+        self.fig = mpl.figure.Figure(figsize = self.figsize)
+        self.cvs = mpl.backends.backend_pdf.FigureCanvasPdf(self.fig)
+    
+    def make_plot(self):
+        
+        self.z = hc.linkage(self.data, method = 'average')
+        
+        self.ax = self.fig.add_subplot(1, 1, 1)
+        
+        self.dendro = \
+            hc.dendrogram(self.z,
+                          labels = self.data.columns,
+                          color_threshold = 0,
+                          orientation = 'left',
+                          ax = self.ax,
+                          link_color_func = lambda x: self.color)
+        
+        _ = [tl.set_fontproperties(self.fp_ticklabel) for tl in self.ax.get_yticklabels()]
+        _ = [tl.set_fontproperties(self.fp_ticklabel) for tl in self.ax.get_xticklabels()]
+        
+        self.ax.xaxis.grid(True, color = '#FFFFFF', lw = 1, ls = 'solid')
+        self.ax.yaxis.grid(False)
+        self.ax.set_axisbelow(True)
+        self.ax.set_axis_bgcolor('#EAEAF2')
+        list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
+        self.ax.tick_params(which = 'both', length = 0)
+    
+    def finish(self):
+        """
+        Applies tight layout, draws the figure, writes the file and closes.
+        """
+        #self.gs.update(wspace=0.1, hspace=0.1)
+        self.fig.tight_layout()
+        #self.fig.subplots_adjust(top = 0.94)
         self.cvs.draw()
         self.cvs.print_figure(self.pdf)
         self.pdf.close()

@@ -24,11 +24,13 @@ import subprocess
 import imp
 import locale
 import numpy as np
+import pandas as pd
 
 import pypath.main as main
 import pypath.plot as plot
 import pypath.data_formats as data_formats
 import pypath.dataio as dataio
+import pypath.descriptions as descriptions
 from pypath.common import *
 import pypath.refs as _refs
 
@@ -37,8 +39,11 @@ class Workflow(object):
     def __init__(self,
                  name,
                  network_datasets = [],
+                 do_main_table = True,
+                 do_compile_main_table = True,
                  do_curation_table = True,
                  do_compile_curation_table = True,
+                 do_simgraphs = True,
                  do_multi_barplots = True,
                  do_coverage_groups = True,
                  do_htp_char = True,
@@ -50,11 +55,18 @@ class Workflow(object):
                  do_refs_years_grid = True,
                  do_dirs_stacked = True,
                  do_refs_composite = True,
+                 do_curation_plot = True,
                  do_refs_by_j = True,
                  do_refs_by_db = True,
                  do_refs_by_year = True,
+                 do_resource_list = True,
+                 do_compile_resource_list = True,
+                 do_consistency_dedrogram = True,
+                 do_consistency_table = True,
                  title = None,
                  outdir = None,
+                 htdata = {},
+                 inc_raw = None,
                  **kwargs):
         
         for k, v in iteritems(locals()):
@@ -69,16 +81,17 @@ class Workflow(object):
             'ccolors': {
                 'p': '#77AADD',
                 'm': '#77CCCC',
-                'i': '#CC99BB',
-                'r': '#DD7788'
+                'i': '#DDAA77',
+                'r': '#CC99BB'
             },
             'ccolors2': {
-                'p': '#114477',
+                'p': '#4477AA',
                 'm': '#117777',
-                'i': '#771155',
-                'r': '#771122'
+                'i': '#774411',
+                'r': '#771155'
             },
-            'group_colors': ['#332288', '#44AA99', '#882255', '#AA4499'],
+            'group_colors': ['#4477AA', '#44AAAA', '#DDAA77', '#CC99BB'],
+            'group_colors2': ['#77AADD', '#77CCCC', '#DDAA77', '#CC99BB'],
             'table2file': 'curation_tab_%s.tex' % self.name,
             'stable2file': 'curation_tab_stripped_%s.tex' % self.name,
             'latex': '/usr/bin/xelatex',
@@ -116,6 +129,8 @@ class Workflow(object):
             'htp_lower': 1,
             'htp_upper': 500,
             'history_tree_fname': 'history_tree.tex',
+            'main_table_fname': 'main_table_%s.tex' % self.name,
+            'main_table_stripped_fname': 'main_table_stripped_%s.tex' % self.name,
             'simgraph_vertex_fname': 'sources_similarity_vertex_%s.pdf' % self.name,
             'simgraph_edge_fname': 'sources_similarity_edge_%s.pdf' % self.name,
             'refs_journal_grid_fname': 'refs_by_db_journal_%s.pdf' % self.name,
@@ -124,7 +139,12 @@ class Workflow(object):
             'refs_composite_fname': 'refs-composite_%s.pdf',
             'refs_by_j_file': 'references-by-journal-%u_%s.pdf',
             'refs_by_db_file': 'references-by-db_%s.pdf',
-            'refs_by_year_file': 'references-by-year_%s.pdf'
+            'refs_by_year_file': 'references-by-year_%s.pdf',
+            'curation_plot_fname': 'new-curated-by-year_%s.pdf' % self.name,
+            'resource_list_fname': 'resources.tex',
+            'resource_list_fname_stripped': 'resources_stripped.tex',
+            'consistency_dedrogram_fname': 'inconsistency-dendrogram_%s.pdf' % self.name,
+            'consistency_table_fname': 'inconsistency-table_%s.tex' % self.name
         }
         
         self.barplots_settings = [
@@ -469,18 +489,30 @@ class Workflow(object):
         self.barplot_colors()
         if self.do_refs_composite or \
             self.do_refs_journals_grid or \
-            self.do_refs_years_grid:
+            self.do_refs_years_grid or \
+            self.do_curation_plot or \
+            self.do_htp_char:
             self.load_pubmed_data()
         if self.do_dirs_stacked:
             self.get_dirs_data()
+        if self.do_consistency_dedrogram or \
+            self.do_consistency_table:
+            self.inconsistency_data()
     
     def make_plots(self):
         
+        if self.do_main_table:
+            self.main_table()
+            if self.do_compile_main_table:
+                self.latex_compile(self.main_table_fname)
         if self.do_curation_table:
             self.curation_table()
             if self.do_compile_curation_table:
-                self.compile_curation_table()
+                self.latex_compile(self.stable2file)
         self.get_multibarplot_ordr()
+        if self.do_simgraphs:
+            self.make_simgraph_vertex()
+            self.make_simgraph_edge()
         if self.do_multi_barplots:
             self.make_multi_barplots()
         if self.do_coverage_groups:
@@ -496,7 +528,7 @@ class Workflow(object):
         if self.do_history_tree:
             self.make_history_tree()
             if self.do_compile_history_tree:
-                self.compile_history_tree()
+                self.latex_compile(self.history_tree_fname)
         if self.do_refs_by_j:
             self.make_refs_by_journal()
         if self.do_refs_by_db:
@@ -512,6 +544,16 @@ class Workflow(object):
             self.make_dirs_stacked(include_all = False)
         if self.do_refs_composite:
             self.make_refs_composite()
+        if self.do_curation_plot:
+            self.make_curation_plot()
+        if self.do_resource_list:
+            self.resource_list_table()
+            if self.do_compile_resource_list:
+                self.compile_latex(self.resource_list_fname)
+        if self.do_consistency_dedrogram:
+            self.make_consistency_dendrogram()
+        if self.do_consistency_table:
+            self.make_consistency_table()
     
     def set_outdir(self):
         self.outdir = self.name if self.outdir is None else self.outdir
@@ -681,7 +723,10 @@ class Workflow(object):
                 self.labels_coverage_groups,
                 self.data_coverage_groups,
                 categories = self.cats,
-                color = self.group_colors,
+                color = [self.group_colors[0],
+                         self.group_colors[2],
+                         self.group_colors[1],
+                         self.group_colors[3]],
                 group_labels = self.coverage_groups_group_labels,
                 cat_ordr = self.cat_ordr,
                 ylab = r'Coverage [%]',
@@ -802,7 +847,7 @@ class Workflow(object):
             
             color_labels = []
             for c in ['p', 'm', 'i', 'r']:
-                color_labels.append((data_formats.catnames[c], self.ccolors[c]))
+                color_labels.append((data_formats.catnames[c], self.ccolors2[c]))
             
             for i, l in enumerate(labels):
                 if type(l) is tuple:
@@ -849,14 +894,12 @@ class Workflow(object):
                     len(uniqList(flatList(self.ptms.values()))),
                     len(self.ptms_all_in_network))]))
         
-        group_colors = ['#FE5222', '#F5FC8A', '#0EACD3', '#CDEC25']
-        
         self.ptms_barplot = \
             plot.MultiBarplot(
                 self.data_ptms[0],
                 self.data_ptms[1:],
                 categories = [0] * len(self.data_ptms[0]),
-                color = self.group_colors,
+                color = [self.ccolors['p'], self.ccolors['m']],
                 group_labels = ['Total', 'In network'],
                 cat_names = ['E-S resources'],
                 ylab = r'E-S interactions',
@@ -867,8 +910,9 @@ class Workflow(object):
                 fname = self.get_path(
                     'ptms-by-ptmdb_%s.pdf' % self.name),
                 order = 'y',
-                figsize = (12, 9),
-                legend_font = {'size': 'large'},
+                figsize = (6, 4),
+                title_font = {'size': 'large'},
+                legend_font = {'size': 'x-large'},
                 bar_args = {'width': 0.8}
             )
     
@@ -880,13 +924,15 @@ class Workflow(object):
                 fname = self.get_path('htp-%u_%s.pdf' % (self.htp_upper, self.name)),
                 title = '%s resources' % self.title.capitalize(),
                 lower = self.htp_lower,
-                upper = self.htp_upper
+                upper = self.htp_upper,
+                htdata = self.htdata
             )
+        self.htdata = self.htp_char.htdata
     
     def make_history_tree(self):
         
         self.history_tree = plot.HistoryTree(fname = self.get_path(self.history_tree_fname),
-                                             compile = False)
+                                             compile = False, dotlineopacity = 1.0)
     
     def compile_history_tree(self):
         
@@ -913,6 +959,7 @@ class Workflow(object):
             plot.BarplotsGrid(
                 self.pp,
                 'year',
+                xmin = 1970,
                 by = 'database',
                 fname = self.get_path(self.refs_year_grid_fname),
                 ylab = 'References',
@@ -961,21 +1008,29 @@ class Workflow(object):
     def make_refs_by_year(self):
         self.console('Plotting references by year')
         counts = dict(self.pubmeds.year.value_counts())
+        ecounts = dict(self.pubmeds_earliest.year.value_counts())
         years = np.arange(min(self.pubmeds.year), max(self.pubmeds.year) + 1)
+        years = years[list(years).index(1970):]
         values = np.array(list(map(lambda y: counts[y] if y in counts else 0.0, years)))
+        evalues = np.array(list(map(lambda y: ecounts[y] if y in counts else 0.0, years)))
+        years = list(map(lambda y: '%u' % y if y % 5 == 0 else '', years))
 
         self.refs_by_year = \
             plot.MultiBarplot(
                 years,
-                values,
+                [values, evalues],
                 fname = self.get_path(self.refs_by_year_file % self.name),
                 order = years,
+                grouped = True,
                 xlab = 'Years',
                 ylab = 'Number of PubMed IDs',
-                title = 'Number of references by year in %s databases' % self.name.capitalize(),
-                color = '#332288',
-                figsize = (12, 9),
-                desc = False
+                title = 'Number of references by year in %s databases' % self.name,
+                legend_font = {'size': 'x-large'},
+                color = ['#77AADD', '#88CCAA'],
+                figsize = (8, 5),
+                group_labels = ['All references', 'Earliest references'],
+                desc = False,
+                legloc = 2
             )
     
     def make_refs_by_journal(self):
@@ -986,7 +1041,7 @@ class Workflow(object):
             byj_ordr = list(reversed(self.pubmeds.journal.value_counts().sort_values().index))[:i]
             byj_vals = list(reversed(self.pubmeds.journal.value_counts().sort_values()))[:i]
             
-            size = 8 if i == 100 else 'small'
+            size = 7 if i == 100 else 'small'
             
             self.refs_by_journal = \
                 plot.MultiBarplot(
@@ -999,10 +1054,11 @@ class Workflow(object):
                     ylab = 'Number of PubMed IDs',
                     title = 'Number of references by journals in %s databases' % \
                         self.name.capitalize(),
-                    color = '#332288',
-                    figsize = (12, 9),
+                    color = '#4477AA',
+                    figsize = (9, 6.75),
                     xticklabel_font = {'size': size},
-                    desc = False
+                    desc = False,
+                    maketitle = False
                 )
     
     def make_simgraph_vertex(self):
@@ -1025,6 +1081,10 @@ class Workflow(object):
     
     def make_dirs_stacked(self, include_all = True):
         
+        names = ['Positive (All: {:,g})'.format(self.data_dirs[1][-1]),
+                 'Negative (All: {:,g})'.format(self.data_dirs[2][-1]),
+                 'Unknown effect (All: {:,g})'.format(self.data_dirs[3][-1]),
+                 'Unknown direction (All: {:,g})'.format(self.data_dirs[4][-1]),]
         if include_all:
             x = self.data_dirs[0]
             y = self.data_dirs[1:]
@@ -1038,8 +1098,8 @@ class Workflow(object):
             plot.StackedBarplot(
                 x = x,
                 y = y,
-                names = ['Positive', 'Negative', 'Unknown effect', 'Unknown direction'],
-                colors = self.group_colors,
+                names = names,
+                colors = list(reversed(self.group_colors2)),
                 ylab = 'Interactions',
                 xlab = 'Resources',
                 title = 'Interactions with direction or sign',
@@ -1048,6 +1108,13 @@ class Workflow(object):
                     ('all' if include_all else 'wo-all', self.name)),
                 desc = False
             ))
+    
+    def make_curation_plot(self):
+        
+        self.curation_plot = plot.CurationPlot(self.pp,
+                                               self.get_path(self.curation_plot_fname),
+                                               colors = self.group_colors,
+                                               pubmeds = self.pubmeds)
     
     def make_refs_composite(self):
         self.refs_composite = plot.RefsComposite(
@@ -1098,45 +1165,248 @@ class Workflow(object):
         
         self.console('Making curation statistics '\
             'LaTeX table without header, writing to file `%s`' % self.get_path(self.stable2file))
-        self.pp.curation_tab(latex_hdr = True,
-                             fname = self.get_path(self.table2file))
+        self.pp.curation_tab(latex_hdr = False,
+                             fname = self.get_path(self.stable2file))
     
-    def compile_curation_table(self):
+    def main_table(self):
         
-        if self.compile_latex:
-            self.console('Running `%s` on `%s`' % (self.latex, self.get_path(self.table2file)))
-            
-            self.curation_tab_latex_proc = subprocess.Popen(
-                [self.latex, self.get_path(self.table2file)],
-                stdout = subprocess.PIPE,
-                stderr = subprocess.PIPE)
-            self.curation_tab_latex_output, self.curation_tab_latex_error = \
-                self.curation_tab_latex_proc.communicate()
-            self.curation_tab_latex_return = \
-                self.curation_tab_latex_proc.returncode
-            
-            self.console('LaTeX %s' % (
-                'compiled successfully' \
-                    if self.curation_tab_latex_return == 0 \
-                else 'compilation failed'))
+        self.pp.basic_stats(latex = True, fname = self.get_path(self.main_table_fname))
+        self.pp.basic_stats(latex = True, fname = self.get_path(self.main_table_stripped_fname), latex_hdr = False)
     
-    def compile_history_tree(self):
+    def resource_list_table(self):
         
-        self.console('Running `%s` on `%s`' % (self.latex, self.get_path(self.table2file)))
+        descriptions.resource_list_latex(
+            filename = self.get_path(self.resource_list_fname))
+        descriptions.resource_list_latex(
+            filename = self.get_path(self.resource_list_fname_stripped), latex_hdr = False)
+    
+    def latex_compile(self, fname):
         
-        self.history_tree_latex_proc = subprocess.Popen(
-            [self.latex, self.get_path(self.history_tree_fname)],
+        self.console('Running `%s` on `%s`' % (self.latex, self.get_path(fname)))
+        
+        self.latex_proc = subprocess.Popen(
+            [self.latex, self.get_path(fname)],
             stdout = subprocess.PIPE,
             stderr = subprocess.PIPE)
-        self.history_tree_latex_output, self.history_tree_latex_error = \
-            self.history_tree_latex_proc.communicate()
-        self.history_tree_latex_return = \
-            self.history_tree_latex_proc.returncode
+        self.latex_output, self.latex_error = self.latex_proc.communicate()
+        self.latex_return = self.latex_proc.returncode
         
         self.console('LaTeX %s' % (
                 'compiled successfully' \
-                    if self.history_tree_latex_return == 0 \
+                    if self.latex_return == 0 \
                 else 'compilation failed'))
+    
+    def inconsistency_data(self):
+        
+        if self.inc_raw is None:
+            self.inc_raw = self.pp.consistency()
+        
+        self.inco =  \
+            dict(
+                map(
+                    lambda m:
+                        (m,
+                        dict(
+                            map(
+                                lambda t:
+                                    (t,
+                                    dict(
+                                        zip(
+                                            self.pp.sources,
+                                            map(
+                                                lambda n:
+                                                    n if type(n) is int else len(n),
+                                                    map(
+                                                        lambda s:
+                                                            reduce(
+                                                                lambda a, b:
+                                                                    a + b if type(a) is int else a | b,
+                                                                    map(
+                                                                        lambda ic1:
+                                                                            ic1[1][t],
+                                                                            filter(
+                                                                                lambda ic1:
+                                                                                    ic1[0][0] == s,
+                                                                                    iteritems(self.inc_raw['inconsistency'][m])
+                                                                            )
+                                                                    )
+                                                            ),
+                                                        self.pp.sources
+                                                    )
+                                            )
+                                        )
+                                    )
+                                    ),
+                                ['total', 'major', 'minor']
+                            )
+                        )
+                        ),
+                    ['directions', 'signs', 'directions_edges', 'signs_edges']
+                )
+            )
+        
+        self.cons = \
+            dict(
+                map(
+                    lambda m:
+                        (m,
+                        dict(
+                            map(
+                                lambda t:
+                                    (t,
+                                    dict(
+                                        zip(
+                                            self.pp.sources,
+                                            map(
+                                                lambda n:
+                                                    n if type(n) is int else len(n),
+                                                    map(
+                                                        lambda s:
+                                                            reduce(
+                                                                lambda a, b:
+                                                                    a + b if type(a) is int else a | b,
+                                                                    map(
+                                                                        lambda ic1:
+                                                                            ic1[1][t],
+                                                                            filter(
+                                                                                lambda ic1:
+                                                                                    ic1[0][0] == s,
+                                                                                    iteritems(self.inc_raw['consistency'][m])
+                                                                            )
+                                                                    )
+                                                            ),
+                                                        self.pp.sources
+                                                    )
+                                            )
+                                        )
+                                    )
+                                    ),
+                                ['total', 'major', 'minor']
+                            )
+                        )
+                        ),
+                    ['directions', 'signs', 'directions_edges', 'signs_edges']
+                )
+            )
+        
+        self.incid = dict(map(lambda s: (s, self.inco['directions_edges']['minor'][s] / \
+        float(self.inco['directions_edges']['minor'][s] + \
+            self.cons['directions_edges']['total'][s] + 0.0001)),
+            self.pp.sources))
+        
+        self.incis = dict(map(lambda s: (s, self.inco['signs_edges']['minor'][s] / \
+                float(self.inco['signs_edges']['minor'][s] + \
+                    self.cons['signs_edges']['total'][s] + 0.0001)),
+            self.pp.sources))
+        
+        self.incidp = dict(map(lambda s: (s[0], (len(s[1]['total']) / \
+                float(len(s[1]['total']) + \
+                    len(self.inc_raw['consistency']['directions_edges'][s[0]]['total']) + 0.0001)) \
+                    if (len(s[1]['total']) + \
+                        len(self.inc_raw['consistency']['directions_edges'][s[0]]['total'])) > 5 \
+                    else np.nan),
+            iteritems(self.inc_raw['inconsistency']['directions_edges'])))
+        
+        self.incidp = dict(map(lambda s: (s[0], (len(s[1]['total']) / \
+                float(len(s[1]['total']) + \
+                    len(self.inc_raw['consistency']['directions_edges'][s[0]]['total']) + 0.0001))),
+            iteritems(self.inc_raw['inconsistency']['directions_edges'])))
+        
+        self.incdf = pd.DataFrame(np.vstack([np.array([self.incidp[(s1, s2)] \
+            for s1 in sorted(self.pp.sources)]) for s2 in sorted(self.pp.sources)]),
+            index = sorted(self.pp.sources), columns = sorted(self.pp.sources))
+        
+        self.incdf = self.incdf.loc[(self.incdf.sum(axis=1) != 0), (self.incdf.sum(axis=0) != 0)]
+        
+        for lab in ['HPRD', 'NetPath', 'Reactome', 'ACSN', 'PDZBase', 'NCI-PID']:
+            if lab in self.incdf:
+                self.incdf.__delitem__(lab)
+                self.incdf = self.incdf.drop(lab)
+    
+    def make_consistency_dendrogram(self):
+        
+        self.cons_dendro = plot.Dendrogram(
+            fname = self.get_path(self.consistency_dedrogram_fname),
+            data = self.incdf)
+    
+    def make_consistency_table(self):
+        
+        undirected = set(map(lambda s: s[0], filter(lambda s: s[1] == 0, iteritems(self.incid))))
+        signed = set(map(lambda s: s[0], filter(lambda s: s[1] > 0, iteritems(self.incis))))
+        directed = set(map(lambda s: s[0], filter(lambda s: s[1] > 0, iteritems(self.incid)))) - signed
+
+        singles_undirected = dict(map(lambda s:
+            (s, len(list(filter(lambda e:
+                    s in e['sources'] and len(e['sources']) == 1,
+                self.pp.graph.es)))),
+            undirected))
+        singles_directed = dict(map(lambda s:
+            (s, sum(map(
+                lambda e: sum([
+                    s in e['dirs'].sources_straight() and len(e['dirs'].sources_straight()) == 1,
+                    s in e['dirs'].sources_reverse() and len(e['dirs'].sources_reverse()) == 1]),
+                self.pp.graph.es))), directed))
+        singles_signed = dict(map(lambda s: 
+            (s, sum(map(
+                lambda e: sum([
+                    s in e['dirs'].positive_sources_straight() and len(e['dirs'].positive_sources_straight()) == 1,
+                    s in e['dirs'].positive_sources_reverse() and len(e['dirs'].positive_sources_reverse()) == 1,
+                    s in e['dirs'].negative_sources_straight() and len(e['dirs'].negative_sources_straight()) == 1,
+                    s in e['dirs'].negative_sources_reverse() and len(e['dirs'].negative_sources_reverse()) == 1]),
+                self.pp.graph.es))), signed))
+        
+        scores_undirected = dict(map(lambda s: (s[0], s[1] / \
+            float(max(singles_undirected.values()))), iteritems(singles_undirected)))
+        
+        scores_directed = dict(map(lambda s: (s[0], (s[1] / \
+            float(max(singles_directed.values())) + \
+                (1 - self.incid[s[0]])/max(map(lambda x: 1 - x, self.incid.values()))) / 2.0),
+            iteritems(singles_directed)))
+        
+        scores_signed = dict(map(lambda s: (s[0], (s[1] / \
+            float(max(singles_signed.values())) + \
+                (1 - self.incis[s[0]])/max(map(lambda x: 1 - x, self.incis.values())) + \
+                (1 - self.incid[s[0]])/max(map(lambda x: 1 - x, self.incid.values()))) / 3.0),
+            iteritems(singles_signed)))
+        
+        tbl = r'''\begin{tabularx}{\textwidth}{p{3.5cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+            \toprule
+            Resurce & Specific interactions & Direction inconsistency & Effect inconsistency & Combined score \\
+            \midrule
+            \multicolumn{5}{l}{Undirected resources} \\
+            \midrule
+                '''
+        
+        for s, sc in reversed(sorted(iteritems(scores_undirected), key = lambda s: s[1])):
+            tbl += r'''    %s & %u &   &  & %.04f \\
+                ''' % (s, singles_undirected[s], scores_undirected[s])
+        
+        tbl += r'''    \midrule
+            \multicolumn{5}{l}{Directed resources} \\
+            \midrule
+                '''
+        
+        for s, sc in reversed(sorted(iteritems(scores_directed), key = lambda s: s[1])):
+            tbl += r'''    %s & %u &  %.04f &  & %.04f \\
+                ''' % (s, singles_directed[s], self.incid[s], scores_directed[s])
+        
+        tbl += r'''    \midrule
+            \multicolumn{5}{l}{Signed resources} \\
+            \midrule
+                '''
+        
+        for s, sc in reversed(sorted(iteritems(scores_signed), key = lambda s: s[1])):
+            tbl += r'''    %s & %u &  %.04f &  %.04f & %.04f \\
+                ''' % (s, singles_signed[s], self.incid[s], self.incis[s], scores_signed[s])
+        
+        tbl += r'''    \bottomrule
+        \end{tabularx}'''
+        
+        with open(self.get_path(self.consistency_table_fname), 'w') as f:
+            f.write(tbl)
+        
+        self.consistency_table = tbl
+
     
     def load_pubmed_data(self):
         self.pubmeds, self.pubmeds_earliest = _refs.get_pubmed_data(self.pp, htp_threshold = None)
