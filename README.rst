@@ -6,7 +6,7 @@ pypath
 
 :contributions: denes@ebi.ac.uk
 :documentation: http://pypath.omnipathdb.org/
-:issues: https://github.com/seazlab/pypath/issues
+:issues: https://github.com/saezlab/pypath/issues
 
 **pypath** is a Python package built around igraph to work with molecular network representations e.g. protein, miRNA and drug compound interaction networks.
 
