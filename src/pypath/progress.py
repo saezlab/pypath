@@ -36,7 +36,7 @@ class Progress(object):
         self.min_update_interval = 0.0 \
             if not self.ipython or self.ipython == 'terminal' \
             else 1.0
-        sys.stdout.write("\r"+" "*150)
+        sys.stdout.write("\r"+" "*200)
         if self.percent:
             sys.stdout.write("\r\t:: %s: %s 0.00%%" % \
                 (self.name, '%s,'%self.status))
@@ -51,7 +51,7 @@ class Progress(object):
         self.done += step
         if force or (self.done % self.interval < 1.0 and \
             time.time() - self.last_updated > self.min_update_interval):
-            sys.stdout.write("\r"+" "*150)
+            sys.stdout.write("\r"+" "*200)
             if self.percent:
                 sys.stdout.write(
                     "\r\t:: %s: %s %.2f%% %s" % (
@@ -84,7 +84,7 @@ class Progress(object):
         m, s = divmod(self.seconds_elapsed, 60)
         h, m = divmod(m, 60)
         self.time_elapsed = "%d:%02d:%02d" % (h, m, s)
-        sys.stdout.write("\r"+" "*150)
+        sys.stdout.write("\r"+" "*200)
         self.status = status
         if self.percent:
             sys.stdout.write("\r\t:: %s: %s 100.0%% [%s elapsed]" % \

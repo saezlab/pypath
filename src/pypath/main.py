@@ -41,6 +41,8 @@ import threading
 import traceback
 from itertools import chain
 from collections import Counter
+from scipy import stats
+import numpy as np
 try:
     import cPickle as pickle
 except ImportError:
@@ -79,6 +81,7 @@ import pypath.proteomicsdb as proteomicsdb
 import pypath.reflists as reflists
 import pypath.input_formats as input_formats
 import pypath.refs as _refs
+import pypath.plot as plot
 
 import pypath.ig_drawing as ig_drawing
 import pypath.common as common
@@ -171,7 +174,9 @@ class Direction(object):
         '''
         if self.check_param(direction):
             self.dirs[direction] = True
-            source = set(source) if type(source) is list else set([source])
+            source = source if type(source) is set \
+                else set(source) if type(source) is list \
+                else set([source])
             self.sources[direction] = self.sources[direction] | source
     
     def get_dir(self, direction, sources = False):
@@ -518,7 +523,7 @@ class PyPath(object):
             g.vs['originalNames'] = [[] for _ in xrange(self.graph.vcount())]
             g.vs['ncbi_tax_id'] = []
             g.vs['exp'] = [{}]
-            g.es['sources'] = [[] for _ in xrange(self.graph.ecount())]
+            g.es['sources'] = [set([]) for _ in xrange(self.graph.ecount())]
             g.es['type'] = [[] for _ in xrange(self.graph.ecount())]
             g.es['references'] = [[] for _ in xrange(self.graph.ecount())]
             g.es['refs_by_source'] = [{} for _ in xrange(self.graph.ecount())]
@@ -554,6 +559,7 @@ class PyPath(object):
             self.proteomicsdb = None
             self.exp_samples = set([])
             self.sources = []
+            self.has_cats = set([])
             self.db_dict = {}
             self.pathway_types = []
             self.pathways = {}
@@ -692,6 +698,32 @@ class PyPath(object):
             else:
                 return None
     
+    def numof_references(self):
+        return len(common.uniqList(common.flatList(
+            list(map(lambda e: e['references'], self.graph.es)))))
+    
+    def mean_reference_per_interaction(self):
+        return np.mean(list(map(lambda e: len(e['references']), self.graph.es)))
+    
+    def numof_reference_interaction_pairs(self):
+        return len(common.uniqList(common.flatList(
+            list(map(lambda e:
+                list(map(lambda r:
+                    (e.index, r), e['references'])),
+            self.graph.es)))))
+    
+    def curators_work(self):
+        curation_effort = self.numof_reference_interaction_pairs()
+        sys.stdout.write('\t:: Curators worked %.01f-%.01f years to accomplish '\
+                         'what currently you have incorporated in this network!'\
+                         '\n\n\tAmazing, isn\'t it?\n' % \
+            (curation_effort * 15 / 60.0 / 2087.0,
+             curation_effort * 60 / 60.0 / 2087.0))
+        sys.stdout.flush()
+    
+    def reference_edge_ratio(self):
+        return self.numof_references() / float(self.graph.ecount())
+    
     def get_giant(self, replace = False, graph = None):
         '''
         Returns the giant component of the graph, or 
@@ -704,10 +736,10 @@ class PyPath(object):
         cl_sizes = cl.sizes()
         giant_component_index = cl_sizes.index(max(cl_sizes))
         in_giant = [x == giant_component_index for x in cl.membership]
-        console(':: Nodes in giant component: %u' % in_giant.count(True))
+        common.console(':: Nodes in giant component: %u' % in_giant.count(True))
         toDel = [i for i in xrange(0, gg.vcount()) if not in_giant[i]]
         gg.delete_vertices(toDel)
-        console(':: Giant component size: %u edges, %u nodes' % \
+        common.console(':: Giant component size: %u edges, %u nodes' % \
             (gg.ecount(), gg.vcount()))
         if not replace:
             return gg
@@ -862,6 +894,10 @@ class PyPath(object):
                 cache_files, int_cache, edges_cache)
         if not len(edgeListMapped):
             if infile is None:
+                if settings.__class__.__name__ != "ReadSettings":
+                    self.ownlog.msg(2,("""No proper input file definition!\n\'settings\'
+                        should be a \'ReadSettings\' instance\n"""), 'ERROR')
+                    return None
                 if settings.huge:
                     sys.stdout.write('\n\tProcessing %s requires huge memory.\n'\
                         '\tPlease hit `y` if you have at least 2G free memory,\n'\
@@ -883,17 +919,14 @@ class PyPath(object):
                 inputFunc = self.get_function(settings.inFile)
                 if inputFunc is None and hasattr(dataio, settings.inFile):
                     inputFunc = getattr(dataio, settings.inFile)
-                if settings.__class__.__name__ != "ReadSettings":
-                    self.ownlog.msg(2,("""No proper input file definition!\n\'settings\'
-                        should be a \'ReadSettings\' instance\n"""), 'ERROR')
-                    return None
                 # reading from remote or local file, or executing import function:
                 if settings.inFile.startswith('http') or \
                     settings.inFile.startswith('ftp'):
                     curl_use_cache = not redownload
-                    infile = dataio.curl(settings.inFile, silent = False,
+                    c = curl.Curl(settings.inFile, silent = False, large = True,
                         cache = curl_use_cache)
-                    infile = [x for x in infile.replace('\r', '').split('\n') \
+                    infile = c.result
+                    infile = [x for x in infile.read().replace('\r', '').split('\n') \
                         if len(x) > 0]
                     self.ownlog.msg(2, "Retrieving data from%s ..." % \
                         settings.inFile)
@@ -1026,6 +1059,8 @@ class PyPath(object):
                     inh = False
                     if type(sign) is tuple:
                         stim, inh = self.process_sign(line[sign[0]], sign)
+                    resource = line[settings.resource] \
+                        if type(settings.resource) is int else settings.resource
                     newEdge = {
                         "nameA": line[settings.nameColA].strip(),
                         "nameB": line[settings.nameColB].strip(),
@@ -1033,7 +1068,7 @@ class PyPath(object):
                         "nameTypeB": settings.nameTypeB,
                         "typeA": settings.typeA,
                         "typeB": settings.typeB,
-                        "source": settings.name,
+                        "source": resource,
                         "isDirected": thisEdgeDir,
                         "references": refs,
                         "stim": stim,
@@ -1079,6 +1114,112 @@ class PyPath(object):
         if keep_raw:
             self.data[settings.name] = edgeListMapped
         self.raw_data = edgeListMapped
+    
+    def load_list(self, lst, name):
+        self.lists[name] = lst
+    
+    def receptors_list(self):
+        self.lists['rec'] = common.uniqList(common.flatList([
+            self.mapper.map_name(rec, 'genesymbol', 'uniprot') \
+            for rec in dataio.get_hpmr()]))
+    
+    def druggability_list(self):
+        self.lists['dgb'] = common.uniqList(common.flatList([
+            self.mapper.map_name(dgb, 'genesymbol', 'uniprot') \
+            for dgb in dataio.get_dgidb()]))
+    
+    def kinases_list(self):
+        self.lists['kin'] = common.uniqList(common.flatList([
+            self.mapper.map_name(kin, 'genesymbol', 'uniprot') \
+            for kin in dataio.get_kinases()]))
+    
+    def tfs_list(self):
+        tfs = dataio.get_tfcensus()
+        utfs = [self.mapper.map_name(tf, 'ensg', 'uniprot') \
+            for tf in tfs['ensg']]
+        utfs += [self.mapper.map_name(h, 'hgnc', 'uniprot') \
+            for h in tfs['hgnc']]
+        self.lists['tf'] = common.uniqList(common.flatList(utfs))
+    
+    def disease_genes_list(self, dataset = 'curated'):
+        diss = dataio.get_disgenet(dataset = dataset)
+        dis = []
+        for di in diss:
+            dis.extend(self.mapper.map_name(di['entrez'], 'entrez', 'uniprot'))
+        self.lists['dis'] = common.uniqList(dis)
+    
+    def signaling_proteins_list(self):
+        goq = dataio.get_go_quick()
+        
+        gosig = set([])
+        
+        for term, name in iteritems(goq['names']):
+            if 'signal' in name or 'regulat' in name:
+                gosig.add(term)
+        
+        upsig = set([])
+        
+        if 'proteome' not in self.lists:
+            self.proteome_list()
+        
+        for up, term in iteritems(goq['terms']['P']):
+            if len(term & gosig):
+                upsig.add(up)
+        
+        spsig = set([])
+        for u in upsig:
+            spsig.update(set(self.mapper.map_name(u, 'uniprot', 'uniprot')))
+        
+        upsig = spsig & set(self.lists['proteome'])
+        
+        self.lists['sig'] = list(upsig)
+
+    
+    def proteome_list(self, swissprot = True):
+        swissprot = 'yes' if swissprot else None
+        self.lists['proteome'] = \
+            dataio.all_uniprots(self.ncbi_tax_id, swissprot = swissprot)
+    
+    def cancer_gene_census_list(self):
+        self.read_list_file(data_formats.cgc)
+    
+    def intogen_cancer_drivers_list(self, intogen_file):
+        data_formats.intogen_cancer.inFile = intogen_file
+        self.read_list_file(data_formats.intogen_cancer)
+    
+    def cancer_drivers_list(self, intogen_file = None):
+        self.cancer_gene_census_list()
+        if intogen_file is not None:
+            self.intogen_cancer_drivers_list(intogen_file = intogen_file)
+            self.lists['cdv'] = list(set(self.lists['cgc']) | set(self.lists['IntOGen']))
+        else:
+            self.lists['cdv'] = self.lists['cgc']
+        
+        self.graph.vs['cdv'] = list(map(lambda v:
+                True if v['name'] in self.lists['cdv'] else False,
+            self.graph.vs))
+    
+    def coverage(self, lst):
+        lst = lst if type(lst) is set \
+            else set(lst) if type(lst) is list \
+            else set(self.lists[lst]) \
+                if type(lst) is str and lst in self.lists \
+            else set([])
+        return len(set(self.graph.vs['name']) & lst) / float(len(lst))
+    
+    def fisher_enrichment(self, lst, attr, ref = 'proteome'):
+        cont = \
+            np.array([
+                [
+                    len(self.lists[ref]),
+                    self.graph.vcount()
+                ],
+                [
+                    len(self.lists[lst]),
+                    len([1 for v in self.graph.vs if len(v[attr]) > 0])
+                ]
+            ])
+        return stats.fisher_exact(cont)
     
     def read_list_file(self, settings, **kwargs):
         _input = None
@@ -1150,7 +1291,7 @@ class PyPath(object):
                 break
             itemList.append(newItem)
             lnum += 1
-        if type(_input) is file:
+        if hasattr(_input, 'close'):
             _input.close()
         itemListMapped = self.map_list(itemList,singleList=True)
         itemListMapped = list(set(itemListMapped))
@@ -1257,6 +1398,10 @@ class PyPath(object):
                 return list(set(lst[0] + lst[1]))
             except:
                 return lst[0] + lst[1]
+        if type(lst[0]) is set:
+            return common.addToSet(lst[0], lst[1])
+        if type(lst[1]) is set:
+            return common.addToSet(lst[1], lst[0])
         if type(lst[0]) is dict and type(lst[1]) is dict:
             return dict(lst[0].items() + lst[1].items())
         if (type(lst[0]) is str or type(lst[0]) is unicode) and \
@@ -1534,32 +1679,32 @@ class PyPath(object):
             g.add_edge(edge[0], edge[1])
             edge = self.edge_exists(nameA, nameB)
         # assigning source:
-        self.add_list_eattr(edge, 'sources', source)
+        self.add_set_eattr(edge, 'sources', source)
         # adding references:
         # if len(refs) > 0:
         refs = [_refs.Reference(pmid) for pmid in refs]
         self.add_list_eattr(edge, 'references', refs)
         # updating references-by-source dict:
-        self.add_grouped_eattr(edge, 'refs_by_source', source, refs)
+        self.add_grouped_set_eattr(edge, 'refs_by_source', source, refs)
         # updating refrences-by-type dict:
-        self.add_grouped_eattr(edge, 'refs_by_type', typ, refs)
+        self.add_grouped_set_eattr(edge, 'refs_by_type', typ, refs)
         # setting directions:
         if not g.es[edge]['dirs']:
             g.es[edge]['dirs'] = Direction(nameA,nameB)
         if isDir:
             g.es[edge]['dirs'].set_dir((nameA,nameB),source)
             # updating references-by-direction dict:
-            self.add_grouped_eattr(edge, 'refs_by_dir', (nameA, nameB), refs)
+            self.add_grouped_set_eattr(edge, 'refs_by_dir', (nameA, nameB), refs)
         else:
             g.es[edge]['dirs'].set_dir('undirected',source)
-            self.add_grouped_eattr(edge, 'refs_by_dir', 'undirected', refs)
+            self.add_grouped_set_eattr(edge, 'refs_by_dir', 'undirected', refs)
         # setting signs:
         if stim:
             g.es[edge]['dirs'].set_sign((nameA,nameB),'positive',source)
         if inh:
             g.es[edge]['dirs'].set_sign((nameA,nameB),'negative',source)
         # updating sources-by-type dict:
-        self.add_grouped_eattr(edge, 'sources_by_type', typ, source)
+        self.add_grouped_set_eattr(edge, 'sources_by_type', typ, source)
         # adding type:
         self.add_list_eattr(edge, 'type', typ)
         # adding extra attributes:
@@ -1578,11 +1723,22 @@ class PyPath(object):
             e[attr] = []
         elif type(e[attr]) is not list:
             e[attr] = [e[attr]]
-        # print(type(e[attr]))
-        # print(type(value))
         e[attr] = common.uniqList(e[attr] + value)
     
-    def add_grouped_eattr(self, edge, attr, group, value):
+    def add_set_eattr(self, edge, attr, value):
+        value = value if type(value) is set \
+            else set(value) if type(value) is list \
+            else set([value])
+        e = self.graph.es[edge]
+        if attr not in self.graph.es.attributes():
+            self.graph.es[attr] = [set([]) for _ in xrange(0, self.graph.ecount())]
+        if e[attr] is None:
+            e[attr] = set([])
+        elif type(e[attr]) is not set:
+            e[attr] = set(e[attr]) if type(e[attr]) is list else set([e[attr]])
+        e[attr].update(value)
+    
+    def add_grouped_eattr(self, edge, attr, group, value, ):
         value = value if type(value) is list else [value]
         e = self.graph.es[edge]
         if attr not in self.graph.es.attributes():
@@ -1595,7 +1751,46 @@ class PyPath(object):
             e[attr][group] = [e[attr][group]]
         e[attr][group] = common.uniqList(e[attr][group] + value)
     
+    def add_grouped_set_eattr(self, edge, attr, group, value):
+        value = value if type(value) is set \
+            else set(value) if type(value) is list \
+            else set([value])
+        e = self.graph.es[edge]
+        if attr not in self.graph.es.attributes():
+            self.graph.es[attr] = [{} for _ in xrange(0, self.graph.ecount())]
+        if type(e[attr]) is not dict:
+            e[attr] = {}
+        if group not in e[attr] or type(e[attr][group]) is None:
+            e[attr][group] = set([])
+        elif type(e[attr][group]) is not set:
+            e[attr][group] = set(e[attr][group]) \
+                if type(e[attr][group]) is list else set([e[attr][group]])
+        e[attr][group].update(value)
+    
     def get_directed(self, graph = False, conv_edges = False, mutual = False, ret = False):
+        """
+        Converts ``graph`` undirected ``igraph.Graph`` object to a directed one.
+        By default it converts the graph in ``PyPath.graph`` and places the directed
+        instance in ``PyPath.dgraph``.
+        
+        @graph : igraph.Graph
+            Undirected graph object.
+        
+        @conv_edges : bool
+            Whether to convert undirected edges (those without explicit
+            direction information) to an arbitrary direction edge or
+            a pair of opposite edges.
+            Otherwise those will be deleted. Default is ``False``.
+        
+        @mutual : bool
+            If ``conv_edges`` is ``True``, whether to convert the
+            undirected edges to a single, arbitrary directed edge,
+            or a pair of opposite directed edges. Default is ``False``.
+        
+        @ret : bool
+            Return the directed graph instance, or return ``None``.
+            Default is ``False`` (returns ``None``).
+        """
         toDel = []
         g = self.graph if not graph else graph
         d = g.as_directed(mutual = True)
@@ -1603,10 +1798,11 @@ class PyPath(object):
         d.es['directed_sources'] = [[] for _ in xrange(g.ecount())]
         d.es['undirected_sources'] = [[] for _ in xrange(g.ecount())]
         d.es['directed'] = [False for _ in xrange(g.ecount())]
-        prg = Progress(total=g.ecount(),name="Setting directions",interval=17)
+        prg = Progress(total = g.ecount(),
+                       name = "Setting directions", interval = 17)
         for e in g.es:
             '''
-            This works because in directed graphs get_eid() defaults to 
+            This works because in directed graphs get_eid() defaults to
             directed = True, so the source -> target edge is returned.
             '''
             dir_one = (g.vs['name'][e.source], g.vs['name'][e.target])
@@ -2148,6 +2344,37 @@ class PyPath(object):
         return dict([(s, self.get_network({'edge': {'sources': [s]}, 'node': {}})) \
             for s in self.sources])
     
+    def separate_by_category(self):
+        cats = \
+            dict(
+                list(
+                    map(
+                        lambda c:
+                            (
+                                c,
+                                list(
+                                    filter(
+                                        lambda s:
+                                            s in self.sources,
+                                        map(
+                                            lambda cs:
+                                                cs[0],
+                                            filter(
+                                                lambda cs:
+                                                    cs[1] == c,
+                                                iteritems(data_formats.categories)
+                                            )
+                                        )
+                                    )
+                                )
+                            ),
+                        self.has_cats
+                    )
+                )
+            )
+        return dict([(c, self.get_network({'edge': {'sources': s}, 'node': {}})) \
+            for c, s in iteritems(cats)])
+    
     def update_pathway_types(self):
         g = self.graph
         pwTyp = []
@@ -2177,6 +2404,11 @@ class PyPath(object):
         for e in g.es:
             src += e["sources"]
         self.sources = list(set(src))
+        self.update_cats()
+    
+    def update_cats(self):
+        self.has_cats = set(list(map(lambda s: data_formats.categories[s],
+            filter(lambda s: s in data_formats.categories, self.sources))))
     
     def update_pathways(self):
         g = self.graph
@@ -2352,12 +2584,28 @@ class PyPath(object):
     def update_vertex_sources(self):
         g = self.graph
         for attr in ['sources', 'references']:
-            g.vs[attr] = [[] for _ in g.vs]
+            g.vs[attr] = [set([]) for _ in g.vs]
             for e in g.es:
-                g.vs[e.source][attr] += e[attr]
-                g.vs[e.target][attr] += e[attr]
-            for v in g.vs:
-                v[attr] = common.uniqList(v[attr])
+                g.vs[e.source][attr].update(e[attr])
+                g.vs[e.target][attr].update(e[attr])
+    
+    def set_categories(self):
+        self.graph.vs['cat'] = [set([]) for _ in self.graph.vs]
+        self.graph.es['cat'] = [set([]) for _ in self.graph.es]
+        self.graph.es['refs_by_cat'] = [{} for _ in self.graph.es]
+        for v in self.graph.vs:
+            for s in v['sources']:
+                if s in data_formats.categories:
+                    v['cat'].add(data_formats.categories[s])
+        for e in self.graph.es:
+            for s in e['sources']:
+                if s in data_formats.categories:
+                    cat = data_formats.categories[s]
+                    e['cat'].add(cat)
+                    if cat not in e['refs_by_cat']:
+                        e['refs_by_cat'][cat] = set([])
+                    if s in e['refs_by_source']:
+                        e['refs_by_cat'][cat].update(e['refs_by_source'][s])
     
     def basic_stats_intergroup(self,groupA,groupB,header=None):
         result = {}
@@ -2365,7 +2613,7 @@ class PyPath(object):
         for k in xrange(0,len(self.sources)+1):
             s = "All" if k == len(self.sources) else self.sources[k]
             f = self.graph if k == len(self.sources) else self.get_network(
-                {"edge": {"sources": [s]}, "node": {}})
+                {"edge": {"sources": set([s])}, "node": {}})
             deg = f.vs.degree()
             bw = f.vs.betweenness()
             vnum = f.vcount()
@@ -2475,15 +2723,15 @@ class PyPath(object):
         g = self.graph
         verticesToDel = []
         for v in g.vs:
-            if len(set(v['sources']) - set([source])) == 0:
+            if len(v['sources'] - set([source])) == 0:
                 verticesToDel.append(v.index)
         g.delete_vertices(verticesToDel)
         edgesToDel = []
         for e in g.es:
-            if len(set(e['sources']) - set([source])) == 0:
+            if len(e['sources'] - set([source])) == 0:
                 edgesToDel.append(e.index)
             else:
-                e['sources'] = list(set(e['sources']) - set([source]))
+                e['sources'] = set(e['sources']) - set([source])
         g.delete_edges(edgesToDel)
         if vertexAttrsToDel is not None:
             for vAttr in vertexAttrsToDel:
@@ -2760,18 +3008,17 @@ class PyPath(object):
         prg = Progress(
         total=len(neg),name="Matching interactions",interval=11)
         matches = 0
-        for e in g.es:
-            e['negative'] = [] if e['negative'] is None else e['negative']
-            e['negative_refs'] = [] if e['negative_refs'] is None else e['negative_refs']
+        g.es['negative'] = [set([]) if e['negative'] is None else e['negative'] for e in g.es]
+        g.es['negative_refs'] = [set([]) if e['negative_refs'] is None else e['negative_refs'] for e in g.es]
         for n in neg:
             aexists = n["defaultNameA"] in g.vs['name']
             bexists = n["defaultNameB"] in g.vs['name']
             if aexists and bexists:
                 edge = self.edge_exists(n["defaultNameA"],n["defaultNameB"])
                 if type(edge) is int:
-                    if settings.name not in g.es[edge]['negative']:
-                        g.es[edge]['negative'].append(settings.name)
-                    g.es[edge]['negative_refs'] += n['attrsEdge']['references']
+                    g.es[edge]['negative'].add(settings.name)
+                    refs = set(list(map(lambda r: _refs.Reference(int(r)), n['attrsEdge']['references'])))
+                    g.es[edge]['negative_refs'].add(refs)
                     matches += 1
             prg.step()
         prg.terminate()
@@ -2792,8 +3039,8 @@ class PyPath(object):
                         g.vs[e.target]['name'],
                         g.vs[e.source]['label'],
                         g.vs[e.target]['label'],
-                        ';'.join(e['sources']),
-                        ';'.join(e['references']),
+                        ';'.join(list(e['sources'])),
+                        ';'.join(map(lambda r: r.pmid, e['references'])),
                         ';'.join(e['negative']),
                         ';'.join(e['negative_refs'])]) + '\n'
                 if lst:
@@ -2953,8 +3200,8 @@ class PyPath(object):
                             self.graph.vs[e.source]['label'].replace(' ','')]
                 thisEdge += [nameB.replace(' ',''),
                             self.graph.vs[e.target]['label']]
-                thisEdge += [';'.join(common.uniqList(e['sources'])),
-                             ';'.join(common.uniqList(e['references']))]
+                thisEdge += [';'.join(list(e['sources'])),
+                             ';'.join(map(lambda r: r.pmid, e['references']))]
                 thisEdge += [';'.join(e['dirs'].get_dir('undirected',sources=True)),
                              ';'.join(e['dirs'].get_dir((nameA,nameB),sources=True)),
                              ';'.join(e['dirs'].get_dir((nameB,nameA),sources=True))]
@@ -3062,9 +3309,9 @@ class PyPath(object):
                        g.vs[e.source]['name'], g.vs[e.target]['name'],
                        isDirB))
                 f.write('\t<data key="Databases">%s</data>\n' % (
-                        ';'.join(common.uniqList(e['sources']))))
+                        ';'.join(list(e['sources']))))
                 f.write('\t<data key="PubMedIDs">%s</data>\n' % (
-                        ';'.join(common.uniqList(e['references']))))
+                        ';'.join(list(map(lambda r: r.pmid, e['references'])))))
                 f.write('\t<data key="Undirected">%s</data>\n' % (
                         ';'.join(common.uniqList(e['dirs_by_source'][0]))))
                 f.write('\t<data key="DirectionAB">%s</data>\n' % (
@@ -3932,6 +4179,16 @@ class PyPath(object):
         return self._neighborhood(vs, order = order, mode = mode)
     
     # compexes
+    
+    def complexes_in_network(self, csource = 'corum', graph = None):
+        graph = self.graph if graph is None else graph
+        cdict = {}
+        allv = set(graph.vs['name'])
+        for v in graph.vs:
+            for c, cdata in iteritems(v['complexes'][csource]):
+                if c not in cdict:
+                    cdict[c] = set(cdata['all_members'])
+        return [c for c, memb in iteritems(cdict) if len(memb - allv) == 0]
     
     def complex_comembership_network(self,graph=None,resources=None):
         graph = graph if graph is not None else self.graph
@@ -4985,12 +5242,16 @@ class PyPath(object):
     
     def get_dirs_signs(self):
         result = {}
-        for db in data_formats.omnipath.values() + data_formats.good.values() \
-            + data_formats.ugly.values():
-            result[db.name] = [bool(db.isDirected), bool(db.sign)]
+        for dbs in [data_formats.ptm.values(), data_formats.interaction_htp.values(),
+            data_formats.pathway.values(), data_formats.transcription.values()]:
+            for db in dbs:
+                result[db.name] = [bool(db.isDirected), bool(db.sign)]
         return result
     
-    def basic_stats(self, latex = False):
+    def basic_stats(self, latex = False, caption = '', latex_hdr = True,
+                    fontsize = 8, font = 'HelveticaNeueLTStd-LtCn', fname = None,
+                    header_format = '%s', row_order = None, by_category = True,
+                    use_cats = ['p', 'm', 'i', 'r'], urls = True, annots = False):
         '''
         Returns basic numbers about the network resources, e.g. edge and 
         node counts. 
@@ -5000,16 +5261,48 @@ class PyPath(object):
             PDFLaTeX: 
             latex stats.tex
         '''
-        outf = os.path.join('results', 'databases-%s.tex'%self.session) \
+        url_strip = {'SPIKE': 4, 'PDZbase': 4, 'DEPOD': 4, 'LMPID': 5, 'DIP': 4, 'MPPI': 5}
+        outf = fname if fname is not None else \
+            os.path.join('results', 'databases-%s.tex'%self.session) \
             if latex else os.path.join('results', 'databases-%s.tsv'%self.session)
         stats = self.sources_overlap()
         dirs = self.get_dirs_signs()
-        header = ['Database', 'Node count', 'Edge count', 'Directions', 'Signs']
+        header = ['Database', 'Node count', 'Edge count', 'Directions', 'Signs'] 
+        if urls: header.append('URL')
+        if annots: header.append('Annotations')
+        header.append('Notes')
         out = [header]
+        
+        desc = descriptions.descriptions
         for s in sorted(stats['single']['nodes'].keys()):
-            out.append([x for x in [s, stats['single']['nodes'][s], 
-            stats['single']['edges'][s], 
-                int(dirs[s][0]), int(dirs[s][1])]])
+            d = desc[s] if s in desc else desc['HPRD'] if s == 'HPRD-phos' else {}
+            annot = ', '.join(d['annot']) if 'annot' in d else ''
+            recom = d['recommend'] if 'recommend' in d else ''
+            url = d['urls']['webpages'][0] \
+                if 'urls' in d \
+                    and 'webpages' in d['urls'] \
+                    and len(d['urls']['webpages']) \
+                else ''
+            if len(url):
+                _url = url.split('/')[:(3 if s not in url_strip else url_strip[s])]
+                url = '/'.join(_url[:3])
+                if len(_url) > 3:
+                    url += r'/\-'
+                    url += '/'.join(_url[3:])
+            url = url.replace('~', r'\textasciitilde ')
+            row = [
+                s,
+                stats['single']['nodes'][s],
+                stats['single']['edges'][s],
+                int(dirs[s][0]) if s in dirs else '',
+                int(dirs[s][1]) if s in dirs else ''
+            ]
+            if urls:
+                row.append(url)
+            if annots:
+                row.append(annot)
+            row.append(recom)
+            out.append(row)
         if not latex:
             out = '\n'.join(['\t'.join(x) for x in out])
             with open(outf, 'w') as f:
@@ -5017,36 +5310,112 @@ class PyPath(object):
             sys.stdout.write('\t:: Output written to file `%s`\n'%outf)
             sys.stdout.flush()
         else:
+            
+            cats = list(reduce(lambda e1, e2: e1 | e2['cat'], self.graph.es, set([]))) \
+                if by_category else []
+            
+            cats = set(cats) & set(use_cats)
+            use_cats = list(filter(lambda c: c in cats, use_cats))
+            
+            out = dict(map(lambda l: (l[0], l[1:]), out[1:]))
+            
+            if not by_category:
+                row_order = sorted(self.sources, key = lambda s: s.lower())
+            else:
+                row_order = []
+                for cat in use_cats:
+                    row_order.append((data_formats.catnames[cat], 'subtitle'))
+                    row_order.extend(
+                        sorted(
+                            filter(
+                                lambda s:
+                                    data_formats.categories[s] == cat,
+                                self.sources
+                            ),
+                            key = lambda s: s.lower()
+                        )
+                    )
+            
             texnewline = r'\\' + '\n'
-            tex = r'''\documentclass[12pt,a4paper]{article}
-                \usepackage[T1]{fontenc}
-                \usepackage[utf8]{inputenc}
-                \usepackage[english]{babel}
-                \usepackage[landscape]{geometry}
-                \usepackage{booktabs}
-                \usepackage{microtype}
-                \usepackage{tabularx}
-                \begin{document}
-                \thispagestyle{empty}
-                '''
-            tex += r'\begin{table}[h]' + '\n'
-            tex += r'\begin{tabularx}{\textwidth}{' \
-                + 'X%s'%''.join(['r']*(len(header) - 1)) + r'}' + '\n' \
-                + r'\toprule' + '\n'
-            tex += r' & '.join(header) + texnewline
-            tex += r'\midrule' + '\n'
-            tex += texnewline.join([' & '.join([ \
-                xx.replace('_', r'\_') if type(xx) is not int else \
-                '{:,}'.format(xx) \
-                for xx in x]) for x in out[1:]]) + texnewline
-            tex += r'\bottomrule' + '\n'
-            tex += r'\caption{' + 'Node and edge counts of pathway databases' \
-                + r'}' + '\n'
-            tex += r'\end{tabularx}' + '\n'
-            tex += r'\end{table}' + '\n'
-            tex += r'\end{document}' + '\n'
+            
+            _latex_tab = r'''%s
+                    \begin{tabularx}{0.95\textwidth}{%s}
+                    \toprule
+                        %s
+                    \midrule
+                        %s
+                    \bottomrule
+                    \end{tabularx}%s'''
+            _latex_hdr = r'''\documentclass[a4paper,%upt]{extarticle}
+                    \usepackage{fontspec}
+                    \usepackage{xunicode}
+                    \usepackage{polyglossia}
+                    \setdefaultlanguage{english}
+                    \usepackage{xltxtra}
+                    \usepackage{microtype}
+                    \usepackage[margin=5pt,portrait,paperwidth=23cm,paperheight=30cm]{geometry}
+                    \usepackage{amsmath}
+                    \usepackage{amssymb}
+                    \usepackage{textcomp}
+                    \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+                    \usepackage{color}
+                    \usepackage{booktabs}
+                    \usepackage{tabularx}
+                    \setmainfont{%s}
+                    \definecolor{grey875}{gray}{0.125}
+                    \begin{document}
+                    \color{grey875}
+                    \thispagestyle{empty}
+                    \vfill
+                ''' % (fontsize, font) if latex_hdr else ''
+            _latex_end = r'''
+                    \end{document}
+                ''' if latex_hdr else ''
+            
+            _hdr_row = ' & '.join([header_format%h.replace(r'%', r'\%') \
+                for h in header]) + '\\\\'
+            formatter = lambda x: locale.format('%.2f', x, grouping = True) \
+                if type(x) is float \
+                else locale.format('%d', x, grouping = True) \
+                if type(x) is int \
+                else x
+            intfloat = lambda x: float(x) if '.' in x else int(x)
+            _rows = ''
+            for i, k in enumerate(row_order):
+                
+                if type(k) is tuple and k[1] == 'subtitle':
+                    row = '\n'.join([
+                        r'\midrule' if i > 0 else '',
+                        r'\multicolumn{%u}{l}{%s}\\' % (6 + int(annots) + int(urls), k[0]),
+                        r'\midrule',
+                        ''
+                    ])
+                else:
+                    out[k][2] = r'$\bigstar$' if bool(out[k][2]) else ''
+                    out[k][3] = r'$\bigstar$' if bool(out[k][3]) else ''
+                    row = ' & '.join([k] + [
+                        xx.replace('_', r'\_') \
+                            if type(xx) is not int \
+                            else '{:,}'.format(xx) \
+                        for xx in out[k]]
+                    ) + '\\\\\n'
+                
+                _rows += row
+            
+            _latex_tab = _latex_tab % \
+                (
+                    _latex_hdr,
+                        'r'*(len(header) - 2) + \
+                        (r'p{3.7cm}<{\raggedright}' if urls else '') + \
+                        (r'p{2.7cm}<{\raggedright}' if annots else '') + \
+                        r'X<{\raggedright}',
+                    _hdr_row,
+                    _rows,
+                    _latex_end
+                )
+            
             with open(outf, 'w') as f:
-                f.write(tex)
+                f.write(_latex_tab)
             sys.stdout.write('\t:: Output written to file `%s`\n'%outf)
             sys.stdout.flush()
     
@@ -5472,12 +5841,11 @@ class PyPath(object):
         '''
         self.update_vname()
         self.graph.vs['rec'] = [False for _ in self.graph.vs]
-        receptors = dataio.get_hpmr()
-        for rec in receptors:
-            urec = self.mapper.map_name(rec, 'genesymbol', 'uniprot')
-            for uniprot in urec:
-                if uniprot in self.nodDct:
-                    self.graph.vs[self.nodDct[uniprot]]['rec'] = True
+        if 'rec' not in self.lists:
+            self.receptors_list()
+        for rec in self.lists['rec']:
+            if rec in self.nodDct:
+                self.graph.vs[self.nodDct[rec]]['rec'] = True
     
     def set_kinases(self):
         '''
@@ -5486,12 +5854,11 @@ class PyPath(object):
         '''
         self.update_vname()
         self.graph.vs['kin'] = [False for _ in self.graph.vs]
-        kinases = dataio.get_kinases()
-        for kin in kinases:
-            ukin = self.mapper.map_name(kin, 'genesymbol', 'uniprot')
-            for uniprot in ukin:
-                if uniprot in self.nodDct:
-                    self.graph.vs[self.nodDct[uniprot]]['kin'] = True
+        if 'kin' not in self.lists:
+            self.kinases_list()
+        for kin in self.lists['kin']:
+            if kin in self.nodDct:
+                self.graph.vs[self.nodDct[kin]]['kin'] = True
     
     def set_druggability(self):
         '''
@@ -5500,12 +5867,11 @@ class PyPath(object):
         '''
         self.update_vname()
         self.graph.vs['dgb'] = [False for _ in self.graph.vs]
-        druggables = dataio.get_dgidb()
-        for dgb in druggables:
-            udgb = self.mapper.map_name(dgb, 'genesymbol', 'uniprot')
-            for uniprot in udgb:
-                if uniprot in self.nodDct:
-                    self.graph.vs[self.nodDct[uniprot]]['dgb'] = True
+        if 'dgb' not in self.lists:
+            self.druggability_list()
+        for dgb in self.lists['dgb']:
+            if dgb in self.nodDct:
+                self.graph.vs[self.nodDct[dgb]]['dgb'] = True
     
     def set_drugtargets(self, pchembl = 5.0):
         '''
@@ -5531,19 +5897,24 @@ class PyPath(object):
         '''
         self.update_vname()
         self.graph.vs['tf'] = [False for _ in self.graph.vs]
-        tfs = dataio.get_tfcensus(classes)
-        uniprots = common.flatList([self.mapper.map_name(e, 'ensg', 'uniprot') \
-            for e in tfs['ensg']])
-        uniprots += common.flatList([self.mapper.map_name(e, 'hgnc', 'uniprot') \
-            for e in tfs['hgnc']])
-        for uniprot in uniprots:
-            if uniprot in self.nodDct:
-                self.graph.vs[self.nodDct[uniprot]]['tf'] = True
+        if 'tf' not in self.lists:
+            self.tfs_list()
+        for tf in self.lists['tf']:
+            if tf in self.nodDct:
+                self.graph.vs[self.nodDct[tf]]['tf'] = True
+    
+    def set_disease_genes(self, dataset = 'curated'):
+        self.update_vname()
+        self.graph.vs['dis'] = [False for _ in self.graph.vs]
+        self.disease_genes_list(dataset = dataset)
+        for tf in self.lists['dis']:
+            if tf in self.nodDct:
+                self.graph.vs[self.nodDct[tf]]['dis'] = True
     
     def get_pathways(self, source):
         attrname = '%s_pathways'%source
-        protein_pws = None
-        interaction_pws = None
+        proteins_pws = None
+        interactions_pws = None
         if hasattr(dataio, attrname):
             fun = getattr(dataio, attrname)
             proteins_pws, interactions_pws = fun(mapper = self.mapper)
@@ -5662,46 +6033,88 @@ class PyPath(object):
                     if up in self.nodInd:
                         self.graph.vs[self.nodDct[up]]['dis'].append(d['disease'])
     
-    def curation_stats(self):
+    def curation_stats(self, by_category = True):
         result = {}
         all_refs = len(set(common.flatList([[r.pmid for r in e['references']] \
             for e in self.graph.es])))
-        for s in self.sources:
-            src_edges = len([e.index for e in self.graph.es if s in e['sources']])
-            src_edges_pct = len([e.index \
-                for e in self.graph.es if s in e['sources']]) / \
-                    float(self.graph.ecount()) * 100.0
-            only_src_edges = len([e.index for e in self.graph.es \
-                if s in e['sources'] and len(e['sources']) == 1])
-            only_src_edges_pct = len([e.index for e in self.graph.es \
-                if s in e['sources'] and len(e['sources']) == 1]) / \
-                float(self.graph.ecount()) * 100.0
+        
+        cats = list(reduce(lambda e1, e2: e1 | e2['cat'], self.graph.es, set([]))) \
+            if by_category else []
+        
+        for s in list(self.sources) + cats:
+            
+            sattr = 'cat' if s in data_formats.catnames else 'sources'
+            rattr = 'refs_by_cat' if s in data_formats.catnames else 'refs_by_source'
+            
+            cat = None if s in data_formats.catnames \
+                or s not in data_formats.categories \
+                else data_formats.categories[s]
+            catmembers = set(data_formats.catnames.keys()) \
+                if s in data_formats.catnames \
+                else set(self.sources) if not hasattr(data_formats, cat) \
+                else getattr(data_formats, cat)
+            
+            src_nodes = len([v for v in self.graph.vs if s in v[sattr]])
+            cat_nodes = self.graph.vcount() if cat is None \
+                else len([v for v in self.graph.vs if len(v[sattr] & catmembers)])
+            src_nodes_pct = src_nodes / float(cat_nodes) * 100.0
+            only_src_nodes = len([v for v in self.graph.vs \
+                if s in v[sattr] and len(v[sattr] & catmembers) == 1])
+            only_src_nodes_pct = only_src_nodes / float(cat_nodes) * 100.0
+            shared_nodes = len([v for v in self.graph.vs \
+                if s in v[sattr] and len(v[sattr] & catmembers) > 1])
+            
+            src_edges = len([e for e in self.graph.es if s in e[sattr]])
+            cat_edges = self.graph.ecount() if cat is None \
+                else len([e for e in self.graph.es if len(e[sattr] & catmembers)])
+            src_edges_pct = src_edges / \
+                    float(cat_edges) * 100.0
+            only_src_edges = len([e for e in self.graph.es \
+                if s in e[sattr] and len(e[sattr] & catmembers) == 1])
+            only_src_edges_pct = only_src_edges / float(cat_edges) * 100.0
             shared_edges = len([e.index for e in self.graph.es \
-                if s in e['sources'] and len(e['sources']) > 1])
-            src_refs = set(common.uniqList([r.pmid for r in common.flatList([e['refs_by_source'][s] \
-                for e in self.graph.es if s in e['refs_by_source']])]))
+                if s in e[sattr] and len(e[sattr] & catmembers) > 1])
+            
+            src_refs = set(common.uniqList([r.pmid for r in common.flatList([e[rattr][s] \
+                for e in self.graph.es if s in e[rattr]])]))
             other_refs = set(common.flatList([[r.pmid for r in \
-                common.flatList([rr for sr, rr in iteritems(e['refs_by_source']) if sr != s])] \
+                    common.flatList([rr for sr, rr in iteritems(e[rattr]) \
+                        if sr != s and sr in catmembers])] \
                 for e in self.graph.es]))
             only_src_refs = len(src_refs - other_refs)
             only_src_refs_pct = len(src_refs - other_refs) / float(all_refs) * 100.0
             src_refs_pct = len(src_refs) / float(all_refs) * 100.0
             shared_refs = len(src_refs & other_refs)
+            
             shared_curation_effort = sum([len(x) for x in \
                 [set(common.flatList([[(r.pmid, e.index) for r in rr] \
-                    for sr, rr in iteritems(e['refs_by_source']) if sr != s])) & \
-                set([(rl.pmid, e.index) for rl in e['refs_by_source'][s]]) \
-                for e in self.graph.es if s in e['refs_by_source']] if len (x) != 0])
+                    for sr, rr in iteritems(e[rattr]) \
+                        if sr != s and sr in catmembers])) \
+                & \
+                set([(rl.pmid, e.index) for rl in e[rattr][s]]) \
+                for e in self.graph.es if s in e[rattr]]])
+            
             src_only_curation_effort = sum([len(x) for x in \
-                [set([(rl.pmid, e.index) for rl in e['refs_by_source'][s]]) - \
+                [set([(rl.pmid, e.index) for rl in e[rattr][s]]) - \
                 set(common.flatList([[(r.pmid, e.index) for r in rr] \
-                    for sr, rr in iteritems(e['refs_by_source']) if sr != s])) \
-                for e in self.graph.es if s in e['refs_by_source']] if len (x) != 0])
+                    for sr, rr in iteritems(e[rattr]) \
+                        if sr != s if sr in catmembers])) \
+                for e in self.graph.es if s in e[rattr]]])
+            
             src_curation_effort = sum([len(x) for x in \
-                [set([(rl.pmid, e.index) for rl in e['refs_by_source'][s]]) \
-                    for e in self.graph.es if s in e['refs_by_source']] if len (x) != 0])
+                [set([(rl.pmid, e.index) for rl in e[rattr][s]]) \
+                    for e in self.graph.es if s in e[rattr]]])
             ratio = len(src_refs) / float(src_edges)
+            
+            if s in data_formats.catnames:
+                s = data_formats.catnames[s]
+            
             result[s] = {
+                'source_nodes': src_nodes,
+                'source_nodes_percentage': src_nodes_pct,
+                'specific_nodes': only_src_nodes,
+                'specific_nodes_percentage': only_src_nodes_pct,
+                'shared_nodes': shared_nodes,
                 'source_edges': src_edges,
                 'source_edges_percentage': src_edges_pct,
                 'specific_edges': only_src_edges,
@@ -5718,11 +6131,12 @@ class PyPath(object):
                 'refs_edges_ratio': ratio,
                 'corrected_curation_effort': src_curation_effort * ratio
             }
+        
         return result
     
-    def table_latex(self, fname, header, data, sum_row = True, row_order = None, 
-        latex_hdr = True, caption = '', font = 'HelveticaNeueLTStd-Lt', fontsize = 10,
-        sum_label = 'Total', sum_cols = None, header_format = '%s'):
+    def table_latex(self, fname, header, data, sum_row = True, row_order = None,
+        latex_hdr = True, caption = '', font = 'HelveticaNeueLTStd-LtCn', fontsize = 8,
+        sum_label = 'Total', sum_cols = None, header_format = '%s', by_category = True):
         non_digit = re.compile(r'[^\d.-]+')
         row_order = sorted(data.keys(), key = lambda x: x.upper()) \
             if row_order is None else row_order
@@ -5736,7 +6150,7 @@ class PyPath(object):
                 \end{tabularx}
                 %s
             '''
-        _latex_hdr = r'''\documentclass[a4paper,%upt]{article}
+        _latex_hdr = r'''\documentclass[a4wide,%upt]{extarticle}
                 \usepackage{fontspec}
                 \usepackage{xunicode}
                 \usepackage{polyglossia}
@@ -5764,16 +6178,35 @@ class PyPath(object):
                 \end{document}
             ''' % caption if latex_hdr else ''
         _hdr_row = ' & '.join([''] + [header_format%h[1].replace(r'%', r'\%') \
-            for h in header]) + '\\\\\n'
+            for h in header]) + '\\\\'
         formatter = lambda x: locale.format('%.2f', x, grouping = True) \
-            if type(x) is float else locale.format('%d', x, grouping = True)
+            if type(x) is float \
+            else locale.format('%d', x, grouping = True) \
+            if type(x) is int \
+            else x
         intfloat = lambda x: float(x) if '.' in x else int(x)
-        _rows = '\\\\\n'.join([' & '.join([k] + [formatter(data[k][h[0]]) \
-            for h in header]) for k in row_order]) + '\\\\\n'
+        _rows = ''
+        for i, k in enumerate(row_order):
+            
+            row = ' & '.join([k[0] if type(k) is tuple else k] + \
+                [formatter(data[k][h[0]]) for h in header]) + '\\\\'
+            
+            if type(k) is tuple and k[1] == 'subtitle':
+                row = '\n'.join([
+                    r'\midrule' if i > 0 else '',
+                    row,
+                    r'\midrule',
+                    ''
+                ])
+            else:
+                row = row + '\n'
+            
+            _rows += row
+        
         sum_cols = xrange(len(header)) if sum_cols is None \
             else sum_cols
         _sum_row = ' & '.join([sum_label] + ['' if i not in sum_cols else formatter(sum([ \
-            intfloat(filter(lambda x: len(x) > 0, [non_digit.sub('', str(v[h[0]])), '0'])[0]) \
+            intfloat(list(filter(lambda x: len(x) > 0, [non_digit.sub('', str(v[h[0]])), '0']))[0]) \
             for v in data.values()])) \
             for i, h in enumerate(header)]) + '\\\\\n'
         _latex_tab = _latex_tab % (_latex_hdr, 'X' + 'r'*len(header), _hdr_row, _rows, 
@@ -5781,8 +6214,25 @@ class PyPath(object):
         with open(fname, 'w') as f:
             f.write(_latex_tab)
     
-    def curation_tab(self, fname = 'curation_stats.tex', **kwargs):
+    def curation_tab(self, fname = 'curation_stats.tex', by_category = True, 
+                     use_cats = ['p', 'm', 'i', 'r'],
+                     header_size = 'normalsize', **kwargs):
+        
+        if by_category and 'cat' not in self.graph.es.attributes():
+            self.set_categories()
+        
+        cats = list(reduce(lambda e1, e2: e1 | e2['cat'], self.graph.es, set([]))) \
+            if by_category else []
+        
+        cats = set(cats) & set(use_cats)
+        use_cats = list(filter(lambda c: c in cats, use_cats))
+        
         header = [
+            ('source_nodes', 'Proteins'),
+            ('source_nodes_percentage', r'Proteins [%]'),
+            ('shared_nodes', 'Shared proteins'),
+            ('specific_nodes', 'Specific proteins'),
+            ('specific_nodes_percentage', r'Specific proteins [%]'),
             ('source_edges', 'Edges'),
             ('source_edges_percentage', r'Edges [%]'),
             ('shared_edges', 'Shared edges'),
@@ -5799,32 +6249,105 @@ class PyPath(object):
             ('refs_edges_ratio', 'References-edges ratio'),
             ('corrected_curation_effort', 'Corrected curation effort')
         ]
-        header_format = r'\rotatebox{90}{\footnotesize %s}'
-        cs = self.curation_stats()
-        self.table_latex(fname, header, cs, header_format = header_format, 
+        header_format = (r'\rotatebox{90}{\%s ' % header_size) + '%s}'
+        
+        cs = self.curation_stats(by_category = by_category)
+        
+        for name, data in iteritems(cs):
+            if data['specific_refs'] == 0 and data['shared_refs'] == 0:
+                data['source_refs'] = 'N/A'
+                data['specific_refs'] = 'N/A'
+                data['shared_refs'] = 'N/A'
+                data['source_refs_percentage'] = 'N/A'
+                data['specific_refs_percentage'] = 'N/A'
+                data['source_curation_effort'] = 'N/A'
+                data['shared_curation_effort'] = 'N/A'
+                data['source_specific_curation_effort'] = 'N/A'
+                data['refs_edges_ratio'] = 'N/A'
+                data['corrected_curation_effort'] = 'N/A'
+        
+        for key in use_cats:
+            if key in data_formats.catnames:
+                name = data_formats.catnames[key]
+                if by_category:
+                    cs[(name, 'subtitle')] = cs[name]
+                else:
+                    if name in cs:
+                        del cs[name]
+        
+        row_order = []
+        
+        if by_category:
+            for cat in use_cats:
+                row_order.append((data_formats.catnames[cat], 'subtitle'))
+                row_order.extend(
+                    sorted(
+                        filter(
+                            lambda name:
+                                name in data_formats.categories and \
+                                    data_formats.categories[name] == cat,
+                            cs.keys()
+                        )
+                    )
+                )
+        
+        self.table_latex(fname, header, cs, header_format = header_format,
+            row_order = row_order if by_category else None, by_category = by_category,
             sum_row = False, **kwargs)
     
-    def remove_htp(self, threshold = 50):
+    def load_omnipath(self, threshold = 1):
+        self.load_resources(data_formats.omnipath)
+        self.third_source_directions()
+        self.remove_htp(threshold = threshold, keep_directed = True)
+    
+    def remove_htp(self, threshold = 50, keep_directed = False):
         self.htp_stats()
         vcount_before = self.graph.vcount()
         ecount_before = self.graph.ecount()
         htedgs = [e.index for e in self.graph.es if \
-            len(set([r.pmid for r in e['references']]) - self.htp[threshold]['htrefs']) == 0]
+            len(set([r.pmid for r in e['references']]) - self.htp[threshold]['htrefs']) == 0 \
+                and (not keep_directed or not e['dirs'].is_directed())]
         self.graph.delete_edges(htedgs)
         zerodeg = [v.index for v in self.graph.vs if v.degree() == 0]
         self.graph.delete_vertices(zerodeg)
         self.update_vname()
-        sys.stdout.write('\t:: Interactions from only high-throughput resources '\
+        sys.stdout.write('\t:: Interactions with only high-throughput references '\
             'have been removed.\n\t   %u interactions removed.\n\t   Number of edges '\
             'decreased from %u to %u, number of vertices from %u to %u.\n' % \
             (len(htedgs), ecount_before, self.graph.ecount(), 
              vcount_before, self.graph.vcount()))
         sys.stdout.flush()
     
+    def remove_undirected(self, min_refs = None):
+        vcount_before = self.graph.vcount()
+        ecount_before = self.graph.ecount()
+        udedgs = [e.index for e in self.graph.es if \
+                not e['dirs'].is_directed() and (
+                    min_refs is None or \
+                    len(set([r.pmid for r in e['references']])) < min_refs
+                )]
+        self.graph.delete_edges(udedgs)
+        zerodeg = [v.index for v in self.graph.vs if v.degree() == 0]
+        self.graph.delete_vertices(zerodeg)
+        self.update_vname()
+        sys.stdout.write('\t:: Undirected interactions %s '\
+            'have been removed.\n\t   %u interactions removed.\n\t   Number of edges '\
+            'decreased from %u to %u, number of vertices from %u to %u.\n' % \
+            ('' if min_refs is None else 'with less than %u references' % min_refs,
+            len(udedgs), ecount_before, self.graph.ecount(),
+             vcount_before, self.graph.vcount()))
+        sys.stdout.flush()
+    
+    def numof_directed_edges(self):
+        return len(list(filter(lambda e: e['dirs'].is_directed(), self.graph.es)))
+    
+    def numof_undirected_edges(self):
+        return len(list(filter(lambda e: not e['dirs'].is_directed(), self.graph.es)))
+    
     def htp_stats(self):
         htdata = {}
         refc = Counter(common.flatList((r.pmid for r in e['references']) for e in self.graph.es))
-        for htlim in reversed(xrange(5, 201)):
+        for htlim in reversed(xrange(1, 201)):
             htrefs = set([i[0] for i in refc.most_common() if i[1] > htlim])
             htedgs = [e.index for e in self.graph.es if \
                 len(set([r.pmid for r in e['references']]) - htrefs) == 0]
@@ -6173,7 +6696,7 @@ class PyPath(object):
             evis = edges_filter(g.es[eid]) and \
                 nodes_filter(g.vs[s]) and nodes_filter(g.vs[t]) and \
                 (edge_sources is None or \
-                    len(set(g.es[eid]['sources']) & edge_sources) > 0) and \
+                    len(g.es[eid]['sources'] & edge_sources) > 0) and \
                 g.es[eid].source not in hide_nodes and g.es[eid].target not in hide_nodes
             if evis or hide:
                 drawn_directed = False
@@ -6198,7 +6721,7 @@ class PyPath(object):
                                     ssign[0] & dir_sources
                                 for eattr, fun in iteritems(edge_callbacks):
                                     attrs[eattr] = fun(g.es[eid], 
-                                        thisDir, thisSign, thisDirSources, set(g.es[eid]['sources']))
+                                        thisDir, thisSign, thisDirSources, g.es[eid]['sources'])
                             elif vis and (sign[1] and dir_sources is None or \
                                 dir_sources is not None and \
                                 len(ssign[1] & dir_sources) > 0):
@@ -6207,13 +6730,13 @@ class PyPath(object):
                                     ssign[1] & dir_sources
                                 for eattr, fun in iteritems(edge_callbacks):
                                     attrs[eattr] = fun(g.es[eid], 
-                                        thisDir, thisSign, thisSources, set(g.es[eid]['sources']))
+                                        thisDir, thisSign, thisSources, g.es[eid]['sources'])
                             elif vis:
                                 thisSign = 'unknown'
                                 thisSources = sdir
                                 for eattr, fun in iteritems(edge_callbacks):
                                     attrs[eattr] = fun(g.es[eid], 
-                                        thisDir, thisSign, thisSources, set(g.es[eid]['sources']))
+                                        thisDir, thisSign, thisSources, g.es[eid]['sources'])
                             else:
                                 attrs['style'] = 'invis'
                                 drawn_directed = False
@@ -6235,8 +6758,8 @@ class PyPath(object):
                                 thisSources = ssign[0] if dir_sources is None else \
                                     ssign[0] & dir_sources
                                 for eattr, fun in iteritems(edge_callbacks):
-                                    attrs[eattr] = fun(g.es[eid], 
-                                        thisDir, thisSign, thisSources, set(g.es[eid]['sources']))
+                                    attrs[eattr] = fun(g.es[eid],
+                                        thisDir, thisSign, thisSources, (g.es[eid]['sources']))
                             elif vis and (sign[1] and dir_sources is None or \
                                 dir_sources is not None and \
                                 len(ssign[1] & dir_sources) > 0):
@@ -6244,14 +6767,14 @@ class PyPath(object):
                                 thisSources = ssign[1] if dir_sources is None else \
                                     ssign[1] & dir_sources
                                 for eattr, fun in iteritems(edge_callbacks):
-                                    attrs[eattr] = fun(g.es[eid], 
-                                        thisDir, thisSign, thisSources, set(g.es[eid]['sources']))
+                                    attrs[eattr] = fun(g.es[eid],
+                                        thisDir, thisSign, thisSources, g.es[eid]['sources'])
                             elif vis:
                                 thisSign = 'unknown'
                                 thisSources = sdir
                                 for eattr, fun in iteritems(edge_callbacks):
-                                    attrs[eattr] = fun(g.es[eid], 
-                                        thisDir, thisSign, thisSources, set(g.es[eid]['sources']))
+                                    attrs[eattr] = fun(g.es[eid],
+                                        thisDir, thisSign, thisSources, g.es[eid]['sources'])
                             else:
                                 attrs['style'] = 'invis'
                                 drawn_directed = False
@@ -6264,7 +6787,7 @@ class PyPath(object):
                     thisSources = d.get_dir('undirected', sources = True)
                     for eattr, fun in iteritems(edge_callbacks):
                         attrs[eattr] = fun(g.es[eid], thisDir, thisSign, 
-                            thisSources, set(g.es[eid]['sources']))
+                            thisSources, g.es[eid]['sources'])
                     if (not evis and hide) or drawn_directed:
                         attrs['style'] = 'invis'
                     if dot.has_neighbor(sl, tl):
@@ -6288,11 +6811,11 @@ class PyPath(object):
                     ((s1, s2), dict(
                         map(lambda a: (a, set([]) if t.endswith('edges') else 0), \
                             ['total', 'minor', 'major']))) \
-                        for s1 in net.sources for s2 in net.sources)), \
+                        for s1 in self.sources for s2 in self.sources)), \
                 ['directions', 'directions_edges', 'signs', 'signs_edges']))), \
             ['consistency', 'inconsistency']))
         # inconsistency #
-        prg = progress.Progress(len(self.sources)**2, 'Counting inconsistency', 1)
+        prg = Progress(len(self.sources)**2, 'Counting inconsistency', 1)
         for s1 in self.sources:
             for s2 in self.sources:
                 prg.step()
@@ -6378,7 +6901,7 @@ class PyPath(object):
                                 con['inconsistency']['signs_edges'][(s2, s1)]['minor'].add(e.index)
         prg.terminate()
         # consistency #
-        prg = progress.Progress(len(self.sources)**2, 'Counting consistency', 1)
+        prg = Progress(len(self.sources)**2, 'Counting consistency', 1)
         for s1 in self.sources:
             for s2 in self.sources:
                 prg.step()
@@ -6386,71 +6909,71 @@ class PyPath(object):
                 for e in self.graph.es:
                     d = e['dirs']
                     if s12 <= d.sources_straight():
-                        con['consistency']['signs']['directions'][(s1, s2)]['total'] += 1
-                        con['consistency']['signs']['directions_edges'][(s1, s2)]['total'].add(e.index)
+                        con['consistency']['directions'][(s1, s2)]['total'] += 1
+                        con['consistency']['directions_edges'][(s1, s2)]['total'].add(e.index)
                         if len(d.sources_straight()) > len(d.sources_reverse()) and \
                             len(s12 & d.sources_reverse()) == 0:
-                            con['consistency']['signs']['directions'][(s1, s2)]['major'] += 1
-                            con['consistency']['signs']['directions_edges'][(s1, s2)]['major'].add(e.index)
+                            con['consistency']['directions'][(s1, s2)]['major'] += 1
+                            con['consistency']['directions_edges'][(s1, s2)]['major'].add(e.index)
                         elif len(d.sources_straight()) < len(d.sources_reverse()) and \
                             len(s12 & d.sources_reverse()) == 0:
-                            con['consistency']['signs']['directions'][(s1, s2)]['minor'] += 1
-                            con['consistency']['signs']['directions_edges'][(s1, s2)]['minor'].add(e.index)
+                            con['consistency']['directions'][(s1, s2)]['minor'] += 1
+                            con['consistency']['directions_edges'][(s1, s2)]['minor'].add(e.index)
                     if s12 <= d.sources_reverse():
-                        con['consistency']['signs']['directions'][(s1, s2)]['total'] += 1
-                        con['consistency']['signs']['directions_edges'][(s1, s2)]['total'].add(e.index)
+                        con['consistency']['directions'][(s1, s2)]['total'] += 1
+                        con['consistency']['directions_edges'][(s1, s2)]['total'].add(e.index)
                         if len(d.sources_reverse()) > len(d.sources_straight()) and \
                             len(s12 & d.sources_straight()) == 0:
-                            con['consistency']['signs']['directions'][(s1, s2)]['major'] += 1
-                            con['consistency']['signs']['directions_edges'][(s1, s2)]['major'].add(e.index)
+                            con['consistency']['directions'][(s1, s2)]['major'] += 1
+                            con['consistency']['directions_edges'][(s1, s2)]['major'].add(e.index)
                         elif len(d.sources_reverse()) < len(d.sources_straight()) and \
                             len(s12 & d.sources_straight()) == 0:
-                            con['consistency']['signs']['directions'][(s1, s2)]['minor'] += 1
-                            con['consistency']['signs']['directions_edges'][(s1, s2)]['minor'].add(e.index)
+                            con['consistency']['directions'][(s1, s2)]['minor'] += 1
+                            con['consistency']['directions_edges'][(s1, s2)]['minor'].add(e.index)
                     if s12 <= d.positive_sources_straight():
                         con['consistency']['signs'][(s1, s2)]['total'] += 1
-                        con['consistency']['signs']['signs_edges'][(s1, s2)]['total'].add(e.index)
+                        con['consistency']['signs_edges'][(s1, s2)]['total'].add(e.index)
                         if len(d.positive_sources_straight()) > len(d.positive_sources_reverse()) and \
                             len(s12 & d.positive_sources_reverse()) == 0:
                             con['consistency']['signs'][(s1, s2)]['major'] += 1
-                            con['consistency']['signs']['signs_edges'][(s1, s2)]['major'].add(e.index)
+                            con['consistency']['signs_edges'][(s1, s2)]['major'].add(e.index)
                         elif len(d.positive_sources_straight()) < len(d.positive_sources_reverse()) and \
                             len(s12 & d.positive_sources_reverse()) == 0:
                             con['consistency']['signs'][(s1, s2)]['minor'] += 1
-                            con['consistency']['signs']['signs_edges'][(s1, s2)]['minor'].add(e.index)
+                            con['consistency']['signs_edges'][(s1, s2)]['minor'].add(e.index)
                     if s12 <= d.negative_sources_straight():
                         con['consistency']['signs'][(s1, s2)]['total'] += 1
-                        con['consistency']['signs']['signs_edges'][(s1, s2)]['total'].add(e.index)
+                        con['consistency']['signs_edges'][(s1, s2)]['total'].add(e.index)
                         if len(d.negative_sources_straight()) > len(d.negative_sources_reverse()) and \
                             len(s12 & d.negative_sources_reverse()) == 0:
                             con['consistency']['signs'][(s1, s2)]['major'] += 1
-                            con['consistency']['signs']['signs_edges'][(s1, s2)]['major'].add(e.index)
+                            con['consistency']['signs_edges'][(s1, s2)]['major'].add(e.index)
                         elif len(d.negative_sources_straight()) < len(d.negative_sources_reverse()) and \
                             len(s12 & d.negative_sources_reverse()) == 0:
                             con['consistency']['signs'][(s1, s2)]['minor'] += 1
-                            con['consistency']['signs']['signs_edges'][(s1, s2)]['minor'].add(e.index)
+                            con['consistency']['signs_edges'][(s1, s2)]['minor'].add(e.index)
                     if s12 <= d.positive_sources_reverse():
                         con['consistency']['signs'][(s1, s2)]['total'] += 1
-                        con['consistency']['signs']['signs_edges'][(s1, s2)]['total'].add(e.index)
+                        con['consistency']['signs_edges'][(s1, s2)]['total'].add(e.index)
                         if len(d.positive_sources_reverse()) > len(d.positive_sources_straight()) and \
                             len(s12 & d.positive_sources_straight()) == 0:
                             con['consistency']['signs'][(s1, s2)]['major'] += 1
-                            con['consistency']['signs']['signs_edges'][(s1, s2)]['major'].add(e.index)
+                            con['consistency']['signs_edges'][(s1, s2)]['major'].add(e.index)
                         elif len(d.positive_sources_reverse()) < len(d.positive_sources_straight()) and \
                             len(s12 & d.positive_sources_straight()) == 0:
                             con['consistency']['signs'][(s1, s2)]['minor'] += 1
-                            con['consistency']['signs']['signs_edges'][(s1, s2)]['minor'].add(e.index)
+                            con['consistency']['signs_edges'][(s1, s2)]['minor'].add(e.index)
                     if s12 <= d.negative_sources_reverse():
                         con['consistency']['signs'][(s1, s2)]['total'] += 1
-                        con['consistency']['signs']['signs_edges'][(s1, s2)]['total'].add(e.index)
+                        con['consistency']['signs_edges'][(s1, s2)]['total'].add(e.index)
                         if len(d.negative_sources_reverse()) > len(d.negative_sources_straight()) and \
                             len(s12 & d.negative_sources_straight()) == 0:
                             con['consistency']['signs'][(s1, s2)]['major'] += 1
-                            con['consistency']['signs']['signs_edges'][(s1, s2)]['major'].add(e.index)
+                            con['consistency']['signs_edges'][(s1, s2)]['major'].add(e.index)
                         elif len(d.negative_sources_reverse()) < len(d.negative_sources_straight()) and \
                             len(s12 & d.negative_sources_straight()) == 0:
                             con['consistency']['signs'][(s1, s2)]['minor'] += 1
-                            con['consistency']['signs']['signs_edges'][(s1, s2)]['minor'].add(e.index)
+                            con['consistency']['signs_edges'][(s1, s2)]['minor'].add(e.index)
         prg.terminate()
         return con
     
@@ -6496,6 +7019,12 @@ class PyPath(object):
                         for v in edge.tuple]), sep))
                 fid.write('%s\n' % sep.join(['{}'.format(edge[eattr])
                     for eattr in edge_attributes]))
+    
+    def in_complex(self, csources = ['corum']):
+        self.graph.es['in_complex'] = \
+            [sum([len(set(self.graph.vs[e.source]['complexes'][cs].keys()) & \
+                set(self.graph.vs[e.target]['complexes'][cs].keys())) for cs in csources]) > 0 \
+                for e in self.graph.es]
     
     def reload(self):
         modname = self.__class__.__module__

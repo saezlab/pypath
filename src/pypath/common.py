@@ -25,10 +25,12 @@ import random
 import textwrap
 import hashlib
 
-__all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes', 'uniqList', 'addToList', 
-           'gen_session_id', 'sorensen_index', 'console', 'wcl', 'flatList',
+__all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes', 'uniqList', 'addToList',
+           'addToSet',
+           'gen_session_id', 'sorensen_index', 'simpson_index', 'simpson_index_counts',
+           'jaccard_index', 'console', 'wcl', 'flatList',
            'charTypes', 'delEmpty', '__version__', 'get_args',
-           'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs', 'md5']
+           'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs', 'md5', 'mod_keywords']
 
 # get the location
 ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -76,6 +78,111 @@ aacodes = {
     'X': 'XAA'
 }
 
+aanames = {
+    'alanine': 'A',
+    'arginine': 'R',
+    'asparagine': 'N',
+    'aspartic acid': 'D',
+    'cysteine': 'C',
+    'glutamine': 'Q',
+    'glutamic acid': 'E',
+    'glycine': 'G',
+    'histidine': 'H',
+    'isoleucine': 'I',
+    'leucine': 'L',
+    'lysine': 'K',
+    'methionine': 'M',
+    'phenylalanine': 'F',
+    'proline': 'P',
+    'serine': 'S',
+    'threonine': 'T',
+    'tryptophan': 'W',
+    'tyrosine': 'Y',
+    'valine': 'V'
+}
+
+mod_keywords = {
+    'Reactome': [
+        ('phosphopantetheinylation', ['phosphopantet']),
+        ('phosphorylation', ['phospho']),
+        ('acetylneuraminylation', ['acetylneuraminyl']),
+        ('acetylation', ['acetyl']),
+        ('farnesylation', ['farnesyl']),
+        ('palmitoylation', ['palmito']),
+        ('methylation', ['methyl']),
+        ('tetradecanoylation', ['tetradecanoyl']),
+        ('decanoylation', ['decanoyl']),
+        ('palmitoleylation', ['palmytoleil']),
+        ('formylation', ['formyl']),
+        ('ubiquitination', ['ubiquitin']),
+        ('galactosylation', ['galactos']),
+        ('glutamylation', ['glutamyl']),
+        ('fucosylation', ['fucosyl']),
+        ('myristoylation', ['myristoyl']),
+        ('carboxylation', ['carboxyl']),
+        ('biotinylation', ['biotinyl']),
+        ('glycosylation', ['glycosyl']),
+        ('octanoylation', ['octanoyl']),
+        ('glycylation', ['glycyl']),
+        ('hydroxylation', ['hydroxy']),
+        ('sulfhydration', ['persulfid']),
+        ('thiolation', ['thio']),
+        ('amidation', ['amide']),
+        ('selenation', ['seleno']),
+        ('glucosylation', ['glucosyl']),
+        ('neddylation', ['neddyl']),
+        ('sumoylation', ['sumoyl']),
+        ('prenylation', ['prenyl'])
+    ],
+    'ACSN': [
+        ('phosphorylation', ['phospho']),
+        ('glycylation', ['glycyl']),
+        ('ubiquitination', ['ubiquitin']),
+        ('acetylation', ['acetyl']),
+        ('myristoylation', ['myristoyl']),
+        ('prenylation', ['prenyl']),
+        ('hydroxylation', ['hydroxy'])
+    ],
+    'WikiPathways': [],
+    'NetPath': [
+        ('phosphorylation', ['phospho']),
+        ('glycylation', ['glycyl']),
+        ('ubiquitination', ['ubiquitin']),
+        ('acetylation', ['acetyl'])
+    ],
+    'PANTHER': [
+        ('phosphorylation', ['phospho']),
+        ('acetylation', ['acetyl'])
+    ],
+    'NCI-PID': [
+        ('phosphorylation', ['phospho']),
+        ('methylation', ['methyl']),
+        ('farnesylation', ['farnesyl']),
+        ('palmitoylation', ['palmito']),
+        ('myristoylation', ['myristoyl']),
+        ('glycylation', ['glycyl']),
+        ('ubiquitination', ['ubiquitin']),
+        ('acetylation', ['acetyl']),
+        ('glycosylation', ['glycosyl']),
+        ('geranylation', ['geranyl']),
+        ('hydroxylation', ['hydroxy'])
+    ],
+    'KEGG': [
+        ('phosphorylation', ['hospho']),
+        ('methylation', ['methyl']),
+        ('ubiquitination', ['ubiquitin']),
+        ('acetylation', ['acetyl']),
+        ('hydroxylation', ['hydroxy']),
+        ('carboxyethylation', ['carboxyethyl']),
+        ('ribosylation', ['ribosyl']),
+        ('nitrosylation', ['nitrosyl']),
+        ('sulfoylation', ['ulfo']),
+        ('biotinylation', ['biotinyl']),
+        ('malonylation', ['malonyl']),
+        ('glutarylation', ['lutaryl'])
+    ]
+}
+
 if 'long' not in __builtins__:
     long = int
 
@@ -91,15 +198,27 @@ numTypes = set([int, long, float])
 charTypes = set([str, unicode, bytes])
 
 def uniqList(seq):
-    # Not order preserving
-    # from http://www.peterbe.com/plog/uniqifiers-benchmark
+    """
+    Not order preserving
+    From http://www.peterbe.com/plog/uniqifiers-benchmark
+    """
+    return list({}.fromkeys(seq).keys())
+
+def uniqList1(seq):
+    """
+    Not order preserving
+    From http://www.peterbe.com/plog/uniqifiers-benchmark
+    """
+    return list(set(seq))
+
+def uniqList2(seq):
+    """
+    Not order preserving
+    From http://www.peterbe.com/plog/uniqifiers-benchmark
+    """
     keys = {}
     for e in seq:
-        try:
-            keys[e] = 1
-        except:
-            print('ERROR in pypath.common.uniqList(): unhashable type:')
-            print(e)
+        keys[e] = 1
     return list(keys.keys())
 
 def flatList(lst):
@@ -108,9 +227,11 @@ def flatList(lst):
 def delEmpty(lst):
     return [i for i in lst if len(i) > 0]
 
-def uniqOrdList(seq, idfun = None): 
-    # Order preserving
-    # from http://www.peterbe.com/plog/uniqifiers-benchmark
+def uniqOrdList(seq, idfun = None):
+    """
+    Order preserving
+    From http://www.peterbe.com/plog/uniqifiers-benchmark
+    """
     if idfun is None:
         def idfun(x): return x
     seen = {}
@@ -118,22 +239,36 @@ def uniqOrdList(seq, idfun = None):
     for item in seq:
         marker = idfun(item)
         if marker in seen: continue
-        try:
-            seen[marker] = 1
-        except:
-            print('ERROR in pypath.common.uniqOrdList(): unhashable type:')
-            print(marker)
+        seen[marker] = 1
         result.append(item)
     return result
 
 def addToList(lst, toadd):
-    if isinstance(toadd, list):
-        lst += toadd
-    else:
+    if type(lst) is not list:
+        if type(lst) in simpleTypes:
+            lst = [lst]
+        else:
+            lst = list(lst)
+    if toadd is None:
+        return lst
+    if type(toadd) in simpleTypes:
         lst.append(toadd)
+    else:
+        if type(toadd) is not list:
+            toadd = list(toadd)
+        lst.extend(toadd)
     if None in lst:
         lst.remove(None)
     return uniqList(lst)
+
+def addToSet(st, toadd):
+    if type(toadd) in simpleTypes:
+        st.add(toadd)
+    if type(toadd) is list:
+        toadd = set(toadd)
+    if type(toadd) is set:
+        st.update(toadd)
+    return st
 
 def something(anything):
     return not (anything is None or \
@@ -149,6 +284,9 @@ def simpson_index(a, b):
     b = set(b)
     ab = a & b
     return float(len(ab)) / float(min(len(a),len(b)))
+
+def simpson_index_counts(a, b, c):
+    return float(c) / float(min(a, b)) if min(a, b) > 0 else 0.0
 
 def sorensen_index(a, b):
     a = set(a)
@@ -202,14 +340,23 @@ def rotate(point, angle, center = (0.0, 0.0)):
     return temp_point
 
 def cleanDict(dct):
-    for k, v in dct.items():
+    """
+    Removes ``None`` values from dict and casts everything else to ``str``.
+    """
+    toDel = []
+    for k, v in iteritems(dct):
         if v is None:
-            del dct[k]
+            toDel.append(k)
         else:
             dct[k] = str(v)
+    for k in toDel:
+        del dct[k]
     return dct
 
 def md5(value):
+    """
+    Returns the ms5sum of ``value`` as string.
+    """
     try:
         string = str(value).encode('ascii')
     except:
@@ -220,3 +367,74 @@ igraph_graphics_attrs = {
     'vertex': ['size', ' color', 'frame_color', 'frame_width', 'shape', 'label', 'label_dist', 'label_color', 'label_size', 'label_angle'],
     'edge': ['curved', 'color', 'width', 'arrow_size', 'arrow_width']
 }
+
+def merge_dicts(d1, d2):
+    """
+    Merges dicts recursively
+    """
+    for k2, v2 in iteritems(d2):
+        t = type(v2)
+        if k2 not in d1:
+            d1[k2] = v2
+        elif t is dict:
+            d1[k2] = merge_dicts(d1[k2], v2)
+        elif t is list:
+            d1[k2].extend(v2)
+        elif t is set:
+            d1[k2].update(v2)
+    return d1
+
+def dict_set_path(d, path):
+    """
+    In dict of dicts ``d`` looks up the keys following ``path``,
+    creates new subdicts and keys if those do not exist yet,
+    and sets/merges the leaf element according to simple heuristic.
+    """
+    val = path[-1]
+    key = path[-2]
+    subd = d
+    for k in path[:-2]:
+        if type(subd) is dict:
+            if k in subd:
+                subd = subd[k]
+            else:
+                subd[k] = {}
+                subd = subd[k]
+        else:
+            return d
+    if key not in subd:
+        subd[key] = val
+    elif type(val) is dict and type(subd[key]) is dict:
+        subd[key].update(val)
+    elif type(subd[key]) is list:
+        if type(val) is list:
+            subd[key].extend(val)
+        else:
+            subd[key].append(val)
+    elif type(subd[key]) is set:
+        if type(val) is set:
+            subd[key].update(val)
+        else:
+            subd[key].add(val)
+    return d
+
+def dict_diff(d1, d2):
+    ldiff = {}
+    rdiff = {}
+    keys = set(d1.keys()) & set(d2.keys())
+    for k in keys:
+        if type(d1[k]) is dict and type(d2[k]) is dict:
+            ldiff[k], rdiff[k] = dict_diff(d1[k], d2[k])
+        elif type(d1[k]) is set and type(d2[k]) is set:
+            ldiff[k], rdiff[k] = (d1[k] - d2[k], d2[k] - d1[k])
+    return ldiff, rdiff
+
+def dict_sym_diff(d1, d2):
+    diff = {}
+    keys = set(d1.keys()) & set(d2.keys())
+    for k in keys:
+        if type(d1[k]) is dict and type(d2[k]) is dict:
+            diff[k] = dict_sym_diff(d1[k], d2[k])
+        elif type(d1[k]) is set and type(d2[k]) is set:
+            diff[k] = d1[k] ^ d2[k]
+    return diff

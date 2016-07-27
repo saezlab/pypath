@@ -707,7 +707,27 @@ bp = plot.Barplot(x = d[0], y = d[1],
 
 # dirs signes w/ omnipath
 console(':: Plotting `Directions/effects` stacked barplot')
-d = zip(*[(s, 
+d = list(zip(*[(s, len([v for v in net.graph.vs if s in v['sources']])) for s in sorted(net.sources)] + \
+    [(omnipath, net.graph.vcount())]))
+labcol = \
+    list(
+        map(
+            lambda lab:
+                ccolors[data_formats.categories[lab]] \
+                    if lab in data_formats.categories \
+                    else ccolors['p'],
+            d[0]
+        )
+    )
+bp = plot.Barplot(x = d[0], y = d[1],
+    data = None, fname = 'proteins_3-by-db.pdf', lab_size = lab_size, 
+    axis_lab_size = axis_lab_size, font_weight = fontW,
+    ylab = 'Number of proteins', color = labcol,
+    xlab = 'Resources', order = 'y')
+
+vcount_ordr = list(bp.ordr)
+
+d = list(zip(*[(s, 
     sum([sum([s in e['dirs'].positive_sources[e['dirs'].straight],
         s in e['dirs'].positive_sources[e['dirs'].reverse]]) for e in g.es]),
     sum([sum([s in e['dirs'].negative_sources[e['dirs'].straight],
@@ -720,8 +740,8 @@ d = zip(*[(s,
         e['dirs'].negative_sources[e['dirs'].reverse])]) for e in g.es]),
     sum([s in e['dirs'].sources['undirected'] for e in g.es])
         ) \
-    for s, g in sep.iteritems()] + 
-        [(omnipath, 
+    for s, g in iteritems(sep)] +
+        [(omnipath,
             sum([e['dirs'].is_stimulation() for e in net.graph.es]),
             sum([e['dirs'].is_inhibition() for e in net.graph.es]),
             sum([not e['dirs'].is_stimulation() and \
@@ -731,7 +751,67 @@ d = zip(*[(s,
                 not e['dirs'].is_inhibition() and \
                 not e['dirs'].is_directed() for e in net.graph.es])
             )]
+    ))
+
+sb = plot.StackedBarplot(
+    x = d[0],
+    y = d[1:],
+    names = ['Positive', 'Negative', 'Unknown effect', 'Unknown direction'],
+    colors = ['#0EACD3', '#FE5222', '#CDEC25', '#413632'],
+    ylab = 'Interactions',
+    xlab = 'Resources',
+    title = 'Interactions with direction or sign',
+    order = vcount_ordr,
+    fname = 'dirs-signes_cat-by-db-o-st.pdf',
+    desc = False
+)
+
+vcount_ordr.remove(omnipath)
+d = list(zip(*[(s, 
+    sum([sum([s in e['dirs'].positive_sources[e['dirs'].straight],
+        s in e['dirs'].positive_sources[e['dirs'].reverse]]) for e in g.es]),
+    sum([sum([s in e['dirs'].negative_sources[e['dirs'].straight],
+        s in e['dirs'].negative_sources[e['dirs'].reverse]]) for e in g.es]),
+    sum([sum([s in ((e['dirs'].sources[e['dirs'].straight] - \
+        e['dirs'].positive_sources[e['dirs'].straight]) - \
+        e['dirs'].negative_sources[e['dirs'].straight]),
+        s in ((e['dirs'].sources[e['dirs'].reverse] - \
+        e['dirs'].positive_sources[e['dirs'].reverse]) - \
+        e['dirs'].negative_sources[e['dirs'].reverse])]) for e in g.es]),
+    sum([s in e['dirs'].sources['undirected'] for e in g.es])
+        ) \
+    for s, g in iteritems(sep)]))
+
+sb = plot.StackedBarplot(
+    x = d[0],
+    y = d[1:],
+    names = ['Positive', 'Negative', 'Unknown effect', 'Unknown direction'],
+    colors = ['#0EACD3', '#FE5222', '#CDEC25', '#413632'],
+    ylab = 'Interactions',
+    xlab = 'Resources',
+    title = 'Interactions with direction or sign',
+    order = vcount_ordr,
+    fname = 'dirs-signes_cat-by-db-wo-op-st.pdf',
+    desc = False
+)
+
+sg = plot.SimilarityGraph(
+        net,
+        fname = 'sources_similarity_vertex.pdf',
+        similarity = 'vertex',
+        size = 'vertex',
     )
+
+sg = plot.SimilarityGraph(
+        net,
+        fname = 'sources_similarity_edge.pdf',
+        similarity = 'edge',
+        size = 'edge',
+    )
+
+ht = plot.HistoryTree(fname = 'history_tree.tex')
+
+hc = plot.HtpCharacteristics(net, fname = 'htp_causal.pdf', title = 'Causal resources', lower = 2)
 
 sens.stacked_barplot(x = d[0], y = d[1:], 
     names = ['Positive', 'Negative', 'Unknown effect', 'Unknown direction'],

@@ -268,7 +268,9 @@ urls = {
     'kegg_pws': {
         'label': 'KEGG Pathways',
         'list_url': 'http://www.genome.jp/kegg/pathway.html',
-        'kgml_url': 'http://www.kegg.jp/kegg-bin/download?entry=%s&format=kgml'
+        'kgml_url': 'http://www.kegg.jp/kegg-bin/download?entry=%s&format=kgml',
+        'biopax_l3': 'http://www.pathwaycommons.org/archives/PC2/'\
+            'v8/PathwayCommons.8.kegg.BIOPAX.owl.gz'
     },
     'depod': {
         'label': 'Dephosphorylation substrates and sites',
@@ -292,10 +294,6 @@ urls = {
     'kinclass': {
         'label': 'Kinase families and groups',
         'url': 'http://kinase.com/static/colt/data/human/kinome/tables/Table%20S2.txt'
-    },
-    'acsn': {
-        'label': 'Atlas of Cancer Signaling Networks',
-        'url': 'https://acsn.curie.fr/files/acsn_ppi.sif'
     },
     'protdb_exp': {
         'label': 'Expression data from ProteomicsDB',
@@ -386,6 +384,10 @@ urls = {
     'netpath_psimi': {
         'label': 'Batch download of NetPath pathways in PSI-MI format',
         'url': 'http://www.netpath.org/download/zipped/PSI-MI.zip'
+    },
+    'netpath_bp': {
+        'label': 'Netpath pathways one by one in BioPAX level 3 format',
+        'biopax_l3': 'http://www.netpath.org/data/biopax/NetPath_%u.owl'
     },
     'proteomemap': {
         'label': 'Human Proteome Map: Mass-spec expression data in healthy human tissues',
@@ -605,6 +607,11 @@ urls = {
             'protein.actions.v10/%u.protein.actions.v10.txt.gz',
         'links': 'http://string-db.org/download/protein.links.detailed.v10/%u'\
             '.protein.links.detailed.v10.txt.gz'
+    },
+    'wikipw': {
+        'label': 'WikiPathways human biopax',
+        'biopax_l3': 'http://wikipathways.org//wpi/cache/wikipathways_'\
+            'Homo_sapiens_Curation-AnalysisCollection__owl.zip'
     }
 }
 

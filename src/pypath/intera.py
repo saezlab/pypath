@@ -33,8 +33,13 @@ from collections import Counter
 # from pypath:
 import pypath.common as common
 
-__all__ = ['Residue', 'Ptm', 'Motif', 'Domain', 
+__all__ = ['Residue', 'Ptm', 'Motif', 'Domain',
     'DomainDomain', 'DomainMotif', 'Interface']
+
+
+if 'unicode' not in __builtins__:
+    unicode = str
+
 
 class Residue(object):
     
@@ -67,6 +72,9 @@ class Residue(object):
     def __str__(self):
         return 'Residue %s-%u in protein %s-%u%s\n' % (self.name, self.number, 
             self.protein, self.isoform, ' (mutated)' if self.mutated else '')
+    
+    def __repr__(self):
+        return self.__str__()
     
     def serialize(self):
         return '%s:%u' % (self.name, self.number)
@@ -133,8 +141,8 @@ class Mutation(object):
 
 class Ptm(object):
     
-    def __init__(self, protein, id_type = 'uniprot', typ = 'unknown', 
-            motif = None, residue = None, source = None, isoform = 1, 
+    def __init__(self, protein, id_type = 'uniprot', typ = 'unknown',
+            motif = None, residue = None, source = None, isoform = 1,
             seq = None):
         self.non_digit = re.compile(r'[^\d.-]+')
         self.protein = protein
@@ -145,7 +153,7 @@ class Ptm(object):
         self.residue = residue
         self.isoform = isoform if type(isoform) is int \
             else int(self.non_digit.sub('', isoform))
-        self.sources = []
+        self.sources = set([])
         self.add_source(source)
         self.isoforms = set([])
         self.add_isoform(isoform)
@@ -203,7 +211,14 @@ class Ptm(object):
             return False
     
     def add_source(self, source):
-        self.sources = common.addToList(self.sources, source)
+        if type(source) in common.charTypes:
+            self._add_source(source)
+        else:
+            for s in source:
+                self._add_source(s)
+    
+    def _add_source(self, source):
+        self.sources.add(source)
     
     def serialize(self):
         return '%s-%u:%s:%s:%s:%s:%u' % (self.protein, self.isoform, 
@@ -264,7 +279,7 @@ class Motif(object):
     
     def __init__(self, protein, start, end, id_type = 'uniprot', regex = None, 
         instance = None, isoform = 1, motif_name = None, prob = None, elm = None,
-        description = None, seq = None):
+        description = None, seq = None, source = None):
         non_digit = re.compile(r'[^\d.-]+')
         self.protein = protein
         self.id_type = id_type
@@ -281,6 +296,9 @@ class Motif(object):
         self.prob = prob
         self.elm = elm
         self.description = description
+        self.sources = set([])
+        if source is not None:
+            self.add_source(source)
     
     def __hash__(self):
         return hash((self.protein, self.start, self.end))
@@ -307,6 +325,16 @@ class Motif(object):
             other == self.motif_name:
             return True
         return False
+    
+    def add_source(self, source):
+        if type(source) in common.charTypes:
+            self._add_source(source)
+        else:
+            for s in source:
+                self._add_source(s)
+    
+    def _add_source(self, source):
+        self.sources.add(source)
     
     def serialize(self):
         return '%s:%s:%u-%u' % (
@@ -467,9 +495,9 @@ class DomainDomain(object):
     def __init__(self, domain_a, domain_b, pdbs = None, 
         sources = None, refs = None, contact_residues = None):
         self.domains = [domain_a, domain_b]
-        self.sources = []
-        self.refs = []
-        self.pdbs = []
+        self.sources = set([])
+        self.refs = set([])
+        self.pdbs = set([])
         self.add_sources(sources)
         self.add_refs(refs)
         self.add_pdbs(pdbs)
@@ -493,14 +521,21 @@ class DomainDomain(object):
     def __contains__(self, other):
         return other in self.domains[0] or other in self.domains[1]
     
-    def add_sources(self, sources):
-        self.sources = common.addToList(self.sources, sources)
+    def add_sources(self, source):
+        if type(source) in common.charTypes:
+            self._add_source(source)
+        else:
+            for s in source:
+                self._add_source(s)
+    
+    def _add_source(self, source):
+        self.sources.add(source)
     
     def add_refs(self, refs):
-        self.refs = common.addToList(self.refs, refs)
+        self.refs = common.addToSet(self.refs, refs)
     
     def add_pdbs(self, pdbs):
-        self.pdbs = common.addToList(self.pdbs, pdbs)
+        self.pdbs = common.addToSet(self.pdbs, pdbs)
     
     def serialize(self):
         return '|'.join([self.domains[0].serialize(), self.domains[1].serialize(), 
@@ -522,9 +557,9 @@ class DomainMotif(object):
     def __init__(self, domain, ptm, sources = None, refs = None, pdbs = None):
         self.ptm = ptm
         self.domain = domain
-        self.sources = []
-        self.refs = []
-        self.pdbs = []
+        self.sources = set([])
+        self.refs = set([])
+        self.pdbs = set([])
         self.add_sources(sources)
         self.add_refs(refs)
         self.add_pdbs(pdbs)
@@ -558,14 +593,21 @@ class DomainMotif(object):
     def get_proteins(self):
         return [self.domain.protein, self.ptm.protein]
     
-    def add_sources(self, sources):
-        self.sources = common.addToList(self.sources, sources)
+    def add_sources(self, source):
+        if type(source) in common.charTypes:
+            self._add_source(source)
+        else:
+            for s in source:
+                self._add_source(s)
+    
+    def _add_source(self, source):
+        self.sources.add(source)
     
     def add_refs(self, refs):
-        self.refs = common.addToList(self.refs, refs)
+        self.refs = common.addToSet(self.refs, refs)
     
     def add_pdbs(self, pdbs):
-        self.pdbs = common.addToList(self.pdbs, pdbs)
+        self.refs = common.addToSet(self.pdbs, pdbs)
     
     def serialize(self):
         return '|'.join([self.domain.serialize(), self.ptm.serialize(), 
@@ -593,8 +635,8 @@ class Regulation(object):
         self.source = source
         self.target = target
         self.effect = effect
-        self.sources = []
-        self.refs = []
+        self.sources = set([])
+        self.refs = set([])
         self.add_sources(sources)
         self.add_refs(refs)
     
@@ -614,11 +656,18 @@ class Regulation(object):
     def __ne__(self, other):
         return not self.__eq__(other)
     
-    def add_sources(self, sources):
-        self.sources = common.addToList(self.sources, sources)
+    def add_sources(self, source):
+        if type(source) in common.charTypes:
+            self._add_source(source)
+        else:
+            for s in source:
+                self._add_source(s)
+    
+    def _add_source(self, source):
+        self.sources.add(source)
     
     def add_refs(self, refs):
-        self.refs = common.addToList(self.refs, refs)
+        self.refs = common.addToSet(self.refs, refs)
     
     def serialize(self):
         return '|'.join([self.effect, self.ptm.serialize(), self.target, 

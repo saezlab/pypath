@@ -48,7 +48,7 @@ class Seq(object):
             else self.isof[isoform][start-1:end]
     
     def isoforms(self):
-        return self.isof.keys()
+        return list(self.isof.keys())
     
     def has_isoform(self, isoform):
         return isoform in self.isof

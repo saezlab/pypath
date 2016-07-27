@@ -2,11 +2,11 @@ pypath
 ######
 
 
-:note: pypath has been developed initially only for Python 2.7. In its current state it can be imported in Python 3.5, and the most essential functionalities have been tested and fixed to work both in Py2 and Py3. You can build the network also in Py3, what means ``pypath.curl.Curl()``, ``pypath.mapping.Mapper()`` and the core functionalites of ``pypath.main.PyPath()`` certainly work. Other methods are fixed in arbitrary order, depending on their importance.
+:note: Pypath supports both Python 2.7 and Python 3.5. In the beginning, pypath has been developed only for Python 2.7. The methods are adjusted to Py3 in arbitrary order, depending on their importance. The vaste majority of the module already has been tested in Py3.
 
 :contributions: denes@ebi.ac.uk
 :documentation: http://pypath.omnipathdb.org/
-:issues: https://github.com/seazlab/pypath/issues
+:issues: https://github.com/saezlab/pypath/issues
 
 **pypath** is a Python package built around igraph to work with molecular network representations e.g. protein, miRNA and drug compound interaction networks.
 

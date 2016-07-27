@@ -38,6 +38,9 @@ class ReferenceList(object):
                 lst.append(l.strip())
             f.close()
         self.lst = set(lst)
+    
+    def __contains__(self, something):
+        return something in self.lst
 
 def get_reflists():
     return [

@@ -19,15 +19,17 @@
 from future.utils import iteritems
 
 import os
+import copy
 
 # from pypath:
 import pypath.input_formats as input_formats
 from pypath import common
 
-__all__ = ['urls', 'mapList', 'otherMappings', 'refLists', 
-           'reaction', 'interaction', 'interaction_misc', 'pathway', 
+__all__ = ['urls', 'mapList', 'otherMappings', 'refLists',
+           'reaction', 'interaction', 'interaction_misc', 'pathway',
+           'interaction_htp',
            'ptm', 'ptm_misc', 'obsolate', 'transcription_deprecated',
-           'omnipath', 'transcription', 'negative', 'gdsc_comp_target', 'cgc', 
+           'omnipath', 'transcription', 'negative', 'gdsc_comp_target', 'cgc',
            'mapListUniprot', 'mapListBasic', 'reactome_modifications',
            'reaction_misc']
 
@@ -77,6 +79,25 @@ part of their content can be used when processing along
 strict conditions to have only binary interactions with
 references.
 '''
+reaction = {
+    'Reaction resources': input_formats.ReadSettings(
+        name = "reaction resources",
+        separator = None, nameColA = 0, nameColB = 1,
+        nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA = "protein", typeB = "protein", isDirected = (3, '1'),
+        sign = None,
+        resource = 4,
+        inFile = 'get_reactions',
+        references = (5, ';'), ncbiTaxId = 9606,
+        extraEdgeAttrs = {
+            "sif_rule": (2, ";")
+            },
+        extraNodeAttrsA={},
+        extraNodeAttrsB={},
+        must_have_references = False
+    )
+}
+
 reaction_misc = {
     'nci_pid': input_formats.ReadSettings(name = "NCI-PID", 
         separator = None, nameColA = 0,
@@ -110,7 +131,7 @@ reaction_misc = {
         extraNodeAttrsB={})
 }
 
-reaction = {
+reaction_pc = {
     'acsn': input_formats.ReadSettings(name="ACSN", 
         separator = None, nameColA=0,
         nameColB=1, nameTypeA="genesymbol", nameTypeB="genesymbol",
@@ -370,7 +391,7 @@ interaction = {
         extraEdgeAttrs = {},
         extraNodeAttrsA = {},
         extraNodeAttrsB = {}),
-    'alz': input_formats.ReadSettings(name="AlzPathway", 
+    'alz': input_formats.ReadSettings(name="AlzPathway",
         separator="\t", nameColA=0, nameColB=1,
         nameTypeA="uniprot", nameTypeB="uniprot",
         typeA="protein", typeB="protein", isDirected=False, sign=False,
@@ -467,7 +488,7 @@ ptm = {
         extraNodeAttrsA={},
         extraNodeAttrsB={},
         must_have_references = True),
-    'hprd': input_formats.ReadSettings(name="HPRD", 
+    'hprd_p': input_formats.ReadSettings(name="HPRD-phos",
         separator = None, nameColA = 6,
         nameColB = 3, nameTypeA = "genesymbol", nameTypeB = "refseqp",
         typeA = "protein", typeB = "protein", isDirected = 1, sign = False,
@@ -477,14 +498,6 @@ ptm = {
         extraNodeAttrsA={},
         extraNodeAttrsB={})
 }
-
-'''
-The default set of resources in OmniPath.
-'''
-omnipath = {}
-omnipath.update(pathway)
-omnipath.update(ptm)
-omnipath.update(interaction)
 
 '''
 Other PTM datasets which are not used because the lack of
@@ -544,6 +557,9 @@ ptm_misc = {
         extraNodeAttrsA = {},
         extraNodeAttrsB = {})
 }
+
+ptm_all = copy.deepcopy(ptm_misc)
+ptm_all.update(ptm)
 
 '''
 Interaction databases not included in OmniPath.
@@ -668,7 +684,7 @@ interaction_htp = {
         extraEdgeAttrs={},
         extraNodeAttrsA={},
         extraNodeAttrsB={},
-        inputArgs = {'htp_limit': None}),
+        inputArgs = {'htp_limit': None, 'ltp': False}),
     'dip': input_formats.ReadSettings(name="DIP",
         nameColA=0, nameColB=1,
         nameTypeA="uniprot", nameTypeB="uniprot",
@@ -683,6 +699,16 @@ interaction_htp = {
         extraNodeAttrsA={},
         extraNodeAttrsB={},
         inputArgs = {'core_only': False, 'small_scale_only': False}),
+    'ccmap': input_formats.ReadSettings(name="CancerCellMap", 
+        nameColA = 0, nameColB = 1,
+        nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA = "protein", typeB = "protein",
+        isDirected = (2, 'directed'), sign = False, ncbiTaxId = 9606,
+        inFile = 'get_ccmap',
+        references = (3, ";"),
+        extraEdgeAttrs={},
+        extraNodeAttrsA={},
+        extraNodeAttrsB={}),
     'innatedb': input_formats.ReadSettings(name = "InnateDB",
         nameColA = 0, nameColB = 2,
         nameTypeA = "uniprot", nameTypeB = "uniprot",
@@ -703,7 +729,7 @@ interaction_htp = {
             },
         extraNodeAttrsA = {},
         extraNodeAttrsB = {}),
-    'hprd': input_formats.ReadSettings(name="HPRD", 
+    'hprd': input_formats.ReadSettings(name="HPRD",
         separator = None, nameColA = 0,
         nameColB = 3, nameTypeA = "genesymbol", nameTypeB = "genesymbol",
         typeA = "protein", typeB = "protein", isDirected = 0, sign = False,
@@ -711,7 +737,36 @@ interaction_htp = {
         inFile = 'hprd_htp', references = (7, ','), header = False,
         extraEdgeAttrs={'hprd_methods': (6, ';')},
         extraNodeAttrsA={},
-        extraNodeAttrsB={})
+        extraNodeAttrsB={}),
+    'hi3': input_formats.ReadSettings(
+        name = "Vidal HI-III",
+        separator = None,
+        nameColA = 1,
+        nameColB = 3,
+        nameTypeA = "genesymbol",
+        nameTypeB = "genesymbol",
+        typeA = "protein",
+        typeB = "protein",
+        isDirected = False,
+        sign = False,
+        ncbiTaxId = 9606,
+        inFile = 'vidal_hi_iii',
+        references = False,
+        extraEdgeAttrs = {},
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {},
+        must_have_references = False,
+        inputArgs = {'fname': '/home/denes/Documents/pw/data/hi3-2.3.tsv'}),
+    'mppi': input_formats.ReadSettings(name = "MPPI", 
+        separator = "|", nameColA = 2, nameColB = 6,
+        nameTypeA = "uniprot", nameTypeB = "uniprot",
+        typeA = "protein", typeB = "protein", isDirected = False, sign = False,
+        inFile = 'mppi_interactions',
+        references = (0, ";"), ncbiTaxId = 9606,
+        extraEdgeAttrs = {
+            "mppi_evidences": (1, ";")},
+        extraNodeAttrsA = {},
+        extraNodeAttrsB = {})
 }
 
 '''
@@ -819,6 +874,24 @@ transcription_deprecated = {
                 extraNodeAttrsB = {})
 }
 
+
+'''
+The default set of resources in OmniPath.
+'''
+omnipath = {}
+omnipath.update(pathway)
+omnipath.update(ptm)
+omnipath.update(interaction)
+
+del omnipath['netpath']
+#del omnipath['innatedb']
+del omnipath['alz']
+#del omnipath['biogrid']
+omnipath['intact'] = interaction_htp['intact']
+omnipath['biogrid'] = interaction_htp['biogrid']
+omnipath['hprd'] = interaction_htp['hprd']
+
+
 '''
 Manually curated negative interactions, i.e. pairs of
 proteins prooved in experiments to not interact with
@@ -888,19 +961,14 @@ gdsc_lst = input_formats.ReadList(name="atg", separator=";", nameCol=0,
                 inFile=os.path.join(ROOT, 'data', 'autophagy.list'),
                 extraAttrs={'drugs': 2})
 
-cgc = input_formats.ReadList(name = "CancerGeneCensus", nameCol = 2,
+cgc = input_formats.ReadList(name = "cgc", nameCol = 2,
                 nameType = "entrez", typ = "protein",
                 inFile = 'get_cgc',
                 extraAttrs = {})
 
 intogen_cancer = input_formats.ReadList(name = "IntOGen", separator = "\t", nameCol=1,
                 nameType = "genesymbol", typ = "protein",
-                inFile = 'intogen_cancerdrivers.tsv',
-                extraAttrs={})
-
-aidan_list = input_formats.ReadList(name="aidan_list", separator=";", nameCol=0,
-                nameType="uniprot", typ="protein",
-                inFile=os.path.join(ROOT, 'data', 'aidan_list_uniprot'),
+                inFile = None,
                 extraAttrs={})
 
 reactome_modifications = {
@@ -908,7 +976,7 @@ reactome_modifications = {
     'glycosylated': ('glycosylation', 'X'),
     'acetylated': ('acetylated', 'X'),
     'prenylated': ('prenylation', 'X'),
-    'ubiquitinated': ('ubiquitination', 'X'), 
+    'ubiquitinated': ('ubiquitination', 'X'),
     'myristoylated': ('myristoylation', 'X'),
     'hydroxylated': ('hydroxylation', 'X'),
     'acetylated residue': ('acetylation', 'X'),
@@ -983,12 +1051,14 @@ reactome_modifications = {
 }
 
 categories = {
+    'Vidal HI-III': 'i',
     'CancerCellMap': 'p',
     'InnateDB': 'i',
     'SPIKE': 'p',
     'LMPID': 'm',
     'DIP': 'i',
-    'HPRD': 'm',
+    'HPRD': 'i',
+    'HPRD-phos': 'm',
     'PDZBase': 'p',
     'dbPTM': 'm',
     'MatrixDB': 'i',
@@ -1011,18 +1081,42 @@ categories = {
     'NCI-PID': 'r',
     'DeathDomain': 'p',
     'ARN': 'p',
-    'BioGRID': 'i'
+    'BioGRID': 'i',
+    'IntAct': 'i',
+    'Reactome': 'r',
+    'ACSN': 'r',
+    'WikiPathways': 'r',
+    'PANTHER': 'r',
+    'ABS': 't',
+    'ENCODE_distal': 't',
+    'PAZAR': 't',
+    'ENCODE_proximal': 't',
+    'ORegAnno': 't',
+    'HTRI': 't',
+    'MIMP': 'm'
 }
 
 p = set([])
 i = set([])
 r = set([])
 m = set([])
+t = set([])
 
 for db, c in iteritems(categories):
     locals()[c].add(db)
+
+catnames = {
+    'm': 'Enzyme-substrate',
+    'p': 'Activity flow',
+    'i': 'Undirected PPI',
+    'r': 'Process description',
+    't': 'Transcription'
+}
+
+catletters = dict(map(reversed, iteritems(catnames)))
 
 pathway_resources = p
 interaction_resources = i
 ptm_resources = m
 reaction_resources = r
+transctiption_resources = t

@@ -23,9 +23,11 @@
 from collections import Counter
 import locale
 locale.setlocale(locale.LC_ALL, 'en_GB.UTF-8')
+from future.utils import iteritems
 
 # stats and plotting modules #
 
+import imp
 import math
 import numpy as np
 import pandas as pd
@@ -111,24 +113,36 @@ def get_moves(bbox1, bbox2):
 
 # parameters
 omnipath = 'All'
-prefix = "int"
+prefix = "3"
 lab_size = (18, 21)
 axis_lab_size = 36
-table2file = 'int_curation_stats_stripped.tex'
+table2file = 'cat_curation_stats_stripped.tex'
 fisherFile = 'fisher_tests_int'
 fontW = 'medium'
+
+ccolors = {
+    'p': '#CDDFBB',
+    'r': '#F2B39E',
+    'm': '#FEEA9C',
+    'i': '#ADC8C9'
+}
+
+ccolors = {
+    'p': '#A9C98B',
+    'r': '#E87A62',
+    'm': '#FDDD5D',
+    'i': '#6FA6A9'
+}
 
 console(':: Creating new network object')
 net = pypath.PyPath(9606)
 
 # see `default_network.py` for the initialization of this default network
 console(':: Loading network')
-net.init_network(data_formats.interaction_htp, exclude = ['hi3'])
-
-hc = plot.HtpCharacteristics(net, fname = 'htp_int_10000.pdf', title = 'Interaction resources', lower = 2, upper = 10000)
-
-
-hc = plot.HtpCharacteristics(net2, fname = 'htp_causal_1000.pdf', title = 'Causal resources', lower = 1, upper = 1000)
+net.load_resources(data_formats.interaction_htp)
+net.load_resources(data_formats.pathway)
+net.load_resources(data_formats.ptm)
+net.init_network(data_formats.reaction)
 
 # Table 2 for the article
 console(':: Table 2: statistics of interaction and curation content and overlaps,'\
@@ -220,27 +234,61 @@ fi.write('Transcription factors:\t%s\t%s' % stats.fisher_exact(contTf))
 fi.close()
 
 # source-vcount barplot
-d = zip(*[(s, len([v for v in net.graph.vs if s in v['sources']])) for s in net.sources] + \
-    [(omnipath, net.graph.vcount())])
-bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'proteins_int-by-db.pdf', lab_size = lab_size, 
+d = list(zip(*[(s, len([v for v in net.graph.vs if s in v['sources']])) for s in sorted(net.sources)] + \
+    [(omnipath, net.graph.vcount())]))
+labcol = \
+    list(
+        map(
+            lambda lab:
+                ccolors[data_formats.categories[lab]] \
+                    if lab in data_formats.categories \
+                    else ccolors[lab[1]],
+            d[0]
+        )
+    )
+bp = plot.Barplot(x = d[0], y = d[1],
+    data = None, fname = 'proteins_3-by-db.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    ylab = 'Number of proteins', color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'],
-    xlab = 'Interaction databases', order = 'y',
-    y_break = (0.41, 0.15))
+    ylab = 'Number of proteins', color = labcol,
+    xlab = 'Resources', order = 'y')
 
 vcount_ordr = list(bp.ordr)
-bp.finish()
+
+csep = net.separate_by_category()
+cats = dict(map(lambda c: (c[0], data_formats.catnames[c[1]]), iteritems(data_formats.categories)))
+cats.update(dict(map(lambda c: (('All', c[0]), c[1]), iteritems(data_formats.catnames))))
+
+get_data = lambda fun: \
+    list(zip(*[(s, fun(sep[s])) for s in sorted(net.sources)] + \
+        list(map(lambda c: (('All', c[0]), fun(csep[c[0]])), sorted(data_formats.catnames.keys())))))
+
+bplotsettings = [
+    ('Number of proteins', 'Number of proteins', 'proteins', lambda g: g.vcount(), vcount_ordr)
+]
+d = list(zip(*[(s, len([v for v in net.graph.vs if s in v['sources']])) for s in sorted(net.sources)] + \
+    list(map(lambda c: (('All', c[0]), csep[c[0]].vcount()), iteritems(data_formats.catnames)))))
+
+bp = plot.MultiBarplot(
+    d[0], d[1],
+    categories = cats,
+    color = labcol,
+    cat_ordr = ['Activity flow', 'Enzyme-substrate', 'Interaction', 'Process description'],
+    ylab = 'Number of proteins',
+    title = 'Number of proteins',
+    desc = True,
+    fname = 'proteins_cat-by-db2.pdf',
+    order = 'y'
+)
 
 # source-ecount barplot
 console(':: Plotting `Number of proteins` barplot')
-d = zip(*[(s, len([e for e in net.graph.es if s in e['sources']])) for s in net.sources] + \
+d = zip(*[(s, len([e for e in net.graph.es if s in e['sources']])) for s in sorted(net.sources)] + \
     [(omnipath, net.graph.ecount())])
 bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'interactions_int-by-db.pdf', lab_size = lab_size, 
+    data = None, fname = 'interactions_3-by-db.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    ylab = 'Number of interactions', color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'],
-    xlab = 'Interaction databases', order = vcount_ordr, fin = False, desc = False, 
+    ylab = 'Number of interactions', color = labcol,
+    xlab = 'Resources', order = vcount_ordr, fin = False, desc = False,
     #y_break = (0.24, 0.24)
     )
 
@@ -249,24 +297,26 @@ bp.finish()
 
 # density sens.barplot
 console(':: Plotting `Graph density` barplot')
-d = zip(*[(s, g.density()) for s, g in sep.iteritems()] + \
+d = zip(*[(s, sep[s].density()) for s in sorted(net.sources)] + \
     [(omnipath, net.graph.density())])
 bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'density_int-by-db.pdf', lab_size = lab_size, 
+    data = None, fname = 'density_3-by-db.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    ylab = 'Graph density', color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'],
-    xlab = 'Interaction databases', order = 'y', 
-    y_break = (0.15, 0.1))
+    ylab = 'Graph density', color = labcol,
+    xlab = 'Resources', order = 'y', 
+    #y_break = (0.15, 0.1)
+    )
 
 # density with same order as protein count:
-d = zip(*[(s, g.density()) for s, g in sep.iteritems()] + \
+d = zip(*[(s, sep[s].density()) for s in sorted(net.sources)] + \
     [(omnipath, net.graph.density())])
 bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'density_int-by-db-o.pdf', lab_size = lab_size, 
+    data = None, fname = 'density_3-by-db-o.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    ylab = 'Graph density', color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'],
-    xlab = 'Interaction databases', order = vcount_ordr, desc = False, 
-    y_break = (0.15, 0.1))
+    ylab = 'Graph density', color = labcol,
+    xlab = 'Resources', order = vcount_ordr, desc = False, 
+    #y_break = (0.15, 0.1)
+    )
 
 # vcount - ecount scatterplot:
 topdata = {
@@ -285,9 +335,9 @@ topdata = {
         (set(net.lists['IntOGen']) | set(net.lists['CancerGeneCensus']))) \
     for s in net.sources],
 'Complexes': [len(sens.complexes_in_network(g)) \
-    for s, g in sep.iteritems()],
+    for s in sorted(net.sources)],
 'PTMs': [len([1 for e in g.es if len(e['ptm']) != 0]) \
-    for s, g in sep.iteritems()],
+    for s in sorted(net.sources)],
 'Database': net.sources
 }
 topdf = pd.DataFrame(topdata, index = net.sources)
@@ -306,7 +356,7 @@ sp = plot.ScatterPlus('Proteins', 'Interactions', sizes = 'Redensity',
         labels = 'Database', data = topdf,
         xlog = True, ylog = True, xlim = [-20.0, 5000.0], 
         ylim = [-20.0, 20000.0], 
-        fname = 'vcount-ecount_int-log-4.pdf', font_family = 'Helvetica Neue LT Std', 
+        fname = 'vcount-ecount_3-log-4.pdf', font_family = 'Helvetica Neue LT Std', 
         font_style = 'normal', font_weight = 'medium', font_variant = 'normal',
         font_stretch = 'normal', confi = True, 
         xlab = 'Number of proteins', ylab = 'Number of interacting pairs', 
@@ -323,7 +373,7 @@ sp = plot.ScatterPlus('Number of disease related proteins',
         labels = 'Database', data = topdf,
         xlim = [30.0, 2300.0], ylim = [0.0, 2000.0],
         xlog = True, ylog = True, 
-        fname = 'dis-cancer_int-log.pdf', font_family = 'Helvetica Neue LT Std', 
+        fname = 'dis-cancer_3-log.pdf', font_family = 'Helvetica Neue LT Std', 
         font_style = 'normal', font_weight = 'medium', font_variant = 'normal',
         font_stretch = 'normal', confi = True, 
         xlab = 'Number of\ndisease related proteins', ylab = 'Number of cancer drivers', 
@@ -334,17 +384,17 @@ sp = plot.ScatterPlus('Number of disease related proteins',
         fin = True)
 
 console(':: Plotting `Receptors vs. TFs` scatterplot')
-sp = plot.ScatterPlus('Number of receptors', 
-        'Number of TFs', sizes = 'Proteins', 
+sp = plot.ScatterPlus('Number of receptors',
+        'Number of TFs', sizes = 'Proteins',
         labels = None, data = topdf,
-        xlog = 'symlog', ylog = 'symlog', 
-        xlim = [50.0, 1000.0], ylim = [0.0, 10000.0],
-        fname = 'tf-rec_int-log.pdf', font_family = 'Helvetica Neue LT Std', 
+        xlog = 'symlog', ylog = 'symlog',
+        xlim = [50.0, 1000.0], ylim = [10.0, 2000.0],
+        fname = 'tf-rec_3-log.pdf', font_family = 'Helvetica Neue LT Std',
         font_style = 'normal', font_weight = 'medium', font_variant = 'normal',
-        font_stretch = 'normal', confi = True, 
-        xlab = 'Number of receptors', ylab = 'Number of TFs', 
+        font_stretch = 'normal', confi = True,
+        xlab = 'Number of receptors', ylab = 'Number of TFs',
         axis_lab_size = 23.76, annotation_size = 11.8, size = 20.0, size_scaling = 0.66,
-        lab_angle = 90, lab_size = (11.8, 13.86), color = '#007b7f', 
+        lab_angle = 90, lab_size = (11.8, 13.86), color = '#007b7f',
         order = False, desc = True, legend = True, legtitle = 'Total number\nof proteins',
         fin = True)
 
@@ -352,7 +402,7 @@ sp = plot.ScatterPlus('Number of receptors',
         'Number of TFs', sizes = 'Proteins', 
         labels = 'Database', data = topdf,
         xlim = [-10.0, 550.0], ylim = [-5.0, 400.0],
-        fname = 'tf-rec_int.pdf', font_family = 'Helvetica Neue LT Std', 
+        fname = 'tf-rec_3.pdf', font_family = 'Helvetica Neue LT Std', 
         font_style = 'normal', font_weight = 'medium', font_variant = 'normal',
         font_stretch = 'normal', confi = True, 
         xlab = 'Number of receptors', ylab = 'Number of TFs', 
@@ -368,7 +418,7 @@ sp = plot.ScatterPlus('Complexes',
         xlog = 'symlog', ylog = 'symlog',
         #xlim = [-50.0, 680.0], ylim = [10.0, 10000.0],
         xlim = [2.0, 1800.0], ylim = [0.0, 5000.0],
-        fname = 'comp-ptm_int.pdf', font_family = 'Helvetica Neue LT Std', 
+        fname = 'comp-ptm_3.pdf', font_family = 'Helvetica Neue LT Std', 
         font_style = 'normal', font_weight = 'medium', font_variant = 'normal',
         font_stretch = 'normal', confi = True, 
         xlab = 'Number of complexes', ylab = 'Number of PTMs', 
@@ -380,147 +430,147 @@ sp = plot.ScatterPlus('Complexes',
 
 # transitivity barplot
 console(':: Plotting `Graph transitivity` barplot')
-d = zip(*[(s, g.transitivity_undirected()) for s, g in sep.iteritems()] + \
+d = zip(*[(s, sep[s].transitivity_undirected()) for s in sorted(net.sources)] + \
     [(omnipath, net.graph.transitivity_undirected())])
 bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'transitivity_int-by-db.pdf', lab_size = lab_size, 
+    data = None, fname = 'transitivity_3-by-db.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    ylab = 'Graph global transitivity', color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'],
-    xlab = 'Interaction databases', order = 'y')
+    ylab = 'Graph global transitivity', color = labcol,
+    xlab = 'Resources', order = 'y')
 bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'transitivity_int-by-db-o.pdf', lab_size = lab_size, 
+    data = None, fname = 'transitivity_3-by-db-o.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    ylab = 'Graph global transitivity', color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'],
-    xlab = 'Interaction databases', order = vcount_ordr, desc = False)
+    ylab = 'Graph global transitivity', color = labcol,
+    xlab = 'Resources', order = vcount_ordr, desc = False)
 
 # diameter barplot
 console(':: Plotting `Graph diameter` barplot')
-d = zip(*[(s, g.diameter()) for s, g in sep.iteritems()] + \
+d = zip(*[(s, sep[s].diameter()) for s in sorted(net.sources)] + \
     [(omnipath, net.graph.diameter())])
 bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'diameter_int-by-db.pdf', lab_size = lab_size, 
+    data = None, fname = 'diameter_3-by-db.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    ylab = 'Graph diameter', color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
-    xlab = 'Interaction databases', order = 'y')
+    ylab = 'Graph diameter', color = labcol, 
+    xlab = 'Resources', order = 'y')
 bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'diameter_int-by-db-o.pdf', lab_size = lab_size, 
+    data = None, fname = 'diameter_3-by-db-o.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    ylab = 'Graph diameter', color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
-    xlab = 'Interaction databases', order = vcount_ordr, desc = False)
+    ylab = 'Graph diameter', color = labcol, 
+    xlab = 'Resources', order = vcount_ordr, desc = False)
 
 # receptors barplot
 console(':: Plotting `Number of receptors` barplot')
-d = zip(*[(s, len([v for v in g.vs if v['rec']])) \
-    for s, g in sep.iteritems()] + \
+d = zip(*[(s, len([v for v in sep[s].vs if v['rec']])) \
+    for s in sorted(net.sources)] + \
     [(omnipath, sum(net.graph.vs['rec']))])
 bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'receptors_int-by-db.pdf', lab_size = lab_size, 
+    data = None, fname = 'receptors_3-by-db.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    ylab = 'Number of receptors', color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
-    xlab = 'Interaction databases', order = 'y',
+    ylab = 'Number of receptors', color = labcol, 
+    xlab = 'Resources', order = 'y',
     #y_break = (0.6, 0.15)
     )
-bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'receptors_int-by-db-o.pdf', lab_size = lab_size, 
+bp = plot.Barplot(x = d[0], y = d[1],
+    data = None, fname = 'receptors_3-by-db-o.pdf', lab_size = lab_size,
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    ylab = 'Number of receptors', color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
-    xlab = 'Interaction databases', order = vcount_ordr, desc = False,
+    ylab = 'Number of receptors', color = labcol,
+    xlab = 'Resources', order = vcount_ordr, desc = False,
     #y_break = (0.6, 0.15)
     )
 
 # receptors prop barplot
 console(':: Plotting `Proportion of receptors` barplot')
 d = zip(*[(s, len([v for v in g.vs if v['rec']])/float(g.vcount())*100) \
-    for s, g in sep.iteritems()] + \
+    for s in sorted(net.sources)] + \
     [(omnipath, sum(net.graph.vs['rec'])/float(net.graph.vcount())*100)])
 bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'receptorprop_int-by-db.pdf', lab_size = lab_size, 
+    data = None, fname = 'receptorprop_3-by-db.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    ylab = r'% of receptors', color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
-    xlab = 'Interaction databases', order = 'y',
+    ylab = r'% of receptors', color = labcol, 
+    xlab = 'Resources', order = 'y',
     #y_break = (0.60, 0.12)
     )
 bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'receptorprop_int-by-db-o.pdf', lab_size = lab_size, 
+    data = None, fname = 'receptorprop_3-by-db-o.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    ylab = r'% of receptors', color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
-    xlab = 'Interaction databases', order = vcount_ordr, desc = False,
+    ylab = r'% of receptors', color = labcol, 
+    xlab = 'Resources', order = vcount_ordr, desc = False,
     #y_break = (0.60, 0.12)
     )
 
 # receptors coverage barplot
 console(':: Plotting `Coverage of receptors` barplot')
-d = zip(*[(s, len([v for v in g.vs if v['rec']])/float(len(net.lists['rec']))*100) \
-    for s, g in sep.iteritems()] + \
+d = zip(*[(s, len([v for v in sep[s].vs if v['rec']])/float(len(net.lists['rec']))*100) \
+    for s in sorted(net.sources)] + \
     [(omnipath, sum(net.graph.vs['rec'])/float(len(net.lists['rec']))*100)])
 bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'receptorcov_int-by-db.pdf', lab_size = lab_size, 
+    data = None, fname = 'receptorcov_3-by-db.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
     ylab = r'% of receptors covered', 
-    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
-    xlab = 'Interaction databases', order = 'y')
+    color = labcol, 
+    xlab = 'Resources', order = 'y')
 bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'receptorcov_int-by-db-o.pdf', lab_size = lab_size, 
+    data = None, fname = 'receptorcov_3-by-db-o.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
     ylab = r'% of receptors covered', 
-    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
-    xlab = 'Interaction databases', order = vcount_ordr, desc = False)
+    color = labcol, 
+    xlab = 'Resources', order = vcount_ordr, desc = False)
 
 # transcription factors sens.barplot
 console(':: Plotting `Number of TFs` barplot')
-d = zip(*[(s, len([v for v in g.vs if v['tf']])) \
-    for s, g in sep.iteritems()] + \
+d = zip(*[(s, len([v for v in sep[s].vs if v['tf']])) \
+    for s in sorted(net.sources)] + \
     [(omnipath, sum(net.graph.vs['tf']))])
 bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'tfs_int-by-db.pdf', lab_size = lab_size, 
+    data = None, fname = 'tfs_3-by-db.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
     ylab = 'Number of TFs', 
-    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
-    xlab = 'Interaction databases', order = 'y',
+    color = labcol, 
+    xlab = 'Resources', order = 'y',
     y_break = False)
 bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'tfs_int-by-db-o.pdf', lab_size = lab_size, 
+    data = None, fname = 'tfs_3-by-db-o.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
     ylab = 'Number of TFs', 
-    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
-    xlab = 'Interaction databases', order = vcount_ordr, desc = False, 
+    color = labcol, 
+    xlab = 'Resources', order = vcount_ordr, desc = False, 
     y_break = False)
 
 # transcription factor prop sens.barplot
 console(':: Plotting `Proportion of TFs` barplot')
-d = zip(*[(s, len([v for v in g.vs if v['tf']])/float(g.vcount())*100) \
-    for s, g in sep.iteritems()] + \
+d = zip(*[(s, len([v for v in sep[s].vs if v['tf']])/float(g.vcount())*100) \
+    for s in sorted(net.sources)] + \
     [(omnipath, sum(net.graph.vs['tf'])/float(net.graph.vcount())*100)])
 bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'tfprop_int-by-db.pdf', lab_size = lab_size, 
+    data = None, fname = 'tfprop_3-by-db.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
     ylab = r'% of transcription factors',
-    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
-    xlab = 'Interaction databases', order = 'y')
+    color = labcol, 
+    xlab = 'Resources', order = 'y')
 bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'tfprop_int-by-db-o.pdf', lab_size = lab_size, 
+    data = None, fname = 'tfprop_3-by-db-o.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
     ylab = r'% of transcription factors',
-    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
-    xlab = 'Interaction databases', order = vcount_ordr, desc = False)
+    color = labcol, 
+    xlab = 'Resources', order = vcount_ordr, desc = False)
 
 console(':: Plotting `Coverage of TFs` barplot')
-d = zip(*[(s, len([v for v in g.vs if v['tf']])/float(len(net.lists['tfs']))*100) \
-    for s, g in sep.iteritems()] + \
+d = zip(*[(s, len([v for v in sep[s].vs if v['tf']])/float(len(net.lists['tfs']))*100) \
+    for s in sorted(net.sources)] + \
     [(omnipath, sum(net.graph.vs['tf'])/float(len(net.lists['tfs']))*100)])
 bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'tfcov_int-by-db.pdf', lab_size = lab_size, 
+    data = None, fname = 'tfcov_3-by-db.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
     ylab = r'% of TFs covered', 
-    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
-    xlab = 'Interaction databases', order = 'y', 
+    color = labcol, 
+    xlab = 'Resources', order = 'y', 
     y_break = False)
 bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'tfcov_int-by-db-o.pdf', lab_size = lab_size, 
+    data = None, fname = 'tfcov_3-by-db-o.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
     ylab = r'% of TFs covered', 
-    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
-    xlab = 'Interaction databases', order = vcount_ordr, desc = False, 
+    color = labcol, 
+    xlab = 'Resources', order = vcount_ordr, desc = False, 
     y_break = False)
 
 # receptors & TFs coverage barplot together
@@ -572,7 +622,7 @@ nul = [t.set_fontsize(lab_size[0] * 0.7) for t in leg.texts]
 nul = [t.set_fontsize(lab_size[0] * 0.7) for t in ax.get_yticklabels()]
 xlim = ax.set_xlim(-0.5, float(len(net.sources)) + 1.0)
 ylab = ax.set_ylabel(r'% of proteins covered', fontsize = axis_lab_size * 0.45)
-xlab = ax.set_xlabel('Interaction databases', fontsize = axis_lab_size * 0.45)
+xlab = ax.set_xlabel('Resources', fontsize = axis_lab_size * 0.45)
 xticks = ax.set_xticks(x + 2 * w)
 xticklabs = ax.set_xticklabels(d['Database'], rotation = 90, fontsize = lab_size[0] * 0.6)
 ax.xaxis.label.set_fontweight('medium')
@@ -581,7 +631,7 @@ ax.xaxis.grid(False)
 
 plt.tight_layout()
 
-fig.savefig('interesting-proteins-cov_int-by-db.pdf')
+fig.savefig('interesting-proteins-cov_3-by-db.pdf')
 
 plt.close()
 
@@ -596,94 +646,94 @@ for d in diss:
         dis[u].append(d['disease'])
 
 d = zip(*[(s, sum(len(x) for u, x in dis.iteritems() \
-    if u in g.vs['name'])/float(sum(len(x) \
+    if u in sep[s].vs['name'])/float(sum(len(x) \
     for x in dis.values()))*100) \
-    for s, g in sep.iteritems()] + \
+    for s in sorted(net.sources)] + \
     [(omnipath, sum(len(x) for x in net.graph.vs['dis']) / \
         float(sum(len(x) for x in dis.values()))*100)])
 bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'discov_int-by-db.pdf', lab_size = lab_size, 
+    data = None, fname = 'discov_3-by-db.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
     ylab = r'% of disease-gene' + '\nassociations covered', 
-    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
-    xlab = 'Interaction databases', order = 'y', 
+    color = labcol, 
+    xlab = 'Resources', order = 'y', 
     y_break = False)
 bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'discov_int-by-db-o.pdf', lab_size = lab_size, 
+    data = None, fname = 'discov_3-by-db-o.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
     ylab = r'% of disease-gene' + '\nassociations covered', 
-    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
-    xlab = 'Interaction databases', order = vcount_ordr, desc = False,
+    color = labcol, 
+    xlab = 'Resources', order = vcount_ordr, desc = False,
     y_break = False)
 
 # number of complexes sens.barplot
 console(':: Plotting `Complexes` barplot')
-d = zip(*[(s, len(sens.complexes_in_network(g))) \
-    for s, g in sep.iteritems()] + \
+d = zip(*[(s, len(sens.complexes_in_network(sep[s]))) \
+    for s in sorted(net.sources)] + \
     [(omnipath, len(sens.complexes_in_network(net.graph)))])
 bp = plot.Barplot(x = d[0], y = d[1], 
-    fname = 'complexes_int-by-db.pdf', lab_size = lab_size, 
+    fname = 'complexes_3-by-db.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
+    color = labcol, 
     ylab = 'Number of complexes',
     #\n(out of %u)'%\
         #len(sens.complexes_in_network(net.graph)), 
-    xlab = 'Interaction databases', order = 'y', y_break = (0.55, 0.15))
+    xlab = 'Resources', order = 'y', y_break = (0.55, 0.15))
 bp = plot.Barplot(x = d[0], y = d[1], 
-    fname = 'complexes_int-by-db-o.pdf', lab_size = lab_size, 
+    fname = 'complexes_3-by-db-o.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
+    color = labcol, 
     ylab = 'Number of complexes',
     #\n(out of %u)'%\
         #len(sens.complexes_in_network(net.graph)), 
-    xlab = 'Interaction databases', order = vcount_ordr, desc = False, 
+    xlab = 'Resources', order = vcount_ordr, desc = False, 
     y_break = (0.55, 0.15))
 
 # number of ptms sens.barplot
 console(':: Plotting `PTMs covered` barplot')
-d = zip(*[(s, sum([len(e['ptm']) for e in g.es])) \
-    for s, g in sep.iteritems()] + \
+d = zip(*[(s, sum([len(e['ptm']) for e in sep[s].es])) \
+    for s in sorted(net.sources)] + \
     [(omnipath, sum([len(e['ptm']) for e in net.graph.es]))])
 bp = plot.Barplot(x = d[0], y = d[1], 
-    fname = 'ptms_int-by-db.pdf', lab_size = lab_size, 
+    fname = 'ptms_3-by-db.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
+    color = labcol, 
     ylab = 'Number of PTMs',
     #\n(out of %u PTMs)'%\
         #sum([len(e['ptm']) for e in net.graph.es]), 
-    xlab = 'Interaction databases', order = 'y',
+    xlab = 'Resources', order = 'y',
     #y_break = (0.65, 0.15)
     )
 bp = plot.Barplot(x = d[0], y = d[1], 
-    fname = 'ptms_int-by-db-o.pdf', lab_size = lab_size, 
+    fname = 'ptms_3-by-db-o.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
+    color = labcol, 
     ylab = 'Number of PTMs',
     #\n(out of %u PTMs)'%\
         #sum([len(e['ptm']) for e in net.graph.es]), 
-    xlab = 'Interaction databases', order = vcount_ordr, desc = False, 
+    xlab = 'Resources', order = vcount_ordr, desc = False, 
     #y_break = (0.65, 0.15)
     )
 
 # number of ptms sens.barplot
 console(':: Plotting `Interactions with PTM` barplot')
-d = zip(*[(s, len([1 for e in g.es if len(e['ptm']) != 0])) \
-    for s, g in sep.iteritems()] + \
+d = zip(*[(s, len([1 for e in sep[s].es if len(e['ptm']) != 0])) \
+    for s in sorted(net.sources)] + \
     [(omnipath, len([1 for e in net.graph.es if len(e['ptm']) != 0]))])
 bp = plot.Barplot(x = d[0], y = d[1], 
-    fname = 'havingptm_int-by-db.pdf', lab_size = lab_size, 
+    fname = 'havingptm_3-by-db.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
+    color = labcol, 
     ylab = 'Interactions having PTM', 
-    xlab = 'Interaction databases', order = 'y',
+    xlab = 'Resources', order = 'y',
     #y_break = (0.49, 0.1)
     )
 bp = plot.Barplot(x = d[0], y = d[1], 
-    fname = 'havingptm_int-by-db-o.pdf', lab_size = lab_size, 
+    fname = 'havingptm_3-by-db-o.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
+    color = labcol, 
     ylab = 'Interactions having PTM', 
-    xlab = 'Interaction databases', order = vcount_ordr, desc = False, 
+    xlab = 'Resources', order = vcount_ordr, desc = False, 
     #y_break = (0.49, 0.1)
     )
 
@@ -691,43 +741,43 @@ bp = plot.Barplot(x = d[0], y = d[1],
 
 # cosmic cancer gene census coverage sens.barplot
 console(':: Plotting `Cancer Gene Census coverage` barplot')
-d = zip(*[(s, len(set(net.lists['CancerGeneCensus']) & set(g.vs['name'])) / \
+d = zip(*[(s, len(set(net.lists['CancerGeneCensus']) & set(sep[s].vs['name'])) / \
         float(len(net.lists['CancerGeneCensus']))*100) \
-        for s, g in sep.iteritems()] + \
+        for s in sorted(net.sources)] + \
     [(omnipath, len(set(net.lists['CancerGeneCensus']) & set(net.graph.vs['name'])) / \
         float(len(net.lists['CancerGeneCensus']))*100)])
-bp = plot.Barplot(x = d[0], y = d[1], 
-    fname = 'ccgccov_int-by-db.pdf', lab_size = lab_size, 
+bp = plot.Barplot(x = d[0], y = d[1],
+    fname = 'ccgccov_3-by-db.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
+    color = labcol, 
     ylab = r'% of CGC genes', 
-    xlab = 'Interaction databases', order = 'y')
-bp = plot.Barplot(x = d[0], y = d[1], 
-    fname = 'ccgccov_int-by-db-o.pdf', lab_size = lab_size, 
+    xlab = 'Resources', order = 'y')
+bp = plot.Barplot(x = d[0], y = d[1],
+    fname = 'ccgccov_3-by-db-o.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
-    ylab = r'% of CGC genes', 
-    xlab = 'Interaction databases', order = vcount_ordr, desc = False)
+    color = labcol, 
+    ylab = r'% of CGC genes',
+    xlab = 'Resources', order = vcount_ordr, desc = False)
 
 # intogene cancer driver coverage sens.barplot
 console(':: Plotting `IntOGen cancer drivers coverage` barplot')
-d = zip(*[(s, len(set(net.lists['IntOGen']) & set(g.vs['name'])) / \
+d = zip(*[(s, len(set(net.lists['IntOGen']) & set(sep[s].vs['name'])) / \
         float(len(net.lists['IntOGen']))*100) \
-        for s, g in sep.iteritems()] + \
+        for s in sorted(net.sources)] + \
     [(omnipath, len(set(net.lists['IntOGen']) & set(net.graph.vs['name'])) / \
         float(len(net.lists['IntOGen']))*100)])
-bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'intocov_int-by-db.pdf', lab_size = lab_size, 
+bp = plot.Barplot(x = d[0], y = d[1],
+    data = None, fname = 'intocov_3-by-db.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
-    ylab = r'% of IntOGen genes', 
-    xlab = 'Interaction databases', order = 'y')
-bp = plot.Barplot(x = d[0], y = d[1], 
-    data = None, fname = 'intocov_int-by-db-o.pdf', lab_size = lab_size, 
+    color = labcol, 
+    ylab = r'% of IntOGen genes',
+    xlab = 'Resources', order = 'y')
+bp = plot.Barplot(x = d[0], y = d[1],
+    data = None, fname = 'intocov_3-by-db-o.pdf', lab_size = lab_size, 
     axis_lab_size = axis_lab_size, font_weight = fontW,
-    color = ['#007B7F'] * (len(d[1]) - 1) + ['#6EA945'], 
-    ylab = r'% of IntOGen genes', 
-    xlab = 'Interaction databases', order = vcount_ordr, desc = False)
+    color = labcol, 
+    ylab = r'% of IntOGen genes',
+    xlab = 'Resources', order = vcount_ordr, desc = False)
 
 # ## #
 # PTMs in PTM resources and in the network
@@ -796,7 +846,7 @@ ax.xaxis.grid(False)
 
 plt.tight_layout()
 
-fig.savefig('ptms-by-ptmdb_int.pdf')
+fig.savefig('ptms-by-ptmdb_3.pdf')
 
 plt.close()
 
@@ -858,7 +908,7 @@ pl = axs[4].plot(sorted(htdata.keys()), [htdata[h]['lvnum'] for h in sorted(htda
     '-', color = '#FCCC06')
 xlab = axs[4].set_xlabel('HT limit', fontsize = axis_lab_size * 0.66, fontweight = fontW)
 ylab = axs[4].set_ylabel('LT network node count', fontsize = axis_lab_size * 0.45, fontweight = fontW)
-fig.savefig('ht-limits_int.pdf')
+fig.savefig('ht-limits_3.pdf')
 plt.close(fig)
 
 console(':: Done. Bye.')

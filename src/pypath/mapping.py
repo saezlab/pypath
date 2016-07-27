@@ -627,12 +627,12 @@ class Mapper(object):
         # loading the remaining from the big UniProt mapping file:
         if len(ac_types) > 0:
             url = urls.urls['uniprot_idmap_ftp']['url']
-            c = curl.Curl(url, silent = False)
-            data = c.result.split('\n')
-            prg = progress.Progress(len(data), "Processing ID conversion list", 99)
-            for l in data:
-                prg.step()
-                l = l.split('\t')
+            c = curl.Curl(url, silent = False, large = True)
+            
+            prg = progress.Progress(c.size, "Processing ID conversion list", 99)
+            for l in c.result:
+                prg.step(len(l))
+                l = l.decode('ascii').strip().split('\t')
                 for ac_typ in ac_types:
                     if len(l) > 2 and self.name_types[ac_typ] == l[1]:
                         other = l[2].split('.')[0]

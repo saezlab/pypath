@@ -77,6 +77,7 @@ gethexrgbs = lambda x: map(dec2hex, getrgbs(x))
 # color converting functions
 
 def rgb2hex(rgb):
+    rgb = tuple(int(i) for i in rgb)
     return '#%02x%02x%02x' % rgb
 
 def hex2rgb(rgbhex):

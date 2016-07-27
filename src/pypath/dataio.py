@@ -120,7 +120,9 @@ def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
         sys.stdout.write('No such file: %s\n' % xls_file)
     sys.stdout.flush()
 
-def read_table(cols, fileObject = None, data = None, sep = '\t', sep2 = None, rem = [], hdr = None):
+def read_table(cols, fileObject = None, data = None,
+                sep = '\t', sep2 = None, rem = [], hdr = None,
+                encoding = 'ascii'):
     '''
     Generic function to read data tables.
     
@@ -154,6 +156,8 @@ def read_table(cols, fileObject = None, data = None, sep = '\t', sep2 = None, re
         data = [l.strip() for l in data.split('\n') if len(l) > 0][hdr:]
     res = []
     for l in data:
+        if type(l) is bytes:
+            l = l.decode(encoding)
         for r in rem:
             l = l.replace(r,'')
         l = [f.strip() for f in l.split(sep)]
@@ -1643,8 +1647,6 @@ def get_psite_phos(raw = True, organism = 'human'):
         'residue': 9,
         'motif': 11
     }
-    #buff = StringIO()
-    #buff.write(data)
     data = read_table(cols = cols, fileObject = data, sep = '\t', hdr = 4)
     result = []
     non_digit = re.compile(r'[^\d.-]+')
@@ -2955,7 +2957,7 @@ def hprd_htp():
         map(
             lambda l:
                 l.split('\t'),
-                c.result[fname].read().encode('ascii').split('\n')
+                c.result[fname].read().decode('ascii').split('\n')
             )
         )
 
@@ -3009,7 +3011,7 @@ def get_disgenet(dataset = 'curated'):
         'assoc_typ': 7,
         'source': 8
     }
-    data = read_table(cols = cols, data = data.values()[0], hdr = 1, sep = '\t')
+    data = read_table(cols = cols, data = list(data.values())[0], hdr = 1, sep = '\t')
     for i, d in enumerate(data):
         data[i]['score'] = float(data[i]['score'])
         data[i]['assoc_typ'] = [x.strip() for x in data[i]['assoc_typ'].split(',')]
@@ -3571,6 +3573,27 @@ def rolland_hi_ii_14():
         tbl
     )[1:]
 
+def vidal_hi_iii(fname):
+    '''
+    Loads the HI-III  unbiased interactome from preliminary data of
+    the next large scale screening of Vidal Lab.
+    
+    The data is accessible here:
+        http://interactome.dfci.harvard.edu/H_sapiens/dload_trk.php
+    You need to register and accept the license terms.
+    
+    Returns list of interactions.
+    '''
+    f = curl.FileOpener(fname)
+    return \
+        list(
+            map(
+                lambda l:
+                    l.decode('ascii').strip().split('\t'),
+                f.result
+            )
+        )[1:]
+
 def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
     '''
     Generic function to read MS Excel XLS file, and convert one sheet
@@ -3730,6 +3753,7 @@ def reactions_biopax(biopax_file, organism = 9606, protein_name_type = 'UniProt'
     bpmphe = '%smemberPhysicalEntity' % bppref
     bperef = '%sentityReference' % bppref
     bpxref = '%sxref' % bppref
+    bpdnam = '%sdisplayName' % bppref
     bprelr = '%sRelationshipXref' % bppref
     bpcsto = '%scomponentStoichiometry' % bppref
     bpstoc = '%sstoichiometricCoefficient' % bppref
@@ -4556,7 +4580,7 @@ def get_wang_effects():
             reading_edges = True
     return effects
 
-def biogrid_interactions(organism = 9606, htp_limit = 1):
+def biogrid_interactions(organism = 9606, htp_limit = 1, ltp = True):
     '''
     Downloads and processes BioGRID interactions.
     Keeps only the "low throughput" interactions.
@@ -4579,7 +4603,7 @@ def biogrid_interactions(organism = 9606, htp_limit = 1):
         l = l.decode('utf-8')
         l = l.split('\t')
         if len(l) > 17:
-            if l[17].startswith('Low') and l[15] == organism and l[16] == organism:
+            if l[17].startswith('Low') or not ltp and l[15] == organism and l[16] == organism:
                 interactions.append([l[7], l[8], l[14]])
                 refc.append(l[14])
     refc = Counter(refc)
@@ -5353,7 +5377,7 @@ def intact_interactions(miscore = 0.6, organism = 9606, complex_expansion = Fals
         organism = '%u' % organism
     c = curl.Curl(url, silent = False, large = True, files_needed = ['intact.txt'])
     data = c.result
-    f = data.values()[0]
+    f = data['intact.txt']
     size = c.sizes['intact.txt']
     lnum = 0
     prg = progress.Progress(size, 'Reading IntAct MI-tab file', 99)
@@ -5389,22 +5413,26 @@ def intact_interactions(miscore = 0.6, organism = 9606, complex_expansion = Fals
                     uniprots = tuple(sorted([u1, u2]))
                     if uniprots not in result:
                         result[uniprots] = [set([]), set([]), set([])]
-                    null = map(result[uniprots][0].add,
-                        map(lambda ref:
-                            ref[1],
-                            filter(lambda ref:
-                                ref[0] == 'pubmed',
-                                map(lambda pm:
-                                    pm.split(':'),
-                                    l[8].split('|')
+                    list(
+                        map(result[uniprots][0].add,
+                            map(lambda ref:
+                                ref[1],
+                                filter(lambda ref:
+                                    ref[0] == 'pubmed',
+                                    map(lambda pm:
+                                        pm.split(':'),
+                                        l[8].split('|')
+                                    )
                                 )
                             )
                         )
                     )
-                    null = map(result[uniprots][1].add,
-                        map(lambda m:
-                            m.split('(')[1].replace(')', '').replace('"', ''),
-                            l[6].split('|')
+                    list(
+                        map(result[uniprots][1].add,
+                            map(lambda m:
+                                m.split('(')[1].replace(')', '').replace('"', ''),
+                                l[6].split('|')
+                            )
                         )
                     )
                     if l[15] != '-':
@@ -5416,7 +5444,7 @@ def intact_interactions(miscore = 0.6, organism = 9606, complex_expansion = Fals
         iteritems(result)
     )
     prg.terminate()
-    return result
+    return list(result)
 
 def deathdomain_interactions():
     result = []
@@ -5479,7 +5507,7 @@ def get_string_effects(ncbi_tax_id = 9606,
     c = curl.Curl(url, silent = False, large = True)
     null = c.result.readline()
     for l in c.result:
-        l = l.encode('ascii').split('\t')
+        l = l.decode('ascii').split('\t')
         if len(l) and l[4] == '1' \
             and int(l[5]) >= score_threshold:
             eff = '+' if l[2] in stimulation \
@@ -5491,3 +5519,26 @@ def get_string_effects(ncbi_tax_id = 9606,
                     l[0][5:], l[1][5:], eff
                 ])
     return effects
+
+def get_reactions(types = None, sources = None):
+    if type(types) is list:
+        types = set(types)
+    if type(sources) is list:
+        sources = set(sources)
+    cachefile = os.path.join('cache', 'reaction_interactions_by_source.pickle')
+    if os.path.exists(cachefile):
+        interactions = pickle.load(open(cachefile, 'rb'))
+    else:
+        import pypath.reaction as reaction
+        rea = reaction.RePath()
+        rea.load_all()
+        rea.expand_by_source()
+        interactions = rea.interactions_by_source
+    for i in interactions:
+        if (sources is None or i[4] in sources) and \
+            (types is None or len(i[2] & types)):
+            yield [i[0], i[1],
+                ';'.join(list(i[2] if types is None else i[2] & types)),
+                str(int(i[3])),
+                i[4],
+                ';'.join(list(i[5]))]

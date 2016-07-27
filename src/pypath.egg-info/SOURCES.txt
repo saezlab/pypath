@@ -6,6 +6,7 @@ setup.py
 src/pypath/__init__.py
 src/pypath/__version__
 src/pypath/_html.py
+src/pypath/analysis.py
 src/pypath/chembl.py
 src/pypath/chemblws.py
 src/pypath/colorgen.py
