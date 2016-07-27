@@ -95,6 +95,7 @@ class Workflow(object):
             'table2file': 'curation_tab_%s.tex' % self.name,
             'stable2file': 'curation_tab_stripped_%s.tex' % self.name,
             'latex': '/usr/bin/xelatex',
+            'latex_timeout': 10,
             'compile_latex': True,
             'multi_barplots_summary': True,
             'protein_lists': {
@@ -133,6 +134,7 @@ class Workflow(object):
             'main_table_stripped_fname': 'main_table_stripped_%s.tex' % self.name,
             'simgraph_vertex_fname': 'sources_similarity_vertex_%s.pdf' % self.name,
             'simgraph_edge_fname': 'sources_similarity_edge_%s.pdf' % self.name,
+            'simgraph_curation_fname': 'sources_similarity_curation_%s.pdf' % self.name,
             'refs_journal_grid_fname': 'refs_by_db_journal_%s.pdf' % self.name,
             'refs_year_grid_fname': 'refs_by_db_year_%s.pdf' % self.name,
             'dirs_stacked_fname': 'dirs-signes-by-db-%s_%s.pdf',
@@ -513,6 +515,7 @@ class Workflow(object):
         if self.do_simgraphs:
             self.make_simgraph_vertex()
             self.make_simgraph_edge()
+            self.make_simgraph_curation()
         if self.do_multi_barplots:
             self.make_multi_barplots()
         if self.do_coverage_groups:
@@ -1009,8 +1012,8 @@ class Workflow(object):
         self.console('Plotting references by year')
         counts = dict(self.pubmeds.year.value_counts())
         ecounts = dict(self.pubmeds_earliest.year.value_counts())
-        years = np.arange(min(self.pubmeds.year), max(self.pubmeds.year) + 1)
-        years = years[list(years).index(1970):]
+        years = np.arange(1970, max(self.pubmeds.year) + 1)
+        #years = years[list(years).index(1970):]
         values = np.array(list(map(lambda y: counts[y] if y in counts else 0.0, years)))
         evalues = np.array(list(map(lambda y: ecounts[y] if y in counts else 0.0, years)))
         years = list(map(lambda y: '%u' % y if y % 5 == 0 else '', years))
@@ -1068,6 +1071,15 @@ class Workflow(object):
                 fname = self.get_path(self.simgraph_vertex_fname),
                 similarity = 'vertex',
                 size = 'vertex',
+            )
+    
+    def make_simgraph_curation(self):
+        self.simgraph_curation = \
+            plot.SimilarityGraph(
+                self.pp,
+                fname = self.get_path(self.simgraph_curation_fname),
+                similarity = 'curation',
+                size = 'curation',
             )
     
     def make_simgraph_edge(self):
@@ -1184,12 +1196,15 @@ class Workflow(object):
         
         self.console('Running `%s` on `%s`' % (self.latex, self.get_path(fname)))
         
-        self.latex_proc = subprocess.Popen(
-            [self.latex, self.get_path(fname)],
-            stdout = subprocess.PIPE,
-            stderr = subprocess.PIPE)
-        self.latex_output, self.latex_error = self.latex_proc.communicate()
-        self.latex_return = self.latex_proc.returncode
+        try:
+            self.latex_proc = subprocess.Popen(
+                [self.latex, self.get_path(fname)],
+                stdout = subprocess.PIPE,
+                stderr = subprocess.PIPE)
+            self.latex_output, self.latex_error = self.latex_proc.communicate(timeout = self.latex_timeout)
+            self.latex_return = self.latex_proc.returncode
+        except subprocess.TimeoutExpired:
+            self.latex_return = 1
         
         self.console('LaTeX %s' % (
                 'compiled successfully' \

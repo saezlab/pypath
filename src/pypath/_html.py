@@ -864,7 +864,7 @@ def main_page():
     notebook_dir = ['pypath-docs', 'notebooks']
     
     notebook_names = {
-        'pypath_build_networks.html': 'Introduction',
+        'pypath_build_networks.html': 'Quick start',
         'pypath_mapping.html': 'ID conversion',
         'pathway_extraction.html': 'Pathway annotations',
         'node_neighbourhood.html': 'Extracting PKNs',

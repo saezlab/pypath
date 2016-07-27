@@ -1961,24 +1961,27 @@ class SimilarityGraph(object):
         self.size_param_defaults = {
             'vertex': (1.12, 0.55, 0.040),
             'edge': (1.25, 0.48, 0.065),
-            'curation': (0.22, 0.55, 0.016)
+            'curation': (0.125, 0.44, 0.08)
         }
         self.scale_defaults = {
             'vertex': {
                 'vscale': [50, 100, 500, 1000, 5000],
-                'escale': [0.05, 0.1, 0.2, 0.5]
+                'escale': [0.05, 0.1, 0.2, 0.5],
+                'ew': lambda x: (x * 10.0)**1.8
             },
             'edge': {
                 'vscale': [50, 100, 500, 1000, 2000],
-                'escale': [0.05, 0.1, 0.2, 0.5]
+                'escale': [0.05, 0.1, 0.2, 0.5],
+                'ew': lambda x: (x * 10.0)**1.8
             },
             'curation': {
                 'vscale': [100, 1000, 5000, 10000, 20000],
-                'escale': [5.0, 7.5, 10.0, 15.0, 30.0]
+                'escale': [5.0, 10.0, 15.0, 30.0],
+                'ew': lambda x: (x * 0.35)**1.3
             }
         }
         
-        #self.plot()
+        self.plot()
     
     def reload(self):
         modname = self.__class__.__module__
@@ -2068,16 +2071,17 @@ class SimilarityGraph(object):
         self.edges = [e for e in self.edges if e[2] > 0.0545 and e[0] != e[1]]
     
     def curation_sim(self):
-        self.edges = [(s1, s2, sum([0.0 if s1 not in e['refs_by_source'] or \
-            s2 not in e['refs_by_source'] \
-            else len(set([r1.pmid for r1 in e['refs_by_source'][s1]]).\
-            symmetric_difference(set([r2.pmid for r2 in e['refs_by_source'][s2]]))) \
-            for e in self.graph.es]) / \
-            float(len([e for e in self.graph.es \
-                if s1 in e['sources'] and s2 in e['sources']]) + 0.001)) \
+        self.edges = [(s1, s2, (sum([0.0 if s1 not in e['refs_by_source'] or \
+                s2 not in e['refs_by_source'] \
+                else len(set([r1.pmid for r1 in e['refs_by_source'][s1]]).\
+                symmetric_difference(set([r2.pmid for r2 in e['refs_by_source'][s2]]))) \
+                for e in self.graph.es]) / \
+                float(len([e for e in self.graph.es \
+                    if s1 in e['sources'] and s2 in e['sources']]) + 0.001)) \
+            ) \
             for s1 in self.pp.sources for s2 in self.pp.sources]
         
-        self.edges = [e for e in self.edges if e[2] > 5.9 and e[0] != e[1]]
+        self.edges = [e for e in self.edges if e[2] >= 4.0 and e[0] != e[1]]
     
     def init_sgraph(self):
         self.sgraph = igraph.Graph.TupleList(self.edges, edge_attrs = ['weight'])
@@ -2086,7 +2090,7 @@ class SimilarityGraph(object):
     def make_layout(self):
         self.layout_param_defaults = {
             'fruchterman_reingold': {
-                'weights': 'weight',
+                'weights': 'weight' if self.similarity != 'curation' else None,
                 'repulserad': self.sgraph.vcount() ** 2.8,
                 'maxiter': 1000,
                 'area': self.sgraph.vcount() ** 2.3
@@ -2166,10 +2170,10 @@ class SimilarityGraph(object):
                 )
             alledges = float(len([e2.index for e2 in self.graph.es if v['name'] in e2['sources']]))
             uniqcits = sum([len([rr.pmid for rr in e3['refs_by_source'][v['name']]]) \
-                        for e3 in net.graph.es \
+                        for e3 in self.graph.es \
                         if v['name'] in e3['refs_by_source']])
             
-            sizes.append(allrefs / alledges * uniqcits)
+            sizes.append((allrefs / alledges * uniqcits)**self.size_param[1])
         
         self.sgraph.vs['size'] = sizes
     
@@ -2242,16 +2246,17 @@ class SimilarityGraph(object):
             vertex_size = self.sgraph.vs['size'],
             vertex_frame_width = 0,
             vertex_color = '#77AADD',
-            vertex_label_color = '#777777FF',
+            vertex_label_color = '#000000FF',
             vertex_label_family = 'Sentinel Book',
-            edge_label_color = '#777777FF',
+            edge_label_color = '#000000FF',
             edge_label_family = 'Sentinel Book',
-            vertex_label_size = 24,
+            vertex_label_size = 27,
             vertex_label_dist = 1.4,
-            edge_label_size = 24,
+            edge_label_size = 27,
             edge_label = self.sgraph.es['label'],
-            edge_width = list(map(lambda x: (x * 10.0)**1.8, self.sgraph.es['weight'])),
-            edge_color = '#CC99BB55',
+            edge_width = list(map(self.scale_defaults[self.similarity]['ew'],
+                                  self.sgraph.es['weight'])),
+            edge_color = '#77441155',
             edge_curved = False
         )
     
@@ -3716,7 +3721,8 @@ class BarplotsGrid(object):
                 else:
                     x = np.array(sorted(getattr(self.data, self.x)[np.where(self.ilevels[nplot])[0]].unique()))
                 if self.full_range_x and x.dtype == np.int:
-                    x = np.arange(min(x), max(x) + 1)
+                    xmin = self.xmin if self.xmin is not None else min(x)
+                    x = np.arange(xmin, max(x) + 1)
                 y = dict(getattr(self.data, self.x)[self.ilevels[nplot]].value_counts())
                 y = np.array(list(map(lambda l: y[l] if l in y else 0.0, x)))
                 if self.sort:
