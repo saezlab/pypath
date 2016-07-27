@@ -5529,8 +5529,8 @@ def get_reactions(types = None, sources = None):
     if os.path.exists(cachefile):
         interactions = pickle.load(open(cachefile, 'rb'))
     else:
-        import pypath.reaction as reaction
-        rea = reaction.RePath()
+        import pypath.pyreact as pyreact
+        rea = pyreact.PyReact()
         rea.load_all()
         rea.expand_by_source()
         interactions = rea.interactions_by_source
