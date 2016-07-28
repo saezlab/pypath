@@ -6299,6 +6299,7 @@ class PyPath(object):
         self.load_resources(data_formats.omnipath)
         self.third_source_directions()
         self.remove_htp(threshold = threshold, keep_directed = True)
+        self.remove_undirected(min_refs = 2)
     
     def remove_htp(self, threshold = 50, keep_directed = False):
         self.htp_stats()

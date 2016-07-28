@@ -2556,8 +2556,9 @@ def get_cpdb(exclude = None):
                 result.append([participants[0], participants[1], l[0], l[1]])
     return result
 
-def get_pathwaycommons(sources = None, types = None):
+def get_pathwaycommons(sources = None, types = None, sources_separated = True):
     
+    result = {}
     interactions = []
     
     if type(types) is list:
@@ -2577,8 +2578,17 @@ def get_pathwaycommons(sources = None, types = None):
         'inoh': 'INOH',
         'netpath': 'NetPath',
         'biogrid': 'BioGRID',
-        'corum': 'CORUM'
+        'corum': 'CORUM',
+        'psp': 'PhosphoSite'
     }
+    
+    directed = set([
+        'state-change',
+        'controls-state-change-of',
+        'controls-transport-of',
+        'controls-phosphorylation-of'
+    ])
+    
     sources = list(source_names.keys()) \
         if sources is None else sources
     
@@ -2600,8 +2610,34 @@ def get_pathwaycommons(sources = None, types = None):
             
             if types is None or l[1] in types:
                 
-                l.append(source_names[s])
-                interactions.append(l)
+                if sources_separated:
+                    l.append(source_names[s])
+                    interactions.append(l)
+                
+                else:
+                    pair = (l[0], l[2])
+                    
+                    if pair not in result:
+                        
+                        result[pair] = [set([]), set([]), 0]
+                    
+                    result[pair][0].add(source_names[s])
+                    result[pair][1].add(l[1])
+                    
+                    if l[1] in directed:
+                        result[pair][2] = 1
+                
+    if not sources_separated:
+        
+        for pair, details in iteritems(result):
+            
+            interactions.append([pair[0],
+                                 pair[1],
+                                 ';'.join(details[0]),
+                                 ';'.join(details[1]),
+                                 str(details[2])
+                            ])
+    
     return interactions
 
 def get_go(organism = 9606, swissprot = 'yes'):
