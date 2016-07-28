@@ -98,6 +98,25 @@ reaction = {
     )
 }
 
+pathwaycommons = {
+    'PathwayCommon': input_formats.ReadSettings(
+        name = "PathwayCommons",
+        separator = None, nameColA = 0, nameColB = 2,
+        nameTypeA = "genesymbol", nameTypeB = "genesymbol",
+        typeA = "protein", typeB = "protein", isDirected = False,
+        sign = None,
+        resource = 3,
+        inFile = 'get_pathwaycommons',
+        references = None, ncbiTaxId = 9606,
+        extraEdgeAttrs = {
+            "sif_rule": 1
+            },
+        extraNodeAttrsA={},
+        extraNodeAttrsB={},
+        must_have_references = False
+    )
+}
+
 reaction_misc = {
     'nci_pid': input_formats.ReadSettings(name = "NCI-PID", 
         separator = None, nameColA = 0,

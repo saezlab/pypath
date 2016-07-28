@@ -2556,6 +2556,54 @@ def get_cpdb(exclude = None):
                 result.append([participants[0], participants[1], l[0], l[1]])
     return result
 
+def get_pathwaycommons(sources = None, types = None):
+    
+    interactions = []
+    
+    if type(types) is list:
+        types = set(types)
+    
+    source_names = {
+        'wp': 'WikiPathways',
+        'kegg': 'KEGG',
+        'bind': 'BIND',
+        'intact': 'IntAct',
+        'intact_complex': 'IntAct',
+        'panther': 'PANTHER',
+        'pid': 'NCI-PID',
+        'reactome': 'Reactome',
+        'dip': 'DIP',
+        'hprd': 'HPRD',
+        'inoh': 'INOH',
+        'netpath': 'NetPath',
+        'biogrid': 'BioGRID',
+        'corum': 'CORUM'
+    }
+    sources = list(source_names.keys()) \
+        if sources is None else sources
+    
+    prg = progress.Progress(len(sources),
+                            'Processing PathwayCommons',
+                            1, percent = False)
+    
+    url = urls.urls['pwcommons']['url']
+    
+    for s in sources:
+        
+        prg.step()
+        surl = url % s
+        c = curl.Curl(surl, silent = False, large = True)
+        
+        for l in c.result:
+            
+            l = l.decode('ascii').strip().split('\t')
+            
+            if types is None or l[1] in types:
+                
+                l.append(source_names[s])
+                interactions.append(l)
+    return interactions
+
 def get_go(organism = 9606, swissprot = 'yes'):
     rev = '' if swissprot is None \
             else ' AND reviewed:%s' % swissprot
