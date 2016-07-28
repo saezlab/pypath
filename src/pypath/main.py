@@ -5996,7 +5996,7 @@ class PyPath(object):
                     g.vs[e.source]['netpath_pathways'] | set(e['netpath_pathways'])
                 g.vs[e.target]['netpath_pathways'] = \
                     g.vs[e.target]['netpath_pathways'] | set(e['netpath_pathways'])
-        if 'slk_pathways' in gvs.attributes():
+        if 'slk_pathways' in g.vs.attributes():
             g.vs['signalink_pathways'] = [set(v['slk_pathways']) for v in g.vs]
             for v in g.vs:
                 if v['atg']:
