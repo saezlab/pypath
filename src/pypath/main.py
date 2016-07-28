@@ -5267,7 +5267,7 @@ class PyPath(object):
             if latex else os.path.join('results', 'databases-%s.tsv'%self.session)
         stats = self.sources_overlap()
         dirs = self.get_dirs_signs()
-        header = ['Database', 'Node count', 'Edge count', 'Directions', 'Signs'] 
+        header = ['Database', 'Nodes', 'Edges', 'Directions', 'Signs']
         if urls: header.append('URL')
         if annots: header.append('Annotations')
         header.append('Notes')
@@ -5406,7 +5406,7 @@ class PyPath(object):
                 (
                     _latex_hdr,
                         'r'*(len(header) - 2) + \
-                        (r'p{3.7cm}<{\raggedright}' if urls else '') + \
+                        (r'p{3.0cm}<{\raggedright}' if urls else '') + \
                         (r'p{2.7cm}<{\raggedright}' if annots else '') + \
                         r'X<{\raggedright}',
                     _hdr_row,
@@ -5860,6 +5860,19 @@ class PyPath(object):
             if kin in self.nodDct:
                 self.graph.vs[self.nodDct[kin]]['kin'] = True
     
+    def set_signaling_proteins(self):
+        '''
+        Creates a vertex attribute `kin` with value *True* if
+        the protein is a kinase, otherwise *False*.
+        '''
+        self.update_vname()
+        self.graph.vs['sig'] = [False for _ in self.graph.vs]
+        if 'kin' not in self.lists:
+            self.signaling_proteins_list()
+        for sig in self.lists['sig']:
+            if sig in self.nodDct:
+                self.graph.vs[self.nodDct[sig]]['sig'] = True
+    
     def set_druggability(self):
         '''
         Creates a vertex attribute `dgb` with value *True* if
@@ -5976,16 +5989,22 @@ class PyPath(object):
     
     def pathway_attributes(self, graph = None):
         g = self.graph if graph is None else graph
-        g.vs['netpath_pathways'] = [set([]) for _ in xrange(g.vcount())]
-        for e in g.es:
-            g.vs[e.source]['netpath_pathways'] = \
-                g.vs[e.source]['netpath_pathways'] | set(e['netpath_pathways'])
-            g.vs[e.target]['netpath_pathways'] = \
-                g.vs[e.target]['netpath_pathways'] | set(e['netpath_pathways'])
-        g.vs['signalink_pathways'] = [set(v['slk_pathways']) for v in g.vs]
-        for v in g.vs:
-            if v['atg']:
-                v['signalink_pathways'].add('autophagy')
+        if 'netpath_pathways' in g.es.attributes():
+            g.vs['netpath_pathways'] = [set([]) for _ in xrange(g.vcount())]
+            for e in g.es:
+                g.vs[e.source]['netpath_pathways'] = \
+                    g.vs[e.source]['netpath_pathways'] | set(e['netpath_pathways'])
+                g.vs[e.target]['netpath_pathways'] = \
+                    g.vs[e.target]['netpath_pathways'] | set(e['netpath_pathways'])
+        if 'slk_pathways' in gvs.attributes():
+            g.vs['signalink_pathways'] = [set(v['slk_pathways']) for v in g.vs]
+            for v in g.vs:
+                if v['atg']:
+                    v['signalink_pathways'].add('autophagy')
+            g.es['signalink_pathways'] = [
+                g.vs[e.source]['signalink_pathways'] | \
+                g.vs[e.target]['signalink_pathways'] \
+                    for e in g.es]
     
     def pathways_table(self, filename = 'genes_pathways.list', 
         pw_sources = ['signalink', 'signor', 'netpath', 'kegg'], graph = None):

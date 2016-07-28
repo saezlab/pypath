@@ -613,12 +613,13 @@ class Workflow(object):
         with open(self.get_path(self.fisher_file), 'w') as fi:
             
             for attr, name in self.fisher:
+                print(attr, name)
                 cont = np.array([[len(self.pp.lists['proteome']),
                                 self.pp.graph.vcount()],
                                 [len(self.pp.lists[attr]),
-                                len([1 for v in self.pp.graph.vs if len(v[attr]) > 0])]])
+                                len([1 for v in self.pp.graph.vs if v[attr]])]])
                 fi.write('%s:' % name)
-                fi.write('\t%s\t%s\n' % stats.fisher_exact(contDisg))
+                fi.write('\t%s\t%s\n' % stats.fisher_exact(cont))
     
     def get_data(self, fun, attr):
         if attr is None or not hasattr(self, attr):
@@ -967,7 +968,8 @@ class Workflow(object):
                 fname = self.get_path(self.refs_year_grid_fname),
                 ylab = 'References',
                 title = 'Number of references by databases and years',
-                data = self.pubmeds
+                data = self.pubmeds,
+                uniform_ylim = True
             )
     
     def make_refs_journals_grid(self):

@@ -1272,7 +1272,7 @@ class ScatterPlus(object):
             'stretch': 'condensed',
             'weight': 'bold',
             'variant': 'normal',
-            'size': 'x-large'
+            'size': 'xx-large'
         }
         self.ticklabel_font_default = {
             'family': ['Helvetica Neue LT Std'],
@@ -1280,7 +1280,7 @@ class ScatterPlus(object):
             'stretch': 'condensed',
             'weight': 'roman',
             'variant': 'normal',
-            'size': 'large'
+            'size': 'x-large'
         }
         self.legend_font_default = {
             'family': ['Helvetica Neue LT Std'],
@@ -1288,7 +1288,7 @@ class ScatterPlus(object):
             'stretch': 'condensed',
             'weight': 'roman',
             'variant': 'normal',
-            'size': 'small'
+            'size': 'medium'
         }
         self.title_font_default = {
             'family': ['Helvetica Neue LT Std'],
@@ -1304,7 +1304,7 @@ class ScatterPlus(object):
             'stretch': 'condensed',
             'weight': 'bold',
             'variant': 'normal',
-            'size': 'small'
+            'size': 'large'
         }
         
         self.axis_lab_font = common.merge_dicts(axis_lab_font,
@@ -1721,7 +1721,7 @@ class ScatterPlus(object):
                 #bbox_transform = self.fig.transFigure
             #)
             
-            self.leg2.get_title().set_fontproperties(self.fp_axis_lab)
+            self.leg2.get_title().set_fontproperties(self.fp_ticklabel)
     
     def axes_labels(self):
         if self.xlab is not None:
@@ -3510,6 +3510,7 @@ class BarplotsGrid(object):
             color = '#77AADD',
             xlim = None,
             uniform_xlim = True,
+            uniform_ylim = False,
             full_range_x = True,
             sort = False,
             desc = False,
@@ -3623,6 +3624,7 @@ class BarplotsGrid(object):
         self.set_grid()
         self.make_plots()
         self.set_title()
+        self.set_ylim()
     
     def post_plot(self):
         self.finish()
@@ -3686,7 +3688,7 @@ class BarplotsGrid(object):
         """
         self.gs = mpl.gridspec.GridSpec(self.nrows, self.ncols + 1,
                 height_ratios = [1.0] * self.nrows, width_ratios = [0.0] + [1.0] * self.ncols)
-        self.axes = list(map(lambda _: [None] * (self.ncols + 1), xrange(self.nrows * 2)))
+        self.axes = list(map(lambda _: [None] * (self.ncols + 1), xrange(self.nrows)))
     
     def get_subplot(self, i, j):
         if self.axes[i][j] is None:
@@ -3704,8 +3706,10 @@ class BarplotsGrid(object):
     def set_xlim(self):
         if self.xlim is None and self.uniform_xlim:
             allx = getattr(self.data, self.x).unique()
-            xlen = allx.max() - allx.min() if self.full_range_x else len(allx)
-            self.xlim = [-1.0, xlen + 1.5]
+            xmin = allx.min() if self.xmin is None else self.xmin
+            xlen = allx.max() - xmin if self.full_range_x \
+                else len(list(filter(lambda x: x >= xmin, allx)))
+            self.xlim = [-1.0, xlen + 1.0]
     
     def make_plots(self):
         
@@ -3799,6 +3803,21 @@ class BarplotsGrid(object):
         self.title_text.set_fontproperties(self.fp_title)
         self.title_text.set_horizontalalignment(self.title_halign)
         self.title_text.set_verticalalignment(self.title_valign)
+    
+    def set_ylim(self):
+        if self.uniform_ylim:
+            ymin = min(map(lambda row:
+                    min(map(lambda ax: ax.get_ylim()[0],
+                            filter(lambda ax: ax is not None, row[1:]))),
+                self.axes))
+            ymax = max(map(lambda row:
+                    max(map(lambda ax: ax.get_ylim()[1],
+                            filter(lambda ax: ax is not None, row[1:]))),
+                self.axes[1:]))
+            for aa in self.axes:
+                for ax in aa[1:]:
+                    if ax is not None:
+                        ax.set_ylim([ymin, ymax])
     
     def finish(self):
         """
