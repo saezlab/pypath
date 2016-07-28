@@ -570,11 +570,13 @@ urls = {
     'dip': {
         'label': 'DIP PSI-MI tab',
         'login': 'http://dip.doe-mbi.ucla.edu/dip/Login.cgi',
-        'url': 'http://dip.mbi.ucla.edu/dip/file?ds=current&fn=Hsapi20160430%s&ff=txt',
+        'url': 'http://dip.mbi.ucla.edu/dip/file?'\
+            'ds=current&fn=Hsapi20160430%s&ff=txt',
         'ik': 'http://dip.doe-mbi.ucla.edu/dip/DIPview.cgi?IK=%u'
     },
     'vaquerizas2009': {
-        'label': 'A census of human transcription factors: function, expression and evolution; Supplementary Table S3',
+        'label': 'A census of human transcription factors: function, '\
+            'expression and evolution; Supplementary Table S3',
         'url': 'http://www.nature.com/nrg/journal/v10/n4/extref/nrg2538-s3.txt'
     },
     'spike': {
@@ -591,11 +593,13 @@ urls = {
     },
     'macrophage': {
         'label': 'Macrophage Pathways; Raza 2010, Supplementary Materials 1',
-        'url': r'https://static-content.springer.com/esm/art%3A10.1186%2F1752-0509-4-63/MediaObjects/12918_2010_452_MOESM2_ESM.XLS'
+        'url': r'https://static-content.springer.com/esm/art%3A10.1186%2F1752-'
+            r'0509-4-63/MediaObjects/12918_2010_452_MOESM2_ESM.XLS'
     },
     'intact': {
         'label': 'IntAct entire database PSI-MI tab',
-        'mitab' : 'ftp://ftp.ebi.ac.uk/pub/databases/intact/current/psimitab/intact.zip'
+        'mitab' : 'ftp://ftp.ebi.ac.uk/pub/databases/intact/'\
+            'current/psimitab/intact.zip'
     },
     'death': {
         'label': 'DeathDomain webpage',
@@ -612,6 +616,11 @@ urls = {
         'label': 'WikiPathways human biopax',
         'biopax_l3': 'http://wikipathways.org//wpi/cache/wikipathways_'\
             'Homo_sapiens_Curation-AnalysisCollection__owl.zip'
+    },
+    'pwcommons': {
+        'label': 'PathwayCommons binary SIF files',
+        'url': 'http://www.pathwaycommons.org/archives/PC2/v8/'\
+            'PathwayCommons.8.%s.BINARY_SIF.hgnc.txt.sif.gz'
     }
 }
 

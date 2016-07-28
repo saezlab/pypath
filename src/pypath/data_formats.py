@@ -98,11 +98,63 @@ reaction = {
     )
 }
 
+pathwaycommons = {
+    'PathwayCommons': input_formats.ReadSettings(
+        name = "PathwayCommons",
+        separator = None, nameColA = 0, nameColB = 2,
+        nameTypeA = "genesymbol", nameTypeB = "genesymbol",
+        typeA = "protein", typeB = "protein",
+        isDirected = (1, ['state-chanege', 'controls-phosphorylation-of']),
+        sign = None,
+        resource = 3,
+        inFile = 'get_pathwaycommons',
+        references = None, ncbiTaxId = 9606,
+        extraEdgeAttrs = {
+            "sif_rule": 1
+            },
+        extraNodeAttrsA={},
+        extraNodeAttrsB={},
+        must_have_references = False,
+        inputArgs = {
+            'types': [
+                'state-change',
+                'in-same-component',
+                'interacts-with',
+                'controls-state-change-of',
+                'in-complex-with',
+                'controls-transport-of',
+                'controls-phosphorylation-of'
+            ]
+        }
+    )
+}
+
+pathwaycommons1 = {
+    'PathwayCommons': input_formats.ReadSettings(
+        name = "PathwayCommons",
+        separator = None, nameColA = 0, nameColB = 1,
+        nameTypeA = "genesymbol", nameTypeB = "genesymbol",
+        typeA = "protein", typeB = "protein",
+        isDirected = (4, '1'),
+        sign = None,
+        inFile = 'get_pathwaycommons',
+        references = None, ncbiTaxId = 9606,
+        extraEdgeAttrs = {},
+        extraNodeAttrsA={},
+        extraNodeAttrsB={},
+        must_have_references = False,
+        inputArgs = {
+            'sources_separated': False
+        }
+    )
+}
+
+
 reaction_misc = {
-    'nci_pid': input_formats.ReadSettings(name = "NCI-PID", 
+    'nci_pid': input_formats.ReadSettings(name = "NCI-PID",
         separator = None, nameColA = 0,
         nameColB = 1, nameTypeA = "uniprot", nameTypeB = "uniprot",
-        typeA = "protein", typeB = "protein", 
+        typeA = "protein", typeB = "protein",
         isDirected = (4, 'directed'), sign = False,
         ncbiTaxId = 9606,
         inFile = 'pid_interactions', references = (3, ';'), header = False,

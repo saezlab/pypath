@@ -966,7 +966,7 @@ class ComplexVariations(Intersecting, EntitySet):
     def __rsub__(self, other):
         return self.proteins() - other
 
-class RePath(object):
+class PyReact(object):
     
     def __init__(self, mapper = None, ncbi_tax_id = 9606,
                 default_id_types = {}, modifications = True,
