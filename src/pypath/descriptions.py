@@ -26,6 +26,7 @@ import textwrap
 
 import pypath._html as _html
 import pypath.data_formats as data_formats
+import pypath.urls as urls
 
 __all__ = ['descriptions', 'gen_html', 'write_html']
 
@@ -2862,7 +2863,7 @@ def gen_html():
             except KeyError:
                 sys.stdout.write('Wrong license format for %s\n' % k)
                 sys.stdout.flush()
-        for uk, uv in v['urls'].iteritems():
+        for uk, uv in iteritems(v['urls']):
             if len(uv) > 0 and uk != 'omictools':
                 try:
                     doc += '\t\t\t<h3>%s</h3>\n' % (uk.capitalize())
@@ -2891,7 +2892,7 @@ def gen_html():
                     v['urls']['omictools'][0]
             if 'pathguide' in v:
                 doc += '\t\t\t<li><a href="%s" target="_blank">PathGuide</a></li>\n' % \
-                    (data_formats.urls['pathguide']['url'] % v['pathguide'])
+                    (urls.urls['pathguide']['url'] % v['pathguide'])
             doc += '\t\t\t</ul>\n'
         if 'taxons' in v:
             doc += '<p><b>Taxons: </b><em>%s</em></p>' % \
@@ -3039,7 +3040,7 @@ def licenses_emails(outfile = 'licenses_emails.txt'):
     no_license = 'Unfortunately, we could not find licensing information for %s. According to todays copyright laws, we are not allowed to redistribute data without the explicit permission of the copyright holder (http://www.gnu.org/licenses/license-list.html#NoLicense). We would like to ask you for permission to redistribute %s data in the way outlined above.'
     license_ok = 'We understand you published %s under %s license. This should allow us the redistribution outlined above, so I am writing only to keep you informed, and to say thank you for making your data available.'
     license_problem = 'We understand you published %s under license %s, which does not allow us the redistribution of the data. We would like to ask you for special permission to redistribute %s data in the way outlined above.'
-    for db, inp in data_formats.omnipath.iteritems():
+    for db, inp in iteritems(data_formats.omnipath):
         desc = descriptions[inp.name]
         name = desc['full_name'] if 'full_name' in desc else desc['label'] if 'label' in desc else inp.name
         if desc['license']['name'].startswith('No'):

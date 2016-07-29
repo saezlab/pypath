@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pypath.intera &mdash; pypath 0.1.72 documentation</title>
+  <title>pypath.intera &mdash; pypath 0.5.1 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="pypath 0.1.72 documentation" href="../../index.html"/>
+    <link rel="top" title="pypath 0.5.1 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.1
+                0.5
               </div>
             
           
@@ -150,15 +150,23 @@
 <span class="c1"># domain-motif interactions, binding interfaces</span>
 <span class="c1">#</span>
 
+<span class="kn">from</span> <span class="nn">future.utils</span> <span class="kn">import</span> <span class="n">iteritems</span>
+<span class="kn">from</span> <span class="nn">past.builtins</span> <span class="kn">import</span> <span class="nb">xrange</span><span class="p">,</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">reduce</span>
+
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
 
 <span class="c1"># from pypath:</span>
-<span class="kn">import</span> <span class="nn">common</span>
+<span class="kn">import</span> <span class="nn">pypath.common</span> <span class="kn">as</span> <span class="nn">common</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Residue&#39;</span><span class="p">,</span> <span class="s1">&#39;Ptm&#39;</span><span class="p">,</span> <span class="s1">&#39;Motif&#39;</span><span class="p">,</span> <span class="s1">&#39;Domain&#39;</span><span class="p">,</span> 
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Residue&#39;</span><span class="p">,</span> <span class="s1">&#39;Ptm&#39;</span><span class="p">,</span> <span class="s1">&#39;Motif&#39;</span><span class="p">,</span> <span class="s1">&#39;Domain&#39;</span><span class="p">,</span>
     <span class="s1">&#39;DomainDomain&#39;</span><span class="p">,</span> <span class="s1">&#39;DomainMotif&#39;</span><span class="p">,</span> <span class="s1">&#39;Interface&#39;</span><span class="p">]</span>
+
+
+<span class="k">if</span> <span class="s1">&#39;unicode&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">__builtins__</span><span class="p">:</span>
+    <span class="nb">unicode</span> <span class="o">=</span> <span class="nb">str</span>
+
 
 <div class="viewcode-block" id="Residue"><a class="viewcode-back" href="../../index.html#pypath.intera.Residue">[docs]</a><span class="k">class</span> <span class="nc">Residue</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     
@@ -191,6 +199,9 @@
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;Residue </span><span class="si">%s</span><span class="s1">-</span><span class="si">%u</span><span class="s1"> in protein </span><span class="si">%s</span><span class="s1">-</span><span class="si">%u%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> 
             <span class="bp">self</span><span class="o">.</span><span class="n">protein</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">isoform</span><span class="p">,</span> <span class="s1">&#39; (mutated)&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutated</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__str__</span><span class="p">()</span>
     
     <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">:</span><span class="si">%u</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
@@ -257,8 +268,8 @@
 
 <div class="viewcode-block" id="Ptm"><a class="viewcode-back" href="../../index.html#pypath.intera.Ptm">[docs]</a><span class="k">class</span> <span class="nc">Ptm</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein</span><span class="p">,</span> <span class="n">id_type</span> <span class="o">=</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="n">typ</span> <span class="o">=</span> <span class="s1">&#39;unknown&#39;</span><span class="p">,</span> 
-            <span class="n">motif</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">residue</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">source</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">isoform</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> 
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein</span><span class="p">,</span> <span class="n">id_type</span> <span class="o">=</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="n">typ</span> <span class="o">=</span> <span class="s1">&#39;unknown&#39;</span><span class="p">,</span>
+            <span class="n">motif</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">residue</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">source</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">isoform</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
             <span class="n">seq</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">non_digit</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;[^\d.-]+&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protein</span> <span class="o">=</span> <span class="n">protein</span>
@@ -269,7 +280,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">residue</span> <span class="o">=</span> <span class="n">residue</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">isoform</span> <span class="o">=</span> <span class="n">isoform</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">isoform</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span> \
             <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">non_digit</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">isoform</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_source</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">isoforms</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_isoform</span><span class="p">(</span><span class="n">isoform</span><span class="p">)</span>
@@ -327,7 +338,14 @@
             <span class="k">return</span> <span class="bp">False</span>
     
     <span class="k">def</span> <span class="nf">add_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">addToList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">source</span><span class="p">)</span> <span class="ow">in</span> <span class="n">common</span><span class="o">.</span><span class="n">charTypes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_source</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_source</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_add_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">-</span><span class="si">%u</span><span class="s1">:</span><span class="si">%s</span><span class="s1">:</span><span class="si">%s</span><span class="s1">:</span><span class="si">%s</span><span class="s1">:</span><span class="si">%s</span><span class="s1">:</span><span class="si">%u</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protein</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">isoform</span><span class="p">,</span> 
@@ -388,7 +406,7 @@
     
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protein</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">id_type</span> <span class="o">=</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="n">regex</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> 
         <span class="n">instance</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">isoform</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">motif_name</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">prob</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">elm</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
-        <span class="n">description</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">seq</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">seq</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">source</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
         <span class="n">non_digit</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;[^\d.-]+&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protein</span> <span class="o">=</span> <span class="n">protein</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id_type</span> <span class="o">=</span> <span class="n">id_type</span>
@@ -405,6 +423,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">prob</span> <span class="o">=</span> <span class="n">prob</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elm</span> <span class="o">=</span> <span class="n">elm</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_source</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">protein</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">))</span>
@@ -431,6 +452,16 @@
             <span class="n">other</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">motif_name</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">True</span>
         <span class="k">return</span> <span class="bp">False</span>
+    
+    <span class="k">def</span> <span class="nf">add_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">source</span><span class="p">)</span> <span class="ow">in</span> <span class="n">common</span><span class="o">.</span><span class="n">charTypes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_source</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_source</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_add_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">:</span><span class="si">%s</span><span class="s1">:</span><span class="si">%u</span><span class="s1">-</span><span class="si">%u</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
@@ -493,7 +524,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">isoform</span> <span class="o">=</span> <span class="n">isoform</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">isoform</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span> \
             <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">non_digit</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">isoform</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pdbs</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">pdb</span><span class="p">,</span> <span class="n">chain</span> <span class="ow">in</span> <span class="n">chains</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">pdb</span><span class="p">,</span> <span class="n">chain</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">chains</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_chains</span><span class="p">(</span><span class="n">pdb</span><span class="p">,</span> <span class="n">chain</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -561,7 +592,7 @@
             <span class="mi">0</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> 
             <span class="mi">0</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> 
             <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">pdb</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chains</span><span class="p">))</span> \
-                <span class="k">for</span> <span class="n">pdb</span><span class="p">,</span> <span class="n">chains</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdbs</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()])</span>
+                <span class="k">for</span> <span class="n">pdb</span><span class="p">,</span> <span class="n">chains</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdbs</span><span class="p">)])</span>
             <span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -573,13 +604,13 @@
                 <span class="mi">0</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> 
                 <span class="mi">0</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> 
                 <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> (chains </span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pdb</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chains</span><span class="p">))</span> \
-                <span class="k">for</span> <span class="n">pdb</span><span class="p">,</span> <span class="n">chains</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdbs</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()])</span>
+                <span class="k">for</span> <span class="n">pdb</span><span class="p">,</span> <span class="n">chains</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdbs</span><span class="p">)])</span>
             <span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">other</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> \
             <span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">start</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">end</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">pdb</span><span class="p">,</span> <span class="n">chain</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">pdbs</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">pdb</span><span class="p">,</span> <span class="n">chain</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">pdbs</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_chains</span><span class="p">(</span><span class="n">pdb</span><span class="p">,</span> <span class="n">chain</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">domain_id_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_id_type</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">domain_id_type</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_id_type</span> <span class="o">!=</span> <span class="s1">&#39;pfam&#39;</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">domain</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> \
@@ -591,9 +622,9 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain_a</span><span class="p">,</span> <span class="n">domain_b</span><span class="p">,</span> <span class="n">pdbs</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> 
         <span class="n">sources</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">refs</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">contact_residues</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">domains</span> <span class="o">=</span> <span class="p">[</span><span class="n">domain_a</span><span class="p">,</span> <span class="n">domain_b</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">refs</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pdbs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdbs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_sources</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_refs</span><span class="p">(</span><span class="n">refs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_pdbs</span><span class="p">(</span><span class="n">pdbs</span><span class="p">)</span>
@@ -617,14 +648,21 @@
     <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">other</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">other</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     
-    <span class="k">def</span> <span class="nf">add_sources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sources</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">addToList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">,</span> <span class="n">sources</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">add_sources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">source</span><span class="p">)</span> <span class="ow">in</span> <span class="n">common</span><span class="o">.</span><span class="n">charTypes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_source</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_source</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_add_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">add_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">refs</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">addToList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">refs</span><span class="p">,</span> <span class="n">refs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refs</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">addToSet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">refs</span><span class="p">,</span> <span class="n">refs</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">add_pdbs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdbs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pdbs</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">addToList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdbs</span><span class="p">,</span> <span class="n">pdbs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdbs</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">addToSet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdbs</span><span class="p">,</span> <span class="n">pdbs</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">serialize</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">domains</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">serialize</span><span class="p">(),</span> 
@@ -646,9 +684,9 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">ptm</span><span class="p">,</span> <span class="n">sources</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">refs</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">pdbs</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ptm</span> <span class="o">=</span> <span class="n">ptm</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">domain</span> <span class="o">=</span> <span class="n">domain</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">refs</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pdbs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdbs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_sources</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_refs</span><span class="p">(</span><span class="n">refs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_pdbs</span><span class="p">(</span><span class="n">pdbs</span><span class="p">)</span>
@@ -682,14 +720,21 @@
     <span class="k">def</span> <span class="nf">get_proteins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">protein</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">protein</span><span class="p">]</span>
     
-    <span class="k">def</span> <span class="nf">add_sources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sources</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">addToList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">,</span> <span class="n">sources</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">add_sources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">source</span><span class="p">)</span> <span class="ow">in</span> <span class="n">common</span><span class="o">.</span><span class="n">charTypes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_source</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_source</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_add_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">add_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">refs</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">addToList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">refs</span><span class="p">,</span> <span class="n">refs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refs</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">addToSet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">refs</span><span class="p">,</span> <span class="n">refs</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">add_pdbs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdbs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pdbs</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">addToList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdbs</span><span class="p">,</span> <span class="n">pdbs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refs</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">addToSet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdbs</span><span class="p">,</span> <span class="n">pdbs</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">serialize</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">serialize</span><span class="p">(),</span> 
@@ -717,8 +762,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">target</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">effect</span> <span class="o">=</span> <span class="n">effect</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">refs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_sources</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_refs</span><span class="p">(</span><span class="n">refs</span><span class="p">)</span>
     
@@ -738,11 +783,18 @@
     <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
     
-    <span class="k">def</span> <span class="nf">add_sources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sources</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">addToList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">,</span> <span class="n">sources</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">add_sources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">source</span><span class="p">)</span> <span class="ow">in</span> <span class="n">common</span><span class="o">.</span><span class="n">charTypes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_source</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_source</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_add_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">add_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">refs</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">addToList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">refs</span><span class="p">,</span> <span class="n">refs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refs</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">addToSet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">refs</span><span class="p">,</span> <span class="n">refs</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">effect</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">serialize</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> 
@@ -770,7 +822,7 @@
         <span class="n">sources</span> <span class="o">=</span> <span class="n">sources</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span> <span class="k">else</span> <span class="p">[</span><span class="n">sources</span><span class="p">]</span>
         <span class="n">sources</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
         <span class="n">proteins</span> <span class="o">=</span> <span class="n">proteins</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">proteins</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">proteins</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">()</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="nb">locals</span><span class="p">()):</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">members</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">uniqList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proteins</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constitution</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">proteins</span><span class="p">)</span>
@@ -823,9 +875,6 @@
             <span class="ow">or</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">res_a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">unicode</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">res_a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">)</span> \
             <span class="ow">or</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">res_b</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">unicode</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">res_b</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">)</span> \
             <span class="ow">or</span> <span class="n">typ</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">:</span>
-            <span class="k">print</span> <span class="n">res_a</span>
-            <span class="k">print</span> <span class="n">res_b</span>
-            <span class="k">print</span> <span class="n">typ</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">Wrong parameters for Interface.add_residues()</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">typ</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">id_a</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -941,7 +990,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.72',
+            VERSION:'0.5.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -613,7 +613,7 @@ class PyPath(object):
         self.__dict__ = other.__dict__
         self.ownlog.msg(1, "Reinitialized", 'INFO')
     
-    def init_network(self, lst = omnipath, exclude = [], 
+    def init_network(self, lst = omnipath, exclude = [],
         cache_files = {}, pfile = False, save = False,
         reread = False, redownload = False):
         '''
