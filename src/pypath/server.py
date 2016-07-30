@@ -15,17 +15,26 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
+from future.utils import iteritems
+
+import sys
+
 try:
     from twisted.web import server, resource
     from twisted.internet import reactor
 except:
-    print 'No `twisted` available.'
+    sys.stdout.write('\t:: No `twisted` available.\n')
+
 import urllib
 import json
 
-import pypath.descriptions
-import pypath._html
-import pypath.data_formats
+import pypath.descriptions as descriptions
+import pypath._html as _html
+import pypath.data_formats as data_formats
+from pypath.common import flatList, __version__
+
+if 'unicode' not in __builtins__:
+    unicode = str
 
 def stop_server():
     reactor.removeAll()
@@ -47,6 +56,7 @@ class RestResource(resource.Resource):
         self.htmls = ['info', '']
     
     def render_GET(self, request):
+        request.postpath = list(map(lambda i: i.decode('utf-8'), request.postpath))
         html = len(request.postpath) == 0 or request.postpath[0] in self.htmls
         self.set_defaults(request, html = html)
         if len(request.postpath) > 0 and hasattr(self, request.postpath[0]) \
@@ -59,9 +69,9 @@ class RestResource(resource.Resource):
         elif len(request.postpath) == 0:
             return self.root(request)
         # return str(request.__dict__)
-        return "Not found: %s%s" % ('/'.join(request.postpath), 
+        return "Not found: %s%s" % ('/'.join(request.postpath),
             '' if len(request.args) == 0 else \
-            '?%s' % '&'.join(['%s=%s'%(k, v) for k, v in request.args.iteritems()]))
+            '?%s' % '&'.join(['%s=%s'%(k, v) for k, v in iteritems(request.args)]))
     
     def set_defaults(self, request, html = False):
         request.setHeader('Cache-Control', 'Public')
@@ -101,12 +111,12 @@ class RestResource(resource.Resource):
                 if type(v) is not list else ';'.join(v) for v in val]))
     
     def interactions(self, req):
-        fields = ['sources', 'references']
+        fields = [b'sources', b'references']
         result = []
         elist = self._get_eids(req)
         res = []
         hdr = ['source', 'target', 'is_directed', 'is_stimulation', 'is_inhibition']
-        hdr += [f for f in fields if f in req.args['fields']]
+        hdr += [f.decode('utf-8') for f in fields if f in req.args[b'fields']]
         all_sources = set([])
         for eid in elist:
             e = self.g.es[eid]
@@ -127,7 +137,7 @@ class RestResource(resource.Resource):
                         thisEdge.append(list(dsources))
                     if 'references' in hdr:
                         thisEdge.append([r.pmid for r in flatList([rs for s, rs in \
-                            e['refs_by_source'].iteritems() \
+                            iteritems(e['refs_by_source']) \
                             if s in dsources])])
                     thisEdge.append(self._dip_urls(e))
                     res.append(thisEdge)
@@ -175,12 +185,12 @@ class RestResource(resource.Resource):
         return elist
     
     def ptms(self, req):
-        fields = ['is_stimulation', 'is_inhibition', 'sources', 'references']
+        fields = [b'is_stimulation', b'is_inhibition', b'sources', b'references']
         result = []
         elist = self._get_eids(req)
         res = []
         hdr = ['enzyme', 'substrate', 'residue_type', 'residue_offset', 'modification']
-        hdr += [f for f in fields if f in req.args['fields']]
+        hdr += [f.decode('utf-8') for f in fields if f in req.args['fields']]
         if 'ptm' in self.g.es.attributes():
             for eid in elist:
                 e = self.g.es[eid]

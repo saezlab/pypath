@@ -74,7 +74,7 @@ import webbrowser
 try:
     from bioservices import WSDLService
 except:
-    sys.stdout.write('No `bioservices` available.\n\n')
+    sys.stdout.write('\t:: No `bioservices` available.\n')
     sys.stdout.flush()
 
 from xlrd import open_workbook

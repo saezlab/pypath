@@ -28,7 +28,7 @@ except:
     try:
         import pymysql as myslq
     except:
-        sys.stdout.write('No `mysql` available.\n\n')
+        sys.stdout.write('\t:: No module `mysql` available.\n')
         sys.stdout.flush()
 
 import pypath.mapping as mapping

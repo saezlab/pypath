@@ -22,7 +22,13 @@
 # almost new one, copying only some at points from goatools.
 #
 
-import fisher
+import sys
+
+try:
+    import fisher
+except:
+    sys.stdout.write('\t:: No module `fisher` available.\n')
+
 import statsmodels.stats.multitest as smm
 from collections import OrderedDict
 

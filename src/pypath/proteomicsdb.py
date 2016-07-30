@@ -270,6 +270,6 @@ class ProteomicsDB(object):
     
     def pandas_matrix(self):
         '''
-        Returns expression data in a pandas matrix.
+        Returns expression data in a pandas matrix. Not implemented.
         '''
         pass

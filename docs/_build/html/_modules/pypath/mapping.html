@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pypath.mapping &mdash; pypath 0.1.72 documentation</title>
+  <title>pypath.mapping &mdash; pypath 0.5.1 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="pypath 0.1.72 documentation" href="../../index.html"/>
+    <link rel="top" title="pypath 0.5.1 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.1
+                0.5
               </div>
             
           
@@ -143,12 +143,22 @@
 <span class="c1">#  Website: http://www.ebi.ac.uk/~denes</span>
 <span class="c1">#</span>
 
+
+<span class="kn">from</span> <span class="nn">future.utils</span> <span class="kn">import</span> <span class="n">iteritems</span>
+<span class="kn">from</span> <span class="nn">past.builtins</span> <span class="kn">import</span> <span class="nb">xrange</span><span class="p">,</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">reduce</span>
+
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">codecs</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">imp</span>
+
 <span class="kn">import</span> <span class="nn">urllib</span>
-<span class="kn">import</span> <span class="nn">urllib2</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">urllib</span><span class="p">,</span> <span class="s1">&#39;urlencode&#39;</span><span class="p">):</span>
+    <span class="n">_urllib</span> <span class="o">=</span> <span class="n">urllib</span>
+    <span class="n">urllib</span> <span class="o">=</span> <span class="n">_urllib</span><span class="o">.</span><span class="n">parse</span>
+
 <span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="k">try</span><span class="p">:</span>
@@ -157,14 +167,16 @@
     <span class="kn">import</span> <span class="nn">pickle</span>
 
 <span class="c1"># from pypath:</span>
-<span class="kn">import</span> <span class="nn">progress</span>
-<span class="kn">import</span> <span class="nn">logn</span>
-<span class="kn">from</span> <span class="nn">common</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">import</span> <span class="nn">data_formats</span>
-<span class="kn">import</span> <span class="nn">mysql</span>
-<span class="kn">import</span> <span class="nn">dataio</span>
+<span class="kn">import</span> <span class="nn">pypath.progress</span> <span class="kn">as</span> <span class="nn">progress</span>
+<span class="kn">import</span> <span class="nn">pypath.logn</span> <span class="kn">as</span> <span class="nn">logn</span>
+<span class="kn">import</span> <span class="nn">pypath.common</span> <span class="kn">as</span> <span class="nn">common</span>
+<span class="kn">import</span> <span class="nn">pypath.maps</span> <span class="kn">as</span> <span class="nn">maps</span>
+<span class="kn">import</span> <span class="nn">pypath.mysql</span> <span class="kn">as</span> <span class="nn">mysql</span>
+<span class="kn">import</span> <span class="nn">pypath.urls</span> <span class="kn">as</span> <span class="nn">urls</span>
+<span class="kn">import</span> <span class="nn">pypath.curl</span> <span class="kn">as</span> <span class="nn">curl</span>
+<span class="kn">import</span> <span class="nn">pypath.mapping_input</span> <span class="kn">as</span> <span class="nn">mapping_input</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;MappingTable&#39;</span><span class="p">,</span> <span class="s1">&#39;Mapper&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;MappingTable&#39;</span><span class="p">,</span> <span class="s1">&#39;Mapper&#39;</span><span class="p">,</span> <span class="s1">&#39;ReferenceList&#39;</span><span class="p">]</span>
 
 <span class="c1">###</span>
 <span class="c1">### functions to read and use mapping tables from UniProt, file, mysql or pickle </span>
@@ -191,13 +203,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cachedir</span> <span class="o">=</span> <span class="n">cachedir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;to&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="p">{}}</span>
         <span class="k">if</span> <span class="n">log</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">!=</span> <span class="s1">&#39;logw&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">gen_session_id</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">gen_session_id</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span> <span class="o">=</span> <span class="n">logn</span><span class="o">.</span><span class="n">logw</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="s1">&#39;INFO&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span> <span class="o">=</span> <span class="n">log</span>
         <span class="k">if</span> <span class="n">param</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">mid</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="nb">str</span><span class="p">((</span><span class="n">one</span><span class="p">,</span> <span class="n">two</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">bi</span><span class="p">)))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
-            <span class="n">md5param</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">__dict__</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mid</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">md5</span><span class="p">((</span><span class="n">one</span><span class="p">,</span> <span class="n">two</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">bi</span><span class="p">))</span>
+            <span class="n">md5param</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">__dict__</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cachefile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cachedir</span><span class="p">,</span> <span class="n">md5param</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cachefile</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cachefile</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">))</span>
@@ -215,21 +227,33 @@
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">param</span><span class="o">.</span><span class="n">bi</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
                     <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cachefile</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">))</span>
     
+    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">modname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">fromlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">modname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
+    
     <span class="k">def</span> <span class="nf">cleanDict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">mapping</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
-            <span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">uniqList</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">mapping</span><span class="p">):</span>
+            <span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">uniqList</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">mapping</span>
     
     <span class="k">def</span> <span class="nf">read_mapping_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">!=</span> <span class="s2">&quot;FileMapping&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Invalid parameter for read_mapping_file()&quot;</span><span class="p">,</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dataio</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mapping_input</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dataio</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">):</span>
-            <span class="n">toCall</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">dataio</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mapping_input</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">):</span>
+            <span class="n">toCall</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mapping_input</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">)</span>
             <span class="n">infile</span> <span class="o">=</span> <span class="n">toCall</span><span class="p">()</span>
-            <span class="n">total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">infile</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">map</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">filter</span><span class="p">:</span>
+                <span class="n">infile</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">infile</span><span class="p">])</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">infile</span> <span class="o">=</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">encoding</span> <span class="o">=</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
             <span class="n">total</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">)</span>
@@ -248,6 +272,7 @@
             <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">line</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">):</span>
                 <span class="n">prg</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
                 <span class="n">prg</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">separator</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">max</span><span class="p">([</span><span class="n">param</span><span class="o">.</span><span class="n">oneCol</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">twoCol</span><span class="p">]):</span>
@@ -259,7 +284,7 @@
                         <span class="n">mapping_i</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">twoCol</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
                     <span class="n">mapping_i</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">twoCol</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">oneCol</span><span class="p">])</span>
             <span class="n">lnum</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">file</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="s1">&#39;close&#39;</span><span class="p">):</span>
             <span class="n">infile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapping_o</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cleanDict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">])</span>
@@ -287,7 +312,7 @@
         <span class="n">rev</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">swissprot</span> <span class="ow">is</span> <span class="bp">None</span> \
             <span class="k">else</span> <span class="s1">&#39; AND reviewed:</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">param</span><span class="o">.</span><span class="n">swissprot</span>
         <span class="n">query</span> <span class="o">=</span> <span class="s1">&#39;organism:</span><span class="si">%u%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">tax</span><span class="p">),</span> <span class="n">rev</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_basic&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_basic&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">post</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;query&#39;</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span> 
             <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="s1">&#39;tab&#39;</span><span class="p">,</span> 
@@ -295,7 +320,8 @@
                 <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">subfield</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="s1">&#39;(</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="o">%</span><span class="n">param</span><span class="o">.</span><span class="n">subfield</span><span class="p">)</span>
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">?</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">urllib</span><span class="o">.</span><span class="n">urlencode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">post</span><span class="p">))</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">curl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">xx</span><span class="p">]</span> <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">field</span> <span class="o">==</span> <span class="s1">&#39;protein names&#39;</span> <span class="k">else</span> \
             <span class="p">[</span><span class="n">xxx</span> <span class="k">for</span> <span class="n">xxx</span> <span class="ow">in</span> <span class="n">resep</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">scolend</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">xx</span><span class="o">.</span><span class="n">strip</span><span class="p">()))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">xxx</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span> \
@@ -350,7 +376,7 @@
                 <span class="n">param</span><span class="o">.</span><span class="n">fieldOne</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">fieldTwo</span><span class="p">,</span> <span class="n">tax_filter</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">param</span><span class="o">.</span><span class="n">mysql</span><span class="o">.</span><span class="n">run_query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">_mysql</span><span class="o">.</span><span class="n">Error</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">except</span> <span class="n">_mysql</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;MySQL error: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">FAILED QUERY: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">query</span><span class="p">),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;o&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;i&quot;</span><span class="p">:</span> <span class="p">{}}</span>
         <span class="n">total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">mysql</span><span class="o">.</span><span class="n">result</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
@@ -406,7 +432,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tables</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uniprot_mapped</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">log</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">!=</span> <span class="s1">&#39;logw&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">gen_session_id</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">gen_session_id</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span> <span class="o">=</span> <span class="n">logn</span><span class="o">.</span><span class="n">logw</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span><span class="s1">&#39;INFO&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span> <span class="o">=</span> <span class="n">log</span>
@@ -428,6 +454,14 @@
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">types_name</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_types</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_types</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
     
+    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">modname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">fromlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">modname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
+    
+    
     <span class="k">def</span> <span class="nf">init_mysql</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mysql</span> <span class="o">=</span> <span class="n">mysql</span><span class="o">.</span><span class="n">MysqlRunner</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mysql_conf</span><span class="p">,</span> <span class="n">log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="p">)</span>
     
@@ -447,14 +481,14 @@
             <span class="n">tbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="n">tblNameRev</span><span class="p">]</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">load</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">form</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;mapListUniprot&#39;</span><span class="p">,</span> <span class="s1">&#39;mapListBasic&#39;</span><span class="p">]:</span>
-                <span class="n">frm</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">data_formats</span><span class="p">,</span> <span class="n">form</span><span class="p">)</span>
+                <span class="n">frm</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">maps</span><span class="p">,</span> <span class="n">form</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">tblName</span> <span class="ow">in</span> <span class="n">frm</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">load_mappings</span><span class="p">(</span><span class="n">maps</span> <span class="o">=</span> <span class="p">{</span><span class="n">tblName</span><span class="p">:</span> <span class="n">frm</span><span class="p">[</span><span class="n">tblName</span><span class="p">]})</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">load_mappings</span><span class="p">(</span><span class="n">maplst</span> <span class="o">=</span> <span class="p">{</span><span class="n">tblName</span><span class="p">:</span> <span class="n">frm</span><span class="p">[</span><span class="n">tblName</span><span class="p">]})</span>
                     <span class="n">tbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">which_table</span><span class="p">(</span><span class="n">nameType</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">,</span> <span class="n">load</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
                     <span class="k">break</span>
                 <span class="k">if</span> <span class="n">tblNameRev</span> <span class="ow">in</span> <span class="n">frm</span><span class="p">:</span>
                     <span class="n">frm</span><span class="p">[</span><span class="n">tblNameRev</span><span class="p">]</span><span class="o">.</span><span class="n">bi</span> <span class="o">=</span> <span class="bp">True</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">load_mappings</span><span class="p">(</span><span class="n">maps</span> <span class="o">=</span> <span class="p">{</span><span class="n">tblNameRev</span><span class="p">:</span> <span class="n">frm</span><span class="p">[</span><span class="n">tblNameRev</span><span class="p">]})</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">load_mappings</span><span class="p">(</span><span class="n">maplst</span> <span class="o">=</span> <span class="p">{</span><span class="n">tblNameRev</span><span class="p">:</span> <span class="n">frm</span><span class="p">[</span><span class="n">tblNameRev</span><span class="p">]})</span>
                     <span class="n">tbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">which_table</span><span class="p">(</span><span class="n">nameType</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">,</span> <span class="n">load</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
                     <span class="k">break</span>
                 <span class="k">if</span> <span class="n">tbl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
@@ -507,7 +541,7 @@
             <span class="k">for</span> <span class="n">nt</span> <span class="ow">in</span> <span class="n">nameType</span><span class="p">:</span>
                 <span class="n">mappedNames</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">nt</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">,</span> 
                     <span class="n">strict</span><span class="p">,</span> <span class="n">silent</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">uniqList</span><span class="p">(</span><span class="n">mappedNames</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">common</span><span class="o">.</span><span class="n">uniqList</span><span class="p">(</span><span class="n">mappedNames</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">nameType</span> <span class="o">==</span> <span class="n">targetNameType</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">targetNameType</span> <span class="o">!=</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">:</span>
                 <span class="k">return</span> <span class="p">[</span> <span class="n">name</span> <span class="p">]</span>
@@ -533,7 +567,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">uniprot_mapped</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">orig</span><span class="p">,</span> <span class="n">mappedNames</span><span class="p">))</span>
             <span class="n">mappedNames</span> <span class="o">=</span> <span class="p">[</span><span class="n">u</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">mappedNames</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reup</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">u</span><span class="p">)]</span>
         <span class="c1"># print &#39;\tmapped to %s&#39; % str(mappedNames)</span>
-        <span class="k">return</span> <span class="n">uniqList</span><span class="p">(</span><span class="n">mappedNames</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">common</span><span class="o">.</span><span class="n">uniqList</span><span class="p">(</span><span class="n">mappedNames</span><span class="p">)</span></div>
     
     <span class="k">def</span> <span class="nf">map_refseq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refseq</span><span class="p">,</span> <span class="n">nameType</span><span class="p">,</span> <span class="n">targetNameType</span><span class="p">,</span> <span class="n">strict</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
         <span class="n">mappedNames</span> <span class="o">=</span> <span class="p">[]</span>
@@ -609,7 +643,7 @@
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">ERROR: &#39;</span><span class="p">,</span><span class="n">msg</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">]))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">msg</span><span class="p">,</span><span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
     
-<div class="viewcode-block" id="Mapper.load_mappings"><a class="viewcode-back" href="../../index.html#pypath.mapping.Mapper.load_mappings">[docs]</a>    <span class="k">def</span> <span class="nf">load_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">maps</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Mapper.load_mappings"><a class="viewcode-back" href="../../index.html#pypath.mapping.Mapper.load_mappings">[docs]</a>    <span class="k">def</span> <span class="nf">load_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">maplst</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        mapList is a list of mappings to load;</span>
 <span class="sd">        elements of mapList are dicts containing the </span>
@@ -618,20 +652,20 @@
 <span class="sd">        &quot;src&quot;: &quot;mysql&quot;, &quot;par&quot;: &quot;mysql_param/file_param&quot;)</span>
 <span class="sd">        by default those are loaded from pickle files</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="n">maps</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span> 
+        <span class="k">if</span> <span class="n">maplst</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span> 
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">maps</span> <span class="o">=</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">mapList</span>
+                <span class="n">maplst</span> <span class="o">=</span> <span class="n">maps</span><span class="o">.</span><span class="n">mapList</span>
             <span class="k">except</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;load_mappings(): No input defined&#39;</span><span class="p">,</span><span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Loading mapping tables...&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">mapName</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">maps</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">mapName</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">maplst</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Loading table </span><span class="si">%s</span><span class="s2"> ...&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">mapName</span><span class="p">))</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">:: Loading &#39;</span><span class="si">%s</span><span class="s2">&#39; to &#39;</span><span class="si">%s</span><span class="s2">&#39; mapping table</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> \
                 <span class="p">(</span><span class="n">mapName</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mapName</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
             <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;FileMapping&#39;</span> <span class="ow">and</span> \
                 <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">)</span> <span class="ow">and</span> \
-                <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dataio</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">):</span>
+                <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mapping_input</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;Error: no such file: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> \
                     <span class="n">param</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
@@ -686,7 +720,7 @@
         <span class="n">tbls</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[(</span><span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">],</span> 
             <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[(</span><span class="s1">&#39;genesymbol-syn&#39;</span><span class="p">,</span> <span class="s1">&#39;swissprot&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">]]</span>
         <span class="k">for</span> <span class="n">tbl</span> <span class="ow">in</span> <span class="n">tbls</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">gs</span><span class="p">,</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">tbl</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">gs</span><span class="p">,</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">tbl</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gs</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">:</span>
                     <span class="n">gs5</span> <span class="o">=</span> <span class="n">gs</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
                     <span class="k">if</span> <span class="n">gs5</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tbl_gs5</span><span class="p">:</span>
@@ -710,7 +744,7 @@
         <span class="c1"># attempting to load them from Pickle</span>
         <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">ac_typ</span> <span class="ow">in</span> <span class="n">ac_types</span><span class="p">:</span>
-            <span class="n">md5ac</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="nb">str</span><span class="p">((</span><span class="n">ac_typ</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="n">bi</span><span class="p">)))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+            <span class="n">md5ac</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">md5</span><span class="p">((</span><span class="n">ac_typ</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="n">bi</span><span class="p">))</span>
             <span class="n">cachefile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">,</span> <span class="n">md5ac</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cachefile</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[(</span><span class="n">ac_typ</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">mapping</span> <span class="o">=</span> \
@@ -719,13 +753,13 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[(</span><span class="n">ac_typ</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">mid</span> <span class="o">=</span> <span class="n">md5ac</span>
         <span class="c1"># loading the remaining from the big UniProt mapping file:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ac_types</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">url</span> <span class="o">=</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_idmap_ftp&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="n">prg</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">Progress</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="s2">&quot;Processing ID conversion list&quot;</span><span class="p">,</span> <span class="mi">99</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-                <span class="n">prg</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-                <span class="n">l</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">urls</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;uniprot_idmap_ftp&#39;</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">large</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+            
+            <span class="n">prg</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">Progress</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="s2">&quot;Processing ID conversion list&quot;</span><span class="p">,</span> <span class="mi">99</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="p">:</span>
+                <span class="n">prg</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>
+                <span class="n">l</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">ac_typ</span> <span class="ow">in</span> <span class="n">ac_types</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_types</span><span class="p">[</span><span class="n">ac_typ</span><span class="p">]</span> <span class="o">==</span> <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
                         <span class="n">other</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
@@ -744,7 +778,7 @@
             <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">ac_typ</span> <span class="ow">in</span> <span class="n">ac_types</span><span class="p">:</span>
-                    <span class="n">md5ac</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="nb">str</span><span class="p">((</span><span class="n">ac_typ</span><span class="p">,</span> <span class="n">bi</span><span class="p">)))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+                    <span class="n">md5ac</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">md5</span><span class="p">((</span><span class="n">ac_typ</span><span class="p">,</span> <span class="n">bi</span><span class="p">))</span>
                     <span class="n">cachefile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">,</span> <span class="n">md5ac</span><span class="p">)</span>
                     <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[(</span><span class="n">ac_typ</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">)]</span><span class="o">.</span><span class="n">mapping</span><span class="p">,</span> 
                         <span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">))</span>
@@ -763,7 +797,7 @@
 <span class="sd">        This is a wrapper to load a ... mapping table.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">umap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_mapping_uniprot</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">umap</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">umap</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
 
     <span class="k">def</span> <span class="nf">read_mapping_uniprot_mysql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">ncbi_tax_id</span><span class="p">,</span> <span class="n">log</span><span class="p">,</span> <span class="n">bi</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
@@ -828,7 +862,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.72',
+            VERSION:'0.5.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -413,13 +413,118 @@ Bioservices is a Python module to access various webserices. If you need only th
 Reference
 =========
 
-.. automodule:: pypath.pypath
+.. automodule:: pypath.main
    :members:
 
-.. autoclass:: pypath.pypath.PyPath
+.. autoclass:: pypath.main.PyPath
    :members:
 
-.. autoclass:: pypath.pypath.Direction
+.. autoclass:: pypath.main.Direction
+   :members:
+
+.. automodule:: pypath.input_formats
+   :members:
+
+.. autoclass:: pypath.input_formats.ReadSettings
+   :members:
+
+.. autoclass:: pypath.input_formats.ReadList
+   :members:
+
+.. autoclass:: pypath.input_formats.UniprotMapping
+   :members:
+
+.. autoclass:: pypath.input_formats.PickleMapping
+   :members:
+
+.. autoclass:: pypath.input_formats.FileMapping
+   :members:
+
+.. autoclass:: pypath.input_formats.MysqlMapping
+   :members:
+
+.. automodule:: pypath.pyreact
+   :members:
+
+.. autoclass:: pypath.pyreact.BioPaxReader
+   :members:
+
+.. autoclass:: pypath.pyreact.PyReact
+   :members:
+
+.. autoclass:: pypath.pyreact.Entity
+   :members:
+
+.. autoclass:: pypath.pyreact.Protein
+   :members:
+
+.. autoclass:: pypath.pyreact.EntitySet
+   :members:
+
+.. autoclass:: pypath.pyreact.AttributeHandler
+   :members:
+
+.. autoclass:: pypath.pyreact.ProteinFamily
+   :members:
+
+.. autoclass:: pypath.pyreact.Complex
+   :members:
+
+.. autoclass:: pypath.pyreact.ComplexVariations
+   :members:
+
+.. autoclass:: pypath.pyreact.ReactionSide
+   :members:
+
+.. autoclass:: pypath.pyreact.Reaction
+   :members:
+
+.. autoclass:: pypath.pyreact.Control
+   :members:
+
+.. automodule:: pypath.plot
+   :members:
+
+.. autoclass:: pypath.plot.Plot
+   :members:
+
+.. autoclass:: pypath.plot.MultiBarplot
+   :members:
+
+.. autoclass:: pypath.plot.ScatterPlus
+   :members:
+
+.. autoclass:: pypath.plot.StackedBarplot
+   :members:
+
+.. autoclass:: pypath.plot.SimilarityGraph
+   :members:
+
+.. autoclass:: pypath.plot.Histogram
+   :members:
+
+.. autoclass:: pypath.plot.HistoryTree
+   :members:
+
+.. autoclass:: pypath.plot.HtpCharacteristics
+   :members:
+
+.. autoclass:: pypath.plot.RefsComposite
+   :members:
+
+.. autoclass:: pypath.plot.CurationPlot
+   :members:
+
+.. autoclass:: pypath.plot.BarplotsGrid
+   :members:
+
+.. autoclass:: pypath.plot.Dendrogram
+   :members:
+
+.. automodule:: pypath.analysis
+   :members:
+
+.. autoclass:: pypath.analysis.Workflow
    :members:
 
 .. automodule:: pypath.intera
@@ -449,10 +554,38 @@ Reference
 .. autoclass:: pypath.intera.Interface
    :members:
 
+.. automodule:: pypath.pdb
+   :members:
+
+.. autoclass:: pypath.pdb.ResidueMapper
+   :members:
+
+.. automodule:: pypath.proteomicsdb
+   :members:
+
+.. autoclass:: pypath.proteomicsdb.ProteomicsDB
+
 .. automodule:: pypath.mapping
    :members:
 
 .. autoclass:: pypath.mapping.Mapper
+   :members:
+
+.. autoclass:: pypath.mapping.MappingTable
+
+.. automodule:: pypath.maps
+   :members:
+
+.. automodule:: pypath.reflists
+   :members:
+
+.. autoclass:: pypath.reflists.ReferenceList
+   :members:
+
+.. autoclass:: pypath.refs
+   :members:
+
+.. autoclass:: pypath.refs.Reference
    :members:
 
 .. automodule:: pypath.moduland
@@ -461,17 +594,108 @@ Reference
 .. automodule:: pypath.dataio
    :members:
 
+.. automodule:: pypath.uniprot_input
+   :members:
+
+.. automodule:: pypath.mapping_input
+   :members:
+
+.. automodule:: pypath.server
+   :members:
+
+.. autoclass:: pypath.server.RestResource
+   :members:
+
+.. autoclass:: pypath.server.Rest
+   :members:
+
+.. automodule:: pypath.curl
+   :members:
+
+.. autoclass:: pypath.curl.Curl
+   :members:
+
+.. autoclass:: pypath.curl.FileOpener
+   :members:
+
 .. automodule:: pypath.chembl
    :members:
 
+.. autoclass:: pypath.chembl.Chembl
+
 .. automodule:: pypath.unichem
+   :members:
+
+.. autoclass:: pypath.unichem.UniChem
    :members:
 
 .. automodule:: pypath.seq
    :members:
 
+.. autoclass:: pypath.seq.Seq
+   :members:
+
 .. automodule:: pypath.mysql
+   :members:
+
+.. autoclass:: pypath.mysql.MysqlRunner
    :members:
 
 .. automodule:: pypath.mysql_connect
    :members:
+
+.. autoclass:: pypath.mysql_connect.MysqlConnect
+   :members:
+
+.. automodule:: pypath.progress
+   :members:
+
+.. autoclass:: pypath.progress.Progress
+   :members:
+
+.. automodule:: pypath.colorgen
+   :members:
+
+.. automodule:: pypath.common
+   :members:
+
+.. automodule:: pypath.enrich
+   :members:
+
+.. autoclass:: pypath.enrich.Enrichment
+   :members:
+
+.. autoclass:: pypath.enrich.EnrichmentSet
+   :members:
+
+.. automodule:: pypath.gsea
+   :members:
+
+.. autoclass:: pypath.gsea.GSEA
+   :members:
+
+.. autoclass:: pypath.gsea.GSEABinaryEnrichmentSet
+   :members:
+
+.. automodule:: pypath.go
+   :members:
+
+.. autoclass:: pypath.go.GOAnnotation
+   :members:
+
+.. autoclass:: pypath.go.GOEnrichmentSet
+   :members:
+
+.. automodule:: pypath.drawing
+   :members:
+
+.. autoclass:: pypath.drawing.Plot
+   :members:
+
+.. automodule:: pypath.logn
+   :members:
+
+.. autoclass:: pypath.logw
+   :members:
+
+

@@ -51,14 +51,14 @@ except ImportError:
 try:
     import pygraphviz as graphviz
 except:
-    sys.stdout.write('\nModule `pygraphviz` not found.\n'\
-        'You don\'t need it unless you want to export dot files.\n')
+    sys.stdout.write('\t:: No module `pygraphviz` available.\n'\
+        '\tYou don\'t need it unless you want to export dot files.\n')
     sys.stdout.flush()
 
 try:
     import pandas
 except:
-    sys.stdout.write('\nModule `pandas` not found.\n\n')
+    sys.stdout.write('\nNo module `pandas` available.\n')
     sys.stdout.flush()
 
 # from this module:
@@ -590,7 +590,7 @@ class PyPath(object):
             self.ownlog.msg(1, "PyPath has been initialized")
             self.ownlog.msg(1, "Beginning session '%s'" % self.session)
             sys.stdout.write(
-                """\t» New session started,\n\tsession ID: '%s'\n\tlogfile:"""\
+                """\t> New session started,\n\tsession ID: '%s'\n\tlogfile:"""\
                 """'./%s'.\n""" % \
                 (self.session,self.ownlog.logfile))
             
@@ -613,7 +613,7 @@ class PyPath(object):
         self.__dict__ = other.__dict__
         self.ownlog.msg(1, "Reinitialized", 'INFO')
     
-    def init_network(self, lst = omnipath, exclude = [], 
+    def init_network(self, lst = omnipath, exclude = [],
         cache_files = {}, pfile = False, save = False,
         reread = False, redownload = False):
         '''
@@ -2817,7 +2817,7 @@ class PyPath(object):
         self.update_sources()
         self.update_vertex_sources()
         sys.stdout.write(
-            '''\n » %u interactions between %u nodes\n from %u'''\
+            '''\n > %u interactions between %u nodes\n from %u'''\
             ''' resources have been loaded,\n for details see the log: ./%s\n''' %
             (self.graph.ecount(), self.graph.vcount(), 
             len(self.sources), self.ownlog.logfile))
@@ -2827,7 +2827,7 @@ class PyPath(object):
     
     def load_resource(self, settings, clean = True, cache_files = {},
         reread = False, redownload = False):
-        sys.stdout.write(' » '+settings.name+'\n')
+        sys.stdout.write(' > '+settings.name+'\n')
         self.read_data_file(settings, cache_files = cache_files,
             reread = reread, redownload = redownload)
         self.attach_network()
@@ -2849,14 +2849,14 @@ class PyPath(object):
     
     def load_negatives(self):
         for k,v in iteritems(negative):
-            sys.stdout.write(' » '+v.name+'\n')
+            sys.stdout.write(' > '+v.name+'\n')
             self.apply_negative(v)
     
     def list_resources(self):
-        sys.stdout.write(' » omnipath\n')
+        sys.stdout.write(' > omnipath\n')
         for k,v in iteritems(omnipath):
             sys.stdout.write('\t:: %s (%s)\n' % (v.name,k))
-        sys.stdout.write(' » good\n')
+        sys.stdout.write(' > good\n')
         for k,v in iteritems(good):
             sys.stdout.write('\t:: %s (%s)\n' % (v.name,k))
     
@@ -2871,11 +2871,11 @@ class PyPath(object):
             if 'webpages' in dd['urls']:
                 out += '\t:: Webpages:\n'
                 for w in dd['urls']['webpages']:
-                    out += '\t    » %s\n' % w
+                    out += '\t    > %s\n' % w
             if 'articles' in dd['urls']:
                 out += '\t:: Articles:\n'
                 for w in dd['urls']['articles']:
-                    out += '\t    » %s\n' % w
+                    out += '\t    > %s\n' % w
         if 'taxons' in dd:
             out += '\t:: Taxons: %s\n' % ', '.join(dd['taxons'])
         if 'descriptions' in dd and len(dd['descriptions']) > 0:

@@ -5,6 +5,9 @@ pyopenssl
 ndg-httpsclient
 chembl_webresource_client
 pyasn1
+numpy
+scipy
+matplotlib
 fisher
 statsmodels
 pycurl
