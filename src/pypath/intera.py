@@ -607,7 +607,7 @@ class DomainMotif(object):
         self.refs = common.addToSet(self.refs, refs)
     
     def add_pdbs(self, pdbs):
-        self.refs = common.addToSet(self.pdbs, pdbs)
+        self.pdbs = common.addToSet(self.pdbs, pdbs)
     
     def serialize(self):
         return '|'.join([self.domain.serialize(), self.ptm.serialize(), 

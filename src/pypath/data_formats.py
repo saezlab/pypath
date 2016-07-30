@@ -570,7 +570,7 @@ ptm_misc = {
     'ppoint': input_formats.ReadSettings(name="PhosphoPoint", separator=";", 
         nameColA=1, nameColB=3,
         nameTypeA="entrez", nameTypeB="entrez",
-        typeA="protein", typeB="protein", isDirected=0, header=True, ncbiTaxId=9606, 
+        typeA="protein", typeB="protein", isDirected=True, header=True, ncbiTaxId=9606, 
         inFile=os.path.join(ROOT, 'data', 'phosphopoint.csv'), 
         references = False, sign=False,
         extraEdgeAttrs={
@@ -581,7 +581,7 @@ ptm_misc = {
     'pnetworks': input_formats.ReadSettings(name="PhosphoNetworks", 
         separator = None, nameColA=0,
         nameColB=1, nameTypeA="genesymbol", nameTypeB="genesymbol",
-        typeA = "protein", typeB = "protein", isDirected = 1, sign = False,
+        typeA = "protein", typeB = "protein", isDirected = True, sign = False,
         ncbiTaxId = 9606,
         inFile = 'pnetworks_interactions', references = False, header = False,
         extraEdgeAttrs={},
