@@ -30,7 +30,7 @@ import json
 
 import pypath.descriptions as descriptions
 import pypath._html as _html
-import pypath.data_formats as data_formats
+import pypath.urls as urls
 from pypath.common import flatList, __version__
 
 if 'unicode' not in __builtins__:
@@ -79,16 +79,16 @@ class RestResource(resource.Resource):
             request.postpath.remove('')
         if html:
             request.setHeader('Content-Type', 'text/html; charset=utf-8')
-        elif 'format' in request.args and request.args['format'][0] == 'json':
-            request.args['format'] = 'json'
+        elif b'format' in request.args and request.args[b'format'][0] == b'json':
+            request.args[b'format'] = b'json'
             request.setHeader('Content-Type', 'text/json; charset=utf-8')
         else:
-            request.args['format'] = 'text'
+            request.args[b'format'] = b'text'
             request.setHeader('Content-Type', 'text/plain; charset=utf-8')
-        request.args['header'] = 1 if 'header' not in request.args \
-            else int(request.args['header'][0])
-        request.args['fields'] = [] if 'fields' not in request.args \
-            else request.args['fields']
+        request.args[b'header'] = 1 if b'header' not in request.args \
+            else int(request.args[b'header'][0])
+        request.args[b'fields'] = [] if b'fields' not in request.args \
+            else request.args[b'fields']
     
     def about(self, req):
         return 'Hello, this is the REST service of pypath %s. Welcome!\n'\
@@ -104,7 +104,7 @@ class RestResource(resource.Resource):
         hdr = ['nodes', 'edges', 'is_directed', 'sources']
         val = [self.g.vcount(), self.g.ecount(), 
             int(self.g.is_directed()), self.p.sources]
-        if req.args['format'] == 'json':
+        if b'format' in req.args and req.args[b'format'] == b'json':
             return json.dumps(dict(zip(hdr, val)))
         else:
             return '%s\n%s' % ('\t'.join(hdr), '\t'.join([str(v) \
@@ -116,11 +116,12 @@ class RestResource(resource.Resource):
         elist = self._get_eids(req)
         res = []
         hdr = ['source', 'target', 'is_directed', 'is_stimulation', 'is_inhibition']
-        hdr += [f.decode('utf-8') for f in fields if f in req.args[b'fields']]
+        if b'fields' in req.args:
+            hdr += [f.decode('utf-8') for f in fields if f in req.args[b'fields']]
         all_sources = set([])
         for eid in elist:
             e = self.g.es[eid]
-            all_sources = all_sources | set(e['sources'])
+            all_sources = all_sources | e['sources']
             for d in ['straight', 'reverse']:
                 uniprots = getattr(e['dirs'], d)
                 if e['dirs'].dirs[uniprots]:
@@ -144,7 +145,7 @@ class RestResource(resource.Resource):
             if not e['dirs'].is_directed():
                 thisEdge = [e['dirs'].nodes[0], e['dirs'].nodes[1], 0, 0, 0]
                 if 'sources' in hdr:
-                    thisEdge.append(e['sources'])
+                    thisEdge.append(list(e['sources']))
                 if 'references' in hdr:
                     thisEdge.append([r.pmid for r in e['references']])
                 thisEdge.append(self._dip_urls(e))
@@ -156,24 +157,25 @@ class RestResource(resource.Resource):
                 r[:-1],
                 res
             )
-        if req.args['format'] == 'json':
+        if b'format' in req.args and req.args[b'format'] == b'json':
             return json.dumps([dict(zip(hdr, r)) for r in res])
         else:
             return self._table_output(res, hdr, req)
     
     def _table_output(self, res, hdr, req):
-        return '%s%s' % ('' if not bool(req.args['header']) else '%s\n'%'\t'.join(hdr), 
-                '\n'.join(['\t'.join([';'.join(f) if type(f) is list else str(f) \
+        return '%s%s' % ('' if not bool(req.args[b'header']) else '%s\n'%'\t'.join(hdr), 
+                '\n'.join(['\t'.join([';'.join(f) \
+                    if type(f) is list or type(f) is set else str(f) \
                 for f in r]) for r in res]))
     
     def _get_eids(self, req):
         names = None if len(req.postpath) <= 1 else req.postpath[1].split(',')
         ids = range(0, self.g.vcount()) if names is None else self.p.names2vids(names)
-        ids = set(ids) 
+        ids = set(ids)
         elist = set(range(0, self.g.ecount())) if names is None else set([])
         if names is not None:
             alist = dict(zip(ids, [self.g.neighbors(i) for i in ids]))
-            for one, others in alist.iteritems():
+            for one, others in iteritems(alist):
                 for two in others:
                     e = self.g.get_eid(one, two, directed = True, error = False)
                     if e != -1:
@@ -190,7 +192,8 @@ class RestResource(resource.Resource):
         elist = self._get_eids(req)
         res = []
         hdr = ['enzyme', 'substrate', 'residue_type', 'residue_offset', 'modification']
-        hdr += [f.decode('utf-8') for f in fields if f in req.args['fields']]
+        if b'fields' in req.args:
+            hdr += [f.decode('utf-8') for f in fields if f in req.args[b'fields']]
         if 'ptm' in self.g.es.attributes():
             for eid in elist:
                 e = self.g.es[eid]
@@ -205,11 +208,11 @@ class RestResource(resource.Resource):
                             thisPtm.append(int(e['dirs'].is_inhibition(\
                                 (ptm.domain.protein, ptm.ptm.protein))))
                         if 'sources' in hdr:
-                            thisPtm.append(ptm.ptm.sources)
+                            thisPtm.append(list(ptm.ptm.sources))
                         if 'references' in hdr:
-                            thisPtm.append(ptm.refs)
+                            thisPtm.append(list(ptm.refs))
                         res.append(thisPtm)
-        if req.args['format'] == 'json':
+        if b'format' in req.args and req.args[b'format'] == b'json':
             return json.dumps([dict(zip(hdr, r)) for r in res])
         else:
             return self._table_output(res, hdr, req)
@@ -239,7 +242,7 @@ class RestResource(resource.Resource):
                         e['dirs'].negative_sources[d]]]),
             ]
             for s in self.p.sources]
-        if req.args['format'] == 'json':
+        if b'format' in req.args and req.args[b'format'] == b'json':
             return json.dumps([dict(zip(hdr, r)) for r in res])
         else:
             return self._table_output(res, hdr, req)
@@ -248,6 +251,6 @@ class RestResource(resource.Resource):
         result = []
         if 'dip_id' in e.attributes():
             for dip_id in e['dip_id']:
-                result.append(data_formats.urls['dip']['ik'] % \
+                result.append(urls.urls['dip']['ik'] % \
                     int(dip_id.split('-')[1][:-1]))
         return ';'.join(result)
