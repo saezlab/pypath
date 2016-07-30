@@ -45,7 +45,7 @@ src/pypath/pdb.py
 src/pypath/plot.py
 src/pypath/progress.py
 src/pypath/proteomicsdb.py
-src/pypath/reaction.py
+src/pypath/pyreact.py
 src/pypath/reaction2.py
 src/pypath/reflists.py
 src/pypath/refs.py

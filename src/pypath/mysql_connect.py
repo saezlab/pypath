@@ -18,8 +18,12 @@
 import os
 import sys
 from configparser import ConfigParser
-import pymysql as MySQLdb
-import pymysql.cursors as cursors
+
+try:
+    import pymysql as MySQLdb
+    import pymysql.cursors as cursors
+except:
+    sys.stdout.write('\t:: No MySQL support.\n')
 
 from pypath import common
 

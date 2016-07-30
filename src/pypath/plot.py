@@ -39,7 +39,7 @@ import igraph
 try:
     import hcluster as hc2
 except:
-    sys.stdout.write('\t :: Module `hcluster` not available.\n')
+    sys.stdout.write('\t:: Module `hcluster` not available.\n')
 import matplotlib.gridspec as gridspec
 import matplotlib.backends.backend_pdf
 from matplotlib import ticker

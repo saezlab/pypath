@@ -28,7 +28,7 @@ import os
 
 import pypath.common as common
 
-_fonts = open('fonts.css', 'r').read().decode('utf-8') \
+_fonts = open('fonts.css', 'rb').read().decode('utf-8') \
     if os.path.exists('fonts.css') else ''
 
 _ebi_logo = u'''data:image/png;base64,
@@ -1598,7 +1598,7 @@ _default_css = u'''
                     vertical-align: middle;
                 }
                 .nav {
-                    padding: 7px 7px 7px 7px;
+                    padding: 12px 7px 7px 7px;
                     color: #FFFFFF;
                     background-color: #6EA945;
                     cursor: pointer;

@@ -17,6 +17,8 @@
 
 from future.utils import iteritems
 
+import sys
+
 try:
     from twisted.web import server, resource
     from twisted.internet import reactor
@@ -25,7 +27,6 @@ except:
 
 import urllib
 import json
-import sys
 
 import pypath.descriptions as descriptions
 import pypath._html as _html
@@ -55,7 +56,6 @@ class RestResource(resource.Resource):
         self.htmls = ['info', '']
     
     def render_GET(self, request):
-        print(request.__dict__)
         request.postpath = list(map(lambda i: i.decode('utf-8'), request.postpath))
         html = len(request.postpath) == 0 or request.postpath[0] in self.htmls
         self.set_defaults(request, html = html)

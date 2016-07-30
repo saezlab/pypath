@@ -22,8 +22,13 @@
 import sys
 import codecs
 import time
-import pymysql as MySQLdb
-import pymysql.cursors as cursors
+
+try:
+    import pymysql as MySQLdb
+    import pymysql.cursors as cursors
+except:
+    sys.stdout.write('\t:: No MySQL support.\n')
+
 import hashlib
 from queue import Queue
 import threading
