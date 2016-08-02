@@ -4734,7 +4734,7 @@ def get_graphviz_attrs():
     url = urls.urls['graphviz']['url']
     c = curl.Curl(url)
     html = c.result
-    soup = bs4.BeautifulSoup(html)
+    soup = bs4.BeautifulSoup(html, 'lxml')
     vertex_attrs = {}
     edge_attrs = {}
     graph_attrs = {}
