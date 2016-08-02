@@ -33,7 +33,7 @@ import pypath.dataio as dataio
 class Reference(object):
     
     def __init__(self, pmid):
-        self.pmid = str(pmid.strip())
+        self.pmid = str(pmid).strip()
         
     def __eq__(self, other):
         return self.pmid == other.pmid
