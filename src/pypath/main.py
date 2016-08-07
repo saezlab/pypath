@@ -161,6 +161,13 @@ class Direction(object):
                 ', '.join(self.negative_sources[self.reverse]))
         return s
     
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
     def check_nodes(self, nodes):
         return not bool(len(set(self.nodes) - set(nodes)))
     
@@ -248,7 +255,7 @@ class Direction(object):
             return bool(sum(self.positive.values())) or \
                 bool(sum(self.negative.values()))
         else:
-            return bool(sum(self.negative[direction] + self.postive[direction]))
+            return self.negative[direction] or self.positive[direction]
     
     def set_sign(self, direction, sign, source):
         if self.check_nodes(direction):
@@ -357,6 +364,70 @@ class Direction(object):
     
     def positive_sources_reverse(self):
         return self.positive_sources[self.reverse]
+    
+    def majority_dir(self):
+        """
+        Returns directionality based on majority consensus.
+        Returns `None` if the number of sources supporting the two opposite
+        directions are the same. Returns `'undirected'` if there is no directionality
+        information. Returns `tuple` of IDs if one direction is supported by
+        more sources.
+        """
+        if self.is_directed():
+            if len(self.sources[self.straight]) == len(self.sources[self.reverse]):
+                return None
+            elif len(self.sources[self.straight]) > len(self.sources[self.reverse]):
+                return self.straight
+            else:
+                return self.reverse
+        else:
+            return 'undirected'
+    
+    def majority_sign(self):
+        """
+        Returns signs based on majority consensus. Keys in the returned `dict` are directions.
+        Values are `None` if the direction lacks effect sign. Otherwise `tuples` with their
+        first element `True` if the number of sources supporting stimulation in the given
+        direction is greater or equal compared to those supporting inhibition. The second
+        value is the same for inhibition.
+        """
+        result = {self.straight: None, self.reverse: None}
+        if self.has_sign(direction = self.straight):
+            pos = len(self.positive_sources[self.straight]) >= len(self.negative_sources[self.straight])
+            neg = len(self.positive_sources[self.straight]) <= len(self.negative_sources[self.straight])
+            result[self.straight] = [pos, neg]
+        if self.has_sign(direction = self.reverse):
+            pos = len(self.positive_sources[self.reverse]) >= len(self.negative_sources[self.reverse])
+            neg = len(self.positive_sources[self.reverse]) <= len(self.negative_sources[self.reverse])
+            result[self.reverse] = [pos, neg]
+        return result
+    
+    def consensus_edges(self):
+        """
+        Returns list of edges based on majority consensus of directions and signs.
+        """
+        result = []
+        d = self.majority_dir()
+        s = self.majority_sign()
+        if d == 'undirected':
+            result.append([self.straight[0], self.straight[1], 'undirected', 'unknown'])
+        if d is None or d == self.straight:
+            if s[self.straight] is not None:
+                if s[self.straight][0]:
+                    result.append([self.straight[0], self.straight[1], 'directed', 'positive'])
+                if s[self.straight][1]:
+                    result.append([self.straight[0], self.straight[1], 'directed', 'negative'])
+            else:
+                result.append([self.straight[0], self.straight[1], 'directed', 'unknown'])
+        if d is None or d == self.reverse:
+            if s[self.reverse] is not None:
+                if s[self.reverse][0]:
+                    result.append([self.reverse[0], self.reverse[1], 'directed', 'positive'])
+                if s[self.reverse][1]:
+                    result.append([self.reverse[0], self.reverse[1], 'directed', 'negative'])
+            else:
+                result.append([self.reverse[0], self.reverse[1], 'directed', 'unknown'])
+        return result
     
     def merge(self,other):
         if other.__class__.__name__ == 'Direction' and self.check_nodes(other.nodes):
