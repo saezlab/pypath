@@ -100,27 +100,41 @@ if [ ! -d $LOCAL ];
     then mkdir $LOCAL;
 fi
 
+
 export PATH="$LOCALBIN:$PATH"
 
 # beginning part `INSTALL`
+
+PYTHONRCCONTENT=\
+'import readline# pypath added\n'\
+'import rlcompleter# pypath added\n'\
+'if "libedit" in readline.__doc__:# pypath added\n'\
+'    readline.parse_and_bind("bind ^I rl_complete")# pypath added\n'\
+'else:# pypath added\n'\
+'    readline.parse_and_bind("tab: complete")# pypath added'
+BASHPROFPYRC='export PYTHONSTARTUP=~/.pythonrc'
+BASHPROFLOCP='export PATH="'$LOCALBIN':$PATH"'
+
 if [[ "$INSTALL" = "true" ]];
 then
+    if [[ ! -f .pythonrc || "$(grep 'tab:[[:space:]]\?complete' .pythonrc)" == "" ]];
+    then
+        # autocompletion is highly useful
+        # we add it to the .pyhthonrc
+        # feel free to remove later if u don't like
+        echo "$PYTHONRCCONTENT" >> .pythonrc
+    fi
 
-    # autocompletion is highly useful
-    # we add it to the .pyhthonrc
-    # feel free to remove later if u don't like
-    cat << EOF >> .pythonrc
-    import readline
-    import rlcompleter
-    if 'libedit' in readline.__doc__:
-        readline.parse_and_bind("bind ^I rl_complete")
-    else:
-        readline.parse_and_bind("tab: complete")
-EOF
-
-    cat << EOF >> .bash_profile
-    export PYTHONSTARTUP=~/.pythonrc
-EOF
+    if [[ ! -f .bash_profile || "$(grep '.pythonrc' .bash_profile)" == "" ]];
+    then
+        # adding this to .bash_profile to use .pythonrc
+        echo "$BASHPROFPYRC" >> .bash_profile
+    fi
+    if [[ ! -f .bash_profile || "$(grep $LOCALBIN .bash_profile)" == "" ]];
+    then
+        # adding this to .bash_profile to have local in path
+        echo "$BASHPROFLOCP" >> .bash_profile
+    fi
 
     # downloading and extracting homebrew:
     if [ ! `type brew >/dev/null 2>&1` ];
@@ -149,7 +163,6 @@ EOF
 
     # adding local paths and python paths permantently
     cat << EOF >> .bash_profile
-    #export PYTHONPATH="$LOCALPYPATH:\$PYTHONPATH"
     export PATH="$LOCALBIN:\$PATH"
 EOF
 
@@ -269,11 +282,26 @@ then
             do
                 if [[ $i -lt ${#formulas[@]} ]];
                 then
-                    brew uninstall ${formulas[$i]}
+                    brew remove --force ${formulas[$i]}
                 fi
             done
         fi
     fi
+    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall)"
+fi
+
+if [[ "$UNINSTE" == "true" ]];
+then
+    echo "$(tr '\n' '\a' < .pythonrc)" | sed 's/'"$(echo -en "$PYTHONRCCONTENT" | tr '\n' '\a')"'//g' | tr '\a' '\n' > .pythonrc_tmp
+    mv .pythonrc_tmp .pythonrc
+    echo "$(tr '\n' '\a' < .bash_profile)" | sed 's/'"$(echo -en "$BASHPROFPYRC" | tr '\n' '\a')"'//g' | tr '\a' '\n' > .bash_profile_tmp
+    mv .bash_profile_tmp .bash_profile
+    echo "$(tr '\n' '\a' < .bash_profile)" | sed 's/'"$(echo -en "$BASHPROFLOCP" | tr '\n' '\a')"'//g' | tr '\a' '\n' > .bash_profile_tmp
+    mv .bash_profile_tmp .bash_profile
 fi
 
 # end of part `UNINSTALL`
+
+unset $LOCALBIN
+unset $LOCALPIP
+unset $PYPATHURL
