@@ -61,6 +61,7 @@ then
         CONDABIN="$HOME/anaconda2/bin"
         CONDAURL="http://repo.continuum.io/archive/Anaconda2-4.1.1-MacOSX-x86_64.sh"
         PYFABRIC="fabric"
+    fi
 else
     CONDABIN="$CONDAROOT/bin"
     CONDA="$CONDABIN/conda"
