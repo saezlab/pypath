@@ -56,12 +56,12 @@ else
     if [[ $PYMAINVER == "3" ]];
     then
         CONDAINS="Anaconda3-4.1.1-MacOSX-x86_64.sh"
-        CONDABIN="~/anaconda3/bin"
+        CONDABIN="$HOME/anaconda3/bin"
         CONDAURL="http://repo.continuum.io/archive/Anaconda3-4.1.1-MacOSX-x86_64.sh"
         PYFABRIC="fabric3"
     else
         CONDAINS="Anaconda2-4.1.1-MacOSX-x86_64.sh"
-        CONDABIN="~/anaconda2/bin"
+        CONDABIN="$HOME/anaconda2/bin"
         CONDAURL="http://repo.continuum.io/archive/Anaconda2-4.1.1-MacOSX-x86_64.sh"
         PYFABRIC="fabric"
     fi
@@ -75,7 +75,7 @@ PYPATHURL="http://pypath.omnipathdb.org/releases/latest/pypath-latest.tar.gz"
 if [[ "$INSTALL" == "true" ]];
 then
     echo -en "\n\n===[ Attempting to install pypath and all its dependencies with the help of Anaconda. ]===\n\n"
-    echo -en "\t Note: this method works on most of the Mac computers. Watch out for errors, and the test results post installation."\
+    echo -en "\t Note: this method works on most of the Mac computers. Watch out for errors, and the test results post installation.\n\t"\
 " This will take a couple of minutes. Now relax, and hope the best.\n\n"
     if [ ! -d $CONDABIN ];
     then
@@ -87,22 +87,22 @@ then
         bash ./$CONDAINS -b
     fi
 
-    $CONDA install -c vgauthier cairo=1.12.18
-    $CONDA install -c richlewis pycairo=1.10.0
-    $CONDA install pymysql
-    $CONDA install graphviz
+    $CONDA install -y -c vgauthier cairo=1.12.18
+    $CONDA install -y -c richlewis pycairo=1.10.0
+    $CONDA install -y pymysql
+    $CONDA install -y graphviz
 
     if [[ $PYMAINVER == "3" ]];
     then
-        $CONDAPIP install git+https://github.com/brentp/fishers_exact_test.git
+        $CONDAPIP install -y git+https://github.com/brentp/fishers_exact_test.git
     fi
-    $CONDAPIP install $PYFABRIC
-    $CONDAPIP install pygraphviz
-    $CONDAPIP install pysftp
-    $CONDAPIP install future
-    $CONDAPIP install bioservices
-    $CONDAPIP install -i https://pypi.anaconda.org/pypi/simple python-igraph
-    $CONDAPIP install $PYPATHURL
+    $CONDAPIP install -y $PYFABRIC
+    $CONDAPIP install -y pygraphviz
+    $CONDAPIP install -y pysftp
+    $CONDAPIP install -y future
+    $CONDAPIP install -y bioservices
+    $CONDAPIP install -i https://pypi.anaconda.org/pypi/simple -y python-igraph
+    $CONDAPIP install -y $PYPATHURL
 fi
 
 # beginning part `TESTS`
