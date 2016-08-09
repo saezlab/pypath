@@ -19,9 +19,9 @@
 
 # installing HomeBrew first:
 
-$USAGE="\tUsage: $0 [-h (show help and exit)] [-p <2|3> (Python version)] "\
-    "[-t (run tests only)] [-u (uninstall everything)] [-f (do not ask confirmation at uninstall)] "\
-    "[-m (uninstall Python modules)] [-b (uninstall HomeBrew and formulas)] [-e (remove environment changes)]\n"
+USAGE="Usage:\n\t$0\n\t\t[-h (show help and exit)]\n\t\t[-p <2|3> (Python version)]\n\t\t"\
+"[-t (run tests only)]\n\t\t[-u (uninstall everything)]\n\t\t[-f (do not ask confirmation at uninstall)]\n\t\t"\
+"[-m (uninstall Python modules)]\n\t\t[-b (uninstall HomeBrew and formulas)]\n\t\t[-e (remove environment changes)]\n"
 PYMAINVER="2"
 INSTALL=true
 TESTS=true
@@ -30,7 +30,7 @@ UNINSTB=false
 UNINSTE=false
 UCONFIRM=true
 
-while getopts ":hp:" opt;
+while getopts ":htumbefp:" opt;
 do
     case $opt in
         h)
@@ -46,6 +46,7 @@ do
         u)
             INSTALL=false
             UNINSTM=true
+            UNINSTF=true
             UNINSTB=true
             UNINSTE=true
             TESTS=false
@@ -57,6 +58,7 @@ do
             ;;
         b)
             INSTALL=false
+            UNINSTF=true
             UNINSTB=true
             TESTS=false
             ;;
@@ -93,51 +95,53 @@ USER=`whoami`
 LOCAL="$HOME/local"
 LOCALBIN="$LOCAL/bin"
 LOCALPIP="$LOCALBIN/pip$PYVER"
-#LOCALPYPATH="$LOCAL/lib/python$PYVER/site-packages"
 PYPATHURL="http://pypath.omnipathdb.org/releases/latest/pypath-latest.tar.gz"
 
 if [ ! -d $LOCAL ];
     then mkdir $LOCAL;
 fi
 
-
 export PATH="$LOCALBIN:$PATH"
 
 # beginning part `INSTALL`
 
-PYTHONRCCONTENT=\
+PYTHONRCCONTENT=''\
 'import readline# pypath added\n'\
 'import rlcompleter# pypath added\n'\
 'if "libedit" in readline.__doc__:# pypath added\n'\
 '    readline.parse_and_bind("bind ^I rl_complete")# pypath added\n'\
 'else:# pypath added\n'\
 '    readline.parse_and_bind("tab: complete")# pypath added'
-BASHPROFPYRC='export PYTHONSTARTUP=~/.pythonrc'
-BASHPROFLOCP='export PATH="'$LOCALBIN':$PATH"'
+BASHPROFPYRC='export PYTHONSTARTUP=~/.pythonrc # pypath added'
+BASHPROFLOCP='export PATH="'$LOCALBIN':$PATH" # pypath added'
 
 if [[ "$INSTALL" = "true" ]];
 then
+    echo -en "\n\n===[ Attempting to install pypath and all its dependencies with the help of HomeBrew. ]===\n\n"
+    echo -en "\t Note: this method works on most of the Mac computers.\n\t Watch out for errors, and the test results post installation.\n"\
+"\t This will last at least 10 mins. Now relax, and hope the best.\n\n"
     if [[ ! -f .pythonrc || "$(grep 'tab:[[:space:]]\?complete' .pythonrc)" == "" ]];
     then
         # autocompletion is highly useful
         # we add it to the .pyhthonrc
         # feel free to remove later if u don't like
-        echo "$PYTHONRCCONTENT" >> .pythonrc
+        echo -en "$PYTHONRCCONTENT" >> .pythonrc
     fi
 
     if [[ ! -f .bash_profile || "$(grep '.pythonrc' .bash_profile)" == "" ]];
     then
         # adding this to .bash_profile to use .pythonrc
-        echo "$BASHPROFPYRC" >> .bash_profile
+        echo -en "$BASHPROFPYRC" >> .bash_profile
     fi
     if [[ ! -f .bash_profile || "$(grep $LOCALBIN .bash_profile)" == "" ]];
     then
         # adding this to .bash_profile to have local in path
-        echo "$BASHPROFLOCP" >> .bash_profile
+        echo -en "$BASHPROFLOCP" >> .bash_profile
     fi
 
     # downloading and extracting homebrew:
-    if [ ! `type brew >/dev/null 2>&1` ];
+    type brew >/dev/null 2>&1
+    if [[ $? != 0 ]];
     then
         cd $LOCAL
         curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1
@@ -180,25 +184,27 @@ if [[ "$TESTS" == "true" ]];
 then
     # check and report:
 
-    echo -en "\n\n====[ Testing installation ]====\n\n"
+    echo -en "\n\n\t====[ Testing installation ]====\n\n"
 
-    if [ ! `type brew >/dev/null 2>&1` ];
+    type brew >/dev/null 2>&1
+
+    if [[ $? -eq 1 ]];
     then
-        echo -en "\t [!!] Failed to install HomeBrew. This prevents the installation of essential dependencies.\n"
+        echo -en "\t [ !! ] Failed to install HomeBrew. This prevents the installation of essential dependencies.\n"
     else
-        echo -en "\t [OK] HomeBrew is available.\n"
+        echo -en "\t [ OK ] HomeBrew is available.\n"
     fi
 
     declare -a formulas=($PYTHONNAME $PYCAIRONAME homebrew/science/igraph graphviz)
 
-    for frm in "${modules[@]}"
+    for frm in "${formulas[@]}"
     do
-    hasfrm=`brew ls --versions $frm`
+        hasfrm="$(brew ls --versions $(echo $frm | awk 'BEGIN{FS="/"}{print $NF}'))"
     if [[ $hasfrm"o" == "o" ]];
     then
-        echo -en "\t [!!] Brew formula `$frm` is missing.\n"
+        echo -en "\t [ !! ] Brew formula \`$frm\` is missing.\n"
     else
-        echo -en "\t [OK] Brew formula `$frm` is available.\n"
+        echo -en "\t [ OK ] Brew formula \`$frm\` is available.\n"
     fi
     done
 
@@ -209,19 +215,21 @@ then
         $PYTHONNAME -c "import $mod" >/dev/null 2>&1
         if [[ $? == 0 ]];
         then
-            echo -en "\t [OK] Module `$mod` for Python $PYVER is available.\n"
+            echo -en "\t [ OK ] Module \`$mod\` for Python $PYVER is available.\n"
         else
-            echo -en "\t [!!] Module `$mod` for Python $PYVER failed to install.\n"
+            echo -en "\t [ !! ] Module \`$mod\` for Python $PYVER failed to install.\n"
         fi
     done
 
     $PYTHONNAME -c "import pypath; pa = pypath.PyPath()" >/dev/null 2>&1
     if [[ $? == 0 ]];
     then
-        echo -en "\t [OK] Congratulations! You have pypath installed! :)\n"
+        echo -en "\t [ OK ] Congratulations! You have pypath installed! :)\n"\
+            "\t        The authors wish you interesting findings in your analysis.\n"\
+            "\t        If you experience any issue, don't hesitate to contact omnipath@googlegroups.com.\n\n"
     else
-        echo -en "\t [!!] You have no pypath installed or some issue avoids the module to load.\n"\
-            "\t      Please check the list above for failed items. Contact omnipath@googlegroups.com if you need help.\n"
+        echo -en "\t [ !! ] You have no pypath installed or some issue avoids the module to load.\n"\
+            "\t        Please check the list above for failed items. Contact omnipath@googlegroups.com if you need help.\n\n"
     fi
 
 # end of part `TESTS`
@@ -230,78 +238,116 @@ fi
 # beginning part `UNINSTALL`
 
 declare -a modules=(pypath $PYFABRIC pysftp fisher pygraphviz pymysql bioservices suds pandas scipy numpy future igraph cairo)
-mcols=`for $(seq 0 $((${#modules[@]} - 1))); do echo "($i) ${modules[$i]}"; done; echo "(a) all"; echo "() none"`
-mcols=`echo $mcols | columns`
-mmsg=`echo -en "===[ Remove the following Python $PYVER modules? ]===\n$mcols\n[Answer e.g. \"1,2,3\" or \"a\"] "`
+mcols="$(for i in $(seq 0 $((${#modules[@]} - 1))); do echo "($i) ${modules[$i]}"; done; echo "(a) all"; echo "() none")"
+mcols="$(echo $mcols | column)"
+mmsg="$(echo -en "\n===>[ Remove the following Python $PYVER modules? ]<===\n\n$mcols\n[Answer e.g. \"1,2,3\" or \"a\"] ")"
 
 declare -a formulas=(graphviz homebrew/science/igraph $PYCAIRONAME $PYTHONNAME)
-fcols=`for $(seq 0 $((${#modules[@]} - 1))); do echo "($i) ${formulas[$i]}"; done; echo "(a) all"; echo "() none"`
-fcols=`echo $fcols | columns`
-fmsg=`echo -en "===[ Remove the following HomeBrew formulas? ]===\n$fcols\n[Answer e.g. \"1,2,3\" or \"a\"] "`
+fcols="$(for i in $(seq 0 $((${#formulas[@]} - 1))); do echo "($i) ${formulas[$i]}"; done; echo "(a) all"; echo "() none")"
+fcols="$(echo $fcols | column)"
+fmsg="$(echo -en "\n===>[ Remove the following HomeBrew formulas? ]<===\n\n$fcols\n[Answer e.g. \"1,2,3\" or \"a\"] ")"
+
+bmsg="$(echo -en "\n===>[ Do you want to remove HomeBrew? ]<===\n\n [ y/N ] ")"
 
 # uninstalling python modules:
 if [[ "$UNINSTM" == "true" ]];
 then
-    declare -a msel=(a)
     if [[ "$UCONFIRM" == "true" ]];
     then
-        (IFS=","; read -p "$mmsg" -r -a msel)
+        ifs_default=$IFS
+        IFS=","
+        read -p "$mmsg" -r -a msel
+        IFS=$ifs_default
+    else
+        declare -a msel=(a)
     fi
     if [[ ${#msel[@]} -gt 0 ]];
     then
+        echo -en "\n\n\t===[ Uninstalling Python modules ]===\n\n"
         if [[ ${msel[0]} == "a" ]];
         then
             msel=$(seq 0 $((${#modules[@] - 1})))
-        else
-            for i in ${msel[@]};
-            do
-                if [[ $i -lt ${#modules[@]} ]];
-                then
-                    $LOCALPIP --uninstall ${modules[$i]}
-                fi
-            done
         fi
+        for i in ${msel[@]};
+        do
+            if [[ $i -lt ${#modules[@]} ]];
+            then
+                $LOCALPIP uninstall -y ${modules[$i]}
+            fi
+        done
     fi
 fi
 
 # uninstalling homebrew formulas:
 if [[ "$UNINSTF" == "true" ]];
 then
-    declare -a fsel=(a)
     if [[ "$UCONFIRM" == "true" ]];
     then
-        (IFS=","; read -p "$fmsg" -r -a fsel)
+        ifs_default=$IFS
+        IFS=","
+        read -p "$fmsg" -r -a fsel
+        IFS=$ifs_default
+    else
+        declare -a fsel=(a)
     fi
     if [[ ${#fsel[@]} -gt 0 ]];
     then
         if [[ ${fsel[0]} == "a" ]];
         then
             fsel=$(seq 0 $((${#formulas[@] - 1})))
+        fi
+        echo -en "\n\n===[ Uninstalling HomeBrew formulas ]===\n\n"
+        for i in ${fsel[@]};
+        do
+            if [[ $i -lt ${#formulas[@]} ]];
+            then
+                brew remove --force $(echo ${formulas[$i]} | awk 'BEGIN{FS="/"}{print $NF}')
+                brew rm $(join <(brew leaves) <(brew deps ${formulas[$i]}))
+            fi
+        done
+    fi
+    if [[ "$UCONFIRM" == "true" ]];
+    then
+        read -p "$bmsg" -n 1 UNINSTB
+        if [[ "$UNINSTB" =~ ^(y|Y)$ ]];
+        then
+            UNINSTB=true
         else
-            for i in ${fsel[@]};
-            do
-                if [[ $i -lt ${#formulas[@]} ]];
-                then
-                    brew remove --force ${formulas[$i]}
-                fi
-            done
+            UNINSTB=false
         fi
     fi
-    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall)"
+    if [[ "$UNINSTB" == "true" ]];
+    then
+        echo -en "\n===[ Uninstalling HomeBrew ]===\n\n"
+        curl -L 'https://raw.githubusercontent.com/Homebrew/install/master/uninstall' > brew-uninstall.rb
+        chmod +x brew-uninstall.rb
+        ./brew-uninstall.rb -qf
+    fi
 fi
 
 if [[ "$UNINSTE" == "true" ]];
 then
-    echo "$(tr '\n' '\a' < .pythonrc)" | sed 's/'"$(echo -en "$PYTHONRCCONTENT" | tr '\n' '\a')"'//g' | tr '\a' '\n' > .pythonrc_tmp
-    mv .pythonrc_tmp .pythonrc
-    echo "$(tr '\n' '\a' < .bash_profile)" | sed 's/'"$(echo -en "$BASHPROFPYRC" | tr '\n' '\a')"'//g' | tr '\a' '\n' > .bash_profile_tmp
-    mv .bash_profile_tmp .bash_profile
-    echo "$(tr '\n' '\a' < .bash_profile)" | sed 's/'"$(echo -en "$BASHPROFLOCP" | tr '\n' '\a')"'//g' | tr '\a' '\n' > .bash_profile_tmp
-    mv .bash_profile_tmp .bash_profile
+    echo -en "\n\n===[ Restoring environment (~/.pythonrc, ~/.bash_profile) ]===\n\n"
+    if [ -f .pythonrc ];
+    then
+        echo "$(tr '\n' '\a' < .pythonrc)" | sed 's/'"$(echo -en "$PYTHONRCCONTENT" | tr '\n' '\a')"'//g' | tr '\a' '\n' > .pythonrc_tmp
+        mv .pythonrc_tmp .pythonrc
+    fi
+    if [ -f .bash_profile ];
+    then
+        BASHPROFPYRCE="$(echo $BASHPROFPYRC | sed -e 's/[]\/$*.^|[]/\\&/g')"
+        echo "$(tr '\n' '\a' < .bash_profile)" | sed 's/'"$(echo -en "$BASHPROFPYRCE" | tr '\n' '\a')"'//g' | tr '\a' '\n' > .bash_profile_tmp
+        mv .bash_profile_tmp .bash_profile
+        BASHPROFLOCPE="$(echo $BASHPROFLOCP | sed -e 's/[]\/$*.^|[]/\\&/g')"
+        echo "$(tr '\n' '\a' < .bash_profile)" | sed 's/'"$(echo -en "$BASHPROFLOCPE" | tr '\n' '\a')"'//g' | tr '\a' '\n' > .bash_profile_tmp
+        mv .bash_profile_tmp .bash_profile
+    fi
 fi
 
 # end of part `UNINSTALL`
 
-unset $LOCALBIN
-unset $LOCALPIP
-unset $PYPATHURL
+unset LOCALBIN
+unset LOCALPIP
+unset PYPATHURL
+
+echo -en "\n===[ Tasks complete. Please report any issue to omnipath@googlegroups.com. Bye. ]===\n\n"
