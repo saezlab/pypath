@@ -95,15 +95,15 @@ then
 
     if [[ $PYMAINVER == "3" ]];
     then
-        $CONDAPIP install -y git+https://github.com/brentp/fishers_exact_test.git
+        $CONDAPIP install git+https://github.com/brentp/fishers_exact_test.git
     fi
-    $CONDAPIP install -y $PYFABRIC
-    $CONDAPIP install -y pygraphviz
-    $CONDAPIP install -y pysftp
-    $CONDAPIP install -y future
-    $CONDAPIP install -y bioservices
-    $CONDAPIP install -i https://pypi.anaconda.org/pypi/simple -y python-igraph
-    $CONDAPIP install -y $PYPATHURL
+    $CONDAPIP install $PYFABRIC
+    $CONDAPIP install pygraphviz
+    $CONDAPIP install pysftp
+    $CONDAPIP install future
+    $CONDAPIP install bioservices
+    $CONDAPIP install -i https://pypi.anaconda.org/pypi/simple python-igraph
+    $CONDAPIP install $PYPATHURL
 fi
 
 # beginning part `TESTS`
