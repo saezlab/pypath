@@ -18,7 +18,7 @@
 #
 
 USAGE="Usage:\n\t$0\n\t\t[-h (show help and exit)]\n\t\t[-p <2|3> (Python version)]\n\t\t"\
-    "[-t (run tests only)]\n\t\t-c <Anaconda path, e.g. ~/anaconda3>\n\n"
+"[-t (run tests only)]\n\t\t-c <Anaconda path, e.g. ~/anaconda3>\n\n"
 PYMAINVER="3"
 
 INSTALL=true
@@ -45,6 +45,7 @@ do
             echo -en "$USAGE"
             exit 2
             ;;
+    esac
 done
 
 if [ -z "${CONDAROOT+x}" ];
