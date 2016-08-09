@@ -92,17 +92,17 @@ then
     $CONDA install -y -c richlewis pycairo=1.10.0
     $CONDA install -y pymysql
     $CONDA install -y graphviz
+    $CONDA install -y -c bioconda python-igraph
+    $CONDA install -y -c omnia pygraphviz
 
     if [[ $PYMAINVER == "3" ]];
     then
         $CONDAPIP install git+https://github.com/brentp/fishers_exact_test.git
     fi
     $CONDAPIP install $PYFABRIC
-    $CONDAPIP install pygraphviz
     $CONDAPIP install pysftp
     $CONDAPIP install future
     $CONDAPIP install bioservices
-    $CONDAPIP install -i https://pypi.anaconda.org/pypi/simple python-igraph
     $CONDAPIP install $PYPATHURL
 fi
 
@@ -114,7 +114,7 @@ then
 
     echo -en "\n\n\t===[ Testing installation ]===\n\n"
 
-    declare -a modules=(cairo igraph future numpy scipy pandas suds bioservices pymysql pygraphviz fisher pysftp $PYFABRIC pypath)
+    declare -a modules=(cairo igraph future numpy scipy pandas suds bioservices pymysql pygraphviz fisher pysftp fabric pypath)
 
     for mod in "${modules[@]}"
     do

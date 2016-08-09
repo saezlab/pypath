@@ -208,7 +208,7 @@ then
     fi
     done
 
-    declare -a modules=(cairo igraph future numpy scipy pandas suds bioservices pymysql pygraphviz fisher pysftp $PYFABRIC pypath)
+    declare -a modules=(cairo igraph future numpy scipy pandas suds bioservices pymysql pygraphviz fisher pysftp fabric pypath)
 
     for mod in "${modules[@]}"
     do
