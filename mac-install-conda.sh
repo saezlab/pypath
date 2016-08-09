@@ -50,10 +50,6 @@ done
 
 if [ -z "${CONDAROOT+x}" ];
 then
-    CONDABIN="$CONDAROOT/bin"
-    CONDA="$CONDABIN/conda"
-    CONDAPIP="$CONDABIN/pip"
-else
     if [[ $PYMAINVER == "3" ]];
     then
         CONDAINS="Anaconda3-4.1.1-MacOSX-x86_64.sh"
@@ -65,7 +61,10 @@ else
         CONDABIN="$HOME/anaconda2/bin"
         CONDAURL="http://repo.continuum.io/archive/Anaconda2-4.1.1-MacOSX-x86_64.sh"
         PYFABRIC="fabric"
-    fi
+else
+    CONDABIN="$CONDAROOT/bin"
+    CONDA="$CONDABIN/conda"
+    CONDAPIP="$CONDABIN/pip"
 fi 
 
 CONDA="$CONDABIN/conda"
