@@ -17,34 +17,127 @@
 #  Tested on OS X 10.11.3
 #
 
-CONDA3URL="http://repo.continuum.io/archive/Anaconda3-4.1.1-MacOSX-x86_64.sh"
-CONDA3INS="Anaconda3-4.1.1-MacOSX-x86_64.sh"
-CONDA2URL="http://repo.continuum.io/archive/Anaconda2-4.1.1-MacOSX-x86_64.sh"
-CONDA2INS="Anaconda2-4.1.1-MacOSX-x86_64.sh"
-CONDA="conda"
-CONDAPIP="pip"
+USAGE="Usage:\n\t$0\n\t\t[-h (show help and exit)]\n\t\t[-p <2|3> (Python version)]\n\t\t"\
+    "[-t (run tests only)]\n\t\t-c <Anaconda path, e.g. ~/anaconda3>\n\n"
+PYMAINVER="3"
+
+INSTALL=true
+TESTS=true
+
+
+while getopts ":htp:c:" opt;
+do
+    case $opt in
+        h)
+            echo -en "$USAGE"
+            exit 0
+            ;;
+        t)
+            INSTALL=false
+            ;;
+        c)
+            CONDAROOT="${OPTARG}"
+            ;;
+        p)
+            PYMAINVER="${OPTARG}"
+            ;;
+        ?)
+            echo -en "$USAGE"
+            exit 2
+            ;;
+done
+
+if [ -z "${CONDAROOT+x}" ];
+then
+    CONDABIN="$CONDAROOT/bin"
+    CONDA="$CONDABIN/conda"
+    CONDAPIP="$CONDABIN/pip"
+else
+    if [[ $PYMAINVER == "3" ]];
+    then
+        CONDAINS="Anaconda3-4.1.1-MacOSX-x86_64.sh"
+        CONDABIN="~/anaconda3/bin"
+        CONDAURL="http://repo.continuum.io/archive/Anaconda3-4.1.1-MacOSX-x86_64.sh"
+        PYFABRIC="fabric3"
+    else
+        CONDAINS="Anaconda2-4.1.1-MacOSX-x86_64.sh"
+        CONDABIN="~/anaconda2/bin"
+        CONDAURL="http://repo.continuum.io/archive/Anaconda2-4.1.1-MacOSX-x86_64.sh"
+        PYFABRIC="fabric"
+    fi
+fi 
+
+CONDA="$CONDABIN/conda"
+CONDAPIP="$CONDABIN/pip"
+CONDAPY="$CONDABIN/python"
 PYPATHURL="http://pypath.omnipathdb.org/releases/latest/pypath-latest.tar.gz"
 
-if [[ $PYMAINVER == "3" ]];
+if [[ "$INSTALL" == "true" ]];
 then
-    curl -LO $CONDA3URL
-    chmod +x $CONDA3INS
-    bash ./$CONDA3INS
-else
-    curl -LO $CONDA2URL
-    chmod +x $CONDA2INS
-    bash ./$CONDA2INS
+    echo -en "\n\n===[ Attempting to install pypath and all its dependencies with the help of Anaconda. ]===\n\n"
+    echo -en "\t Note: this method works on most of the Mac computers. Watch out for errors, and the test results post installation."\
+" This will take a couple of minutes. Now relax, and hope the best.\n\n"
+    if [ ! -d $CONDABIN ];
+    then
+        if [ ! -f $CONDAINS ];
+        then
+            curl -LO $CONDAURL
+        fi
+        chmod +x $CONDAINS
+        bash ./$CONDAINS -b
+    fi
+
+    $CONDA install -c vgauthier cairo=1.12.18
+    $CONDA install -c richlewis pycairo=1.10.0
+    $CONDA install pymysql
+    $CONDA install graphviz
+
+    if [[ $PYMAINVER == "3" ]];
+    then
+        $CONDAPIP install git+https://github.com/brentp/fishers_exact_test.git
+    fi
+    $CONDAPIP install $PYFABRIC
+    $CONDAPIP install pygraphviz
+    $CONDAPIP install pysftp
+    $CONDAPIP install future
+    $CONDAPIP install bioservices
+    $CONDAPIP install -i https://pypi.anaconda.org/pypi/simple python-igraph
+    $CONDAPIP install $PYPATHURL
 fi
 
-$CONDA install -c vgauthier cairo=1.12.18
-$CONDA install -c richlewis pycairo=1.10.0
-$CONDA install pymysql
-$CONDA install graphviz
+# beginning part `TESTS`
 
-$CONDAPIP install fabric3
-$CONDAPIP install pygraphviz
-$CONDAPIP install pysftp
-$CONDAPIP install future
-$CONDAPIP install bioservices
-$CONDAPIP install -i https://pypi.anaconda.org/pypi/simple python-igraph
-$CONDAPIP install $PYPATHURL
+if [[ "$TESTS" == "true" ]];
+then
+    # check and report:
+
+    echo -en "\n\n\t===[ Testing installation ]===\n\n"
+
+    declare -a modules=(cairo igraph future numpy scipy pandas suds bioservices pymysql pygraphviz fisher pysftp $PYFABRIC pypath)
+
+    for mod in "${modules[@]}"
+    do
+        $CONDAPY -c "import $mod" >/dev/null 2>&1
+        if [[ $? == 0 ]];
+        then
+            echo -en "\t [ OK ] Module \`$mod\` for Python $PYMAINVER is available.\n"
+        else
+            echo -en "\t [ !! ] Module \`$mod\` for Python $PYMAINVER failed to install.\n"
+        fi
+    done
+
+    $CONDAPY -c "import pypath; pa = pypath.PyPath()" >/dev/null 2>&1
+    if [[ $? == 0 ]];
+    then
+        echo -en "\t [ OK ] Congratulations! You have pypath installed! :)\n"\
+            "\t        The authors wish you interesting findings in your analysis.\n"\
+            "\t        If you experience any issue, don't hesitate to contact omnipath@googlegroups.com.\n\n"
+    else
+        echo -en "\t [ !! ] You have no pypath installed or some issue avoids the module to load.\n"\
+            "\t        Please check the list above for failed items. Contact omnipath@googlegroups.com if you need help.\n\n"
+    fi
+
+# end of part `TESTS`
+fi
+
+echo -en "\n===[ Tasks complete. Please report any issue to omnipath@googlegroups.com. Bye. ]===\n\n"

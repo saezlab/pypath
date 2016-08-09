@@ -34,11 +34,11 @@ while getopts ":htumbefp:" opt;
 do
     case $opt in
         h)
-            echo -en $USAGE;
+            echo -en "$USAGE";
             exit 0
             ;;
         p)
-            PYMAINVER=${OPTARG}
+            PYMAINVER="${OPTARG}"
             ;;
         t)
             INSTALL=false
@@ -71,7 +71,7 @@ do
             UCONFIRM=false
             ;;
         ?)
-            echo -en $USAGE;
+            echo -en "$USAGE";
             exit 2
             ;;
     esac
@@ -184,7 +184,7 @@ if [[ "$TESTS" == "true" ]];
 then
     # check and report:
 
-    echo -en "\n\n\t====[ Testing installation ]====\n\n"
+    echo -en "\n\n\t===[ Testing installation ]===\n\n"
 
     type brew >/dev/null 2>&1
 
