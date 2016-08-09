@@ -89,7 +89,12 @@ then
     fi
 
     $CONDA install -y -c vgauthier cairo=1.12.18
-    $CONDA install -y -c richlewis pycairo=1.10.0
+    if [[ "$PYMAINVER" == "3" ]];
+    then
+        $CONDA install -y -c richlewis pycairo=1.10.0
+    else
+        $CONDA install -y -c pkgw py2cairo
+    fi
     $CONDA install -y pymysql
     $CONDA install -y graphviz
     $CONDA install -y -c bioconda python-igraph
