@@ -161,6 +161,13 @@ class Direction(object):
                 ', '.join(self.negative_sources[self.reverse]))
         return s
     
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
     def check_nodes(self, nodes):
         return not bool(len(set(self.nodes) - set(nodes)))
     
@@ -245,9 +252,10 @@ class Direction(object):
     
     def has_sign(self, direction = None):
         if direction is None:
-            return bool(sum(self.positive.values() + self.negative.values()))
+            return bool(sum(self.positive.values())) or \
+                bool(sum(self.negative.values()))
         else:
-            return bool(sum(self.negative[direction] + self.postive[direction]))
+            return self.negative[direction] or self.positive[direction]
     
     def set_sign(self, direction, sign, source):
         if self.check_nodes(direction):
@@ -357,6 +365,70 @@ class Direction(object):
     def positive_sources_reverse(self):
         return self.positive_sources[self.reverse]
     
+    def majority_dir(self):
+        """
+        Returns directionality based on majority consensus.
+        Returns `None` if the number of sources supporting the two opposite
+        directions are the same. Returns `'undirected'` if there is no directionality
+        information. Returns `tuple` of IDs if one direction is supported by
+        more sources.
+        """
+        if self.is_directed():
+            if len(self.sources[self.straight]) == len(self.sources[self.reverse]):
+                return None
+            elif len(self.sources[self.straight]) > len(self.sources[self.reverse]):
+                return self.straight
+            else:
+                return self.reverse
+        else:
+            return 'undirected'
+    
+    def majority_sign(self):
+        """
+        Returns signs based on majority consensus. Keys in the returned `dict` are directions.
+        Values are `None` if the direction lacks effect sign. Otherwise `tuples` with their
+        first element `True` if the number of sources supporting stimulation in the given
+        direction is greater or equal compared to those supporting inhibition. The second
+        value is the same for inhibition.
+        """
+        result = {self.straight: None, self.reverse: None}
+        if self.has_sign(direction = self.straight):
+            pos = len(self.positive_sources[self.straight]) >= len(self.negative_sources[self.straight])
+            neg = len(self.positive_sources[self.straight]) <= len(self.negative_sources[self.straight])
+            result[self.straight] = [pos, neg]
+        if self.has_sign(direction = self.reverse):
+            pos = len(self.positive_sources[self.reverse]) >= len(self.negative_sources[self.reverse])
+            neg = len(self.positive_sources[self.reverse]) <= len(self.negative_sources[self.reverse])
+            result[self.reverse] = [pos, neg]
+        return result
+    
+    def consensus_edges(self):
+        """
+        Returns list of edges based on majority consensus of directions and signs.
+        """
+        result = []
+        d = self.majority_dir()
+        s = self.majority_sign()
+        if d == 'undirected':
+            result.append([self.straight[0], self.straight[1], 'undirected', 'unknown'])
+        if d is None or d == self.straight:
+            if s[self.straight] is not None:
+                if s[self.straight][0]:
+                    result.append([self.straight[0], self.straight[1], 'directed', 'positive'])
+                if s[self.straight][1]:
+                    result.append([self.straight[0], self.straight[1], 'directed', 'negative'])
+            else:
+                result.append([self.straight[0], self.straight[1], 'directed', 'unknown'])
+        if d is None or d == self.reverse:
+            if s[self.reverse] is not None:
+                if s[self.reverse][0]:
+                    result.append([self.reverse[0], self.reverse[1], 'directed', 'positive'])
+                if s[self.reverse][1]:
+                    result.append([self.reverse[0], self.reverse[1], 'directed', 'negative'])
+            else:
+                result.append([self.reverse[0], self.reverse[1], 'directed', 'unknown'])
+        return result
+    
     def merge(self,other):
         if other.__class__.__name__ == 'Direction' and self.check_nodes(other.nodes):
             self.dirs[self.straight] = self.dirs[self.straight] or \
@@ -417,6 +489,8 @@ class AttrHelper(object):
         elif type(self.value) in common.simpleTypes:
             return self.value
         # if a dictionary given to map some igraph attribute to values:
+        elif hasattr(self.value, '__call__'):
+            return self.value(instance)
         elif type(self.value) is dict and self.attr_name is not None:
             if hasattr(instance, self.value['_name']):
                 key_attr = getattr(instance, self.value['_name'])
@@ -3936,10 +4010,12 @@ class PyPath(object):
         @directed : bool
             To be passed to igraph.Graph.get_eid()
         '''
-        v_source = self.protein(source)
-        v_target = self.protein(target)
+        v_source = self.protein(source) \
+            if not self.graph.is_directed() else self.dprotein(source)
+        v_target = self.protein(target) \
+            if not self.graph.is_directed() else self.dprotein(target)
         if v_source is not None and v_target is not None:
-            eid = self.graph.get_eid(v_source.index, v_target.index, 
+            eid = self.graph.get_eid(v_source.index, v_target.index,
                 directed = directed, error = False)
             if eid != -1:
                 return self.graph.es[eid]
@@ -4143,9 +4219,16 @@ class PyPath(object):
     def neighbors(self, identifier, mode = 'ALL'):
         vrtx = self.protein(identifier)
         if vrtx is not None:
-            return _NamedVertexSeq(vrtx.neighbors(mode = mode), 
+            return _NamedVertexSeq(vrtx.neighbors(mode = mode),
                 self.nodNam, self.nodLab)
         return _NamedVertexSeq([], self.nodNam, self.nodLab)
+    
+    def dneighbors(self, identifier, mode = 'ALL'):
+        vrtx = self.dprotein(identifier)
+        if vrtx is not None:
+            return _NamedVertexSeq(vrtx.neighbors(mode = mode),
+                self.dnodNam, self.dnodLab)
+        return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
     
     # neighborhood variations:
     
@@ -6389,7 +6472,7 @@ class PyPath(object):
         for interactions already supported by literature 
         evidences from other sources.
         '''
-        self.string_effects(graph = graph)
+        # self.string_effects(graph = graph)
         self.kegg_directions(graph = graph)
         self.laudanna_effects(graph = graph)
         self.laudanna_directions(graph = graph)
@@ -6521,12 +6604,12 @@ class PyPath(object):
                 )
             )
     
-    def export_dot(self, nodes = None, edges = None, directed = True, 
+    def export_dot(self, nodes = None, edges = None, directed = True,
         labels = 'genesymbol', edges_filter = lambda e: True, nodes_filter = lambda v: True,
         edge_sources = None, dir_sources = None, graph = None,
-        return_object = False, save_dot = None, save_graphics = None, 
-        prog = 'neato', format = None, hide = False, 
-        font = None, auto_edges = False, hide_nodes = [], 
+        return_object = False, save_dot = None, save_graphics = None,
+        prog = 'neato', format = None, hide = False,
+        font = None, auto_edges = False, hide_nodes = [],
         defaults = {}, **kwargs):
         '''
         Builds a pygraphviz.AGraph() object with filtering the edges 
@@ -6567,7 +6650,7 @@ class PyPath(object):
         @hide nodes : list
         Nodes to hide. List of vertex ids.
         @auto_edges : str
-        Automatic, built-in style for edges. 
+        Automatic, built-in style for edges.
         'DIRECTIONS' or 'RESOURCE_CATEGORIES' are supported.
         @font : str
         Font to use for labels. 
@@ -6683,7 +6766,7 @@ class PyPath(object):
                     if type(callback_value) is dict:
                         if '_name' not in callback_value:
                             callback_value['_name'] = 'index'
-                    callbacks[attr] = AttrHelper(value = callback_value, 
+                    callbacks[attr] = AttrHelper(value = callback_value,
                         name = attr, defaults = _defaults)
         # graph
         dot = graphviz.AGraph(directed = directed)
@@ -6740,8 +6823,9 @@ class PyPath(object):
                                 thisSources = ssign[0] if dir_sources is None else \
                                     ssign[0] & dir_sources
                                 for eattr, fun in iteritems(edge_callbacks):
-                                    attrs[eattr] = fun(g.es[eid], 
-                                        thisDir, thisSign, thisDirSources, g.es[eid]['sources'])
+                                    attrs[eattr] = fun(g.es[eid],
+                                        thisDir, thisSign,
+                                        thisSources, g.es[eid]['sources'])
                             elif vis and (sign[1] and dir_sources is None or \
                                 dir_sources is not None and \
                                 len(ssign[1] & dir_sources) > 0):
@@ -6749,14 +6833,16 @@ class PyPath(object):
                                 thisSoures = ssign[1] if dir_sources is None else \
                                     ssign[1] & dir_sources
                                 for eattr, fun in iteritems(edge_callbacks):
-                                    attrs[eattr] = fun(g.es[eid], 
-                                        thisDir, thisSign, thisSources, g.es[eid]['sources'])
+                                    attrs[eattr] = fun(g.es[eid],
+                                        thisDir, thisSign,
+                                        thisSources, g.es[eid]['sources'])
                             elif vis:
                                 thisSign = 'unknown'
                                 thisSources = sdir
                                 for eattr, fun in iteritems(edge_callbacks):
-                                    attrs[eattr] = fun(g.es[eid], 
-                                        thisDir, thisSign, thisSources, g.es[eid]['sources'])
+                                    attrs[eattr] = fun(g.es[eid],
+                                        thisDir, thisSign,
+                                        thisSources, g.es[eid]['sources'])
                             else:
                                 attrs['style'] = 'invis'
                                 drawn_directed = False

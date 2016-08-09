@@ -431,7 +431,9 @@ class Mapper(object):
         if len(mappedNames) == 0 and nameType == 'genesymbol':
             mappedNames = self._map_name(name, 'genesymbol-syn', targetNameType)
             if not strict and len(mappedNames) == 0:
-                mappedNames = self._map_name(name, 'genesymbol5', targetNameType)
+                mappedNames = self._map_name('%s1'%name, 'genesymbol', targetNameType)
+                if len(mappedNames) == 0:
+                    mappedNames = self._map_name(name, 'genesymbol5', targetNameType)
         if targetNameType == 'uniprot':
             orig = mappedNames
             mappedNames = self.primary_uniprot(mappedNames)
