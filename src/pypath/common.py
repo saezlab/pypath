@@ -25,11 +25,14 @@ import random
 import textwrap
 import hashlib
 
-__all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes', 'uniqList', 'addToList',
+import __main__
+
+__all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes', 'listLike',
+           'uniqList', 'addToList',
            'addToSet',
            'gen_session_id', 'sorensen_index', 'simpson_index', 'simpson_index_counts',
            'jaccard_index', 'console', 'wcl', 'flatList',
-           'charTypes', 'delEmpty', '__version__', 'get_args',
+           'charTypes', 'delEmpty', '__version__', 'get_args', 'get_function',
            'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs', 'md5', 'mod_keywords']
 
 # get the location
@@ -196,6 +199,8 @@ simpleTypes = set([int, long, float, str, unicode, bytes])
 numTypes = set([int, long, float])
 
 charTypes = set([str, unicode, bytes])
+
+listLike = set([list, tuple])
 
 def uniqList(seq):
     """
@@ -438,3 +443,35 @@ def dict_sym_diff(d1, d2):
         elif type(d1[k]) is set and type(d2[k]) is set:
             diff[k] = d1[k] ^ d2[k]
     return diff
+
+def get_function(fun, instance = None):
+    if hasattr(fun, '__call__'):
+        return fun
+    fun = fun.split('.')
+    fun0 = fun.pop(0)
+    toCall = None
+    if fun0 in globals():
+        toCall = globals()[fun0]
+    elif fun0 in locals():
+        toCall = locals()[fun0]
+    elif fun0 == __name__.split('.')[0]:
+        toCall = __main__
+    elif fun0 == 'self' or fun0 == __name__.split('.')[-1]:
+        toCall = instance
+    elif fun0 in dir(instance):
+        toCall = getattr(instance, fun0)
+    else:
+        for subm in globals().keys():
+            if hasattr(globals()[subm], '__name__') and \
+                globals()[subm].__name__.split('.')[0] == __name__.split('.')[-1]:
+                if hasattr(globals()[subm], fun0):
+                    toCall = getattr(globals()[subm], fun0)
+    if toCall is None:
+        return None
+    for fun0 in fun:
+        if hasattr(toCall, fun0):
+            toCall = getattr(toCall, fun0)
+    if hasattr(toCall, '__call__'):
+        return toCall
+    else:
+        return None
