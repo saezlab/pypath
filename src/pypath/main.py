@@ -762,6 +762,9 @@ class PyPath(object):
             attrs[fieldName] = fieldVal
         return attrs
     
+    def print_name(self):
+        print(__name__)
+    
     def get_taxon(self, tax_dict, fields):
         if 'A' in tax_dict and 'B' in tax_dict:
             return (self.get_taxon(tax_dict['A'], fields), 
@@ -4382,7 +4385,7 @@ class PyPath(object):
         else:
             return None
     
-    def edges_3d(self,methods=['dataio.get_instruct', 'dataio.get_i3d']):
+    def edges_3d(self, methods=['dataio.get_instruct', 'dataio.get_i3d']):
         all_3d = []
         self.update_vname()
         for m in methods:
