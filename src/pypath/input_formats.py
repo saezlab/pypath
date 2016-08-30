@@ -108,12 +108,35 @@ class ReadSettings:
     
     def __init__(self, name = "unknown", separator = None, nameColA = 0, nameColB = 1,
             nameTypeA = "uniprot", nameTypeB = "uniprot", typeA = "protein",
-            typeB = "protein", isDirected = False, sign = False, inFile = None,
+            typeB = "protein", isDirected = False, sign = False, feed = None,
             references = False, extraEdgeAttrs = {}, extraNodeAttrsA = {},
             extraNodeAttrsB = {}, header = False, taxonA = 9606, taxonB = 9606,
             ncbiTaxId = False, interactionType = 'PPI',
             positiveFilters = [], negativeFilters = [], inputArgs = {},
-            must_have_references = True, huge = False, resource = None):
+            must_have_references = True, huge = False, resource = None,
+            encoding = 'utf-8'):
+        """
+        Provides parameters for reading any molecular interaction data.
+        Serves as parent of :class:`~pypath._input.Reader`.
+        
+        :param str name: Name of the data source.
+        :param separator: Field separator for text processing;
+        `None` if `feed` is type of `list`.
+        :type separator: str or None
+        :param str nameTypeA: Identifier type for molecule A.
+        :param str nameTypeB: Identifier type for molecule B.
+        :param str typeA: Type of molecule A (e.g. protein).
+        :param str typeB: Type of molecule B (e.g. protein).
+        :param isDirected: Whether the interaction is directed or not.
+        Boolean values are valid for all records of the input. A `tuple`
+        with field index (int) as its first element and values indicating
+        directed interaction as its second element (list or str) will
+        test for each line; e.g. `(4, ['+', '-'])` will parse lines with
+        `+` or `-` in the columnt `#4` as directed, and as undirected all
+        others.
+        :type isDirected: bool or tuple
+        :param sign:
+        """
         self.typeA = typeA
         self.typeB = typeB
         self.nameColA = nameColA
@@ -140,6 +163,7 @@ class ReadSettings:
         self.must_have_references = must_have_references and bool(references)
         self.huge = huge
         self.resource = self.name if resource is None else resource
+        self.encoding = encoding
 
 class ReadList:
     
