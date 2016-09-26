@@ -1,7 +1,7 @@
 Webservice
 ==========
 
-One instance of the pypath webservice running on the domain http://omnipathdb.org/, serving the OmniPath data with additional PTMs. It serves data in REST style, by HTTP protocol (browser, wget, curl or anything can make requests). This host is accessible only on the EBI internal network. From outside you can use SSH tunnel of course. The webservice currently recognizes 6 types of queries: ``interactions``, ``ptms``, ``resources``, ``network``, ``about`` and ``info``. 
+One instance of the pypath webservice running at the domain http://omnipathdb.org/, serving the OmniPath data with additional enzyme-substrate interactions. It implements a very simple REST style API, you can make requests by HTTP protocol (browser, wget, curl or whatever). The webservice currently recognizes 6 types of queries: ``interactions``, ``ptms``, ``resources``, ``network``, ``about`` and ``info``. 
 
 A request without any parameter, gives some basic numbers about the actual loaded dataset:
 

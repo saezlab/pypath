@@ -1,5 +1,0 @@
-http://localhost:33333/ptms?fields=sources&fields=references&ptmtype=acetylation
-http://172.22.68.26:33333/ptms?fields=sources&fields=references&ptmtype=acetylation
-http://172.22.68.26:33333/ptms?fields=sources&fields=references&ptmtype=phosphorylation
-
-http://172.22.68.26:33333/ptms?fields=sources&fields=references&ptmtype=phosphorylation&fields=is_stimulation&fields=is_inhibition
