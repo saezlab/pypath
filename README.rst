@@ -144,7 +144,7 @@ Main improvements in the past releases:
 
 0.1.0:
 ------
-* First release of PyPath, for initial testing.
+* First release of pypath, for initial testing.
 
 0.2.0:
 -----
@@ -173,6 +173,7 @@ Upcoming:
 * New, more flexible network reader class
 * Full support for multi-species molecular interaction networks (e.g. pathogene-host)
 * Better support for not protein only molecular interaction networks (metabolites, drug compounds, RNA)
+* ChEMBL webservice interface, interface for PubChem and eventually for DrugBank
 * Silent mode: a way to suppress messages and progress bars
 
 Features

@@ -18,11 +18,17 @@
 from future.utils import iteritems
 from past.builtins import xrange, range, reduce
 
-import cairo
-import math
-import igraph
 import os
 import sys
+
+try:
+    import cairo
+except:
+    sys.stdout.write('No module `cairo` available.'\
+        '\nSome plotting functionalities won\'t be accessible.\n')
+
+import math
+import igraph
 import time
 
 from pypath.common import *

@@ -27,8 +27,13 @@ import sys
 import re
 import imp
 import math
+try:
+    import cairo
+except:
+    sys.stdout.write('No module `cairo` available.'\
+        '\nSome plotting functionalities won\'t be accessible.\n')
+
 import igraph
-import cairo
 import codecs
 import random
 import textwrap
