@@ -16,14 +16,14 @@
 import pypath
 from pypath import data_formats
 
-net = pypath.PyPath()
+net = pypath.Pypath()
 net.init_network(exclude = ['intact', 'acsn', 'reactome', 'nci-pid'])
 net.save_network('cache/default_network_raw.pickle')
 net.remove_htp()
 net.third_source_directions()
 net.save_network('cache/default_network.pickle')
 
-net = pypath.PyPath()
+net = pypath.Pypath()
 net.init_network(pfile = 'cache/default_network_raw.pickle')
 net.load_resources(data_formats.ptm_misc)
 net.third_source_directions()

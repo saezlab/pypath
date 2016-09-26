@@ -36,20 +36,20 @@ import matplotlib.patches as mpatches
 import _sensitivity as sens
 from scipy import stats
 
-# from pypath #
+# from bioigraph #
 
-import pypath
-from pypath.common import *
-from pypath.data_formats import best, good, ugly, transcription
-from pypath import dataio
-from pypath import plot
+import bioigraph
+from bioigraph.common import *
+from bioigraph.data_formats import best, good, ugly, transcription
+from bioigraph import dataio
+from bioigraph import plot
 
 # parameters
 omnipath = 'OmniPath'
 lab_size = (18, 21)
 axis_lab_size = 36
 
-net = pypath.Pypath(9606)
+net = bioigraph.BioGraph(9606)
 
 #net.init_network(exclude = ['intact'])
 #net.third_source_directions()
@@ -73,8 +73,8 @@ net.load_corum()
 sens.in_complex(net)
 net.in_complex()
 net.load_ptms()
-net.read_list_file(pypath.data_formats.cgc)
-net.read_list_file(pypath.data_formats.intogene_cancer)
+net.read_list_file(bioigraph.data_formats.cgc)
+net.read_list_file(bioigraph.data_formats.intogene_cancer)
 # net.load_comppi()
 sep = net.separate()
 

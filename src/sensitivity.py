@@ -13,8 +13,6 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
-from future.utils import iteritems
-
 import re
 import random
 import sys

@@ -39,19 +39,19 @@ import scipy.cluster.hierarchy as hc
 import hcluster as hc2
 import matplotlib.patches as mpatches
 
-# from pypath #
+# from bioigraph #
 
-import pypath
-from pypath.common import *
+import bioigraph
+from bioigraph.common import *
 
 # literature curated network
-net = pypath.Pypath(9606)
+net = bioigraph.BioGraph(9606)
 net.init_network(pfile = 'cache/default_network_wo-intact_ltp-only.pickle')
-net.read_list_file(pypath.data_formats.cgc)
-net.read_list_file(pypath.data_formats.intogene_cancer)
+net.read_list_file(bioigraph.data_formats.cgc)
+net.read_list_file(bioigraph.data_formats.intogene_cancer)
 # high confidence interactome from Vidal Lab, 2nd release, 2014
-hi2 = pypath.Pypath(9606)
-hi2.init_network(lst = {'hi2': pypath.data_formats.ugly['hi2']})
+hi2 = bioigraph.BioGraph(9606)
+hi2.init_network(lst = {'hi2': bioigraph.data_formats.ugly['hi2']})
 
 ## Rolland 2014 like visualization
 # getting adjacency matrices

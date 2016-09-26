@@ -46,13 +46,13 @@ import scipy.cluster.hierarchy as hc
 import hcluster as hc2
 import matplotlib.patches as mpatches
 
-# from pypath #
+# from bioigraph #
 
-import pypath
-from pypath import chembl
-from pypath.common import *
+import bioigraph
+from bioigraph import chembl
+from bioigraph.common import *
 import _sensitivity as sens
-from pypath import progress
+from bioigraph import progress
 
 # 0 ## Constants
 
@@ -85,7 +85,7 @@ with open(drugfile, 'r') as f:
 
 # 2 ## Initializing signaling network
 
-net = pypath.Pypath(9606, mysql=mysql_gelati, name="demo")
+net = bioigraph.BioGraph(9606, mysql=mysql_gelati, name="demo")
 
 #net.init_network(pfile = 'cache/plus_phospho.pickle')
 #net.load_resources(lst={'mimp': good['mimp']})

@@ -810,10 +810,6 @@ sg = plot.SimilarityGraph(
         size = 'edge',
     )
 
-ht = plot.HistoryTree(fname = 'history_tree.tex')
-
-hc = plot.HtpCharacteristics(net, fname = 'htp_causal.pdf', title = 'Causal resources', lower = 2)
-
 sens.stacked_barplot(x = d[0], y = d[1:], 
     names = ['Positive', 'Negative', 'Unknown effect', 'Unknown direction'],
     data = None, fname = 'dirs-signes-by-db-o-st.pdf', lab_size = lab_size, 

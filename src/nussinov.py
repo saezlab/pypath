@@ -13,16 +13,16 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
-import pypath
+import bioigraph
 import copy
 from itertools import chain
-from pypath.data_formats import best, good, ugly, transcription
-from pypath import dataio
+from bioigraph.data_formats import best, good, ugly, transcription
+from bioigraph import dataio
 
 mysql_gelati = (None,'mapping_gelati')
 mysql_chembl = (None,'chembl_ebi')
 
-net = pypath.Pypath(9606)
+net = bioigraph.BioGraph(9606)
 
 net.init_network(pfile = 'cache/plus_phospho.pickle')
 net.load_resources(transcription)

@@ -132,7 +132,7 @@ for i, s in enumerate(escale):
     v1['name'] = ''
     v2['name'] = ''
 
-sf = cairo.PDFSurface('resource_graph_proteins_simpson.pdf', 1024, 1024)
+sf = cairo.PDFSurface('resource_graph_edge_simpson.pdf', 1024, 1024)
 bbox = igraph.drawing.utils.BoundingBox(124, 124, 900, 900)
 
 plot = igraph.plot(g, vertex_label = g.vs['name'],

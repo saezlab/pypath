@@ -70,7 +70,7 @@ if not hasattr(urllib, 'quote'):
 try:
     import pysftp
 except:
-    sys.stdout.write('''\t:: Module `pyfstp` not available. 
+    sys.stdout.write('''\n\t:: Module `pyfstp` not available. 
         Only downloading of a small number of resources 
         relies on this module.
         Please install by PIP if it is necessary for you.
@@ -85,7 +85,7 @@ try:
     from fabric.network import connect, HostConnectionCache
     from fabric.state import env
 except:
-    sys.stdout.write('\t:: No module `fabric` available.\n')
+    sys.stdout.write('No `fabric` available.\n')
     sys.stdout.flush()
 
 from contextlib import closing
