@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-#  Copyright (c) 2014-2016 - EMBL-EBI
+#  Copyright (c) 2014-2015 - EMBL-EBI
 #
 #  File author(s): Dénes Türei (denes@ebi.ac.uk)
 #
@@ -109,8 +109,7 @@ def get_moves(bbox1, bbox2):
     return (xmove, ymove)
 
 # parameters
-omnipath = 'All'
-prefix = "int"
+omnipath = 'OmniPath'
 lab_size = (18, 21)
 axis_lab_size = 36
 table2file = 'curation_stats_stripped.tex'
