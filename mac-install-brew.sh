@@ -20,11 +20,14 @@
 # installing HomeBrew first:
 
 USAGE="Usage:\n\t$0\n\t\t[-h (show help and exit)]\n\t\t[-p <2|3> (Python version)]\n\t\t"\
+"[-c (do not install cairo)]\n\t\t[-g (do not install graphviz)]\n\t\t"\
 "[-t (run tests only)]\n\t\t[-u (uninstall everything)]\n\t\t[-f (do not ask confirmation at uninstall)]\n\t\t"\
 "[-m (uninstall Python modules)]\n\t\t[-b (uninstall HomeBrew and formulas)]\n\t\t[-e (remove environment changes)]\n"
 PYMAINVER="2"
 INSTALL=true
 TESTS=true
+ICAIRO=true
+IGRAPHVIZ=true
 UNINSTM=false
 UNINSTB=false
 UNINSTE=false
@@ -69,6 +72,12 @@ do
             ;;
         f)
             UCONFIRM=false
+            ;;
+        c)
+            ICAIRO=false
+            ;;
+        g)
+            IGRAPHVIZ=false
             ;;
         ?)
             echo -en "$USAGE";
@@ -118,7 +127,8 @@ BASHPROFLOCP='export PATH="'$LOCALBIN':$PATH" # pypath added'
 if [[ "$INSTALL" = "true" ]];
 then
     echo -en "\n\n===[ Attempting to install pypath and all its dependencies with the help of HomeBrew. ]===\n\n"
-    echo -en "\t Note: this method works on most of the Mac computers.\n\t Watch out for errors, and the test results post installation.\n"\
+    echo -en "\t Note: this method works on most of the Mac computers.\n"\
+"\t Watch out for errors, and the test results post installation.\n"\
 "\t This will last at least 10 mins. Now relax, and hope the best.\n\n"
     if [[ ! -f .pythonrc || "$(grep 'tab:[[:space:]]\?complete' .pythonrc)" == "" ]];
     then
@@ -147,10 +157,21 @@ then
         curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1
         cd ~
     fi
-
+    
+    # update repositories
     brew update
-    brew install $PYTHONNAME $PYCAIRONAME homebrew/science/igraph graphviz
-
+    # obtaining a recent python distribution from brew:
+    brew install $PYTHONNAME
+    # optionally install (py)cairo:
+    if [[ "$ICAIRO" == "true" ]];
+        then brew install $PYCAIRONAME;
+    fi
+    # optionally install graphviz:
+    if [[ "$IGRAPHVIZ" == "true" ]];
+        then brew install homebrew/science/igraph graphviz;
+    fi
+    
+    # installing another python modules by pip
     $LOCALPIP install --upgrade pip
     $LOCALPIP install python-igraph
     $LOCALPIP install pysftp
@@ -161,7 +182,10 @@ then
     $LOCALPIP install suds-jurko
     $LOCALPIP install bioservices
     $LOCALPIP install pymysql
-    $LOCALPIP install pygraphviz
+    # optionally install pygraphviz
+    if [[ "$IGRAPHVIZ" == "true" ]];
+        then $LOCALPIP install pygraphviz;
+    fi
 
     $LOCALPIP install $PYPATHURL
 
