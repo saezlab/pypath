@@ -1,12 +1,12 @@
 Metadata-Version: 1.1
 Name: pypath
-Version: 0.5.24
+Version: 0.5.25
 Summary: Work with molecular networks in Python igraph
-Home-page: ['http://157.181.231.40/~denes/pypath']
+Home-page: ['http://pypath.omnipathdb.org']
 Author: Dénes Türei
 Author-email: denes@ebi.ac.uk
 License: LGPL
-Download-URL: ['http://157.181.231.40/~denes/pypath']
+Download-URL: ['http://pypath.omnipathdb.org']
 Description: pypath
         ######
         
@@ -67,10 +67,43 @@ Description: pypath
         Installation
         ============
         
-        igraph C library
-        ----------------
+        Linux
+        -----
         
-        Python igraph is a Python interface to use the igraph C library. The C library should be installed. 
+        In almost any up-to-date Linux distribution the dependencies of **pypath** are built-in, or provided by the distributors.
+        You only need to install a couple of things in your package manager (cairo, py(2)cairo, igraph, python(2)-igraph, graphviz, pygraphviz), and after install **pypath** by *pip* (see below).
+        If any module still missing, you can install them the usual way by *pip* or your package manager.
+        
+        igraph C library, cairo and pycairo
+        -----------------------------------
+        
+        *python(2)-igraph* is a Python interface to use the igraph C library. The C library must be installed.
+        The same goes for *cairo*, *py(2)cairo* and *graphviz*.
+        
+        Directly from git
+        -----------------
+        
+        .. code:: bash
+            
+            pip install git+https://github.com/saezlab/pypath.git
+        
+        With pip
+        --------
+        
+        Download the package from /dist, and install with pip:
+        
+        .. code:: bash
+            
+            pip install pypath-x.y.z.tar.gz
+        
+        Build source distribution
+        -------------------------
+        
+        Clone the git repo, and run setup.py:
+        
+        .. code:: bash
+            
+            python setup.py sdist
         
         Mac OS X
         --------
@@ -84,37 +117,73 @@ Description: pypath
         
         * ``pkgconfig`` not found. Check if the ``$PKG_CONFIG_PATH`` variable is set correctly, and pointing on a directory where pkgconfig really can be found.
         
-        * Error while trying to install py2cairo by pip. py2cairo could not be installed by pip, but only by waf. Please set the ``$PKG_CONFIG_PATH`` before. See **mac-install-source.sh** on how to install with waf.
+        * Error while trying to install py(2)cairo by pip. py(2)cairo could not be installed by pip, but only by waf. Please set the ``$PKG_CONFIG_PATH`` before. See **mac-install-source.sh** on how to install with waf.
         
         * Error at pygraphviz build: ``graphviz/cgraph.h file not found``. This is because the directory of graphviz detected wrong by pkgconfig. See **mac-install-source.sh** how to set include dirs and library dirs by ``--global-option`` parameters.
         
         * Can not install bioservices, because installation of jurko-suds fails. Ok, this fails because pip is not able to install the recent version of setuptools, because a very old version present in the system path. The development version of jurko-suds does not require setuptools, so you can install it directly from git as it is done in **mac-install-source.sh**.
         
+        * In **Anaconda**, *pypath* can be imported, but the modules and classes are missing. Apparently Anaconda has some built-in stuff called *pypath*. This has nothing to do with this module. Please be aware that Anaconda installs a completely separated Python distribution, and does not detect modules in the main Python installation. You need to install all modules within Anaconda's directory. **mac-install-conda.sh** does exactly this. If you still experience issues, please contact us.
         
-        Directly from git
+        Microsoft Windows
         -----------------
         
-        .. code:: bash
-            
-            pip2 install git+https://github.com/saezlab/pypath.git
+        Not many people have used *pypath* on Microsoft computers so far. Please share your experiences and contact us if you encounter any issue. We appreciate your feedback, and it is very important for us to provide better support for Microsoft computers.
         
-        With pip
-        --------
+        With Anaconda
+        ~~~~~~~~~~~~~
         
-        Download the package from /dist, and install with pip:
+        The same workflow like you see in ``mac-install-conda.sh`` should work for Anaconda on Windows. The only problem you certainly will encounter is that not all the channels have packages for all platforms. If certain channel provides no package for Windows, or for your Python version, you just need to find an other one. For this, do a search:
         
         .. code:: bash
             
-            pip2 install pypath-x.y.z.tar.gz
+            anaconda search -t conda <package name>
         
-        Build source distribution
-        -------------------------
+        For example, if you search for *pycairo*, you will find out that *vgauther* provides it for osx-64, but only for Python 3.4, while *richlewis* provides also for Python 3.5. And for win-64 platform, there is the channel of *KristanAmstrong*. Go along all the commands in ``mac-install-conda.sh``, and modify the channel if necessary, until all packages install successfully.
         
-        Clone the git repo, and run setup.py:
+        With other Python distributions
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
-        .. code:: bash
-            
-            python2 setup.py sdist
+        Here the basic principles are the same as everywhere: first try to install all external dependencies (see above about igraph, cairo and pycairo), after *pip* install should work.
+        
+        Release History
+        ===============
+        
+        Main improvements in the past releases:
+        
+        0.1.0:
+        ------
+        * First release of pypath, for initial testing.
+        
+        0.2.0:
+        -----
+        * Lots of small improvements in almost every module
+        * Networks can be read from local files, remote files, lists or provided by any function
+        * Almost all redistributed data have been removed, every source downloaded from the original provider.
+        
+        0.3.0:
+        ------
+        * First version whith partial Python 3 support.
+        
+        0.4.0:
+        ------
+        * **pyreact** module with **BioPaxReader** and **PyReact** classes added
+        * Process description databases, BioPax and PathwayCommons SIF conversion rules are supported
+        * Format definitions for 6 process description databases included.
+        
+        0.5.0:
+        ------
+        * Many classes have been added to the **plot** module
+        * All figures and tables in the manuscript can be generated automatically
+        * This is supported by a new module, **analysis**, which implements a generic workflow in its **Workflow** class.
+        
+        Upcoming:
+        ---------
+        * New, more flexible network reader class
+        * Full support for multi-species molecular interaction networks (e.g. pathogene-host)
+        * Better support for not protein only molecular interaction networks (metabolites, drug compounds, RNA)
+        * ChEMBL webservice interface, interface for PubChem and eventually for DrugBank
+        * Silent mode: a way to suppress messages and progress bars
         
         Features
         ========
@@ -172,12 +241,42 @@ Description: pypath
         
         Release History
         ------------------
-        This is a summary of the changelog. 
+        This is a summary of the changelog.
         
-        0.1.0: 
-        +++++++++++ 
-        * First release of Bioigraph, for testing.
-Keywords: graph,network,protein,mRNA,DNA,signaling,SignaLink,Signor,InnateDB,IntAct,Reactome,MPPI,NCI-PID,DIP,MatrixDB,PANTHER,PhosphoSite,PhosphoPoint,DEPOD,SPIKE,KEGG,Autophagy,ARN,NRF2,NRF2ome,Guide to Pharmacology,regulation,phosphorylation,kinase,phosphatase,dephosphorylation,directed graph
+        0.1.0:
+        +++++++++++
+        * First release of PyPath, for initial testing.
+        
+        0.2.0:
+        +++++++++++
+        * Lots of small improvements in almost every module
+        * Networks can be read from local files, remote files, lists or provided by any function
+        * Almost all redistributed data have been removed, every source downloaded from the original provider.
+        
+        0.3.0:
+        +++++++++++
+        * First version whith partial Python 3 support.
+        
+        0.4.0:
+        +++++++++++
+        * **pyreact** module with **BioPaxReader** and **PyReact** classes added
+        * Process description databases, BioPax and PathwayCommons SIF conversion rules are supported
+        * Format definitions for 6 process description databases included.
+        
+        0.5.0:
+        +++++++++++
+        * Many classes have been added to the **plot** module
+        * All figures and tables in the manuscript can be generated automatically
+        * This is supported by a new module, **analysis**, which implements a generic workflow in its **Workflow** class.
+        
+        Upcoming:
+        +++++++++++
+        * New, more flexible network reader class
+        * Full support for multi-species molecular interaction networks (e.g. pathogene-host)
+        * Better support for not protein only molecular interaction networks (metabolites, drug compounds, RNA)
+        * Silent mode: a way to suppress messages and progress bars
+        
+Keywords: protein,mRNA,DNA,signaling,SignaLink,Signor,InnateDB,IntAct,Reactome,MPPI,NCI-PID,DIP,MatrixDB,PANTHER,PhosphoSite,PhosphoPoint,DEPOD,SPIKE,KEGG,Autophagy,ARN,NRF2,NRF2ome,Guide to Pharmacology,regulation,phosphorylation,kinase,phosphatase,dephosphorylation,directed graph
 Platform: Linux
 Platform: Unix
 Platform: MacOSX
@@ -187,7 +286,7 @@ Classifier: Intended Audience :: Developers
 Classifier: Intended Audience :: Science/Research
 Classifier: License :: GNU Library or Lesser General Public License (LGPL)
 Classifier: Operating System :: OS Independent
-Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python
 Classifier: Topic :: Software Development :: Libraries :: Python Modules
 Classifier: Topic :: Scientific/Engineering :: Bio-Informatics
 Classifier: Topic :: Scientific/Engineering :: Information Analysis
