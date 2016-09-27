@@ -99,7 +99,7 @@ Clone the git repo, and run setup.py:
 Mac OS X
 --------
 
-On OS X installation is not straightforward primarily because cairo needs to be compiled from source. We provide 2 scripts here: the **mac-install-source.sh** requires only Python 2.7 and Xcode installed, while the **mac-install-brew.sh** to install everything with HomeBrew. To know more see the description in the script header.
+On OS X installation is not straightforward primarily because cairo needs to be compiled from source. We provide 3 scripts here: the **mac-install-source.sh** requires only Python 2.7 and Xcode installed, while the **mac-install-brew.sh** to install everything with HomeBrew, and **mac-install-conda.sh** to install from Anaconda distribution. With these scripts installation of igraph, cairo and graphviz goes smoothly most of the time, and options are available for omitting the 2 latter. To know more see the description in the script header.
 
 Troubleshooting
 ~~~~~~~~~~~~~~~
