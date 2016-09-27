@@ -17,14 +17,19 @@
 #  Tested on OS X 10.11.3
 #
 
+# help message
 USAGE="Usage:\n\t$0\n\t\t[-h (show help and exit)]\n\t\t[-p <2|3> (Python version)]\n\t\t"\
-"[-t (run tests only)]\n\t\t-c <Anaconda path, e.g. ~/anaconda3>\n\n"
-PYMAINVER="3"
+"[-c (do not install cairo)]\n\t\t[-g (do not install graphviz)]\n\t\t"\
+"[-t (run tests only)]\n\t\t-a <Anaconda path, e.g. ~/anaconda3>\n\n"
 
+# default options
+PYMAINVER="3"
 INSTALL=true
 TESTS=true
+ICAIRO=true
+IGRAPHVIZ=true
 
-
+# processing cli arguments
 while getopts ":htp:c:" opt;
 do
     case $opt in
@@ -35,11 +40,17 @@ do
         t)
             INSTALL=false
             ;;
-        c)
+        a)
             CONDAROOT="${OPTARG}"
             ;;
         p)
             PYMAINVER="${OPTARG}"
+            ;;
+        c)
+            ICAIRO=false
+            ;;
+        g)
+            IGRAPHVIZ=false
             ;;
         ?)
             echo -en "$USAGE"
@@ -66,7 +77,7 @@ else
     CONDABIN="$CONDAROOT/bin"
     CONDA="$CONDABIN/conda"
     CONDAPIP="$CONDABIN/pip"
-fi 
+fi
 
 CONDA="$CONDABIN/conda"
 CONDAPIP="$CONDABIN/pip"
@@ -76,7 +87,8 @@ PYPATHURL="http://pypath.omnipathdb.org/releases/latest/pypath-latest.tar.gz"
 if [[ "$INSTALL" == "true" ]];
 then
     echo -en "\n\n===[ Attempting to install pypath and all its dependencies with the help of Anaconda. ]===\n\n"
-    echo -en "\t Note: this method works on most of the Mac computers. Watch out for errors, and the test results post installation.\n\t"\
+    echo -en "\t Note: this method works on most of the Mac computers."\
+" Watch out for errors, and the test results post installation.\n\t"\
 " This will take a couple of minutes. Now relax, and hope the best.\n\n"
     if [ ! -d $CONDABIN ];
     then
@@ -87,18 +99,28 @@ then
         chmod +x $CONDAINS
         bash ./$CONDAINS -b
     fi
-
-    $CONDA install -y -c vgauthier cairo=1.12.18
-    if [[ "$PYMAINVER" == "3" ]];
+    
+    # optionally installing (py)cairo
+    if [[ "$ICAIRO" == "true" ]];
     then
-        $CONDA install -y -c richlewis pycairo=1.10.0
-    else
-        $CONDA install -y -c pkgw py2cairo
+        $CONDA install -y -c vgauthier cairo=1.12.18
+        if [[ "$PYMAINVER" == "3" ]];
+        then
+            $CONDA install -y -c richlewis pycairo=1.10.0
+        else
+            $CONDA install -y -c pkgw py2cairo
+        fi
     fi
     $CONDA install -y pymysql
-    $CONDA install -y graphviz
+    # optionally install (py)graphviz
+    if [[ "$IGRAPHVIZ" == "true" ]];
+    then
+        $CONDA install -y graphviz
+        $CONDA install -y -c omnia pygraphviz
+    fi
+    
+    # installing igraph
     $CONDA install -y -c bioconda python-igraph
-    $CONDA install -y -c omnia pygraphviz
 
     if [[ $PYMAINVER == "3" ]];
     then
