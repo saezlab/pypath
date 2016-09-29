@@ -1649,7 +1649,7 @@ _header = u'''<!DOCTYPE html>
 _footer = u'''
         <br>
         <p> <a href="http://www.ebi.ac.uk/~denes">Denes Turei, 2016.</a> 
-            Feedback: denes@ebi.ac.uk </p>
+            Feedback: omnipath@googlegroups.com </p>
         <p>
             <a href="https://validator.w3.org/check/referer">
                 <img 

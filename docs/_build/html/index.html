@@ -729,7 +729,7 @@ Hide filtered edges instead of omit them.
 &#64;hide nodes : list
 Nodes to hide. List of vertex ids.
 &#64;auto_edges : str
-Automatic, built-in style for edges. 
+Automatic, built-in style for edges.
 &#8216;DIRECTIONS&#8217; or &#8216;RESOURCE_CATEGORIES&#8217; are supported.
 &#64;font : str
 Font to use for labels. 
@@ -1249,6 +1249,12 @@ edge attributes to vertex attributes.</p>
 <dt id="pypath.main.Direction">
 <em class="property">class </em><code class="descclassname">pypath.main.</code><code class="descname">Direction</code><span class="sig-paren">(</span><em>nameA</em>, <em>nameB</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
+<dt id="pypath.main.Direction.consensus_edges">
+<code class="descname">consensus_edges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.consensus_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.consensus_edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list of edges based on majority consensus of directions and signs.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.Direction.get_dir">
 <code class="descname">get_dir</code><span class="sig-paren">(</span><em>direction</em>, <em>sources=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.get_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.get_dir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns boolean or list of sources</p>
@@ -1259,6 +1265,26 @@ edge attributes to vertex attributes.</p>
 <code class="descname">get_dirs</code><span class="sig-paren">(</span><em>src</em>, <em>tgt</em>, <em>sources=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.get_dirs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.get_dirs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns all directions with boolean values
 or list of sources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.Direction.majority_dir">
+<code class="descname">majority_dir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.majority_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.majority_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns directionality based on majority consensus.
+Returns <cite>None</cite> if the number of sources supporting the two opposite
+directions are the same. Returns <cite>&#8216;undirected&#8217;</cite> if there is no directionality
+information. Returns <cite>tuple</cite> of IDs if one direction is supported by
+more sources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.Direction.majority_sign">
+<code class="descname">majority_sign</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.majority_sign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.majority_sign" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns signs based on majority consensus. Keys in the returned <cite>dict</cite> are directions.
+Values are <cite>None</cite> if the direction lacks effect sign. Otherwise <cite>tuples</cite> with their
+first element <cite>True</cite> if the number of sources supporting stimulation in the given
+direction is greater or equal compared to those supporting inhibition. The second
+value is the same for inhibition.</p>
 </dd></dl>
 
 <dl class="method">
