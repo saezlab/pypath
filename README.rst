@@ -121,9 +121,6 @@ Microsoft Windows
 
 Not many people have used *pypath* on Microsoft computers so far. Please share your experiences and contact us if you encounter any issue. We appreciate your feedback, and it is very important for us to provide better support for Microsoft computers.
 
-
-Py 3.4.3
-
 With Anaconda
 ~~~~~~~~~~~~~
 
