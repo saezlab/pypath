@@ -121,6 +121,9 @@ Microsoft Windows
 
 Not many people have used *pypath* on Microsoft computers so far. Please share your experiences and contact us if you encounter any issue. We appreciate your feedback, and it is very important for us to provide better support for Microsoft computers.
 
+
+Py 3.4.3
+
 With Anaconda
 ~~~~~~~~~~~~~
 
@@ -135,7 +138,16 @@ For example, if you search for *pycairo*, you will find out that *vgauther* prov
 With other Python distributions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Here the basic principles are the same as everywhere: first try to install all external dependencies (see above about igraph, cairo and pycairo), after *pip* install should work.
+Here the basic principles are the same as everywhere: first try to install all external dependencies, after *pip* install should work. On Windows certain packages can not be installed by compiled from source by *pip*, instead the easiest to install them precompiled. These are in our case *fisher, lxml, numpy (mkl version), pycairo, igraph, pygraphviz, scipy and statsmodels*. The precompiled packages are available here: http://www.lfd.uci.edu/~gohlke/pythonlibs/. We tested the setup with Python 3.4.3 and Python 2.7.11. The former should just work fine, while with the latter we have issues to be resolved.
+
+Known issues
+~~~~~~~~~~~~
+
+* *"No module fabric available."* -- or *pysftp* missing: this is not important, only certain data download methods rely on these modules, but likely you won't call those at all.
+* Progress indicator floods terminal: sorry about that, will be fixed soon.
+* Encoding related exceptions in Python2: these might occur at some points in the module, please send the traceback if you encounter one, and we will fix as soon as possible.
+
+*Special thanks to Jorge Ferreira for testing pypath on Windows!*
 
 Release History
 ===============
