@@ -508,7 +508,7 @@ class Curl(FileOpener):
                 if self.url.startswith('ftp'):
                     self.status == 500
                     for h in self.resp_headers:
-                        if h.startswith('226'):
+                        if h.startswith(b'226'):
                             self.status = 200
                             self.terminate_progress()
                             break

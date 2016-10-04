@@ -1924,12 +1924,21 @@ def get_ielm(ppi, id_type = 'UniProtKB_AC', mydomains = 'HMMS',
     return this_result
 
 def get_pepcyber(cache = None):
+    
+    def get_cells(row):
+        cells = row.find_all('td')
+        if len(cells) == 10:
+            sp = cells[4].find('span')
+            if sp is not None and 'class' in sp.attrs \
+                and 'sequence' in sp.attrs['class']:
+                return cells
+    
     url = urls.urls['pepcyber']['url']
     # this is huge, takes a few minutes! 
     c = curl.Curl(url, silent = False, timeout = 600)
     data = c.result
     soup = bs4.BeautifulSoup(data, 'html.parser')
-    rows = soup.find_all('table')[6].find_all('tr')
+    rows = soup.find_all('tr')
     result = []
     uniprots = {}
     if cache is None:
@@ -1942,35 +1951,40 @@ def get_pepcyber(cache = None):
                 uniprots[l[0].strip()] = [ l[1].strip(), l[2].strip()]
     prg = progress.Progress(len(rows), 'Retrieving and processing data', 7)
     notfound = []
-    for r in rows:
+    
+    for row in rows:
         prg.step()
-        thisRow = [c.text.strip() for c in r.find_all('td')]
+        cells = get_cells(row)
+        if cells is None:
+            continue
+        
+        thisRow = [c.text.strip() for c in cells]
         if len(thisRow) > 9 and thisRow[5].isdigit():
-            inum = int(r.find('a')['name'])
+            inum = int(row.find('a')['name'])
             thisRow[9] = None if 'p' not in thisRow[4] else \
                 thisRow[4][thisRow[4].index('p') + 1]
             if thisRow[2] not in uniprots or thisRow[3] not in uniprots:
-                uniprots = dict(uniprots.items() + pepcyber_uniprot(inum).items())
+                uniprots.update(pepcyber_uniprot(inum))
             if thisRow[2] in uniprots and thisRow[3] in uniprots:
-                thisRow += uniprots[thisRow[2]] + uniprots[thisRow[3]]
+                thisRow.extend(uniprots[thisRow[2]])
+                thisRow.extend(uniprots[thisRow[3]])
                 result.append(thisRow[1:])
             else:
                 notfound.append([thisRow[2], thisRow[3], inum])
     prg.terminate()
     with open(cache, 'w') as f:
         for g, u in iteritems(uniprots):
-            try:
-                f.write('\t'.join([g] + u) + '\n')
-            except:
-                pass
+            f.write('\t'.join([g] + u) + '\n')
     return result
 
 def pepcyber_uniprot(num):
+    print('pepcyber_uniprot()')
     result = {}
     url = urls.urls['pepcyber_details']['url'] % num
     c = curl.Curl(url, cache = False)
     data = c.result
     if data is None:
+        print('returning empty, type (%s)' % str(type(result)))
         return result
     soup = bs4.BeautifulSoup(data, 'html.parser')
     gname = None
@@ -1986,6 +2000,7 @@ def pepcyber_uniprot(num):
                 result[gname] = [swprot, refseq]
             gname = None
         prev = td.text.strip()
+    print('returning type (%s)' % str(type(result)))
     return result
 
 def get_pdzbase():
