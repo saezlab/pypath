@@ -3640,13 +3640,26 @@ def signor_pathways(**kwargs):
     prg.terminate()
     return proteins_pathways, interactions_pathways
 
-def signor_interactions():
+def signor_interactions(organism = 'human'):
     '''
     Downloads the full dataset from Signor.
-    Return the file contents.
+    Returns the file contents.
+    
+    Note: this method has been updated Oct 2016,
+    as Signor updated both their data and webpage.
     '''
-    url = urls.urls['signor']['all_url']
-    c = curl.Curl(url, silent = False, large = True)
+    url = urls.urls['signor']['all_url_new']
+    binary_data = [
+        (b'organism', organism.encode('utf-8')),
+        (b'format', b'csv'),
+        (b'submit', b'Download')
+    ]
+    c = curl.Curl(url,
+        silent = False,
+        large = True,
+        follow = True, timeout = 30,
+        binary_data = binary_data,
+        return_headers = True)
     return c.result
 
 def rolland_hi_ii_14():
@@ -5171,6 +5184,12 @@ def get_dip(url = None, organism = 9606, core_only = True, direct_only = True,
     return i
 
 def dip_login(user, passwd):
+    """
+    This does not work for unknown reasons.
+    
+    In addition, the binary_data parameter of Curl().__init__() has been changed,
+    below updates are necessary.
+    """
     bdr = '---------------------------8945224391427558067125853467'
     useragent = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:43.0) '\
         'Gecko/20110304 Firefox/43.0'

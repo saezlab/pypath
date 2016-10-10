@@ -35,6 +35,7 @@ import struct
 import pycurl
 try:
     from cStringIO import StringIO
+    BytesIO = StringIO
 except:
     try:
         from StringIO import StringIO
@@ -101,7 +102,15 @@ if 'unicode' not in __builtins__:
 
 CURSOR_UP_ONE = '\x1b[1A'
 ERASE_LINE = '\x1b[2K'
+
+# global contexts for modifying Curl() behviour
 CACHE = None
+CACHEDEL = False
+CACHEPRINT = False
+DRYRUN = False
+PRESERVE = False
+
+LASTCURL = None
 
 show_cache = False
 
@@ -123,23 +132,83 @@ class cache_on(object):
             sys.stdout.flush()
         CACHE = self._store_cache
 
-class cache_off(object):
+class _global_context(object):
     
-    def __init__(self):
-        pass
+    def __init__(self, name, on_off):
+        self.name = name
+        self.module = sys.modules[__name__]
+        self.on_off = on_off
     
     def __enter__(self):
-        global CACHE
-        self._store_cache = globals()['CACHE']
-        CACHE = False
+        self._store_value = getattr(self.module, self.name)
+        setattr(self.module, self.name, self.on_off)
     
     def __exit__(self, exception_type, exception_value, traceback):
-        global CACHE
         if exception_type is not None:
             sys.stdout.write('%s, %s, %s\n' % \
                 (str(exception_type), str(exception_value), str(traceback)))
             sys.stdout.flush()
-        CACHE = self._store_cache
+        setattr(self.module, self.name, self._store_value)
+
+class _global_context_on(_global_context):
+    
+    def __init__(self, name):
+        super(_global_context_on, self).__init__(name, True)
+
+class _global_context_off(_global_context):
+    
+    def __init__(self, name):
+        super(_global_context_off, self).__init__(name, False)
+
+class cache_on(_global_context_on):
+    
+    def __init__(self):
+        super(cache_on, self).__init__('CACHE')
+
+class cache_off(_global_context_off):
+    
+    def __init__(self):
+        super(cache_off, self).__init__('CACHE')
+
+class cache_print_on(_global_context_on):
+    
+    def __init__(self):
+        super(cache_print_on, self).__init__('CACHEPRINT')
+
+class cache_print_off(_global_context_off):
+    
+    def __init__(self):
+        super(cache_print_off, self).__init__('CACHEPRINT')
+
+class cache_delete_on(_global_context_on):
+    
+    def __init__(self):
+        super(cache_delete_on, self).__init__('CACHEDEL')
+
+class cache_delete_off(_global_context_off):
+    
+    def __init__(self):
+        super(cache_delete_off, self).__init__('CACHEDEL')
+
+class dryrun_on(_global_context_on):
+    
+    def __init__(self):
+        super(dryrun_on, self).__init__('DRYRUN')
+
+class dryrun_off(_global_context_off):
+    
+    def __init__(self):
+        super(dryrun_off, self).__init__('DRYRUN')
+
+class preserve_on(_global_context_on):
+    
+    def __init__(self):
+        super(preserve_on, self).__init__('PRESERVE')
+
+class preserve_off(_global_context_off):
+    
+    def __init__(self):
+        super(preserve_off, self).__init__('PRESERVE')
 
 class RemoteFile(object):
     
@@ -346,7 +415,13 @@ class Curl(FileOpener):
         self.sftp_user = sftp_user
         self.sftp_passwd_file = sftp_passwd_file
         
-        if not self.use_cache:
+        if CACHEPRINT:
+            self.show_cache()
+        
+        if CACHEDEL:
+            self.delete_cache_file()
+        
+        if not self.use_cache and not DRYRUN:
             self.title = None
             self.set_title()
             if self.sftp_host is not None:
@@ -362,8 +437,16 @@ class Curl(FileOpener):
             sys.stdout.write('\t:: Loading data from cache '\
                 'previously downloaded from %s\n' % self.domain)
             sys.stdout.flush()
-        if process and not self.download_failed:
+        if process and not self.download_failed and not DRYRUN:
             self.process_file()
+        
+        if DRYRUN:
+            self.print_debug_info('INFO', 'DRYRUN PERFORMED, RETURNING NONE')
+        
+        if PRESERVE:
+            self.print_debug_info('INFO', 'PRESERVING Curl() INSTANCE '\
+                'IN pypath.curl.LASTCURL')
+            setattr(sys.modules[__name__], 'LASTCURL', self)
     
     def reload(self):
         modname = self.__class__.__module__
@@ -372,9 +455,9 @@ class Curl(FileOpener):
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
     
-    def print_debug_info(self, msg):
+    def print_debug_info(self, typ, msg):
         msg = self.bytes2unicode(msg)
-        sys.stdout.write('\n\t%s\n' % msg)
+        sys.stdout.write('\n\t%s\n\t%s\n' % (typ, msg))
         sys.stdout.flush()
     
     def process_url(self):
@@ -384,7 +467,8 @@ class Curl(FileOpener):
     
     def is_quoted(self, string):
         '''
-        From http://stackoverflow.com/questions/1637762/test-if-string-is-url-encoded-in-php
+        From http://stackoverflow.com/questions/
+        1637762/test-if-string-is-url-encoded-in-php
         '''
         test = string
         while(urllib.unquote(test) != test):
@@ -445,13 +529,51 @@ class Curl(FileOpener):
                 self.qs
             )
     
+    def construct_binary_data(self):
+        """
+        The binary data content of a `form/multipart` type request
+        can be constructed from a list of tuples (<field name>, <field value>),
+        where field name and value are both type of bytes.
+        """
+        bdr = b'---------------------------%s' % \
+            common.gen_session_id(28).encode('ascii')
+        self.binary_data_param = self.binary_data
+        self.binary_data = b'\r\n'.join(
+                map(
+                    lambda i:
+                        b'--%s\r\nContent-Disposition: form-data;'\
+                        b' name="%s"\r\n\r\n%s' % (bdr, i[0], i[1]),
+                    self.binary_data_param
+                )
+            )
+        self.binary_data = b'%s\r\n--%s--\r\n' % (self.binary_data, bdr)
+        self.req_headers.append(
+            'Content-Type: multipart/form-data; boundary=%s' % \
+            bdr.decode('ascii'))
+        self.req_headers.append('Content-Length: %u' % len(self.binary_data))
+    
     def set_binary_data(self):
+        """
+        Set binary data to be transmitted attached to POST request.
+        
+        `binary_data` is either a bytes string, or a filename, or
+        a list of key-value pairs of a multipart form.
+        """
         if self.binary_data:
-            self.binary_data_size = os.path.getsize(self.binary_data)
-            self.binary_data_file = open(self.binary_data, 'rb')
-            self.curl.setopt(c.POST, 1)
-            filesize = os.path.getsize(self.binary_data)
-            self.curl.setopt(pycurl.POSTFIELDSIZE, filesize)
+            
+            if type(self.binary_data) is list:
+                self.construct_binary_data()
+            if type(self.binary_data) is bytes:
+                self.binary_data_size = len(self.binary_data)
+                self.binary_data_file = BytesIO()
+                self.binary_data_file.write(self.binary_data)
+                self.binary_data_file.seek(0)
+            elif os.path.exists(self.binary_data):
+                self.binary_data_size = os.path.getsize(self.binary_data)
+                self.binary_data_file = open(self.binary_data, 'rb')
+            
+            self.curl.setopt(pycurl.POST, 1)
+            self.curl.setopt(pycurl.POSTFIELDSIZE, self.binary_data_size)
             self.curl.setopt(pycurl.READFUNCTION, self.binary_data_file.read)
             self.curl.setopt(pycurl.CUSTOMREQUEST, 'POST')
             self.curl.setopt(pycurl.POSTREDIR, 3)
@@ -487,18 +609,18 @@ class Curl(FileOpener):
         self.curl_init(url = url)
         self.curl_progress_setup()
         self.set_target()
-        self.set_req_headers()
-        self.set_resp_headers()
         self.set_debug()
         self.set_post()
         self.set_binary_data()
+        self.set_req_headers()
+        self.set_resp_headers()
     
     def curl_call(self):
         for attempt in xrange(self.retries):
             try:
                 if self.debug:
-                    self.print_debug_info(
-                        'pypath.curl.Curl().curl_call() :: attempt #%u' % i)
+                    self.print_debug_info('INFO',
+                        'pypath.curl.Curl().curl_call() :: attempt #%u' % attempt)
                 self.curl.perform()
                 if self.url.startswith('http'):
                     self.status = self.curl.getinfo(pycurl.HTTP_CODE)
@@ -517,7 +639,7 @@ class Curl(FileOpener):
                 if self.progress is not None:
                     self.progress.terminate(status = 'failed')
                     self.progress = None
-                self.print_debug_info('PycURL error: %u, %s' % e.args)
+                self.print_debug_info('ERROR', 'PycURL error: %s' % str(e.args))
         if self.status != 200:
             self.download_failed = True
         self.curl.close()
@@ -678,7 +800,13 @@ class Curl(FileOpener):
     
     def delete_cache_file(self):
         if os.path.exists(self.cache_file_name):
+            self.print_debug_info('INFO', 'CACHE FILE = %s' % self.cache_file_name)
+            self.print_debug_info('INFO', 'DELETING CACHE FILE')
             os.remove(self.cache_file_name)
+            self.use_cache = False
+        else:
+            self.print_debug_info('INFO', 'CACHE FILE = %s' % self.cache_file_name)
+            self.print_debug_info('INFO', 'CACHE FILE DOES NOT EXIST')
     
     def select_cache_file(self):
         self.use_cache = False
@@ -688,9 +816,9 @@ class Curl(FileOpener):
             self.use_cache = True
     
     def show_cache(self):
-        self.print_debug_info('URL = %s' % self.url)
-        self.print_debug_info('CACHE FILE = %s' % self.cache_file_name)
-        self.print_debug_info('Using cache: %s; cache file exists: %s' % \
+        self.print_debug_info('INFO', 'URL = %s' % self.url)
+        self.print_debug_info('INFO', 'CACHE FILE = %s' % self.cache_file_name)
+        self.print_debug_info('INFO', 'Using cache: %s; cache file exists: %s' % \
             (self.cache, os.path.exists(self.cache_file_name)))
     
     # open files:
