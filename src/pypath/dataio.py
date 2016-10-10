@@ -3655,6 +3655,8 @@ def signor_interactions(organism = 'human'):
         (b'submit', b'Download')
     ]
     c = curl.Curl(url,
+        silent = False,
+        large = True,
         follow = True, timeout = 30,
         binary_data = binary_data,
         return_headers = True)

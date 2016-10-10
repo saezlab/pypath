@@ -141,7 +141,7 @@ class _global_context(object):
     
     def __enter__(self):
         self._store_value = getattr(self.module, self.name)
-        setattr(self.module, self.value, self.on_off)
+        setattr(self.module, self.name, self.on_off)
     
     def __exit__(self, exception_type, exception_value, traceback):
         if exception_type is not None:
@@ -153,62 +153,62 @@ class _global_context(object):
 class _global_context_on(_global_context):
     
     def __init__(self, name):
-        super(_global_context_on).__init__(name, True)
+        super(_global_context_on, self).__init__(name, True)
 
 class _global_context_off(_global_context):
     
     def __init__(self, name):
-        super(_global_context_off).__init__(name, False)
+        super(_global_context_off, self).__init__(name, False)
 
 class cache_on(_global_context_on):
     
     def __init__(self):
-        super(cache_on).__init__('CACHE')
+        super(cache_on, self).__init__('CACHE')
 
 class cache_off(_global_context_off):
     
     def __init__(self):
-        super(cache_off).__init__('CACHE')
+        super(cache_off, self).__init__('CACHE')
 
 class cache_print_on(_global_context_on):
     
     def __init__(self):
-        super(cache_print_on).__init__('CACHEPRINT')
+        super(cache_print_on, self).__init__('CACHEPRINT')
 
 class cache_print_off(_global_context_off):
     
     def __init__(self):
-        super(cache_print_off).__init__('CACHEPRINT')
+        super(cache_print_off, self).__init__('CACHEPRINT')
 
 class cache_delete_on(_global_context_on):
     
     def __init__(self):
-        super(cache_delete_on).__init__('CACHEDEL')
+        super(cache_delete_on, self).__init__('CACHEDEL')
 
 class cache_delete_off(_global_context_off):
     
     def __init__(self):
-        super(cache_delete_off).__init__('CACHEDEL')
+        super(cache_delete_off, self).__init__('CACHEDEL')
 
 class dryrun_on(_global_context_on):
     
     def __init__(self):
-        super(dryrun_on).__init__('DRYRUN')
+        super(dryrun_on, self).__init__('DRYRUN')
 
 class dryrun_off(_global_context_off):
     
     def __init__(self):
-        super(dryrun_off).__init__('DRYRUN')
+        super(dryrun_off, self).__init__('DRYRUN')
 
 class preserve_on(_global_context_on):
     
     def __init__(self):
-        super(preserve_on).__init__('PRESERVE')
+        super(preserve_on, self).__init__('PRESERVE')
 
 class preserve_off(_global_context_off):
     
     def __init__(self):
-        super(preserve_off).__init__('PRESERVE')
+        super(preserve_off, self).__init__('PRESERVE')
 
 class RemoteFile(object):
     
@@ -440,7 +440,12 @@ class Curl(FileOpener):
         if process and not self.download_failed and not DRYRUN:
             self.process_file()
         
+        if DRYRUN:
+            self.print_debug_info('INFO', 'DRYRUN PERFORMED, RETURNING NONE')
+        
         if PRESERVE:
+            self.print_debug_info('INFO', 'PRESERVING Curl() INSTANCE '\
+                'IN pypath.curl.LASTCURL')
             setattr(sys.modules[__name__], 'LASTCURL', self)
     
     def reload(self):
@@ -462,7 +467,8 @@ class Curl(FileOpener):
     
     def is_quoted(self, string):
         '''
-        From http://stackoverflow.com/questions/1637762/test-if-string-is-url-encoded-in-php
+        From http://stackoverflow.com/questions/
+        1637762/test-if-string-is-url-encoded-in-php
         '''
         test = string
         while(urllib.unquote(test) != test):
@@ -794,13 +800,13 @@ class Curl(FileOpener):
     
     def delete_cache_file(self):
         if os.path.exists(self.cache_file_name):
-            self.print_debug_info('CACHE FILE = %s' % self.cache_file_name)
-            self.print_debug_info('DELETING CACHE FILE')
+            self.print_debug_info('INFO', 'CACHE FILE = %s' % self.cache_file_name)
+            self.print_debug_info('INFO', 'DELETING CACHE FILE')
             os.remove(self.cache_file_name)
             self.use_cache = False
         else:
-            self.print_debug_info('CACHE FILE = %s' % self.cache_file_name)
-            self.print_debug_info('CACHE FILE DOES NOT EXIST')
+            self.print_debug_info('INFO', 'CACHE FILE = %s' % self.cache_file_name)
+            self.print_debug_info('INFO', 'CACHE FILE DOES NOT EXIST')
     
     def select_cache_file(self):
         self.use_cache = False
@@ -810,9 +816,9 @@ class Curl(FileOpener):
             self.use_cache = True
     
     def show_cache(self):
-        self.print_debug_info('URL = %s' % self.url)
-        self.print_debug_info('CACHE FILE = %s' % self.cache_file_name)
-        self.print_debug_info('Using cache: %s; cache file exists: %s' % \
+        self.print_debug_info('INFO', 'URL = %s' % self.url)
+        self.print_debug_info('INFO', 'CACHE FILE = %s' % self.cache_file_name)
+        self.print_debug_info('INFO', 'Using cache: %s; cache file exists: %s' % \
             (self.cache, os.path.exists(self.cache_file_name)))
     
     # open files:
