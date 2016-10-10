@@ -35,6 +35,7 @@ import struct
 import pycurl
 try:
     from cStringIO import StringIO
+    BytesIO = StringIO
 except:
     try:
         from StringIO import StringIO
@@ -372,9 +373,9 @@ class Curl(FileOpener):
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
     
-    def print_debug_info(self, msg):
+    def print_debug_info(self, typ, msg):
         msg = self.bytes2unicode(msg)
-        sys.stdout.write('\n\t%s\n' % msg)
+        sys.stdout.write('\n\t%s\n\t%s\n' % (typ, msg))
         sys.stdout.flush()
     
     def process_url(self):
@@ -445,13 +446,51 @@ class Curl(FileOpener):
                 self.qs
             )
     
+    def construct_binary_data(self):
+        """
+        The binary data content of a `form/multipart` type request
+        can be constructed from a list of tuples (<field name>, <field value>),
+        where field name and value are both type of bytes.
+        """
+        bdr = b'---------------------------%s' % \
+            common.gen_session_id(28).encode('ascii')
+        self.binary_data_param = self.binary_data
+        self.binary_data = b'\r\n'.join(
+                map(
+                    lambda i:
+                        b'--%s\r\nContent-Disposition: form-data;'\
+                        b' name="%s"\r\n\r\n%s' % (bdr, i[0], i[1]),
+                    self.binary_data_param
+                )
+            )
+        self.binary_data = b'%s\r\n--%s--\r\n' % (self.binary_data, bdr)
+        self.req_headers.append(
+            'Content-Type: multipart/form-data; boundary=%s' % \
+            bdr.decode('ascii'))
+        self.req_headers.append('Content-Length: %u' % len(self.binary_data))
+    
     def set_binary_data(self):
+        """
+        Set binary data to be transmitted attached to POST request.
+        
+        `binary_data` is either a bytes string, or a filename, or
+        a list of key-value pairs of a multipart form.
+        """
         if self.binary_data:
-            self.binary_data_size = os.path.getsize(self.binary_data)
-            self.binary_data_file = open(self.binary_data, 'rb')
-            self.curl.setopt(c.POST, 1)
-            filesize = os.path.getsize(self.binary_data)
-            self.curl.setopt(pycurl.POSTFIELDSIZE, filesize)
+            
+            if type(self.binary_data) is list:
+                self.construct_binary_data()
+            if type(self.binary_data) is bytes:
+                self.binary_data_size = len(self.binary_data)
+                self.binary_data_file = BytesIO()
+                self.binary_data_file.write(self.binary_data)
+                self.binary_data_file.seek(0)
+            elif os.path.exists(self.binary_data):
+                self.binary_data_size = os.path.getsize(self.binary_data)
+                self.binary_data_file = open(self.binary_data, 'rb')
+            
+            self.curl.setopt(pycurl.POST, 1)
+            self.curl.setopt(pycurl.POSTFIELDSIZE, self.binary_data_size)
             self.curl.setopt(pycurl.READFUNCTION, self.binary_data_file.read)
             self.curl.setopt(pycurl.CUSTOMREQUEST, 'POST')
             self.curl.setopt(pycurl.POSTREDIR, 3)
@@ -487,18 +526,18 @@ class Curl(FileOpener):
         self.curl_init(url = url)
         self.curl_progress_setup()
         self.set_target()
-        self.set_req_headers()
-        self.set_resp_headers()
         self.set_debug()
         self.set_post()
         self.set_binary_data()
+        self.set_req_headers()
+        self.set_resp_headers()
     
     def curl_call(self):
         for attempt in xrange(self.retries):
             try:
                 if self.debug:
-                    self.print_debug_info(
-                        'pypath.curl.Curl().curl_call() :: attempt #%u' % i)
+                    self.print_debug_info('INFO',
+                        'pypath.curl.Curl().curl_call() :: attempt #%u' % attempt)
                 self.curl.perform()
                 if self.url.startswith('http'):
                     self.status = self.curl.getinfo(pycurl.HTTP_CODE)
@@ -517,7 +556,7 @@ class Curl(FileOpener):
                 if self.progress is not None:
                     self.progress.terminate(status = 'failed')
                     self.progress = None
-                self.print_debug_info('PycURL error: %u, %s' % e.args)
+                self.print_debug_info('ERROR', 'PycURL error: %s' % str(e.args))
         if self.status != 200:
             self.download_failed = True
         self.curl.close()
