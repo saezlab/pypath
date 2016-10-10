@@ -670,6 +670,32 @@ class Workflow(object):
             
             ordr = self.vcount_ordr if par[5] == 'vcount' else par[5]
             
+            csvname = self.get_path('%s-by-db_%s.csv' % (par[2], self.name))
+            
+            with open(csvname, 'w') as csv:
+                #print(data)
+                #print(list(zip(*data)))
+                #print(data2)
+                ddata = dict(zip(*data))
+                ddata2 = dict(zip(*data2))
+                csv.write('Label;%s;%s\n' % (par[0], par[0]))
+                csv.write(
+                    '\n'.join(
+                        map(
+                            lambda k:
+                                ';'.join(
+                                    map(
+                                        str,
+                                        [k,
+                                         ddata[k] if k in ddata else '',
+                                         ddata2[k] if k in ddata2 else '']
+                                    )
+                                ),
+                            ordr
+                        )
+                    )
+                )
+            
             self.multi_barplots[par[2]] = \
                 plot.MultiBarplot(
                     data[0], data[1],
@@ -856,6 +882,13 @@ class Workflow(object):
             for i, l in enumerate(labels):
                 if type(l) is tuple:
                     labels[i] = data_formats.catnames[l[1]]
+            
+            csvname = self.get_path('%s_%s.csv' % (par[4], self.name))
+            
+            with open(csvname, 'w') as csv:
+                
+                csv.write('Label;%s;%s;%s\n' % (par[3]['xlab'], par[3]['ylab'], par[3]['legtitle']))
+                csv.write('\n'.join(map(lambda l: ';'.join(map(str, l)), zip(labels, x, y, s))))
             
             sp = plot.ScatterPlus(
                     x,

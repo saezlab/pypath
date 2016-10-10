@@ -1080,7 +1080,7 @@ def get_3did(ddi_flat = None, res = True, organism = 9606, pickl = True):
     else:
         return None
     u_pdb, pdb_u = get_pdb_chains()
-    all_unip = set(uniprot_inupt.all_uniprots(organism = organism))
+    all_unip = set(uniprot_input.all_uniprots(organism = organism))
     if all_unip is None or pdb_u is None:
         return None
     ddi = []
@@ -1978,13 +1978,11 @@ def get_pepcyber(cache = None):
     return result
 
 def pepcyber_uniprot(num):
-    print('pepcyber_uniprot()')
     result = {}
     url = urls.urls['pepcyber_details']['url'] % num
     c = curl.Curl(url, cache = False)
     data = c.result
     if data is None:
-        print('returning empty, type (%s)' % str(type(result)))
         return result
     soup = bs4.BeautifulSoup(data, 'html.parser')
     gname = None
@@ -2000,7 +1998,6 @@ def pepcyber_uniprot(num):
                 result[gname] = [swprot, refseq]
             gname = None
         prev = td.text.strip()
-    print('returning type (%s)' % str(type(result)))
     return result
 
 def get_pdzbase():
@@ -3129,7 +3126,7 @@ def load_lmpid(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
     with open(os.path.join(common.ROOT, 'data', fname), 'r') as f:
         data = f.read()
     soup = bs4.BeautifulSoup(data, 'html.parser')
-    uniprots = uniprot_inupt.all_uniprots(organism = organism, swissprot = None)
+    uniprots = uniprot_input.all_uniprots(organism = organism, swissprot = None)
     prg = progress.Progress(len(soup.find_all('record')), 'Processing data from LMPID', 21)
     for rec in soup.find_all('record'):
         prg.step()
