@@ -1029,7 +1029,7 @@ class PyPath(object):
                             traceback.print_tb(e.__traceback__, file = sys.stdout)
                         except Exception as e:
                             sys.stdout.write('\t:: Failed handling exception.\n')
-                            sys.stdout.write('\t%s\n' % str(exc.args))
+                            sys.stdout.write('\t%s\n' % str(e.args))
                             sys.stdout.flush()
                     curl.CACHE = _store_cache
                 elif os.path.isfile(settings.inFile):

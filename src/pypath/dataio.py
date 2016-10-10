@@ -1080,7 +1080,7 @@ def get_3did(ddi_flat = None, res = True, organism = 9606, pickl = True):
     else:
         return None
     u_pdb, pdb_u = get_pdb_chains()
-    all_unip = set(uniprot_inupt.all_uniprots(organism = organism))
+    all_unip = set(uniprot_input.all_uniprots(organism = organism))
     if all_unip is None or pdb_u is None:
         return None
     ddi = []
@@ -1924,12 +1924,21 @@ def get_ielm(ppi, id_type = 'UniProtKB_AC', mydomains = 'HMMS',
     return this_result
 
 def get_pepcyber(cache = None):
+    
+    def get_cells(row):
+        cells = row.find_all('td')
+        if len(cells) == 10:
+            sp = cells[4].find('span')
+            if sp is not None and 'class' in sp.attrs \
+                and 'sequence' in sp.attrs['class']:
+                return cells
+    
     url = urls.urls['pepcyber']['url']
     # this is huge, takes a few minutes! 
     c = curl.Curl(url, silent = False, timeout = 600)
     data = c.result
     soup = bs4.BeautifulSoup(data, 'html.parser')
-    rows = soup.find_all('table')[6].find_all('tr')
+    rows = soup.find_all('tr')
     result = []
     uniprots = {}
     if cache is None:
@@ -1942,27 +1951,30 @@ def get_pepcyber(cache = None):
                 uniprots[l[0].strip()] = [ l[1].strip(), l[2].strip()]
     prg = progress.Progress(len(rows), 'Retrieving and processing data', 7)
     notfound = []
-    for r in rows:
+    
+    for row in rows:
         prg.step()
-        thisRow = [c.text.strip() for c in r.find_all('td')]
+        cells = get_cells(row)
+        if cells is None:
+            continue
+        
+        thisRow = [c.text.strip() for c in cells]
         if len(thisRow) > 9 and thisRow[5].isdigit():
-            inum = int(r.find('a')['name'])
+            inum = int(row.find('a')['name'])
             thisRow[9] = None if 'p' not in thisRow[4] else \
                 thisRow[4][thisRow[4].index('p') + 1]
             if thisRow[2] not in uniprots or thisRow[3] not in uniprots:
-                uniprots = dict(uniprots.items() + pepcyber_uniprot(inum).items())
+                uniprots.update(pepcyber_uniprot(inum))
             if thisRow[2] in uniprots and thisRow[3] in uniprots:
-                thisRow += uniprots[thisRow[2]] + uniprots[thisRow[3]]
+                thisRow.extend(uniprots[thisRow[2]])
+                thisRow.extend(uniprots[thisRow[3]])
                 result.append(thisRow[1:])
             else:
                 notfound.append([thisRow[2], thisRow[3], inum])
     prg.terminate()
     with open(cache, 'w') as f:
         for g, u in iteritems(uniprots):
-            try:
-                f.write('\t'.join([g] + u) + '\n')
-            except:
-                pass
+            f.write('\t'.join([g] + u) + '\n')
     return result
 
 def pepcyber_uniprot(num):
@@ -3114,7 +3126,7 @@ def load_lmpid(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
     with open(os.path.join(common.ROOT, 'data', fname), 'r') as f:
         data = f.read()
     soup = bs4.BeautifulSoup(data, 'html.parser')
-    uniprots = uniprot_inupt.all_uniprots(organism = organism, swissprot = None)
+    uniprots = uniprot_input.all_uniprots(organism = organism, swissprot = None)
     prg = progress.Progress(len(soup.find_all('record')), 'Processing data from LMPID', 21)
     for rec in soup.find_all('record'):
         prg.step()
