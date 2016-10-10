@@ -350,7 +350,7 @@ pathway = {
         extraNodeAttrsA = {},
         extraNodeAttrsB = {}),
     'signor': input_formats.ReadSettings(name="Signor", 
-        separator="\t", nameColA = 2, nameColB = 6,
+        separator=";", nameColA = 2, nameColB = 6,
         nameTypeA="uniprot", nameTypeB="uniprot",
         # only direct interactions
         positiveFilters = [(22, 'YES')], 
