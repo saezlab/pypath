@@ -102,7 +102,15 @@ if 'unicode' not in __builtins__:
 
 CURSOR_UP_ONE = '\x1b[1A'
 ERASE_LINE = '\x1b[2K'
+
+# global contexts for modifying Curl() behviour
 CACHE = None
+CACHEDEL = False
+CACHEPRINT = False
+DRYRUN = False
+PRESERVE = False
+
+LASTCURL = None
 
 show_cache = False
 
@@ -124,23 +132,83 @@ class cache_on(object):
             sys.stdout.flush()
         CACHE = self._store_cache
 
-class cache_off(object):
+class _global_context(object):
     
-    def __init__(self):
-        pass
+    def __init__(self, name, on_off):
+        self.name = name
+        self.module = sys.modules[__name__]
+        self.on_off = on_off
     
     def __enter__(self):
-        global CACHE
-        self._store_cache = globals()['CACHE']
-        CACHE = False
+        self._store_value = getattr(self.module, self.name)
+        setattr(self.module, self.value, self.on_off)
     
     def __exit__(self, exception_type, exception_value, traceback):
-        global CACHE
         if exception_type is not None:
             sys.stdout.write('%s, %s, %s\n' % \
                 (str(exception_type), str(exception_value), str(traceback)))
             sys.stdout.flush()
-        CACHE = self._store_cache
+        setattr(self.module, self.name, self._store_value)
+
+class _global_context_on(_global_context):
+    
+    def __init__(self, name):
+        super(_global_context_on).__init__(name, True)
+
+class _global_context_off(_global_context):
+    
+    def __init__(self, name):
+        super(_global_context_off).__init__(name, False)
+
+class cache_on(_global_context_on):
+    
+    def __init__(self):
+        super(cache_on).__init__('CACHE')
+
+class cache_off(_global_context_off):
+    
+    def __init__(self):
+        super(cache_off).__init__('CACHE')
+
+class cache_print_on(_global_context_on):
+    
+    def __init__(self):
+        super(cache_print_on).__init__('CACHEPRINT')
+
+class cache_print_off(_global_context_off):
+    
+    def __init__(self):
+        super(cache_print_off).__init__('CACHEPRINT')
+
+class cache_delete_on(_global_context_on):
+    
+    def __init__(self):
+        super(cache_delete_on).__init__('CACHEDEL')
+
+class cache_delete_off(_global_context_off):
+    
+    def __init__(self):
+        super(cache_delete_off).__init__('CACHEDEL')
+
+class dryrun_on(_global_context_on):
+    
+    def __init__(self):
+        super(dryrun_on).__init__('DRYRUN')
+
+class dryrun_off(_global_context_off):
+    
+    def __init__(self):
+        super(dryrun_off).__init__('DRYRUN')
+
+class preserve_on(_global_context_on):
+    
+    def __init__(self):
+        super(preserve_on).__init__('PRESERVE')
+
+class preserve_off(_global_context_off):
+    
+    def __init__(self):
+        super(preserve_off).__init__('PRESERVE')
 
 class RemoteFile(object):
     
@@ -347,7 +415,13 @@ class Curl(FileOpener):
         self.sftp_user = sftp_user
         self.sftp_passwd_file = sftp_passwd_file
         
-        if not self.use_cache:
+        if CACHEPRINT:
+            self.show_cache()
+        
+        if CACHEDEL:
+            self.delete_cache_file()
+        
+        if not self.use_cache and not DRYRUN:
             self.title = None
             self.set_title()
             if self.sftp_host is not None:
@@ -363,8 +437,11 @@ class Curl(FileOpener):
             sys.stdout.write('\t:: Loading data from cache '\
                 'previously downloaded from %s\n' % self.domain)
             sys.stdout.flush()
-        if process and not self.download_failed:
+        if process and not self.download_failed and not DRYRUN:
             self.process_file()
+        
+        if PRESERVE:
+            setattr(sys.modules[__name__], 'LASTCURL', self)
     
     def reload(self):
         modname = self.__class__.__module__
@@ -717,7 +794,13 @@ class Curl(FileOpener):
     
     def delete_cache_file(self):
         if os.path.exists(self.cache_file_name):
+            self.print_debug_info('CACHE FILE = %s' % self.cache_file_name)
+            self.print_debug_info('DELETING CACHE FILE')
             os.remove(self.cache_file_name)
+            self.use_cache = False
+        else:
+            self.print_debug_info('CACHE FILE = %s' % self.cache_file_name)
+            self.print_debug_info('CACHE FILE DOES NOT EXIST')
     
     def select_cache_file(self):
         self.use_cache = False

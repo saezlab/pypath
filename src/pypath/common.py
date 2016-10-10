@@ -30,7 +30,8 @@ __all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes', 'uniqList'
            'gen_session_id', 'sorensen_index', 'simpson_index', 'simpson_index_counts',
            'jaccard_index', 'console', 'wcl', 'flatList',
            'charTypes', 'delEmpty', '__version__', 'get_args',
-           'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs', 'md5', 'mod_keywords']
+           'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs', 'md5', 'mod_keywords',
+           'Namespace', 'fun']
 
 # get the location
 ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -438,3 +439,13 @@ def dict_sym_diff(d1, d2):
         elif type(d1[k]) is set and type(d2[k]) is set:
             diff[k] = d1[k] ^ d2[k]
     return diff
+
+class Namespace(object):
+    pass
+
+def fun():
+    print(__name__)
+    print(__name__ in globals())
+    for n in __name__.split('.'):
+        print(n, n in globals())
+    return __name__
