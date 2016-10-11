@@ -114,27 +114,17 @@ LASTCURL = None
 
 show_cache = False
 
-class cache_on(object):
-    
-    def __init__(self):
-        pass
-    
-    def __enter__(self):
-        global CACHE
-        self._store_cache = globals()['CACHE']
-        CACHE = True
-    
-    def __exit__(self, exception_type, exception_value, traceback):
-        global CACHE
-        if exception_type is not None:
-            sys.stdout.write('%s, %s, %s\n' % \
-                (str(exception_type), str(exception_value), str(traceback)))
-            sys.stdout.flush()
-        CACHE = self._store_cache
-
 class _global_context(object):
+    """
+    This is a metaclass for context handlers working by
+    setting a module level variable to certain value.
+    """
     
     def __init__(self, name, on_off):
+        """
+        :param str name: Name of the module level variable.
+        :param on_off: Value of the module level variable in the context.
+        """
         self.name = name
         self.module = sys.modules[__name__]
         self.on_off = on_off
@@ -151,61 +141,262 @@ class _global_context(object):
         setattr(self.module, self.name, self._store_value)
 
 class _global_context_on(_global_context):
+    """
+    This is a metaclass for context handlers working by
+    setting a module level variable to `True`.
+    """
     
     def __init__(self, name):
+        """
+        :param str name: Name of the module level variable.
+        """
         super(_global_context_on, self).__init__(name, True)
 
 class _global_context_off(_global_context):
+    """
+    This is a metaclass for context handlers working by
+    setting a module level variable to `False`.
+    """
     
     def __init__(self, name):
+        """
+        :param str name: Name of the module level variable.
+        """
         super(_global_context_off, self).__init__(name, False)
 
 class cache_on(_global_context_on):
+    """
+    This is a context handler to turn on pypath.curl.Curl() cache.
+    As most of the methods use cache as their default behaviour,
+    probably it won't change anything.
+    
+    Behind the scenes it sets the value of the `pypath.curl.CACHE`
+    module level variable to `True` (by default it is `None`).
+    
+    Example: ::
+        
+        import pypath
+        from pypath import curl, data_formats
+        
+        pa = pypath.PyPath()
+        
+        print('`curl.CACHE` is ', curl.CACHE)
+        
+        with curl.cache_on():
+            print('`curl.CACHE` is ', curl.CACHE)
+            pa.load_resources({'signor': data_formats.pathway['signor']})
+    """
     
     def __init__(self):
         super(cache_on, self).__init__('CACHE')
 
 class cache_off(_global_context_off):
+    """
+    This is a context handler to turn off pypath.curl.Curl() cache.
+    Data will be downloaded even if it exists in cache.
+    
+    Behind the scenes it sets the value of the `pypath.curl.CACHE`
+    module level variable to `False` (by default it is `None`).
+    
+    Example: ::
+        
+        import pypath
+        from pypath import curl, data_formats
+        
+        pa = pypath.PyPath()
+        
+        print('`curl.CACHE` is ', curl.CACHE)
+        
+        with curl.cache_on():
+            print('`curl.CACHE` is ', curl.CACHE)
+            pa.load_resources({'signor': data_formats.pathway['signor']})
+    """
     
     def __init__(self):
         super(cache_off, self).__init__('CACHE')
 
 class cache_print_on(_global_context_on):
+    """
+    This is a context handler which makes pypath.curl.Curl() print
+    verbose messages about its cache.
+    
+    Behind the scenes it sets the value of the `pypath.curl.CACHEPRINT`
+    module level variable to `True` (by default it is `False`).
+    
+    Example: ::
+        
+        import pypath
+        from pypath import curl, data_formats
+        
+        pa = pypath.PyPath()
+        
+        with curl.cache_print_on():
+            pa.load_resources({'signor': data_formats.pathway['signor']})
+    """
     
     def __init__(self):
         super(cache_print_on, self).__init__('CACHEPRINT')
 
 class cache_print_off(_global_context_off):
+    """
+    This is a context handler which stops pypath.curl.Curl() to print
+    verbose messages about its cache.
+    
+    Behind the scenes it sets the value of the `pypath.curl.CACHEPRINT`
+    module level variable to `False`. As by default it is `False`, this
+    context won't modify the default behaviour.
+    
+    Example: ::
+        
+        import pypath
+        from pypath import curl, data_formats
+        
+        pa = pypath.PyPath()
+        
+        with curl.cache_print_off():
+            pa.load_resources({'signor': data_formats.pathway['signor']})
+    """
     
     def __init__(self):
         super(cache_print_off, self).__init__('CACHEPRINT')
 
 class cache_delete_on(_global_context_on):
+    """
+    This is a context handler which results pypath.curl.Curl() deleting the
+    cache files instead of reading it. Then it downloads the data again,
+    or does nothing if the `DRYRUN` context is turned on. Upon deleting
+    cache files console messages will let you know which files have been
+    deleted.
+    
+    Behind the scenes it sets the value of the `pypath.curl.CACHEDEL`
+    module level variable to `True` (by default it is `False`).
+    
+    Example: ::
+        
+        import pypath
+        from pypath import curl, data_formats
+        
+        pa = pypath.PyPath()
+        
+        with curl.cache_delete_on():
+            pa.load_resources({'signor': data_formats.pathway['signor']})
+    """
     
     def __init__(self):
         super(cache_delete_on, self).__init__('CACHEDEL')
 
 class cache_delete_off(_global_context_off):
+    """
+    This is a context handler which stops pypath.curl.Curl() deleting the
+    cache files. This is the default behaviour, so this context won't
+    change anything by default.
+    
+    Behind the scenes it sets the value of the `pypath.curl.CACHEDEL`
+    module level variable to `False`.
+    
+    Example: ::
+        
+        import pypath
+        from pypath import curl, data_formats
+        
+        pa = pypath.PyPath()
+        
+        with curl.cache_delete_off():
+            pa.load_resources({'signor': data_formats.pathway['signor']})
+    """
     
     def __init__(self):
         super(cache_delete_off, self).__init__('CACHEDEL')
 
 class dryrun_on(_global_context_on):
+    """
+    This is a context handler which results pypath.curl.Curl() to do all
+    setup steps, but do not perform download or cache read.
+    
+    Behind the scenes it sets the value of the `pypath.curl.DRYRUN`
+    module level variable to `True` (by default it is `False`).
+    
+    Example: ::
+        
+        import pypath
+        from pypath import curl, data_formats
+        
+        pa = pypath.PyPath()
+        
+        with curl.cache_dryrun_on():
+            pa.load_resources({'signor': data_formats.pathway['signor']})
+    """
     
     def __init__(self):
         super(dryrun_on, self).__init__('DRYRUN')
 
 class dryrun_off(_global_context_off):
+    """
+    This is a context handler which results pypath.curl.Curl() to
+    perform download or cache read. This is the default behaviour,
+    so applying this context restores the default.
+    
+    Behind the scenes it sets the value of the `pypath.curl.DRYRUN`
+    module level variable to `False`.
+    
+    Example: ::
+        
+        import pypath
+        from pypath import curl, data_formats
+        
+        pa = pypath.PyPath()
+        
+        with curl.cache_dryrun_off():
+            pa.load_resources({'signor': data_formats.pathway['signor']})
+    """
     
     def __init__(self):
         super(dryrun_off, self).__init__('DRYRUN')
 
 class preserve_on(_global_context_on):
+    """
+    This is a context handler which results pypath.curl.Curl() to make
+    a reference to itself in the module level variable `LASTCURL`. This
+    is useful if you have some issue with `Curl`, and you want to access
+    the instance for debugging.
+    
+    Behind the scenes it sets the value of the `pypath.curl.PRESERVE`
+    module level variable to `True` (by default it is `False`).
+    
+    Example: ::
+        
+        import pypath
+        from pypath import curl, data_formats
+        
+        pa = pypath.PyPath()
+        
+        with curl.cache_preserve_on():
+            pa.load_resources({'signor': data_formats.pathway['signor']})
+    """
     
     def __init__(self):
         super(preserve_on, self).__init__('PRESERVE')
 
 class preserve_off(_global_context_off):
+    """
+    This is a context handler which avoids pypath.curl.Curl() to make
+    a reference to itself in the module level variable `LASTCURL`. By
+    default it does not do this, so this context only restores the
+    default.
+    
+    Behind the scenes it sets the value of the `pypath.curl.PRESERVE`
+    module level variable to `False`.
+    
+    Example: ::
+        
+        import pypath
+        from pypath import curl, data_formats
+        
+        pa = pypath.PyPath()
+        
+        with curl.cache_preserve_off():
+            pa.load_resources({'signor': data_formats.pathway['signor']})
+    """
     
     def __init__(self):
         super(preserve_off, self).__init__('PRESERVE')
@@ -245,6 +436,13 @@ class RemoteFile(object):
                         yield line
 
 class FileOpener(object):
+    """
+    This class opens a file, extracts it in case it is a
+    gzip, tar.gz, tar.bz2 or zip archive, selects the requested
+    files if you only need certain files from a multifile archive,
+    reads the data from the file, or returns the file pointer,
+    as you request. It examines the file type and size.
+    """
     
     def __init__(self,
                  file_param,
@@ -355,6 +553,18 @@ class FileOpener(object):
             self.type = 'plain'
 
 class Curl(FileOpener):
+    """
+    This class is a wrapper around pycurl.
+    You can set a vast amount of parameters.
+    In addition it has a cacheing functionality, using this downloads
+    performed only once.
+    It handles HTTP, FTP, cookies, headers, GET and POST params,
+    multipart/form data, URL quoting, redirects, timeouts, retries,
+    encodings, debugging.
+    It returns either downloaded data, file pointer, files extracted
+    from archives (gzip, tar.gz, zip).
+    It is able to show a progress and status indicator on the console.
+    """
     
     def __init__(self,
         url, silent = True, get = None,

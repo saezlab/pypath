@@ -30,6 +30,9 @@
   
 
   
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="pypath 0.5.1 documentation" href="#"/> 
 
   
@@ -2408,6 +2411,14 @@ cited at more than this number of interactions.</dd>
 </dd></dl>
 
 <dl class="function">
+<dt id="pypath.dataio.dip_login">
+<code class="descclassname">pypath.dataio.</code><code class="descname">dip_login</code><span class="sig-paren">(</span><em>user</em>, <em>passwd</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/dataio.html#dip_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.dataio.dip_login" title="Permalink to this definition">¶</a></dt>
+<dd><p>This does not work for unknown reasons.</p>
+<p>In addition, the binary_data parameter of Curl().__init__() has been changed,
+below updates are necessary.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="pypath.dataio.get_acsn_effects">
 <code class="descclassname">pypath.dataio.</code><code class="descname">get_acsn_effects</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/dataio.html#get_acsn_effects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.dataio.get_acsn_effects" title="Permalink to this definition">¶</a></dt>
 <dd><p>Processes ACSN data, returns list of effects.</p>
@@ -2842,9 +2853,11 @@ Returns list of interactions.</p>
 
 <dl class="function">
 <dt id="pypath.dataio.signor_interactions">
-<code class="descclassname">pypath.dataio.</code><code class="descname">signor_interactions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/dataio.html#signor_interactions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.dataio.signor_interactions" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pypath.dataio.</code><code class="descname">signor_interactions</code><span class="sig-paren">(</span><em>organism='human'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/dataio.html#signor_interactions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.dataio.signor_interactions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Downloads the full dataset from Signor.
-Return the file contents.</p>
+Returns the file contents.</p>
+<p>Note: this method has been updated Oct 2016,
+as Signor updated both their data and webpage.</p>
 </dd></dl>
 
 <dl class="function">
@@ -2960,10 +2973,37 @@ the next large scale screening of Vidal Lab.</p>
 <span class="target" id="module-pypath.curl"></span><dl class="class">
 <dt id="pypath.curl.Curl">
 <em class="property">class </em><code class="descclassname">pypath.curl.</code><code class="descname">Curl</code><span class="sig-paren">(</span><em>url</em>, <em>silent=True</em>, <em>get=None</em>, <em>post=None</em>, <em>req_headers=None</em>, <em>cache=True</em>, <em>debug=False</em>, <em>outf=None</em>, <em>compr=None</em>, <em>encoding=None</em>, <em>files_needed=None</em>, <em>timeout=300</em>, <em>init_url=None</em>, <em>init_fun='get_jsessionid'</em>, <em>follow=True</em>, <em>large=False</em>, <em>override_post=False</em>, <em>init_headers=False</em>, <em>return_headers=False</em>, <em>binary_data=None</em>, <em>write_cache=True</em>, <em>force_quote=False</em>, <em>sftp_user=None</em>, <em>sftp_passwd=None</em>, <em>sftp_passwd_file='.secrets'</em>, <em>sftp_port=22</em>, <em>sftp_host=None</em>, <em>sftp_ask=None</em>, <em>setup=True</em>, <em>call=True</em>, <em>process=True</em>, <em>retries=3</em>, <em>cache_dir='cache'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/curl.html#Curl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.curl.Curl" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><p>This class is a wrapper around pycurl.
+You can set a vast amount of parameters.
+In addition it has a cacheing functionality, using this downloads
+performed only once.
+It handles HTTP, FTP, cookies, headers, GET and POST params,
+multipart/form data, URL quoting, redirects, timeouts, retries,
+encodings, debugging.
+It returns either downloaded data, file pointer, files extracted
+from archives (gzip, tar.gz, zip).
+It is able to show a progress and status indicator on the console.</p>
+<dl class="method">
+<dt id="pypath.curl.Curl.construct_binary_data">
+<code class="descname">construct_binary_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/curl.html#Curl.construct_binary_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.curl.Curl.construct_binary_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>The binary data content of a <cite>form/multipart</cite> type request
+can be constructed from a list of tuples (&lt;field name&gt;, &lt;field value&gt;),
+where field name and value are both type of bytes.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="pypath.curl.Curl.is_quoted">
 <code class="descname">is_quoted</code><span class="sig-paren">(</span><em>string</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/curl.html#Curl.is_quoted"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.curl.Curl.is_quoted" title="Permalink to this definition">¶</a></dt>
-<dd><p>From <a class="reference external" href="http://stackoverflow.com/questions/1637762/test-if-string-is-url-encoded-in-php">http://stackoverflow.com/questions/1637762/test-if-string-is-url-encoded-in-php</a></p>
+<dd><p>From <a class="reference external" href="http://stackoverflow.com/questions/">http://stackoverflow.com/questions/</a>
+1637762/test-if-string-is-url-encoded-in-php</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypath.curl.Curl.set_binary_data">
+<code class="descname">set_binary_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/curl.html#Curl.set_binary_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.curl.Curl.set_binary_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set binary data to be transmitted attached to POST request.</p>
+<p><cite>binary_data</cite> is either a bytes string, or a filename, or
+a list of key-value pairs of a multipart form.</p>
 </dd></dl>
 
 <dl class="method">
@@ -2977,7 +3017,273 @@ the next large scale screening of Vidal Lab.</p>
 <dl class="class">
 <dt id="pypath.curl.FileOpener">
 <em class="property">class </em><code class="descclassname">pypath.curl.</code><code class="descname">FileOpener</code><span class="sig-paren">(</span><em>file_param</em>, <em>compr=None</em>, <em>extract=True</em>, <em>_open=True</em>, <em>set_fileobj=True</em>, <em>files_needed=None</em>, <em>large=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/curl.html#FileOpener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.curl.FileOpener" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This class opens a file, extracts it in case it is a
+gzip, tar.gz, tar.bz2 or zip archive, selects the requested
+files if you only need certain files from a multifile archive,
+reads the data from the file, or returns the file pointer,
+as you request. It examines the file type and size.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pypath.curl.cache_delete_off">
+<em class="property">class </em><code class="descclassname">pypath.curl.</code><code class="descname">cache_delete_off</code><a class="reference internal" href="_modules/pypath/curl.html#cache_delete_off"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.curl.cache_delete_off" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a context handler which stops pypath.curl.Curl() deleting the
+cache files. This is the default behaviour, so this context won&#8217;t
+change anything by default.</p>
+<p>Behind the scenes it sets the value of the <cite>pypath.curl.CACHEDEL</cite>
+module level variable to <cite>False</cite>.</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pypath</span>
+<span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">curl</span><span class="p">,</span> <span class="n">data_formats</span>
+
+<span class="n">pa</span> <span class="o">=</span> <span class="n">pypath</span><span class="o">.</span><span class="n">PyPath</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">curl</span><span class="o">.</span><span class="n">cache_delete_off</span><span class="p">():</span>
+    <span class="n">pa</span><span class="o">.</span><span class="n">load_resources</span><span class="p">({</span><span class="s1">&#39;signor&#39;</span><span class="p">:</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">pathway</span><span class="p">[</span><span class="s1">&#39;signor&#39;</span><span class="p">]})</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="pypath.curl.cache_delete_on">
+<em class="property">class </em><code class="descclassname">pypath.curl.</code><code class="descname">cache_delete_on</code><a class="reference internal" href="_modules/pypath/curl.html#cache_delete_on"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.curl.cache_delete_on" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a context handler which results pypath.curl.Curl() deleting the
+cache files instead of reading it. Then it downloads the data again,
+or does nothing if the <cite>DRYRUN</cite> context is turned on. Upon deleting
+cache files console messages will let you know which files have been
+deleted.</p>
+<p>Behind the scenes it sets the value of the <cite>pypath.curl.CACHEDEL</cite>
+module level variable to <cite>True</cite> (by default it is <cite>False</cite>).</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pypath</span>
+<span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">curl</span><span class="p">,</span> <span class="n">data_formats</span>
+
+<span class="n">pa</span> <span class="o">=</span> <span class="n">pypath</span><span class="o">.</span><span class="n">PyPath</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">curl</span><span class="o">.</span><span class="n">cache_delete_on</span><span class="p">():</span>
+    <span class="n">pa</span><span class="o">.</span><span class="n">load_resources</span><span class="p">({</span><span class="s1">&#39;signor&#39;</span><span class="p">:</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">pathway</span><span class="p">[</span><span class="s1">&#39;signor&#39;</span><span class="p">]})</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="pypath.curl.cache_off">
+<em class="property">class </em><code class="descclassname">pypath.curl.</code><code class="descname">cache_off</code><a class="reference internal" href="_modules/pypath/curl.html#cache_off"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.curl.cache_off" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a context handler to turn off pypath.curl.Curl() cache.
+Data will be downloaded even if it exists in cache.</p>
+<p>Behind the scenes it sets the value of the <cite>pypath.curl.CACHE</cite>
+module level variable to <cite>False</cite> (by default it is <cite>None</cite>).</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pypath</span>
+<span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">curl</span><span class="p">,</span> <span class="n">data_formats</span>
+
+<span class="n">pa</span> <span class="o">=</span> <span class="n">pypath</span><span class="o">.</span><span class="n">PyPath</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;`curl.CACHE` is &#39;</span><span class="p">,</span> <span class="n">curl</span><span class="o">.</span><span class="n">CACHE</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">curl</span><span class="o">.</span><span class="n">cache_on</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;`curl.CACHE` is &#39;</span><span class="p">,</span> <span class="n">curl</span><span class="o">.</span><span class="n">CACHE</span><span class="p">)</span>
+    <span class="n">pa</span><span class="o">.</span><span class="n">load_resources</span><span class="p">({</span><span class="s1">&#39;signor&#39;</span><span class="p">:</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">pathway</span><span class="p">[</span><span class="s1">&#39;signor&#39;</span><span class="p">]})</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="pypath.curl.cache_on">
+<em class="property">class </em><code class="descclassname">pypath.curl.</code><code class="descname">cache_on</code><a class="reference internal" href="_modules/pypath/curl.html#cache_on"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.curl.cache_on" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a context handler to turn on pypath.curl.Curl() cache.
+As most of the methods use cache as their default behaviour,
+probably it won&#8217;t change anything.</p>
+<p>Behind the scenes it sets the value of the <cite>pypath.curl.CACHE</cite>
+module level variable to <cite>True</cite> (by default it is <cite>None</cite>).</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pypath</span>
+<span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">curl</span><span class="p">,</span> <span class="n">data_formats</span>
+
+<span class="n">pa</span> <span class="o">=</span> <span class="n">pypath</span><span class="o">.</span><span class="n">PyPath</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;`curl.CACHE` is &#39;</span><span class="p">,</span> <span class="n">curl</span><span class="o">.</span><span class="n">CACHE</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">curl</span><span class="o">.</span><span class="n">cache_on</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;`curl.CACHE` is &#39;</span><span class="p">,</span> <span class="n">curl</span><span class="o">.</span><span class="n">CACHE</span><span class="p">)</span>
+    <span class="n">pa</span><span class="o">.</span><span class="n">load_resources</span><span class="p">({</span><span class="s1">&#39;signor&#39;</span><span class="p">:</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">pathway</span><span class="p">[</span><span class="s1">&#39;signor&#39;</span><span class="p">]})</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="pypath.curl.cache_print_off">
+<em class="property">class </em><code class="descclassname">pypath.curl.</code><code class="descname">cache_print_off</code><a class="reference internal" href="_modules/pypath/curl.html#cache_print_off"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.curl.cache_print_off" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a context handler which stops pypath.curl.Curl() to print
+verbose messages about its cache.</p>
+<p>Behind the scenes it sets the value of the <cite>pypath.curl.CACHEPRINT</cite>
+module level variable to <cite>False</cite>. As by default it is <cite>False</cite>, this
+context won&#8217;t modify the default behaviour.</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pypath</span>
+<span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">curl</span><span class="p">,</span> <span class="n">data_formats</span>
+
+<span class="n">pa</span> <span class="o">=</span> <span class="n">pypath</span><span class="o">.</span><span class="n">PyPath</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">curl</span><span class="o">.</span><span class="n">cache_print_off</span><span class="p">():</span>
+    <span class="n">pa</span><span class="o">.</span><span class="n">load_resources</span><span class="p">({</span><span class="s1">&#39;signor&#39;</span><span class="p">:</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">pathway</span><span class="p">[</span><span class="s1">&#39;signor&#39;</span><span class="p">]})</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="pypath.curl.cache_print_on">
+<em class="property">class </em><code class="descclassname">pypath.curl.</code><code class="descname">cache_print_on</code><a class="reference internal" href="_modules/pypath/curl.html#cache_print_on"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.curl.cache_print_on" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a context handler which makes pypath.curl.Curl() print
+verbose messages about its cache.</p>
+<p>Behind the scenes it sets the value of the <cite>pypath.curl.CACHEPRINT</cite>
+module level variable to <cite>True</cite> (by default it is <cite>False</cite>).</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pypath</span>
+<span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">curl</span><span class="p">,</span> <span class="n">data_formats</span>
+
+<span class="n">pa</span> <span class="o">=</span> <span class="n">pypath</span><span class="o">.</span><span class="n">PyPath</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">curl</span><span class="o">.</span><span class="n">cache_print_on</span><span class="p">():</span>
+    <span class="n">pa</span><span class="o">.</span><span class="n">load_resources</span><span class="p">({</span><span class="s1">&#39;signor&#39;</span><span class="p">:</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">pathway</span><span class="p">[</span><span class="s1">&#39;signor&#39;</span><span class="p">]})</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="pypath.curl.dryrun_off">
+<em class="property">class </em><code class="descclassname">pypath.curl.</code><code class="descname">dryrun_off</code><a class="reference internal" href="_modules/pypath/curl.html#dryrun_off"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.curl.dryrun_off" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a context handler which results pypath.curl.Curl() to
+perform download or cache read. This is the default behaviour,
+so applying this context restores the default.</p>
+<p>Behind the scenes it sets the value of the <cite>pypath.curl.DRYRUN</cite>
+module level variable to <cite>False</cite>.</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pypath</span>
+<span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">curl</span><span class="p">,</span> <span class="n">data_formats</span>
+
+<span class="n">pa</span> <span class="o">=</span> <span class="n">pypath</span><span class="o">.</span><span class="n">PyPath</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">curl</span><span class="o">.</span><span class="n">cache_dryrun_off</span><span class="p">():</span>
+    <span class="n">pa</span><span class="o">.</span><span class="n">load_resources</span><span class="p">({</span><span class="s1">&#39;signor&#39;</span><span class="p">:</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">pathway</span><span class="p">[</span><span class="s1">&#39;signor&#39;</span><span class="p">]})</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="pypath.curl.dryrun_on">
+<em class="property">class </em><code class="descclassname">pypath.curl.</code><code class="descname">dryrun_on</code><a class="reference internal" href="_modules/pypath/curl.html#dryrun_on"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.curl.dryrun_on" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a context handler which results pypath.curl.Curl() to do all
+setup steps, but do not perform download or cache read.</p>
+<p>Behind the scenes it sets the value of the <cite>pypath.curl.DRYRUN</cite>
+module level variable to <cite>True</cite> (by default it is <cite>False</cite>).</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pypath</span>
+<span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">curl</span><span class="p">,</span> <span class="n">data_formats</span>
+
+<span class="n">pa</span> <span class="o">=</span> <span class="n">pypath</span><span class="o">.</span><span class="n">PyPath</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">curl</span><span class="o">.</span><span class="n">cache_dryrun_on</span><span class="p">():</span>
+    <span class="n">pa</span><span class="o">.</span><span class="n">load_resources</span><span class="p">({</span><span class="s1">&#39;signor&#39;</span><span class="p">:</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">pathway</span><span class="p">[</span><span class="s1">&#39;signor&#39;</span><span class="p">]})</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="pypath.curl.preserve_off">
+<em class="property">class </em><code class="descclassname">pypath.curl.</code><code class="descname">preserve_off</code><a class="reference internal" href="_modules/pypath/curl.html#preserve_off"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.curl.preserve_off" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a context handler which avoids pypath.curl.Curl() to make
+a reference to itself in the module level variable <cite>LASTCURL</cite>. By
+default it does not do this, so this context only restores the
+default.</p>
+<p>Behind the scenes it sets the value of the <cite>pypath.curl.PRESERVE</cite>
+module level variable to <cite>False</cite>.</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pypath</span>
+<span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">curl</span><span class="p">,</span> <span class="n">data_formats</span>
+
+<span class="n">pa</span> <span class="o">=</span> <span class="n">pypath</span><span class="o">.</span><span class="n">PyPath</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">curl</span><span class="o">.</span><span class="n">cache_preserve_off</span><span class="p">():</span>
+    <span class="n">pa</span><span class="o">.</span><span class="n">load_resources</span><span class="p">({</span><span class="s1">&#39;signor&#39;</span><span class="p">:</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">pathway</span><span class="p">[</span><span class="s1">&#39;signor&#39;</span><span class="p">]})</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="pypath.curl.preserve_on">
+<em class="property">class </em><code class="descclassname">pypath.curl.</code><code class="descname">preserve_on</code><a class="reference internal" href="_modules/pypath/curl.html#preserve_on"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.curl.preserve_on" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a context handler which results pypath.curl.Curl() to make
+a reference to itself in the module level variable <cite>LASTCURL</cite>. This
+is useful if you have some issue with <cite>Curl</cite>, and you want to access
+the instance for debugging.</p>
+<p>Behind the scenes it sets the value of the <cite>pypath.curl.PRESERVE</cite>
+module level variable to <cite>True</cite> (by default it is <cite>False</cite>).</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pypath</span>
+<span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">curl</span><span class="p">,</span> <span class="n">data_formats</span>
+
+<span class="n">pa</span> <span class="o">=</span> <span class="n">pypath</span><span class="o">.</span><span class="n">PyPath</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">curl</span><span class="o">.</span><span class="n">cache_preserve_on</span><span class="p">():</span>
+    <span class="n">pa</span><span class="o">.</span><span class="n">load_resources</span><span class="p">({</span><span class="s1">&#39;signor&#39;</span><span class="p">:</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">pathway</span><span class="p">[</span><span class="s1">&#39;signor&#39;</span><span class="p">]})</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">pypath.curl.</code><code class="descname">Curl</code><span class="sig-paren">(</span><em>url</em>, <em>silent=True</em>, <em>get=None</em>, <em>post=None</em>, <em>req_headers=None</em>, <em>cache=True</em>, <em>debug=False</em>, <em>outf=None</em>, <em>compr=None</em>, <em>encoding=None</em>, <em>files_needed=None</em>, <em>timeout=300</em>, <em>init_url=None</em>, <em>init_fun='get_jsessionid'</em>, <em>follow=True</em>, <em>large=False</em>, <em>override_post=False</em>, <em>init_headers=False</em>, <em>return_headers=False</em>, <em>binary_data=None</em>, <em>write_cache=True</em>, <em>force_quote=False</em>, <em>sftp_user=None</em>, <em>sftp_passwd=None</em>, <em>sftp_passwd_file='.secrets'</em>, <em>sftp_port=22</em>, <em>sftp_host=None</em>, <em>sftp_ask=None</em>, <em>setup=True</em>, <em>call=True</em>, <em>process=True</em>, <em>retries=3</em>, <em>cache_dir='cache'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/curl.html#Curl"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>This class is a wrapper around pycurl.
+You can set a vast amount of parameters.
+In addition it has a cacheing functionality, using this downloads
+performed only once.
+It handles HTTP, FTP, cookies, headers, GET and POST params,
+multipart/form data, URL quoting, redirects, timeouts, retries,
+encodings, debugging.
+It returns either downloaded data, file pointer, files extracted
+from archives (gzip, tar.gz, zip).
+It is able to show a progress and status indicator on the console.</p>
+<dl class="method">
+<dt>
+<code class="descname">construct_binary_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/curl.html#Curl.construct_binary_data"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>The binary data content of a <cite>form/multipart</cite> type request
+can be constructed from a list of tuples (&lt;field name&gt;, &lt;field value&gt;),
+where field name and value are both type of bytes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">is_quoted</code><span class="sig-paren">(</span><em>string</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/curl.html#Curl.is_quoted"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>From <a class="reference external" href="http://stackoverflow.com/questions/">http://stackoverflow.com/questions/</a>
+1637762/test-if-string-is-url-encoded-in-php</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">set_binary_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/curl.html#Curl.set_binary_data"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Set binary data to be transmitted attached to POST request.</p>
+<p><cite>binary_data</cite> is either a bytes string, or a filename, or
+a list of key-value pairs of a multipart form.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">url_fix</code><span class="sig-paren">(</span><em>charset='utf-8'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/curl.html#Curl.url_fix"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>From <a class="reference external" href="http://stackoverflow.com/a/121017/854988">http://stackoverflow.com/a/121017/854988</a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">pypath.curl.</code><code class="descname">FileOpener</code><span class="sig-paren">(</span><em>file_param</em>, <em>compr=None</em>, <em>extract=True</em>, <em>_open=True</em>, <em>set_fileobj=True</em>, <em>files_needed=None</em>, <em>large=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/curl.html#FileOpener"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>This class opens a file, extracts it in case it is a
+gzip, tar.gz, tar.bz2 or zip archive, selects the requested
+files if you only need certain files from a multifile archive,
+reads the data from the file, or returns the file pointer,
+as you request. It examines the file type and size.</p>
+</dd></dl>
 
 <span class="target" id="module-pypath.chembl"></span><dl class="class">
 <dt id="pypath.chembl.Chembl">

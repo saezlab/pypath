@@ -3640,6 +3640,34 @@ def signor_pathways(**kwargs):
     prg.terminate()
     return proteins_pathways, interactions_pathways
 
+def csv_sep_change(csv, old, new):
+    
+    clean_csv = []
+    bw_quotes = False
+    
+    for char in csv:
+        if char == '\r':
+            continue
+        elif char == '"':
+            if bw_quotes:
+                bw_quotes = False
+            else:
+                bw_quotes = True
+        elif char == '\n':
+            if not bw_quotes:
+                clean_csv.append(char)
+            else:
+                continue
+        elif char == old:
+            if bw_quotes:
+                clean_csv.append(char)
+            else:
+                clean_csv.append(new)
+        else:
+            clean_csv.append(char)
+    
+    return ''.join(clean_csv)
+
 def signor_interactions(organism = 'human'):
     '''
     Downloads the full dataset from Signor.
@@ -3648,6 +3676,8 @@ def signor_interactions(organism = 'human'):
     Note: this method has been updated Oct 2016,
     as Signor updated both their data and webpage.
     '''
+    
+    
     url = urls.urls['signor']['all_url_new']
     binary_data = [
         (b'organism', organism.encode('utf-8')),
@@ -3660,7 +3690,16 @@ def signor_interactions(organism = 'human'):
         follow = True, timeout = 30,
         binary_data = binary_data,
         return_headers = True)
-    return c.result
+    
+    _ = c.result.readline()
+    sep = '@#@#@'
+    lines = c.result.read().decode('utf-8')
+    lines = csv_sep_change(lines, ';', sep).split('\n')
+    
+    i = 0
+    result = filter(lambda l: len(l) > 1, map(lambda l: l.split(sep), lines))
+    
+    return result
 
 def rolland_hi_ii_14():
     '''
