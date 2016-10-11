@@ -878,26 +878,23 @@ class PyPath(object):
     
     def filters(self, line, positiveFilters = [], negativeFilters = []):
         for filtr in negativeFilters:
-            # print 'Negative filter:'
-            sep = filtr[2] if len(filtr) > 2 else None
-            thisVal = set(line[filtr[0]].split(sep))
+            if len(filtr) > 2:
+                sep = filtr[2]
+                thisVal = set(line[filtr[0]].split(sep))
+            else:
+                thisVal = set([line[filtr[0]]])
             filtrVal = set(filtr[1] if type(filtr[1]) is list else [filtr[1]])
-            # print '\tthisVal: ', thisVal
-            # print '\tfiltrVal: ', filtrVal
             if len(thisVal & filtrVal) > 0:
-                # print '\tNegative filter matched, filter = True (skip this record)'
                 return True
         for filtr in positiveFilters:
-            # print 'Positive filter:'
-            sep = filtr[2] if len(filtr) > 2 else None
-            thisVal = set(line[filtr[0]].split(sep))
+            if len(filtr) > 2:
+                sep = filtr[2]
+                thisVal = set(line[filtr[0]].split(sep))
+            else:
+                thisVal = set([line[filtr[0]]])
             filtrVal = set(filtr[1] if type(filtr[1]) is list else [filtr[1]])
-            # print '\tthisVal: ', thisVal
-            # print '\tfiltrVal: ', filtrVal
             if len(thisVal & filtrVal) == 0:
-                # print '\tPositive filter matched, filter = True (skip this record)'
                 return True
-        # print '\tNo filter matched, filter = False (process this record)'
         return False
     
     def lookup_cache(self, name, cache_files, int_cache, edges_cache):
@@ -1066,12 +1063,20 @@ class PyPath(object):
                     lambda i:
                         i is not None,
                     [ 
-                        settings.nameColA, 
-                        settings.nameColB, 
-                        self.get_max(settings.extraEdgeAttrs), 
-                        self.get_max(settings.extraNodeAttrsA), 
+                        settings.nameColA,
+                        settings.nameColB,
+                        self.get_max(settings.extraEdgeAttrs),
+                        self.get_max(settings.extraNodeAttrsA),
                         self.get_max(settings.extraNodeAttrsB),
-                        refCol,dirCol,sigCol
+                        refCol, dirCol, sigCol,
+                        max(
+                            map(lambda x: x[0], settings.positiveFilters),
+                            default = 0
+                        ),
+                        max(
+                            map(lambda x: x[0], settings.negativeFilters),
+                            default = 0
+                        )
                     ]
                 )
             )
@@ -1094,15 +1099,20 @@ class PyPath(object):
                     split(settings.separator)
                 else:
                     line = [x.replace('\n','').replace('\r','') \
-                        if type(x) in common.charTypes else x 
+                        if hasattr(x, 'replace') else x
                         for x in line]
                 # in case line has less fields than needed
                 if len(line) < maxCol:
-                    self.ownlog.msg(2,(
-                        "Line #%u has less than %u fields! :(\n" % (lnum, maxCol)),
-                        'ERROR')
+                    self.ownlog.msg(
+                        2,
+                        (
+                            'Line #%u has less than %u fields,'\
+                            ' skipping! :(\n' % (lnum, maxCol)
+                        ),
+                        'ERROR'
+                    )
                     readError = 1
-                    break
+                    continue
                 else:
                     # applying filters:
                     if self.filters(line, settings.positiveFilters,
@@ -1179,7 +1189,15 @@ class PyPath(object):
                         "attrsEdge": attrsEdge}
                     newEdge.update(nodeAttrs)
                 if readError != 0:
-                    break
+                    self.ownlog.msg(
+                        2,
+                        (
+                            'Errors occured, certain lines skipped.'\
+                            'Trying to read the remaining.\n'
+                        ),
+                        'ERROR'
+                    )
+                    readError = 1
                 edgeList.append(newEdge)
             if hasattr(infile, 'close'):
                 infile.close()
