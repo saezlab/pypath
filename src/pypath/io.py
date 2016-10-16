@@ -4,6 +4,7 @@
 import pycurl
 from StringIO import StringIO
 
+
 def curl(url):
     result = StringIO()
     header = StringIO()

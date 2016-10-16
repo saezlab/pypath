@@ -16,15 +16,12 @@
 #
 
 import os
-import sys
-import textwrap
-import datetime
 import logging
 
 from pypath import common
 
+
 class logw(object):
-    
     def __init__(self, session, loglevel='INFO'):
         self.session = session
         self.loglevel = loglevel
@@ -36,10 +33,11 @@ class logw(object):
         self.wd = os.getcwd()
         open(self.logfile, 'a').close()
         if os.name == 'posix':
-            if os.path.islink('log/recent.log') or os.path.isfile('log/recent.log'):
+            if os.path.islink('log/recent.log') or os.path.isfile(
+                    'log/recent.log'):
                 os.remove('log/recent.log')
-            os.symlink(self.logfile,self.wd+'/log/recent.log')
-    
+            os.symlink(self.logfile, self.wd + '/log/recent.log')
+
     def msg(self, indent, message, loglevel=None):
         loglevel = 'INFO' if loglevel is None or loglevel not in self.levels else loglevel
         # time = datetime.datetime.today().strftime('%c')
@@ -53,21 +51,21 @@ class logw(object):
         l(message)
         if loglevel == 'ERROR':
             common.console(message)
-    
+
     def init_logger(self):
         logging.basicConfig(
             filename=self.logfile,
             format='%(asctime)s %(message)s',
             datefmt='[%Y-%m-%d %H:%M:%S]',
-            level = getattr(logging, self.loglevel))
+            level=getattr(logging, self.loglevel))
         self.logger = logging.getLogger(__name__)
-        self.msg(1,"Logger initialized, logging to %s" % self.logfile,'INFO')
-    
+        self.msg(1, "Logger initialized, logging to %s" % self.logfile, 'INFO')
+
     def __getstate__(self):
         d = dict(self.__dict__)
         del d['logger']
         return d
-        
-    def __setstate__(self,d):
+
+    def __setstate__(self, d):
         self.__dict__ = d
         self.init_logger()

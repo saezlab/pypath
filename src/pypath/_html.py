@@ -17,7 +17,7 @@
 
 #
 # this module makes possible a
-# dynamic data integration, download 
+# dynamic data integration, download
 # files from various resources, in standard
 # or non-standard text based and xml formats,
 # process them, sometimes parse html
@@ -1665,35 +1665,41 @@ _footer = u'''
         \t</body>\n
     </html>\n''' % (_valid_html5, _valid_css3)
 
-def get_header(title = ''):
-    return _header % (_favicon, _default_css, 'OmniPath :: %s'%title)
 
-def default_template(content, page_title, title = '',
-                     logos_bottom = False, above_title = ''):
-    
+def get_header(title=''):
+    return _header % (_favicon, _default_css, 'OmniPath :: %s' % title)
+
+
+def default_template(content,
+                     page_title,
+                     title='',
+                     logos_bottom=False,
+                     above_title=''):
+
     logos = u'\t<div id="logos">\n\t\t'\
             '<img class="align-middle logo" src="%s" alt="EMBL-EBI, Hinxton"/>\n\t\t'\
             '<img class="align-middle logo" src="%s" alt="JRC-COMBINE, RWTH Aachen"/>\n\t\t'\
             '<img class="align-middle logo" src="%s" alt="Earlham Institure, Norwich"/>\n\t'\
             '</div>\n' % (_ebi_logo, _rwth_aachen_logo, _ei_logo)
-    
+
     page = u'%s\n%s\t<h1>%s</h1>\n\t%s<br>\n%s\n%s\n' % \
-            (
-                get_header(title),
-                above_title if logos_bottom else logos,
-                page_title,
-                content,
-                logos if logos_bottom else '',
-                _footer
-            )
-    
-    return bs4.BeautifulSoup(page, 'lxml', from_encoding = 'utf-8')\
+        (
+            get_header(title),
+            above_title if logos_bottom else logos,
+            page_title,
+            content,
+            logos if logos_bottom else '',
+            _footer
+        )
+
+    return bs4.BeautifulSoup(page, 'lxml', from_encoding='utf-8')\
         .prettify().encode('utf-8')
+
 
 def main_page():
     notebooks = []
     notebook_dir = ['pypath-docs', 'notebooks']
-    
+
     notebook_names = [
         ('pypath_build_networks.html', 'Quick start'),
         ('pypath_mapping.html', 'ID conversion'),
@@ -1701,28 +1707,26 @@ def main_page():
         ('node_neighbourhood.html', 'Extracting signaling networks'),
         ('TF_location.html', 'Finding transcription factors')
     ]
-    
+
     if os.path.exists(os.path.join(*notebook_dir)):
         notebooks = os.listdir(os.path.join(*notebook_dir))
-    
+
     above_title = '<p><img src="%s" title="Welcome to OmniPath!"></p>' % \
         _omnipath_logo
-    
+
     with open(os.path.join(common.ROOT, 'data', 'main.html'), 'r') as f:
         doc = f.read()
-    
+
     doc += '<h3>Check out our tutorials:</h3>'
     for nb, name in notebook_names:
         if nb in notebooks:
             doc += '<p><a href="%s" title="%s">%s</a></p>' % (
-                    'http://pypath.omnipathdb.org/notebooks/%s' % nb,
-                    name,
-                    name
-                )
+                'http://pypath.omnipathdb.org/notebooks/%s' % nb, name, name)
     doc += '<p>Special thanks for Luis Tobalina for providing some of the tutorials.</p>'
-    
-    return default_template(doc,
+
+    return default_template(
+        doc,
         'OmniPath: literature curated human signaling pathways',
         'literature curated human signaling pathways',
-        logos_bottom = True,
-        above_title = above_title)
+        logos_bottom=True,
+        above_title=above_title)

@@ -21,21 +21,16 @@ import pypath.uniprot_input as uniprot_input
 import pypath.curl as curl
 import pypath.urls as urls
 
-def get_uniprot_sec(organism = 9606):
+
+def get_uniprot_sec(organism=9606):
     if organism is not None:
-        proteome = uniprot_input.all_uniprots(organism = organism)
+        proteome = uniprot_input.all_uniprots(organism=organism)
         proteome = set(proteome)
     sec_pri = []
     url = urls.urls['uniprot_sec']['url']
-    c = curl.Curl(url, silent = False, large = True)
+    c = curl.Curl(url, silent=False, large=True)
     data = c.result
-    return filter(lambda line:
-        len(line) == 2 and (organism is None or line[1] in proteome),
-        map(lambda i:
-            i[1].decode('utf-8').split(), 
-            filter(lambda i:
-                i[0] >= 30,
-                enumerate(data)
-            )
-        )
-    )
+    return filter(
+        lambda line: len(line) == 2 and (organism is None or line[1] in proteome),
+        map(lambda i: i[1].decode('utf-8').split(),
+            filter(lambda i: i[0] >= 30, enumerate(data))))

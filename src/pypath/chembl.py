@@ -19,7 +19,6 @@ import sys
 from itertools import chain
 import time
 import threading
-import hashlib
 
 # from pypath:
 try:
@@ -33,25 +32,29 @@ except:
 
 import pypath.mapping as mapping
 import pypath.progress as progress
-import pypath.data_formats as data_formats
 import pypath.common as common
 
+
 class Chembl(object):
-    
-    def __init__(self, chembl_mysql = (None, 'chembl_ebi'), ncbi_tax_id = 9606, 
-                 mapping_mysql = None, mapper = None):
+    def __init__(self,
+                 chembl_mysql=(None, 'chembl_ebi'),
+                 ncbi_tax_id=9606,
+                 mapping_mysql=None,
+                 mapper=None):
         self.mysql = mysql.MysqlRunner(chembl_mysql)
         self.ncbi_tax_id = ncbi_tax_id
         if mapper.__class__.__name__ != 'Mapper':
-            self.mapper = mapping.Mapper(ncbi_tax_id,mapping_mysql)
+            self.mapper = mapping.Mapper(ncbi_tax_id, mapping_mysql)
             # self.mapper.load_mappings(maps=data_formats.mapListUniprot)
         else:
             self.mapper = mapper
         self.chembl_uniprot_table()
         self.result = None
         # constant elements:
-        self.extra_fields = ['compound_names','action_type','target_domains',
-                     'predicted_binding_domains','activities','pchembl']
+        self.extra_fields = [
+            'compound_names', 'action_type', 'target_domains',
+            'predicted_binding_domains', 'activities', 'pchembl'
+        ]
         self.set_group_concat_len = '''SET group_concat_max_len=18446744073709551615;'''
         self.group_concat_len_increased = False
         self.pbd_join = '''
@@ -131,18 +134,26 @@ class Chembl(object):
             GROUP BY 
                 cr.compound_name, md.chembl_id 
             ORDER BY NULL;'''
-    
+
     def huge_group_concat(self):
         if not self.group_concat_len_increased:
             qid = self.mysql.get_qid(self.set_group_concat_len)
             self.mysql.send_query(self.set_group_concat_len)
             self.mysql.wait_results([qid])
             self.group_concat_len_increased = True
-    
-    def compounds_targets(self, id_list, id_type='uniprot', assay_types=['B','F'],
-                          relationship_types=['D','H'],domains=False,pred_bind_d=False,
-                          action_type=False,activities=False,pchembl=False,
-                          one_query=False, client_side = False):
+
+    def compounds_targets(self,
+                          id_list,
+                          id_type='uniprot',
+                          assay_types=['B', 'F'],
+                          relationship_types=['D', 'H'],
+                          domains=False,
+                          pred_bind_d=False,
+                          action_type=False,
+                          activities=False,
+                          pchembl=False,
+                          one_query=False,
+                          client_side=False):
         '''
         Same as compounds_targets(), but queries each id by separate mysql query.
         Better performance expected in case the batch query requires disk_tmp_table.
@@ -158,7 +169,7 @@ class Chembl(object):
                 args=[id_list],
                 kwargs={
                     'id_type': id_type,
-                    'assay_types':assay_types,
+                    'assay_types': assay_types,
                     'relationship_types': relationship_types,
                     'domains': domains,
                     'pred_bind_d': pred_bind_d,
@@ -177,29 +188,41 @@ class Chembl(object):
             if client_side:
                 self.result = list(self.result)
         else:
-            prg = progress.Progress(total=len(id_list),
-                                    name='Starting queries', interval=5)
+            prg = progress.Progress(
+                total=len(id_list), name='Starting queries', interval=5)
             qids = []
             for identifier in id_list:
                 prg.step()
-                qids.append(self.compound_target(identifier, id_type = id_type, 
-                                assay_types = assay_types, 
-                                relationship_types = relationship_types,
-                                domains = domains, pred_bind_d = pred_bind_d,
-                                action_type = action_type, activities = activities,
-                                pchembl = pchembl, wait = False))
+                qids.append(
+                    self.compound_target(
+                        identifier,
+                        id_type=id_type,
+                        assay_types=assay_types,
+                        relationship_types=relationship_types,
+                        domains=domains,
+                        pred_bind_d=pred_bind_d,
+                        action_type=action_type,
+                        activities=activities,
+                        pchembl=pchembl,
+                        wait=False))
             prg.terminate()
             self.mysql_ready(qids)
             for qid in qids:
                 self.result += list(self.mysql.get_result(qid))
-    
-    def compound_target(self, id_list, id_type = 'uniprot', assay_types = ['B','F'],
-                          relationship_types = ['D','H'], 
-                          domains = False, pred_bind_d = False,
-                          action_type = False, activities = False, pchembl = False, 
-                          wait = True):
+
+    def compound_target(self,
+                        id_list,
+                        id_type='uniprot',
+                        assay_types=['B', 'F'],
+                        relationship_types=['D', 'H'],
+                        domains=False,
+                        pred_bind_d=False,
+                        action_type=False,
+                        activities=False,
+                        pchembl=False,
+                        wait=True):
         '''Get compounds for list of targets or targets for a list of compounds
-        
+
         Inputs:
         id_list -- list of uniprot ids or compound chembl ids
         id_type -- if 'uniprot', search compounds for targets;
@@ -226,11 +249,12 @@ class Chembl(object):
             'compound_synonym': 'ms.synonyms'
         }
         if type(id_list) is list:
-            where = fields[id_type] + ' IN ('+ ','.join(['"%s"'%i for i in id_list]) + ')'
+            where = fields[id_type] + \
+                ' IN (' + ','.join(['"%s"' % i for i in id_list]) + ')'
         else:
-            where = fields[id_type] + ' = ' + '"%s"'%id_list
-        assay_types = ','.join(['"%s"'%i for i in assay_types])
-        relationship_types = ','.join(['"%s"'%i for i in relationship_types])
+            where = fields[id_type] + ' = ' + '"%s"' % id_list
+        assay_types = ','.join(['"%s"' % i for i in assay_types])
+        relationship_types = ','.join(['"%s"' % i for i in relationship_types])
         select_extra = ''
         join_extra = ''
         if domains:
@@ -273,24 +297,29 @@ class Chembl(object):
             ay.relationship_type IN (%s) AND 
             %s 
         GROUP BY cs.accession,md.chembl_id 
-        ORDER BY NULL;''' % (select_extra, join_extra,
-                             assay_types,relationship_types,
-                             where)
+        ORDER BY NULL;''' % (select_extra, join_extra, assay_types,
+                             relationship_types, where)
         self.huge_group_concat()
         qid = self.mysql.get_qid(q)
-        cursor = self.mysql.ss_cursor if type(id_list) is list else self.mysql.cs_cursor
-        self.mysql.send_query(q, cursor = cursor, silent = True)
+        cursor = self.mysql.ss_cursor if type(
+            id_list) is list else self.mysql.cs_cursor
+        self.mysql.send_query(q, cursor=cursor, silent=True)
         if wait:
             self.mysql_ready([qid])
         else:
             return qid
         result = self.mysql.get_result(qid)
         self.result = result
-    
-    def compounds_targets_mechanism(self, id_list, id_type = 'uniprot',
-                                    domains = False, pred_bind_d = False,
-                                    activities = False, pchembl = False, 
-                                    one_query = False, client_side = False):
+
+    def compounds_targets_mechanism(self,
+                                    id_list,
+                                    id_type='uniprot',
+                                    domains=False,
+                                    pred_bind_d=False,
+                                    activities=False,
+                                    pchembl=False,
+                                    one_query=False,
+                                    client_side=False):
         if id_type == 'uniprot':
             compound_lookup = True
             id_list = self.get_chembl_uniprots(id_list)
@@ -318,34 +347,43 @@ class Chembl(object):
             if client_side:
                 self.result = list(self.result)
         else:
-            prg = progress.Progress(total=len(id_list),
-                                    name = 'Sending queries', interval=5)
+            prg = progress.Progress(
+                total=len(id_list), name='Sending queries', interval=5)
             qids = []
             for identifier in id_list:
                 prg.step()
-                qids.append(self.compound_target_mechanism(
-                                identifier, id_type = id_type,
-                                domains = domains, pred_bind_d = pred_bind_d,
-                                activities = activities, pchembl = pchembl, 
-                                wait = False))
+                qids.append(
+                    self.compound_target_mechanism(
+                        identifier,
+                        id_type=id_type,
+                        domains=domains,
+                        pred_bind_d=pred_bind_d,
+                        activities=activities,
+                        pchembl=pchembl,
+                        wait=False))
             prg.terminate()
             self.mysql_ready(qids)
             for qid in qids:
                 self.result += list(self.mysql.get_result(qid))
-    
-    def compound_target_mechanism(self, id_list, id_type = 'uniprot',
-                                    domains = False, pred_bind_d = False,
-                                    activities = False, pchembl = False, 
-                                    wait = True):
+
+    def compound_target_mechanism(self,
+                                  id_list,
+                                  id_type='uniprot',
+                                  domains=False,
+                                  pred_bind_d=False,
+                                  activities=False,
+                                  pchembl=False,
+                                  wait=True):
         fields = {
             'uniprot': 'cs.accession',
             'chembl': 'md.chembl_id',
             'compound_synonym': 'ms.synonyms'
         }
         if type(id_list) is list:
-            where = fields[id_type] + ' IN ('+ ','.join(['"%s"'%i for i in id_list]) + ')'
+            where = fields[id_type] + \
+                ' IN (' + ','.join(['"%s"' % i for i in id_list]) + ')'
         else:
-            where = fields[id_type] + ' = ' + '"%s"'%id_list
+            where = fields[id_type] + ' = ' + '"%s"' % id_list
         select_extra = ''
         join_extra = ''
         if domains:
@@ -389,30 +427,31 @@ class Chembl(object):
             compound_chembl,
             target_uniprot
         ORDER BY NULL;
-        ''' % (select_extra,join_extra,where)
+        ''' % (select_extra, join_extra, where)
         self.huge_group_concat()
         qid = self.mysql.get_qid(q)
-        self.mysql.send_query(q, silent = True)
+        self.mysql.send_query(q, silent=True)
         if wait:
             self.mysql_ready([qid])
         else:
             return qid
         result = self.mysql.get_result(qid)
         self.result = result
-    
-    def synonyms2chembl(self, synonyms, like = True):
+
+    def synonyms2chembl(self, synonyms, like=True):
         self.result = {}
         syn_lower = dict(zip([s.lower() for s in synonyms], synonyms))
-        syn_lst = ','.join(['"%s"'%syn for syn in synonyms])
+        syn_lst = ','.join(['"%s"' % syn for syn in synonyms])
         synq = self.comp_syn % syn_lst
-        recq = self.comp_rec % ('name', ' IN (%s)'%syn_lst)
+        recq = self.comp_rec % ('name', ' IN (%s)' % syn_lst)
         synqid = self.mysql.get_qid(synq)
         recqid = self.mysql.get_qid(recq)
-        self.mysql.send_query(synq, silent = True)
-        self.mysql.send_query(recq, silent = True)
+        self.mysql.send_query(synq, silent=True)
+        self.mysql.send_query(recq, silent=True)
         self.mysql.wait_results([synqid, recqid])
         self.mysql_ready()
-        for r in chain(self.mysql.get_result(synqid), self.mysql.get_result(recqid)):
+        for r in chain(
+                self.mysql.get_result(synqid), self.mysql.get_result(recqid)):
             syn = syn_lower[r['syn'].lower()]
             if syn not in self.result:
                 self.result[syn] = []
@@ -420,16 +459,18 @@ class Chembl(object):
                 self.result[syn].append(r['chembl_id'])
         if like:
             like_results = {}
-            notfound = [n for n in list(set(synonyms) - set(self.result.keys())) \
-                if not n.isdigit()]
+            notfound = [
+                n for n in list(set(synonyms) - set(self.result.keys()))
+                if not n.isdigit()
+            ]
             qids = {}
             trds = []
             for field in ['name', 'key']:
                 for syn in notfound:
-                    q = self.comp_rec % (field, ' LIKE "%%%s%%"'%syn)
+                    q = self.comp_rec % (field, ' LIKE "%%%s%%"' % syn)
                     qid = self.mysql.get_qid(q)
                     qids[qid] = syn
-                    self.mysql.send_query(q, silent = True)
+                    self.mysql.send_query(q, silent=True)
             self.mysql.wait_results(qids.keys())
             self.mysql_ready()
             for qid, syn in qids.iteritems():
@@ -445,26 +486,27 @@ class Chembl(object):
                 # choosing the shortest returned list of ChEMBL IDs
                 if len(results) > 0 and syn not in self.result:
                     results = [common.uniqList(r) for r in results]
-                    self.result[syn] = reduce(lambda x, y: x \
-                        if len(y) == 0 or len(x) < len(y) and len(x) > 0 \
-                        else y, results)
-        self.result = dict([(k, common.uniqList(v)) for k, v in self.result.iteritems()])
-    
-    def get_chembl_uniprots(self,originals):
+                    self.result[syn] = reduce(
+                        lambda x, y: x if len(y) == 0 or len(x) < len(y) and len(x) > 0 else y,
+                        results)
+        self.result = dict([(k, common.uniqList(v))
+                            for k, v in self.result.iteritems()])
+
+    def get_chembl_uniprots(self, originals):
         chembls = []
         for u in originals:
-                if u in self.uniprot_chembl:
-                    chembls += self.uniprot_chembl[u]
+            if u in self.uniprot_chembl:
+                chembls += self.uniprot_chembl[u]
         return chembls
-    
+
     def result_table(self):
         header = [self.result[0].keys()]
         s = '\t'.join(header) + '\n'
         for r in self.result:
             s += '\t'.join(r) + '\n'
         return s
-    
-    def compounds_by_target(self, update_uniprots = True):
+
+    def compounds_by_target(self, update_uniprots=True):
         ct = {}
         for r in self.result:
             if r['target_uniprot'] in self.chembl_uniprot and update_uniprots:
@@ -481,19 +523,20 @@ class Chembl(object):
                     ct[u] = []
                 ct[u].append(this_compound)
         self.compounds = ct
-    
+
     def targets_by_compound(self):
         tc = {}
         for r in self.result:
             this_target = {}
             this_target['uniprot'] = r['target_uniprot']
             for e in self.extra_fields:
-                this_target[e] = [] if e not in r or r[e] is None else r[e].split(';')
+                this_target[e] = [] if e not in r or r[e] is None else r[
+                    e].split(';')
             if r['compound_chembl'] not in tc:
                 tc[r['compound_chembl']] = []
             tc[r['compound_chembl']].append(this_target)
         self.targets = tc
-    
+
     def chembl_uniprot_table(self):
         q = '''SELECT DISTINCT(accession) AS ac 
         FROM component_sequences 
@@ -509,23 +552,24 @@ class Chembl(object):
         self.chembl_uniprot = {}
         self.uniprot_chembl = {}
         for u in chembl_uniprots:
-            umapped = self.mapper.map_name(u,'uniprot','uniprot')
+            umapped = self.mapper.map_name(u, 'uniprot', 'uniprot')
             self.chembl_uniprot[u] = umapped
             for w in umapped:
                 if w not in self.uniprot_chembl:
                     self.uniprot_chembl[w] = []
                 self.uniprot_chembl[w].append(u)
-    
-    def mysql_ready(self, qids = None):
+
+    def mysql_ready(self, qids=None):
         if qids is not None:
             sys.stdout.write('\t:: Waiting for MySQL...')
             sys.stdout.flush()
             self.mysql.wait_results(qids)
-        sys.stdout.write('\r'+' '*90)
+        sys.stdout.write('\r' + ' ' * 90)
         sys.stdout.write('\r\t:: MySQL: ready.')
         sys.stdout.write('\n')
         sys.stdout.flush()
-    
+
+
 '''
 some tests:
 

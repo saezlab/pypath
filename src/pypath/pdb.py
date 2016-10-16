@@ -1,17 +1,15 @@
-
-
 class ResidueMapper(object):
-    
     """
     This class stores and serves the PDB --> UniProt 
     residue level mapping. Attempts to download the 
     mapping, and stores it for further use. Converts 
     PDB residue numbers to the corresponding UniProt ones.
     """
+
     def __init__(self):
         self.clean()
-    
-    def load_mapping(self,pdb):
+
+    def load_mapping(self, pdb):
         non_digit = re.compile(r'[^\d.-]+')
         pdb = pdb.lower()
         url = data_formats.urls['pdb_align']['url'] + pdb
@@ -29,23 +27,24 @@ class ResidueMapper(object):
             if chain not in mapper:
                 mapper[chain] = {}
             mapper[chain][pdbend] = {
-                'uniprot': uniprot, 
+                'uniprot': uniprot,
                 'pdbstart': pdbstart,
                 'uniprotstart': uniprotstart,
-                'uniprotend': uniprotend}
+                'uniprotend': uniprotend
+            }
         self.mappers[pdb] = mapper
-    
-    def get_residue(self,pdb,resnum,chain=None):
+
+    def get_residue(self, pdb, resnum, chain=None):
         pdb = pdb.lower()
         if pdb not in self.mappers:
             self.load_mapping(pdb)
         if pdb in self.mappers:
-            for chain,data in self.mappers[pdb].iteritems():
+            for chain, data in self.mappers[pdb].iteritems():
                 pdbends = data.keys()
                 if resnum <= max(pdbends):
-                    pdbend = min([x for x in [
-                            e - resnum for e in pdbends
-                        ] if x >= 0] ) + resnum
+                    pdbend = min(
+                        [x for x in [e - resnum for e in pdbends]
+                         if x >= 0]) + resnum
                     seg = data[pdbend]
                     if seg['pdbstart'] <= resnum:
                         offset = seg['uniprotstart'] - seg['pdbstart']
@@ -57,7 +56,7 @@ class ResidueMapper(object):
                         }
                         return residue
         return None
-    
+
     def clean(self):
         '''
         Removes cached mappings, freeing up memory.
