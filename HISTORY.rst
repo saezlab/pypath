@@ -28,6 +28,10 @@ This is a summary of the changelog.
 * All figures and tables in the manuscript can be generated automatically
 * This is supported by a new module, **analysis**, which implements a generic workflow in its **Workflow** class.
 
+0.5.32:
++++++++++++
+* `chembl`, `unichem`, `mysql` and `mysql_connect` modules made Python3 compatible
+
 Upcoming:
 +++++++++++
 * New, more flexible network reader class

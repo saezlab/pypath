@@ -15,12 +15,15 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
+from future.utils import iteritems
+from past.builtins import xrange, range, reduce
+
 import json
 import sys
 import bs4
 
 import pypath.progress as progress
-import pypath.dataio as dataio
+import pypath.curl as curl
 
 
 class Unichem(object):
@@ -56,7 +59,7 @@ class Unichem(object):
         }
         # from db name to unichem id
         self.name_dict = {}
-        for k, v in self.uc_dict.iteritems():
+        for k, v in iteritems(self.uc_dict):
             self.name_dict[v] = k
         self.url_stem = 'https://www.ebi.ac.uk/unichem/rest/src_compound_id'
         self.inchi_stem = 'https://www.ebi.ac.uk/unichem/rest/inchikey/%s'
@@ -96,7 +99,7 @@ class Unichem(object):
         Every call overwrites previous result!
         '''
         sys.stdout.write('\n')
-        for k, v in self.uc_dict.iteritems():
+        for k, v in iteritems(self.uc_dict):
             sys.stdout.write('\t%s\t%s\n' % (k, v))
         sys.stdout.write(msg + '\n')
         sys.stdout.flush()
@@ -117,7 +120,8 @@ class Unichem(object):
             interval=1)
         for comp in lst:
             url = '/'.join([self.url_stem, comp, source, target])
-            result = dataio.curl(url)
+            c = curl.Curl(url, large = False)
+            result = c.result
             self.result[comp] = []
             if result is not None:
                 data = json.loads(result)
@@ -133,7 +137,8 @@ class Unichem(object):
             total=len(lst), name='Translating InChi-Keys', interval=1)
         for inchik in lst:
             url = self.inchi_stem % inchik
-            result = dataio.curl(url)
+            c = curl.Curl(url, large = False)
+            result = c.result
             if result is not None:
                 data = json.loads(result)
                 self.result[inchik] = [
@@ -148,7 +153,8 @@ class Unichem(object):
             total=len(smiles), name='Translating SMILEs', interval=1)
         for sml in smiles:
             url = self.chembl_url.format(sml)
-            result = dataio.curl(url)
+            c = curl.Curl(url, large = False)
+            result = c.result
             self.result[sml] = []
             if result is not None:
                 try:
@@ -201,11 +207,12 @@ class Unichem(object):
             prg.step()
             url = self.cpd_search.format(method, i, id_type,
                                          '/'.join(parameters))
-            result = dataio.curl(url)
+            c = curl.Curl(url, large = False)
+            result = c.result
             self.result[i] = []
             if result is not None:
                 data = json.loads(result)
-                for k, v in data.iteritems():
+                for k, v in iteritems(data):
                     for j in range(1, len(v)):
                         self.result[i].append(v[j][0])
             self.result[i] = list(set(self.result[i]))

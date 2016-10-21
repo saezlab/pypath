@@ -15,9 +15,11 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
+from past.builtins import xrange, range, reduce
+
 import os
 import sys
-from configparser import ConfigParser
+import configparser
 
 try:
     import pymysql as MySQLdb
@@ -37,7 +39,7 @@ class MysqlConnect(object):
         self.timeout = timeout
         self.conf_file = config if config is not None \
             else os.path.join(common.ROOT, 'mysql_config', 'defaults.mysql')
-        self.conf_reader = ConfigParser.RawConfigParser()
+        self.conf_reader = configparser.RawConfigParser()
         self.conf_reader.read(self.conf_file)
         self.configs = self.conf_reader.sections()
         self.access = {}

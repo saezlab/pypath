@@ -19,6 +19,8 @@
 # This is a multi-threaded wrapper over python's MySQLdb module
 #
 
+from past.builtins import xrange, range, reduce
+
 import sys
 import codecs
 import time
@@ -30,7 +32,7 @@ except:
     sys.stdout.write('\t:: No MySQL support.\n')
 
 import hashlib
-from queue import Queue
+import queue
 import threading
 
 import pypath.mysql_connect as mysql_connect
@@ -79,8 +81,8 @@ class MysqlRunner(object):
             self.max_connections()
             self.concurrent_queries = min(self.max_con_value / 2,
                                           concurrent_queries)
-            self.waiting_tasks = Queue.Queue()
-            self.running_tasks = Queue.Queue(maxsize=self.concurrent_queries)
+            self.waiting_tasks = queue.Queue()
+            self.running_tasks = queue.Queue(maxsize=self.concurrent_queries)
             for i in xrange(self.concurrent_queries):
                 self.add_thread()
             self.control_main = threading.Thread(
@@ -368,4 +370,6 @@ class MysqlRunner(object):
         @query : str
             MySQL query or any other string.
         '''
+        if hasattr(query, 'encode'):
+            query = query.encode('utf-8')
         return hashlib.md5(query).hexdigest()

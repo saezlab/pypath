@@ -2204,7 +2204,7 @@ class PyPath(object):
                                 % (attr), 'WARNING')
             if len(types) > 0:
                 if list in types:
-                    self.vertexAttrs[attr] = []
+                    self.vertexAttrs[attr] = list
                 else:
                     self.vertexAttrs[attr] = types[0]
                 self.init_vertex_attr(attr)
@@ -2220,7 +2220,7 @@ class PyPath(object):
                                 (attr), 'WARNING')
             if len(types) > 0:
                 if list in types:
-                    self.edgeAttrs[attr] = []
+                    self.edgeAttrs[attr] = list
                 else:
                     self.edgeAttrs[attr] = types[0]
                 self.init_edge_attr(attr)

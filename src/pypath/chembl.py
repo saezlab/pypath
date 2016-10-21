@@ -15,6 +15,9 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
+from future.utils import iteritems
+from past.builtins import xrange, range, reduce
+
 import sys
 from itertools import chain
 import time
@@ -22,13 +25,10 @@ import threading
 
 # from pypath:
 try:
-    import mysql
+    import pypath.mysql as mysql
 except:
-    try:
-        import pymysql as myslq
-    except:
-        sys.stdout.write('\t:: No module `mysql` available.\n')
-        sys.stdout.flush()
+    sys.stdout.write('\t:: No module `mysql` available.\n')
+    sys.stdout.flush()
 
 import pypath.mapping as mapping
 import pypath.progress as progress
@@ -473,7 +473,7 @@ class Chembl(object):
                     self.mysql.send_query(q, silent=True)
             self.mysql.wait_results(qids.keys())
             self.mysql_ready()
-            for qid, syn in qids.iteritems():
+            for qid, syn in iteritems(qids):
                 res = self.mysql.get_result(qid)
                 this_result = []
                 for r in res:
@@ -482,7 +482,7 @@ class Chembl(object):
                 if syn not in like_results:
                     like_results[syn] = []
                 like_results[syn].append(this_result)
-            for syn, results in like_results.iteritems():
+            for syn, results in iteritems(like_results):
                 # choosing the shortest returned list of ChEMBL IDs
                 if len(results) > 0 and syn not in self.result:
                     results = [common.uniqList(r) for r in results]
@@ -490,7 +490,7 @@ class Chembl(object):
                         lambda x, y: x if len(y) == 0 or len(x) < len(y) and len(x) > 0 else y,
                         results)
         self.result = dict([(k, common.uniqList(v))
-                            for k, v in self.result.iteritems()])
+                            for k, v in iteritems(self.result)])
 
     def get_chembl_uniprots(self, originals):
         chembls = []
