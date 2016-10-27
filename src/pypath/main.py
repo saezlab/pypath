@@ -45,6 +45,7 @@ import locale
 import heapq
 import threading
 import traceback
+import itertools
 from itertools import chain
 from collections import Counter
 from scipy import stats
@@ -1153,10 +1154,14 @@ class PyPath(object):
                             settings.extraEdgeAttrs),
                         self.get_max(settings.extraNodeAttrsA), self.get_max(
                             settings.extraNodeAttrsB), refCol, dirCol, sigCol,
-                        max(map(lambda x: x[0], settings.positiveFilters),
-                            default=0), max(map(lambda x: x[0],
-                                                settings.negativeFilters),
-                                            default=0)
+                        max(itertools.chain(
+                            map(lambda x: x[0],
+                                settings.positiveFilters),
+                            [0])),
+                        max(itertools.chain(
+                            map(lambda x: x[0],
+                                settings.negativeFilters),
+                            [0]))
                     ]))
             # iterating lines from input file
             lnum = 0
