@@ -23,30 +23,32 @@ import pypath.urls as urls
 import pypath.curl as curl
 import pypath.seq as se
 
-def all_uniprots(organism = 9606, swissprot = None):
-    rev = '' if swissprot is None else ' AND reviewed:%s'%swissprot
-    url = urls.urls['uniprot_basic']['url']
-    post = {'query': 'organism:%s%s' % (str(organism), rev), 
-        'format': 'tab', 'columns': 'id'}
-    c = curl.Curl(url, post = post, silent = False)
-    data = c.result
-    return list(filter(lambda x:
-        len(x) > 0,
-        map(lambda l:
-            l.strip(),
-            data.split('\n')[1:]
-        )
-    ))
 
-def swissprot_seq(organism = 9606, isoforms = False):
-    taxids = {
-        9606: 'Homo sapiens'
+def all_uniprots(organism=9606, swissprot=None):
+    rev = '' if swissprot is None else ' AND reviewed:%s' % swissprot
+    url = urls.urls['uniprot_basic']['url']
+    post = {
+        'query': 'organism:%s%s' % (str(organism), rev),
+        'format': 'tab',
+        'columns': 'id'
     }
+    c = curl.Curl(url, post=post, silent=False)
+    data = c.result
+    return list(
+        filter(lambda x: len(x) > 0,
+               map(lambda l: l.strip(), data.split('\n')[1:])))
+
+
+def swissprot_seq(organism=9606, isoforms=False):
+    taxids = {9606: 'Homo sapiens'}
     result = {}
     url = urls.urls['uniprot_basic']['url']
-    post = {'query': 'organism:%s AND reviewed:yes'%str(organism), 
-        'format': 'tab', 'columns': 'id,sequence'}
-    c = curl.Curl(url, post = post, silent = False)
+    post = {
+        'query': 'organism:%s AND reviewed:yes' % str(organism),
+        'format': 'tab',
+        'columns': 'id,sequence'
+    }
+    c = curl.Curl(url, post=post, silent=False)
     data = c.result
     data = data.split('\n')
     del data[0]
@@ -62,11 +64,12 @@ def swissprot_seq(organism = 9606, isoforms = False):
                     result[unip].add_seq(seq, isof)
     return result
 
-def get_isoforms(organism = 'Homo sapiens'):
+
+def get_isoforms(organism='Homo sapiens'):
     reorg = re.compile(r'OS=([A-Z][a-z]+\s[a-z]+)')
     result = {}
     url = urls.urls['unip_iso']['url']
-    c = curl.Curl(url, silent = False)
+    c = curl.Curl(url, silent=False)
     data = c.result
     data = read_fasta(data)
     for header, seq in iteritems(data):
@@ -79,6 +82,7 @@ def get_isoforms(organism = 'Homo sapiens'):
                 result[unip] = {}
             result[unip][isof] = seq
     return result
+
 
 def read_fasta(fasta):
     result = {}

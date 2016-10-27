@@ -30,23 +30,23 @@ import pypath.common as common
 import pypath.urls as urls
 import pypath.dataio as dataio
 
+
 class Reference(object):
-    
     def __init__(self, pmid):
         self.pmid = str(pmid).strip()
-        
+
     def __eq__(self, other):
         return self.pmid == other.pmid
-    
+
     def __hash__(self):
         return hash(self.pmid)
-    
+
     def open(self):
         dataio.open_pubmed(self.pmid)
-    
+
     def __str__(self):
         return self.pmid
-    
+
     def info(self):
         return dataio.get_pubmeds([self.pmid])
 
@@ -54,7 +54,7 @@ class Reference(object):
 def open_pubmed(pmid):
     '''
     Opens PubMed record in web browser.
-    
+
     @pmid : str or int
         PubMed ID
     '''
@@ -62,13 +62,14 @@ def open_pubmed(pmid):
     url = urls.urls['pubmed']['url'] % pmid
     webbrowser.open(url)
 
-def only_pmids(idList, strict = True):
+
+def only_pmids(idList, strict=True):
     '''
     Return elements unchanged which compy to PubMed ID format,
     and attempts to translate the DOIs and PMC IDs using NCBI
     E-utils.
     Returns list containing only PMIDs.
-    
+
     @idList : list, str
         List of IDs or one single ID.
     @strict : bool
@@ -82,13 +83,15 @@ def only_pmids(idList, strict = True):
     dois = [i for i in idList if '/' in i]
     manuscids = [i for i in idList if i.startswith('NIHMS')]
     if not strict:
-        non_pmids = set(idList) - (set(pmids) | set(dois) | set(pmcids) | set(manuscids))
+        non_pmids = set(idList) - (set(pmids) | set(dois) | set(pmcids) |
+                                   set(manuscids))
         pmids = pmids | non_pmids
     if len(pmcids) > 0:
         pmids = pmids | set(pmids_list(pmcids))
     if len(dois) > 0:
         pmids = pmids | set(pmids_list(dois))
     return list(pmids)
+
 
 def get_pmid(idList):
     '''
@@ -98,7 +101,7 @@ def get_pmid(idList):
     if type(idList) in common.simpleTypes:
         idList = [idList]
     url = urls.urls['pubmed-eutils']['conv'] % ','.join(str(i) for i in idList)
-    c = curl.Curl(url, silent = True)
+    c = curl.Curl(url, silent=True)
     data = c.result
     try:
         js = json.loads(data)
@@ -106,12 +109,10 @@ def get_pmid(idList):
         js = {}
     return js
 
+
 def pmids_dict(idList):
     jsn = get_pmid(idList)
-    result = {
-        'doi': {},
-        'pmc': {}
-    }
+    result = {'doi': {}, 'pmc': {}}
     if 'records' in jsn:
         for r in jsn['records']:
             if 'pmid' in r:
@@ -120,6 +121,7 @@ def pmids_dict(idList):
                 if 'pmcid' in r:
                     result['pmc'][r['pmid']] = r['pmcid']
     return result
+
 
 def pmids_list(idList):
     jsn = get_pmid(idList)
@@ -130,77 +132,76 @@ def pmids_list(idList):
                 result.append(r['pmid'])
     return result
 
-def get_pubmed_data(pp, cache = 'pubmed2.pickle', cachedir = 'cache',
-                    htp_threshold = 20):
+
+def get_pubmed_data(pp,
+                    cache='pubmed2.pickle',
+                    cachedir='cache',
+                    htp_threshold=20):
     """
     For one PyPath object, obtains metadata for all PubMed IDs
     through NCBI E-utils.
-    
+
     :param pp: pypath.PyPath object
     :param htp_threshold: the number of interactions for one reference
         over the study considered to be high-throughput
     """
     cachefile = os.path.join(cachedir, cache)
-    
+
     if htp_threshold is not None:
         pp.htp_stats()
-    
-    pubmeds = common.uniqList(common.flatList(
-        [[r.pmid for r in e['references']] for e in pp.graph.es]))
-    
+
+    pubmeds = common.uniqList(
+        common.flatList([[r.pmid for r in e['references']]
+                         for e in pp.graph.es]))
+
     if htp_threshold is not None:
         pubmeds = set(pubmeds) - pp.htp[htp_threshold]['htrefs']
-    
+
     notpmid = [i for i in pubmeds if not i.isdigit()]
 
-    sys.stdout.write(
-        '\t:: Number of non PubMed ID references: %u\n' % len(notpmid)
-    )
-    
+    sys.stdout.write('\t:: Number of non PubMed ID references: %u\n' %
+                     len(notpmid))
+
     pmdata = {}
     if os.path.exists(cachefile):
-        sys.stdout.write(
-            '\t:: Loading data previously downloaded '\
-                'from PubMed, from file `%s`\n' % cachefile
-        )
+        sys.stdout.write('\t:: Loading data previously downloaded '
+                         'from PubMed, from file `%s`\n' % cachefile)
         pmdata = pickle.load(open(cachefile, 'rb'))
 
     missing = list(set(pubmeds) - set(pmdata.keys()))
-    sys.stdout.write(
-        '\t:: Downloading data from PubMed about %s papers\n' % len(missing)
-    )
+    sys.stdout.write('\t:: Downloading data from PubMed about %s papers\n' %
+                     len(missing))
     cached_pubmeds_len = len(pmdata)
     pmdata_new = dataio.get_pubmeds(missing)
     pmdata.update(pmdata_new)
-    
-    sys.stdout.write(
-        '\t:: Saving PubMed data to file `%s`\n' % cachefile
-    )
-    
+
+    sys.stdout.write('\t:: Saving PubMed data to file `%s`\n' % cachefile)
+
     if len(pmdata) > cached_pubmeds_len:
         pickle.dump(pmdata, open(cachefile, 'wb'))
-    
+
     pmdata = dict(i for i in pmdata.items() if i[0] in pubmeds)
-    
+
     points = []
     earliest = []
     for e in pp.graph.es:
         for s, rs in iteritems(e['refs_by_source']):
-            pms = [r.pmid for r in rs \
-                if (htp_threshold is None or r.pmid not in pp.htp[htp_threshold]['htrefs']) \
-                    and r.pmid in pmdata \
-                    and 'pubdate' in pmdata[r.pmid]
+            pms = [
+                r.pmid for r in rs
+                if (htp_threshold is None or r.pmid not in pp.htp[
+                    htp_threshold]['htrefs']
+                    ) and r.pmid in pmdata and 'pubdate' in pmdata[r.pmid]
             ]
             if len(pms) > 0:
                 yrs = [int(pmdata[pm]['pubdate'][:4]) for pm in pms]
                 earliest.append((s, 0, min(yrs), '', e.index))
                 for pm in pms:
-                    points.append((s, pm, int(pmdata[pm]['pubdate'][:4]), 
-                        pmdata[pm]['source'], e.index))
-    
+                    points.append((s, pm, int(pmdata[pm]['pubdate'][:4]),
+                                   pmdata[pm]['source'], e.index))
+
     points = common.uniqList(points)
     earliest = common.uniqList(earliest)
-    
+
     points = pd.DataFrame.from_records(points)
     earliest = pd.DataFrame.from_records(earliest)
     points.columns = ['database', 'pmid', 'year', 'journal', 'eid']

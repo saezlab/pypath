@@ -26,7 +26,6 @@
 #
 #  Website: http://igraph.org/
 #
-
 """
 Drawing routines to draw graphs.
 
@@ -55,7 +54,7 @@ from igraph._igraph import convex_hull, VertexSeq
 from igraph.compat import property
 from igraph.configuration import Configuration
 from igraph.drawing.baseclasses import AbstractDrawer, AbstractCairoDrawer, \
-                                       AbstractXMLRPCDrawer
+    AbstractXMLRPCDrawer
 from igraph.drawing.colors import color_to_html_format, color_name_to_rgb
 from pypath.ig_drawing_edge import ArrowEdgeDrawer
 from igraph.drawing.text import TextAlignment, TextDrawer
@@ -91,10 +90,12 @@ class DefaultGraphDrawerFFsupport(AbstractCairoGraphDrawer):
     See L{Graph.__plot__()} for the keyword arguments understood by
     this drawer."""
 
-    def __init__(self, context, bbox, \
-                 vertex_drawer_factory = DefaultVertexDrawer,
-                 edge_drawer_factory = ArrowEdgeDrawer,
-                 label_drawer_factory = TextDrawer):
+    def __init__(self,
+                 context,
+                 bbox,
+                 vertex_drawer_factory=DefaultVertexDrawer,
+                 edge_drawer_factory=ArrowEdgeDrawer,
+                 label_drawer_factory=TextDrawer):
         """Constructs the graph drawer and associates it to the given
         Cairo context and the given L{BoundingBox}.
 
@@ -153,8 +154,8 @@ class DefaultGraphDrawerFFsupport(AbstractCairoGraphDrawer):
             if isinstance(reverse, basestring):
                 reverse = reverse.lower().startswith("desc")
         attrs = graph.es[edge_order_by]
-        edge_order = sorted(range(len(attrs)), key=attrs.__getitem__,
-                reverse=bool(reverse))
+        edge_order = sorted(
+            range(len(attrs)), key=attrs.__getitem__, reverse=bool(reverse))
 
         return edge_order
 
@@ -181,8 +182,8 @@ class DefaultGraphDrawerFFsupport(AbstractCairoGraphDrawer):
             if isinstance(reverse, basestring):
                 reverse = reverse.lower().startswith("desc")
         attrs = graph.vs[vertex_order_by]
-        vertex_order = sorted(range(len(attrs)), key=attrs.__getitem__,
-                reverse=bool(reverse))
+        vertex_order = sorted(
+            range(len(attrs)), key=attrs.__getitem__, reverse=bool(reverse))
 
         return vertex_order
 
@@ -204,28 +205,31 @@ class DefaultGraphDrawerFFsupport(AbstractCairoGraphDrawer):
             margin = list(margin)
         except TypeError:
             margin = [margin]
-        while len(margin)<4:
+        while len(margin) < 4:
             margin.extend(margin)
 
         # Contract the drawing area by the margin and fit the layout
         bbox = self.bbox.contract(margin)
-        layout.fit_into(bbox, keep_aspect_ratio=kwds.get("keep_aspect_ratio", False))
+        layout.fit_into(
+            bbox, keep_aspect_ratio=kwds.get("keep_aspect_ratio", False))
 
         # Decide whether we need to calculate the curvature of edges
         # automatically -- and calculate them if needed.
         autocurve = kwds.get("autocurve", None)
-        if autocurve or (autocurve is None and \
-                "edge_curved" not in kwds and "curved" not in graph.edge_attributes() \
-                and graph.ecount() < 10000):
+        if autocurve or (autocurve is None and "edge_curved" not in kwds and
+                         "curved" not in graph.edge_attributes() and
+                         graph.ecount() < 10000):
             from igraph import autocurve
             default = kwds.get("edge_curved", 0)
             if default is True:
                 default = 0.5
             default = float(default)
-            kwds["edge_curved"] = autocurve(graph, attribute=None, default=default)
+            kwds["edge_curved"] = autocurve(
+                graph, attribute=None, default=default)
 
         # Construct the vertex, edge and label drawers
-        vertex_drawer = self.vertex_drawer_factory(context, bbox, palette, layout)
+        vertex_drawer = self.vertex_drawer_factory(context, bbox, palette,
+                                                   layout)
         edge_drawer = self.edge_drawer_factory(context, palette)
         label_drawer = self.label_drawer_factory(context)
 
@@ -236,7 +240,7 @@ class DefaultGraphDrawerFFsupport(AbstractCairoGraphDrawer):
 
         # Determine the order in which we will draw the vertices and edges
         vertex_order = self._determine_vertex_order(graph, kwds)
-        edge_order   = self._determine_edge_order(graph, kwds)
+        edge_order = self._determine_edge_order(graph, kwds)
 
         # Draw the highlighted groups (if any)
         if "mark_groups" in kwds:
@@ -269,10 +273,14 @@ class DefaultGraphDrawerFFsupport(AbstractCairoGraphDrawer):
                     raise TypeError("group membership list must be iterable")
 
                 # Get the vertex indices that constitute the convex hull
-                hull = [group[i] for i in convex_hull([layout[idx] for idx in group])]
+                hull = [
+                    group[i]
+                    for i in convex_hull([layout[idx] for idx in group])
+                ]
 
                 # Calculate the preferred rounding radius for the corners
-                corner_radius = 1.25 * max(vertex_builder[idx].size for idx in hull)
+                corner_radius = 1.25 * \
+                    max(vertex_builder[idx].size for idx in hull)
 
                 # Construct the polygon
                 polygon = [layout[idx] for idx in hull]
@@ -280,19 +288,23 @@ class DefaultGraphDrawerFFsupport(AbstractCairoGraphDrawer):
                 if len(polygon) == 2:
                     # Expand the polygon (which is a flat line otherwise)
                     a, b = Point(*polygon[0]), Point(*polygon[1])
-                    c = corner_radius * (a-b).normalized()
+                    c = corner_radius * (a - b).normalized()
                     n = Point(-c[1], c[0])
                     polygon = [a + n, b + n, b - c, b - n, a - n, a + c]
                 else:
                     # Expand the polygon around its center of mass
-                    center = Point(*[sum(coords) / float(len(coords))
-                                      for coords in zip(*polygon)])
-                    polygon = [Point(*point).towards(center, -corner_radius)
-                               for point in polygon]
+                    center = Point(*[
+                        sum(coords) / float(len(coords))
+                        for coords in zip(*polygon)
+                    ])
+                    polygon = [
+                        Point(*point).towards(center, -corner_radius)
+                        for point in polygon
+                    ]
 
                 # Draw the hull
                 context.set_source_rgba(color[0], color[1], color[2],
-                                        color[3]*0.25)
+                                        color[3] * 0.25)
                 polygon_drawer.draw_path(polygon, corner_radius=corner_radius)
                 context.fill_preserve()
                 context.set_source_rgba(*color)
@@ -325,7 +337,7 @@ class DefaultGraphDrawerFFsupport(AbstractCairoGraphDrawer):
         else:
             # Specified vertex order
             vertex_coord_iter = ((vs[i], vertex_builder[i], layout[i])
-                    for i in vertex_order)
+                                 for i in vertex_order)
 
         # Draw the vertices
         drawer_method = vertex_drawer.draw
@@ -350,7 +362,7 @@ class DefaultGraphDrawerFFsupport(AbstractCairoGraphDrawer):
         else:
             # Specified vertex order
             vertex_coord_iter = ((vertex_builder[i], layout[i])
-                    for i in vertex_order)
+                                 for i in vertex_order)
 
         # Draw the vertex labels
         for vertex, coords in vertex_coord_iter:
@@ -358,8 +370,9 @@ class DefaultGraphDrawerFFsupport(AbstractCairoGraphDrawer):
                 continue
 
             if hasattr(vertex, 'label_family'):
-                context.select_font_face(vertex.label_family, \
-                    cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+                context.select_font_face(vertex.label_family,
+                                         cairo.FONT_SLANT_NORMAL,
+                                         cairo.FONT_WEIGHT_NORMAL)
             context.set_font_size(vertex.label_size)
             context.set_source_rgba(*vertex.label_color)
             label_drawer.text = vertex.label
@@ -367,7 +380,7 @@ class DefaultGraphDrawerFFsupport(AbstractCairoGraphDrawer):
             if vertex.label_dist:
                 # Label is displaced from the center of the vertex.
                 _, yb, w, h, _, _ = label_drawer.text_extents()
-                w, h = w/2.0, h/2.0
+                w, h = w / 2.0, h / 2.0
                 radius = vertex.label_dist * vertex.size / 2.
                 # First we find the reference point that is at distance `radius'
                 # from the vertex in the direction given by `label_angle'.
@@ -375,18 +388,18 @@ class DefaultGraphDrawerFFsupport(AbstractCairoGraphDrawer):
                 # center of the bounding box of the label with the center of the
                 # vertex goes through the reference point and the reference
                 # point lies exactly on the bounding box of the vertex.
-                alpha = vertex.label_angle % (2*pi)
+                alpha = vertex.label_angle % (2 * pi)
                 cx = coords[0] + radius * cos(alpha)
                 cy = coords[1] - radius * sin(alpha)
                 # Now we have the reference point. We have to decide which side
                 # of the label box will intersect with the line that connects
                 # the center of the label with the center of the vertex.
                 if w > 0:
-                    beta = atan2(h, w) % (2*pi)
+                    beta = atan2(h, w) % (2 * pi)
                 else:
-                    beta = pi/2.
+                    beta = pi / 2.
                 gamma = pi - beta
-                if alpha > 2*pi-beta or alpha <= beta:
+                if alpha > 2 * pi - beta or alpha <= beta:
                     # Intersection at left edge of label
                     cx += w
                     cy -= tan(alpha) * w
@@ -395,9 +408,9 @@ class DefaultGraphDrawerFFsupport(AbstractCairoGraphDrawer):
                     try:
                         cx += h / tan(alpha)
                     except:
-                        pass    # tan(alpha) == inf
+                        pass  # tan(alpha) == inf
                     cy -= h
-                elif alpha > gamma and alpha <= gamma + 2*beta:
+                elif alpha > gamma and alpha <= gamma + 2 * beta:
                     # Intersection at right edge of label
                     cx -= w
                     cy += tan(alpha) * w
@@ -406,10 +419,10 @@ class DefaultGraphDrawerFFsupport(AbstractCairoGraphDrawer):
                     try:
                         cx -= h / tan(alpha)
                     except:
-                        pass    # tan(alpha) == inf
+                        pass  # tan(alpha) == inf
                     cy += h
                 # Draw the label
-                label_drawer.draw_at(cx-w, cy-h-yb, wrap=wrap)
+                label_drawer.draw_at(cx - w, cy - h - yb, wrap=wrap)
             else:
                 # Label is exactly in the center of the vertex
                 cx, cy = coords
@@ -434,8 +447,9 @@ class DefaultGraphDrawerFFsupport(AbstractCairoGraphDrawer):
 
             # Set the font size, color and text
             if hasattr(visual_edge, 'label_family'):
-                context.select_font_face(visual_edge.label_family, \
-                    cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+                context.select_font_face(visual_edge.label_family,
+                                         cairo.FONT_SLANT_NORMAL,
+                                         cairo.FONT_WEIGHT_NORMAL)
             context.set_font_size(visual_edge.label_size)
             context.set_source_rgba(*visual_edge.label_color)
             label_drawer.text = visual_edge.label
@@ -444,7 +458,7 @@ class DefaultGraphDrawerFFsupport(AbstractCairoGraphDrawer):
             src, dest = edge.tuple
             src_vertex, dest_vertex = vertex_builder[src], vertex_builder[dest]
             (x, y), (halign, valign) = \
-                    edge_drawer.get_label_position(edge, src_vertex, dest_vertex)
+                edge_drawer.get_label_position(edge, src_vertex, dest_vertex)
 
             # Measure the text
             _, yb, w, h, _, _ = label_drawer.text_extents()
@@ -464,8 +478,7 @@ class DefaultGraphDrawerFFsupport(AbstractCairoGraphDrawer):
             # Draw the edge label
             label_drawer.halign = halign
             label_drawer.valign = valign
-            label_drawer.bbox = (x-w, y-h, x+w, y+h)
+            label_drawer.bbox = (x - w, y - h, x + w, y + h)
             label_drawer.draw(wrap=wrap)
-
 
 #####################################################################

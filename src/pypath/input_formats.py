@@ -17,13 +17,22 @@
 
 import codecs
 
-__all__ = ['MysqlMapping','FileMapping',
-           'PickleMapping','ReadSettings','ReadList', 'Reference']
+__all__ = [
+    'MysqlMapping', 'FileMapping', 'PickleMapping', 'ReadSettings', 'ReadList',
+    'Reference'
+]
+
 
 class MysqlMapping(object):
-        
-    def __init__(self, tableName, fieldOne, fieldTwo, db = None, tax = None, 
-            bi = False, mysql = None, typ = 'protein'):
+    def __init__(self,
+                 tableName,
+                 fieldOne,
+                 fieldTwo,
+                 db=None,
+                 tax=None,
+                 bi=False,
+                 mysql=None,
+                 typ='protein'):
         self.tableName = tableName
         self.fieldOne = fieldOne
         self.fieldTwo = fieldTwo
@@ -33,10 +42,17 @@ class MysqlMapping(object):
         self.mysql = mysql
         self.typ = typ
 
+
 class FileMapping(object):
-        
-    def __init__(self, input, oneCol, twoCol, separator = None,
-        header = 0, bi = False, tax = 9606, typ = 'protein'):
+    def __init__(self,
+                 input,
+                 oneCol,
+                 twoCol,
+                 separator=None,
+                 header=0,
+                 bi=False,
+                 tax=9606,
+                 typ='protein'):
         self.input = input
         self.oneCol = oneCol
         self.twoCol = twoCol
@@ -45,28 +61,28 @@ class FileMapping(object):
         self.typ = typ
         self.bi = bi
 
-#class UniprotMapping(object):
-    
-    #def __init__(self, ac_type, field = None, 
-        #bi = False, tax = 9606, swissprot = 'yes', subfield = None):
-        #self.bi = bi
-        #self.tax = int(tax)
-        #self.ac_type = ac_type
-        #self.typ = 'protein'
-        #if field is not None:
-            #self.field = field
-            #self.subfield = subfield
-        #elif self.ac_type in ac_types:
-            #self.field = ac_types[self.ac_type][0]
-            #self.subfield = ac_types[self.ac_type][1]
-        #self.swissprot = swissprot
+# class UniprotMapping(object):
+
+# def __init__(self, ac_type, field = None,
+# bi = False, tax = 9606, swissprot = 'yes', subfield = None):
+#self.bi = bi
+#self.tax = int(tax)
+#self.ac_type = ac_type
+#self.typ = 'protein'
+# if field is not None:
+#self.field = field
+#self.subfield = subfield
+# elif self.ac_type in ac_types:
+#self.field = ac_types[self.ac_type][0]
+#self.subfield = ac_types[self.ac_type][1]
+#self.swissprot = swissprot
+
 
 class UniprotMapping(object):
-    
-    def __init__(self, nameType, bi = False, tax = 9606, swissprot = 'yes'):
+    def __init__(self, nameType, bi=False, tax=9606, swissprot='yes'):
         '''
         Defines an ID conversion table to retrieve from UniProt.
-        
+
         @nameType : str
             Type of accession numbers you would like to translate.
         @targetNameType : str
@@ -99,21 +115,40 @@ class UniprotMapping(object):
         self.subfield = None if nameType not in ac_query \
             else ac_query[nameType][1]
 
+
 class PickleMapping(object):
-    
     def __init__(self, pickleFile):
         self.pickleFile = pickleFile
 
+
 class ReadSettings:
-    
-    def __init__(self, name = "unknown", separator = None, nameColA = 0, nameColB = 1,
-            nameTypeA = "uniprot", nameTypeB = "uniprot", typeA = "protein",
-            typeB = "protein", isDirected = False, sign = False, inFile = None,
-            references = False, extraEdgeAttrs = {}, extraNodeAttrsA = {},
-            extraNodeAttrsB = {}, header = False, taxonA = 9606, taxonB = 9606,
-            ncbiTaxId = False, interactionType = 'PPI',
-            positiveFilters = [], negativeFilters = [], inputArgs = {},
-            must_have_references = True, huge = False, resource = None):
+    def __init__(self,
+                 name="unknown",
+                 separator=None,
+                 nameColA=0,
+                 nameColB=1,
+                 nameTypeA="uniprot",
+                 nameTypeB="uniprot",
+                 typeA="protein",
+                 typeB="protein",
+                 isDirected=False,
+                 sign=False,
+                 inFile=None,
+                 references=False,
+                 extraEdgeAttrs={},
+                 extraNodeAttrsA={},
+                 extraNodeAttrsB={},
+                 header=False,
+                 taxonA=9606,
+                 taxonB=9606,
+                 ncbiTaxId=False,
+                 interactionType='PPI',
+                 positiveFilters=[],
+                 negativeFilters=[],
+                 inputArgs={},
+                 must_have_references=True,
+                 huge=False,
+                 resource=None):
         self.typeA = typeA
         self.typeB = typeB
         self.nameColA = nameColA
@@ -141,11 +176,17 @@ class ReadSettings:
         self.huge = huge
         self.resource = self.name if resource is None else resource
 
+
 class ReadList:
-    
-    def __init__(self, name="unknown", separator=None, nameCol=0,
-            nameType = "uniprot", typ="protein", inFile=None,
-            extraAttrs={},header=False):
+    def __init__(self,
+                 name="unknown",
+                 separator=None,
+                 nameCol=0,
+                 nameType="uniprot",
+                 typ="protein",
+                 inFile=None,
+                 extraAttrs={},
+                 header=False):
         self.typ = typ
         self.nameCol = nameCol
         self.nameType = nameType
@@ -154,6 +195,7 @@ class ReadList:
         self.name = name
         self.separator = separator
         self.header = header
+
 
 ac_query = {
     'genesymbol': ['genes', 'PREFERRED'],

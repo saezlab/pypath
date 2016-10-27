@@ -15,9 +15,11 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
+from past.builtins import xrange, range, reduce
+
 import os
 import sys
-from configparser import ConfigParser
+import configparser
 
 try:
     import pymysql as MySQLdb
@@ -27,48 +29,49 @@ except:
 
 from pypath import common
 
+
 class MysqlConnect(object):
-    
-    def __init__(self, config = None, log = None, timeout = 12):
+    def __init__(self, config=None, log=None, timeout=12):
         '''
         config is the name of a connection config file
         '''
         self.log = log
         self.timeout = timeout
         self.conf_file = config if config is not None \
-            else os.path.join(common.ROOT,'mysql_config','defaults.mysql')
-        self.conf_reader = ConfigParser.RawConfigParser()
+            else os.path.join(common.ROOT, 'mysql_config', 'defaults.mysql')
+        self.conf_reader = configparser.RawConfigParser()
         self.conf_reader.read(self.conf_file)
         self.configs = self.conf_reader.sections()
         self.access = {}
         self.read_configs()
-    
+
     def read_configs(self):
         for name in self.configs:
             self.read_config(name)
-    
+
     def read_config(self, name):
         try:
             self.access[name] = {
-                            'host': self.conf_reader.get(name,'host'),
-                            'user': self.conf_reader.get(name,'user'),
-                            'password': self.conf_reader.get(name,'password'),
-                            'db': self.conf_reader.get(name,'database')
-                        }
-            if self.conf_reader.has_option(name,'port'):
-                self.access[name]['port'] = int(self.conf_reader.get(name,'port'))
+                'host': self.conf_reader.get(name, 'host'),
+                'user': self.conf_reader.get(name, 'user'),
+                'password': self.conf_reader.get(name, 'password'),
+                'db': self.conf_reader.get(name, 'database')
+            }
+            if self.conf_reader.has_option(name, 'port'):
+                self.access[name]['port'] = int(
+                    self.conf_reader.get(name, 'port'))
             else:
                 self.access[name]['port'] = 3306
         except:
             self.access[name] = None
             error = 'Could not read MySQL settings from file %s in section %s' % \
-                (self.conf_file,name)
+                (self.conf_file, name)
             if self.log is not None:
                 self.log.msq(2, error, 'ERROR')
             else:
                 common.console(error)
-    
-    def get_connection(self, name, cursor = 'SSDictCursor', **kwargs):
+
+    def get_connection(self, name, cursor='SSDictCursor', **kwargs):
         if self.access[name] is None:
             self.read_config(name)
         if self.access[name] is None:
@@ -81,15 +84,14 @@ class MysqlConnect(object):
         else:
             try:
                 con = MySQLdb.connect(
-                    host = self.access[name]['host'],
-                    user = self.access[name]['user'],
-                    port = self.access[name]['port'],
-                    passwd = self.access[name]['password'],
-                    db = self.access[name]['db'],
-                    cursorclass = getattr(cursors, cursor),
-                    connect_timeout = self.timeout,
-                    **kwargs
-                )
+                    host=self.access[name]['host'],
+                    user=self.access[name]['user'],
+                    port=self.access[name]['port'],
+                    passwd=self.access[name]['password'],
+                    db=self.access[name]['db'],
+                    cursorclass=getattr(cursors, cursor),
+                    connect_timeout=self.timeout,
+                    **kwargs)
                 return con
             except:
                 error = 'Failed to connect MySQL `%s\'.' % name

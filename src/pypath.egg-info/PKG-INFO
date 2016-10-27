@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: pypath
-Version: 0.5.31
+Version: 0.5.32
 Summary: Work with molecular networks in Python igraph
 Home-page: ['http://pypath.omnipathdb.org']
 Author: Dénes Türei
@@ -277,6 +277,10 @@ Description: pypath
         * Many classes have been added to the **plot** module
         * All figures and tables in the manuscript can be generated automatically
         * This is supported by a new module, **analysis**, which implements a generic workflow in its **Workflow** class.
+        
+        0.5.32:
+        +++++++++++
+        * `chembl`, `unichem`, `mysql` and `mysql_connect` modules made Python3 compatible
         
         Upcoming:
         +++++++++++

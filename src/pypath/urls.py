@@ -29,37 +29,42 @@ urls = {
         'url': 'http://www.uniprot.org/uniprot/'
     },
     'corum': {
-        'label': 'CORUM is a database of protein complexes, downloadable in csv format',
-        'url': 'http://mips.helmholtz-muenchen.de/genre/proj/corum/allComplexes.csv'
+        'label':
+        'CORUM is a database of protein complexes, downloadable in csv format',
+        'url':
+        'http://mips.helmholtz-muenchen.de/genre/proj/corum/allComplexes.csv'
     },
     'pfam_pdb': {
         'label': 'PDB-Pfam mapping and names of Pfam domains',
-        'url': 'ftp://ftp.ebi.ac.uk/pub/databases/Pfam/mappings/pdb_pfam_mapping.txt'
+        'url':
+        'ftp://ftp.ebi.ac.uk/pub/databases/Pfam/mappings/pdb_pfam_mapping.txt'
     },
     'pfam_up': {
         'label': 'Mapping Pfam regions to UniProt',
-        'url': 'ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/'\
-            'Pfam-A.regions.tsv.gz'
+        'url': 'ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/'
+        'Pfam-A.regions.tsv.gz'
     },
     '3dcomplexes_contact': {
         'label': 'This file contains the topology definition of the complexes',
-        'url': 'http://shmoo.weizmann.ac.il/elevy/3dcomplexV4/dataV4/'\
-            'contactDefinition.txt'
+        'url': 'http://shmoo.weizmann.ac.il/elevy/3dcomplexV4/dataV4/'
+        'contactDefinition.txt'
     },
     '3dcomplexes_correspondancy': {
         'label': 'This is the dictionary of chain names',
-        'url': 'http://shmoo.weizmann.ac.il/elevy/3dcomplexV4/dataV4/'\
-            'pdb_chain_corresV2.txt'
+        'url': 'http://shmoo.weizmann.ac.il/elevy/3dcomplexV4/dataV4/'
+        'pdb_chain_corresV2.txt'
     },
     'pdb_chains': {
-        'label': 'Corresponding UniProt IDs and residue numbers for each chain'\
-            'in PDB structures',
-        'url': 'ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/tsv/pdb_chain_'\
-            'uniprot.tsv.gz'
+        'label': 'Corresponding UniProt IDs and residue numbers for each chain'
+        'in PDB structures',
+        'url':
+        'ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/tsv/pdb_chain_'
+        'uniprot.tsv.gz'
     },
     'complex_portal': {
         'label': 'Complexes curated by IntAct',
-        'url': 'ftp://ftp.ebi.ac.uk/pub/databases/intact/complex/current/psi25/'
+        'url':
+        'ftp://ftp.ebi.ac.uk/pub/databases/intact/complex/current/psi25/'
     },
     'pisa_interfaces': {
         'label': 'Base URL for download interface data from PDBe PISA',
@@ -67,8 +72,8 @@ urls = {
     },
     'catalytic_sites': {
         'label': 'Catalytic Site Atlas',
-        'url': 'http://www.ebi.ac.uk/thornton-'\
-            'srv/databases/CSA/downloads/CSA_2_0_121113.txt'
+        'url': 'http://www.ebi.ac.uk/thornton-'
+        'srv/databases/CSA/downloads/CSA_2_0_121113.txt'
     },
     '3did_ddi': {
         'label': 'Domain-domain interactions derived from 3D structures',
@@ -80,17 +85,19 @@ urls = {
     },
     'swissprot_full': {
         'label': 'Full UniProt/Swissprot database',
-        'url': 'ftp://ftp.ebi.ac.uk/pub/databases/Pfam/'\
-            'current_release/uniprot_sprot.dat.gz'
+        'url': 'ftp://ftp.ebi.ac.uk/pub/databases/Pfam/'
+        'current_release/uniprot_sprot.dat.gz'
     },
     'instruct_human': {
-        'label': 'Protein interactome networks annotated to 3D structural resolution',
+        'label':
+        'Protein interactome networks annotated to 3D structural resolution',
         'url': 'http://instruct.yulab.org/download/sapiens.sin'
     },
     'i3d_human': {
         'label': 'Interactome3D representative dataset for human proteins',
-        'url': 'http://interactome3d.irbbarcelona.org/user_data/human/download/'\
-            'representative/interactions.dat'
+        'url':
+        'http://interactome3d.irbbarcelona.org/user_data/human/download/'
+        'representative/interactions.dat'
     },
     'instruct_offsets': {
         'label': 'Offsets between PDB chains and UniProt sequences',
@@ -98,8 +105,8 @@ urls = {
     },
     'compleat': {
         'label': 'Curated and inferred complexes from multiple databases',
-        'url': 'http://www.flyrnai.org/compleat/ComplexDownload'\
-            '?requestType=complexDownload&org=Human'
+        'url': 'http://www.flyrnai.org/compleat/ComplexDownload'
+        '?requestType=complexDownload&org=Human'
     },
     'switches.elm': {
         'label': 'Curated data on molecular switches in cellular regulation',
@@ -127,13 +134,15 @@ urls = {
     },
     'pdb_align': {
         'label': 'PDB-UniProt residue level mapping',
-        'url': 'http://pdb.org/pdb/rest/das/pdb_uniprot_mapping/alignment?query='
+        'url':
+        'http://pdb.org/pdb/rest/das/pdb_uniprot_mapping/alignment?query='
     },
     'pepcyber': {
         'label': 'MySQL injection to PEPCyber website :)',
-        'url': 'http://www.pepcyber.org/PPEP/search_result.php?domain=Any&ppbd_symbol'\
-            '=Any&search_field=symbol&query_value=%27+OR+1&binding_sequence=&go_id='\
-            'Any&Submit=Search'
+        'url':
+        'http://www.pepcyber.org/PPEP/search_result.php?domain=Any&ppbd_symbol'
+        '=Any&search_field=symbol&query_value=%27+OR+1&binding_sequence=&go_id='
+        'Any&Submit=Search'
     },
     'pepcyber_details': {
         'label': 'Interaction details from pepcyber',
@@ -157,15 +166,18 @@ urls = {
     },
     'psite_ac': {
         'label': 'PhosphoSite acetylation sites',
-        'url': 'http://www.phosphosite.org/downloads/Acetylation_site_dataset.gz'
+        'url':
+        'http://www.phosphosite.org/downloads/Acetylation_site_dataset.gz'
     },
     'psite_kin': {
         'label': 'PhosphoSite kinase-substrate interactions',
-        'url': 'http://www.phosphosite.org/downloads/Kinase_Substrate_Dataset.gz'
+        'url':
+        'http://www.phosphosite.org/downloads/Kinase_Substrate_Dataset.gz'
     },
     'psite_met': {
         'label': 'PhosphoSite methylation sites',
-        'url': 'http://www.phosphosite.org/downloads/Methylation_site_dataset.gz'
+        'url':
+        'http://www.phosphosite.org/downloads/Methylation_site_dataset.gz'
     },
     'psite_gal': {
         'label': 'PhosphoSite O-GalNAc sites',
@@ -177,15 +189,18 @@ urls = {
     },
     'psite_p': {
         'label': 'PhosphoSite phosphorylation sites',
-        'url': 'http://www.phosphosite.org/downloads/Phosphorylation_site_dataset.gz'
+        'url':
+        'http://www.phosphosite.org/downloads/Phosphorylation_site_dataset.gz'
     },
     'psite_sum': {
         'label': 'Sumoylation sites',
-        'url': 'http://www.phosphosite.org/downloads/Sumoylation_site_dataset.gz'
+        'url':
+        'http://www.phosphosite.org/downloads/Sumoylation_site_dataset.gz'
     },
     'psite_ub': {
         'label': 'Ubiquitination sites',
-        'url': 'http://www.phosphosite.org/downloads/Ubiquitination_site_dataset.gz'
+        'url':
+        'http://www.phosphosite.org/downloads/Ubiquitination_site_dataset.gz'
     },
     'proteomic_ielm': {
         'label': 'Proteomic iELM',
@@ -197,8 +212,8 @@ urls = {
     },
     'domino': {
         'label': 'Domino PPI and domain-motif database in MI-TAB format',
-        'url': 'ftp://mint.bio.uniroma2.it/pub/domino/release/mitab/'\
-            '2009-10-22/2009-10-22-domino-full-binary.mitab26'
+        'url': 'ftp://mint.bio.uniroma2.it/pub/domino/release/mitab/'
+        '2009-10-22/2009-10-22-domino-full-binary.mitab26'
     },
     'hprd_all': {
         'label': 'HPRD all data in flat files',
@@ -208,7 +223,8 @@ urls = {
     },
     'p_elm': {
         'label': 'phosphoELM',
-        'url': 'http://phospho.elm.eu.org/dumps/phosphoELM_vertebrate_latest.dump.tgz',
+        'url':
+        'http://phospho.elm.eu.org/dumps/phosphoELM_vertebrate_latest.dump.tgz',
         'psites': 'phosphoELM_vertebrate_'
     },
     'p_elm_kin': {
@@ -268,56 +284,58 @@ urls = {
     'kegg_pws': {
         'label': 'KEGG Pathways',
         'list_url': 'http://www.genome.jp/kegg/pathway.html',
-        'kgml_url': 'http://www.kegg.jp/kegg-bin/download?entry=%s&format=kgml',
-        'biopax_l3': 'http://www.pathwaycommons.org/archives/PC2/'\
-            'v8/PathwayCommons.8.kegg.BIOPAX.owl.gz'
+        'kgml_url':
+        'http://www.kegg.jp/kegg-bin/download?entry=%s&format=kgml',
+        'biopax_l3': 'http://www.pathwaycommons.org/archives/PC2/'
+        'v8/PathwayCommons.8.kegg.BIOPAX.owl.gz'
     },
     'depod': {
         'label': 'Dephosphorylation substrates and sites',
         'urls': [
-            'http://www.koehn.embl.de/depod/download/DEPOD_201408'\
-                '_human_phosphatase-substrate.txt',
-            'http://www.koehn.embl.de/depod/download/DEPOD_201405'\
-                '_human_phosphatase-substrate.mitab'
+            'http://www.koehn.embl.de/depod/download/DEPOD_201408'
+            '_human_phosphatase-substrate.txt',
+            'http://www.koehn.embl.de/depod/download/DEPOD_201405'
+            '_human_phosphatase-substrate.mitab'
         ]
     },
     'mimp': {
         'label': 'Kinase-substrate relationships',
-        'url': 'http://mimp.baderlab.org/fetch_data/phosphorylation_data'\
-            '.tab/phosphorylation_data.tab'
+        'url': 'http://mimp.baderlab.org/fetch_data/phosphorylation_data'
+        '.tab/phosphorylation_data.tab'
     },
     'unip_iso': {
         'label': 'Isoform sequences from UniProt',
-        'url': 'ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/'\
-            'knowledgebase/complete/uniprot_sprot_varsplic.fasta.gz'
+        'url': 'ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/'
+        'knowledgebase/complete/uniprot_sprot_varsplic.fasta.gz'
     },
     'kinclass': {
         'label': 'Kinase families and groups',
-        'url': 'http://kinase.com/static/colt/data/human/kinome/tables/Table%20S2.txt'
+        'url':
+        'http://kinase.com/static/colt/data/human/kinome/tables/Table%20S2.txt'
     },
     'protdb_exp': {
         'label': 'Expression data from ProteomicsDB',
-        'url': 'https://www.proteomicsdb.org/proteomicsdb/logic/api/'\
-            'proteinexpression.xsodata/InputParams(PROTEINFILTER='\
-            '%%27%s%%27,MS_LEVEL=%u,TISSUE_ID_SELECTION=%%27%%27,'\
-            'TISSUE_CATEGORY_SELECTION=%%27tissue;fluid%%27,SCOPE_SELECTION=%u,'\
-            'GROUP_BY_TISSUE=1,CALCULATION_METHOD=0,EXP_ID=-1)/Results?'\
-            '$select=UNIQUE_IDENTIFIER,TISSUE_ID,TISSUE_NAME,TISSUE_SAP_SYNONYM,'\
-            'SAMPLE_ID,SAMPLE_NAME,AFFINITY_PURIFICATION,EXPERIMENT_ID,'\
-            'EXPERIMENT_NAME,EXPERIMENT_SCOPE,EXPERIMENT_SCOPE_NAME,PROJECT_ID,'\
-            'PROJECT_NAME,PROJECT_STATUS,UNNORMALIZED_INTENSITY,'\
-            'NORMALIZED_INTENSITY,MIN_NORMALIZED_INTENSITY,'\
-            'MAX_NORMALIZED_INTENSITY,SAMPLES&$format=json',
+        'url': 'https://www.proteomicsdb.org/proteomicsdb/logic/api/'
+        'proteinexpression.xsodata/InputParams(PROTEINFILTER='
+        '%%27%s%%27,MS_LEVEL=%u,TISSUE_ID_SELECTION=%%27%%27,'
+        'TISSUE_CATEGORY_SELECTION=%%27tissue;fluid%%27,SCOPE_SELECTION=%u,'
+        'GROUP_BY_TISSUE=1,CALCULATION_METHOD=0,EXP_ID=-1)/Results?'
+        '$select=UNIQUE_IDENTIFIER,TISSUE_ID,TISSUE_NAME,TISSUE_SAP_SYNONYM,'
+        'SAMPLE_ID,SAMPLE_NAME,AFFINITY_PURIFICATION,EXPERIMENT_ID,'
+        'EXPERIMENT_NAME,EXPERIMENT_SCOPE,EXPERIMENT_SCOPE_NAME,PROJECT_ID,'
+        'PROJECT_NAME,PROJECT_STATUS,UNNORMALIZED_INTENSITY,'
+        'NORMALIZED_INTENSITY,MIN_NORMALIZED_INTENSITY,'
+        'MAX_NORMALIZED_INTENSITY,SAMPLES&$format=json',
         'subs': ['uniprot', 'ms_level', 'scope']
     },
     'protdb_tis': {
         'label': 'Get all tissues where a given protein is expressed',
-        'url': 'https://www.proteomicsdb.org/proteomicsdb/logic/api/'\
-            'proteinspertissue.xsodata/InputParams(TISSUE_ID='\
-            '%%27%s%%27,CALCULATION_METHOD=0,SWISSPROT_ONLY=%u,'\
-            'NO_ISOFORM=%u)/Results?$select=ENTRY_NAME,UNIQUE_IDENTIFIER,DATABASE,'\
-            'PROTEIN_DESCRIPTION,PEPTIDES,SAMPLE_NAME,SAMPLE_DESCRIPTION,'\
-            'UNNORMALIZED_EXPRESSION,NORMALIZED_EXPRESSION&$format=xml',
+        'url': 'https://www.proteomicsdb.org/proteomicsdb/logic/api/'
+        'proteinspertissue.xsodata/InputParams(TISSUE_ID='
+        '%%27%s%%27,CALCULATION_METHOD=0,SWISSPROT_ONLY=%u,'
+        'NO_ISOFORM=%u)/Results?$select=ENTRY_NAME,UNIQUE_IDENTIFIER,DATABASE,'
+        'PROTEIN_DESCRIPTION,PEPTIDES,SAMPLE_NAME,SAMPLE_DESCRIPTION,'
+        'UNNORMALIZED_EXPRESSION,NORMALIZED_EXPRESSION&$format=xml',
         'subs': ['bto', 'swissprot_only', 'isoform']
     },
     'abs': {
@@ -326,13 +344,13 @@ urls = {
     },
     'uniprot_sec': {
         'label': 'Secondary UniProt ACs',
-        'url': 'ftp://ftp.uniprot.org/pub/databases/uniprot/'\
-            'knowledgebase/docs/sec_ac.txt'
+        'url': 'ftp://ftp.uniprot.org/pub/databases/uniprot/'
+        'knowledgebase/docs/sec_ac.txt'
     },
     'uniprot_idmap_ftp': {
         'label': 'Human ID mapping from UniProt',
-        'url': 'ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/'\
-            'knowledgebase/idmapping/by_organism/HUMAN_9606_idmapping.dat.gz'
+        'url': 'ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/'
+        'knowledgebase/idmapping/by_organism/HUMAN_9606_idmapping.dat.gz'
     },
     'uniprot_idmap': {
         'label': 'ID mapping from UniProt',
@@ -344,41 +362,44 @@ urls = {
     },
     'htri': {
         'label': 'TF-target gene lists from HTRI',
-        'url': 'http://www.lbbc.ibb.unesp.br/htri/consulta?type=1&all=true&down=3'\
-            '&iconss1.x=57&iconss1.y=48',
+        'url':
+        'http://www.lbbc.ibb.unesp.br/htri/consulta?type=1&all=true&down=3'
+        '&iconss1.x=57&iconss1.y=48',
         'init_url': 'http://www.lbbc.ibb.unesp.br/htri/pagdown.jsp'
     },
     'oreganno_old': {
         'label': 'TF-target gene lists from ORegAnno, previous version',
-        'url': 'http://www.oreganno.org/oregano/htdocs'\
-            '/data/oreganno_UCSC_08Nov10.txt.gz'
+        'url': 'http://www.oreganno.org/oregano/htdocs'
+        '/data/oreganno_UCSC_08Nov10.txt.gz'
     },
     'oreganno': {
         'label': 'TF-target gene lists from ORegAnno',
-        'url': 'http://py-gi1.stanford.edu:8080/oregano/htdocs/'\
-            'downloads/ORegAnno_Combined_2015.09.16.tsv'
+        'url': 'http://py-gi1.stanford.edu:8080/oregano/htdocs/'
+        'downloads/ORegAnno_Combined_2015.09.16.tsv'
     },
     'cpdb': {
         'label': 'All human interactions from ConsensusPathDB',
-        'url': 'http://cpdb.molgen.mpg.de/download/ConsensusPathDB_human_PPI.gz'
+        'url':
+        'http://cpdb.molgen.mpg.de/download/ConsensusPathDB_human_PPI.gz'
     },
     'goa': {
         'label': 'UniProt GO annotations from GOA',
-        'url': 'ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/%s/'\
-            'gene_association.goa_%s.gz'
+        'url': 'ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/%s/'
+        'gene_association.goa_%s.gz'
     },
     'quickgo': {
         'label': 'UniProt GO annotations from QuickGO',
-        'url': 'http://www.ebi.ac.uk/QuickGO/GAnnotation?format=tsv&'\
-            'limit=-1%s&termUse=%s&tax=%u&col=proteinID,goID,goName,aspect'
+        'url': 'http://www.ebi.ac.uk/QuickGO/GAnnotation?format=tsv&'
+        'limit=-1%s&termUse=%s&tax=%u&col=proteinID,goID,goName,aspect'
     },
     'goslim_gen': {
         'label': 'Generic GOSlim from GO Consortium',
-        'url': 'http://www.geneontology.org/ontology/subsets/goslim_generic.obo'
+        'url':
+        'http://www.geneontology.org/ontology/subsets/goslim_generic.obo'
     },
     'netpath_names': {
-        'label': 'NetPath numeric pathway IDs can be translated to '\
-            'pathway names only by extracting them from HTML....',
+        'label': 'NetPath numeric pathway IDs can be translated to '
+        'pathway names only by extracting them from HTML....',
         'url': 'http://www.netpath.org/browse'
     },
     'netpath_psimi': {
@@ -390,29 +411,33 @@ urls = {
         'biopax_l3': 'http://www.netpath.org/data/biopax/NetPath_%u.owl'
     },
     'proteomemap': {
-        'label': 'Human Proteome Map: Mass-spec expression data in healthy human tissues',
-        'url': 'http://www.humanproteomemap.org/Download_HPM/HPM_protein_level_'\
-            'expression_matrix_Kim_et_al_052914.csv'
+        'label':
+        'Human Proteome Map: Mass-spec expression data in healthy human tissues',
+        'url':
+        'http://www.humanproteomemap.org/Download_HPM/HPM_protein_level_'
+        'expression_matrix_Kim_et_al_052914.csv'
     },
     'proteinatlas_normal': {
-        'label': 'Human Protein Atlas: Immuncytochemistry expression data in '\
-            'healthy human cells',
+        'label': 'Human Protein Atlas: Immuncytochemistry expression data in '
+        'healthy human cells',
         'url': 'http://www.proteinatlas.org/download/normal_tissue.csv.zip'
     },
     'proteinatlas_cancer': {
-        'label': 'Human Protein Atlas: Immuncytochemistry expression data in '\
-            'human tumour cells',
+        'label': 'Human Protein Atlas: Immuncytochemistry expression data in '
+        'human tumour cells',
         'url': 'http://www.proteinatlas.org/download/cancer.csv.zip'
     },
     'lincs-compounds': {
-        'label': 'List of small molecules in LINCS with synonyms and PubChem IDs',
-        'url': 'http://lincs.hms.harvard.edu/db/datasets/20000/smallmolecules'\
-            '?search=&output_type=.csv'
+        'label':
+        'List of small molecules in LINCS with synonyms and PubChem IDs',
+        'url': 'http://lincs.hms.harvard.edu/db/datasets/20000/smallmolecules'
+        '?search=&output_type=.csv'
     },
     'pubmed-eutils': {
         'label': 'Retrieving summary of PubMed records',
         'url': 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi',
-        'conv': 'http://www.ncbi.nlm.nih.gov/pmc/utils/idconv/v1.0/?ids=%s&format=json'
+        'conv':
+        'http://www.ncbi.nlm.nih.gov/pmc/utils/idconv/v1.0/?ids=%s&format=json'
     },
     'pubmed': {
         'label': 'PubMed baseurl',
@@ -420,7 +445,8 @@ urls = {
     },
     'hpmr': {
         'label': 'Human Plasma Membrane Receptome',
-        'url': 'http://receptome.stanford.edu/hpmr/SearchDB/findGenes.asp?textName=*'
+        'url':
+        'http://receptome.stanford.edu/hpmr/SearchDB/findGenes.asp?textName=*'
     },
     'tfcensus': {
         'label': 'A census of human transcription factors (Vaquerizas 2009)',
@@ -428,7 +454,8 @@ urls = {
     },
     'tfcheckp': {
         'label': 'A comprehensive list of transcription factors',
-        'url': 'http://www.tfcheckpoint.org/data/TFCheckpoint_download_180515.txt'
+        'url':
+        'http://www.tfcheckpoint.org/data/TFCheckpoint_download_180515.txt'
     },
     'gtp': {
         'label': 'Guide to Pharmacology: ligand-receptor interactions',
@@ -437,22 +464,26 @@ urls = {
     'giant': {
         'label': 'JSON network from GIANT by gene based query',
         'init_url': 'http://giant.princeton.edu/',
-        'url': 'http://giant.princeton.edu/contexts/integration/query/%u/?%s&prior=0.1'
+        'url':
+        'http://giant.princeton.edu/contexts/integration/query/%u/?%s&prior=0.1'
     },
     'msigdb': {
-        'label': 'Molecular Signatures Database', 
+        'label': 'Molecular Signatures Database',
         'login1': 'http://software.broadinstitute.org/gsea/login.jsp',
-        'login2': 'http://software.broadinstitute.org/gsea/j_spring_security_check',
-        'url': 'http://www.broadinstitute.org/gsea/msigdb/download_file.jsp?'\
-            'filePath=/resources/msigdb/5.0/%s.all.v5.0.%s.gmt',
+        'login2':
+        'http://software.broadinstitute.org/gsea/j_spring_security_check',
+        'url': 'http://www.broadinstitute.org/gsea/msigdb/download_file.jsp?'
+        'filePath=/resources/msigdb/5.0/%s.all.v5.0.%s.gmt',
         'coll': 'http://www.broadinstitute.org/gsea/msigdb/collections.jsp',
         'url_stem': 'http://www.broadinstitute.org/gsea/%s',
-        'one_set': 'http://www.broadinstitute.org/gsea/msigdb/download_geneset.jsp?'\
-            'geneSetName=%s&fileType=txt'
+        'one_set':
+        'http://www.broadinstitute.org/gsea/msigdb/download_geneset.jsp?'
+        'geneSetName=%s&fileType=txt'
     },
     'disgenet': {
         'label': 'Disease-gene associations',
-        'url': 'http://www.disgenet.org/ds/DisGeNET/results/%s_gene_disease_associations.tar.gz',
+        'url':
+        'http://www.disgenet.org/ds/DisGeNET/results/%s_gene_disease_associations.tar.gz',
         'datasets': ['curated', 'literature', 'befree', 'all']
     },
     'hsn': {
@@ -461,15 +492,15 @@ urls = {
     },
     'li2012': {
         'label': 'Human Phosphotyrosine Signaling Network',
-        'url': 'http://genome.cshlp.org/content/suppl/2011/12/27/'\
-            'gr.128819.111.DC1/Supplementary_files_S1-S5.xls'
+        'url': 'http://genome.cshlp.org/content/suppl/2011/12/27/'
+        'gr.128819.111.DC1/Supplementary_files_S1-S5.xls'
     },
     'trip': {
         'label': 'The TRP channel database',
         'base': 'http://www.trpchannel.org/',
         'show': 'http://www.trpchannel.org/proteins/show?id=%s',
-        'intr': 'http://www.trpchannel.org/interactions/show?trp=%s&'\
-            'interactor=%s',
+        'intr': 'http://www.trpchannel.org/interactions/show?trp=%s&'
+        'interactor=%s',
         'url': 'http://www.trpchannel.org/20141116.csv',
         'json': 'http://www.trpchannel.org/proteins/getjson'
     },
@@ -482,22 +513,25 @@ urls = {
     },
     'hiii14': {
         'label': 'Rolland et al 2014, Human Interactome II',
-        'url': 'http://www.cell.com/cms/attachment/2021150198/2041343422/mmc3.xlsx'
+        'url':
+        'http://www.cell.com/cms/attachment/2021150198/2041343422/mmc3.xlsx'
     },
     'kinome': {
         'label': 'List of human kinases',
-        'url': 'http://kinase.com/static/colt/data/human/kinome/tables/Kincat_Hsap.08.02.xls'
+        'url':
+        'http://kinase.com/static/colt/data/human/kinome/tables/Kincat_Hsap.08.02.xls'
     },
     'dgidb': {
         'label': 'Druggable genes compiled from multiple resources',
         'main_url': 'http://dgidb.genome.wustl.edu/search_categories',
-        'url': 'http://dgidb.genome.wustl.edu/druggable_gene_categories/%s?'\
-            'sources=BaderLabGenes,CarisMolecularIntelligence,FoundationOneGenes,GO,'\
-            'GuideToPharmacologyGenes,HopkinsGroom,MskImpact,RussLampel,dGene'
+        'url': 'http://dgidb.genome.wustl.edu/druggable_gene_categories/%s?'
+        'sources=BaderLabGenes,CarisMolecularIntelligence,FoundationOneGenes,GO,'
+        'GuideToPharmacologyGenes,HopkinsGroom,MskImpact,RussLampel,dGene'
     },
     'reactome': {
         'label': 'The Reactome reaction network database',
-        'sbml': 'http://www.reactome.org/download/current/homo_sapiens.2.sbml.gz',
+        'sbml':
+        'http://www.reactome.org/download/current/homo_sapiens.2.sbml.gz',
         'biopax_l3': 'http://www.reactome.org/download/current/biopax.zip',
         'biopax_l2': 'http://www.reactome.org/download/current/biopax2.zip'
     },
@@ -508,24 +542,32 @@ urls = {
     },
     'nci-pid': {
         'label': 'National Cancer Institute -- Pathway Interaction Database',
-        'biopax_l3': 'ftp://ftp1.nci.nih.gov/pub/PID/BioPAX_Level_3/NCI-Nature_Curated.bp3.owl.gz'
+        'biopax_l3':
+        'ftp://ftp1.nci.nih.gov/pub/PID/BioPAX_Level_3/NCI-Nature_Curated.bp3.owl.gz'
     },
     'panther': {
         'label': 'PANTHER pathways',
-        'biopax_l3': 'ftp://ftp.pantherdb.org//pathway/current_release/BioPAX.tar.gz'
+        'biopax_l3':
+        'ftp://ftp.pantherdb.org//pathway/current_release/BioPAX.tar.gz'
     },
     'laudanna': {
-        'label': 'Directionality and effect information inferred from multiple sources by Laudanna Lab',
-        'sigflow': 'http://dp.univr.it/~laudanna/LCTST/downloads/files/SignalingFlow.EA',
-        'sigdir': 'http://dp.univr.it/~laudanna/LCTST/downloads/files/SignalingDirection.EA'
+        'label':
+        'Directionality and effect information inferred from multiple sources by Laudanna Lab',
+        'sigflow':
+        'http://dp.univr.it/~laudanna/LCTST/downloads/files/SignalingFlow.EA',
+        'sigdir':
+        'http://dp.univr.it/~laudanna/LCTST/downloads/files/SignalingDirection.EA'
     },
     'biogrid': {
         'label': 'BioGRID version 2 tab format',
-        'url': 'http://thebiogrid.org/downloads/archives/Latest%20Release/BIOGRID-MV-Physical-LATEST.tab2.zip'
+        'url':
+        'http://thebiogrid.org/downloads/archives/Latest%20Release/BIOGRID-MV-Physical-LATEST.tab2.zip'
     },
     'wang': {
-        'label': 'Human Signaling Network compiled by Wang Group, version 6 (2014)',
-        'url': 'http://www.bri.nrc.ca/wang/cancerMap/HumanSignalingNetwork_v6.csv'
+        'label':
+        'Human Signaling Network compiled by Wang Group, version 6 (2014)',
+        'url':
+        'http://www.bri.nrc.ca/wang/cancerMap/HumanSignalingNetwork_v6.csv'
     },
     'graphviz': {
         'label': 'List of Graphviz attributes',
@@ -533,23 +575,30 @@ urls = {
     },
     'hid': {
         'label': 'CCSB Human Interactome Project',
-        'lit-bm-13': 'http://interactome.dfci.harvard.edu/H_sapiens/download/Lit-BM-13.tsv',
-        'hi-ii-14': 'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-II-14.tsv',
-        'hi-i-05': 'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-I-05.tsv'
+        'lit-bm-13':
+        'http://interactome.dfci.harvard.edu/H_sapiens/download/Lit-BM-13.tsv',
+        'hi-ii-14':
+        'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-II-14.tsv',
+        'hi-i-05':
+        'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-I-05.tsv'
     },
     'ca1': {
         'label': 'Supplementary Online Materials for Ma\'ayan 2005',
-        'url': 'http://science.sciencemag.org/highwire/filestream/586741/'\
-            'field_highwire_adjunct_files/1/Maayan_SOM_External_Files.zip'
+        'url': 'http://science.sciencemag.org/highwire/filestream/586741/'
+        'field_highwire_adjunct_files/1/Maayan_SOM_External_Files.zip'
     },
     'ccmap': {
         'label': 'Cancer Cell Map from PathwayCommons 2011 snapshot',
-        'edges': 'http://www.pathwaycommons.org/archives/PC1/last_release-2011/tab_delim_network/by_source/cell-map-edge-attributes.txt.zip',
-        'nodes': 'http://www.pathwaycommons.org/archives/PC1/last_release-2011/tab_delim_network/by_source/cell-map-node-attributes.txt.zip'
+        'edges':
+        'http://www.pathwaycommons.org/archives/PC1/last_release-2011/tab_delim_network/by_source/cell-map-edge-attributes.txt.zip',
+        'nodes':
+        'http://www.pathwaycommons.org/archives/PC1/last_release-2011/tab_delim_network/by_source/cell-map-node-attributes.txt.zip'
     },
     'pathguide': {
-        'label': 'Collection of metabolic and signaling pathway and molecular interaction resources',
-        'url': 'http://pathguide.org/fullrecord.php?organisms=all&availability=all&standards=all&order=alphabetic&DBID=%u'
+        'label':
+        'Collection of metabolic and signaling pathway and molecular interaction resources',
+        'url':
+        'http://pathguide.org/fullrecord.php?organisms=all&availability=all&standards=all&order=alphabetic&DBID=%u'
     },
     'cgc': {
         'label': 'Cancer Gene Census: list of cancer related (driver) genes',
@@ -558,7 +607,8 @@ urls = {
     },
     'havugimana': {
         'label': 'Census of human soluble protein complexes',
-        'url': 'http://www.cell.com/cms/attachment/2021768736/2041631145/mmc3.xls'
+        'url':
+        'http://www.cell.com/cms/attachment/2021768736/2041631145/mmc3.xls'
     },
     'matrixdb': {
         'label': 'MatrixDB in house curated interactions, PSI-MI tab format',
@@ -566,18 +616,19 @@ urls = {
     },
     'innatedb': {
         'label': 'InnateDB PSI-MI tab',
-        'url': 'http://innatedb.com/download/interactions/innatedb_ppi.mitab.gz'
+        'url':
+        'http://innatedb.com/download/interactions/innatedb_ppi.mitab.gz'
     },
     'dip': {
         'label': 'DIP PSI-MI tab',
         'login': 'http://dip.doe-mbi.ucla.edu/dip/Login.cgi',
-        'url': 'http://dip.mbi.ucla.edu/dip/file?'\
-            'ds=current&fn=Hsapi20160430%s&ff=txt',
+        'url': 'http://dip.mbi.ucla.edu/dip/file?'
+        'ds=current&fn=Hsapi20160430%s&ff=txt',
         'ik': 'http://dip.doe-mbi.ucla.edu/dip/DIPview.cgi?IK=%u'
     },
     'vaquerizas2009': {
-        'label': 'A census of human transcription factors: function, '\
-            'expression and evolution; Supplementary Table S3',
+        'label': 'A census of human transcription factors: function, '
+        'expression and evolution; Supplementary Table S3',
         'url': 'http://www.nature.com/nrg/journal/v10/n4/extref/nrg2538-s3.txt'
     },
     'spike': {
@@ -590,17 +641,18 @@ urls = {
     },
     'negatome': {
         'label': 'Negatome manually curated non-interacting protein pairs',
-        'manual': 'http://mips.helmholtz-muenchen.de/proj/ppi/negatome/manual.txt'
+        'manual':
+        'http://mips.helmholtz-muenchen.de/proj/ppi/negatome/manual.txt'
     },
     'macrophage': {
         'label': 'Macrophage Pathways; Raza 2010, Supplementary Materials 1',
         'url': r'https://static-content.springer.com/esm/art%3A10.1186%2F1752-'
-            r'0509-4-63/MediaObjects/12918_2010_452_MOESM2_ESM.XLS'
+        r'0509-4-63/MediaObjects/12918_2010_452_MOESM2_ESM.XLS'
     },
     'intact': {
         'label': 'IntAct entire database PSI-MI tab',
-        'mitab' : 'ftp://ftp.ebi.ac.uk/pub/databases/intact/'\
-            'current/psimitab/intact.zip'
+        'mitab': 'ftp://ftp.ebi.ac.uk/pub/databases/intact/'
+        'current/psimitab/intact.zip'
     },
     'death': {
         'label': 'DeathDomain webpage',
@@ -608,20 +660,20 @@ urls = {
     },
     'string': {
         'label': 'STRING',
-        'actions': 'http://string-db.org/download/'\
-            'protein.actions.v10/%u.protein.actions.v10.txt.gz',
-        'links': 'http://string-db.org/download/protein.links.detailed.v10/%u'\
-            '.protein.links.detailed.v10.txt.gz'
+        'actions': 'http://string-db.org/download/'
+        'protein.actions.v10/%u.protein.actions.v10.txt.gz',
+        'links': 'http://string-db.org/download/protein.links.detailed.v10/%u'
+        '.protein.links.detailed.v10.txt.gz'
     },
     'wikipw': {
         'label': 'WikiPathways human biopax',
-        'biopax_l3': 'http://wikipathways.org//wpi/cache/wikipathways_'\
-            'Homo_sapiens_Curation-AnalysisCollection__owl.zip'
+        'biopax_l3': 'http://wikipathways.org//wpi/cache/wikipathways_'
+        'Homo_sapiens_Curation-AnalysisCollection__owl.zip'
     },
     'pwcommons': {
         'label': 'PathwayCommons binary SIF files',
-        'url': 'http://www.pathwaycommons.org/archives/PC2/v8/'\
-            'PathwayCommons.8.%s.BINARY_SIF.hgnc.txt.sif.gz'
+        'url': 'http://www.pathwaycommons.org/archives/PC2/v8/'
+        'PathwayCommons.8.%s.BINARY_SIF.hgnc.txt.sif.gz'
     }
 }
 

@@ -25,29 +25,31 @@ import random
 import textwrap
 import hashlib
 
-__all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes', 'uniqList', 'addToList',
-           'addToSet',
-           'gen_session_id', 'sorensen_index', 'simpson_index', 'simpson_index_counts',
-           'jaccard_index', 'console', 'wcl', 'flatList',
-           'charTypes', 'delEmpty', '__version__', 'get_args',
-           'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs', 'md5', 'mod_keywords',
-           'Namespace', 'fun']
+__all__ = [
+    'ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes', 'uniqList',
+    'addToList', 'addToSet', 'gen_session_id', 'sorensen_index',
+    'simpson_index', 'simpson_index_counts', 'jaccard_index', 'console', 'wcl',
+    'flatList', 'charTypes', 'delEmpty', '__version__', 'get_args',
+    'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs', 'md5',
+    'mod_keywords', 'Namespace', 'fun'
+]
 
 # get the location
 ROOT = os.path.abspath(os.path.dirname(__file__))
+
 
 def _get_version():
     with open(os.path.join(ROOT, '__version__'), 'r') as v:
         return tuple([int(i) for i in v.read().strip().split('.')])
 
+
 _MAJOR, _MINOR, _MICRO = _get_version()
 __version__ = '%d.%d.%d' % (_MAJOR, _MINOR, _MICRO)
 __release__ = '%d.%d' % (_MAJOR, _MINOR)
 
-
 default_name_type = {
-    "protein": "uniprot", 
-    "mirna": "mirbase", 
+    "protein": "uniprot",
+    "mirna": "mirbase",
     "lncrna": "lncrnaname",
     "drug": "pubchem"
 }
@@ -103,85 +105,47 @@ aanames = {
 }
 
 mod_keywords = {
-    'Reactome': [
-        ('phosphopantetheinylation', ['phosphopantet']),
-        ('phosphorylation', ['phospho']),
-        ('acetylneuraminylation', ['acetylneuraminyl']),
-        ('acetylation', ['acetyl']),
-        ('farnesylation', ['farnesyl']),
-        ('palmitoylation', ['palmito']),
-        ('methylation', ['methyl']),
-        ('tetradecanoylation', ['tetradecanoyl']),
-        ('decanoylation', ['decanoyl']),
-        ('palmitoleylation', ['palmytoleil']),
-        ('formylation', ['formyl']),
-        ('ubiquitination', ['ubiquitin']),
-        ('galactosylation', ['galactos']),
-        ('glutamylation', ['glutamyl']),
-        ('fucosylation', ['fucosyl']),
-        ('myristoylation', ['myristoyl']),
-        ('carboxylation', ['carboxyl']),
-        ('biotinylation', ['biotinyl']),
-        ('glycosylation', ['glycosyl']),
-        ('octanoylation', ['octanoyl']),
-        ('glycylation', ['glycyl']),
-        ('hydroxylation', ['hydroxy']),
-        ('sulfhydration', ['persulfid']),
-        ('thiolation', ['thio']),
-        ('amidation', ['amide']),
-        ('selenation', ['seleno']),
-        ('glucosylation', ['glucosyl']),
-        ('neddylation', ['neddyl']),
-        ('sumoylation', ['sumoyl']),
-        ('prenylation', ['prenyl'])
-    ],
-    'ACSN': [
-        ('phosphorylation', ['phospho']),
-        ('glycylation', ['glycyl']),
-        ('ubiquitination', ['ubiquitin']),
-        ('acetylation', ['acetyl']),
-        ('myristoylation', ['myristoyl']),
-        ('prenylation', ['prenyl']),
-        ('hydroxylation', ['hydroxy'])
-    ],
+    'Reactome':
+    [('phosphopantetheinylation', ['phosphopantet']),
+     ('phosphorylation', ['phospho']),
+     ('acetylneuraminylation', ['acetylneuraminyl']),
+     ('acetylation', ['acetyl']), ('farnesylation', ['farnesyl']),
+     ('palmitoylation', ['palmito']), ('methylation', ['methyl']),
+     ('tetradecanoylation', ['tetradecanoyl']),
+     ('decanoylation', ['decanoyl']), ('palmitoleylation', ['palmytoleil']),
+     ('formylation', ['formyl']), ('ubiquitination', ['ubiquitin']),
+     ('galactosylation', ['galactos']), ('glutamylation', ['glutamyl']),
+     ('fucosylation', ['fucosyl']), ('myristoylation', ['myristoyl']),
+     ('carboxylation', ['carboxyl']), ('biotinylation', ['biotinyl']),
+     ('glycosylation', ['glycosyl']), ('octanoylation', ['octanoyl']),
+     ('glycylation', ['glycyl']), ('hydroxylation', ['hydroxy']),
+     ('sulfhydration', ['persulfid']), ('thiolation', ['thio']),
+     ('amidation', ['amide']), ('selenation', ['seleno']),
+     ('glucosylation', ['glucosyl']), ('neddylation', ['neddyl']),
+     ('sumoylation', ['sumoyl']), ('prenylation', ['prenyl'])],
+    'ACSN': [('phosphorylation', ['phospho']), ('glycylation', ['glycyl']),
+             ('ubiquitination', ['ubiquitin']), ('acetylation', ['acetyl']),
+             ('myristoylation', ['myristoyl']), ('prenylation', ['prenyl']),
+             ('hydroxylation', ['hydroxy'])],
     'WikiPathways': [],
-    'NetPath': [
-        ('phosphorylation', ['phospho']),
-        ('glycylation', ['glycyl']),
-        ('ubiquitination', ['ubiquitin']),
-        ('acetylation', ['acetyl'])
-    ],
-    'PANTHER': [
-        ('phosphorylation', ['phospho']),
-        ('acetylation', ['acetyl'])
-    ],
-    'NCI-PID': [
-        ('phosphorylation', ['phospho']),
-        ('methylation', ['methyl']),
-        ('farnesylation', ['farnesyl']),
-        ('palmitoylation', ['palmito']),
-        ('myristoylation', ['myristoyl']),
-        ('glycylation', ['glycyl']),
-        ('ubiquitination', ['ubiquitin']),
-        ('acetylation', ['acetyl']),
-        ('glycosylation', ['glycosyl']),
-        ('geranylation', ['geranyl']),
-        ('hydroxylation', ['hydroxy'])
-    ],
-    'KEGG': [
-        ('phosphorylation', ['hospho']),
-        ('methylation', ['methyl']),
-        ('ubiquitination', ['ubiquitin']),
-        ('acetylation', ['acetyl']),
-        ('hydroxylation', ['hydroxy']),
-        ('carboxyethylation', ['carboxyethyl']),
-        ('ribosylation', ['ribosyl']),
-        ('nitrosylation', ['nitrosyl']),
-        ('sulfoylation', ['ulfo']),
-        ('biotinylation', ['biotinyl']),
-        ('malonylation', ['malonyl']),
-        ('glutarylation', ['lutaryl'])
-    ]
+    'NetPath': [('phosphorylation', ['phospho']), ('glycylation', ['glycyl']),
+                ('ubiquitination', ['ubiquitin']),
+                ('acetylation', ['acetyl'])],
+    'PANTHER': [('phosphorylation', ['phospho']), ('acetylation', ['acetyl'])],
+    'NCI-PID':
+    [('phosphorylation', ['phospho']), ('methylation', ['methyl']),
+     ('farnesylation', ['farnesyl']), ('palmitoylation', ['palmito']),
+     ('myristoylation', ['myristoyl']), ('glycylation', ['glycyl']),
+     ('ubiquitination', ['ubiquitin']), ('acetylation', ['acetyl']),
+     ('glycosylation', ['glycosyl']), ('geranylation', ['geranyl']),
+     ('hydroxylation', ['hydroxy'])],
+    'KEGG':
+    [('phosphorylation', ['hospho']), ('methylation', ['methyl']),
+     ('ubiquitination', ['ubiquitin']), ('acetylation', ['acetyl']),
+     ('hydroxylation', ['hydroxy']), ('carboxyethylation', ['carboxyethyl']),
+     ('ribosylation', ['ribosyl']), ('nitrosylation', ['nitrosyl']),
+     ('sulfoylation', ['ulfo']), ('biotinylation', ['biotinyl']),
+     ('malonylation', ['malonyl']), ('glutarylation', ['lutaryl'])]
 }
 
 if 'long' not in __builtins__:
@@ -190,13 +154,14 @@ if 'long' not in __builtins__:
 if 'unicode' not in __builtins__:
     unicode = str
 
-aaletters = dict(zip(aacodes.values(),aacodes.keys()))
+aaletters = dict(zip(aacodes.values(), aacodes.keys()))
 
 simpleTypes = set([int, long, float, str, unicode, bytes])
 
 numTypes = set([int, long, float])
 
 charTypes = set([str, unicode, bytes])
+
 
 def uniqList(seq):
     """
@@ -205,12 +170,14 @@ def uniqList(seq):
     """
     return list({}.fromkeys(seq).keys())
 
+
 def uniqList1(seq):
     """
     Not order preserving
     From http://www.peterbe.com/plog/uniqifiers-benchmark
     """
     return list(set(seq))
+
 
 def uniqList2(seq):
     """
@@ -222,27 +189,35 @@ def uniqList2(seq):
         keys[e] = 1
     return list(keys.keys())
 
+
 def flatList(lst):
     return [it for sl in lst for it in sl]
+
 
 def delEmpty(lst):
     return [i for i in lst if len(i) > 0]
 
-def uniqOrdList(seq, idfun = None):
+
+def uniqOrdList(seq, idfun=None):
     """
     Order preserving
     From http://www.peterbe.com/plog/uniqifiers-benchmark
     """
     if idfun is None:
-        def idfun(x): return x
+
+        def idfun(x):
+            return x
+
     seen = {}
     result = []
     for item in seq:
         marker = idfun(item)
-        if marker in seen: continue
+        if marker in seen:
+            continue
         seen[marker] = 1
         result.append(item)
     return result
+
 
 def addToList(lst, toadd):
     if type(lst) is not list:
@@ -262,6 +237,7 @@ def addToList(lst, toadd):
         lst.remove(None)
     return uniqList(lst)
 
+
 def addToSet(st, toadd):
     if type(toadd) in simpleTypes:
         st.add(toadd)
@@ -271,23 +247,28 @@ def addToSet(st, toadd):
         st.update(toadd)
     return st
 
+
 def something(anything):
-    return not (anything is None or \
-        (type(anything) in [list, set, dict, str, unicode] \
-            and len(anything) == 0))
+    return not (anything is None or
+                (type(anything) in [list, set, dict, str, unicode] and
+                 len(anything) == 0))
+
 
 def gen_session_id(length=5):
     abc = '0123456789abcdefghijklmnopqrstuvwxyz'
     return ''.join(random.choice(abc) for i in range(length))
 
+
 def simpson_index(a, b):
     a = set(a)
     b = set(b)
     ab = a & b
-    return float(len(ab)) / float(min(len(a),len(b)))
+    return float(len(ab)) / float(min(len(a), len(b)))
+
 
 def simpson_index_counts(a, b, c):
     return float(c) / float(min(a, b)) if min(a, b) > 0 else 0.0
+
 
 def sorensen_index(a, b):
     a = set(a)
@@ -295,17 +276,20 @@ def sorensen_index(a, b):
     ab = a & b
     return float(len(ab)) / float(len(a) + len(b))
 
+
 def jaccard_index(a, b):
     a = set(a)
     b = set(b)
     ab = a & b
     return float(len(ab)) / float(len(a | b))
 
+
 def console(message):
-    message = '\n\t'.join(textwrap.wrap(message,80))
-    sys.stdout.write(('\n\t'+message).ljust(80))
+    message = '\n\t'.join(textwrap.wrap(message, 80))
+    sys.stdout.write(('\n\t' + message).ljust(80))
     sys.stdout.write('\n')
     sys.stdout.flush()
+
 
 def wcl(f):
     toClose = type(f) is file
@@ -318,27 +302,34 @@ def wcl(f):
         f.close()
     return i + 1
 
-def get_args(loc_dict, remove = set([])):
-    if type(remove) not in [set, list]: remove = set([remove])
-    if type(remove) is list: remove = set(remove)
+
+def get_args(loc_dict, remove=set([])):
+    if type(remove) not in [set, list]:
+        remove = set([remove])
+    if type(remove) is list:
+        remove = set(remove)
     remove.add('self')
     remove.add('kwargs')
     args = dict((k, v) for k, v in iteritems(loc_dict) if k not in remove)
-    if 'kwargs' in loc_dict: args = dict(args.items() + loc_dict['kwargs'].items())
+    if 'kwargs' in loc_dict:
+        args = dict(args.items() + loc_dict['kwargs'].items())
     return args
 
-def rotate(point, angle, center = (0.0, 0.0)):
+
+def rotate(point, angle, center=(0.0, 0.0)):
     """
     from http://stackoverflow.com/a/20024348/854988
     Rotates a point around center. Angle is in degrees.
     Rotation is counter-clockwise
     """
     angle = math.radians(angle)
-    temp_point = point[0]-center[0] , point[1]-center[1]
-    temp_point = ( temp_point[0]*math.cos(angle)-temp_point[1]*math.sin(angle), \
-        temp_point[0]*math.sin(angle) + temp_point[1]*math.cos(angle))
-    temp_point = temp_point[0]+center[0] , temp_point[1]+center[1]
+    temp_point = point[0] - center[0], point[1] - center[1]
+    temp_point = (
+        temp_point[0] * math.cos(angle) - temp_point[1] * math.sin(angle),
+        temp_point[0] * math.sin(angle) + temp_point[1] * math.cos(angle))
+    temp_point = temp_point[0] + center[0], temp_point[1] + center[1]
     return temp_point
+
 
 def cleanDict(dct):
     """
@@ -354,6 +345,7 @@ def cleanDict(dct):
         del dct[k]
     return dct
 
+
 def md5(value):
     """
     Returns the ms5sum of ``value`` as string.
@@ -364,10 +356,15 @@ def md5(value):
         string = str(value).encode('ascii')
     return hashlib.md5(string).hexdigest()
 
+
 igraph_graphics_attrs = {
-    'vertex': ['size', ' color', 'frame_color', 'frame_width', 'shape', 'label', 'label_dist', 'label_color', 'label_size', 'label_angle'],
+    'vertex': [
+        'size', ' color', 'frame_color', 'frame_width', 'shape', 'label',
+        'label_dist', 'label_color', 'label_size', 'label_angle'
+    ],
     'edge': ['curved', 'color', 'width', 'arrow_size', 'arrow_width']
 }
+
 
 def merge_dicts(d1, d2):
     """
@@ -384,6 +381,7 @@ def merge_dicts(d1, d2):
         elif t is set:
             d1[k2].update(v2)
     return d1
+
 
 def dict_set_path(d, path):
     """
@@ -419,6 +417,7 @@ def dict_set_path(d, path):
             subd[key].add(val)
     return d
 
+
 def dict_diff(d1, d2):
     ldiff = {}
     rdiff = {}
@@ -430,6 +429,7 @@ def dict_diff(d1, d2):
             ldiff[k], rdiff[k] = (d1[k] - d2[k], d2[k] - d1[k])
     return ldiff, rdiff
 
+
 def dict_sym_diff(d1, d2):
     diff = {}
     keys = set(d1.keys()) & set(d2.keys())
@@ -440,8 +440,10 @@ def dict_sym_diff(d1, d2):
             diff[k] = d1[k] ^ d2[k]
     return diff
 
+
 class Namespace(object):
     pass
+
 
 def fun():
     print(__name__)
