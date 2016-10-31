@@ -34,7 +34,6 @@ import pypath.mapping as mapping
 import pypath.progress as progress
 import pypath.common as common
 
-
 class Chembl(object):
     def __init__(self,
                  chembl_mysql=(None, 'chembl_ebi'),
@@ -51,6 +50,11 @@ class Chembl(object):
         self.chembl_uniprot_table()
         self.result = None
         # constant elements:
+        self.mandatory_fields = set(['compound_chembl',
+                                     'target_uniprot',
+                                     'tax_id',
+                                     'target_type',
+                                     'potential_duplicate'])
         self.extra_fields = [
             'compound_names', 'action_type', 'target_domains',
             'predicted_binding_domains', 'activities', 'pchembl'
@@ -84,6 +88,11 @@ class Chembl(object):
             ON (dm.molregno = md.molregno AND dm.tid = td.tid)'''
         self.atype_select = ''',
             GROUP_CONCAT(DISTINCT(dm.action_type) SEPARATOR ';') AS action_type'''
+        self.cprop_select = ',\n            CAST(cp.%s AS CHAR) AS %s'
+        self.cprop_join = '''
+        /* various properties of the compounds */
+        LEFT JOIN compound_properties AS cp
+            ON md.molregno = cp.molregno'''
         self.act_join = '''
         /* this is for activity values, if available */
         LEFT JOIN assays AS ay 
@@ -147,6 +156,7 @@ class Chembl(object):
                           id_type='uniprot',
                           assay_types=['B', 'F'],
                           relationship_types=['D', 'H'],
+                          compound_props = [],
                           domains=False,
                           pred_bind_d=False,
                           action_type=False,
@@ -171,6 +181,7 @@ class Chembl(object):
                     'id_type': id_type,
                     'assay_types': assay_types,
                     'relationship_types': relationship_types,
+                    'compound_props': compound_props,
                     'domains': domains,
                     'pred_bind_d': pred_bind_d,
                     'action_type': action_type,
@@ -199,6 +210,7 @@ class Chembl(object):
                         id_type=id_type,
                         assay_types=assay_types,
                         relationship_types=relationship_types,
+                        compound_props=compound_props,
                         domains=domains,
                         pred_bind_d=pred_bind_d,
                         action_type=action_type,
@@ -215,6 +227,7 @@ class Chembl(object):
                         id_type='uniprot',
                         assay_types=['B', 'F'],
                         relationship_types=['D', 'H'],
+                        compound_props = [],
                         domains=False,
                         pred_bind_d=False,
                         action_type=False,
@@ -268,6 +281,10 @@ class Chembl(object):
             join_extra += self.atype_join
         if activities:
             select_extra += self.act_select
+        if len(compound_props):
+            for prop in compound_props:
+                select_extra += self.cprop_select % (prop, prop.lower())
+            join_extra += self.cprop_join
         if pchembl:
             select_extra += self.pchembl_select
         q = '''SELECT 
@@ -287,7 +304,7 @@ class Chembl(object):
         %s 
         WHERE 
             tt.parent_type = "PROTEIN" AND 
-            ac.potential_duplicate IS NULL AND 
+            ac.potential_duplicate != 1 AND 
             ac.pchembl_value IS NOT NULL AND 
                 (
                 data_validity_comment IS NULL OR 
@@ -500,6 +517,10 @@ class Chembl(object):
         return chembls
 
     def result_table(self):
+        """
+        Returns result as a tab separated string which
+        can be written to a file. First row is header.
+        """
         header = [self.result[0].keys()]
         s = '\t'.join(header) + '\n'
         for r in self.result:
@@ -507,6 +528,10 @@ class Chembl(object):
         return s
 
     def compounds_by_target(self, update_uniprots=True):
+        """
+        This processes the result and saves
+        the compounds to the `compounds` attribute as a dictionary.
+        """
         ct = {}
         for r in self.result:
             if r['target_uniprot'] in self.chembl_uniprot and update_uniprots:
@@ -519,12 +544,20 @@ class Chembl(object):
                 for e in self.extra_fields:
                     this_compound[e] = [] if e not in r or r[e] is None \
                         else r[e].split(';')
+                for ee in sorted(r.keys()):
+                    if ee not in self.mandatory_fields and \
+                       ee not in self.extra_fields:
+                        this_compound[ee] = r[ee]
                 if u not in ct:
                     ct[u] = []
                 ct[u].append(this_compound)
         self.compounds = ct
 
     def targets_by_compound(self):
+        """
+        This processes the result and saves
+        the targets to the `targets` attribute as a dictionary.
+        """
         tc = {}
         for r in self.result:
             this_target = {}

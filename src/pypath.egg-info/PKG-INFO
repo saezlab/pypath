@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: pypath
-Version: 0.5.32
+Version: 0.5.33
 Summary: Work with molecular networks in Python igraph
 Home-page: ['http://pypath.omnipathdb.org']
 Author: Dénes Türei
