@@ -6215,3 +6215,64 @@ def get_reactions(types=None, sources=None):
                 ';'.join(list(i[2] if types is None else i[2] & types)),
                 str(int(i[3])), i[4], ';'.join(list(i[5]))
             ]
+
+def get_homologene():
+    """
+    Downloads the recent release of the NCBI HomoloGene database.
+    Returns file pointer.
+    """
+    url = urls.urls['homologene']['url']
+    c = curl.Curl(url=url, silent=False, large=True)
+    return c.result
+
+def homologene_dict(source, target, id_type):
+    """
+    Returns orthology translation table as dict, obtained
+    from NVBI HomoloGene data.
+    
+    :param int source: NCBI Taxonomy ID of the source species (keys).
+    :param int target: NCBI Taxonomy ID of the target species (values).
+    :param str id_type: ID type to be used in the dict. Possible values:
+        'RefSeq', 'Entrez', 'GI', 'GeneSymbol'.
+    """
+    ids = {
+        'refseq': 5,
+        'genesymbol': 3,
+        'gi': 4,
+        'entrez': 2
+    }
+    
+    try:
+        id_col = ids[id_type.lower()]
+    except KeyError:
+        sys.stdout.write('\tUnknown ID type: `%s`. Please use RefSeq, '\
+            'Entrez, GI or GeneSymbol.\n' % id_type)
+        raise
+    
+    hg = get_homologene()
+    hgroup = None
+    result = {}
+    
+    for l in hg:
+        
+        l = l.decode('ascii').strip().split('\t')
+        this_hgroup = l[0].strip()
+        
+        if this_hgroup != hgroup:
+            this_source = None
+            this_target = None
+            hgroup = this_hgroup
+        
+        this_taxon = int(l[1].strip())
+        if this_taxon == source:
+            this_source = l[id_col]
+        elif this_taxon == target:
+            this_target = l[id_col]
+        
+        if this_source is not None and this_target is not None \
+            and len(this_source) and len(this_target):
+            if this_source not in result:
+                result[this_source] = set([])
+            result[this_source].add(this_target)
+    
+    return result

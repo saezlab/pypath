@@ -7847,7 +7847,7 @@ class PyPath(object):
                                 s1, s2)]['minor'].add(e.index)
         prg.terminate()
         return con
-
+    
     def export_edgelist(self,
                         fname,
                         graph=None,
@@ -7901,16 +7901,30 @@ class PyPath(object):
             [sum([len(set(self.graph.vs[e.source]['complexes'][cs].keys()) &
                       set(self.graph.vs[e.target]['complexes'][cs].keys())) for cs in csources]) > 0
                 for e in self.graph.es]
-
+    
+    def orthology_translation(self, target, source = None):
+        """
+        Translates the current object to another organism by orthology.
+        Proteins without known ortholog will be deleted.
+        
+        :param int target: NCBI Taxonomy ID of the target organism.
+            E.g. 10090 for mouse.
+        """
+        source = self.ncbi_tax_id if source is None else source
+        orto = dataio.homologene_dict(source, target, 'entrez')
+        
+        for l in orto:
+            
+    
     def reload(self):
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist=[modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-
+    
     def _disclaimer(self):
         sys.stdout.write(self.disclaimer)
-
+    
     def licence(self):
         self._disclaimer()

@@ -16,10 +16,11 @@
 #
 
 import codecs
+import sys
 
 __all__ = [
     'MysqlMapping', 'FileMapping', 'PickleMapping', 'ReadSettings', 'ReadList',
-    'Reference'
+    'Reference', 'UniprotListMapping'
 ]
 
 
@@ -115,6 +116,33 @@ class UniprotMapping(object):
         self.subfield = None if nameType not in ac_query \
             else ac_query[nameType][1]
 
+class UniprotListMapping(object):
+    
+    def __init__(self, nameType, ac_name = None,
+                 targetNameType = None, target_ac_name = None,
+                 bi = False,
+                 ncbi_tax_id = 9606,
+                 swissprot = 'yes'):
+        """
+        Provides parameters for downloading mapping table from UniProt
+        `Upload Lists` webservice.
+        """
+        self.ac_query = ac_query
+        self.bi = bi
+        self.ncbi_tax_id = ncbi_tax_id
+        self.typ = 'protein'
+        self.nameType, self.ac_name = self.get_ac_type(nameType, ac_name)
+        self.targetNameType, self.target_ac_name = \
+            self.get_ac_type(targetNameType, target_ac_name)
+    
+    def get_ac_type(self, nameType, ac_name):
+        nameType = nameType if nameType is not None else \
+            ac_name if ac_name is not None else 'uniprot'
+        if nameType not in self.ac_query and ac_name is None:
+            sys.stdout.write('\t:: Unknown ID type: `%s`.\n' % nameType)
+        else:
+            ac_name = self.ac_query[nameType] if ac_name is None else ac_name
+        return nameType, ac_name
 
 class PickleMapping(object):
     def __init__(self, pickleFile):

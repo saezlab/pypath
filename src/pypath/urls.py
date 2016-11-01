@@ -26,7 +26,8 @@ urls = {
     },
     'uniprot_basic': {
         'label': 'URL for UniProt queries',
-        'url': 'http://www.uniprot.org/uniprot/'
+        'url': 'http://www.uniprot.org/uniprot/',
+        'lists': 'http://www.uniprot.org/uploadlists/'
     },
     'corum': {
         'label':
@@ -674,6 +675,10 @@ urls = {
         'label': 'PathwayCommons binary SIF files',
         'url': 'http://www.pathwaycommons.org/archives/PC2/v8/'
         'PathwayCommons.8.%s.BINARY_SIF.hgnc.txt.sif.gz'
+    },
+    'homologene': {
+        'label': 'NCBI HomoloGene data, recent release',
+        'url': 'ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/homologene.data'
     }
 }
 

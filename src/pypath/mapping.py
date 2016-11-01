@@ -176,7 +176,17 @@ class MappingTable(object):
             self.mapping["from"] = mapping_i
             self.cleanDict(self.mapping["from"])
         prg.terminate()
-
+    
+    def read_mapping_uniprot_list(self, param, uniprots):
+        """
+        Reads a mapping table from UniProt "upload lists" service.
+        """
+        post = {
+            'from': param.ac_name,
+            'format': 'tab',
+            'to': param.target_ac_name
+        }
+    
     def read_mapping_uniprot(self, param):
         '''
         Downloads ID mappings directly from UniProt.
@@ -324,8 +334,9 @@ class Mapper(object):
             os.mkdir(self.cachedir)
         self.unmapped = []
         self.ownlog = log
-        self.ncbi_tax_id = ncbi_tax_id
+        self.default_ncbi_tax_id = ncbi_tax_id
         self.tables = {}
+        self.tables[self.default_ncbi_tax_id] = {}
         self.uniprot_mapped = []
         if log.__class__.__name__ != 'logw':
             self.session = common.gen_session_id()
@@ -361,20 +372,27 @@ class Mapper(object):
     def init_mysql(self):
         self.mysql = mysql.MysqlRunner(self.mysql_conf, log=self.ownlog)
 
-    def which_table(self, nameType, targetNameType, load=True):
+    def which_table(self, nameType, targetNameType,
+                    load=True, ncbi_tax_id = None):
         '''
         Returns the table which is suitable to convert an ID of 
         nameType to targetNameType. If no such table have been loaded
         yet, it attempts to load from UniProt.
         '''
         tbl = None
+        ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
         tblName = (nameType, targetNameType)
         tblNameRev = (targetNameType, nameType)
-        if tblName in self.tables:
-            tbl = self.tables[tblName].mapping['to']
-        elif tblNameRev in self.tables and \
-                len(self.tables[tblNameRev].mapping['from']) > 0:
-            tbl = self.tables[tblNameRev].mapping['from']
+        
+        if ncbi_tax_id not in self.tables:
+            self.tables[ncbi_tax_id] = {}
+        
+        tables = self.tables[ncbi_tax_id]
+        if tblName in tables:
+            tbl = tables[tblName].mapping['to']
+        elif tblNameRev in tables and \
+                len(tables[tblNameRev].mapping['from']) > 0:
+            tbl = tables[tblNameRev].mapping['from']
         elif load:
             for form in ['mapListUniprot', 'mapListBasic']:
                 frm = getattr(maps, form)
@@ -387,7 +405,8 @@ class Mapper(object):
                     frm[tblNameRev].bi = True
                     self.load_mappings(maplst={tblNameRev: frm[tblNameRev]})
                     tbl = self.which_table(
-                        nameType, targetNameType, load=False)
+                        nameType, targetNameType, load=False,
+                        ncbi_tax_id = ncbi_tax_id)
                     break
                 if tbl is not None:
                     break
@@ -395,11 +414,15 @@ class Mapper(object):
                 if nameType in self.name_types:
                     self.load_uniprot_mappings([nameType])
         return tbl
+    
+    def get_tax_id(self, ncbi_tax_id):
+        return self.default_ncbi_tax_id if ncbi_tax_id is None else ncbi_tax_id
 
     def map_name(self,
                  name,
                  nameType,
                  targetNameType,
+                 ncbi_tax_id=None,
                  strict=False,
                  silent=True):
         r'''
@@ -438,6 +461,7 @@ class Mapper(object):
             and load the table before calling :py:func:Mapper.map_name().
 
         '''
+        ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
         if type(nameType) is list:
             mappedNames = []
             for nt in nameType:
