@@ -536,6 +536,11 @@ def get_complexportal(species=9606, zipped=True):
 
 
 def get_havugimana():
+    """
+    Downloads data from
+    Supplement Table S3/1 from Havugimana 2012
+    Cell. 150(5): 1068–1081.
+    """
     url = urls.urls['havugimana']['url']
     c = curl.Curl(url, silent=False, large=True)
     data = c.result

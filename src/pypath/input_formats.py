@@ -17,6 +17,7 @@
 
 import codecs
 import sys
+import copy
 
 __all__ = [
     'MysqlMapping', 'FileMapping', 'PickleMapping', 'ReadSettings', 'ReadList',
@@ -30,18 +31,23 @@ class MysqlMapping(object):
                  fieldOne,
                  fieldTwo,
                  db=None,
-                 tax=None,
+                 ncbi_tax_id=None,
                  bi=False,
                  mysql=None,
                  typ='protein'):
         self.tableName = tableName
         self.fieldOne = fieldOne
         self.fieldTwo = fieldTwo
-        self.tax = tax
+        self.ncbi_tax_id = ncbi_tax_id
         self.db = db
         self.bi = bi
         self.mysql = mysql
         self.typ = typ
+    
+    def set_organism(self, ncbi_tax_id):
+        other_organism = copy.deepcopy(self)
+        other_organism.ncbi_tax_id = ncbi_tax_id
+        return other_organism
 
 
 class FileMapping(object):
@@ -52,7 +58,7 @@ class FileMapping(object):
                  separator=None,
                  header=0,
                  bi=False,
-                 tax=9606,
+                 ncbi_tax_id=9606,
                  typ='protein'):
         self.input = input
         self.oneCol = oneCol
@@ -61,6 +67,12 @@ class FileMapping(object):
         self.header = header
         self.typ = typ
         self.bi = bi
+        self.ncbi_tax_id = ncbi_tax_id
+    
+    def set_organism(self, ncbi_tax_id):
+        other_organism = copy.deepcopy(self)
+        other_organism.ncbi_tax_id = ncbi_tax_id
+        return other_organism
 
 # class UniprotMapping(object):
 
@@ -80,7 +92,7 @@ class FileMapping(object):
 
 
 class UniprotMapping(object):
-    def __init__(self, nameType, bi=False, tax=9606, swissprot='yes'):
+    def __init__(self, nameType, bi=False, ncbi_tax_id=9606, swissprot='yes'):
         '''
         Defines an ID conversion table to retrieve from UniProt.
 
@@ -106,7 +118,7 @@ class UniprotMapping(object):
             from the latter.
         '''
         self.bi = bi
-        self.tax = int(tax)
+        self.ncbi_tax_id = int(ncbi_tax_id)
         self.typ = 'protein'
         self.swissprot = swissprot
         self.nameType = nameType
@@ -115,6 +127,11 @@ class UniprotMapping(object):
             else ac_query[nameType][0]
         self.subfield = None if nameType not in ac_query \
             else ac_query[nameType][1]
+    
+    def set_organism(self, ncbi_tax_id):
+        other_organism = copy.deepcopy(self)
+        other_organism.ncbi_tax_id = ncbi_tax_id
+        return other_organism
 
 class UniprotListMapping(object):
     
@@ -127,7 +144,7 @@ class UniprotListMapping(object):
         Provides parameters for downloading mapping table from UniProt
         `Upload Lists` webservice.
         """
-        self.ac_query = ac_query
+        self.ac_mapping = ac_mapping
         self.bi = bi
         self.ncbi_tax_id = ncbi_tax_id
         self.typ = 'protein'
@@ -138,11 +155,16 @@ class UniprotListMapping(object):
     def get_ac_type(self, nameType, ac_name):
         nameType = nameType if nameType is not None else \
             ac_name if ac_name is not None else 'uniprot'
-        if nameType not in self.ac_query and ac_name is None:
+        if nameType not in self.ac_mapping and ac_name is None:
             sys.stdout.write('\t:: Unknown ID type: `%s`.\n' % nameType)
         else:
-            ac_name = self.ac_query[nameType] if ac_name is None else ac_name
+            ac_name = self.ac_mapping[nameType] if ac_name is None else ac_name
         return nameType, ac_name
+    
+    def set_organism(self, ncbi_tax_id):
+        other_organism = copy.deepcopy(self)
+        other_organism.ncbi_tax_id = ncbi_tax_id
+        return other_organism
 
 class PickleMapping(object):
     def __init__(self, pickleFile):

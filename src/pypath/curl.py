@@ -1169,7 +1169,7 @@ class Curl(FileOpener):
         if self.progress is not None:
             self.terminate_progress()
         if self.debug:
-            self.print_debug_info(status)
+            self.print_debug_info('INFO', status)
         elif not self.silent:
             sys.stdout.write('\r%s' % (' ' * 150))
             sys.stdout.write('\r\t:: %s' % status)

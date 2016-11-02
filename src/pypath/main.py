@@ -1303,44 +1303,72 @@ class PyPath(object):
         self.lists[name] = lst
 
     def receptors_list(self):
+        """
+        Loads the Human Plasma Membrane Receptome as a list.
+        This resource is human only.
+        """
         self.lists['rec'] = common.uniqList(
             common.flatList([
-                self.mapper.map_name(rec, 'genesymbol', 'uniprot')
+                self.mapper.map_name(rec, 'genesymbol', 'uniprot', ncbi_tax_id = 9606)
                 for rec in dataio.get_hpmr()
             ]))
 
     def druggability_list(self):
+        """
+        Loads the list of druggable proteins from DgiDB.
+        This resource is human only.
+        """
         self.lists['dgb'] = common.uniqList(
             common.flatList([
-                self.mapper.map_name(dgb, 'genesymbol', 'uniprot')
+                self.mapper.map_name(dgb, 'genesymbol', 'uniprot', 9606)
                 for dgb in dataio.get_dgidb()
             ]))
 
     def kinases_list(self):
+        """
+        Loads the list of all known kinases in the proteome from kinase.com.
+        This resource is human only.
+        """
         self.lists['kin'] = common.uniqList(
             common.flatList([
-                self.mapper.map_name(kin, 'genesymbol', 'uniprot')
+                self.mapper.map_name(kin, 'genesymbol', 'uniprot', 9606)
                 for kin in dataio.get_kinases()
             ]))
 
     def tfs_list(self):
+        """
+        Loads the list of all known transcription factors from TF census
+        (Vaquerizas 2009). This resource is human only.
+        """
         tfs = dataio.get_tfcensus()
         utfs = [
-            self.mapper.map_name(tf, 'ensg', 'uniprot') for tf in tfs['ensg']
+            self.mapper.map_name(tf, 'ensg', 'uniprot', 9606) \
+                for tf in tfs['ensg']
         ]
         utfs += [
-            self.mapper.map_name(h, 'hgnc', 'uniprot') for h in tfs['hgnc']
+            self.mapper.map_name(h, 'hgnc', 'uniprot', 9606) \
+                for h in tfs['hgnc']
         ]
         self.lists['tf'] = common.uniqList(common.flatList(utfs))
 
     def disease_genes_list(self, dataset='curated'):
+        """
+        Loads the list of all disease related genes from DisGeNet.
+        This resource is human only.
+        """
         diss = dataio.get_disgenet(dataset=dataset)
         dis = []
         for di in diss:
-            dis.extend(self.mapper.map_name(di['entrez'], 'entrez', 'uniprot'))
+            dis.extend(self.mapper.map_name(
+                di['entrez'], 'entrez', 'uniprot', 9606))
         self.lists['dis'] = common.uniqList(dis)
 
     def signaling_proteins_list(self):
+        """
+        Compiles a list of signaling proteins (as opposed to other proteins
+        like metabolic enzymes, matrix proteins), by looking up a few simple
+        keywords in short description of GO terms.
+        """
         goq = dataio.get_go_quick()
 
         gosig = set([])
@@ -1360,21 +1388,32 @@ class PyPath(object):
 
         spsig = set([])
         for u in upsig:
-            spsig.update(set(self.mapper.map_name(u, 'uniprot', 'uniprot')))
+            spsig.update(set(self.mapper.map_name(
+                u, 'uniprot', 'uniprot', ncbi_tax_id = self.ncbi_tax_id)))
 
         upsig = spsig & set(self.lists['proteome'])
 
         self.lists['sig'] = list(upsig)
 
     def proteome_list(self, swissprot=True):
+        """
+        Loads the whole proteome as a list.
+        """
         swissprot = 'yes' if swissprot else None
         self.lists['proteome'] = \
             dataio.all_uniprots(self.ncbi_tax_id, swissprot=swissprot)
 
     def cancer_gene_census_list(self):
+        """
+        Loads the list of cancer driver proteins from the COSMIC Cancer 
+        Gene Census.
+        """
         self.read_list_file(data_formats.cgc)
 
     def intogen_cancer_drivers_list(self, intogen_file):
+        """
+        Loads the list of cancer driver proteins from IntOGen data.
+        """
         data_formats.intogen_cancer.inFile = intogen_file
         self.read_list_file(data_formats.intogen_cancer)
 
@@ -1507,6 +1546,10 @@ class PyPath(object):
         return listMapped
 
     def map_item(self, item):
+        """
+        Translates the name in item representing a molecule.
+        """
+        # TODO: include 
         defaultNames = self.mapper.map_name(
             item['name'], item['nameType'],
             self.default_name_type[item['type']])
@@ -1515,14 +1558,19 @@ class PyPath(object):
         return defaultNames
 
     def map_edge(self, edge):
+        """
+        Translates molecule names in dict representing an edge.
+        """
         edgeStack = []
         defaultNameA = self.mapper.map_name(
             edge['nameA'], edge['nameTypeA'],
-            self.default_name_type[edge['typeA']])
+            self.default_name_type[edge['typeA']],
+            ncbi_tax_id = edge['taxA'])
         # print 'mapped %s to %s' % (str(edge['nameA']), str(defaultNameA))
         defaultNameB = self.mapper.map_name(
             edge['nameB'], edge['nameTypeB'],
-            self.default_name_type[edge['typeB']])
+            self.default_name_type[edge['typeB']],
+            ncbi_tax_id = edge['taxB'])
         # print 'mapped %s to %s' % (str(edge['nameB']), str(defaultNameB))
         # this is needed because the possibility ambigous mapping
         # one name can be mapped to multiple ones
@@ -2730,8 +2778,10 @@ class PyPath(object):
         ]
         for v, l, i in zip(g.vs, labels, xrange(g.vcount())):
             if l is None and v['type'] == 'protein':
-                label = self.mapper.map_name(v['name'], defaultNameType,
-                                             geneSymbol)
+                label = self.mapper.map_name(v['name'],
+                                             defaultNameType,
+                                             geneSymbol,
+                                             ncbi_tax_id = v['ncbi_tax_id'])
                 if len(label) == 0:
                     labels[i] = v['name']
                 else:
@@ -3111,23 +3161,6 @@ class PyPath(object):
             (k, v) for k, v in iteritems(lst)
             if (not v.huge or v.name in cache_files) and k not in exclude)
         for lst in [huge, nothuge]:
-            ac_types = set([])
-            for k, v in iteritems(lst):
-                if isinstance(v.nameTypeA, list):
-                    ac_types = ac_types | set(v.nameTypeA)
-                else:
-                    ac_types.add(v.nameTypeA)
-                if isinstance(v.nameTypeB, list):
-                    ac_types = ac_types | set(v.nameTypeB)
-                else:
-                    ac_types.add(v.nameTypeB)
-            table_loaded = set([])
-            for ids in self.mapper.tables.keys():
-                if ids[1] == 'uniprot':
-                    table_loaded.add(ids[0])
-            self.mapper.load_uniprot_mappings(
-                list(ac_types - table_loaded & set(self.mapper.name_types.keys(
-                ))))
             for k, v in iteritems(lst):
                 self.load_resource(
                     v,
@@ -3897,6 +3930,11 @@ class PyPath(object):
             self.ownlog.msg(2, 'Pfam domains has been retrieved.', 'INFO')
 
     def load_corum(self, graph=None):
+        """
+        Loads complexes from CORUM database. Loads data into vertex attribute
+        `graph.vs['complexes']['corum']`.
+        This resource is human only.
+        """
         graph = graph if graph is not None else self.graph
         complexes, members = dataio.get_corum()
         if complexes is None:
@@ -3904,14 +3942,16 @@ class PyPath(object):
         else:
             self.init_complex_attr(graph, 'corum')
             for u, cs in iteritems(members):
-                sw = self.mapper.map_name(u, 'uniprot', 'uniprot')
+                sw = self.mapper.map_name(u, 'uniprot', 'uniprot', 9606)
                 for s in sw:
                     if s in graph.vs['name']:
                         for c in cs:
                             others = []
                             for memb in complexes[c[0]][0]:
-                                others += self.mapper.map_name(memb, 'uniprot',
-                                                               'uniprot')
+                                others += self.mapper.map_name(memb,
+                                                               'uniprot',
+                                                               'uniprot',
+                                                               9606)
                             graph.vs.select(
                                 name=s)[0]['complexes']['corum'][c[1]] = {
                                     'full_name': c[0],
@@ -3934,6 +3974,11 @@ class PyPath(object):
                 v['complexes'][name] = {}
 
     def load_havugimana(self, graph=None):
+        """
+        Loads complexes from Havugimana 2012. Loads data into vertex attribute
+        `graph.vs['complexes']['havugimana']`.
+        This resource is human only.
+        """
         graph = graph if graph is not None else self.graph
         complexes = dataio.read_complexes_havugimana()
         if complexes is None:
@@ -3944,9 +3989,15 @@ class PyPath(object):
                 membs = []
                 names = []
                 for memb in c:
-                    membs += self.mapper.map_name(memb, 'uniprot', 'uniprot')
+                    membs += self.mapper.map_name(memb,
+                                                  'uniprot',
+                                                  'uniprot',
+                                                  9606)
                 for u in membs:
-                    names += self.mapper.map_name(u, 'uniprot', 'genesymbol')
+                    names += self.mapper.map_name(u,
+                                                  'uniprot',
+                                                  'genesymbol',
+                                                  9606)
                 names = sorted(set(names))
                 name = ':'.join(names)
                 for u in membs:
@@ -3962,6 +4013,11 @@ class PyPath(object):
                     'INFO')
 
     def load_compleat(self, graph=None):
+        """
+        Loads complexes from Compleat. Loads data into vertex attribute
+        `graph.vs['complexes']['compleat']`.
+        This resource is human only.
+        """
         graph = graph if graph is not None else self.graph
         complexes = dataio.get_compleat()
         if complexes is None:
@@ -3972,11 +4028,15 @@ class PyPath(object):
                 c['uniprots'] = []
                 c['gsymbols'] = []
                 for e in c['entrez']:
-                    c['uniprots'] += self.mapper.map_name(e, 'entrez',
-                                                          'uniprot')
+                    c['uniprots'] += self.mapper.map_name(e,
+                                                          'entrez',
+                                                          'uniprot',
+                                                          9606)
                 for u in c['uniprots']:
-                    c['gsymbols'] += self.mapper.map_name(u, 'uniprot',
-                                                          'genesymbol')
+                    c['gsymbols'] += self.mapper.map_name(u,
+                                                          'uniprot',
+                                                          'genesymbol',
+                                                          9606)
                 c['gsymbols'] = list(
                     set([gs.replace('; ', '') for gs in c['gsymbols']]))
                 if len(c['uniprots']) > 0:
@@ -3995,6 +4055,11 @@ class PyPath(object):
                             'INFO')
 
     def load_complexportal(self, graph=None):
+        """
+        Loads complexes from ComplexPortal. Loads data into vertex attribute
+        `graph.vs['complexes']['complexportal']`.
+        This resource is human only.
+        """
         graph = graph if graph is not None else self.graph
         # TODO: handling species
         complexes = dataio.get_complexportal()
@@ -4015,7 +4080,10 @@ class PyPath(object):
                 else:
                     name = c['fullname']
                 for u in c['uniprots']:
-                    swprots += self.mapper.map_name(u, 'uniprot', 'uniprot')
+                    swprots += self.mapper.map_name(u,
+                                                    'uniprot',
+                                                    'uniprot',
+                                                    9606)
                 swprots = list(set(swprots))
                 for sw in swprots:
                     if sw in graph.vs['name']:
@@ -4084,8 +4152,10 @@ class PyPath(object):
                 if len(swprots) > 0:
                     name = []
                     for sp in swprots:
-                        name += self.mapper.map_name(sp, 'uniprot',
-                                                     'genesymbol')
+                        name += self.mapper.map_name(sp,
+                                                     'uniprot',
+                                                     'genesymbol',
+                                                     9606)
                     compl_names[cname] = '-'.join(name) + ' complex'
                     compl_membs[cname] = (swprots, uprots)
                 prg.step()
@@ -5202,7 +5272,10 @@ class PyPath(object):
             prg.step()
             uniprot1 = [l[9]] if len(l[9]) > 0 else []
             if len(l[9]) == 0 and len(l[10]) > 0:
-                uniprot1 = self.mapper.map_name(l[10], 'refseq', 'uniprot')
+                uniprot1 = self.mapper.map_name(l[10],
+                                                'refseq',
+                                                'uniprot',
+                                                9606)
             uniprot2 = [l[11]] if len(l[11]) > 0 else []
             # ptm on u2,
             # u1 interacts with u2 depending on ptm
@@ -5293,9 +5366,9 @@ class PyPath(object):
         for c in comppi:
             prg.step()
             uniprots1 = self.mapper.map_name(c['uniprot1'], 'uniprot',
-                                             'uniprot')
+                                             'uniprot', 9606)
             uniprots2 = self.mapper.map_name(c['uniprot2'], 'uniprot',
-                                             'uniprot')
+                                             'uniprot', 9606)
             for u1 in uniprots1:
                 if self.node_exists(u1):
                     for loc in [x.split(':') for x in c['loc1'].split('|')]:
@@ -7914,7 +7987,7 @@ class PyPath(object):
         orto = dataio.homologene_dict(source, target, 'entrez')
         
         for l in orto:
-            
+            pass
     
     def reload(self):
         modname = self.__class__.__module__
