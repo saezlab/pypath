@@ -492,6 +492,25 @@ class Direction(object):
             self.negative_sources[self.reverse] = \
                 common.uniqList(self.negative_sources[self.reverse] +
                                 other.negative_sources[self.reverse])
+    
+    def translate(self, ids):
+        # new Direction object
+        newd = Direction(ids[self.nodes[0]], ids[self.nodes[1]])
+        
+        # copying directions
+        for k, v in iteritems(self.sources):
+            di = (ids[k[0]], ids[k[1]]) if type(k) is tuple else k
+            newd.set_dir(di, v)
+        
+        # copying signs
+        for di in [self.straight, self.reverse]:
+            
+            pos, neg = self.get_sign(di, sources = True)
+            
+            newd.set_sign((ids[di[0]], ids[di[1]]), 'positive', pos)
+            newd.set_sign((ids[di[0]], ids[di[1]]), 'negative', neg)
+        
+        return newd
 
 
 class AttrHelper(object):
@@ -1586,41 +1605,40 @@ class PyPath(object):
                 edgeStack.append(edge)
                 # print 'new edge: %s' % str(edge)
         return edgeStack
-
-    def merge_attrs(self, a, b, exc=["name"]):
-        sys.stdout.write('.')
-        for key, val in iteritems(b.attributes()):
-            if key not in a.attributes():
-                a[key] = val
-            elif key not in exc:
-                if key == 'signs':
-                    a[key] = self.combine_signs(a[key], b[key])
-                elif key == 'directions':
-                    a[key] = self.combine_dirs(a[key], b[key])
-                elif key == 'dirs_by_source':
-                    a[key] = self.combine_dirsrc(a[key], b[key])
-                else:
-                    a[key] = self.combine_attr([a[key], val])
-
-    def combine_signs(self, sigA, sigB):
-        for out in [0, 1]:
-            for inn in [0, 1]:
-                sigA[out][inn] = common.uniqList(sigA[out][inn] + sigB[out][
-                    inn])
-        return sigA
-
-    def combine_dirs(self, dirA, dirB):
-        newDir = [False, False, False]
-        for i in [0, 1, 2]:
-            newDir[i] = dirA[i] or dirB[i]
-        return tuple(newDir)
-
-    def combine_dirsrc(self, dirsA, dirsB):
-        for i in [0, 1, 2]:
-            dirsA[i] = common.uniqList(dirsA[i] + dirsB[i])
-        return dirsA
-
-    def combine_attr(self, lst):
+    
+    def combine_attr(self, lst, num_method = max):
+        """
+        Combines multiple attributes into one. This method attempts
+        to find out which is the best way to combine attributes.
+            * if there is only one value or one of them is None, then returns
+              the one available
+            * lists: concatenates unique values of lists
+            * numbers: returns the greater by default
+              or calls `num_method()` if given.
+            * sets: returns the union
+            * dicts: calls `common.merge_dicts()`
+            * Direction: calls their special `merge()` method
+        Works on more than 2 attributes recursively.
+        
+        :param list lst: List of one or two attribute values.
+        :param callable num_method: Method to merge numeric attributes.
+        """
+        def list_or_set(one, two):
+            if (isinstance(one, list) and isinstance(two, set)) or \
+               (isinstance(two, list) and isinstance(one, set)):
+                try:
+                    return set(one), set(two)
+                except TypeError:
+                    return list(one), list(two)
+            else:
+                return one, two
+        
+        # recursion:
+        if len(lst) > 2:
+            lst = [lst[0],
+                   self.combine_attr(lst[1:], num_method = num_method)]
+        
+        # quick and simple cases:
         if len(lst) == 0:
             return None
         if len(lst) == 1:
@@ -1631,40 +1649,63 @@ class PyPath(object):
             return lst[1]
         if lst[1] is None:
             return lst[0]
+        
+        # merge numeric values
         if type(lst[0]) in common.numTypes and type(lst[1]) in common.numTypes:
-            return max(lst)
+            return num_method(lst)
+        
+        # in case one is list other is set
+        lst[0], lst[1] = list_or_set(lst[0], lst[1])
+        
+        # merge lists:
         if isinstance(lst[0], list) and isinstance(lst[1], list):
             try:
-                return list(set(lst[0] + lst[1]))
-            except:
-                return lst[0] + lst[1]
+                # lists of hashable elements only:
+                return list(set(itertools.chain(lst[0], lst[1])))
+            except TypeError:
+                # if contain non-hashable elements:
+                return list(itertools.chain(lst[0], lst[1]))
+        
+        # merge sets:
         if isinstance(lst[0], set):
             return common.addToSet(lst[0], lst[1])
         if isinstance(lst[1], set):
             return common.addToSet(lst[1], lst[0])
+        
+        # merge dicts:
         if isinstance(lst[0], dict) and isinstance(lst[1], dict):
-            return dict(lst[0].items() + lst[1].items())
+            return common.merge_dicts(lst[0], lst[1])
+        
+        # 2 different strings: return a set with both of them
         if (isinstance(lst[0], str) or isinstance(lst[0], unicode)) and \
                 (isinstance(lst[1], str) or isinstance(lst[1], unicode)):
             if len(lst[0]) == 0:
                 return lst[1]
             if len(lst[1]) == 0:
                 return lst[0]
-            return [lst[0], lst[1]]
+            return set([lst[0], lst[1]])
+        
+        # one attr is list, the other is simple value:
         if (isinstance(lst[0], list) and type(lst[1]) in common.simpleTypes):
-            if len(lst[1]) > 0:
+            if lst[1] in common.numTypes or len(lst[1]) > 0:
                 return common.addToList(lst[0], lst[1])
             else:
                 return lst[0]
         if (isinstance(lst[1], list) and type(lst[0]) in common.simpleTypes):
-            if len(lst[0]) > 0:
+            if lst[0] in common.numTypes or len(lst[0]) > 0:
                 return common.addToList(lst[1], lst[0])
             else:
                 return lst[1]
+        
+        # special: merging directions
         if lst[0].__class__.__name__ == 'Direction' and \
                 lst[1].__class__.__name__ == 'Direction':
             lst[0].merge(lst[1])
             return lst[0]
+        
+        # in case the objects have `__add__()` method:
+        if hasattr(lst[0], '__add__'):
+            return lst[0] + lst[1]
 
     def uniq_node_list(self, lst):
         uniqLst = {}
@@ -1674,118 +1715,164 @@ class PyPath(object):
             else:
                 uniqLst[n[0]] = self.merge_attrs(uniqLst[n[0]], n[1])
         return uniqLst
-
-    def map_network(self, mapping=('trembl', 'swissprot')):
-        '''
-        This function is not needed any more, will be removed soon.
-
-        In the whole network changes every uniprot id to primary.
-        '''
-        self.ownlog.msg(1, "Mapping network by %s..." % mapping, 'INFO')
-        g = self.graph
-        self.ownlog.msg(2, ("Num of edges: %u, num of vertices: %u" %
-                            (g.ecount(), g.vcount())), 'INFO')
-        fun = getattr(self, mapping)
-        primNodes = {}
-        secNodes = {}
-        delNodes = []
-        prg = Progress(total=len(g.vs), name="Mapping nodes", interval=30)
-        for v in g.vs:
-            if v["type"] == "protein" and v["nameType"] == "uniprot":
-                prim = fun([v["name"]])
-                if len(prim) > 0 and v["name"] not in prim:
-                    delNodes.append(v["name"])
-                for u in prim:
-                    if u != v["name"]:
-                        if u not in primNodes:
-                            primNodes[u] = []
-                        primNodes[u].append(v["name"])
-                        if v["name"] not in secNodes:
-                            secNodes[v["name"]] = []
-                        secNodes[v["name"]].append(u)
-            prg.step()
-        prg.terminate()
-        newNodes = list(set(primNodes.keys()) - set(g.vs["name"]))
-        self.new_nodes(newNodes)
-        self.update_vname()
-        self.ownlog.msg(2, "New nodes have been created (%u)" % len(newNodes),
-                        'INFO')
-        primEdges = {}
-        newEdges = []
-        prg = Progress(total=len(g.es), name="Processing edges", interval=200)
-        for e in g.es:
-            uA = g.vs[e.source]["name"]
-            uB = g.vs[e.target]["name"]
-            if uA in secNodes or uB in secNodes:
-                uAlist = [uA] if uA not in secNodes else secNodes[uA]
-                uBlist = [uB] if uB not in secNodes else secNodes[uB]
-                for a in uAlist:
-                    for b in uBlist:
-                        ab = sorted([a, b])
-                        if ab[0] not in primEdges:
-                            primEdges[ab[0]] = {}
-                        if ab[1] not in primEdges[ab[0]]:
-                            primEdges[ab[0]][ab[1]] = []
-                        primEdges[ab[0]][ab[1]].append((uA, uB))
-                        abEdge = self.edge_exists(ab[0], ab[1])
-                        if isinstance(abEdge, tuple):
-                            newEdges.append(abEdge)
-            prg.step()
-        prg.terminate()
-        newEdges = list(set(newEdges))
-        self.new_edges(newEdges)
-        self.ownlog.msg(2, "New edges have been created (%u)" % len(newEdges),
-                        'INFO')
-        # copying node attributes
-        prg = Progress(
-            total=len(primNodes),
-            name="Processing node attributes",
-            interval=10)
-        for k, v in iteritems(primNodes):
-            prim = g.vs.find(name=k)
-            for s in v:
-                sec = g.vs.find(name=s)
-                self.merge_attrs(prim, sec, exc=["name"])
-            prg.step()
-        prg.terminate()
-        # copying edge attributes
-        prg = Progress(
-            total=len(primEdges),
-            name="Processing edge attributes",
-            interval=10)
-        for a, bdict in iteritems(primEdges):
-            primA = g.vs.find(name=a).index
-            for b, originals in iteritems(bdict):
-                primB = g.vs.find(name=b).index
-                prim = g.es.select(_between=((primA, ), (primB, )))[0]
-                for o in originals:
-                    secA = g.vs.find(name=o[0]).index
-                    secB = g.vs.find(name=o[1]).index
-                    sec = g.es.select(_between=((secA, ), (secB, )))[0]
-                    self.merge_attrs(prim, sec)
-            prg.step()
-        prg.terminate()
-        # deleting old nodes
-        delNodeInd = []
-        for u in delNodes:
-            delNodeInd.append(g.vs.find(name=u).index)
-        self.ownlog.msg(2, "Removing old nodes (%u)" % len(delNodeInd), 'INFO')
-        if len(delNodeInd) > 0:
-            g.delete_vertices(list(set(delNodeInd)))
-        self.clean_graph()
-        self.update_vname()
-        self.ownlog.msg(2, "Network has been mapped.", 'INFO')
-        self.ownlog.msg(2, ("Num of edges: %u, num of vertices: %u" %
-                            (g.ecount(), g.vcount())), 'INFO')
-
+    
+    def collapse_by_name(self, graph = None):
+        """
+        Collapses nodes with the same name with copying and merging
+        all edges and attributes.
+        """
+        graph = self.graph if graph is None else graph
+        
+        dupli = Counter(graph.vs['name'])
+        
+        for name, count in iteritems(dupli):
+            if count > 1:
+                nodes = graph.vs.select(name = name)
+                self.merge_nodes(nodes)
+    
+    def merge_nodes(self, nodes, primary = None, graph = None):
+        """
+        Merges all attributes and all edges of selected nodes
+        and assigns them to the primary node
+        (by default the one with lowest ID).
+        
+        :param list nodes: List of edge IDs.
+        :param int primary: ID of the primary edge;
+                            if None the lowest ID selected.
+        """
+        graph = self.graph if graph is None else graph
+        nodes = sorted(nodes)
+        primary = nodes[0] if primary is None else primary
+        nonprimary = list(filter(lambda n: n != primary, nodes))
+        graph.vs['id_merge'] = list(range(graph.vcount()))
+        
+        # combining vertex attributes:
+        vprim = graph.vs[primary]
+        for attr in vprim.attributes():
+            if attr != 'name':
+                v[attr] = self.combine_attr(
+                    list(
+                        map(
+                            lambda vid:
+                                graph.vs[vid][attr],
+                            # combining from all nodes
+                            nodes
+                        )
+                    )
+                )
+        
+        # moving edges of non primary vertices to the primary one
+        self.copy_edges(nonprimary, primary, move = True, graph = graph)
+        
+        # deleting non primary vertices:
+        toDel = list(map(lambda i: graph.vs.select(id_merge = i)[0].index,
+                         nonprimary))
+        
+        graph.delete_vertices(toDel)
+        del graph.vs['id_merge']
+    
+    def copy_edges(self, sources, target, move = False, graph = None):
+        """
+        Copies edges of one node to another,
+        keeping attributes and directions.
+        
+        :param list sources: Vertex IDs to copy from.
+        :param int target: Vertex ID to copy for.
+        :param bool move: Whether perform copy or move, i.e. remove or keep
+                          the source edges.
+        """
+        toDel = set([])
+        graph = self.graph if graph is None else graph
+        graph.vs['id_old'] = list(range(graph.vcount()))
+        graph.es['id_old'] = list(range(graph.ecount()))
+        
+        # preserve a permanent marker of the target vertex
+        ovidt = graph.vs[target]['id_old']
+        
+        # collecting the edges of all source vertices into dict
+        ses = \
+            dict(
+                lambda s:
+                    (
+                        # id_old of source vertices:
+                        s,
+                        # edges of current source node:
+                        set(map(lambda e: e.index,
+                            itertools.chain(graph.es.select(_source = s),
+                                            graph.es.select(_target = s))))
+                    ),
+                sources
+            )
+        
+        # collecting edges to be newly created
+        toAdd = set([])
+        for s, es in iteritems(ses):
+            for eid in es:
+                # the source edge:
+                e = graph.es[eid]
+                # looking up if target edge already exists:
+                vid1 = target if e.source == s else e.source
+                vid2 = target if e.target == s else e.target
+                te = get_eid(vid1, vid2, error = False)
+                if te == -1:
+                    # target edge not found, needs to be added:
+                    toAdd.append((vid1, vid2))
+        
+        # creating new edges
+        graph.add_edges(toAdd)
+        
+        # copying attributes:
+        for ovids, es in iteritems(ses):
+            for oeid in es:
+                # this is the index of the current source node:
+                s = graph.vs.select(id_old = ovids)[0].index
+                # this is the index of the current target node:
+                t = graph.vs.select(id_old = ovidt)[0].index
+                # this is the current source edge:
+                e = graph.es.select(id_old = oeid)[0]
+                # looking up target edge and peer vertex:
+                vid1 = t if e.source == s else e.source
+                vid2 = t if e.target == s else e.target
+                vid_peer = vid1 if e.target == s else e.source
+                te = graph.es[get_eid(vid1, vid2)]
+                
+                # old direction:
+                d = e['dirs']
+                # dict from old names to new ones
+                # the peer does no change, only s->t
+                ids = {
+                    graph.vs[s]['name']: graph.vs[t]['name'],
+                    graph.vs[vid_peer]['name']: graph.vs[vid_peer]['name']
+                }
+                
+                # copying directions and signs:
+                te['dirs'] = d.translate(ids).merge(te['dirs']) \
+                    if isinstance(te['dirs'], Direction) else d.translate(ids)
+                # copying `refs_by_dir`
+                te['refs_by_dir'] = \
+                    self.translate_refsdir(e['refs_by_dir'], ids)
+                # copying further attributes:
+                for eattr in e.attributes():
+                    if eattr != 'dirs' and eattr != 'refs_by_dir':
+                        te[eattr] = self.combine_attr([te[eattr], e[eattr]])
+                
+                # in case we want to delete old edges:
+                toDel.add(e.index)
+        
+        if move:
+            graph.delete_edges(list(toDel))
+        
+        # removing temporary attributes
+        del graph.es['id_old']
+        del graph.vs['id_old']
+    
     def delete_by_taxon(self, tax):
-        '''
+        """
         Removes the proteins of all organisms which are not listed.
 
-        @tax : list
-            List of NCBI Taxonomy IDs of the organisms of interest.
-            E.g. [7227, 9606]
-        '''
+        :param list tax: List of NCBI Taxonomy IDs of the organisms.
+                         E.g. [7227, 9606]
+        """
         g = self.graph
         toDel = []
         for v in g.vs:
@@ -1843,6 +1930,11 @@ class PyPath(object):
         sys.stdout.write(' done.\n')
 
     def clean_graph(self):
+        """
+        Removes multiple edges, unknown molecules and those from wrong taxon.
+        Multiple edges will be combined by `combine_attr()` method.
+        Loops will be deleted unless the `loops` attribute set to `True`.
+        """
         self.ownlog.msg(1, "Removing duplicate edges...", 'INFO')
         g = self.graph
         if not g.is_simple():
@@ -1865,9 +1957,9 @@ class PyPath(object):
     ###
 
     def count_sol(self):
-        '''
+        """
         Counts nodes with zero degree.
-        '''
+        """
         s = 0
         for i in self.graph.vs.degree():
             if i == 0:
@@ -2144,10 +2236,10 @@ class PyPath(object):
         self.graph.add_vertices(list(nodes))
 
     def edge_exists(self, nameA, nameB):
-        '''
+        """
         Returns a tuple of vertice indices if edge doesn't exists,
         otherwise edge id. Not sensitive to direction.
-        '''
+        """
         if not hasattr(self, 'nodDct'):
             self.update_vname()
         nodes = [self.nodDct[nameA], self.nodDct[nameB]]
@@ -2278,6 +2370,10 @@ class PyPath(object):
                 self.init_edge_attr(attr)
 
     def init_vertex_attr(self, attr):
+        """
+        Fills vertex attribute with its default values, creates
+        lists if in `vertexAttrs` the attribute is registered as list.
+        """
         for v in self.graph.vs:
             if v[attr] is None:
                 v[attr] = self.vertexAttrs[attr]()
@@ -2286,6 +2382,10 @@ class PyPath(object):
                 v[attr] = [v[attr]] if len(v[attr]) > 0 else []
 
     def init_edge_attr(self, attr):
+        """
+        Fills edge attribute with its default values, creates
+        lists if in `edgeAttrs` the attribute is registered as list.
+        """
         for e in self.graph.es:
             if e[attr] is None:
                 e[attr] = self.edgeAttrs[attr]()
@@ -2294,6 +2394,10 @@ class PyPath(object):
                 e[attr] = [e[attr]] if len(e[attr]) > 0 else []
 
     def attach_network(self, edgeList=False, regulator=False):
+        """
+        Adds edges to the network from edgeList obtained from file or
+        other input method.
+        """
         g = self.graph
         if not edgeList:
             if self.raw_data is not None:
@@ -2383,6 +2487,9 @@ class PyPath(object):
         self.update_attrs()
 
     def apply_list(self, name, node_or_edge="node"):
+        """
+        Creates vertex or edge attribute based on a list.
+        """
         if name not in self.lists:
             self.ownlog.msg(1, ("""No such list: %s""" % name), 'ERROR')
             return None
@@ -2428,6 +2535,9 @@ class PyPath(object):
                     and_or="and",
                     delete=False,
                     func="max"):
+        """
+        Merges two lists in `lists`.
+        """
         if nameA not in self.lists:
             self.ownlog.msg(1, ("""No such list: %s""" % nameA), 'ERROR')
             return None
@@ -2470,6 +2580,9 @@ class PyPath(object):
             del self.lists[nameB]
 
     def save_session(self):
+        """
+        Save current state into pickle dump.
+        """
         pickleFile = "pwnet-" + self.session + ".pickle"
         self.ownlog.msg(1, ("""Saving session to %s... """ % pickleFile),
                         'INFO')
@@ -2652,6 +2765,10 @@ class PyPath(object):
         return new.induced_subgraph(sub["nodes"])
 
     def separate(self):
+        """
+        Separates networks from different sources.
+        Returns dict of igraph objects.
+        """
         return dict([(s, self.get_network({
             'edge': {
                 'sources': [s]
@@ -2660,6 +2777,10 @@ class PyPath(object):
         })) for s in self.sources])
 
     def separate_by_category(self):
+        """
+        Separate networks based on categories.
+        Returns dict of igraph objects.
+        """
         cats = \
             dict(
                 list(
@@ -2719,6 +2840,10 @@ class PyPath(object):
         self.write_table(res["edges"], outfile + "-edges", cut=20)
 
     def update_sources(self):
+        """
+        Makes sure that the `sources` attribute is an up to date
+        list of all sources in the current network.
+        """
         g = self.graph
         src = []
         for e in g.es:
@@ -2727,6 +2852,10 @@ class PyPath(object):
         self.update_cats()
 
     def update_cats(self):
+        """
+        Makes sure that the `has_cats` attribute is an up to date
+        set of all categories in the current network.
+        """
         self.has_cats = set(
             list(
                 map(lambda s: data_formats.categories[s],
@@ -2755,14 +2884,14 @@ class PyPath(object):
             self.update_vname()
 
     def genesymbol_labels(self, graph=None, remap_all=False):
-        '''
+        """
         Creats vertex attribute ``label`` and fills up with Gene Symbols
         of all proteins where the Gene Symbol can be looked up based on
         the default name of the protein vertex.
         If the attribute ``label`` had been already initialized,
         updates this attribute or recreates if ``remap_all``
         is ``True``.
-        '''
+        """
         self._already_has_directed()
         if graph is None and self.dgraph is not None:
             self.genesymbol_labels(graph=self.dgraph, remap_all=remap_all)
@@ -7974,6 +8103,18 @@ class PyPath(object):
                       set(self.graph.vs[e.target]['complexes'][cs].keys())) for cs in csources]) > 0
                 for e in self.graph.es]
     
+    #
+    # Methods for translating network to other organism
+    #
+    
+    def translate_refsdir(self, rd, ids):
+        new_refsdir = {}
+        for k, v in iteritems(rd):
+            di = (ids[k[0]], ids[k[1]]) if type(k) is tuple else k
+            new_refsdir[di] = v
+            
+            return new_refsdir
+    
     def orthology_translation(self, target, source = None,
                               mapping_id_type = 'refseqp',
                               graph = None):
@@ -8041,8 +8182,6 @@ class PyPath(object):
         vids = dict(map(lambda v: (v[1], v[0]), enumerate(graph.vs['name'])))
         
         # print(list(iteritems(vdict))[:10])
-        
-        
         
         toDel = \
             list(
@@ -8149,26 +8288,6 @@ class PyPath(object):
         # creating new edges
         graph += list(set(itertools.chain(*edgesToAdd.values())))
         
-        ##
-        def translate_dir(d, ids):
-            # new Direction object
-            newd = Direction(ids[d.nodes[0]], ids[d.nodes[1]])
-            
-            # copying directions
-            for k, v in iteritems(d.sources):
-                di = (ids[k[0]], ids[k[1]]) if type(k) is tuple else k
-                newd.set_dir(di, v)
-            
-            # copying signs
-            for di in [d.straight, d.reverse]:
-                
-                pos, neg = d.get_sign(di, sources = True)
-                
-                newd.set_sign((ids[di[0]], ids[di[1]]), 'positive', pos)
-                newd.set_sign((ids[di[0]], ids[di[1]]), 'negative', neg)
-            
-            return newd
-        
         def translate_refsdir(rd, ids):
             new_refsdir = {}
             for k, v in iteritems(rd):
@@ -8191,8 +8310,8 @@ class PyPath(object):
                     d.nodes[1]: vdict[d.nodes[1]][0]
                 }
                 
-                e['dirs'] = translate_dir(d, ids)
-                e['refs_by_dir'] = translate_refsdir(e['refs_by_dir'], ids)
+                e['dirs'] = d.translate(d, ids)
+                e['refs_by_dir'] = self.translate_refsdir(e['refs_by_dir'], ids)
                 
                 if e['id_old'] in edgesToAdd:
                     
@@ -8224,13 +8343,14 @@ class PyPath(object):
                             e['s_t_old'][1]: enew[1]
                         }
                         
-                        eenew['dirs'] = translate_dir(e['dirs'], ids)
+                        eenew['dirs'] = e['dirs'].translate(ids)
                         eenew['refs_by_dir'] = \
-                            translate_refsdir(e['refs_by_dir'], ids)
+                            self.translate_refsdir(e['refs_by_dir'], ids)
                         
                         # copying the remaining attributes
                         for eattr in e.attributes():
-                            eenew[eattr] = copy.deepcopy(e[eattr])
+                            if eattr != 'dirs' and eattr != 'refs_by_dir':
+                                eenew[eattr] = copy.deepcopy(e[eattr])
         
         # setting attributes of vertices
         for vn0, vns in iteritems(vmul):
@@ -8243,17 +8363,28 @@ class PyPath(object):
                 v = graph.vs[vids[vn]]
                 # copying attributes:
                 for vattr in v0.attributes():
-                    v[vattr] = copy.deepcopy(v0[vattr])
+                    if vattr != 'name':
+                        v[vattr] = copy.deepcopy(v0[vattr])
+        
+        # removing temporary edge attributes
+        del self.graph.es['id_old']
+        del self.graph.es['s_t_old']
+        
+        self.collapse_by_name()
         
         self.ncbi_tax_id = target
         
+        self.update_vname()
+        self.update_vindex()
+        self.genesymbol_labels(remap_all = True)
+        
         """
         # testing:
-        import pypath
+import pypath
 
-        pa = pypath.PyPath()
-        pa.init_network({'signor': pypath.data_formats.pathway['signor']})
-        pa.orthology_translation(10090, 9606)
+pa = pypath.PyPath()
+pa.init_network({'signor': pypath.data_formats.pathway['signor']})
+pa.orthology_translation(10090, 9606)
         """
     
     def reload(self):
