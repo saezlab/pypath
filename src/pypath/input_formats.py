@@ -139,11 +139,12 @@ class UniprotListMapping(object):
                  targetNameType = None, target_ac_name = None,
                  bi = False,
                  ncbi_tax_id = 9606,
-                 swissprot = 'yes'):
+                 swissprot = True):
         """
         Provides parameters for downloading mapping table from UniProt
         `Upload Lists` webservice.
         """
+        self.swissprot = swissprot
         self.ac_mapping = ac_mapping
         self.bi = bi
         self.ncbi_tax_id = ncbi_tax_id

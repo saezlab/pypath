@@ -184,7 +184,7 @@ class Direction(object):
         Adds directionality information with
         the corresponding data source named.
         '''
-        if self.check_param(direction):
+        if self.check_param(direction) and len(source):
             self.dirs[direction] = True
             source = source if isinstance(source, set) \
                 else set(source) if isinstance(source, list) \
@@ -266,7 +266,7 @@ class Direction(object):
             return self.negative[direction] or self.positive[direction]
 
     def set_sign(self, direction, sign, source):
-        if self.check_nodes(direction):
+        if self.check_nodes(direction) and len(source):
             self.set_dir(direction, source)
             if sign == 'positive':
                 self.positive[direction] = True
@@ -7975,7 +7975,9 @@ class PyPath(object):
                       set(self.graph.vs[e.target]['complexes'][cs].keys())) for cs in csources]) > 0
                 for e in self.graph.es]
     
-    def orthology_translation(self, target, source = None):
+    def orthology_translation(self, target, source = None,
+                              mapping_id_type = 'refseqp',
+                              graph = None):
         """
         Translates the current object to another organism by orthology.
         Proteins without known ortholog will be deleted.
@@ -7983,11 +7985,260 @@ class PyPath(object):
         :param int target: NCBI Taxonomy ID of the target organism.
             E.g. 10090 for mouse.
         """
+        graph = self.graph if graph is None else graph
         source = self.ncbi_tax_id if source is None else source
-        orto = dataio.homologene_dict(source, target, 'entrez')
+        orto = dataio.homologene_dict(source, target, mapping_id_type)
+        vdict = {}
         
-        for l in orto:
-            pass
+        for v in graph.vs:
+            # translating source UniProt to intermediate IDs
+            sids = self.mapper.map_name(v['name'],
+                                        'uniprot',
+                                        mapping_id_type,
+                                        ncbi_tax_id = source)
+            
+            # translating orthologs
+            tids = set([])
+            tids = \
+                reduce(
+                    lambda sids1, sids2:
+                        sids1 | sids2,
+                    map(
+                        lambda sid:
+                            orto[sid],
+                        filter(
+                            lambda sid:
+                                sid in orto,
+                            sids
+                        )
+                    ),
+                    set([])
+                )
+            
+            # translating target intermetiate IDs to UniProt
+            tup = set([])
+            tup = \
+                sorted(
+                    set(
+                        list(
+                            itertools.chain(
+                                map(
+                                    lambda tid:
+                                        self.mapper.map_name(tid,
+                                                            mapping_id_type,
+                                                            'uniprot',
+                                                            ncbi_tax_id = target),
+                                    tids
+                                )
+                            )
+                        )
+                    )
+                )
+            
+            vdict[v['name']] = tup
+        
+        # nodes could not be mapped are to be deleted
+        vids = dict(map(lambda v: (v[1], v[0]), enumerate(graph.vs['name'])))
+        toDel = \
+            map(
+                lambda v:
+                    vids[v],
+                map(
+                    lambda v:
+                        v[0],
+                    filter(
+                        lambda v:
+                            not len(v[1]) \
+                            # nodes of other species or compounds ignored
+                            and graph.vs[vids[v]]['ncbi_tax_id'] == source,
+                        iteritems(vdict)
+                    )
+                )
+            )
+        
+        ndel = len(toDel)
+        graph.delete_vertices(vids)
+        
+        # renaming vertices
+        newnames = \
+            list(
+                map(
+                    lambda v:
+                        vdict[v['name']][0] \
+                            # nodes of other species or compounds ignored
+                            if v['ncbi_tax_id'] == source \
+                            else v['name'],
+                    graph.vs
+                )
+            )
+        
+        graph.vs['name'] = newnames
+        
+        # the new nodes to be added because of ambiguous mapping
+        toAdd = \
+            list(
+                set(
+                    itertools.chain(
+                        map(
+                            lambda v:
+                                v[1:],
+                            vdict.values()
+                        )
+                    )
+                )
+            )
+        
+        graph += toAdd
+        
+        # this is a dict of vertices to be multiplied:
+        vmul = dict(map(lambda v: (v[0], v), vdict.values()))
+        
+        # compiling a dict of new edges to be added due to ambigous mapping
+        
+        # this is for unambiguously identify edges both at directed and
+        # undirected graphs after reindexing at adding new edges:
+        graph.es['id_old'] = list(range(graph.ecount()))
+        graph.es['s_t_old'] = \
+            list(
+                map(
+                    lambda e:
+                        (
+                            graph.vs[e.source]['name'],
+                            graph.vs[e.target]['name']
+                        ),
+                    graph.es
+                )
+            )
+        
+        edgesToAdd = \
+            dict(
+                map(
+                    lambda epar:
+                        (
+                            # the parent edge original id as key
+                            e['id_old'],
+                            list(
+                                filter(
+                                    lambda enew:
+                                        # removing the parent edge itself
+                                        enew[0] != epar[0] or \
+                                        enew[1] != epar[1],
+                                    itertools.product(
+                                        vmul[epar[0]],
+                                        vmul[epar[1]]
+                                    )
+                                )
+                            )
+                        ),
+                    # only for less typing
+                    map(
+                        lambda e:
+                            (
+                                graph.vs[e.source]['name'],
+                                graph.vs[e.target]['name']
+                            ),
+                        graph.es
+                    )
+                )
+            )
+        
+        # creating new edges
+        graph += list(set(itertools.chain(edgesToAdd.values())))
+        
+        ##
+        def translate_dir(d, ids):
+            # new Direction object
+            newd = Direction(ids[d.nodes[0]], ids[d.nodes[1]])
+            
+            # copying directions
+            for k, v in iteritems(d.sources):
+                di = (ids[k[0]], ids[k[1]]) if type(k) is tuple else k
+                newd.set_dir(di, v)
+            
+            # copying signs
+            for di in [d.straight, d.reverse]:
+                
+                pos, neg = d.get_sign(di, sources = True)
+                
+                newd.set_sign((ids[di[0]], ids[di[1]]), 'positive', pos)
+                newd.set_sign((ids[di[0]], ids[di[1]]), 'negative', pos)
+            
+            return di
+        
+        def translate_refsdir(rd, ids):
+            new_refsdir = {}
+                for k, v in iteritems(rd):
+                    di = (ids[k[0]], ids[k[1]]) if type(k) is tuple else k
+                    new_refsdir[di] = v
+            
+            return new_refsdir
+        
+        #
+        vids = dict(map(lambda v: (v[1], v[0]), enumerate(graph.vs['name'])))
+        # setting attributes on old and new edges:
+        for e in graph.es:
+            
+            d = e['dirs']
+            
+            if d.nodes[0] in vdict and d.nodes[1] in vdict:
+                
+                ids = {
+                    d.nodes[0]: vdict[d.nodes[0]][0],
+                    d.nodes[1]: vdict[d.nodes[1]][0]
+                }
+                
+                e['dirs'] = translate_dir(d, ids)
+                e['refs_by_dir'] = translate_refsdir(e['refs_by_dir'], ids)
+                
+                if e['old_id'] in edgesToAdd:
+                    
+                    for enew in edgesToAdd[e['old_id']]:
+                        
+                        vid1 = vids[enew[0]]
+                        vid2 = vids[enew[1]]
+                        # in case of directed graphs this will be correct:
+                        es = graph.es.select(_source = vid1,
+                                             _target = vid2)
+                        
+                        if not len(es):
+                            # at undirected graphs
+                            # source/target might be opposite:
+                            es = graph.es.select(_source = vid2,
+                                                 _target = vid1)
+                        
+                        if not len(es):
+                            sys.stdout.write('\t:: Could not find edge '\
+                                'between %s and %s!\n' % enew)
+                            continue
+                        
+                        # this is a new edge between orthologs
+                        eenew = es[0]
+                        
+                        ids = {
+                            e['s_t_old'][0]: enew[0],
+                            e['s_t_old'][1]: enew[1]
+                        }
+                        
+                        eenew['dirs'] = translate_dir(e['dirs'], ids)
+                        eenew['refs_by_dir'] = \
+                            translate_refsdir(e['refs_by_dir'], ids)
+                        
+                        # copying the remaining attributes
+                        for eattr in e.attributes():
+                            eenew[eattr] = copy.deepcopy(e[eattr])
+        
+        # setting attributes of vertices
+        for vn0, vns in iteritems(vmul):
+            # the first ortholog:
+            v0 = graph.vs[vids[vn0]]
+            # now setting its taxon to the target:
+            v0['ncbi_tax_id'] = target
+            for vn in vns:
+                # iterating further orthologs:
+                v = graph.vs[vids[vn]]
+                # copying attributes:
+                for vattr in v0.attributes():
+                    v[vattr] = copy.deepcopy(v0[vattr])
     
     def reload(self):
         modname = self.__class__.__module__

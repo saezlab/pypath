@@ -6242,6 +6242,7 @@ def homologene_dict(source, target, id_type):
     """
     ids = {
         'refseq': 5,
+        'refseqp': 5,
         'genesymbol': 3,
         'gi': 4,
         'entrez': 2
