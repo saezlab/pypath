@@ -487,11 +487,11 @@ class Direction(object):
             self.negative[self.reverse] = self.negative[self.reverse] or \
                 other.negative[self.reverse]
             self.positive_sources[self.straight] = \
-                common.uniqList(self.positive_sources[self.straight] or
-                                other.positive_sources[self.straight])
+                                 self.positive_sources[self.straight] | \
+                                other.positive_sources[self.straight]
             self.negative_sources[self.reverse] = \
-                common.uniqList(self.negative_sources[self.reverse] +
-                                other.negative_sources[self.reverse])
+                                 self.negative_sources[self.reverse] | \
+                                other.negative_sources[self.reverse]
     
     def translate(self, ids):
         # new Direction object
@@ -1728,7 +1728,9 @@ class PyPath(object):
         for name, count in iteritems(dupli):
             if count > 1:
                 nodes = graph.vs.select(name = name)
-                self.merge_nodes(nodes)
+                # the number of nodes might have changed
+                if len(nodes) > 1:
+                    self.merge_nodes(nodes)
     
     def merge_nodes(self, nodes, primary = None, graph = None):
         """
@@ -1741,8 +1743,11 @@ class PyPath(object):
                             if None the lowest ID selected.
         """
         graph = self.graph if graph is None else graph
+        nodes = sorted(list(map(lambda n:
+                            n.index if type(n) is not int else n, nodes)))
         nodes = sorted(nodes)
         primary = nodes[0] if primary is None else primary
+        primary = primary.index if type(primary) is not int else primary
         nonprimary = list(filter(lambda n: n != primary, nodes))
         graph.vs['id_merge'] = list(range(graph.vcount()))
         
@@ -1750,7 +1755,7 @@ class PyPath(object):
         vprim = graph.vs[primary]
         for attr in vprim.attributes():
             if attr != 'name':
-                v[attr] = self.combine_attr(
+                vprim[attr] = self.combine_attr(
                     list(
                         map(
                             lambda vid:
@@ -1792,16 +1797,18 @@ class PyPath(object):
         # collecting the edges of all source vertices into dict
         ses = \
             dict(
-                lambda s:
-                    (
-                        # id_old of source vertices:
-                        s,
-                        # edges of current source node:
-                        set(map(lambda e: e.index,
-                            itertools.chain(graph.es.select(_source = s),
-                                            graph.es.select(_target = s))))
-                    ),
-                sources
+                map(
+                    lambda s:
+                        (
+                            # id_old of source vertices:
+                            s,
+                            # edges of current source node:
+                            set(map(lambda e: e.index,
+                                itertools.chain(graph.es.select(_source = s),
+                                                graph.es.select(_target = s))))
+                        ),
+                    sources
+                )
             )
         
         # collecting edges to be newly created
@@ -1813,10 +1820,10 @@ class PyPath(object):
                 # looking up if target edge already exists:
                 vid1 = target if e.source == s else e.source
                 vid2 = target if e.target == s else e.target
-                te = get_eid(vid1, vid2, error = False)
+                te = graph.get_eid(vid1, vid2, error = False)
                 if te == -1:
                     # target edge not found, needs to be added:
-                    toAdd.append((vid1, vid2))
+                    toAdd.add((vid1, vid2))
         
         # creating new edges
         graph.add_edges(toAdd)
@@ -1833,8 +1840,8 @@ class PyPath(object):
                 # looking up target edge and peer vertex:
                 vid1 = t if e.source == s else e.source
                 vid2 = t if e.target == s else e.target
-                vid_peer = vid1 if e.target == s else e.source
-                te = graph.es[get_eid(vid1, vid2)]
+                vid_peer = e.source if e.target == s else e.target
+                te = graph.es[graph.get_eid(vid1, vid2)]
                 
                 # old direction:
                 d = e['dirs']
@@ -8125,10 +8132,14 @@ class PyPath(object):
         :param int target: NCBI Taxonomy ID of the target organism.
             E.g. 10090 for mouse.
         """
+        return_graph = graph is not None
         graph = self.graph if graph is None else graph
         source = self.ncbi_tax_id if source is None else source
         orto = dataio.homologene_dict(source, target, mapping_id_type)
         vdict = {}
+        
+        vcount_before = graph.vcount()
+        ecount_before = graph.ecount()
         
         for v in graph.vs:
             # translating source UniProt to intermediate IDs
@@ -8310,7 +8321,7 @@ class PyPath(object):
                     d.nodes[1]: vdict[d.nodes[1]][0]
                 }
                 
-                e['dirs'] = d.translate(d, ids)
+                e['dirs'] = d.translate(ids)
                 e['refs_by_dir'] = self.translate_refsdir(e['refs_by_dir'], ids)
                 
                 if e['id_old'] in edgesToAdd:
@@ -8370,14 +8381,22 @@ class PyPath(object):
         del self.graph.es['id_old']
         del self.graph.es['s_t_old']
         
-        self.collapse_by_name()
+        self.collapse_by_name(graph = graph)
         
-        self.ncbi_tax_id = target
+        if not return_graph:
+            self.ncbi_tax_id = target
+            
+            self.update_vname()
+            self.update_vindex()
+            self.genesymbol_labels(remap_all = True)
         
-        self.update_vname()
-        self.update_vindex()
-        self.genesymbol_labels(remap_all = True)
+        sys.stdout.write('\t:: Network successfully translated from `%u` to'\
+            ' `%u`.\n\t   Nodes before: %u, after: %u\n\t   Edges before: %u,'\
+            ' after %u\n' % (source, target, vcount_before, graph.vcount(), 
+                            ecount_before, graph.ecount()))
         
+        if return_graph:
+            return graph
         """
         # testing:
 import pypath
@@ -8385,6 +8404,7 @@ import pypath
 pa = pypath.PyPath()
 pa.init_network({'signor': pypath.data_formats.pathway['signor']})
 pa.orthology_translation(10090, 9606)
+
         """
     
     def reload(self):
