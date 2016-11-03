@@ -186,9 +186,7 @@ class Direction(object):
         '''
         if self.check_param(direction) and len(source):
             self.dirs[direction] = True
-            source = source if isinstance(source, set) \
-                else set(source) if isinstance(source, list) \
-                else set([source])
+            source = common.addToSet(set([]), source)
             self.sources[direction] = self.sources[direction] | source
 
     def get_dir(self, direction, sources=False):
@@ -268,14 +266,15 @@ class Direction(object):
     def set_sign(self, direction, sign, source):
         if self.check_nodes(direction) and len(source):
             self.set_dir(direction, source)
+            source = common.addToSet(set([]), source)
             if sign == 'positive':
                 self.positive[direction] = True
-                if source not in self.positive_sources[direction]:
-                    self.positive_sources[direction].add(source)
+                self.positive_sources[direction] = \
+                    self.positive_sources[direction] | source
             else:
                 self.negative[direction] = True
-                if source not in self.negative_sources[direction]:
-                    self.negative_sources[direction].add(source)
+                self.negative_sources[direction] = \
+                    self.negative_sources[direction] | source
 
     def get_sign(self, direction, sign=None, sources=False):
         if self.check_nodes(direction):
@@ -8016,13 +8015,14 @@ class PyPath(object):
                 )
             
             # translating target intermetiate IDs to UniProt
+            
             tup = set([])
             tup = \
                 sorted(
                     set(
                         list(
                             itertools.chain(
-                                map(
+                                *map(
                                     lambda tid:
                                         self.mapper.map_name(tid,
                                                             mapping_id_type,
@@ -8039,25 +8039,32 @@ class PyPath(object):
         
         # nodes could not be mapped are to be deleted
         vids = dict(map(lambda v: (v[1], v[0]), enumerate(graph.vs['name'])))
+        
+        # print(list(iteritems(vdict))[:10])
+        
+        
+        
         toDel = \
-            map(
-                lambda v:
-                    vids[v],
+            list(
                 map(
                     lambda v:
-                        v[0],
-                    filter(
+                        vids[v],
+                    map(
                         lambda v:
-                            not len(v[1]) \
-                            # nodes of other species or compounds ignored
-                            and graph.vs[vids[v]]['ncbi_tax_id'] == source,
-                        iteritems(vdict)
+                            v[0],
+                        filter(
+                            lambda v:
+                                not len(v[1]) \
+                                # nodes of other species or compounds ignored
+                                and graph.vs[vids[v[0]]]['ncbi_tax_id'] == source,
+                            iteritems(vdict)
+                        )
                     )
                 )
             )
         
         ndel = len(toDel)
-        graph.delete_vertices(vids)
+        graph.delete_vertices(toDel)
         
         # renaming vertices
         newnames = \
@@ -8079,7 +8086,7 @@ class PyPath(object):
             list(
                 set(
                     itertools.chain(
-                        map(
+                        *map(
                             lambda v:
                                 v[1:],
                             vdict.values()
@@ -8091,7 +8098,8 @@ class PyPath(object):
         graph += toAdd
         
         # this is a dict of vertices to be multiplied:
-        vmul = dict(map(lambda v: (v[0], v), vdict.values()))
+        vmul = dict(map(lambda v: (v[0], v),
+                    filter(lambda v: len(v), vdict.values())))
         
         # compiling a dict of new edges to be added due to ambigous mapping
         
@@ -8116,34 +8124,30 @@ class PyPath(object):
                     lambda epar:
                         (
                             # the parent edge original id as key
-                            e['id_old'],
+                            epar[0],
                             list(
                                 filter(
                                     lambda enew:
                                         # removing the parent edge itself
-                                        enew[0] != epar[0] or \
-                                        enew[1] != epar[1],
+                                        enew[0] != epar[1][0] or \
+                                        enew[1] != epar[1][1],
                                     itertools.product(
-                                        vmul[epar[0]],
-                                        vmul[epar[1]]
+                                        vmul[epar[1][0]],
+                                        vmul[epar[1][1]]
                                     )
                                 )
                             )
                         ),
-                    # only for less typing
                     map(
                         lambda e:
-                            (
-                                graph.vs[e.source]['name'],
-                                graph.vs[e.target]['name']
-                            ),
+                            (e['id_old'], e['s_t_old']),
                         graph.es
                     )
                 )
             )
         
         # creating new edges
-        graph += list(set(itertools.chain(edgesToAdd.values())))
+        graph += list(set(itertools.chain(*edgesToAdd.values())))
         
         ##
         def translate_dir(d, ids):
@@ -8163,13 +8167,13 @@ class PyPath(object):
                 newd.set_sign((ids[di[0]], ids[di[1]]), 'positive', pos)
                 newd.set_sign((ids[di[0]], ids[di[1]]), 'negative', pos)
             
-            return di
+            return newd
         
         def translate_refsdir(rd, ids):
             new_refsdir = {}
-                for k, v in iteritems(rd):
-                    di = (ids[k[0]], ids[k[1]]) if type(k) is tuple else k
-                    new_refsdir[di] = v
+            for k, v in iteritems(rd):
+                di = (ids[k[0]], ids[k[1]]) if type(k) is tuple else k
+                new_refsdir[di] = v
             
             return new_refsdir
         
@@ -8190,9 +8194,10 @@ class PyPath(object):
                 e['dirs'] = translate_dir(d, ids)
                 e['refs_by_dir'] = translate_refsdir(e['refs_by_dir'], ids)
                 
-                if e['old_id'] in edgesToAdd:
+                if e['id_old'] in edgesToAdd:
                     
-                    for enew in edgesToAdd[e['old_id']]:
+                    # iterating new edges between orthologs
+                    for enew in edgesToAdd[e['id_old']]:
                         
                         vid1 = vids[enew[0]]
                         vid2 = vids[enew[1]]
@@ -8239,6 +8244,16 @@ class PyPath(object):
                 # copying attributes:
                 for vattr in v0.attributes():
                     v[vattr] = copy.deepcopy(v0[vattr])
+        
+        self.ncbi_tax_id = target
+        
+        """
+import pypath
+
+pa = pypath.PyPath()
+pa.init_network({'signor': pypath.data_formats.pathway['signor']})
+pa.orthology_translation(10090, 9606)
+        """
     
     def reload(self):
         modname = self.__class__.__module__
