@@ -8165,7 +8165,7 @@ class PyPath(object):
                 pos, neg = d.get_sign(di, sources = True)
                 
                 newd.set_sign((ids[di[0]], ids[di[1]]), 'positive', pos)
-                newd.set_sign((ids[di[0]], ids[di[1]]), 'negative', pos)
+                newd.set_sign((ids[di[0]], ids[di[1]]), 'negative', neg)
             
             return newd
         
@@ -8248,11 +8248,12 @@ class PyPath(object):
         self.ncbi_tax_id = target
         
         """
-import pypath
+        # testing:
+        import pypath
 
-pa = pypath.PyPath()
-pa.init_network({'signor': pypath.data_formats.pathway['signor']})
-pa.orthology_translation(10090, 9606)
+        pa = pypath.PyPath()
+        pa.init_network({'signor': pypath.data_formats.pathway['signor']})
+        pa.orthology_translation(10090, 9606)
         """
     
     def reload(self):
