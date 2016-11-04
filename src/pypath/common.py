@@ -31,7 +31,7 @@ __all__ = [
     'simpson_index', 'simpson_index_counts', 'jaccard_index', 'console', 'wcl',
     'flatList', 'charTypes', 'delEmpty', '__version__', 'get_args',
     'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs', 'md5',
-    'mod_keywords', 'Namespace', 'fun'
+    'mod_keywords', 'Namespace', 'fun', 'taxids', 'taxa', 'phosphoelm_taxids'
 ]
 
 # get the location
@@ -462,3 +462,19 @@ taxids = {
 }
 
 taxa = dict(map(lambda i: (i[1], i[0]), taxids.items()))
+
+phosphoelm_taxids = {
+    9606: 'Homo sapiens',
+    10090: 'Mus musculus',
+    9913: 'Bos taurus',
+    9986: 'Oryctolagus cuniculus',
+    9615: 'Canis familiaris',
+    10029: 'Cricetulus griseus',
+    9267: 'Didelphis virginiana',
+    9031: 'Gallus gallus',
+    10036: 'Mesocricetus auratus',
+    9940: 'Ovis aries',
+    10116: 'Rattus norvegicus',
+    9823: 'Sus scrofa',
+    8355: 'Xenopus laevis'
+}

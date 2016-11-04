@@ -5623,6 +5623,14 @@ class PyPath(object):
                 kwargs['strict'] = False
                 kwargs['mapper'] = self.mapper
         
+        if source == 'Signor':
+            kwargs['organism'] = self.ncbi_tax_id
+        
+        if source == 'phosphoELM':
+            kwargs['organism'] = self.ncbi_tax_id
+            if self.ncbi_tax_id != 9606 and 'ltp_only' not in kwargs:
+                kwargs['ltp_only'] = False
+        
         self.update_vname()
         toCall = getattr(dataio, functions[source])
         data = toCall(**kwargs)

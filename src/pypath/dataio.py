@@ -2451,9 +2451,25 @@ def get_elm_domains():
     return result
 
 
-def get_phosphoelm(organism='Homo sapiens', ltp_only=True):
+def get_phosphoelm(organism=9606, ltp_only=True):
+    """
+    Downloads kinase-substrate interactions from phosphoELM.
+    Returns list of dicts.
+    
+    :param int organism: NCBI Taxonomy ID.
+    :param bool ltp_only: Include only low-throughput interactions.
+    """
     result = []
     non_digit = re.compile(r'[^\d.-]+')
+    
+    if organism is None:
+        _organism = None
+    elif organism in common.phosphoelm_taxid:
+        _organism = common.phosphoelm_taxid[organism]
+    else:
+        sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
+        return []
+    
     url = urls.urls['p_elm']['url']
     c = curl.Curl(url, silent=False)
     data = c.result
@@ -2465,9 +2481,12 @@ def get_phosphoelm(organism='Homo sapiens', ltp_only=True):
     data = [l.split('\t') for l in data.split('\n')]
     kinases = get_phelm_kinases()
     del data[0]
+    
     for l in data:
-        if len(l) == 9 and l[7] == organism and (not ltp_only or
-                                                 l[6] == 'LTP'):
+        
+        if len(l) == 9 and (l[7] == _organism or _organism is None) \
+            and (not ltp_only or l[6] == 'LTP'):
+            
             l[1] = 1 if '-' not in l[0] else int(l[0].split('-')[1])
             l[0] = l[0].split('-')[0]
             del l[-1]
@@ -2486,6 +2505,7 @@ def get_phosphoelm(organism='Homo sapiens', ltp_only=True):
                 'experiment': l[6],
                 'organism': l[7]
             })
+    
     return result
 
 
@@ -4151,8 +4171,12 @@ def signor_interactions(organism=9606):
             _organism = common.taxids[organism]
         else:
             sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
+            return []
     else:
         _organism = organism
+    
+    if _organism not in {'human', 'rat', 'mouse'}:
+        return []
     
     url = urls.urls['signor']['all_url_new']
     binary_data = [(b'organism', _organism.encode('utf-8')),
