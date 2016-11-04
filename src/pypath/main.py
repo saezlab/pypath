@@ -8480,10 +8480,11 @@ class PyPath(object):
                 self.load_reflists([
                     reflists.ReferenceList(*refl, inFile = 'all_uniprots')])
             
+            sys.stdout.write('\n')
             self.clean_graph()
         
-        sys.stdout.write('\t:: Network successfully translated from `%u` to'\
-            ' `%u`.\n\t   Nodes before: %u, after: %u\n\t   Edges before: %u,'\
+        sys.stdout.write(' > Network successfully translated from `%u` to'\
+            ' `%u`.\n   Nodes before: %u, after: %u\n   Edges before: %u,'\
             ' after %u\n' % (source, target, vcount_before, graph.vcount(), 
                             ecount_before, graph.ecount()))
         
