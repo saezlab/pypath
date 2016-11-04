@@ -5572,9 +5572,9 @@ class PyPath(object):
         if trace:
             return trace
 
-    def load_phosphoelm(self, trace=False, ltp_only=True, **kwargs):
+    def load_phosphoelm(self, trace=False, **kwargs):
         trace = self.load_phospho_dmi(
-            source='phosphoELM', trace=trace, ltp_only=ltp_only, **kwargs)
+            source='phosphoELM', trace=trace, **kwargs)
         if trace:
             return trace
 
@@ -5630,6 +5630,13 @@ class PyPath(object):
             kwargs['organism'] = self.ncbi_tax_id
             if self.ncbi_tax_id != 9606 and 'ltp_only' not in kwargs:
                 kwargs['ltp_only'] = False
+        
+        if source == 'dbPTM':
+            kwargs['organism'] = self.ncbi_tax_id
+        
+        if self.ncbi_tax_id != 9606 and source not in \
+            ['Signor', 'PhosphoSite', 'phosphoELM', 'dbPTM']:
+            return None
         
         self.update_vname()
         toCall = getattr(dataio, functions[source])
@@ -8219,9 +8226,9 @@ class PyPath(object):
                             v[0],
                         filter(
                             lambda v:
-                                not len(v[1]) \
+                                not len(v[1]) and \
                                 # nodes of other species or compounds ignored
-                                and graph.vs[vids[v[0]]]['ncbi_tax_id'] == source,
+                                graph.vs[vids[v[0]]]['ncbi_tax_id'] == source,
                             iteritems(vdict)
                         )
                     )
@@ -8230,6 +8237,12 @@ class PyPath(object):
         
         ndel = len(toDel)
         graph.delete_vertices(toDel)
+        
+        # this for permanent identification of nodes:
+        graph.vs['id_old'] = list(range(graph.vcount()))
+        # a dict of these permanent ids and the orthologs:
+        ovid_orto = \
+            dict(map(lambda v: (v['id_old'], vdict[v['name']]), graph.vs))
         
         # renaming vertices
         newnames = \
@@ -8257,14 +8270,34 @@ class PyPath(object):
                             vdict.values()
                         )
                     )
-                )
+                # except those already exist:
+                ) - set(graph.vs['name'])
             )
         
         graph += toAdd
         
+        # this for permanent identification of nodes:
+        graph.vs['id_new'] = list(range(graph.vcount()))
+        
         # this is a dict of vertices to be multiplied:
-        vmul = dict(map(lambda v: (v[0], v),
-                    filter(lambda v: len(v), vdict.values())))
+        vmul = \
+            dict(
+                map(
+                    lambda v:
+                        (
+                            graph.vs.select(id_old = v[0])[0]['id_new'],
+                            list(
+                                map(
+                                    lambda vv:
+                                        graph.vs.select(name = vv)[
+                                            0]['id_new'],
+                                    v[1]
+                                )
+                            )
+                        ),
+                    iteritems(ovid_orto)
+                )
+            )
         
         # compiling a dict of new edges to be added due to ambigous mapping
         
@@ -8272,6 +8305,17 @@ class PyPath(object):
         # undirected graphs after reindexing at adding new edges:
         graph.es['id_old'] = list(range(graph.ecount()))
         graph.es['s_t_old'] = \
+            list(
+                map(
+                    lambda e:
+                        (
+                            graph.vs[e.source]['id_new'],
+                            graph.vs[e.target]['id_new']
+                        ),
+                    graph.es
+                )
+            )
+        graph.es['u_old'] = \
             list(
                 map(
                     lambda e:
@@ -8311,34 +8355,48 @@ class PyPath(object):
                 )
             )
         
-        # creating new edges
-        graph += list(set(itertools.chain(*edgesToAdd.values())))
+        # translating the dict values to vertex indices
+        edgesToAddVids = \
+            list(set(
+                map(
+                    lambda e:
+                        (
+                            graph.vs.select(id_new = e[0])[0].index,
+                            graph.vs.select(id_new = e[1])[0].index
+                        ),
+                    itertools.chain(
+                        *edgesToAdd.values()
+                    )
+                )
+            ))
         
-        def translate_refsdir(rd, ids):
-            new_refsdir = {}
-            for k, v in iteritems(rd):
-                di = (ids[k[0]], ids[k[1]]) if type(k) is tuple else k
-                new_refsdir[di] = v
-            
-            return new_refsdir
+        # creating new edges
+        graph += edgesToAddVids
         
         #
-        vids = dict(map(lambda v: (v[1], v[0]), enumerate(graph.vs['name'])))
+        vids = dict(map(lambda v: (v['id_new'], v.index), graph.vs))
+        vnms = dict(map(lambda v: (v['id_new'], v['name']), graph.vs))
         # setting attributes on old and new edges:
         for e in graph.es:
             
             d = e['dirs']
             
-            if d.nodes[0] in vdict and d.nodes[1] in vdict:
+            # this lookup is appropriate as old node names are certainly
+            # unique; for newly added edges `dirs` will be None
+            if d is not None and d.nodes[0] in vdict and d.nodes[1] in vdict:
                 
+                # translation of direction object attached to original edges
                 ids = {
                     d.nodes[0]: vdict[d.nodes[0]][0],
                     d.nodes[1]: vdict[d.nodes[1]][0]
                 }
                 
                 e['dirs'] = d.translate(ids)
-                e['refs_by_dir'] = self.translate_refsdir(e['refs_by_dir'], ids)
+                e['refs_by_dir'] = \
+                    self.translate_refsdir(e['refs_by_dir'], ids)
                 
+                # if new edges have been introduced
+                # based on this specific edge
                 if e['id_old'] in edgesToAdd:
                     
                     # iterating new edges between orthologs
@@ -8358,15 +8416,18 @@ class PyPath(object):
                         
                         if not len(es):
                             sys.stdout.write('\t:: Could not find edge '\
-                                'between %s and %s!\n' % enew)
+                                             'between %s and %s!\n' % (
+                                                graph.vs[vid1]['name'],
+                                                graph.vs[vid2]['name']
+                                                ))
                             continue
                         
                         # this is a new edge between orthologs
                         eenew = es[0]
                         
                         ids = {
-                            e['s_t_old'][0]: enew[0],
-                            e['s_t_old'][1]: enew[1]
+                            e['u_old'][0]: graph.vs[vid1]['name'],
+                            e['u_old'][1]: graph.vs[vid2]['name']
                         }
                         
                         eenew['dirs'] = e['dirs'].translate(ids)
@@ -8381,7 +8442,7 @@ class PyPath(object):
         # setting attributes of vertices
         for vn0, vns in iteritems(vmul):
             # the first ortholog:
-            v0 = graph.vs[vids[vn0]]
+            v0 = graph.vs.select(id_new = vn0)[0]
             # now setting its taxon to the target:
             v0['ncbi_tax_id'] = target
             for vn in vns:
@@ -8394,7 +8455,10 @@ class PyPath(object):
         
         # removing temporary edge attributes
         del self.graph.es['id_old']
+        del self.graph.vs['id_old']
+        del self.graph.vs['id_new']
         del self.graph.es['s_t_old']
+        del self.graph.es['u_old']
         
         self.collapse_by_name(graph = graph)
         

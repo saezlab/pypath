@@ -2464,8 +2464,8 @@ def get_phosphoelm(organism=9606, ltp_only=True):
     
     if organism is None:
         _organism = None
-    elif organism in common.phosphoelm_taxid:
-        _organism = common.phosphoelm_taxid[organism]
+    elif organism in common.phosphoelm_taxids:
+        _organism = common.phosphoelm_taxids[organism]
     else:
         sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
         return []
@@ -2490,21 +2490,23 @@ def get_phosphoelm(organism=9606, ltp_only=True):
             l[1] = 1 if '-' not in l[0] else int(l[0].split('-')[1])
             l[0] = l[0].split('-')[0]
             del l[-1]
+            
             if len(l[5]) > 0 and l[5] in kinases:
                 kinase = kinases[l[5]]
-            result.append({
-                'instance': None,
-                'isoform': l[1],
-                'resaa': l[3],
-                'resnum': int(non_digit.sub('', l[2])),
-                'start': None,
-                'end': None,
-                'substrate': l[0],
-                'kinase': kinase,
-                'references': l[4].split(';'),
-                'experiment': l[6],
-                'organism': l[7]
-            })
+                
+                result.append({
+                    'instance': None,
+                    'isoform': l[1],
+                    'resaa': l[3],
+                    'resnum': int(non_digit.sub('', l[2])),
+                    'start': None,
+                    'end': None,
+                    'substrate': l[0],
+                    'kinase': kinase,
+                    'references': l[4].split(';'),
+                    'experiment': l[6],
+                    'organism': l[7]
+                })
     
     return result
 
@@ -2609,19 +2611,43 @@ def pfam_uniprot(uniprots, infile=None):
     return result
 
 
-def get_dbptm():
+def get_dbptm(organism=9606):
+    """
+    Downloads enzyme-substrate interactions from dbPTM.
+    Returns list of dicts.
+    """
+    if organism is None:
+        _organism = None
+    elif organism in common.dbptm_taxids:
+        _organism = common.dbptm_taxids[organism]
+    else:
+        sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
+        return []
+    
     result = []
     byre = re.compile(r'.*by\s([A-Za-z0-9\s]+)\.*')
     andre = re.compile(r',|and')
     non_digit = re.compile(r'[^\d.-]+')
+    
     for url in urls.urls['dbptm']['urls']:
+        
         c = curl.Curl(url, silent=False)
         extra = c.result
+        
         for k, data in iteritems(extra):
+            
             data = [x.split('\t') for x in data.split('\n')]
+            
             for l in data:
+                
                 if len(l) > 8:
+                    
+                    mnemonic = l[0].split('_')[1].strip()
+                    if mnemonic != _organism:
+                        continue
+                    
                     resnum = int(non_digit.sub('', l[2]))
+                    
                     ptm = ({
                         'substrate': l[1],
                         'typ': l[7].lower(),
@@ -2638,20 +2664,28 @@ def get_dbptm():
                         'start': resnum - 6,
                         'end': resnum + 6
                     })
+                    
                     if ptm['kinase'] is not None:
+                        
                         if 'autocatalysis' in ptm['kinase']:
+                            
                             ptm['kinase'].append(ptm['substrate'])
                             ptm['kinase'].remove('autocatalysis')
+                        
                         ptm['kinase'] = [
                             k.replace('host', '').strip()
                             for k in ptm['kinase']
                         ]
+                        
                         ptm['kinase'] = [
                             k for k in ptm['kinase'] if len(k) > 0
                         ]
+                        
                         if len(ptm['kinase']) == 0:
                             ptm['kinase'] = None
+                        
                     result.append(ptm)
+    
     return result
 
 
@@ -2723,7 +2757,7 @@ def get_depod(organism='Homo sapiens'):
     url_mitab = urls.urls['depod']['urls'][1]
     c = curl.Curl(url, silent=False, encoding='ascii')
     data = c.result
-    data_c = curl.Curl(url_mitab, silent=False, encoding='ascii')
+    data_c = curl.Curl(url_mitab, silent=False, encoding='iso-8859-1')
     data_mitab = c.result
     data = [x.split('\t') for x in data.split('\n')]
     data_mitab = [x.split('\t') for x in data_mitab.split('\n')]

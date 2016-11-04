@@ -1130,7 +1130,7 @@ class Curl(FileOpener):
             try:
                 return content.decode(self.encoding or 'utf-8')
             except:
-                self.print_debug_info(
+                self.print_debug_info('WARNING',
                     'Failed '
                     'decoding downloaded bytes content with encoding %s. '
                     'Result might be of type bytes' %

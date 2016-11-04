@@ -31,7 +31,8 @@ __all__ = [
     'simpson_index', 'simpson_index_counts', 'jaccard_index', 'console', 'wcl',
     'flatList', 'charTypes', 'delEmpty', '__version__', 'get_args',
     'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs', 'md5',
-    'mod_keywords', 'Namespace', 'fun', 'taxids', 'taxa', 'phosphoelm_taxids'
+    'mod_keywords', 'Namespace', 'fun', 'taxids', 'taxa', 'phosphoelm_taxids',
+    'dbptm_taxids'
 ]
 
 # get the location
@@ -477,4 +478,26 @@ phosphoelm_taxids = {
     10116: 'Rattus norvegicus',
     9823: 'Sus scrofa',
     8355: 'Xenopus laevis'
+}
+
+dbptm_taxids = {
+    9606: 'HUMAN',
+    10090: 'MOUSE',
+    7227: 'DROME',
+    10116: 'RAT',
+    559292: 'YEAST',
+    284812: 'SCHPO',
+    4081: 'SOLLC',
+    3702: 'ARATH',
+    9940: 'SHEEP',
+    9913: 'BOVIN',
+    9925: 'CAPHI',
+    44689: 'DICDI',
+    4577: 'MAIZE',
+    9823: 'PIG',
+    9615: 'CANLF',
+    6239: 'CAEEL',
+    8455: 'XENLA',
+    83333: 'ECOLI',
+    1891767: 'SV40'
 }
