@@ -5616,6 +5616,13 @@ class PyPath(object):
             'HPRD': 'get_hprd_ptms',
             'Li2012': 'li2012_phospho'
         }
+        
+        if source == 'PhosphoSite' and self.ncbi_tax_id in common.taxids:
+            kwargs['organism'] = common.taxids[self.ncbi_tax_id]
+            if 'strict' not in kwargs:
+                kwargs['strict'] = False
+                kwargs['mapper'] = self.mapper
+        
         self.update_vname()
         toCall = getattr(dataio, functions[source])
         data = toCall(**kwargs)
@@ -8397,15 +8404,6 @@ class PyPath(object):
         
         if return_graph:
             return graph
-        """
-        # testing:
-import pypath
-
-pa = pypath.PyPath()
-pa.init_network({'signor': pypath.data_formats.pathway['signor']})
-pa.orthology_translation(10090, 9606)
-
-        """
     
     def reload(self):
         modname = self.__class__.__module__

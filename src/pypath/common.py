@@ -451,3 +451,14 @@ def fun():
     for n in __name__.split('.'):
         print(n, n in globals())
     return __name__
+
+taxids = {
+    9606: 'human',
+    10090: 'mouse',
+    10116: 'rat',
+    9031: 'chicken',
+    9913: 'cow',
+    9986: 'rabbit',
+}
+
+taxa = dict(map(lambda i: (i[1], i[0]), taxids.items()))

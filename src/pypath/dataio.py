@@ -1830,10 +1830,11 @@ def get_comppi():
     return data
 
 
-def get_psite_phos(raw=True, organism='human'):
+def get_psite_phos(raw=True, organism='human', strict=True, mapper=None):
     url = urls.urls['psite_kin']['url']
     c = curl.Curl(
         url, silent=False, compr='gz', encoding='iso-8859-1', large=True)
+    orto = {}
     data = c.result
     cols = {
         'kinase': 1,
@@ -1849,39 +1850,97 @@ def get_psite_phos(raw=True, organism='human'):
     motre = re.compile(r'(_*)([A-Za-z]+)(_*)')
     for r in data:
         if organism is None or \
-                (r['kinase_org'] == organism and r['substrate_org'] == organism):
-            r['resaa'] = r['residue'][0]
-            r['resnum'] = int(non_digit.sub('', r['residue'][1:]))
-            mot = motre.match(r['motif'])
-            isoform = 1 if '-' not in r['substrate'] else r['substrate'].split(
-                '-')[1]
-            r['substrate'] = r['substrate'].split('-')[0]
-            if mot:
-                r['start'] = r['resnum'] - 7 + len(mot.groups()[0])
-                r['end'] = r['resnum'] + 7 - len(mot.groups()[2])
-                r['instance'] = r['motif'].replace('_', '').upper()
+            ((r['kinase_org'] == organism or not strict) and \
+            r['substrate_org'] == organism):
+            
+            if r['kinase_org'] != organism:
+                korg = r['kinase_org']
+                # attempting to map by orthology:
+                if korg in common.taxa and organism in common.taxa:
+                    
+                    mapper = mapping.Mapper() if mapper is None else mapper
+                    ktaxid = common.taxa[korg]
+                    taxid = common.taxa[organism]
+                    
+                    if korg not in orto:
+                        orto[korg] = homologene_dict(ktaxid, taxid, 'refseqp')
+                    
+                    korg_refseq = mapper.map_name(r['kinase'],
+                                                    'uniprot',
+                                                    'refseqp',
+                                                    ktaxid)
+                    
+                    kin_uniprot = \
+                        list(
+                            itertools.chain(
+                                *map(
+                                    lambda ors:
+                                        mapper.map_name(ors,
+                                                        'refseqp',
+                                                        'uniprot',
+                                                        taxid),
+                                    itertools.chain(
+                                        *map(
+                                            lambda rs:
+                                                orto[korg][rs],
+                                            filter(
+                                                lambda rs:
+                                                    rs in orto[korg],
+                                                korg_refseq
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
             else:
-                r['start'] = None
-                r['end'] = None
-                r['instance'] = None
-            if raw:
-                result.append(r)
-            else:
-                res = intera.Residue(r['resnum'], r['resaa'], r['substrate'])
-                mot = intera.Motif(
-                    r['substrate'],
-                    r['start'],
-                    r['end'],
-                    instance=r['instance'])
-                ptm = intera.Ptm(protein=r['substrate'],
-                                 residue=res,
-                                 motif=mot,
-                                 typ='phosphorylation',
-                                 source='PhosphoSite')
-                dom = intera.Domain(protein=r['kinase'])
-                dommot = intera.DomainMotif(
-                    domain=dom, ptm=ptm, sources=['PhosphoSite'])
-                result.append(dommot)
+                kin_uniprot = [r['kinase']]
+            
+            for kinase in kin_uniprot:
+            
+                r['resaa'] = r['residue'][0]
+                r['resnum'] = int(non_digit.sub('', r['residue'][1:]))
+                mot = motre.match(r['motif'])
+                
+                isoform = 1 if '-' not in r['substrate'] else r['substrate'].split(
+                    '-')[1]
+                
+                r['substrate'] = r['substrate'].split('-')[0]
+                
+                if mot:
+                    r['start'] = r['resnum'] - 7 + len(mot.groups()[0])
+                    r['end'] = r['resnum'] + 7 - len(mot.groups()[2])
+                    r['instance'] = r['motif'].replace('_', '').upper()
+                else:
+                    r['start'] = None
+                    r['end'] = None
+                    r['instance'] = None
+                
+                if raw:
+                    r['kinase'] = kinase
+                    result.append(r)
+                else:
+                    res = intera.Residue(r['resnum'], r['resaa'], r['substrate'])
+                    
+                    mot = intera.Motif(
+                        r['substrate'],
+                        r['start'],
+                        r['end'],
+                        instance=r['instance'])
+                    
+                    ptm = intera.Ptm(protein=r['substrate'],
+                                    residue=res,
+                                    motif=mot,
+                                    typ='phosphorylation',
+                                    source='PhosphoSite')
+                    
+                    dom = intera.Domain(protein=kinase)
+                    
+                    dommot = intera.DomainMotif(
+                        domain=dom, ptm=ptm, sources=['PhosphoSite'])
+                    
+                    result.append(dommot)
+    
     return result
 
 
