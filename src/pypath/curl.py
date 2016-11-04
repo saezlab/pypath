@@ -1027,8 +1027,15 @@ class Curl(FileOpener):
         self.post_str = '' if self.post is None else \
             '?' + '&'.join(sorted([i[0] + '=' + i[1]
                                    for i in iteritems(self.post)]))
+        
+        if self.binary_data:
+            bindata = str(self.binary_data)
+        else:
+            bindata = ''
+        
         self.urlmd5 = hashlib.md5(
-            self.unicode2bytes('%s%s' % (self.url, self.post_str))).hexdigest()
+            self.unicode2bytes('%s%s%s' % \
+                (self.url, self.post_str, bindata))).hexdigest()
 
     def cache_dir_exists(self):
         if not os.path.exists(os.path.join(os.getcwd(), self.cache_dir)):

@@ -3959,23 +3959,22 @@ def trip_interactions(exclude_methods=['Inference', 'Speculation'],
     ] for unipr, d in iteritems(data)]
 
 
-def load_signor_ptms(fname='signor_22052015.tab'):
-    '''
-    This function is deprecated, you should not use it.
-    Loads and processes Signor PTMs from local file.
+def load_signor_ptms(organism=9606):
+    """
+    Loads and processes Signor PTMs.
     Returns dict of dicts.
-    '''
-    url = urls.urls['signor']['all_url']
-    c = curl.Curl(url, silent=False, large=True)
-    data = c.result
+    """
     reres = re.compile(r'([A-Za-z]{3})([0-9]+)')
     result = []
     aalet = dict((k.lower().capitalize(), v)
                  for k, v in iteritems(common.aaletters))
-    null = data.readline()
+    
+    data = signor_interactions(organism=organism)
+    
     for d in data:
-        d = d.decode('utf-8').strip().split('\t')
+        
         resm = reres.match(d[10])
+        
         if resm is not None:
             aa = aalet[resm.groups()[0].capitalize()]
             aanum = int(resm.groups()[1])
@@ -3992,6 +3991,7 @@ def load_signor_ptms(fname='signor_22052015.tab'):
                 'resaa': aa,
                 'motif': inst
             })
+    
     return result
 
 
@@ -4138,7 +4138,7 @@ def csv_sep_change(csv, old, new):
     return ''.join(clean_csv)
 
 
-def signor_interactions(organism='human'):
+def signor_interactions(organism=9606):
     '''
     Downloads the full dataset from Signor.
     Returns the file contents.
@@ -4146,10 +4146,18 @@ def signor_interactions(organism='human'):
     Note: this method has been updated Oct 2016,
     as Signor updated both their data and webpage.
     '''
-
+    if type(organism) is int:
+        if organism in common.taxids:
+            _organism = common.taxids[organism]
+        else:
+            sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
+    else:
+        _organism = organism
+    
     url = urls.urls['signor']['all_url_new']
-    binary_data = [(b'organism', organism.encode('utf-8')),
+    binary_data = [(b'organism', _organism.encode('utf-8')),
                    (b'format', b'csv'), (b'submit', b'Download')]
+    
     c = curl.Curl(
         url,
         silent=False,
@@ -4158,7 +4166,7 @@ def signor_interactions(organism='human'):
         timeout=30,
         binary_data=binary_data,
         return_headers=True)
-
+    
     _ = c.result.readline()
     sep = '@#@#@'
     lines = c.result.read().decode('utf-8')
