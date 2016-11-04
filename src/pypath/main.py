@@ -8373,6 +8373,8 @@ class PyPath(object):
         # creating new edges
         graph += edgesToAddVids
         
+        print(len(list(filter(lambda e: e['dirs'] is None, self.graph.es))))
+        
         #
         vids = dict(map(lambda v: (v['id_new'], v.index), graph.vs))
         vnms = dict(map(lambda v: (v['id_new'], v['name']), graph.vs))
@@ -8468,6 +8470,17 @@ class PyPath(object):
             self.update_vname()
             self.update_vindex()
             self.genesymbol_labels(remap_all = True)
+            refl = (
+                'uniprot',
+                'protein',
+                target
+            )
+            
+            if refl not in self.reflists:
+                self.load_reflists([
+                    reflists.ReferenceList(*refl, inFile = 'all_uniprots')])
+            
+            self.clean_graph()
         
         sys.stdout.write('\t:: Network successfully translated from `%u` to'\
             ' `%u`.\n\t   Nodes before: %u, after: %u\n\t   Edges before: %u,'\
