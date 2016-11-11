@@ -226,7 +226,9 @@ class Ptm(object):
             return False
 
     def add_source(self, source):
-        if type(source) in common.charTypes:
+        if source is None:
+            return None
+        elif type(source) in common.charTypes:
             self._add_source(source)
         else:
             for s in source:
@@ -354,7 +356,9 @@ class Motif(object):
         return False
 
     def add_source(self, source):
-        if type(source) in common.charTypes:
+        if source is None:
+            return None
+        elif type(source) in common.charTypes:
             self._add_source(source)
         else:
             for s in source:
@@ -562,7 +566,9 @@ class DomainDomain(object):
         return other in self.domains[0] or other in self.domains[1]
 
     def add_sources(self, source):
-        if type(source) in common.charTypes:
+        if source is None:
+            return None
+        elif type(source) in common.charTypes:
             self._add_source(source)
         else:
             for s in source:
@@ -637,7 +643,9 @@ class DomainMotif(object):
         return [self.domain.protein, self.ptm.protein]
 
     def add_sources(self, source):
-        if type(source) in common.charTypes:
+        if source is None:
+            return None
+        elif type(source) in common.charTypes:
             self._add_source(source)
         else:
             for s in source:
@@ -703,7 +711,9 @@ class Regulation(object):
         return not self.__eq__(other)
 
     def add_sources(self, source):
-        if type(source) in common.charTypes:
+        if source is None:
+            return None
+        elif type(source) in common.charTypes:
             self._add_source(source)
         else:
             for s in source:
