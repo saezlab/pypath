@@ -171,14 +171,14 @@ class Direction(object):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-
+    
     def check_nodes(self, nodes):
         return not bool(len(set(self.nodes) - set(nodes)))
-
+    
     def check_param(self, di):
         return (di == 'undirected' or (isinstance(di, tuple) and
                                        self.check_nodes(di)))
-
+    
     def set_dir(self, direction, source):
         '''
         Adds directionality information with
@@ -764,7 +764,8 @@ class PyPath(object):
                      pfile=False,
                      save=False,
                      reread=False,
-                     redownload=False):
+                     redownload=False,
+                     **kwargs):
         '''
         This is a lazy way to start the module, load data
         and build the high confidence, literature curated
@@ -4753,7 +4754,7 @@ class PyPath(object):
             if genesymbol in self.dlabDct else None
         return self.up_inhibits(uniprot)
 
-    # meighbors variations
+    # neighbors variations
 
     def up_neighbors(self, uniprot, mode='ALL'):
         vrtx = self.uniprot(uniprot)
@@ -4792,7 +4793,7 @@ class PyPath(object):
                 reduce(
                     lambda a, b: a.extend(b),
                     self.graph.neighborhood(
-                        vs, order=order, mode=mode)), ),
+                        vs, order=order, mode=mode), [])),
             self.nodNam,
             self.nodLab)
 
@@ -4814,7 +4815,7 @@ class PyPath(object):
         vs = self.proteins(identifiers)
         return self._neighborhood(vs, order=order, mode=mode)
 
-    # compexes
+    # complexes
 
     def complexes_in_network(self, csource='corum', graph=None):
         graph = self.graph if graph is None else graph
@@ -7242,8 +7243,11 @@ class PyPath(object):
             sum_row=False,
             **kwargs)
 
-    def load_omnipath(self, threshold=1):
-        self.load_resources(data_formats.omnipath)
+    def load_omnipath(self, threshold=1, pfile=None, **kwargs):
+        """
+        Loads the OmniPath network the way it has been described in the paper.
+        """
+        self.init_network(lst = data_formats.omnipath, pfile=pfile, **kwargs)
         self.third_source_directions()
         self.remove_htp(threshold=threshold, keep_directed=True)
         self.remove_undirected(min_refs=2)

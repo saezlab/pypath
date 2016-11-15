@@ -1831,6 +1831,7 @@ def get_comppi():
 
 
 def get_psite_phos(raw=True, organism='human', strict=True, mapper=None):
+    
     url = urls.urls['psite_kin']['url']
     c = curl.Curl(
         url, silent=False, compr='gz', encoding='iso-8859-1', large=True)
@@ -1902,8 +1903,13 @@ def get_psite_phos(raw=True, organism='human', strict=True, mapper=None):
                 r['resnum'] = int(non_digit.sub('', r['residue'][1:]))
                 mot = motre.match(r['motif'])
                 
-                isoform = 1 if '-' not in r['substrate'] else r['substrate'].split(
-                    '-')[1]
+                r['substrate'] = r['substrate'].split('_')[0] # excluding e.g. Q12809_VAR_014388
+                sisoform = 1 if '-' not in r['substrate'] else \
+                    int(r['substrate'].split('-')[1])
+                r['substrate'] = r['substrate'].split('-')[0]
+                
+                kisoform = 1 if '-' not in kinase else int(kinase.split('-')[1])
+                kinase = kinase.split('-')[0]
                 
                 r['substrate'] = r['substrate'].split('-')[0]
                 
@@ -1920,21 +1926,25 @@ def get_psite_phos(raw=True, organism='human', strict=True, mapper=None):
                     r['kinase'] = kinase
                     result.append(r)
                 else:
-                    res = intera.Residue(r['resnum'], r['resaa'], r['substrate'])
+                    res = intera.Residue(r['resnum'], r['resaa'],
+                                         r['substrate'],
+                                         isoform=sisoform)
                     
                     mot = intera.Motif(
                         r['substrate'],
                         r['start'],
                         r['end'],
-                        instance=r['instance'])
+                        instance=r['instance'],
+                        isoform=sisoform)
                     
                     ptm = intera.Ptm(protein=r['substrate'],
                                     residue=res,
                                     motif=mot,
                                     typ='phosphorylation',
-                                    source='PhosphoSite')
+                                    source='PhosphoSite',
+                                    isoform=sisoform)
                     
-                    dom = intera.Domain(protein=kinase)
+                    dom = intera.Domain(protein=kinase, isoform=kisoform)
                     
                     dommot = intera.DomainMotif(
                         domain=dom, ptm=ptm, sources=['PhosphoSite'])
