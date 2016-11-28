@@ -2330,14 +2330,15 @@ class PyPath(object):
                 edges['ba'][1] = eid
         return edges
 
-    def get_node_pair(self, nameA, nameB):
+    def get_node_pair(self, nameA, nameB, directed = False):
         if not hasattr(self, 'nodDct'):
             self.update_vname()
-        g = self.graph
-        nodes = sorted([nameA, nameB])
+        g = self._directed if directed else self._undirected
+        nodDct = self.dnodDct if directed else self.nodDct
+        nodes = [nameA, nameB] if not directed else sorted([nameA, nameB])
         try:
-            nodeA = self.nodDct[nodes[0]]
-            nodeB = self.nodDct[nodes[1]]
+            nodeA = nodDct[nodes[0]]
+            nodeB = nodDct[nodes[1]]
             return (nodeA, nodeB)
         except:
             return False
@@ -4584,7 +4585,7 @@ class PyPath(object):
 
     def _already_has_directed(self):
         if self._directed is None:
-            if self.graph.is_directed():
+            if self.graph is not None and self.graph.is_directed():
                 self._directed = self.graph
             elif self.dgraph is not None and self.dgraph.is_directed():
                 self._directed = self.dgraph
@@ -4650,37 +4651,37 @@ class PyPath(object):
         vrtx = self.dprotein(identifier)
         if vrtx is not None:
             return self._affected_by(vrtx)
-        return []
+        return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
 
     def affects(self, identifier):
         vrtx = self.dprotein(identifier)
         if vrtx is not None:
             return self._affects(vrtx)
-        return []
+        return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
 
     def up_affects(self, uniprot):
         vrtx = self.duniprot(uniprot)
         if vrtx is not None:
             return self._affects(vrtx)
-        return []
+        return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
 
     def up_affected_by(self, uniprot):
         vrtx = self.duniprot(uniprot)
         if vrtx is not None:
             return self._affected_by(vrtx)
-        return []
+        return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
 
     def gs_affects(self, genesymbol):
         vrtx = self.dgenesymbol(genesymbol)
         if vrtx is not None:
             return self._affects(vrtx)
-        return []
+        return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
 
     def gs_affected_by(self, genesymbol):
         vrtx = self.dgenesymbol(genesymbol)
         if vrtx is not None:
             return self._affected_by(vrtx)
-        return []
+        return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
 
     def up_stimulated_by(self, uniprot):
         dgraph = self._get_directed()
@@ -5718,7 +5719,8 @@ class PyPath(object):
                 # adding kinase-substrate interactions
                 for k in kinase_ups:
                     for s in substrate_ups:
-                        nodes = self.get_node_pair(k, s[0])
+                        nodes = self.get_node_pair(k, s[0],
+                            directed = self.graph.is_directed())
                         if nodes or return_raw:
                             e = None
                             if nodes:

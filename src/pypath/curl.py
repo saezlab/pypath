@@ -868,18 +868,23 @@ class Curl(FileOpener):
                         'INFO', 'pypath.curl.Curl().curl_call() :: attempt #%u'
                         % attempt)
                 self.curl.perform()
+                
                 if self.url.startswith('http'):
                     self.status = self.curl.getinfo(pycurl.HTTP_CODE)
                     if self.status == 200:
                         self.terminate_progress()
                         break
+                
                 if self.url.startswith('ftp'):
                     self.status == 500
                     for h in self.resp_headers:
-                        if h.startswith(b'226'):
+                        if h[:3] == b'226':
                             self.status = 200
                             self.terminate_progress()
                             break
+                    if self.status == 200:
+                        break
+            
             except pycurl.error as e:
                 self.status = 500
                 if self.progress is not None:
