@@ -159,7 +159,7 @@ mapListUniprot = {
 
 mapListBasic = {
     ('uniprot-sec', 'uniprot-pri'): input_formats.FileMapping(
-        'get_uniprot_sec', 0, 1, None, header=0),
+        'get_uniprot_sec', 0, 1, None, header=0, ncbi_tax_id = 0),
     ('genesymbol', 'trembl'): input_formats.UniprotMapping(
         'genesymbol', swissprot='no', bi=True),
     ('genesymbol', 'swissprot'): input_formats.UniprotMapping('genesymbol'),

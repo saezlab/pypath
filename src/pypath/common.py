@@ -31,7 +31,8 @@ __all__ = [
     'simpson_index', 'simpson_index_counts', 'jaccard_index', 'console', 'wcl',
     'flatList', 'charTypes', 'delEmpty', '__version__', 'get_args',
     'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs', 'md5',
-    'mod_keywords', 'Namespace', 'fun'
+    'mod_keywords', 'Namespace', 'fun', 'taxids', 'taxa', 'phosphoelm_taxids',
+    'dbptm_taxids'
 ]
 
 # get the location
@@ -451,3 +452,52 @@ def fun():
     for n in __name__.split('.'):
         print(n, n in globals())
     return __name__
+
+taxids = {
+    9606: 'human',
+    10090: 'mouse',
+    10116: 'rat',
+    9031: 'chicken',
+    9913: 'cow',
+    9986: 'rabbit',
+}
+
+taxa = dict(map(lambda i: (i[1], i[0]), taxids.items()))
+
+phosphoelm_taxids = {
+    9606: 'Homo sapiens',
+    10090: 'Mus musculus',
+    9913: 'Bos taurus',
+    9986: 'Oryctolagus cuniculus',
+    9615: 'Canis familiaris',
+    10029: 'Cricetulus griseus',
+    9267: 'Didelphis virginiana',
+    9031: 'Gallus gallus',
+    10036: 'Mesocricetus auratus',
+    9940: 'Ovis aries',
+    10116: 'Rattus norvegicus',
+    9823: 'Sus scrofa',
+    8355: 'Xenopus laevis'
+}
+
+dbptm_taxids = {
+    9606: 'HUMAN',
+    10090: 'MOUSE',
+    7227: 'DROME',
+    10116: 'RAT',
+    559292: 'YEAST',
+    284812: 'SCHPO',
+    4081: 'SOLLC',
+    3702: 'ARATH',
+    9940: 'SHEEP',
+    9913: 'BOVIN',
+    9925: 'CAPHI',
+    44689: 'DICDI',
+    4577: 'MAIZE',
+    9823: 'PIG',
+    9615: 'CANLF',
+    6239: 'CAEEL',
+    8455: 'XENLA',
+    83333: 'ECOLI',
+    1891767: 'SV40'
+}

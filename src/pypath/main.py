@@ -171,24 +171,22 @@ class Direction(object):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-
+    
     def check_nodes(self, nodes):
         return not bool(len(set(self.nodes) - set(nodes)))
-
+    
     def check_param(self, di):
         return (di == 'undirected' or (isinstance(di, tuple) and
                                        self.check_nodes(di)))
-
+    
     def set_dir(self, direction, source):
         '''
         Adds directionality information with
         the corresponding data source named.
         '''
-        if self.check_param(direction):
+        if self.check_param(direction) and len(source):
             self.dirs[direction] = True
-            source = source if isinstance(source, set) \
-                else set(source) if isinstance(source, list) \
-                else set([source])
+            source = common.addToSet(set([]), source)
             self.sources[direction] = self.sources[direction] | source
 
     def get_dir(self, direction, sources=False):
@@ -266,16 +264,17 @@ class Direction(object):
             return self.negative[direction] or self.positive[direction]
 
     def set_sign(self, direction, sign, source):
-        if self.check_nodes(direction):
+        if self.check_nodes(direction) and len(source):
             self.set_dir(direction, source)
+            source = common.addToSet(set([]), source)
             if sign == 'positive':
                 self.positive[direction] = True
-                if source not in self.positive_sources[direction]:
-                    self.positive_sources[direction].add(source)
+                self.positive_sources[direction] = \
+                    self.positive_sources[direction] | source
             else:
                 self.negative[direction] = True
-                if source not in self.negative_sources[direction]:
-                    self.negative_sources[direction].add(source)
+                self.negative_sources[direction] = \
+                    self.negative_sources[direction] | source
 
     def get_sign(self, direction, sign=None, sources=False):
         if self.check_nodes(direction):
@@ -488,11 +487,30 @@ class Direction(object):
             self.negative[self.reverse] = self.negative[self.reverse] or \
                 other.negative[self.reverse]
             self.positive_sources[self.straight] = \
-                common.uniqList(self.positive_sources[self.straight] or
-                                other.positive_sources[self.straight])
+                                 self.positive_sources[self.straight] | \
+                                other.positive_sources[self.straight]
             self.negative_sources[self.reverse] = \
-                common.uniqList(self.negative_sources[self.reverse] +
-                                other.negative_sources[self.reverse])
+                                 self.negative_sources[self.reverse] | \
+                                other.negative_sources[self.reverse]
+    
+    def translate(self, ids):
+        # new Direction object
+        newd = Direction(ids[self.nodes[0]], ids[self.nodes[1]])
+        
+        # copying directions
+        for k, v in iteritems(self.sources):
+            di = (ids[k[0]], ids[k[1]]) if type(k) is tuple else k
+            newd.set_dir(di, v)
+        
+        # copying signs
+        for di in [self.straight, self.reverse]:
+            
+            pos, neg = self.get_sign(di, sources = True)
+            
+            newd.set_sign((ids[di[0]], ids[di[1]]), 'positive', pos)
+            newd.set_sign((ids[di[0]], ids[di[1]]), 'negative', neg)
+        
+        return newd
 
 
 class AttrHelper(object):
@@ -746,7 +764,8 @@ class PyPath(object):
                      pfile=False,
                      save=False,
                      reread=False,
-                     redownload=False):
+                     redownload=False,
+                     **kwargs):
         '''
         This is a lazy way to start the module, load data
         and build the high confidence, literature curated
@@ -1303,44 +1322,72 @@ class PyPath(object):
         self.lists[name] = lst
 
     def receptors_list(self):
+        """
+        Loads the Human Plasma Membrane Receptome as a list.
+        This resource is human only.
+        """
         self.lists['rec'] = common.uniqList(
             common.flatList([
-                self.mapper.map_name(rec, 'genesymbol', 'uniprot')
+                self.mapper.map_name(rec, 'genesymbol', 'uniprot', ncbi_tax_id = 9606)
                 for rec in dataio.get_hpmr()
             ]))
 
     def druggability_list(self):
+        """
+        Loads the list of druggable proteins from DgiDB.
+        This resource is human only.
+        """
         self.lists['dgb'] = common.uniqList(
             common.flatList([
-                self.mapper.map_name(dgb, 'genesymbol', 'uniprot')
+                self.mapper.map_name(dgb, 'genesymbol', 'uniprot', 9606)
                 for dgb in dataio.get_dgidb()
             ]))
 
     def kinases_list(self):
+        """
+        Loads the list of all known kinases in the proteome from kinase.com.
+        This resource is human only.
+        """
         self.lists['kin'] = common.uniqList(
             common.flatList([
-                self.mapper.map_name(kin, 'genesymbol', 'uniprot')
+                self.mapper.map_name(kin, 'genesymbol', 'uniprot', 9606)
                 for kin in dataio.get_kinases()
             ]))
 
     def tfs_list(self):
+        """
+        Loads the list of all known transcription factors from TF census
+        (Vaquerizas 2009). This resource is human only.
+        """
         tfs = dataio.get_tfcensus()
         utfs = [
-            self.mapper.map_name(tf, 'ensg', 'uniprot') for tf in tfs['ensg']
+            self.mapper.map_name(tf, 'ensg', 'uniprot', 9606) \
+                for tf in tfs['ensg']
         ]
         utfs += [
-            self.mapper.map_name(h, 'hgnc', 'uniprot') for h in tfs['hgnc']
+            self.mapper.map_name(h, 'hgnc', 'uniprot', 9606) \
+                for h in tfs['hgnc']
         ]
         self.lists['tf'] = common.uniqList(common.flatList(utfs))
 
     def disease_genes_list(self, dataset='curated'):
+        """
+        Loads the list of all disease related genes from DisGeNet.
+        This resource is human only.
+        """
         diss = dataio.get_disgenet(dataset=dataset)
         dis = []
         for di in diss:
-            dis.extend(self.mapper.map_name(di['entrez'], 'entrez', 'uniprot'))
+            dis.extend(self.mapper.map_name(
+                di['entrez'], 'entrez', 'uniprot', 9606))
         self.lists['dis'] = common.uniqList(dis)
 
     def signaling_proteins_list(self):
+        """
+        Compiles a list of signaling proteins (as opposed to other proteins
+        like metabolic enzymes, matrix proteins), by looking up a few simple
+        keywords in short description of GO terms.
+        """
         goq = dataio.get_go_quick()
 
         gosig = set([])
@@ -1360,21 +1407,32 @@ class PyPath(object):
 
         spsig = set([])
         for u in upsig:
-            spsig.update(set(self.mapper.map_name(u, 'uniprot', 'uniprot')))
+            spsig.update(set(self.mapper.map_name(
+                u, 'uniprot', 'uniprot', ncbi_tax_id = self.ncbi_tax_id)))
 
         upsig = spsig & set(self.lists['proteome'])
 
         self.lists['sig'] = list(upsig)
 
     def proteome_list(self, swissprot=True):
+        """
+        Loads the whole proteome as a list.
+        """
         swissprot = 'yes' if swissprot else None
         self.lists['proteome'] = \
             dataio.all_uniprots(self.ncbi_tax_id, swissprot=swissprot)
 
     def cancer_gene_census_list(self):
+        """
+        Loads the list of cancer driver proteins from the COSMIC Cancer 
+        Gene Census.
+        """
         self.read_list_file(data_formats.cgc)
 
     def intogen_cancer_drivers_list(self, intogen_file):
+        """
+        Loads the list of cancer driver proteins from IntOGen data.
+        """
         data_formats.intogen_cancer.inFile = intogen_file
         self.read_list_file(data_formats.intogen_cancer)
 
@@ -1507,6 +1565,10 @@ class PyPath(object):
         return listMapped
 
     def map_item(self, item):
+        """
+        Translates the name in item representing a molecule.
+        """
+        # TODO: include 
         defaultNames = self.mapper.map_name(
             item['name'], item['nameType'],
             self.default_name_type[item['type']])
@@ -1515,14 +1577,19 @@ class PyPath(object):
         return defaultNames
 
     def map_edge(self, edge):
+        """
+        Translates molecule names in dict representing an edge.
+        """
         edgeStack = []
         defaultNameA = self.mapper.map_name(
             edge['nameA'], edge['nameTypeA'],
-            self.default_name_type[edge['typeA']])
+            self.default_name_type[edge['typeA']],
+            ncbi_tax_id = edge['taxA'])
         # print 'mapped %s to %s' % (str(edge['nameA']), str(defaultNameA))
         defaultNameB = self.mapper.map_name(
             edge['nameB'], edge['nameTypeB'],
-            self.default_name_type[edge['typeB']])
+            self.default_name_type[edge['typeB']],
+            ncbi_tax_id = edge['taxB'])
         # print 'mapped %s to %s' % (str(edge['nameB']), str(defaultNameB))
         # this is needed because the possibility ambigous mapping
         # one name can be mapped to multiple ones
@@ -1539,41 +1606,40 @@ class PyPath(object):
                 edgeStack.append(edge)
                 # print 'new edge: %s' % str(edge)
         return edgeStack
-
-    def merge_attrs(self, a, b, exc=["name"]):
-        sys.stdout.write('.')
-        for key, val in iteritems(b.attributes()):
-            if key not in a.attributes():
-                a[key] = val
-            elif key not in exc:
-                if key == 'signs':
-                    a[key] = self.combine_signs(a[key], b[key])
-                elif key == 'directions':
-                    a[key] = self.combine_dirs(a[key], b[key])
-                elif key == 'dirs_by_source':
-                    a[key] = self.combine_dirsrc(a[key], b[key])
-                else:
-                    a[key] = self.combine_attr([a[key], val])
-
-    def combine_signs(self, sigA, sigB):
-        for out in [0, 1]:
-            for inn in [0, 1]:
-                sigA[out][inn] = common.uniqList(sigA[out][inn] + sigB[out][
-                    inn])
-        return sigA
-
-    def combine_dirs(self, dirA, dirB):
-        newDir = [False, False, False]
-        for i in [0, 1, 2]:
-            newDir[i] = dirA[i] or dirB[i]
-        return tuple(newDir)
-
-    def combine_dirsrc(self, dirsA, dirsB):
-        for i in [0, 1, 2]:
-            dirsA[i] = common.uniqList(dirsA[i] + dirsB[i])
-        return dirsA
-
-    def combine_attr(self, lst):
+    
+    def combine_attr(self, lst, num_method = max):
+        """
+        Combines multiple attributes into one. This method attempts
+        to find out which is the best way to combine attributes.
+            * if there is only one value or one of them is None, then returns
+              the one available
+            * lists: concatenates unique values of lists
+            * numbers: returns the greater by default
+              or calls `num_method()` if given.
+            * sets: returns the union
+            * dicts: calls `common.merge_dicts()`
+            * Direction: calls their special `merge()` method
+        Works on more than 2 attributes recursively.
+        
+        :param list lst: List of one or two attribute values.
+        :param callable num_method: Method to merge numeric attributes.
+        """
+        def list_or_set(one, two):
+            if (isinstance(one, list) and isinstance(two, set)) or \
+               (isinstance(two, list) and isinstance(one, set)):
+                try:
+                    return set(one), set(two)
+                except TypeError:
+                    return list(one), list(two)
+            else:
+                return one, two
+        
+        # recursion:
+        if len(lst) > 2:
+            lst = [lst[0],
+                   self.combine_attr(lst[1:], num_method = num_method)]
+        
+        # quick and simple cases:
         if len(lst) == 0:
             return None
         if len(lst) == 1:
@@ -1584,40 +1650,63 @@ class PyPath(object):
             return lst[1]
         if lst[1] is None:
             return lst[0]
+        
+        # merge numeric values
         if type(lst[0]) in common.numTypes and type(lst[1]) in common.numTypes:
-            return max(lst)
+            return num_method(lst)
+        
+        # in case one is list other is set
+        lst[0], lst[1] = list_or_set(lst[0], lst[1])
+        
+        # merge lists:
         if isinstance(lst[0], list) and isinstance(lst[1], list):
             try:
-                return list(set(lst[0] + lst[1]))
-            except:
-                return lst[0] + lst[1]
+                # lists of hashable elements only:
+                return list(set(itertools.chain(lst[0], lst[1])))
+            except TypeError:
+                # if contain non-hashable elements:
+                return list(itertools.chain(lst[0], lst[1]))
+        
+        # merge sets:
         if isinstance(lst[0], set):
             return common.addToSet(lst[0], lst[1])
         if isinstance(lst[1], set):
             return common.addToSet(lst[1], lst[0])
+        
+        # merge dicts:
         if isinstance(lst[0], dict) and isinstance(lst[1], dict):
-            return dict(lst[0].items() + lst[1].items())
+            return common.merge_dicts(lst[0], lst[1])
+        
+        # 2 different strings: return a set with both of them
         if (isinstance(lst[0], str) or isinstance(lst[0], unicode)) and \
                 (isinstance(lst[1], str) or isinstance(lst[1], unicode)):
             if len(lst[0]) == 0:
                 return lst[1]
             if len(lst[1]) == 0:
                 return lst[0]
-            return [lst[0], lst[1]]
+            return set([lst[0], lst[1]])
+        
+        # one attr is list, the other is simple value:
         if (isinstance(lst[0], list) and type(lst[1]) in common.simpleTypes):
-            if len(lst[1]) > 0:
+            if lst[1] in common.numTypes or len(lst[1]) > 0:
                 return common.addToList(lst[0], lst[1])
             else:
                 return lst[0]
         if (isinstance(lst[1], list) and type(lst[0]) in common.simpleTypes):
-            if len(lst[0]) > 0:
+            if lst[0] in common.numTypes or len(lst[0]) > 0:
                 return common.addToList(lst[1], lst[0])
             else:
                 return lst[1]
+        
+        # special: merging directions
         if lst[0].__class__.__name__ == 'Direction' and \
                 lst[1].__class__.__name__ == 'Direction':
             lst[0].merge(lst[1])
             return lst[0]
+        
+        # in case the objects have `__add__()` method:
+        if hasattr(lst[0], '__add__'):
+            return lst[0] + lst[1]
 
     def uniq_node_list(self, lst):
         uniqLst = {}
@@ -1627,118 +1716,171 @@ class PyPath(object):
             else:
                 uniqLst[n[0]] = self.merge_attrs(uniqLst[n[0]], n[1])
         return uniqLst
-
-    def map_network(self, mapping=('trembl', 'swissprot')):
-        '''
-        This function is not needed any more, will be removed soon.
-
-        In the whole network changes every uniprot id to primary.
-        '''
-        self.ownlog.msg(1, "Mapping network by %s..." % mapping, 'INFO')
-        g = self.graph
-        self.ownlog.msg(2, ("Num of edges: %u, num of vertices: %u" %
-                            (g.ecount(), g.vcount())), 'INFO')
-        fun = getattr(self, mapping)
-        primNodes = {}
-        secNodes = {}
-        delNodes = []
-        prg = Progress(total=len(g.vs), name="Mapping nodes", interval=30)
-        for v in g.vs:
-            if v["type"] == "protein" and v["nameType"] == "uniprot":
-                prim = fun([v["name"]])
-                if len(prim) > 0 and v["name"] not in prim:
-                    delNodes.append(v["name"])
-                for u in prim:
-                    if u != v["name"]:
-                        if u not in primNodes:
-                            primNodes[u] = []
-                        primNodes[u].append(v["name"])
-                        if v["name"] not in secNodes:
-                            secNodes[v["name"]] = []
-                        secNodes[v["name"]].append(u)
-            prg.step()
-        prg.terminate()
-        newNodes = list(set(primNodes.keys()) - set(g.vs["name"]))
-        self.new_nodes(newNodes)
-        self.update_vname()
-        self.ownlog.msg(2, "New nodes have been created (%u)" % len(newNodes),
-                        'INFO')
-        primEdges = {}
-        newEdges = []
-        prg = Progress(total=len(g.es), name="Processing edges", interval=200)
-        for e in g.es:
-            uA = g.vs[e.source]["name"]
-            uB = g.vs[e.target]["name"]
-            if uA in secNodes or uB in secNodes:
-                uAlist = [uA] if uA not in secNodes else secNodes[uA]
-                uBlist = [uB] if uB not in secNodes else secNodes[uB]
-                for a in uAlist:
-                    for b in uBlist:
-                        ab = sorted([a, b])
-                        if ab[0] not in primEdges:
-                            primEdges[ab[0]] = {}
-                        if ab[1] not in primEdges[ab[0]]:
-                            primEdges[ab[0]][ab[1]] = []
-                        primEdges[ab[0]][ab[1]].append((uA, uB))
-                        abEdge = self.edge_exists(ab[0], ab[1])
-                        if isinstance(abEdge, tuple):
-                            newEdges.append(abEdge)
-            prg.step()
-        prg.terminate()
-        newEdges = list(set(newEdges))
-        self.new_edges(newEdges)
-        self.ownlog.msg(2, "New edges have been created (%u)" % len(newEdges),
-                        'INFO')
-        # copying node attributes
-        prg = Progress(
-            total=len(primNodes),
-            name="Processing node attributes",
-            interval=10)
-        for k, v in iteritems(primNodes):
-            prim = g.vs.find(name=k)
-            for s in v:
-                sec = g.vs.find(name=s)
-                self.merge_attrs(prim, sec, exc=["name"])
-            prg.step()
-        prg.terminate()
-        # copying edge attributes
-        prg = Progress(
-            total=len(primEdges),
-            name="Processing edge attributes",
-            interval=10)
-        for a, bdict in iteritems(primEdges):
-            primA = g.vs.find(name=a).index
-            for b, originals in iteritems(bdict):
-                primB = g.vs.find(name=b).index
-                prim = g.es.select(_between=((primA, ), (primB, )))[0]
-                for o in originals:
-                    secA = g.vs.find(name=o[0]).index
-                    secB = g.vs.find(name=o[1]).index
-                    sec = g.es.select(_between=((secA, ), (secB, )))[0]
-                    self.merge_attrs(prim, sec)
-            prg.step()
-        prg.terminate()
-        # deleting old nodes
-        delNodeInd = []
-        for u in delNodes:
-            delNodeInd.append(g.vs.find(name=u).index)
-        self.ownlog.msg(2, "Removing old nodes (%u)" % len(delNodeInd), 'INFO')
-        if len(delNodeInd) > 0:
-            g.delete_vertices(list(set(delNodeInd)))
-        self.clean_graph()
-        self.update_vname()
-        self.ownlog.msg(2, "Network has been mapped.", 'INFO')
-        self.ownlog.msg(2, ("Num of edges: %u, num of vertices: %u" %
-                            (g.ecount(), g.vcount())), 'INFO')
-
+    
+    def collapse_by_name(self, graph = None):
+        """
+        Collapses nodes with the same name with copying and merging
+        all edges and attributes.
+        """
+        graph = self.graph if graph is None else graph
+        
+        dupli = Counter(graph.vs['name'])
+        
+        for name, count in iteritems(dupli):
+            if count > 1:
+                nodes = graph.vs.select(name = name)
+                # the number of nodes might have changed
+                if len(nodes) > 1:
+                    self.merge_nodes(nodes)
+    
+    def merge_nodes(self, nodes, primary = None, graph = None):
+        """
+        Merges all attributes and all edges of selected nodes
+        and assigns them to the primary node
+        (by default the one with lowest ID).
+        
+        :param list nodes: List of edge IDs.
+        :param int primary: ID of the primary edge;
+                            if None the lowest ID selected.
+        """
+        graph = self.graph if graph is None else graph
+        nodes = sorted(list(map(lambda n:
+                            n.index if type(n) is not int else n, nodes)))
+        nodes = sorted(nodes)
+        primary = nodes[0] if primary is None else primary
+        primary = primary.index if type(primary) is not int else primary
+        nonprimary = list(filter(lambda n: n != primary, nodes))
+        graph.vs['id_merge'] = list(range(graph.vcount()))
+        
+        # combining vertex attributes:
+        vprim = graph.vs[primary]
+        for attr in vprim.attributes():
+            if attr != 'name':
+                vprim[attr] = self.combine_attr(
+                    list(
+                        map(
+                            lambda vid:
+                                graph.vs[vid][attr],
+                            # combining from all nodes
+                            nodes
+                        )
+                    )
+                )
+        
+        # moving edges of non primary vertices to the primary one
+        self.copy_edges(nonprimary, primary, move = True, graph = graph)
+        
+        # deleting non primary vertices:
+        toDel = list(map(lambda i: graph.vs.select(id_merge = i)[0].index,
+                         nonprimary))
+        
+        graph.delete_vertices(toDel)
+        del graph.vs['id_merge']
+    
+    def copy_edges(self, sources, target, move = False, graph = None):
+        """
+        Copies edges of one node to another,
+        keeping attributes and directions.
+        
+        :param list sources: Vertex IDs to copy from.
+        :param int target: Vertex ID to copy for.
+        :param bool move: Whether perform copy or move, i.e. remove or keep
+                          the source edges.
+        """
+        toDel = set([])
+        graph = self.graph if graph is None else graph
+        graph.vs['id_old'] = list(range(graph.vcount()))
+        graph.es['id_old'] = list(range(graph.ecount()))
+        
+        # preserve a permanent marker of the target vertex
+        ovidt = graph.vs[target]['id_old']
+        
+        # collecting the edges of all source vertices into dict
+        ses = \
+            dict(
+                map(
+                    lambda s:
+                        (
+                            # id_old of source vertices:
+                            s,
+                            # edges of current source node:
+                            set(map(lambda e: e.index,
+                                itertools.chain(graph.es.select(_source = s),
+                                                graph.es.select(_target = s))))
+                        ),
+                    sources
+                )
+            )
+        
+        # collecting edges to be newly created
+        toAdd = set([])
+        for s, es in iteritems(ses):
+            for eid in es:
+                # the source edge:
+                e = graph.es[eid]
+                # looking up if target edge already exists:
+                vid1 = target if e.source == s else e.source
+                vid2 = target if e.target == s else e.target
+                te = graph.get_eid(vid1, vid2, error = False)
+                if te == -1:
+                    # target edge not found, needs to be added:
+                    toAdd.add((vid1, vid2))
+        
+        # creating new edges
+        graph.add_edges(toAdd)
+        
+        # copying attributes:
+        for ovids, es in iteritems(ses):
+            for oeid in es:
+                # this is the index of the current source node:
+                s = graph.vs.select(id_old = ovids)[0].index
+                # this is the index of the current target node:
+                t = graph.vs.select(id_old = ovidt)[0].index
+                # this is the current source edge:
+                e = graph.es.select(id_old = oeid)[0]
+                # looking up target edge and peer vertex:
+                vid1 = t if e.source == s else e.source
+                vid2 = t if e.target == s else e.target
+                vid_peer = e.source if e.target == s else e.target
+                te = graph.es[graph.get_eid(vid1, vid2)]
+                
+                # old direction:
+                d = e['dirs']
+                # dict from old names to new ones
+                # the peer does no change, only s->t
+                ids = {
+                    graph.vs[s]['name']: graph.vs[t]['name'],
+                    graph.vs[vid_peer]['name']: graph.vs[vid_peer]['name']
+                }
+                
+                # copying directions and signs:
+                te['dirs'] = d.translate(ids).merge(te['dirs']) \
+                    if isinstance(te['dirs'], Direction) else d.translate(ids)
+                # copying `refs_by_dir`
+                te['refs_by_dir'] = \
+                    self.translate_refsdir(e['refs_by_dir'], ids)
+                # copying further attributes:
+                for eattr in e.attributes():
+                    if eattr != 'dirs' and eattr != 'refs_by_dir':
+                        te[eattr] = self.combine_attr([te[eattr], e[eattr]])
+                
+                # in case we want to delete old edges:
+                toDel.add(e.index)
+        
+        if move:
+            graph.delete_edges(list(toDel))
+        
+        # removing temporary attributes
+        del graph.es['id_old']
+        del graph.vs['id_old']
+    
     def delete_by_taxon(self, tax):
-        '''
+        """
         Removes the proteins of all organisms which are not listed.
 
-        @tax : list
-            List of NCBI Taxonomy IDs of the organisms of interest.
-            E.g. [7227, 9606]
-        '''
+        :param list tax: List of NCBI Taxonomy IDs of the organisms.
+                         E.g. [7227, 9606]
+        """
         g = self.graph
         toDel = []
         for v in g.vs:
@@ -1796,6 +1938,11 @@ class PyPath(object):
         sys.stdout.write(' done.\n')
 
     def clean_graph(self):
+        """
+        Removes multiple edges, unknown molecules and those from wrong taxon.
+        Multiple edges will be combined by `combine_attr()` method.
+        Loops will be deleted unless the `loops` attribute set to `True`.
+        """
         self.ownlog.msg(1, "Removing duplicate edges...", 'INFO')
         g = self.graph
         if not g.is_simple():
@@ -1818,9 +1965,9 @@ class PyPath(object):
     ###
 
     def count_sol(self):
-        '''
+        """
         Counts nodes with zero degree.
-        '''
+        """
         s = 0
         for i in self.graph.vs.degree():
             if i == 0:
@@ -2097,10 +2244,10 @@ class PyPath(object):
         self.graph.add_vertices(list(nodes))
 
     def edge_exists(self, nameA, nameB):
-        '''
+        """
         Returns a tuple of vertice indices if edge doesn't exists,
         otherwise edge id. Not sensitive to direction.
-        '''
+        """
         if not hasattr(self, 'nodDct'):
             self.update_vname()
         nodes = [self.nodDct[nameA], self.nodDct[nameB]]
@@ -2183,14 +2330,15 @@ class PyPath(object):
                 edges['ba'][1] = eid
         return edges
 
-    def get_node_pair(self, nameA, nameB):
+    def get_node_pair(self, nameA, nameB, directed = False):
         if not hasattr(self, 'nodDct'):
             self.update_vname()
-        g = self.graph
-        nodes = sorted([nameA, nameB])
+        g = self._directed if directed else self._undirected
+        nodDct = self.dnodDct if directed else self.nodDct
+        nodes = [nameA, nameB] if not directed else sorted([nameA, nameB])
         try:
-            nodeA = self.nodDct[nodes[0]]
-            nodeB = self.nodDct[nodes[1]]
+            nodeA = nodDct[nodes[0]]
+            nodeB = nodDct[nodes[1]]
             return (nodeA, nodeB)
         except:
             return False
@@ -2231,6 +2379,10 @@ class PyPath(object):
                 self.init_edge_attr(attr)
 
     def init_vertex_attr(self, attr):
+        """
+        Fills vertex attribute with its default values, creates
+        lists if in `vertexAttrs` the attribute is registered as list.
+        """
         for v in self.graph.vs:
             if v[attr] is None:
                 v[attr] = self.vertexAttrs[attr]()
@@ -2239,6 +2391,10 @@ class PyPath(object):
                 v[attr] = [v[attr]] if len(v[attr]) > 0 else []
 
     def init_edge_attr(self, attr):
+        """
+        Fills edge attribute with its default values, creates
+        lists if in `edgeAttrs` the attribute is registered as list.
+        """
         for e in self.graph.es:
             if e[attr] is None:
                 e[attr] = self.edgeAttrs[attr]()
@@ -2247,6 +2403,10 @@ class PyPath(object):
                 e[attr] = [e[attr]] if len(e[attr]) > 0 else []
 
     def attach_network(self, edgeList=False, regulator=False):
+        """
+        Adds edges to the network from edgeList obtained from file or
+        other input method.
+        """
         g = self.graph
         if not edgeList:
             if self.raw_data is not None:
@@ -2336,6 +2496,9 @@ class PyPath(object):
         self.update_attrs()
 
     def apply_list(self, name, node_or_edge="node"):
+        """
+        Creates vertex or edge attribute based on a list.
+        """
         if name not in self.lists:
             self.ownlog.msg(1, ("""No such list: %s""" % name), 'ERROR')
             return None
@@ -2381,6 +2544,9 @@ class PyPath(object):
                     and_or="and",
                     delete=False,
                     func="max"):
+        """
+        Merges two lists in `lists`.
+        """
         if nameA not in self.lists:
             self.ownlog.msg(1, ("""No such list: %s""" % nameA), 'ERROR')
             return None
@@ -2423,6 +2589,9 @@ class PyPath(object):
             del self.lists[nameB]
 
     def save_session(self):
+        """
+        Save current state into pickle dump.
+        """
         pickleFile = "pwnet-" + self.session + ".pickle"
         self.ownlog.msg(1, ("""Saving session to %s... """ % pickleFile),
                         'INFO')
@@ -2605,6 +2774,10 @@ class PyPath(object):
         return new.induced_subgraph(sub["nodes"])
 
     def separate(self):
+        """
+        Separates networks from different sources.
+        Returns dict of igraph objects.
+        """
         return dict([(s, self.get_network({
             'edge': {
                 'sources': [s]
@@ -2613,6 +2786,10 @@ class PyPath(object):
         })) for s in self.sources])
 
     def separate_by_category(self):
+        """
+        Separate networks based on categories.
+        Returns dict of igraph objects.
+        """
         cats = \
             dict(
                 list(
@@ -2672,6 +2849,10 @@ class PyPath(object):
         self.write_table(res["edges"], outfile + "-edges", cut=20)
 
     def update_sources(self):
+        """
+        Makes sure that the `sources` attribute is an up to date
+        list of all sources in the current network.
+        """
         g = self.graph
         src = []
         for e in g.es:
@@ -2680,6 +2861,10 @@ class PyPath(object):
         self.update_cats()
 
     def update_cats(self):
+        """
+        Makes sure that the `has_cats` attribute is an up to date
+        set of all categories in the current network.
+        """
         self.has_cats = set(
             list(
                 map(lambda s: data_formats.categories[s],
@@ -2708,14 +2893,14 @@ class PyPath(object):
             self.update_vname()
 
     def genesymbol_labels(self, graph=None, remap_all=False):
-        '''
+        """
         Creats vertex attribute ``label`` and fills up with Gene Symbols
         of all proteins where the Gene Symbol can be looked up based on
         the default name of the protein vertex.
         If the attribute ``label`` had been already initialized,
         updates this attribute or recreates if ``remap_all``
         is ``True``.
-        '''
+        """
         self._already_has_directed()
         if graph is None and self.dgraph is not None:
             self.genesymbol_labels(graph=self.dgraph, remap_all=remap_all)
@@ -2730,8 +2915,10 @@ class PyPath(object):
         ]
         for v, l, i in zip(g.vs, labels, xrange(g.vcount())):
             if l is None and v['type'] == 'protein':
-                label = self.mapper.map_name(v['name'], defaultNameType,
-                                             geneSymbol)
+                label = self.mapper.map_name(v['name'],
+                                             defaultNameType,
+                                             geneSymbol,
+                                             ncbi_tax_id = v['ncbi_tax_id'])
                 if len(label) == 0:
                     labels[i] = v['name']
                 else:
@@ -3111,23 +3298,6 @@ class PyPath(object):
             (k, v) for k, v in iteritems(lst)
             if (not v.huge or v.name in cache_files) and k not in exclude)
         for lst in [huge, nothuge]:
-            ac_types = set([])
-            for k, v in iteritems(lst):
-                if isinstance(v.nameTypeA, list):
-                    ac_types = ac_types | set(v.nameTypeA)
-                else:
-                    ac_types.add(v.nameTypeA)
-                if isinstance(v.nameTypeB, list):
-                    ac_types = ac_types | set(v.nameTypeB)
-                else:
-                    ac_types.add(v.nameTypeB)
-            table_loaded = set([])
-            for ids in self.mapper.tables.keys():
-                if ids[1] == 'uniprot':
-                    table_loaded.add(ids[0])
-            self.mapper.load_uniprot_mappings(
-                list(ac_types - table_loaded & set(self.mapper.name_types.keys(
-                ))))
             for k, v in iteritems(lst):
                 self.load_resource(
                     v,
@@ -3897,6 +4067,11 @@ class PyPath(object):
             self.ownlog.msg(2, 'Pfam domains has been retrieved.', 'INFO')
 
     def load_corum(self, graph=None):
+        """
+        Loads complexes from CORUM database. Loads data into vertex attribute
+        `graph.vs['complexes']['corum']`.
+        This resource is human only.
+        """
         graph = graph if graph is not None else self.graph
         complexes, members = dataio.get_corum()
         if complexes is None:
@@ -3904,14 +4079,16 @@ class PyPath(object):
         else:
             self.init_complex_attr(graph, 'corum')
             for u, cs in iteritems(members):
-                sw = self.mapper.map_name(u, 'uniprot', 'uniprot')
+                sw = self.mapper.map_name(u, 'uniprot', 'uniprot', 9606)
                 for s in sw:
                     if s in graph.vs['name']:
                         for c in cs:
                             others = []
                             for memb in complexes[c[0]][0]:
-                                others += self.mapper.map_name(memb, 'uniprot',
-                                                               'uniprot')
+                                others += self.mapper.map_name(memb,
+                                                               'uniprot',
+                                                               'uniprot',
+                                                               9606)
                             graph.vs.select(
                                 name=s)[0]['complexes']['corum'][c[1]] = {
                                     'full_name': c[0],
@@ -3934,6 +4111,11 @@ class PyPath(object):
                 v['complexes'][name] = {}
 
     def load_havugimana(self, graph=None):
+        """
+        Loads complexes from Havugimana 2012. Loads data into vertex attribute
+        `graph.vs['complexes']['havugimana']`.
+        This resource is human only.
+        """
         graph = graph if graph is not None else self.graph
         complexes = dataio.read_complexes_havugimana()
         if complexes is None:
@@ -3944,9 +4126,15 @@ class PyPath(object):
                 membs = []
                 names = []
                 for memb in c:
-                    membs += self.mapper.map_name(memb, 'uniprot', 'uniprot')
+                    membs += self.mapper.map_name(memb,
+                                                  'uniprot',
+                                                  'uniprot',
+                                                  9606)
                 for u in membs:
-                    names += self.mapper.map_name(u, 'uniprot', 'genesymbol')
+                    names += self.mapper.map_name(u,
+                                                  'uniprot',
+                                                  'genesymbol',
+                                                  9606)
                 names = sorted(set(names))
                 name = ':'.join(names)
                 for u in membs:
@@ -3962,6 +4150,11 @@ class PyPath(object):
                     'INFO')
 
     def load_compleat(self, graph=None):
+        """
+        Loads complexes from Compleat. Loads data into vertex attribute
+        `graph.vs['complexes']['compleat']`.
+        This resource is human only.
+        """
         graph = graph if graph is not None else self.graph
         complexes = dataio.get_compleat()
         if complexes is None:
@@ -3972,11 +4165,15 @@ class PyPath(object):
                 c['uniprots'] = []
                 c['gsymbols'] = []
                 for e in c['entrez']:
-                    c['uniprots'] += self.mapper.map_name(e, 'entrez',
-                                                          'uniprot')
+                    c['uniprots'] += self.mapper.map_name(e,
+                                                          'entrez',
+                                                          'uniprot',
+                                                          9606)
                 for u in c['uniprots']:
-                    c['gsymbols'] += self.mapper.map_name(u, 'uniprot',
-                                                          'genesymbol')
+                    c['gsymbols'] += self.mapper.map_name(u,
+                                                          'uniprot',
+                                                          'genesymbol',
+                                                          9606)
                 c['gsymbols'] = list(
                     set([gs.replace('; ', '') for gs in c['gsymbols']]))
                 if len(c['uniprots']) > 0:
@@ -3995,6 +4192,11 @@ class PyPath(object):
                             'INFO')
 
     def load_complexportal(self, graph=None):
+        """
+        Loads complexes from ComplexPortal. Loads data into vertex attribute
+        `graph.vs['complexes']['complexportal']`.
+        This resource is human only.
+        """
         graph = graph if graph is not None else self.graph
         # TODO: handling species
         complexes = dataio.get_complexportal()
@@ -4015,7 +4217,10 @@ class PyPath(object):
                 else:
                     name = c['fullname']
                 for u in c['uniprots']:
-                    swprots += self.mapper.map_name(u, 'uniprot', 'uniprot')
+                    swprots += self.mapper.map_name(u,
+                                                    'uniprot',
+                                                    'uniprot',
+                                                    9606)
                 swprots = list(set(swprots))
                 for sw in swprots:
                     if sw in graph.vs['name']:
@@ -4084,8 +4289,10 @@ class PyPath(object):
                 if len(swprots) > 0:
                     name = []
                     for sp in swprots:
-                        name += self.mapper.map_name(sp, 'uniprot',
-                                                     'genesymbol')
+                        name += self.mapper.map_name(sp,
+                                                     'uniprot',
+                                                     'genesymbol',
+                                                     9606)
                     compl_names[cname] = '-'.join(name) + ' complex'
                     compl_membs[cname] = (swprots, uprots)
                 prg.step()
@@ -4378,7 +4585,7 @@ class PyPath(object):
 
     def _already_has_directed(self):
         if self._directed is None:
-            if self.graph.is_directed():
+            if self.graph is not None and self.graph.is_directed():
                 self._directed = self.graph
             elif self.dgraph is not None and self.dgraph.is_directed():
                 self._directed = self.dgraph
@@ -4444,37 +4651,37 @@ class PyPath(object):
         vrtx = self.dprotein(identifier)
         if vrtx is not None:
             return self._affected_by(vrtx)
-        return []
+        return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
 
     def affects(self, identifier):
         vrtx = self.dprotein(identifier)
         if vrtx is not None:
             return self._affects(vrtx)
-        return []
+        return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
 
     def up_affects(self, uniprot):
         vrtx = self.duniprot(uniprot)
         if vrtx is not None:
             return self._affects(vrtx)
-        return []
+        return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
 
     def up_affected_by(self, uniprot):
         vrtx = self.duniprot(uniprot)
         if vrtx is not None:
             return self._affected_by(vrtx)
-        return []
+        return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
 
     def gs_affects(self, genesymbol):
         vrtx = self.dgenesymbol(genesymbol)
         if vrtx is not None:
             return self._affects(vrtx)
-        return []
+        return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
 
     def gs_affected_by(self, genesymbol):
         vrtx = self.dgenesymbol(genesymbol)
         if vrtx is not None:
             return self._affected_by(vrtx)
-        return []
+        return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
 
     def up_stimulated_by(self, uniprot):
         dgraph = self._get_directed()
@@ -4548,7 +4755,7 @@ class PyPath(object):
             if genesymbol in self.dlabDct else None
         return self.up_inhibits(uniprot)
 
-    # meighbors variations
+    # neighbors variations
 
     def up_neighbors(self, uniprot, mode='ALL'):
         vrtx = self.uniprot(uniprot)
@@ -4587,7 +4794,7 @@ class PyPath(object):
                 reduce(
                     lambda a, b: a.extend(b),
                     self.graph.neighborhood(
-                        vs, order=order, mode=mode)), ),
+                        vs, order=order, mode=mode), [])),
             self.nodNam,
             self.nodLab)
 
@@ -4609,7 +4816,7 @@ class PyPath(object):
         vs = self.proteins(identifiers)
         return self._neighborhood(vs, order=order, mode=mode)
 
-    # compexes
+    # complexes
 
     def complexes_in_network(self, csource='corum', graph=None):
         graph = self.graph if graph is None else graph
@@ -5202,7 +5409,10 @@ class PyPath(object):
             prg.step()
             uniprot1 = [l[9]] if len(l[9]) > 0 else []
             if len(l[9]) == 0 and len(l[10]) > 0:
-                uniprot1 = self.mapper.map_name(l[10], 'refseq', 'uniprot')
+                uniprot1 = self.mapper.map_name(l[10],
+                                                'refseq',
+                                                'uniprot',
+                                                9606)
             uniprot2 = [l[11]] if len(l[11]) > 0 else []
             # ptm on u2,
             # u1 interacts with u2 depending on ptm
@@ -5293,9 +5503,9 @@ class PyPath(object):
         for c in comppi:
             prg.step()
             uniprots1 = self.mapper.map_name(c['uniprot1'], 'uniprot',
-                                             'uniprot')
+                                             'uniprot', 9606)
             uniprots2 = self.mapper.map_name(c['uniprot2'], 'uniprot',
-                                             'uniprot')
+                                             'uniprot', 9606)
             for u1 in uniprots1:
                 if self.node_exists(u1):
                     for loc in [x.split(':') for x in c['loc1'].split('|')]:
@@ -5364,9 +5574,9 @@ class PyPath(object):
         if trace:
             return trace
 
-    def load_phosphoelm(self, trace=False, ltp_only=True, **kwargs):
+    def load_phosphoelm(self, trace=False, **kwargs):
         trace = self.load_phospho_dmi(
-            source='phosphoELM', trace=trace, ltp_only=ltp_only, **kwargs)
+            source='phosphoELM', trace=trace, **kwargs)
         if trace:
             return trace
 
@@ -5408,6 +5618,28 @@ class PyPath(object):
             'HPRD': 'get_hprd_ptms',
             'Li2012': 'li2012_phospho'
         }
+        
+        if source == 'PhosphoSite' and self.ncbi_tax_id in common.taxids:
+            kwargs['organism'] = common.taxids[self.ncbi_tax_id]
+            if 'strict' not in kwargs:
+                kwargs['strict'] = False
+                kwargs['mapper'] = self.mapper
+        
+        if source == 'Signor':
+            kwargs['organism'] = self.ncbi_tax_id
+        
+        if source == 'phosphoELM':
+            kwargs['organism'] = self.ncbi_tax_id
+            if self.ncbi_tax_id != 9606 and 'ltp_only' not in kwargs:
+                kwargs['ltp_only'] = False
+        
+        if source == 'dbPTM':
+            kwargs['organism'] = self.ncbi_tax_id
+        
+        if self.ncbi_tax_id != 9606 and source not in \
+            ['Signor', 'PhosphoSite', 'phosphoELM', 'dbPTM']:
+            return None
+        
         self.update_vname()
         toCall = getattr(dataio, functions[source])
         data = toCall(**kwargs)
@@ -5487,7 +5719,8 @@ class PyPath(object):
                 # adding kinase-substrate interactions
                 for k in kinase_ups:
                     for s in substrate_ups:
-                        nodes = self.get_node_pair(k, s[0])
+                        nodes = self.get_node_pair(k, s[0],
+                            directed = self.graph.is_directed())
                         if nodes or return_raw:
                             e = None
                             if nodes:
@@ -7012,8 +7245,11 @@ class PyPath(object):
             sum_row=False,
             **kwargs)
 
-    def load_omnipath(self, threshold=1):
-        self.load_resources(data_formats.omnipath)
+    def load_omnipath(self, threshold=1, pfile=None, **kwargs):
+        """
+        Loads the OmniPath network the way it has been described in the paper.
+        """
+        self.init_network(lst = data_formats.omnipath, pfile=pfile, **kwargs)
         self.third_source_directions()
         self.remove_htp(threshold=threshold, keep_directed=True)
         self.remove_undirected(min_refs=2)
@@ -7847,7 +8083,7 @@ class PyPath(object):
                                 s1, s2)]['minor'].add(e.index)
         prg.terminate()
         return con
-
+    
     def export_edgelist(self,
                         fname,
                         graph=None,
@@ -7901,16 +8137,375 @@ class PyPath(object):
             [sum([len(set(self.graph.vs[e.source]['complexes'][cs].keys()) &
                       set(self.graph.vs[e.target]['complexes'][cs].keys())) for cs in csources]) > 0
                 for e in self.graph.es]
-
+    
+    #
+    # Methods for translating network to other organism
+    #
+    
+    def translate_refsdir(self, rd, ids):
+        new_refsdir = {}
+        for k, v in iteritems(rd):
+            di = (ids[k[0]], ids[k[1]]) if type(k) is tuple else k
+            new_refsdir[di] = v
+            
+            return new_refsdir
+    
+    def orthology_translation(self, target, source = None,
+                              mapping_id_type = 'refseqp',
+                              graph = None):
+        """
+        Translates the current object to another organism by orthology.
+        Proteins without known ortholog will be deleted.
+        
+        :param int target: NCBI Taxonomy ID of the target organism.
+            E.g. 10090 for mouse.
+        """
+        return_graph = graph is not None
+        graph = self.graph if graph is None else graph
+        source = self.ncbi_tax_id if source is None else source
+        orto = dataio.homologene_dict(source, target, mapping_id_type)
+        vdict = {}
+        
+        vcount_before = graph.vcount()
+        ecount_before = graph.ecount()
+        
+        for v in graph.vs:
+            # translating source UniProt to intermediate IDs
+            sids = self.mapper.map_name(v['name'],
+                                        'uniprot',
+                                        mapping_id_type,
+                                        ncbi_tax_id = source)
+            
+            # translating orthologs
+            tids = set([])
+            tids = \
+                reduce(
+                    lambda sids1, sids2:
+                        sids1 | sids2,
+                    map(
+                        lambda sid:
+                            orto[sid],
+                        filter(
+                            lambda sid:
+                                sid in orto,
+                            sids
+                        )
+                    ),
+                    set([])
+                )
+            
+            # translating target intermetiate IDs to UniProt
+            
+            tup = set([])
+            tup = \
+                sorted(
+                    set(
+                        list(
+                            itertools.chain(
+                                *map(
+                                    lambda tid:
+                                        self.mapper.map_name(tid,
+                                                            mapping_id_type,
+                                                            'uniprot',
+                                                            ncbi_tax_id = target),
+                                    tids
+                                )
+                            )
+                        )
+                    )
+                )
+            
+            vdict[v['name']] = tup
+        
+        # nodes could not be mapped are to be deleted
+        vids = dict(map(lambda v: (v[1], v[0]), enumerate(graph.vs['name'])))
+        
+        # print(list(iteritems(vdict))[:10])
+        
+        toDel = \
+            list(
+                map(
+                    lambda v:
+                        vids[v],
+                    map(
+                        lambda v:
+                            v[0],
+                        filter(
+                            lambda v:
+                                not len(v[1]) and \
+                                # nodes of other species or compounds ignored
+                                graph.vs[vids[v[0]]]['ncbi_tax_id'] == source,
+                            iteritems(vdict)
+                        )
+                    )
+                )
+            )
+        
+        ndel = len(toDel)
+        graph.delete_vertices(toDel)
+        
+        # this for permanent identification of nodes:
+        graph.vs['id_old'] = list(range(graph.vcount()))
+        # a dict of these permanent ids and the orthologs:
+        ovid_orto = \
+            dict(map(lambda v: (v['id_old'], vdict[v['name']]), graph.vs))
+        
+        # renaming vertices
+        newnames = \
+            list(
+                map(
+                    lambda v:
+                        vdict[v['name']][0] \
+                            # nodes of other species or compounds ignored
+                            if v['ncbi_tax_id'] == source \
+                            else v['name'],
+                    graph.vs
+                )
+            )
+        
+        graph.vs['name'] = newnames
+        
+        # the new nodes to be added because of ambiguous mapping
+        toAdd = \
+            list(
+                set(
+                    itertools.chain(
+                        *map(
+                            lambda v:
+                                v[1:],
+                            vdict.values()
+                        )
+                    )
+                # except those already exist:
+                ) - set(graph.vs['name'])
+            )
+        
+        graph += toAdd
+        
+        # this for permanent identification of nodes:
+        graph.vs['id_new'] = list(range(graph.vcount()))
+        
+        # this is a dict of vertices to be multiplied:
+        vmul = \
+            dict(
+                map(
+                    lambda v:
+                        (
+                            graph.vs.select(id_old = v[0])[0]['id_new'],
+                            list(
+                                map(
+                                    lambda vv:
+                                        graph.vs.select(name = vv)[
+                                            0]['id_new'],
+                                    v[1]
+                                )
+                            )
+                        ),
+                    iteritems(ovid_orto)
+                )
+            )
+        
+        # compiling a dict of new edges to be added due to ambigous mapping
+        
+        # this is for unambiguously identify edges both at directed and
+        # undirected graphs after reindexing at adding new edges:
+        graph.es['id_old'] = list(range(graph.ecount()))
+        graph.es['s_t_old'] = \
+            list(
+                map(
+                    lambda e:
+                        (
+                            graph.vs[e.source]['id_new'],
+                            graph.vs[e.target]['id_new']
+                        ),
+                    graph.es
+                )
+            )
+        graph.es['u_old'] = \
+            list(
+                map(
+                    lambda e:
+                        (
+                            graph.vs[e.source]['name'],
+                            graph.vs[e.target]['name']
+                        ),
+                    graph.es
+                )
+            )
+        
+        edgesToAdd = \
+            dict(
+                map(
+                    lambda epar:
+                        (
+                            # the parent edge original id as key
+                            epar[0],
+                            list(
+                                filter(
+                                    lambda enew:
+                                        # removing the parent edge itself
+                                        enew[0] != epar[1][0] or \
+                                        enew[1] != epar[1][1],
+                                    itertools.product(
+                                        vmul[epar[1][0]],
+                                        vmul[epar[1][1]]
+                                    )
+                                )
+                            )
+                        ),
+                    map(
+                        lambda e:
+                            (e['id_old'], e['s_t_old']),
+                        graph.es
+                    )
+                )
+            )
+        
+        # translating the dict values to vertex indices
+        edgesToAddVids = \
+            list(set(
+                map(
+                    lambda e:
+                        (
+                            graph.vs.select(id_new = e[0])[0].index,
+                            graph.vs.select(id_new = e[1])[0].index
+                        ),
+                    itertools.chain(
+                        *edgesToAdd.values()
+                    )
+                )
+            ))
+        
+        # creating new edges
+        graph += edgesToAddVids
+        
+        print(len(list(filter(lambda e: e['dirs'] is None, self.graph.es))))
+        
+        #
+        vids = dict(map(lambda v: (v['id_new'], v.index), graph.vs))
+        vnms = dict(map(lambda v: (v['id_new'], v['name']), graph.vs))
+        # setting attributes on old and new edges:
+        for e in graph.es:
+            
+            d = e['dirs']
+            
+            # this lookup is appropriate as old node names are certainly
+            # unique; for newly added edges `dirs` will be None
+            if d is not None and d.nodes[0] in vdict and d.nodes[1] in vdict:
+                
+                # translation of direction object attached to original edges
+                ids = {
+                    d.nodes[0]: vdict[d.nodes[0]][0],
+                    d.nodes[1]: vdict[d.nodes[1]][0]
+                }
+                
+                e['dirs'] = d.translate(ids)
+                e['refs_by_dir'] = \
+                    self.translate_refsdir(e['refs_by_dir'], ids)
+                
+                # if new edges have been introduced
+                # based on this specific edge
+                if e['id_old'] in edgesToAdd:
+                    
+                    # iterating new edges between orthologs
+                    for enew in edgesToAdd[e['id_old']]:
+                        
+                        vid1 = vids[enew[0]]
+                        vid2 = vids[enew[1]]
+                        # in case of directed graphs this will be correct:
+                        es = graph.es.select(_source = vid1,
+                                             _target = vid2)
+                        
+                        if not len(es):
+                            # at undirected graphs
+                            # source/target might be opposite:
+                            es = graph.es.select(_source = vid2,
+                                                 _target = vid1)
+                        
+                        if not len(es):
+                            sys.stdout.write('\t:: Could not find edge '\
+                                             'between %s and %s!\n' % (
+                                                graph.vs[vid1]['name'],
+                                                graph.vs[vid2]['name']
+                                                ))
+                            continue
+                        
+                        # this is a new edge between orthologs
+                        eenew = es[0]
+                        
+                        ids = {
+                            e['u_old'][0]: graph.vs[vid1]['name'],
+                            e['u_old'][1]: graph.vs[vid2]['name']
+                        }
+                        
+                        eenew['dirs'] = e['dirs'].translate(ids)
+                        eenew['refs_by_dir'] = \
+                            self.translate_refsdir(e['refs_by_dir'], ids)
+                        
+                        # copying the remaining attributes
+                        for eattr in e.attributes():
+                            if eattr != 'dirs' and eattr != 'refs_by_dir':
+                                eenew[eattr] = copy.deepcopy(e[eattr])
+        
+        # setting attributes of vertices
+        for vn0, vns in iteritems(vmul):
+            # the first ortholog:
+            v0 = graph.vs.select(id_new = vn0)[0]
+            # now setting its taxon to the target:
+            v0['ncbi_tax_id'] = target
+            for vn in vns:
+                # iterating further orthologs:
+                v = graph.vs[vids[vn]]
+                # copying attributes:
+                for vattr in v0.attributes():
+                    if vattr != 'name':
+                        v[vattr] = copy.deepcopy(v0[vattr])
+        
+        # removing temporary edge attributes
+        del self.graph.es['id_old']
+        del self.graph.vs['id_old']
+        del self.graph.vs['id_new']
+        del self.graph.es['s_t_old']
+        del self.graph.es['u_old']
+        
+        self.collapse_by_name(graph = graph)
+        
+        if not return_graph:
+            self.ncbi_tax_id = target
+            
+            self.update_vname()
+            self.update_vindex()
+            self.genesymbol_labels(remap_all = True)
+            refl = (
+                'uniprot',
+                'protein',
+                target
+            )
+            
+            if refl not in self.reflists:
+                self.load_reflists([
+                    reflists.ReferenceList(*refl, inFile = 'all_uniprots')])
+            
+            sys.stdout.write('\n')
+            self.clean_graph()
+        
+        sys.stdout.write(' > Network successfully translated from `%u` to'\
+            ' `%u`.\n   Nodes before: %u, after: %u\n   Edges before: %u,'\
+            ' after %u\n' % (source, target, vcount_before, graph.vcount(), 
+                            ecount_before, graph.ecount()))
+        
+        if return_graph:
+            return graph
+    
     def reload(self):
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist=[modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-
+    
     def _disclaimer(self):
         sys.stdout.write(self.disclaimer)
-
+    
     def licence(self):
         self._disclaimer()

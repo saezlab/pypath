@@ -132,17 +132,17 @@ class Mutation(object):
         return False
 
     def __contains__(self, other):
-        if other.__class__.__name__ == 'Residue':
+        if isinstance(other, Residue):
             if self.protein == other.protein and self.number == other.number and \
                     self.original.name == other.name:
                 return True
-        elif other.__class__.__name__ == 'Ptm':
+        elif isinstance(other, Ptm):
             if other.residue == self.original or self.original in other.motif:
                 return True
-        elif other.__class__.__name__ == 'Domain':
+        elif isinstance(other, Domain):
             if self.original in other:
                 return True
-        elif other.__class__.__name__ == 'DomainMotif':
+        elif isinstance(other, DomainMotif):
             if self.original in other.ptm or self.original in other.domain:
                 return True
         else:
@@ -207,26 +207,38 @@ class Ptm(object):
         return not self.__eq__(other)
 
     def __contains__(self, other):
-        if other.__class__.__name__ == 'Residue':
+        if isinstance(other, Residue):
             if self.residue is not None:
                 return other == self.residue
             elif self.motif is not None:
                 return other in self.motif
             else:
                 return False
-        if other.__class__.__name__ == 'Motif':
+        if isinstance(other, Motif):
             return other in self.motif
         elif other == self.protein:
             return True
-        elif other.__class__.__name__ == 'Mutation':
+        elif isinstance(other, Mutation):
             if other.original == self.residue or \
                     other.original in self.motif:
                 return True
         else:
             return False
+    
+    def __deepcopy__(self, memo):
+        new = type(self)(self.protein,
+                         id_type = self.id_type,
+                         typ = self.typ,
+                         motif = self.motif,
+                         residue = self.residue,
+                         isoform = self.isoform)
+        new.add_isoform(self.isoforms)
+        return new
 
     def add_source(self, source):
-        if type(source) in common.charTypes:
+        if source is None:
+            return None
+        elif type(source) in common.charTypes:
             self._add_source(source)
         else:
             for s in source:
@@ -261,9 +273,10 @@ class Ptm(object):
             self.isoforms = other.isoforms | self.isoforms
 
     def add_isoform(self, isoform):
-        isoform = isoform if type(isoform) is int \
-            else int(self.non_digit.sub('', isoform))
-        self.isoforms.add(isoform)
+        isoform = set([isoform]) if type(isoform) is int \
+            else isoform if type(isoform) is set \
+            else set([int(self.non_digit.sub('', isoform))])
+        self.isoforms = self.isoforms | isoform
 
     def get_isoforms(self, seq=None):
         result = []
@@ -339,12 +352,12 @@ class Motif(object):
             return False
 
     def __contains__(self, other):
-        if other.__class__.__name__ == 'Residue':
+        if isinstance(other, Residue):
             if other.protein == self.protein and \
                     other.number >= self.start and \
                     other.number <= self.end:
                 return True
-        elif other.__class__.__name__ == 'Mutation':
+        elif isinstance(other, Mutation):
             if other.original in self:
                 return True
         elif other == self.protein or \
@@ -354,7 +367,9 @@ class Motif(object):
         return False
 
     def add_source(self, source):
-        if type(source) in common.charTypes:
+        if source is None:
+            return None
+        elif type(source) in common.charTypes:
             self._add_source(source)
         else:
             for s in source:
@@ -459,21 +474,21 @@ class Domain(object):
         return not self.__eq__(other)
 
     def __contains__(self, other):
-        if other.__class__.__name__ == 'Residue':
+        if isinstance(other, Residue):
             if other.protein == self.protein and \
                     other.number >= self.start and \
                     other.number <= self.end:
                 return True
             else:
                 return False
-        elif other.__class__.__name__ == 'Motif':
+        elif isinstance(other, Motif):
             if other.protein == self.protein and \
                     other.start < self.end and \
                     other.end <= self.start:
                 return True
             else:
                 return False
-        elif other.__class__.__name__ == 'Ptm':
+        elif isinstance(other, Ptm):
             return other.residue in self or other.motif in self
         elif other == self.protein or \
                 other == self.instance or \
@@ -562,7 +577,9 @@ class DomainDomain(object):
         return other in self.domains[0] or other in self.domains[1]
 
     def add_sources(self, source):
-        if type(source) in common.charTypes:
+        if source is None:
+            return None
+        elif type(source) in common.charTypes:
             self._add_source(source)
         else:
             for s in source:
@@ -621,7 +638,7 @@ class DomainMotif(object):
                                        ', '.join(self.refs), ', '.join(self.pdbs))
 
     def __eq__(self, other):
-        if other.__class__.__name__ == 'DomainMotif' and \
+        if isinstance(other, DomainMotif) and \
             self.ptm == other.ptm and \
             (self.domain == other.domain or
              (self.domain.start and self.domain.end) is None or
@@ -632,12 +649,22 @@ class DomainMotif(object):
 
     def __ne__(self, other):
         return not self.__eq__(other)
+    
+    def __contains__(self, other):
+        if other == self.domain or other == self.ptm:
+            return True
+        elif other == self.domain.protein or other == self.ptm.protein:
+            return True
+        else:
+            return False
 
     def get_proteins(self):
         return [self.domain.protein, self.ptm.protein]
 
     def add_sources(self, source):
-        if type(source) in common.charTypes:
+        if source is None:
+            return None
+        elif type(source) in common.charTypes:
             self._add_source(source)
         else:
             for s in source:
@@ -690,7 +717,7 @@ class Regulation(object):
         return hash((self.ptm, self.source, self.target, self.effect))
 
     def __eq__(self, other):
-        if other.__class__.__name__ == 'Regulation' and \
+        if isinstance(other, Regulation) and \
                 self.ptm == other.ptm and \
                 self.source == other.source and \
                 self.target == other.target and \
@@ -703,7 +730,9 @@ class Regulation(object):
         return not self.__eq__(other)
 
     def add_sources(self, source):
-        if type(source) in common.charTypes:
+        if source is None:
+            return None
+        elif type(source) in common.charTypes:
             self._add_source(source)
         else:
             for s in source:

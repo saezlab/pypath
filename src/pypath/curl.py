@@ -868,18 +868,23 @@ class Curl(FileOpener):
                         'INFO', 'pypath.curl.Curl().curl_call() :: attempt #%u'
                         % attempt)
                 self.curl.perform()
+                
                 if self.url.startswith('http'):
                     self.status = self.curl.getinfo(pycurl.HTTP_CODE)
                     if self.status == 200:
                         self.terminate_progress()
                         break
+                
                 if self.url.startswith('ftp'):
                     self.status == 500
                     for h in self.resp_headers:
-                        if h.startswith(b'226'):
+                        if h[:3] == b'226':
                             self.status = 200
                             self.terminate_progress()
                             break
+                    if self.status == 200:
+                        break
+            
             except pycurl.error as e:
                 self.status = 500
                 if self.progress is not None:
@@ -1027,8 +1032,15 @@ class Curl(FileOpener):
         self.post_str = '' if self.post is None else \
             '?' + '&'.join(sorted([i[0] + '=' + i[1]
                                    for i in iteritems(self.post)]))
+        
+        if self.binary_data:
+            bindata = str(self.binary_data)
+        else:
+            bindata = ''
+        
         self.urlmd5 = hashlib.md5(
-            self.unicode2bytes('%s%s' % (self.url, self.post_str))).hexdigest()
+            self.unicode2bytes('%s%s%s' % \
+                (self.url, self.post_str, bindata))).hexdigest()
 
     def cache_dir_exists(self):
         if not os.path.exists(os.path.join(os.getcwd(), self.cache_dir)):
@@ -1123,7 +1135,7 @@ class Curl(FileOpener):
             try:
                 return content.decode(self.encoding or 'utf-8')
             except:
-                self.print_debug_info(
+                self.print_debug_info('WARNING',
                     'Failed '
                     'decoding downloaded bytes content with encoding %s. '
                     'Result might be of type bytes' %
@@ -1169,7 +1181,7 @@ class Curl(FileOpener):
         if self.progress is not None:
             self.terminate_progress()
         if self.debug:
-            self.print_debug_info(status)
+            self.print_debug_info('INFO', status)
         elif not self.silent:
             sys.stdout.write('\r%s' % (' ' * 150))
             sys.stdout.write('\r\t:: %s' % status)

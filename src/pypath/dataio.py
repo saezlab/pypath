@@ -536,6 +536,11 @@ def get_complexportal(species=9606, zipped=True):
 
 
 def get_havugimana():
+    """
+    Downloads data from
+    Supplement Table S3/1 from Havugimana 2012
+    Cell. 150(5): 1068–1081.
+    """
     url = urls.urls['havugimana']['url']
     c = curl.Curl(url, silent=False, large=True)
     data = c.result
@@ -1825,10 +1830,12 @@ def get_comppi():
     return data
 
 
-def get_psite_phos(raw=True, organism='human'):
+def get_psite_phos(raw=True, organism='human', strict=True, mapper=None):
+    
     url = urls.urls['psite_kin']['url']
     c = curl.Curl(
         url, silent=False, compr='gz', encoding='iso-8859-1', large=True)
+    orto = {}
     data = c.result
     cols = {
         'kinase': 1,
@@ -1844,39 +1851,106 @@ def get_psite_phos(raw=True, organism='human'):
     motre = re.compile(r'(_*)([A-Za-z]+)(_*)')
     for r in data:
         if organism is None or \
-                (r['kinase_org'] == organism and r['substrate_org'] == organism):
-            r['resaa'] = r['residue'][0]
-            r['resnum'] = int(non_digit.sub('', r['residue'][1:]))
-            mot = motre.match(r['motif'])
-            isoform = 1 if '-' not in r['substrate'] else r['substrate'].split(
-                '-')[1]
-            r['substrate'] = r['substrate'].split('-')[0]
-            if mot:
-                r['start'] = r['resnum'] - 7 + len(mot.groups()[0])
-                r['end'] = r['resnum'] + 7 - len(mot.groups()[2])
-                r['instance'] = r['motif'].replace('_', '').upper()
+            ((r['kinase_org'] == organism or not strict) and \
+            r['substrate_org'] == organism):
+            
+            if r['kinase_org'] != organism:
+                korg = r['kinase_org']
+                # attempting to map by orthology:
+                if korg in common.taxa and organism in common.taxa:
+                    
+                    mapper = mapping.Mapper() if mapper is None else mapper
+                    ktaxid = common.taxa[korg]
+                    taxid = common.taxa[organism]
+                    
+                    if korg not in orto:
+                        orto[korg] = homologene_dict(ktaxid, taxid, 'refseqp')
+                    
+                    korg_refseq = mapper.map_name(r['kinase'],
+                                                    'uniprot',
+                                                    'refseqp',
+                                                    ktaxid)
+                    
+                    kin_uniprot = \
+                        list(
+                            itertools.chain(
+                                *map(
+                                    lambda ors:
+                                        mapper.map_name(ors,
+                                                        'refseqp',
+                                                        'uniprot',
+                                                        taxid),
+                                    itertools.chain(
+                                        *map(
+                                            lambda rs:
+                                                orto[korg][rs],
+                                            filter(
+                                                lambda rs:
+                                                    rs in orto[korg],
+                                                korg_refseq
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
             else:
-                r['start'] = None
-                r['end'] = None
-                r['instance'] = None
-            if raw:
-                result.append(r)
-            else:
-                res = intera.Residue(r['resnum'], r['resaa'], r['substrate'])
-                mot = intera.Motif(
-                    r['substrate'],
-                    r['start'],
-                    r['end'],
-                    instance=r['instance'])
-                ptm = intera.Ptm(protein=r['substrate'],
-                                 residue=res,
-                                 motif=mot,
-                                 typ='phosphorylation',
-                                 source='PhosphoSite')
-                dom = intera.Domain(protein=r['kinase'])
-                dommot = intera.DomainMotif(
-                    domain=dom, ptm=ptm, sources=['PhosphoSite'])
-                result.append(dommot)
+                kin_uniprot = [r['kinase']]
+            
+            for kinase in kin_uniprot:
+            
+                r['resaa'] = r['residue'][0]
+                r['resnum'] = int(non_digit.sub('', r['residue'][1:]))
+                mot = motre.match(r['motif'])
+                
+                r['substrate'] = r['substrate'].split('_')[0] # excluding e.g. Q12809_VAR_014388
+                sisoform = 1 if '-' not in r['substrate'] else \
+                    int(r['substrate'].split('-')[1])
+                r['substrate'] = r['substrate'].split('-')[0]
+                
+                kisoform = 1 if '-' not in kinase else int(kinase.split('-')[1])
+                kinase = kinase.split('-')[0]
+                
+                r['substrate'] = r['substrate'].split('-')[0]
+                
+                if mot:
+                    r['start'] = r['resnum'] - 7 + len(mot.groups()[0])
+                    r['end'] = r['resnum'] + 7 - len(mot.groups()[2])
+                    r['instance'] = r['motif'].replace('_', '').upper()
+                else:
+                    r['start'] = None
+                    r['end'] = None
+                    r['instance'] = None
+                
+                if raw:
+                    r['kinase'] = kinase
+                    result.append(r)
+                else:
+                    res = intera.Residue(r['resnum'], r['resaa'],
+                                         r['substrate'],
+                                         isoform=sisoform)
+                    
+                    mot = intera.Motif(
+                        r['substrate'],
+                        r['start'],
+                        r['end'],
+                        instance=r['instance'],
+                        isoform=sisoform)
+                    
+                    ptm = intera.Ptm(protein=r['substrate'],
+                                    residue=res,
+                                    motif=mot,
+                                    typ='phosphorylation',
+                                    source='PhosphoSite',
+                                    isoform=sisoform)
+                    
+                    dom = intera.Domain(protein=kinase, isoform=kisoform)
+                    
+                    dommot = intera.DomainMotif(
+                        domain=dom, ptm=ptm, sources=['PhosphoSite'])
+                    
+                    result.append(dommot)
+    
     return result
 
 
@@ -2387,9 +2461,25 @@ def get_elm_domains():
     return result
 
 
-def get_phosphoelm(organism='Homo sapiens', ltp_only=True):
+def get_phosphoelm(organism=9606, ltp_only=True):
+    """
+    Downloads kinase-substrate interactions from phosphoELM.
+    Returns list of dicts.
+    
+    :param int organism: NCBI Taxonomy ID.
+    :param bool ltp_only: Include only low-throughput interactions.
+    """
     result = []
     non_digit = re.compile(r'[^\d.-]+')
+    
+    if organism is None:
+        _organism = None
+    elif organism in common.phosphoelm_taxids:
+        _organism = common.phosphoelm_taxids[organism]
+    else:
+        sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
+        return []
+    
     url = urls.urls['p_elm']['url']
     c = curl.Curl(url, silent=False)
     data = c.result
@@ -2401,27 +2491,33 @@ def get_phosphoelm(organism='Homo sapiens', ltp_only=True):
     data = [l.split('\t') for l in data.split('\n')]
     kinases = get_phelm_kinases()
     del data[0]
+    
     for l in data:
-        if len(l) == 9 and l[7] == organism and (not ltp_only or
-                                                 l[6] == 'LTP'):
+        
+        if len(l) == 9 and (l[7] == _organism or _organism is None) \
+            and (not ltp_only or l[6] == 'LTP'):
+            
             l[1] = 1 if '-' not in l[0] else int(l[0].split('-')[1])
             l[0] = l[0].split('-')[0]
             del l[-1]
+            
             if len(l[5]) > 0 and l[5] in kinases:
                 kinase = kinases[l[5]]
-            result.append({
-                'instance': None,
-                'isoform': l[1],
-                'resaa': l[3],
-                'resnum': int(non_digit.sub('', l[2])),
-                'start': None,
-                'end': None,
-                'substrate': l[0],
-                'kinase': kinase,
-                'references': l[4].split(';'),
-                'experiment': l[6],
-                'organism': l[7]
-            })
+                
+                result.append({
+                    'instance': None,
+                    'isoform': l[1],
+                    'resaa': l[3],
+                    'resnum': int(non_digit.sub('', l[2])),
+                    'start': None,
+                    'end': None,
+                    'substrate': l[0],
+                    'kinase': kinase,
+                    'references': l[4].split(';'),
+                    'experiment': l[6],
+                    'organism': l[7]
+                })
+    
     return result
 
 
@@ -2525,19 +2621,43 @@ def pfam_uniprot(uniprots, infile=None):
     return result
 
 
-def get_dbptm():
+def get_dbptm(organism=9606):
+    """
+    Downloads enzyme-substrate interactions from dbPTM.
+    Returns list of dicts.
+    """
+    if organism is None:
+        _organism = None
+    elif organism in common.dbptm_taxids:
+        _organism = common.dbptm_taxids[organism]
+    else:
+        sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
+        return []
+    
     result = []
     byre = re.compile(r'.*by\s([A-Za-z0-9\s]+)\.*')
     andre = re.compile(r',|and')
     non_digit = re.compile(r'[^\d.-]+')
+    
     for url in urls.urls['dbptm']['urls']:
+        
         c = curl.Curl(url, silent=False)
         extra = c.result
+        
         for k, data in iteritems(extra):
+            
             data = [x.split('\t') for x in data.split('\n')]
+            
             for l in data:
+                
                 if len(l) > 8:
+                    
+                    mnemonic = l[0].split('_')[1].strip()
+                    if mnemonic != _organism:
+                        continue
+                    
                     resnum = int(non_digit.sub('', l[2]))
+                    
                     ptm = ({
                         'substrate': l[1],
                         'typ': l[7].lower(),
@@ -2554,20 +2674,28 @@ def get_dbptm():
                         'start': resnum - 6,
                         'end': resnum + 6
                     })
+                    
                     if ptm['kinase'] is not None:
+                        
                         if 'autocatalysis' in ptm['kinase']:
+                            
                             ptm['kinase'].append(ptm['substrate'])
                             ptm['kinase'].remove('autocatalysis')
+                        
                         ptm['kinase'] = [
                             k.replace('host', '').strip()
                             for k in ptm['kinase']
                         ]
+                        
                         ptm['kinase'] = [
                             k for k in ptm['kinase'] if len(k) > 0
                         ]
+                        
                         if len(ptm['kinase']) == 0:
                             ptm['kinase'] = None
+                        
                     result.append(ptm)
+    
     return result
 
 
@@ -2639,7 +2767,7 @@ def get_depod(organism='Homo sapiens'):
     url_mitab = urls.urls['depod']['urls'][1]
     c = curl.Curl(url, silent=False, encoding='ascii')
     data = c.result
-    data_c = curl.Curl(url_mitab, silent=False, encoding='ascii')
+    data_c = curl.Curl(url_mitab, silent=False, encoding='iso-8859-1')
     data_mitab = c.result
     data = [x.split('\t') for x in data.split('\n')]
     data_mitab = [x.split('\t') for x in data_mitab.split('\n')]
@@ -3895,23 +4023,22 @@ def trip_interactions(exclude_methods=['Inference', 'Speculation'],
     ] for unipr, d in iteritems(data)]
 
 
-def load_signor_ptms(fname='signor_22052015.tab'):
-    '''
-    This function is deprecated, you should not use it.
-    Loads and processes Signor PTMs from local file.
+def load_signor_ptms(organism=9606):
+    """
+    Loads and processes Signor PTMs.
     Returns dict of dicts.
-    '''
-    url = urls.urls['signor']['all_url']
-    c = curl.Curl(url, silent=False, large=True)
-    data = c.result
+    """
     reres = re.compile(r'([A-Za-z]{3})([0-9]+)')
     result = []
     aalet = dict((k.lower().capitalize(), v)
                  for k, v in iteritems(common.aaletters))
-    null = data.readline()
+    
+    data = signor_interactions(organism=organism)
+    
     for d in data:
-        d = d.decode('utf-8').strip().split('\t')
+        
         resm = reres.match(d[10])
+        
         if resm is not None:
             aa = aalet[resm.groups()[0].capitalize()]
             aanum = int(resm.groups()[1])
@@ -3928,6 +4055,7 @@ def load_signor_ptms(fname='signor_22052015.tab'):
                 'resaa': aa,
                 'motif': inst
             })
+    
     return result
 
 
@@ -4074,7 +4202,7 @@ def csv_sep_change(csv, old, new):
     return ''.join(clean_csv)
 
 
-def signor_interactions(organism='human'):
+def signor_interactions(organism=9606):
     '''
     Downloads the full dataset from Signor.
     Returns the file contents.
@@ -4082,10 +4210,22 @@ def signor_interactions(organism='human'):
     Note: this method has been updated Oct 2016,
     as Signor updated both their data and webpage.
     '''
-
+    if type(organism) is int:
+        if organism in common.taxids:
+            _organism = common.taxids[organism]
+        else:
+            sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
+            return []
+    else:
+        _organism = organism
+    
+    if _organism not in {'human', 'rat', 'mouse'}:
+        return []
+    
     url = urls.urls['signor']['all_url_new']
-    binary_data = [(b'organism', organism.encode('utf-8')),
+    binary_data = [(b'organism', _organism.encode('utf-8')),
                    (b'format', b'csv'), (b'submit', b'Download')]
+    
     c = curl.Curl(
         url,
         silent=False,
@@ -4094,7 +4234,7 @@ def signor_interactions(organism='human'):
         timeout=30,
         binary_data=binary_data,
         return_headers=True)
-
+    
     _ = c.result.readline()
     sep = '@#@#@'
     lines = c.result.read().decode('utf-8')
@@ -6215,3 +6355,65 @@ def get_reactions(types=None, sources=None):
                 ';'.join(list(i[2] if types is None else i[2] & types)),
                 str(int(i[3])), i[4], ';'.join(list(i[5]))
             ]
+
+def get_homologene():
+    """
+    Downloads the recent release of the NCBI HomoloGene database.
+    Returns file pointer.
+    """
+    url = urls.urls['homologene']['url']
+    c = curl.Curl(url=url, silent=False, large=True)
+    return c.result
+
+def homologene_dict(source, target, id_type):
+    """
+    Returns orthology translation table as dict, obtained
+    from NVBI HomoloGene data.
+    
+    :param int source: NCBI Taxonomy ID of the source species (keys).
+    :param int target: NCBI Taxonomy ID of the target species (values).
+    :param str id_type: ID type to be used in the dict. Possible values:
+        'RefSeq', 'Entrez', 'GI', 'GeneSymbol'.
+    """
+    ids = {
+        'refseq': 5,
+        'refseqp': 5,
+        'genesymbol': 3,
+        'gi': 4,
+        'entrez': 2
+    }
+    
+    try:
+        id_col = ids[id_type.lower()]
+    except KeyError:
+        sys.stdout.write('\tUnknown ID type: `%s`. Please use RefSeq, '\
+            'Entrez, GI or GeneSymbol.\n' % id_type)
+        raise
+    
+    hg = get_homologene()
+    hgroup = None
+    result = {}
+    
+    for l in hg:
+        
+        l = l.decode('ascii').strip().split('\t')
+        this_hgroup = l[0].strip()
+        
+        if this_hgroup != hgroup:
+            this_source = None
+            this_target = None
+            hgroup = this_hgroup
+        
+        this_taxon = int(l[1].strip())
+        if this_taxon == source:
+            this_source = l[id_col]
+        elif this_taxon == target:
+            this_target = l[id_col]
+        
+        if this_source is not None and this_target is not None \
+            and len(this_source) and len(this_target):
+            if this_source not in result:
+                result[this_source] = set([])
+            result[this_source].add(this_target)
+    
+    return result
