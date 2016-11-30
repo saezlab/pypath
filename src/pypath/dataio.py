@@ -3117,45 +3117,76 @@ def get_go(organism=9606, swissprot='yes'):
 
 
 def get_go_goa(organism='human'):
+    """
+    Downloads GO annotation from UniProt GOA.
+    """
+    
+    def add_annot(a, result):
+        if a[1] not in result[a[8]]:
+            result[a[8]][a[1]] = []
+        result[a[8]][a[1]].append(a[4])
+    
     result = {'P': {}, 'C': {}, 'F': {}}
+    
     url = urls.urls['goa']['url'] % (organism.upper(), organism)
-    c = curl.Curl(url, silent=False)
-    data = c.result
-    data = [
-        x.split('\t') for x in data.split('\n')
-        if not x.startswith('!') and len(x) > 0
-    ]
-    for l in data:
-        if l[1] not in result[l[8]]:
-            result[l[8]][l[1]] = []
-        result[l[8]][l[1]].append(l[4])
+    c = curl.Curl(url, silent=False, large = True)
+    
+    _ = \
+        list(
+            map(
+                lambda l:
+                    add_annot(l.strip().split('\t'), result),
+                filter(
+                    lambda l:
+                        l[0] != '!' and len(l),
+                    map(
+                        lambda l:
+                            l.decode('ascii'),
+                        c.result
+                    )
+                )
+            )
+        )
+    
     return result
 
-
-def get_go_quick(organism=9606, slim=False):
+def get_go_quick(organism=9606, slim=False, names_only=False):
+    """
+    Loads GO terms and annotations from QuickGO.
+    Returns 2 dicts: `names` are GO terms by their IDs,
+    `terms` are proteins GO IDs by UniProt IDs.
+    """
+    
+    def add_term(a, terms, names, names_only):
+        if not names_only:
+            if a[0] not in terms[a[3][0]]:
+                terms[a[3][0]][a[0]] = set([])
+            terms[a[3][0]][a[0]].add(a[1])
+        names[a[1]] = a[2]
+    
     termuse = 'slim' if slim or slim is None else 'ancestor'
     goslim = '' if termuse == 'ancestor' \
         else '&goid=%s' % ','.join(get_goslim(url=slim))
     terms = {'C': {}, 'F': {}, 'P': {}}
     names = {}
     url = urls.urls['quickgo']['url'] % (goslim, termuse, organism)
-    c = curl.Curl(url, silent=False)
-    data = c.result
-    data = [x.split('\t') for x in data.split('\n') if len(x) > 0]
-    del data[0]
-    for l in data:
-        try:
-            if l[0] not in terms[l[3][0]]:
-                terms[l[3][0]][l[0]] = set([])
-            terms[l[3][0]][l[0]].add(l[1])
-            names[l[1]] = l[2]
-        except:
-            sys.stdout.write('Error processing line:\n')
-            sys.stdout.write(l)
-            sys.stdout.write('\n')
-            sys.stdout.flush()
+    c = curl.Curl(url, silent=False, large=True)
+    _ = c.result.readline()
+    
+    _ = \
+        list(
+            map(
+                lambda l:
+                    add_term(l, terms, names, names_only),
+                map(
+                    lambda l:
+                        l.decode('ascii').strip().split('\t'),
+                    c.result
+                )
+            )
+        )
+    
     return {'terms': terms, 'names': names}
-
 
 def get_goslim(url=None):
     rego = re.compile(r'GO:[0-9]{7}')

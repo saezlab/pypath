@@ -386,7 +386,7 @@ urls = {
     'goa': {
         'label': 'UniProt GO annotations from GOA',
         'url': 'ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/%s/'
-        'gene_association.goa_%s.gz'
+        'goa_%s.gaf.gz'
     },
     'quickgo': {
         'label': 'UniProt GO annotations from QuickGO',
