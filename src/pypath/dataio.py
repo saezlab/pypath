@@ -702,7 +702,10 @@ def get_domino_ptms():
     'domains-interpro-B', 'negative'] #28
     '''
     domino = get_domino()
-    miont = get_ontology('MI')
+    try:
+        miont = get_ontology('MI')
+    except:
+        miont = {}
     dmi = []
     ddi = []
     prg = progress.Progress(len(domino), 'Processing DOMINO', 11)
