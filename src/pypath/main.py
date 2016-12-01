@@ -5299,8 +5299,6 @@ class PyPath(object):
                             else:
                                 inst = None
                             
-                            print(inst)
-                            
                             mot = intera.Motif(
                                 protein=uniprot_elm,
                                 motif_name=l[0],
