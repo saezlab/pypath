@@ -5283,21 +5283,36 @@ class PyPath(object):
                 uniprot_dom = l[3]
                 if self.node_exists(uniprot_elm) and self.node_exists(
                         uniprot_dom):
-                    nodes = self.get_node_pair(l[1], l[9])
+                    nodes = self.get_node_pair(uniprot_dom, uniprot_elm)
                     if nodes:
                         e = self.graph.get_eid(nodes[0], nodes[1], error=False)
                         if e != -1:
                             if self.graph.es[e]['ptm'] is None:
                                 self.graph.es[e]['ptm'] = []
+                            
+                            start = int(l[4])
+                            end   = int(l[5])
+                            
+                            if uniprot_elm in self.seq:
+                                inst = self.seq[uniprot_elm].get_region(start = start,
+                                                                        end = end)[2]
+                            else:
+                                inst = None
+                            
+                            print(inst)
+                            
                             mot = intera.Motif(
                                 protein=uniprot_elm,
                                 motif_name=l[0],
-                                start=int(l[4]),
-                                end=int(l[5]))
+                                start=start,
+                                end=end,
+                                instance = inst)
                             ptm = intera.Ptm(protein=uniprot_elm, motif=mot)
                             dstart = start = None if l[6] == 'None' else int(l[
                                 6])
                             dend = None if l[6] == 'None' else int(l[7])
+                            
+                            doms = []
                             if self.u_pfam is not None and uniprot_dom in self.u_pfam:
                                 if l[1] in self.u_pfam[uniprot_dom]:
                                     for region in self.u_pfam[uniprot_dom][l[
@@ -5312,6 +5327,13 @@ class PyPath(object):
                                                     start=region['start'],
                                                     end=region['end'],
                                                     isoform=region['isoform']))
+                            else:
+                                doms = [
+                                    intera.Domain(
+                                        protein=uniprot_dom,
+                                        domain=l[1]
+                                    )
+                                ]
                             for dom in doms:
                                 self.graph.es[e]['ptm'].append(
                                     intera.DomainMotif(dom, ptm, 'ELM'))
@@ -5547,8 +5569,9 @@ class PyPath(object):
                                             operator.itemgetter(1))
                 ]))
 
-    def sequences(self, isoforms=True):
-        self.seq = uniprot_input.swissprot_seq(self.ncbi_tax_id, isoforms)
+    def sequences(self, isoforms=True, update=False):
+        if self.seq is None or update:
+            self.seq = uniprot_input.swissprot_seq(self.ncbi_tax_id, isoforms)
 
     def load_ptms(self):
         self.load_depod_dmi()

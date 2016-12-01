@@ -62,7 +62,7 @@ class Seq(object):
         isoform = self.canonical if isoform is None else isoform
         if residue is None and start is None and end is None:
             return (1, len(self.isof[isoform]), self.isof[isoform])
-        if residue > len(self.isof[isoform]):
+        if residue is not None and residue > len(self.isof[isoform]):
             return (None, None, None)
         start = start if start is not None else residue - flanking
         end = end if end is not None else residue + flanking
