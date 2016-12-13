@@ -5276,6 +5276,9 @@ class PyPath(object):
             self.graph.es['ptm'] = [[] for _ in self.graph.es]
         elm = dataio.get_elm_interactions()
         prg = Progress(len(elm), 'Processing domain-motif interactions', 11)
+        
+        self.sequences()
+        
         for l in elm:
             prg.step()
             if len(l) > 7:
@@ -8172,7 +8175,7 @@ class PyPath(object):
             return new_refsdir
     
     def orthology_translation(self, target, source = None,
-                              mapping_id_type = 'refseqp',
+                              only_swissprot = True,
                               graph = None):
         """
         Translates the current object to another organism by orthology.
@@ -8184,62 +8187,18 @@ class PyPath(object):
         return_graph = graph is not None
         graph = self.graph if graph is None else graph
         source = self.ncbi_tax_id if source is None else source
-        orto = dataio.homologene_dict(source, target, mapping_id_type)
-        vdict = {}
+        orto = dataio.homologene_uniprot_dict(source, target,
+                                              only_swissprot = only_swissprot,
+                                              mapper = self.mapper)
         
         vcount_before = graph.vcount()
         ecount_before = graph.ecount()
         
-        for v in graph.vs:
-            # translating source UniProt to intermediate IDs
-            sids = self.mapper.map_name(v['name'],
-                                        'uniprot',
-                                        mapping_id_type,
-                                        ncbi_tax_id = source)
-            
-            # translating orthologs
-            tids = set([])
-            tids = \
-                reduce(
-                    lambda sids1, sids2:
-                        sids1 | sids2,
-                    map(
-                        lambda sid:
-                            orto[sid],
-                        filter(
-                            lambda sid:
-                                sid in orto,
-                            sids
-                        )
-                    ),
-                    set([])
-                )
-            
-            # translating target intermetiate IDs to UniProt
-            
-            tup = set([])
-            tup = \
-                sorted(
-                    set(
-                        list(
-                            itertools.chain(
-                                *map(
-                                    lambda tid:
-                                        self.mapper.map_name(tid,
-                                                            mapping_id_type,
-                                                            'uniprot',
-                                                            ncbi_tax_id = target),
-                                    tids
-                                )
-                            )
-                        )
-                    )
-                )
-            
-            vdict[v['name']] = tup
-        
         # nodes could not be mapped are to be deleted
         vids = dict(map(lambda v: (v[1], v[0]), enumerate(graph.vs['name'])))
+        
+        orto = dict(filter(lambda i: i[0] in vids and len(i[1]),
+                           iteritems(orto)))
         
         # print(list(iteritems(vdict))[:10])
         
@@ -8247,17 +8206,13 @@ class PyPath(object):
             list(
                 map(
                     lambda v:
-                        vids[v],
-                    map(
+                        v[1],
+                    filter(
                         lambda v:
-                            v[0],
-                        filter(
-                            lambda v:
-                                not len(v[1]) and \
-                                # nodes of other species or compounds ignored
-                                graph.vs[vids[v[0]]]['ncbi_tax_id'] == source,
-                            iteritems(vdict)
-                        )
+                            (v[0] not in orto or not len(orto[v[0]])) and \
+                            # nodes of other species or compounds ignored
+                            graph.vs[v[1]]['ncbi_tax_id'] == source,
+                        iteritems(vids)
                     )
                 )
             )
@@ -8269,14 +8224,14 @@ class PyPath(object):
         graph.vs['id_old'] = list(range(graph.vcount()))
         # a dict of these permanent ids and the orthologs:
         ovid_orto = \
-            dict(map(lambda v: (v['id_old'], vdict[v['name']]), graph.vs))
+            dict(map(lambda v: (v['id_old'], orto[v['name']]), graph.vs))
         
         # renaming vertices
         newnames = \
             list(
                 map(
                     lambda v:
-                        vdict[v['name']][0] \
+                        orto[v['name']][0] \
                             # nodes of other species or compounds ignored
                             if v['ncbi_tax_id'] == source \
                             else v['name'],
@@ -8294,7 +8249,7 @@ class PyPath(object):
                         *map(
                             lambda v:
                                 v[1:],
-                            vdict.values()
+                            orto.values()
                         )
                     )
                 # except those already exist:
@@ -8400,8 +8355,6 @@ class PyPath(object):
         # creating new edges
         graph += edgesToAddVids
         
-        print(len(list(filter(lambda e: e['dirs'] is None, self.graph.es))))
-        
         #
         vids = dict(map(lambda v: (v['id_new'], v.index), graph.vs))
         vnms = dict(map(lambda v: (v['id_new'], v['name']), graph.vs))
@@ -8412,12 +8365,12 @@ class PyPath(object):
             
             # this lookup is appropriate as old node names are certainly
             # unique; for newly added edges `dirs` will be None
-            if d is not None and d.nodes[0] in vdict and d.nodes[1] in vdict:
+            if d is not None and d.nodes[0] in orto and d.nodes[1] in orto:
                 
                 # translation of direction object attached to original edges
                 ids = {
-                    d.nodes[0]: vdict[d.nodes[0]][0],
-                    d.nodes[1]: vdict[d.nodes[1]][0]
+                    d.nodes[0]: orto[d.nodes[0]][0],
+                    d.nodes[1]: orto[d.nodes[1]][0]
                 }
                 
                 e['dirs'] = d.translate(ids)
@@ -8508,6 +8461,7 @@ class PyPath(object):
                     reflists.ReferenceList(*refl, inFile = 'all_uniprots')])
             
             sys.stdout.write('\n')
+            
             self.clean_graph()
         
         sys.stdout.write(' > Network successfully translated from `%u` to'\

@@ -6402,7 +6402,7 @@ def get_homologene():
 def homologene_dict(source, target, id_type):
     """
     Returns orthology translation table as dict, obtained
-    from NVBI HomoloGene data.
+    from NCBI HomoloGene data.
     
     :param int source: NCBI Taxonomy ID of the source species (keys).
     :param int target: NCBI Taxonomy ID of the target species (values).
@@ -6449,5 +6449,64 @@ def homologene_dict(source, target, id_type):
             if this_source not in result:
                 result[this_source] = set([])
             result[this_source].add(this_target)
+    
+    return result
+
+def homologene_uniprot_dict(source, target, only_swissprot = True, mapper = None):
+    """
+    Returns orthology translation table as dict from UniProt to Uniprot,
+    obtained from NCBI HomoloGene data. Uses RefSeq and Entrez IDs for
+    translation.
+    
+    :param int source: NCBI Taxonomy ID of the source species (keys).
+    :param int target: NCBI Taxonomy ID of the target species (values).
+    :param bool only_swissprot: Translate only SwissProt IDs.
+    :param pypath.mapping.Mapper mapper: A Mapper object.
+    """
+    result = {}
+    
+    hge = homologene_dict(source, target, 'entrez')
+    hgr = homologene_dict(source, target, 'refseq')
+    
+    all_source = set(all_uniprots(organism = source, swissprot = 'YES'))
+    
+    if not only_swissprot:
+        all_source_trembl = all_uniprots(organism = source, swissprot = 'NO')
+        all_source.update(set(all_source_trembl))
+    
+    m = mapping.Mapper() if mapper is None else mapper
+    
+    for u in all_source:
+        
+        source_e = m.map_name(u, 'uniprot', 'entrez', source)
+        source_r = m.map_name(u, 'uniprot', 'refseqp', source)
+        target_u = set([])
+        target_r = set([])
+        target_e = set([])
+        
+        for e in source_e:
+            if e in hge:
+                target_e.update(hge[e])
+        
+        for r in source_r:
+            if r in hgr:
+                target_r.update(hgr[r])
+        
+        for e in target_e:
+            target_u.update(set(m.map_name(e, 'entrez', 'uniprot', target)))
+        
+        for r in target_r:
+            target_u.update(set(m.map_name(e, 'refseqp', 'uniprot', target)))
+        
+        target_u = \
+            itertools.chain(
+                *map(
+                    lambda tu:
+                        m.map_name(tu, 'uniprot', 'uniprot', target),
+                    target_u
+                )
+            )
+        
+        result[u] = sorted(list(target_u))
     
     return result
