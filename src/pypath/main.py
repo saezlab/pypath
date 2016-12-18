@@ -8267,7 +8267,9 @@ class PyPath(object):
                 map(
                     lambda v:
                         (
+                            # key is id_new
                             graph.vs.select(id_old = v[0])[0]['id_new'],
+                            # id_new of all new orthologs
                             list(
                                 map(
                                     lambda vv:
@@ -8355,8 +8357,9 @@ class PyPath(object):
         # creating new edges
         graph += edgesToAddVids
         
-        #
+        # id_new > current index
         vids = dict(map(lambda v: (v['id_new'], v.index), graph.vs))
+        # id_new > uniprot
         vnms = dict(map(lambda v: (v['id_new'], v['name']), graph.vs))
         # setting attributes on old and new edges:
         for e in graph.es:
@@ -8421,10 +8424,13 @@ class PyPath(object):
                             if eattr != 'dirs' and eattr != 'refs_by_dir':
                                 eenew[eattr] = copy.deepcopy(e[eattr])
         
+        # id_new > current index
+        vids = dict(map(lambda v: (v['id_new'], v.index), graph.vs))
+        
         # setting attributes of vertices
         for vn0, vns in iteritems(vmul):
             # the first ortholog:
-            v0 = graph.vs.select(id_new = vn0)[0]
+            v0 = graph.vs[vids[vn0]]
             # now setting its taxon to the target:
             v0['ncbi_tax_id'] = target
             for vn in vns:

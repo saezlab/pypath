@@ -1956,17 +1956,37 @@ def get_psite_phos(raw=True, organism='human', strict=True, mapper=None):
     
     return result
 
+def psite_orthology(source, target):
+    """
+    Returns an orthology translation dict of phosphosites
+    based on phosphorylation sites table from PhosphoSitePlus.
+    
+    :param int source: Source taxon (NCBI Taxonomy).
+    :param int target: Target taxon (NCBI Taxonomy).
+    """
+    
 
 def get_psite_p(organism='human'):
+    """
+    Downloads the phosphorylation site dataset from PhosphoSitePlus.
+    """
     result = []
     url = urls.urls['psite_p']['url']
-    c = curl.Curl(url, silent=False)
-    data = c.result
-    data = [r.split('\t') for r in data.split('\n')[4:]]
     nondigit = re.compile(r'[^\d]+')
     remot = re.compile(r'(_*)([A-Za-z]+)(_*)')
+    
+    c = curl.Curl(url, silent=False, large=True)
+    data = c.result
+    
+    for _ in xrange(4):
+        null = c.result.readline()
+    
     for r in data:
+        
+        r = r.split('\t')
+        
         if len(r) > 9 and (organism is None or r[6] == organism):
+            
             uniprot = r[1]
             isoform = 1 if '-' not in uniprot else int(uniprot.split('-')[1])
             uniprot = uniprot.split('-')[0]
@@ -1984,6 +2004,7 @@ def get_psite_p(organism='human'):
                 start = None
                 end = None
                 instance = None
+            
             res = intera.Residue(num, aa, uniprot, isoform=isoform)
             mot = intera.Motif(
                 uniprot, start, end, instance=instance, isoform=isoform)
@@ -1994,6 +2015,7 @@ def get_psite_p(organism='human'):
                              source='PhosphoSite',
                              isoform=isoform)
             result.append(ptm)
+    
     return result
 
 
