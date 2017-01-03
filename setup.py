@@ -171,7 +171,8 @@ deps = [
     'lxml',
     'xlrd',
     'httplib2',
-    'future'
+    'future',
+    'tqdm'
 ]
 
 #mysql = 'pymysql'
