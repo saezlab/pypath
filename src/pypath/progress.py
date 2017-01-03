@@ -41,7 +41,7 @@ class Progress(object):
     
     def __init__(self, total = None, name = "Progress",
              interval = 3000, percent = True, status = 'initializing',
-             done = 0, init = True, unit = 'it'):
+             done = 0, init = True, unit = 'it', ascii = True):
         
         self.name = name
         self.interval = interval
@@ -52,6 +52,7 @@ class Progress(object):
         self.start_time = time.time()
         self.min_update_interval = 0.1
         self.last_printed_value = 0
+        self.ascii = ascii
         
         if init:
             self.init_tqdm()
@@ -67,7 +68,8 @@ class Progress(object):
         self.tqdm = tqdm.tqdm(total = self.total,
                               desc = '%s: %s' % (self.name, self.status),
                               unit_scale = True,
-                              unit = self.unit)
+                              unit = self.unit,
+                              ascii = self.ascii)
         self.last_updated = time.time()
     
     def step(self, step = 1, msg = None, status = 'busy', force = False):
