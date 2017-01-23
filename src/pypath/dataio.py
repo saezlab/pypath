@@ -2020,8 +2020,14 @@ def get_psite_p(organism='human'):
 
 
 def get_psite_reg():
+    """
+    Downloads and preprocesses the regulatory sites dataset from
+    PhosphoSitePlus. This data provides information about which
+    proteins a PTM disrupts or induces the interaction with.
+    """
     url = urls.urls['psite_reg']['url']
-    c = curl.Curl(url, silent=False, compr='gz', encoding='iso-8859-1')
+    c = curl.Curl(url, silent=False, compr='gz',
+                  encoding='iso-8859-1', large=True)
     data = c.result
     cols = {
         'uniprot': 2,
@@ -2032,11 +2038,12 @@ def get_psite_reg():
         'on_interact': 13,
         'pmids': 15
     }
-    buff = StringIO()
-    buff.write(data)
-    data = read_table(cols=cols, fileObject=buff, sep='\t', hdr=4)
+    
+    data = read_table(cols=cols, fileObject=data, sep='\t', hdr=4)
     regsites = {}
+    
     for r in data:
+        
         interact = [[y.replace(')', '').strip() for y in x.split('(')]
                     for x in r['on_interact'].strip().split(';') if len(x) > 0]
         induces = [x[0] for x in interact if x[1] == 'INDUCES']
@@ -2058,6 +2065,7 @@ def get_psite_reg():
             'induces': induces,
             'disrupts': disrupts
         })
+    
     return regsites
 
 
