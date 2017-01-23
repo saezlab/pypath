@@ -1956,15 +1956,96 @@ def get_psite_phos(raw=True, organism='human', strict=True, mapper=None):
     
     return result
 
-def psite_orthology(source, target):
+def ptm_orthology():
     """
     Returns an orthology translation dict of phosphosites
     based on phosphorylation sites table from PhosphoSitePlus.
+    In the result all PTMs represented by a tuple of the following
+    6 elements: UniProt ID, isoform (int), residue one letter code,
+    residue number (int), NCBI Taxonomy ID (int), modification type.
     
     :param int source: Source taxon (NCBI Taxonomy).
     :param int target: Target taxon (NCBI Taxonomy).
     """
+    result = {}
     
+    nondigit = re.compile(r'[^\d]+')
+    mod_types = [
+        ('p', 'phosphorylation'),
+        ('ac', 'acetylation'),
+        ('gal', 'galactosylation'),
+        ('glc', 'glycosylation'),
+        ('sum', 'sumoylation'),
+        ('ub', 'ubiquitination'),
+        ('met', 'methylation')
+    ]
+    unknown_taxa = set([])
+    
+    for typ in mod_types:
+        
+        groups = {}
+        
+        url = urls.urls['psite_%s' % typ[0]]['url']
+        c = curl.Curl(url, silent=False, large=True)
+        
+        data = c.result
+        
+        for _ in xrange(4):
+            null = data.readline()
+        
+        for r in data:
+            
+            
+            r = r.decode('utf-8').split('\t')
+            
+            if len(r) < 10:
+                
+                continue
+            
+            uniprot = r[2]
+            isoform = 1 if '-' not in uniprot else int(uniprot.split('-')[1])
+            uniprot = uniprot.split('-')[0]
+            aa = r[4][0]
+            num = int(nondigit.sub('', r[4]))
+            if r[6] not in common.taxa:
+                unknown_taxa.add(r[6])
+                continue
+            
+            tax = common.taxa[r[6]]
+            group = int(r[5])
+            
+            this_site = (uniprot, isoform, aa, num, tax, typ[1])
+            
+            if group not in groups:
+                groups[group] = set([])
+            
+            groups[group].add(this_site)
+        
+        for group, sites in iteritems(groups):
+            
+            for site1 in sites:
+                
+                for site2 in sites:
+                    
+                    if site1[4] == site2[4]:
+                        
+                        continue
+                    
+                    if site1 not in result:
+                        
+                        result[site1] = {}
+                    
+                    if site2[4] not in result[site1]:
+                        
+                        result[site1][site2[4]] = set([])
+                    
+                    result[site1][site2[4]].add(site2)
+    
+    if len(unknown_taxa):
+        sys.stdout.write('\t:: Unknown taxa encountered:\n\t   %s\n' %
+                         ', '.join(sorted(unknown_taxa)))
+    
+    return result
 
 def get_psite_p(organism='human'):
     """
@@ -1987,7 +2068,7 @@ def get_psite_p(organism='human'):
         
         if len(r) > 9 and (organism is None or r[6] == organism):
             
-            uniprot = r[1]
+            uniprot = r[2]
             isoform = 1 if '-' not in uniprot else int(uniprot.split('-')[1])
             uniprot = uniprot.split('-')[0]
             typ = r[3].lower()

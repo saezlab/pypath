@@ -460,6 +460,24 @@ taxids = {
     9031: 'chicken',
     9913: 'cow',
     9986: 'rabbit',
+    9940: 'sheep',
+    10141: 'guinea pig',
+    10036: 'hamster',
+    7227: 'fruit fly',
+    9615: 'dog',
+    9823: 'pig',
+    8355: 'frog',
+    9091: 'quail',
+    9796: 'horse',
+    9925: 'goat',
+    89462: 'water buffalo',
+    9598: 'monkey',
+    9103: 'turkey',
+    9685: 'cat',
+    7604: 'starfish',
+    1213717: 'torpedo',
+    9669: 'ferret',
+    8839: 'duck'
 }
 
 taxa = dict(map(lambda i: (i[1], i[0]), taxids.items()))
