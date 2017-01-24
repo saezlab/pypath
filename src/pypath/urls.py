@@ -175,16 +175,16 @@ urls = {
         'url':
         'http://www.phosphosite.org/downloads/Kinase_Substrate_Dataset.gz'
     },
-    'psite_met': {
+    'psite_me': {
         'label': 'PhosphoSite methylation sites',
         'url':
         'http://www.phosphosite.org/downloads/Methylation_site_dataset.gz'
     },
-    'psite_gal': {
+    'psite_ga': {
         'label': 'PhosphoSite O-GalNAc sites',
         'url': 'http://www.phosphosite.org/downloads/O-GalNAc_site_dataset.gz'
     },
-    'psite_glc': {
+    'psite_gl': {
         'label': 'PhosphoSite O-GlcNAc sites',
         'url': 'http://www.phosphosite.org/downloads/O-GlcNAc_site_dataset.gz'
     },
@@ -193,7 +193,7 @@ urls = {
         'url':
         'http://www.phosphosite.org/downloads/Phosphorylation_site_dataset.gz'
     },
-    'psite_sum': {
+    'psite_sm': {
         'label': 'Sumoylation sites',
         'url':
         'http://www.phosphosite.org/downloads/Sumoylation_site_dataset.gz'

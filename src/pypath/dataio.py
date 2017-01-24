@@ -1970,18 +1970,10 @@ def ptm_orthology():
     result = {}
     
     nondigit = re.compile(r'[^\d]+')
-    mod_types = [
-        ('p', 'phosphorylation'),
-        ('ac', 'acetylation'),
-        ('gal', 'galactosylation'),
-        ('glc', 'glycosylation'),
-        ('sum', 'sumoylation'),
-        ('ub', 'ubiquitination'),
-        ('met', 'methylation')
-    ]
+    
     unknown_taxa = set([])
     
-    for typ in mod_types:
+    for typ in common.psite_mod_types:
         
         groups = {}
         
@@ -2135,20 +2127,166 @@ def get_psite_reg():
         aa = mod.pop(0)
         modt = modt[1]
         res = ''.join(mod)
-        if r['uniprot'] not in regsites:
-            regsites[r['uniprot']] = []
-        regsites[r['uniprot']].append({
+        isoform = (
+            int(r['uniprot'].split('-')[1])
+            if '-' in r['uniprot']
+            else 1
+        )
+        uniprot = r['uniprot'].split('-')[0]
+        
+        if uniprot not in regsites:
+            regsites[uniprot] = []
+        
+        regsites[uniprot].append({
             'aa': aa,
             'res': res,
             'modt': modt,
             'organism': r['organism'],
             'pmids': [x.strip() for x in r['pmids'].split(';')],
             'induces': induces,
-            'disrupts': disrupts
+            'disrupts': disrupts,
+            'isoform': isoform
         })
     
     return regsites
 
+def regsites_one_organism(organism = 9606, mapper = None):
+    """
+    Returns PhosphoSitePlus regulatory sites translated to
+    one organism by orthology. Residue numbers will be translated
+    where necessary, while gene symbols will be translated to
+    UniProt IDs of the given organism.
+    This works with human, mouse or rat.
+    """
+    
+    def genesymbols2uniprots(genesymbols, tax):
+        return (
+            set(
+                itertools.chain(
+                    *map(
+                        lambda gs:
+                            mapper.map_name(gs, 'genesymbol', 'uniprot', ncbi_tax_id = tax),
+                        genesymbols
+                    )
+                )
+            )
+        )
+    
+    def translate_uniprots(uniprots, homo):
+        return (
+            set(
+                itertools.chain(
+                    *map(
+                        lambda usrc:
+                            homo[usrc] if usrc in homo else [],
+                        uniprots
+                    )
+                )
+            )
+        )
+    
+    result = {}
+    
+    organisms = set([9606, 10090, 10116])
+    
+    mod_types = dict(common.psite_mod_types2)
+    
+    mapper = mapping.Mapper() if mapper is None else mapper
+    
+    regsites = get_psite_reg()
+    
+    other_organisms = organisms - set([organism])
+    
+    homology = (
+        dict(
+            map(
+                lambda other:
+                    (
+                        other,
+                        homologene_uniprot_dict(source = other, target = organism)
+                    ),
+                other_organisms
+            )
+        )
+    )
+    
+    ptm_homology = ptm_orthology()
+    
+    proteome = uniprot_input.all_uniprots(organism = organism, swissprot = 'YES')
+    
+    for substrate, regs in iteritems(regsites):
+        
+        subs = []
+        
+        if substrate in proteome:
+            subs = [substrate]
+        else:
+            for other, homo in iteritems(homology):
+                if substrate in homo:
+                    subs = homo[substrate]
+        
+        for sub in subs:
+            
+            if sub not in result:
+                result[sub] = {}
+            
+            for reg in regs:
+                
+                reg_organism = common.taxa[reg['organism']]
+                
+                if reg_organism not in organisms:
+                    continue
+                
+                mod_type = mod_types[reg['modt']]
+                resnum = int(reg['res'])
+                
+                psite_key = (substrate, reg['isoform'], reg['aa'], resnum, reg_organism, mod_type)
+                
+                if reg_organism != organism:
+                    
+                    regs_target = []
+                    disrupts    = []
+                    induces     = []
+                    
+                    if psite_key in ptm_homology:
+                        
+                        if organism in ptm_homology[psite_key]:
+                            
+                            regs_target = ptm_homology[psite_key][organism]
+                    
+                    if len(regs_target):
+                        
+                        disrupts = genesymbols2uniprots(reg['disrupts'], reg_organism)
+                        disrupts = translate_uniprots(disrupts, homology[reg_organism])
+                        induces  = genesymbols2uniprots(reg['induces'], reg_organism)
+                        induces  = translate_uniprots(induces, homology[reg_organism])
+                    
+                else:
+                    
+                    regs_target = [psite_key]
+                    
+                    disrupts = genesymbols2uniprots(reg['disrupts'], organism)
+                    induces  = genesymbols2uniprots(reg['induces'], organism)
+                
+                for regt in regs_target:
+                    
+                    modkey = (regt[2], regt[3], regt[5])
+                    
+                    if modkey not in result[sub]:
+                        
+                        result[sub][modkey] = {
+                            'induces':  set([]),
+                            'disrupts': set([]),
+                            'pmids':    set([]),
+                            'isoforms': set([])
+                        }
+                    
+                    result[sub][modkey]['induces'].update(induces)
+                    result[sub][modkey]['disrupts'].update(disrupts)
+                    result[sub][modkey]['isoforms'].update([regt[1]])
+                    result[sub][modkey]['pmids'].update(reg['pmids'])
+    
+    return result
 
 def regsites_tab(regsites, mapper, outfile=None):
     header = [

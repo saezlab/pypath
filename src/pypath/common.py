@@ -519,3 +519,32 @@ dbptm_taxids = {
     83333: 'ECOLI',
     1891767: 'SV40'
 }
+
+psite_mod_types = [
+        ('p', 'phosphorylation'),
+        ('ac', 'acetylation'),
+        ('ga', 'galactosylation'),
+        ('gl', 'glycosylation'),
+        ('sm', 'sumoylation'),
+        ('ub', 'ubiquitination'),
+        ('me', 'methylation'),
+    ]
+
+psite_mod_types2 = [
+        ('p', 'phosphorylation'),
+        ('ac', 'acetylation'),
+        ('ga', 'galactosylation'),
+        ('gl', 'glycosylation'),
+        ('ub', 'ubiquitination'),
+        ('me', 'methylation'),
+        ('sm', 'sumoylation'),
+        ('sc', 'succinylation'),
+        ('m1', 'mono-methylation'),
+        ('m2', 'di-methylation'),
+        ('m3', 'tri-methylation'),
+        ('ad', 'adenylation'),
+        ('pa', 'palmitoylation'),
+        ('ne', 'neddylation'),
+        ('sn', 'nitrosylation'),
+        ('ca', 'caspase-cleavage')
+    ]
