@@ -398,6 +398,10 @@ urls = {
         'url':
         'http://www.geneontology.org/ontology/subsets/goslim_generic.obo'
     },
+    'go': {
+        'label': 'The whole Gene Ontology',
+        'url': 'http://purl.obolibrary.org/obo/go.obo'
+    },
     'netpath_names': {
         'label': 'NetPath numeric pathway IDs can be translated to '
         'pathway names only by extracting them from HTML....',
