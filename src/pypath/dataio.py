@@ -73,7 +73,7 @@ import struct
 import json
 import webbrowser
 try:
-    from bioservices import WSDLService
+    import bioservices
 except:
     sys.stdout.write('\t:: No `bioservices` available.\n')
     sys.stdout.flush()
@@ -1664,6 +1664,12 @@ def get_switches_elm():
 
 
 def get_csa(uniprots=None):
+    """
+    Downloads and preprocesses catalytic sites data.
+    This data tells which residues are involved in the catalytic
+    activity of one protein.
+    """
+    
     url = urls.urls['catalytic_sites']['url']
     c = curl.Curl(url, silent=False)
     data = c.result
@@ -1714,14 +1720,20 @@ def get_csa(uniprots=None):
 
 
 def get_ontology(ontology):
-    ols = WSDLService("OLS", urls.urls['ols']['url'])
+    """
+    Downloads an ontology using the bioservices module.
+    """
+    ols = bioservices.WSDLService("OLS", urls.urls['ols']['url'])
     ont = dict((x.key, x.value)
                for x in ols.serv.getAllTermsFromOntology(ontology).item)
     return ont
 
 
 def get_listof_ontologies():
-    ols = WSDLService("OLS", urls.urls['ols']['url'])
+    """
+    Returns a list of available ontologies using the bioservices module.
+    """
+    ols = bioservices.WSDLService("OLS", urls.urls['ols']['url'])
     olist = dict((x.key, x.value) for x in ols.serv.getOntologyNames().item)
     return olist
 
@@ -1811,6 +1823,13 @@ class ResidueMapper(object):
 
 
 def get_comppi():
+    """
+    Downloads and preprocesses protein interaction and cellular compartment
+    association data from the ComPPI database.
+    This data provides scores for occurrence of protein-protein interactions
+    in various compartments.
+    """
+    
     url = urls.urls['comppi']['url']
     post = {
         'fDlSet': 'comp',
@@ -1834,6 +1853,9 @@ def get_comppi():
 
 
 def get_psite_phos(raw=True, organism='human', strict=True, mapper=None):
+    """
+    Downloads and preprocesses phosphorylation site data from PhosphoSitePlus.
+    """
     
     url = urls.urls['psite_kin']['url']
     c = curl.Curl(
@@ -2091,7 +2113,6 @@ def get_psite_p(organism='human'):
     
     return result
 
-
 def get_psite_reg():
     """
     Downloads and preprocesses the regulatory sites dataset from
@@ -2103,13 +2124,14 @@ def get_psite_reg():
                   encoding='iso-8859-1', large=True)
     data = c.result
     cols = {
-        'uniprot': 2,
+        'uniprot': 3,
         'organism': 6,
         'mod': 7,
         'on_function': 11,
         'on_process': 12,
         'on_interact': 13,
-        'pmids': 15
+        'pmids': 15,
+        'comments': 19
     }
     
     data = read_table(cols=cols, fileObject=data, sep='\t', hdr=4)
@@ -2138,14 +2160,20 @@ def get_psite_reg():
             regsites[uniprot] = []
         
         regsites[uniprot].append({
-            'aa': aa,
-            'res': res,
-            'modt': modt,
+            'aa':       aa,
+            'res':      res,
+            'modt':     modt,
             'organism': r['organism'],
-            'pmids': [x.strip() for x in r['pmids'].split(';')],
-            'induces': induces,
+            'pmids':    set(map(lambda f: f.strip(),
+                                r['pmids'].split(';'))),
+            'induces':  induces,
             'disrupts': disrupts,
-            'isoform': isoform
+            'isoform':  isoform,
+            'function': set(map(lambda f: f.strip(),
+                                r['on_function'].split(';'))),
+            'process':  set(map(lambda f: f.strip(),
+                                r['on_process'].split(';'))),
+            'comments': r['comments']
         })
     
     return regsites
@@ -2157,6 +2185,17 @@ def regsites_one_organism(organism = 9606, mapper = None):
     where necessary, while gene symbols will be translated to
     UniProt IDs of the given organism.
     This works with human, mouse or rat.
+    
+    :param int organism:
+        NCBI Taxonomy ID of the target organism. In this
+        method possible values are human, mouse or rat, as these species
+        provide the vast majority of the data, and are close enough to each
+        other that the sites can be safely translated between orthologous
+        proteins by sequence alignement.
+    :param pypath.mapping.Mapper mapper:
+        Here you can provide a Mapper instance, so name dictionaries do not
+        need to be loaded repeatedly, saving some memory space this way.
+        If None provided a new instance will be initiated.
     """
     
     def genesymbols2uniprots(genesymbols, tax):
@@ -2289,6 +2328,10 @@ def regsites_one_organism(organism = 9606, mapper = None):
     return result
 
 def regsites_tab(regsites, mapper, outfile=None):
+    """
+    Exports PhosphoSite regulatory sites as a tabular file, all
+    IDs translated to UniProt.
+    """
     header = [
         'uniprot_a', 'isoform_a', 'a_res_aa', 'a_res_num', 'a_mod_type',
         'effect', 'uniprot_b', 'references'
@@ -2334,6 +2377,31 @@ def get_ielm_huge(ppi,
                   cache=True,
                   part_size=500,
                   headers=None):
+    """
+    Loads iELM predicted domain-motif interaction data for a set of
+    protein-protein interactions. This method breaks the list into
+    reasonable sized chunks and performs multiple requests to iELM,
+    and also retries in case of failure, with reducing the request
+    size. Provides feedback on the console.
+    
+    :param str id_type:
+        The type of the IDs in the supplied interaction list.
+        Default is 'UniProtKB_AC'.
+        Please refer to iELM what type of IDs it does understand.
+    :param str mydomains:
+        The type of the domain detection method.
+        Defaults to 'HMMS'.
+        Please refer to iELM for alternatives.
+    :param int maxwait:
+        The limit of the waiting time in seconds.
+    :param bool cache:
+        Whether to use the cache or download everything again.
+    :param int part_size:
+        The number of interactions to be queried in one request.
+    :param list headers:
+        Additional HTTP headers to send to iELM with each request.
+    """
+    
     ranges = range(0, len(ppi), part_size)
     result = []
     done = False
@@ -2376,6 +2444,10 @@ def get_ielm(ppi,
              part=False,
              part_size=500,
              headers=None):
+    """
+    Performs one query to iELM. Parameters are the same as at get_ielm_huge().
+    """
+    
     url = urls.urls['proteomic_ielm']['url']
     network = ''
     from_pickle = []
@@ -2494,6 +2566,11 @@ def get_ielm(ppi,
 
 
 def get_pepcyber(cache=None):
+    """
+    Downloads phosphoprotein binding protein interactions
+    from the PEPCyber database.
+    """
+    
     def get_cells(row):
         cells = row.find_all('td')
         if len(cells) == 10:
@@ -2572,6 +2649,10 @@ def pepcyber_uniprot(num):
 
 
 def get_pdzbase():
+    """
+    Downloads data from PDZbase. Parses data from the HTML tables.
+    """
+    
     url = urls.urls['pdzbase']['url']
     c = curl.Curl(url, silent=False)
     data = c.result
