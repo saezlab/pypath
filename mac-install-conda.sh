@@ -130,6 +130,7 @@ then
     $CONDAPIP install pysftp
     $CONDAPIP install future
     $CONDAPIP install bioservices
+    $CONDAPIP install tqdm
     $CONDAPIP install $PYPATHURL
 fi
 
@@ -141,7 +142,7 @@ then
 
     echo -en "\n\n\t===[ Testing installation ]===\n\n"
 
-    declare -a modules=(cairo igraph future numpy scipy pandas suds bioservices pymysql pygraphviz fisher pysftp fabric pypath)
+    declare -a modules=(cairo igraph future numpy scipy pandas suds bioservices pymysql pygraphviz fisher pysftp fabric tqdm pypath)
 
     for mod in "${modules[@]}"
     do

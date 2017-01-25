@@ -182,6 +182,7 @@ then
     $LOCALPIP install suds-jurko
     $LOCALPIP install bioservices
     $LOCALPIP install pymysql
+    $LOCALPIP install tqdm
     # optionally install pygraphviz
     if [[ "$IGRAPHVIZ" == "true" ]];
         then $LOCALPIP install pygraphviz;
@@ -232,7 +233,7 @@ then
     fi
     done
 
-    declare -a modules=(cairo igraph future numpy scipy pandas suds bioservices pymysql pygraphviz fisher pysftp fabric pypath)
+    declare -a modules=(cairo igraph future numpy scipy pandas suds bioservices pymysql pygraphviz fisher pysftp fabric tqdm pypath)
 
     for mod in "${modules[@]}"
     do
@@ -261,7 +262,7 @@ fi
 
 # beginning part `UNINSTALL`
 
-declare -a modules=(pypath $PYFABRIC pysftp fisher pygraphviz pymysql bioservices suds pandas scipy numpy future igraph cairo)
+declare -a modules=(pypath $PYFABRIC pysftp fisher pygraphviz pymysql bioservices suds pandas scipy numpy future igraph cairo tqdm)
 mcols="$(for i in $(seq 0 $((${#modules[@]} - 1))); do echo "($i) ${modules[$i]}"; done; echo "(a) all"; echo "() none")"
 mcols="$(echo $mcols | column)"
 mmsg="$(echo -en "\n===>[ Remove the following Python $PYVER modules? ]<===\n\n$mcols\n[Answer e.g. \"1,2,3\" or \"a\"] ")"

@@ -1,6 +1,20 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#from ez_setup import use_setuptools
-#use_setuptools()
+
+#
+#  This file is part of the `pypath` python module
+#
+#  Copyright (c) 2014-2017 - EMBL-EBI
+#
+#  File author(s): Dénes Türei (denes@ebi.ac.uk)
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Website: http://www.ebi.ac.uk/~denes
+#
+
 __revision__ = "$Id$"
 import sys
 import os
@@ -102,58 +116,11 @@ metainfo = {
     'Topic :: Scientific/Engineering :: Mathematics']
 }
 
-#package_data = [
-    #'pypath/data/alzpw-ppi.csv', 
-    #'pypath/data/arn_014.csv', 
-    #'pypath/data/arn.csv', 
-    #'pypath/data/arn_lr01.csv', 
-    #'pypath/data/ca1.csv', 
-    #'pypath/data/cancer_gene_census.csv', 
-    #'pypath/data/cell-map-edge-attributes.txt', 
-    #'pypath/data/dd_refs.csv', 
-    #'pypath/data/depod-refs.csv', 
-    #'pypath/data/dip_human_core_processed.csv', 
-    #'pypath/data/entrez_uniprot.csv', 
-    #'pypath/data/gdsc.sif', 
-    #'pypath/data/gold_standard.csv', 
-    #'pypath/data/gold_standard.xlsx', 
-    #'pypath/data/innatedb.csv', 
-    #'pypath/data/intact_filtered.csv', 
-    #'pypath/data/krishnadev_atg_1.tab', 
-    #'pypath/data/krishnadev_atg.tab', 
-    #'pypath/data/krishnadev_vegeredmeny.csv', 
-    #'pypath/data/kshirsagar_atg_1.tab', 
-    #'pypath/data/kshirsagar_atg.tab', 
-    #'pypath/data/kshirsagar_vegeredmeny.csv', 
-    #'pypath/data/macrophage-strict.csv', 
-    #'pypath/data/matrixdb_core.csv', 
-    #'pypath/data/mppi_human_rep.csv', 
-    #'pypath/data/nci-pid-strict.csv', 
-    #'pypath/data/netpath_refs.csv', 
-    #'pypath/data/nrf2ome.csv', 
-    #'pypath/data/phosphopoint.csv', 
-    #'pypath/data/phosphosite_human_hc.csv', 
-    #'pypath/data/phosphosite_human_noref.csv', 
-    #'pypath/data/salmonella_atg.tar.gz', 
-    #'pypath/data/sec_ac.txt', 
-    #'pypath/data/shlecker_atg_1.tab', 
-    #'pypath/data/shlecker_vegeredmeny.csv', 
-    #'pypath/data/signor_ppi.tsv', 
-    #'pypath/data/slk01human.csv', 
-    #'pypath/data/spike_hc.csv', 
-    #'pypath/data/swissprot2.csv', 
-    #'pypath/data/swissprot-gsymbol-name.csv', 
-    #'pypath/data/trembl2.csv', 
-    #'pypath/data/uniprot-all-human.tab',
-    #'pypath/data/intogene_cancerdrivers.tsv'
-#]
-
 with open('README.rst') as f:
     readme = f.read()
 with open('HISTORY.rst') as f:
     history = f.read()
 
-# choosing module for mysql access:
 deps = [
     'python-igraph',
     'beautifulsoup4',
@@ -174,15 +141,6 @@ deps = [
     'future',
     'tqdm'
 ]
-
-#mysql = 'pymysql'
-#if which('mysql') and which('mysql_config'):
-    #mysql_alt = query_yes_no('Looks like MySQL is installed on your system. \n'\
-        #'Do you want to use MySQL-python instead of pymysql?')
-    #if mysql_alt:
-        #mysql = 'MySQL-python'
-
-#deps.append(mysql)
 
 setup(
     name = 'pypath',
