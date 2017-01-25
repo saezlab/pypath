@@ -2119,6 +2119,26 @@ def get_psite_reg():
     PhosphoSitePlus. This data provides information about which
     proteins a PTM disrupts or induces the interaction with.
     """
+    kwds_pos = {
+        'enzymatic activity, induced',
+        'activity, induced',
+        'protein stabilization',
+        'receptor inactivation, inhibited',
+        'receptor desensitization, inhibited',
+        'receptor internalization, inhibited',
+        'receptor recycling, induced'
+    }
+    
+    kwds_neg = {
+        'enzymatic activity, inhibited',
+        'activity, inhibited',
+        'protein degradation',
+        'receptor inactivation, induced',
+        'receptor desensitization, induced',
+        'receptor internalization, induced',
+        'receptor recycling, inhibited'
+    }
+    
     url = urls.urls['psite_reg']['url']
     c = curl.Curl(url, silent=False, compr='gz',
                   encoding='iso-8859-1', large=True)
@@ -2159,6 +2179,9 @@ def get_psite_reg():
         if uniprot not in regsites:
             regsites[uniprot] = []
         
+        function = set(map(lambda f: f.strip(),
+                           r['on_function'].split(';')))
+        
         regsites[uniprot].append({
             'aa':       aa,
             'res':      res,
@@ -2169,11 +2192,12 @@ def get_psite_reg():
             'induces':  induces,
             'disrupts': disrupts,
             'isoform':  isoform,
-            'function': set(map(lambda f: f.strip(),
-                                r['on_function'].split(';'))),
+            'function': function,
             'process':  set(map(lambda f: f.strip(),
                                 r['on_process'].split(';'))),
-            'comments': r['comments']
+            'comments': r['comments'],
+            'positive': bool(kwds_pos & function),
+            'negative': bool(kwds_neg & function)
         })
     
     return regsites
@@ -2317,13 +2341,27 @@ def regsites_one_organism(organism = 9606, mapper = None):
                             'induces':  set([]),
                             'disrupts': set([]),
                             'pmids':    set([]),
-                            'isoforms': set([])
+                            'isoforms': set([]),
+                            'process':  set([]),
+                            'function': set([]),
+                            'positive': False,
+                            'negative': False,
+                            'comments': []
                         }
                     
                     result[sub][modkey]['induces'].update(induces)
                     result[sub][modkey]['disrupts'].update(disrupts)
+                    result[sub][modkey]['process'].update(reg['process'])
+                    result[sub][modkey]['function'].update(reg['function'])
                     result[sub][modkey]['isoforms'].update([regt[1]])
                     result[sub][modkey]['pmids'].update(reg['pmids'])
+                    result[sub][modkey]['positive'] = \
+                        result[sub][modkey]['positive'] or reg['positive']
+                    result[sub][modkey]['negative'] = \
+                        result[sub][modkey]['negative'] or reg['negative']
+                    if len(reg['comments']):
+                        result[sub][modkey]['comments'].append(reg['comments'])
+                    
     
     return result
 
