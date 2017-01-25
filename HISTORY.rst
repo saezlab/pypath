@@ -32,6 +32,13 @@ This is a summary of the changelog.
 +++++++++++
 * `chembl`, `unichem`, `mysql` and `mysql_connect` modules made Python3 compatible
 
+0.6.31:
++++++++++++
+* Orthology translation of network
+* Homologene UniProt dict to translate between different organisms UniProt-to-UniProt
+* Orthology translation of PTMs
+* Better processing of PhosphoSite regulatory sites
+
 Upcoming:
 +++++++++++
 * New, more flexible network reader class
