@@ -73,7 +73,7 @@ import struct
 import json
 import webbrowser
 try:
-    from bioservices import WSDLService
+    import bioservices
 except:
     sys.stdout.write('\t:: No `bioservices` available.\n')
     sys.stdout.flush()
@@ -702,7 +702,10 @@ def get_domino_ptms():
     'domains-interpro-B', 'negative'] #28
     '''
     domino = get_domino()
-    miont = get_ontology('MI')
+    try:
+        miont = get_ontology('MI')
+    except:
+        miont = {}
     dmi = []
     ddi = []
     prg = progress.Progress(len(domino), 'Processing DOMINO', 11)
@@ -1661,6 +1664,12 @@ def get_switches_elm():
 
 
 def get_csa(uniprots=None):
+    """
+    Downloads and preprocesses catalytic sites data.
+    This data tells which residues are involved in the catalytic
+    activity of one protein.
+    """
+    
     url = urls.urls['catalytic_sites']['url']
     c = curl.Curl(url, silent=False)
     data = c.result
@@ -1711,14 +1720,20 @@ def get_csa(uniprots=None):
 
 
 def get_ontology(ontology):
-    ols = WSDLService("OLS", urls.urls['ols']['url'])
+    """
+    Downloads an ontology using the bioservices module.
+    """
+    ols = bioservices.WSDLService("OLS", urls.urls['ols']['url'])
     ont = dict((x.key, x.value)
                for x in ols.serv.getAllTermsFromOntology(ontology).item)
     return ont
 
 
 def get_listof_ontologies():
-    ols = WSDLService("OLS", urls.urls['ols']['url'])
+    """
+    Returns a list of available ontologies using the bioservices module.
+    """
+    ols = bioservices.WSDLService("OLS", urls.urls['ols']['url'])
     olist = dict((x.key, x.value) for x in ols.serv.getOntologyNames().item)
     return olist
 
@@ -1808,6 +1823,13 @@ class ResidueMapper(object):
 
 
 def get_comppi():
+    """
+    Downloads and preprocesses protein interaction and cellular compartment
+    association data from the ComPPI database.
+    This data provides scores for occurrence of protein-protein interactions
+    in various compartments.
+    """
+    
     url = urls.urls['comppi']['url']
     post = {
         'fDlSet': 'comp',
@@ -1831,6 +1853,9 @@ def get_comppi():
 
 
 def get_psite_phos(raw=True, organism='human', strict=True, mapper=None):
+    """
+    Downloads and preprocesses phosphorylation site data from PhosphoSitePlus.
+    """
     
     url = urls.urls['psite_kin']['url']
     c = curl.Curl(
@@ -1953,18 +1978,111 @@ def get_psite_phos(raw=True, organism='human', strict=True, mapper=None):
     
     return result
 
+def ptm_orthology():
+    """
+    Returns an orthology translation dict of phosphosites
+    based on phosphorylation sites table from PhosphoSitePlus.
+    In the result all PTMs represented by a tuple of the following
+    6 elements: UniProt ID, isoform (int), residue one letter code,
+    residue number (int), NCBI Taxonomy ID (int), modification type.
+    
+    :param int source: Source taxon (NCBI Taxonomy).
+    :param int target: Target taxon (NCBI Taxonomy).
+    """
+    result = {}
+    
+    nondigit = re.compile(r'[^\d]+')
+    
+    unknown_taxa = set([])
+    
+    for typ in common.psite_mod_types:
+        
+        groups = {}
+        
+        url = urls.urls['psite_%s' % typ[0]]['url']
+        c = curl.Curl(url, silent=False, large=True)
+        
+        data = c.result
+        
+        for _ in xrange(4):
+            null = data.readline()
+        
+        for r in data:
+            
+            
+            r = r.decode('utf-8').split('\t')
+            
+            if len(r) < 10:
+                
+                continue
+            
+            uniprot = r[2]
+            isoform = 1 if '-' not in uniprot else int(uniprot.split('-')[1])
+            uniprot = uniprot.split('-')[0]
+            aa = r[4][0]
+            num = int(nondigit.sub('', r[4]))
+            if r[6] not in common.taxa:
+                unknown_taxa.add(r[6])
+                continue
+            
+            tax = common.taxa[r[6]]
+            group = int(r[5])
+            
+            this_site = (uniprot, isoform, aa, num, tax, typ[1])
+            
+            if group not in groups:
+                groups[group] = set([])
+            
+            groups[group].add(this_site)
+        
+        for group, sites in iteritems(groups):
+            
+            for site1 in sites:
+                
+                for site2 in sites:
+                    
+                    if site1[4] == site2[4]:
+                        
+                        continue
+                    
+                    if site1 not in result:
+                        
+                        result[site1] = {}
+                    
+                    if site2[4] not in result[site1]:
+                        
+                        result[site1][site2[4]] = set([])
+                    
+                    result[site1][site2[4]].add(site2)
+    
+    if len(unknown_taxa):
+        sys.stdout.write('\t:: Unknown taxa encountered:\n\t   %s\n' %
+                         ', '.join(sorted(unknown_taxa)))
+    
+    return result
 
 def get_psite_p(organism='human'):
+    """
+    Downloads the phosphorylation site dataset from PhosphoSitePlus.
+    """
     result = []
     url = urls.urls['psite_p']['url']
-    c = curl.Curl(url, silent=False)
-    data = c.result
-    data = [r.split('\t') for r in data.split('\n')[4:]]
     nondigit = re.compile(r'[^\d]+')
     remot = re.compile(r'(_*)([A-Za-z]+)(_*)')
+    
+    c = curl.Curl(url, silent=False, large=True)
+    data = c.result
+    
+    for _ in xrange(4):
+        null = c.result.readline()
+    
     for r in data:
+        
+        r = r.split('\t')
+        
         if len(r) > 9 and (organism is None or r[6] == organism):
-            uniprot = r[1]
+            
+            uniprot = r[2]
             isoform = 1 if '-' not in uniprot else int(uniprot.split('-')[1])
             uniprot = uniprot.split('-')[0]
             typ = r[3].lower()
@@ -1981,6 +2099,7 @@ def get_psite_p(organism='human'):
                 start = None
                 end = None
                 instance = None
+            
             res = intera.Residue(num, aa, uniprot, isoform=isoform)
             mot = intera.Motif(
                 uniprot, start, end, instance=instance, isoform=isoform)
@@ -1991,27 +2110,55 @@ def get_psite_p(organism='human'):
                              source='PhosphoSite',
                              isoform=isoform)
             result.append(ptm)
+    
     return result
 
-
 def get_psite_reg():
+    """
+    Downloads and preprocesses the regulatory sites dataset from
+    PhosphoSitePlus. This data provides information about which
+    proteins a PTM disrupts or induces the interaction with.
+    """
+    kwds_pos = {
+        'enzymatic activity, induced',
+        'activity, induced',
+        'protein stabilization',
+        'receptor inactivation, inhibited',
+        'receptor desensitization, inhibited',
+        'receptor internalization, inhibited',
+        'receptor recycling, induced'
+    }
+    
+    kwds_neg = {
+        'enzymatic activity, inhibited',
+        'activity, inhibited',
+        'protein degradation',
+        'receptor inactivation, induced',
+        'receptor desensitization, induced',
+        'receptor internalization, induced',
+        'receptor recycling, inhibited'
+    }
+    
     url = urls.urls['psite_reg']['url']
-    c = curl.Curl(url, silent=False, compr='gz', encoding='iso-8859-1')
+    c = curl.Curl(url, silent=False, compr='gz',
+                  encoding='iso-8859-1', large=True)
     data = c.result
     cols = {
-        'uniprot': 2,
+        'uniprot': 3,
         'organism': 6,
         'mod': 7,
         'on_function': 11,
         'on_process': 12,
         'on_interact': 13,
-        'pmids': 15
+        'pmids': 15,
+        'comments': 19
     }
-    buff = StringIO()
-    buff.write(data)
-    data = read_table(cols=cols, fileObject=buff, sep='\t', hdr=4)
+    
+    data = read_table(cols=cols, fileObject=data, sep='\t', hdr=4)
     regsites = {}
+    
     for r in data:
+        
         interact = [[y.replace(')', '').strip() for y in x.split('(')]
                     for x in r['on_interact'].strip().split(';') if len(x) > 0]
         induces = [x[0] for x in interact if x[1] == 'INDUCES']
@@ -2022,21 +2169,207 @@ def get_psite_reg():
         aa = mod.pop(0)
         modt = modt[1]
         res = ''.join(mod)
-        if r['uniprot'] not in regsites:
-            regsites[r['uniprot']] = []
-        regsites[r['uniprot']].append({
-            'aa': aa,
-            'res': res,
-            'modt': modt,
+        isoform = (
+            int(r['uniprot'].split('-')[1])
+            if '-' in r['uniprot']
+            else 1
+        )
+        uniprot = r['uniprot'].split('-')[0]
+        
+        if uniprot not in regsites:
+            regsites[uniprot] = []
+        
+        function = set(map(lambda f: f.strip(),
+                           r['on_function'].split(';')))
+        
+        regsites[uniprot].append({
+            'aa':       aa,
+            'res':      res,
+            'modt':     modt,
             'organism': r['organism'],
-            'pmids': [x.strip() for x in r['pmids'].split(';')],
-            'induces': induces,
-            'disrupts': disrupts
+            'pmids':    set(map(lambda f: f.strip(),
+                                r['pmids'].split(';'))),
+            'induces':  induces,
+            'disrupts': disrupts,
+            'isoform':  isoform,
+            'function': function,
+            'process':  set(map(lambda f: f.strip(),
+                                r['on_process'].split(';'))),
+            'comments': r['comments'],
+            'positive': bool(kwds_pos & function),
+            'negative': bool(kwds_neg & function)
         })
+    
     return regsites
 
+def regsites_one_organism(organism = 9606, mapper = None):
+    """
+    Returns PhosphoSitePlus regulatory sites translated to
+    one organism by orthology. Residue numbers will be translated
+    where necessary, while gene symbols will be translated to
+    UniProt IDs of the given organism.
+    This works with human, mouse or rat.
+    
+    :param int organism:
+        NCBI Taxonomy ID of the target organism. In this
+        method possible values are human, mouse or rat, as these species
+        provide the vast majority of the data, and are close enough to each
+        other that the sites can be safely translated between orthologous
+        proteins by sequence alignement.
+    :param pypath.mapping.Mapper mapper:
+        Here you can provide a Mapper instance, so name dictionaries do not
+        need to be loaded repeatedly, saving some memory space this way.
+        If None provided a new instance will be initiated.
+    """
+    
+    def genesymbols2uniprots(genesymbols, tax):
+        return (
+            set(
+                itertools.chain(
+                    *map(
+                        lambda gs:
+                            mapper.map_name(gs, 'genesymbol', 'uniprot', ncbi_tax_id = tax),
+                        genesymbols
+                    )
+                )
+            )
+        )
+    
+    def translate_uniprots(uniprots, homo):
+        return (
+            set(
+                itertools.chain(
+                    *map(
+                        lambda usrc:
+                            homo[usrc] if usrc in homo else [],
+                        uniprots
+                    )
+                )
+            )
+        )
+    
+    result = {}
+    
+    organisms = set([9606, 10090, 10116])
+    
+    mod_types = dict(common.psite_mod_types2)
+    
+    mapper = mapping.Mapper() if mapper is None else mapper
+    
+    regsites = get_psite_reg()
+    
+    other_organisms = organisms - set([organism])
+    
+    homology = (
+        dict(
+            map(
+                lambda other:
+                    (
+                        other,
+                        homologene_uniprot_dict(source = other, target = organism)
+                    ),
+                other_organisms
+            )
+        )
+    )
+    
+    ptm_homology = ptm_orthology()
+    
+    proteome = uniprot_input.all_uniprots(organism = organism, swissprot = 'YES')
+    
+    for substrate, regs in iteritems(regsites):
+        
+        subs = []
+        
+        if substrate in proteome:
+            subs = [substrate]
+        else:
+            for other, homo in iteritems(homology):
+                if substrate in homo:
+                    subs = homo[substrate]
+        
+        for sub in subs:
+            
+            if sub not in result:
+                result[sub] = {}
+            
+            for reg in regs:
+                
+                reg_organism = common.taxa[reg['organism']]
+                
+                if reg_organism not in organisms:
+                    continue
+                
+                mod_type = mod_types[reg['modt']]
+                resnum = int(reg['res'])
+                
+                psite_key = (substrate, reg['isoform'], reg['aa'], resnum, reg_organism, mod_type)
+                
+                if reg_organism != organism:
+                    
+                    regs_target = []
+                    disrupts    = []
+                    induces     = []
+                    
+                    if psite_key in ptm_homology:
+                        
+                        if organism in ptm_homology[psite_key]:
+                            
+                            regs_target = ptm_homology[psite_key][organism]
+                    
+                    if len(regs_target):
+                        
+                        disrupts = genesymbols2uniprots(reg['disrupts'], reg_organism)
+                        disrupts = translate_uniprots(disrupts, homology[reg_organism])
+                        induces  = genesymbols2uniprots(reg['induces'], reg_organism)
+                        induces  = translate_uniprots(induces, homology[reg_organism])
+                    
+                else:
+                    
+                    regs_target = [psite_key]
+                    
+                    disrupts = genesymbols2uniprots(reg['disrupts'], organism)
+                    induces  = genesymbols2uniprots(reg['induces'], organism)
+                
+                for regt in regs_target:
+                    
+                    modkey = (regt[2], regt[3], regt[5])
+                    
+                    if modkey not in result[sub]:
+                        
+                        result[sub][modkey] = {
+                            'induces':  set([]),
+                            'disrupts': set([]),
+                            'pmids':    set([]),
+                            'isoforms': set([]),
+                            'process':  set([]),
+                            'function': set([]),
+                            'positive': False,
+                            'negative': False,
+                            'comments': []
+                        }
+                    
+                    result[sub][modkey]['induces'].update(induces)
+                    result[sub][modkey]['disrupts'].update(disrupts)
+                    result[sub][modkey]['process'].update(reg['process'])
+                    result[sub][modkey]['function'].update(reg['function'])
+                    result[sub][modkey]['isoforms'].update([regt[1]])
+                    result[sub][modkey]['pmids'].update(reg['pmids'])
+                    result[sub][modkey]['positive'] = \
+                        result[sub][modkey]['positive'] or reg['positive']
+                    result[sub][modkey]['negative'] = \
+                        result[sub][modkey]['negative'] or reg['negative']
+                    if len(reg['comments']):
+                        result[sub][modkey]['comments'].append(reg['comments'])
+                    
+    
+    return result
 
 def regsites_tab(regsites, mapper, outfile=None):
+    """
+    Exports PhosphoSite regulatory sites as a tabular file, all
+    IDs translated to UniProt.
+    """
     header = [
         'uniprot_a', 'isoform_a', 'a_res_aa', 'a_res_num', 'a_mod_type',
         'effect', 'uniprot_b', 'references'
@@ -2082,6 +2415,31 @@ def get_ielm_huge(ppi,
                   cache=True,
                   part_size=500,
                   headers=None):
+    """
+    Loads iELM predicted domain-motif interaction data for a set of
+    protein-protein interactions. This method breaks the list into
+    reasonable sized chunks and performs multiple requests to iELM,
+    and also retries in case of failure, with reducing the request
+    size. Provides feedback on the console.
+    
+    :param str id_type:
+        The type of the IDs in the supplied interaction list.
+        Default is 'UniProtKB_AC'.
+        Please refer to iELM what type of IDs it does understand.
+    :param str mydomains:
+        The type of the domain detection method.
+        Defaults to 'HMMS'.
+        Please refer to iELM for alternatives.
+    :param int maxwait:
+        The limit of the waiting time in seconds.
+    :param bool cache:
+        Whether to use the cache or download everything again.
+    :param int part_size:
+        The number of interactions to be queried in one request.
+    :param list headers:
+        Additional HTTP headers to send to iELM with each request.
+    """
+    
     ranges = range(0, len(ppi), part_size)
     result = []
     done = False
@@ -2124,6 +2482,10 @@ def get_ielm(ppi,
              part=False,
              part_size=500,
              headers=None):
+    """
+    Performs one query to iELM. Parameters are the same as at get_ielm_huge().
+    """
+    
     url = urls.urls['proteomic_ielm']['url']
     network = ''
     from_pickle = []
@@ -2242,6 +2604,11 @@ def get_ielm(ppi,
 
 
 def get_pepcyber(cache=None):
+    """
+    Downloads phosphoprotein binding protein interactions
+    from the PEPCyber database.
+    """
+    
     def get_cells(row):
         cells = row.find_all('td')
         if len(cells) == 10:
@@ -2320,6 +2687,10 @@ def pepcyber_uniprot(num):
 
 
 def get_pdzbase():
+    """
+    Downloads data from PDZbase. Parses data from the HTML tables.
+    """
+    
     url = urls.urls['pdzbase']['url']
     c = curl.Curl(url, silent=False)
     data = c.result
@@ -3117,45 +3488,76 @@ def get_go(organism=9606, swissprot='yes'):
 
 
 def get_go_goa(organism='human'):
+    """
+    Downloads GO annotation from UniProt GOA.
+    """
+    
+    def add_annot(a, result):
+        if a[1] not in result[a[8]]:
+            result[a[8]][a[1]] = []
+        result[a[8]][a[1]].append(a[4])
+    
     result = {'P': {}, 'C': {}, 'F': {}}
+    
     url = urls.urls['goa']['url'] % (organism.upper(), organism)
-    c = curl.Curl(url, silent=False)
-    data = c.result
-    data = [
-        x.split('\t') for x in data.split('\n')
-        if not x.startswith('!') and len(x) > 0
-    ]
-    for l in data:
-        if l[1] not in result[l[8]]:
-            result[l[8]][l[1]] = []
-        result[l[8]][l[1]].append(l[4])
+    c = curl.Curl(url, silent=False, large = True)
+    
+    _ = \
+        list(
+            map(
+                lambda l:
+                    add_annot(l.strip().split('\t'), result),
+                filter(
+                    lambda l:
+                        l[0] != '!' and len(l),
+                    map(
+                        lambda l:
+                            l.decode('ascii'),
+                        c.result
+                    )
+                )
+            )
+        )
+    
     return result
 
-
-def get_go_quick(organism=9606, slim=False):
+def get_go_quick(organism=9606, slim=False, names_only=False):
+    """
+    Loads GO terms and annotations from QuickGO.
+    Returns 2 dicts: `names` are GO terms by their IDs,
+    `terms` are proteins GO IDs by UniProt IDs.
+    """
+    
+    def add_term(a, terms, names, names_only):
+        if not names_only:
+            if a[0] not in terms[a[3][0]]:
+                terms[a[3][0]][a[0]] = set([])
+            terms[a[3][0]][a[0]].add(a[1])
+        names[a[1]] = a[2]
+    
     termuse = 'slim' if slim or slim is None else 'ancestor'
     goslim = '' if termuse == 'ancestor' \
         else '&goid=%s' % ','.join(get_goslim(url=slim))
     terms = {'C': {}, 'F': {}, 'P': {}}
     names = {}
     url = urls.urls['quickgo']['url'] % (goslim, termuse, organism)
-    c = curl.Curl(url, silent=False)
-    data = c.result
-    data = [x.split('\t') for x in data.split('\n') if len(x) > 0]
-    del data[0]
-    for l in data:
-        try:
-            if l[0] not in terms[l[3][0]]:
-                terms[l[3][0]][l[0]] = set([])
-            terms[l[3][0]][l[0]].add(l[1])
-            names[l[1]] = l[2]
-        except:
-            sys.stdout.write('Error processing line:\n')
-            sys.stdout.write(l)
-            sys.stdout.write('\n')
-            sys.stdout.flush()
+    c = curl.Curl(url, silent=False, large=True)
+    _ = c.result.readline()
+    
+    _ = \
+        list(
+            map(
+                lambda l:
+                    add_term(l, terms, names, names_only),
+                map(
+                    lambda l:
+                        l.decode('ascii').strip().split('\t'),
+                    c.result
+                )
+            )
+        )
+    
     return {'terms': terms, 'names': names}
-
 
 def get_goslim(url=None):
     rego = re.compile(r'GO:[0-9]{7}')
@@ -6368,7 +6770,7 @@ def get_homologene():
 def homologene_dict(source, target, id_type):
     """
     Returns orthology translation table as dict, obtained
-    from NVBI HomoloGene data.
+    from NCBI HomoloGene data.
     
     :param int source: NCBI Taxonomy ID of the source species (keys).
     :param int target: NCBI Taxonomy ID of the target species (values).
@@ -6415,5 +6817,64 @@ def homologene_dict(source, target, id_type):
             if this_source not in result:
                 result[this_source] = set([])
             result[this_source].add(this_target)
+    
+    return result
+
+def homologene_uniprot_dict(source, target, only_swissprot = True, mapper = None):
+    """
+    Returns orthology translation table as dict from UniProt to Uniprot,
+    obtained from NCBI HomoloGene data. Uses RefSeq and Entrez IDs for
+    translation.
+    
+    :param int source: NCBI Taxonomy ID of the source species (keys).
+    :param int target: NCBI Taxonomy ID of the target species (values).
+    :param bool only_swissprot: Translate only SwissProt IDs.
+    :param pypath.mapping.Mapper mapper: A Mapper object.
+    """
+    result = {}
+    
+    hge = homologene_dict(source, target, 'entrez')
+    hgr = homologene_dict(source, target, 'refseq')
+    
+    all_source = set(all_uniprots(organism = source, swissprot = 'YES'))
+    
+    if not only_swissprot:
+        all_source_trembl = all_uniprots(organism = source, swissprot = 'NO')
+        all_source.update(set(all_source_trembl))
+    
+    m = mapping.Mapper() if mapper is None else mapper
+    
+    for u in all_source:
+        
+        source_e = m.map_name(u, 'uniprot', 'entrez', source)
+        source_r = m.map_name(u, 'uniprot', 'refseqp', source)
+        target_u = set([])
+        target_r = set([])
+        target_e = set([])
+        
+        for e in source_e:
+            if e in hge:
+                target_e.update(hge[e])
+        
+        for r in source_r:
+            if r in hgr:
+                target_r.update(hgr[r])
+        
+        for e in target_e:
+            target_u.update(set(m.map_name(e, 'entrez', 'uniprot', target)))
+        
+        for r in target_r:
+            target_u.update(set(m.map_name(e, 'refseqp', 'uniprot', target)))
+        
+        target_u = \
+            itertools.chain(
+                *map(
+                    lambda tu:
+                        m.map_name(tu, 'uniprot', 'uniprot', target),
+                    target_u
+                )
+            )
+        
+        result[u] = sorted(list(target_u))
     
     return result

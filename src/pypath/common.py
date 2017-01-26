@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 #
@@ -460,6 +460,24 @@ taxids = {
     9031: 'chicken',
     9913: 'cow',
     9986: 'rabbit',
+    9940: 'sheep',
+    10141: 'guinea pig',
+    10036: 'hamster',
+    7227: 'fruit fly',
+    9615: 'dog',
+    9823: 'pig',
+    8355: 'frog',
+    9091: 'quail',
+    9796: 'horse',
+    9925: 'goat',
+    89462: 'water buffalo',
+    9598: 'monkey',
+    9103: 'turkey',
+    9685: 'cat',
+    7604: 'starfish',
+    1213717: 'torpedo',
+    9669: 'ferret',
+    8839: 'duck'
 }
 
 taxa = dict(map(lambda i: (i[1], i[0]), taxids.items()))
@@ -501,3 +519,32 @@ dbptm_taxids = {
     83333: 'ECOLI',
     1891767: 'SV40'
 }
+
+psite_mod_types = [
+        ('p', 'phosphorylation'),
+        ('ac', 'acetylation'),
+        ('ga', 'galactosylation'),
+        ('gl', 'glycosylation'),
+        ('sm', 'sumoylation'),
+        ('ub', 'ubiquitination'),
+        ('me', 'methylation'),
+    ]
+
+psite_mod_types2 = [
+        ('p', 'phosphorylation'),
+        ('ac', 'acetylation'),
+        ('ga', 'galactosylation'),
+        ('gl', 'glycosylation'),
+        ('ub', 'ubiquitination'),
+        ('me', 'methylation'),
+        ('sm', 'sumoylation'),
+        ('sc', 'succinylation'),
+        ('m1', 'mono-methylation'),
+        ('m2', 'di-methylation'),
+        ('m3', 'tri-methylation'),
+        ('ad', 'adenylation'),
+        ('pa', 'palmitoylation'),
+        ('ne', 'neddylation'),
+        ('sn', 'nitrosylation'),
+        ('ca', 'caspase-cleavage')
+    ]

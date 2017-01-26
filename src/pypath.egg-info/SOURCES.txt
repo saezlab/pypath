@@ -41,6 +41,7 @@ src/pypath/mysql.py
 src/pypath/mysql_connect.py
 src/pypath/omim.py
 src/pypath/orderedset.py
+src/pypath/paths.py
 src/pypath/pdb.py
 src/pypath/plot.py
 src/pypath/progress.py

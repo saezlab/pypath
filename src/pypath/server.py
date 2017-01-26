@@ -80,6 +80,7 @@ class RestResource(resource.Resource):
         request.setHeader('Cache-Control', 'Public')
         if '' in request.postpath:
             request.postpath.remove('')
+        request.setHeader('Access-Control-Allow-Origin', '*')
         if html:
             request.setHeader('Content-Type', 'text/html; charset=utf-8')
         elif b'format' in request.args and request.args[b'format'][

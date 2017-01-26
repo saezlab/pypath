@@ -26,6 +26,8 @@ class ReferenceList(object):
         self.typ = typ
         self.tax = tax
         self.kwargs = kwargs
+        if 'organism' not in self.kwargs:
+            self.kwargs['organism'] = self.tax
 
     def load(self):
         if hasattr(dataio, self.infile):

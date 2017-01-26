@@ -1,10 +1,10 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2016 - EMBL-EBI
+#  Copyright (c) 2014-2017 - EMBL-EBI
 #
 #  File author(s): Dénes Türei (denes@ebi.ac.uk)
 #
@@ -175,16 +175,16 @@ urls = {
         'url':
         'http://www.phosphosite.org/downloads/Kinase_Substrate_Dataset.gz'
     },
-    'psite_met': {
+    'psite_me': {
         'label': 'PhosphoSite methylation sites',
         'url':
         'http://www.phosphosite.org/downloads/Methylation_site_dataset.gz'
     },
-    'psite_gal': {
+    'psite_ga': {
         'label': 'PhosphoSite O-GalNAc sites',
         'url': 'http://www.phosphosite.org/downloads/O-GalNAc_site_dataset.gz'
     },
-    'psite_glc': {
+    'psite_gl': {
         'label': 'PhosphoSite O-GlcNAc sites',
         'url': 'http://www.phosphosite.org/downloads/O-GlcNAc_site_dataset.gz'
     },
@@ -193,7 +193,7 @@ urls = {
         'url':
         'http://www.phosphosite.org/downloads/Phosphorylation_site_dataset.gz'
     },
-    'psite_sum': {
+    'psite_sm': {
         'label': 'Sumoylation sites',
         'url':
         'http://www.phosphosite.org/downloads/Sumoylation_site_dataset.gz'
@@ -386,7 +386,7 @@ urls = {
     'goa': {
         'label': 'UniProt GO annotations from GOA',
         'url': 'ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/%s/'
-        'gene_association.goa_%s.gz'
+        'goa_%s.gaf.gz'
     },
     'quickgo': {
         'label': 'UniProt GO annotations from QuickGO',
@@ -397,6 +397,10 @@ urls = {
         'label': 'Generic GOSlim from GO Consortium',
         'url':
         'http://www.geneontology.org/ontology/subsets/goslim_generic.obo'
+    },
+    'go': {
+        'label': 'The whole Gene Ontology',
+        'url': 'http://purl.obolibrary.org/obo/go.obo'
     },
     'netpath_names': {
         'label': 'NetPath numeric pathway IDs can be translated to '

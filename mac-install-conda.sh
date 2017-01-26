@@ -3,7 +3,7 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2016 - EMBL-EBI
+#  Copyright (c) 2014-2017 - EMBL-EBI
 #
 #  File author(s): Dénes Türei (denes@ebi.ac.uk)
 #
@@ -130,6 +130,7 @@ then
     $CONDAPIP install pysftp
     $CONDAPIP install future
     $CONDAPIP install bioservices
+    $CONDAPIP install tqdm
     $CONDAPIP install $PYPATHURL
 fi
 
@@ -141,7 +142,7 @@ then
 
     echo -en "\n\n\t===[ Testing installation ]===\n\n"
 
-    declare -a modules=(cairo igraph future numpy scipy pandas suds bioservices pymysql pygraphviz fisher pysftp fabric pypath)
+    declare -a modules=(cairo igraph future numpy scipy pandas suds bioservices pymysql pygraphviz fisher pysftp fabric tqdm pypath)
 
     for mod in "${modules[@]}"
     do

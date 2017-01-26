@@ -1120,17 +1120,27 @@ class Curl(FileOpener):
         if not self.silent:
             self.print_status('Opening file `%s`' % self.outfile)
         super(Curl, self).__init__(self.outfile, extract=False)
-
+    
+    def close(self):
+        """
+        Closes all file objects.
+        """
+        if type(self.result) is dict:
+            for fp in self.result.values():
+                if hasattr(fp, 'close'):
+                    fp.close()
+        self.fileobj.close()
+    
     def extract_file(self):
         if not self.silent:
             self.print_status('Extracting %s data' % self.type)
         self.extract()
-
+    
     def decode_result(self):
         if self.progress is not None:
             self.print_status('Decoding %s encoded data' %
                               (self.encoding or 'utf-8'))
-
+    
         def _decode_result(content):
             try:
                 return content.decode(self.encoding or 'utf-8')
@@ -1141,14 +1151,14 @@ class Curl(FileOpener):
                     'Result might be of type bytes' %
                     (self.encoding or 'utf-8'))
                 return content
-
+    
         if not self.large:
             if type(self.result) is dict:
                 for name, content in iteritems(self.result):
                     self.result[name] = _decode_result(content)
             else:
                 self.result = _decode_result(self.result)
-
+    
     def get_result_type(self):
         if type(self.result) is dict:
             if len(self.result):
@@ -1165,7 +1175,7 @@ class Curl(FileOpener):
                 'byte array'
                 if type(self.result) is bytes else 'unicode string'
                 if type(self.result) is unicode else 'file object')
-
+    
     def report_ready(self):
         self.get_result_type()
         if not self.silent:
@@ -1176,7 +1186,7 @@ class Curl(FileOpener):
                                % self.type, self.result_type, self.outfile))
             sys.stdout.write('\n')
             sys.stdout.flush()
-
+    
     def print_status(self, status):
         if self.progress is not None:
             self.terminate_progress()
@@ -1186,21 +1196,21 @@ class Curl(FileOpener):
             sys.stdout.write('\r%s' % (' ' * 150))
             sys.stdout.write('\r\t:: %s' % status)
             sys.stdout.flush()
-
+    
     # sftp part:
-
+    
     def sftp_url(self):
         if self.sftp_host is not None:
             self.sftp_filename = self.url
             self.url = '%s%s' % (self.sftp_host, self.sftp_filename)
-
+    
     def sftp_call(self):
         self.sftp_success = self.sftp_download()
         if self.sftp_success:
             self.status = 200
         else:
             self.status = 501
-
+    
     def ask_passwd(self, use_passwd_file=True):
         if use_passwd_file and os.path.exists(self.sftp_passwd_file):
             with open(self.sftp_passwd_file, 'r') as f:
@@ -1227,7 +1237,7 @@ class Curl(FileOpener):
         if save.lower().strip() in ['', 'y', 'yes']:
             with open(self.sftp_passwd_file, 'w') as f:
                 f.write('%s\n%s' % (self.user, self.passwd))
-
+    
     def sftp_download(self):
         self.sftp_ask = 'Please enter your login details for %s\n' % self.host \
             if self.sftp_ask is None else self.sftp_ask

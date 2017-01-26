@@ -3,7 +3,7 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2016 - EMBL-EBI
+#  Copyright (c) 2014-2017 - EMBL-EBI
 #
 #  File author(s): Dénes Türei (denes@ebi.ac.uk)
 #
@@ -47,6 +47,14 @@
 #
 
 # setting some variables
+
+echo -en "\n\n\t [!!] Please note: this is not the suggested way to install pypath.\n"\
+    "\t      Have you considered \`mac-install-brew.sh\` or \`mac-install-conda.sh\`?\n"\
+    "\t      If you want to use this script anyways, please open in your editor,\n"\
+    "\t      so you know what are you doing.\n"\
+    "\t      Now exiting.\n\n"
+exit 0
+
 USER=`whoami`
 HOME="/Users/$USER"
 LOCAL="$HOME/local"
