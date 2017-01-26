@@ -361,13 +361,13 @@ class Direction(object):
         return self.positive[self.straight]
 
     def positive_reverse(self):
-        return self.positive[self.reverese]
+        return self.positive[self.reverse]
 
     def negative_straight(self):
         return self.negative[self.straight]
 
     def negative_reverse(self):
-        return self.negative[self.reverese]
+        return self.negative[self.reverse]
 
     def negative_sources_straight(self):
         return self.negative_sources[self.straight]
