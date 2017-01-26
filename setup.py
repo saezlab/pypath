@@ -87,10 +87,10 @@ def query_yes_no(question, default="yes"):
 
 metainfo = {
     'authors': {
-    'Türei':('Dénes Türei','denes@ebi.ac.uk'),
+        'Türei':('Dénes Türei','turei.denes@gmail.com'),
     },
     'version': __version__,
-    'license': 'LGPL',
+    'license': 'GPLv3',
     'download_url': ['http://pypath.omnipathdb.org'],
     'url': ['http://pypath.omnipathdb.org'],
     'description': 'Work with molecular networks in Python igraph',
@@ -104,12 +104,13 @@ metainfo = {
                  'phosphorylation', 'kinase', 'phosphatase',
                  'dephosphorylation', 'directed graph'],
     'classifiers': [
-    'Development Status :: 2 - Pre-Alpha',
+    'Development Status :: 4 - Beta',
     'Intended Audience :: Developers',
     'Intended Audience :: Science/Research',
-    'License :: GNU Library or Lesser General Public License (LGPL)',
+    'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
     'Operating System :: OS Independent',
     'Programming Language :: Python',
+    'Natural Language :: English',
     'Topic :: Software Development :: Libraries :: Python Modules',
     'Topic :: Scientific/Engineering :: Bio-Informatics',
     'Topic :: Scientific/Engineering :: Information Analysis',
@@ -144,7 +145,7 @@ deps = [
 
 setup(
     name = 'pypath',
-    version = __version__,
+    version = metainfo['version'],
     maintainer = metainfo['authors']['Türei'][0],
     maintainer_email = metainfo['authors']['Türei'][1],
     author = metainfo['authors']['Türei'][0],

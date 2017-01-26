@@ -361,13 +361,13 @@ class Direction(object):
         return self.positive[self.straight]
 
     def positive_reverse(self):
-        return self.positive[self.reverese]
+        return self.positive[self.reverse]
 
     def negative_straight(self):
         return self.negative[self.straight]
 
     def negative_reverse(self):
-        return self.negative[self.reverese]
+        return self.negative[self.reverse]
 
     def negative_sources_straight(self):
         return self.negative_sources[self.straight]
@@ -2312,7 +2312,7 @@ class PyPath(object):
         '''
         Returns all edges between two given vertex names. Similar to
         straight_between(), but checks both directions, and returns
-        list of edge ids in [undirected, straight, reveresed] format,
+        list of edge ids in [undirected, straight, reversed] format,
         for both nameA -> nameB and nameB -> nameA edges.
         '''
         g = self.graph
