@@ -1863,7 +1863,7 @@ def get_psite_phos(raw=True, organism='human', strict=True, mapper=None):
     orto = {}
     data = c.result
     cols = {
-        'kinase': 1,
+        'kinase': 2,
         'kinase_org': 3,
         'substrate': 6,
         'substrate_org': 8,
