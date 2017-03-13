@@ -4,7 +4,7 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2016 - EMBL-EBI
+#  Copyright (c) 2014-2017 - EMBL-EBI
 #
 #  File author(s): Dénes Türei (denes@ebi.ac.uk)
 #
@@ -1628,6 +1628,13 @@ _default_css = u'''
                 }
                 html {
                     padding-bottom: 1024px;
+                }
+                .paper-link {
+                    font-size: larger;
+                    color: #FFFFFF;
+                    background-color: #007B7F;
+                    padding: 12px 25px 7px 25px;
+                    display: inline-block;
                 }''' % _fonts
 
 _header = u'''<!DOCTYPE html>

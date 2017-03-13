@@ -15,7 +15,6 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
-# import main
 import __main__
 
 from future.utils import iteritems
@@ -719,7 +718,7 @@ class PyPath(object):
             self.ownlog = logn.logw(self.session, self.loglevel)
             self.mapper = mapping.Mapper(
                 self.ncbi_tax_id, mysql_conf=self.mysql_conf, log=self.ownlog)
-            self.disclaimer = '\n\n\t=== d i s c l a i m e r ===\n\n'\
+            self.disclaimer = '\n\t=== d i s c l a i m e r ===\n\n'\
                 '\tAll data coming with this module\n'\
                 '\teither as redistributed copy or downloaded using the\n'\
                 '\tprogrammatic interfaces included in the present module\n'\
@@ -735,8 +734,9 @@ class PyPath(object):
             self.ownlog.msg(1, "PyPath has been initialized")
             self.ownlog.msg(1, "Beginning session '%s'" % self.session)
             sys.stdout.write(
-                """\t> New session started,\n\tsession ID: '%s'\n\tlogfile:"""
-                """'./%s'.\n""" % (self.session, self.ownlog.logfile))
+                """\t> New session started,\n\tsession ID: '%s'\n\tlogfile: """
+                """'./%s'\n\tpypath version: %s\n""" % (
+                    self.session, self.ownlog.logfile, common.__version__))
 
         else:
             self.copy(copy)
@@ -6497,8 +6497,21 @@ class PyPath(object):
             correction_method=correction_method)
         enr.new_set(proteins)
         return enr
-
-    def find_all_paths(self, start, end, mode='OUT', maxlen=2, graph=None):
+    
+    def update_adjlist(self, graph = None, mode = 'ALL'):
+        """
+        Creates an adjacency list in a dict of sets format.
+        """
+        
+        graph = graph or self.graph
+        
+        self.adjlist = [
+            set(graph.neighbors(
+                node, mode=mode)) for node in xrange(graph.vcount())
+        ]
+    
+    def find_all_paths(self, start, end, mode='OUT', maxlen=2,
+                       graph=None, silent=False):
         '''
         Finds all paths up to length `maxlen` between groups of
         vertices. This function is needed only becaues igraph`s
@@ -6518,35 +6531,39 @@ class PyPath(object):
             The graph you want to find paths in. self.graph by default.
         '''
 
-        def find_all_paths_aux(adjlist, start, end, path, maxlen=None):
+        def find_all_paths_aux(start, end, path, maxlen=None):
             path = path + [start]
             if start == end:
                 return [path]
             paths = []
             if len(path) < maxlen + 1:
-                for node in adjlist[start] - set(path):
+                for node in self.adjlist[start] - set(path):
                     paths.extend(
-                        find_all_paths_aux(adjlist, node, end, path, maxlen))
+                        find_all_paths_aux(node, end, path, maxlen))
             return paths
-
-        graph = self.graph if graph is None else graph
-        adjlist = [
-            set(graph.neighbors(
-                node, mode=mode)) for node in xrange(graph.vcount())
-        ]
+        
+        graph = graph or self.graph
+        
+        if not hasattr(self, 'adjlist'):
+            self.update_adjlist(graph, mode = mode)
+        
         all_paths = []
         start = start if isinstance(start, list) else [start]
         end = end if isinstance(end, list) else [end]
-        prg = Progress(
-            len(start) * len(end),
-            'Looking up all paths up to length %u' % maxlen, 1)
+        if not silent:
+            prg = Progress(
+                len(start) * len(end),
+                'Looking up all paths up to length %u' % maxlen, 1)
         for s in start:
             for e in end:
-                prg.step()
-                all_paths.extend(find_all_paths_aux(adjlist, s, e, [], maxlen))
-        prg.terminate()
+                if not silent:
+                    prg.step()
+                all_paths.extend(find_all_paths_aux(s, e, [], maxlen))
+        if not silent:
+            prg.terminate()
+        
         return all_paths
-
+    
     def find_all_paths2(self,
                         graph,
                         start,
@@ -7273,11 +7290,41 @@ class PyPath(object):
         """
         Loads the OmniPath network the way it has been described in the paper.
         """
+        
         self.init_network(lst = data_formats.omnipath, pfile=pfile, **kwargs)
         self.third_source_directions()
         self.remove_htp(threshold=threshold, keep_directed=True)
         self.remove_undirected(min_refs=2)
-
+    
+    def load_old_omnipath(self,
+                          kinase_substrate_extra = False,
+                          remove_htp = False,
+                          htp_threshold = 1,
+                          keep_directed = True,
+                          min_refs_undeirected = 2):
+        """
+        Loads the OmniPath network as it was before August 2016.
+        Furthermore it gives some more options.
+        
+        """
+        
+        omnipath = copy.deepcopy(data_formats.omnipath)
+        
+        omnipath['biogrid'] = data_formats.interaction['biogrid']
+        omnipath['alz'] = data_formats.interaction['alz']
+        omnipath['netpath'] = data_formats.interaction['netpath']
+        
+        self.load_resources(omnipath, exclude = ['intact', 'hprd'])
+        
+        if kinase_substrate_extra:
+            self.load_resources(data_formats.ptm_misc)
+        
+        self.third_source_directions()
+        
+        if remove_htp:
+            self.remove_htp(threshold=htp_threshold, keep_directed=keep_directed)
+            self.remove_undirected(min_refs=min_refs_undeirected)
+    
     def remove_htp(self, threshold=50, keep_directed=False):
         self.htp_stats()
         vcount_before = self.graph.vcount()
@@ -7352,7 +7399,7 @@ class PyPath(object):
             }
         self.htp = htdata
 
-    def third_source_directions(self, graph=None):
+    def third_source_directions(self, graph=None, use_string_effects=False):
         '''
         This method calls a series of methods to get
         additional direction & effect information
@@ -7361,7 +7408,10 @@ class PyPath(object):
         for interactions already supported by literature
         evidences from other sources.
         '''
-        # self.string_effects(graph = graph)
+        
+        if use_string_effects:
+            self.string_effects(graph = graph)
+            
         self.kegg_directions(graph=graph)
         self.laudanna_effects(graph=graph)
         self.laudanna_directions(graph=graph)
