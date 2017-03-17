@@ -33,23 +33,25 @@ import pypath.uniprot_input as uniprot_input
 
 class ProteinHomology(object):
     
-    def __init__(self, source, target, only_swissprot = True, mapper = None):
+    def __init__(self, target, source = None, only_swissprot = True, mapper = None):
         """
         This class translates between homologous UniProt IDs of
         2 organisms based on NCBI HomoloGene data.
         Uses RefSeq and Entrez IDs for translation.
         
-        :param int source: NCBI Taxonomy ID of the organism
-                           to be translated from.
+        
         :param int target: NCBI Taxonomy ID of the organism
                            to be translated to.
+        :param int source: NCBI Taxonomy ID of the default organism
+                           to be translated from.
         :param bool only_swissprot: Whether only SwissProt or Trembl IDs
                                     should be used.
         :mapper pypath.mapping.Mapper mapper: A Mapper object.
         """
         
-        self.source = source
+        self.homo = {}
         self.target = target
+        self.set_default_source(source)
         self.mapper = mapping.Mapper() if mapper is None else mapper
         
         self.homologene_uniprot_dict()
@@ -61,38 +63,57 @@ class ProteinHomology(object):
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
     
-    def translate(self, protein):
+    def set_default_source(self, source = None):
+        
+        self.source = source or self.source
+    
+    def get_source(self, source = None):
+        
+        source = source or self.source
+        
+        if source is None:
+            raise ValueError('No source NCBI Taxonomy ID provided.')
+        else:
+            return source
+    
+    def translate(self, protein, source = None):
         """
         For one UniProt ID of the source organism returns all orthologues
         from the target organism.
         """
         
-        if protein in self.homo:
+        source = self.get_source(source)
+        
+        if source not in self.homo:
             
-            return self.homo[protein]
+            self.homologene_uniprot_dict(source)
+        
+        if protein in self.homo[source]:
+            
+            return self.homo[source][protein]
     
-    def homologene_uniprot_dict(self):
+    def homologene_uniprot_dict(self, source):
         """
         Builds orthology translation table as dict from UniProt to Uniprot,
         obtained from NCBI HomoloGene data. Uses RefSeq and Entrez IDs for
         translation.
         """
         
-        self.homo = {}
+        self.homo[source] = {}
         
-        hge = dataio.homologene_dict(self.source, self.target, 'entrez')
-        hgr = dataio.homologene_dict(self.source, self.target, 'refseq')
+        hge = dataio.homologene_dict(source, self.target, 'entrez')
+        hgr = dataio.homologene_dict(source, self.target, 'refseq')
         
-        all_source = set(dataio.all_uniprots(
-            organism = self.source,
+        all_source[source] = set(dataio.all_uniprots(
+            organism = source,
             swissprot = 'YES'))
         
-        if not only_swissprot:
+        if not self.only_swissprot:
             all_source_trembl = dataio.all_uniprots(
                 organism = source, swissprot = 'NO')
-            all_source.update(set(all_source_trembl))
+            all_source[source].update(set(all_source_trembl))
         
-        for u in all_source:
+        for u in all_source[source]:
             
             source_e = self.mapper.map_name(
                 u, 'uniprot', 'entrez', source)
@@ -128,22 +149,32 @@ class ProteinHomology(object):
                     )
                 )
             
-            self.homo[u] = sorted(list(target_u))
+            self.homo[source][u] = sorted(list(target_u))
 
-class PTMHomology(ProteinHomology):
+class PtmHomology(ProteinHomology):
     
-    __init__(self, source, target, only_swissprot = True, mapper = None):
+    __init__(self, target, source = None, only_swissprot = True,
+             mapper = None, seq = None):
         
-        super(PTMHomology, self).__init__(source, target,
+        super(PtmHomology, self).__init__(target,
+                                          source,
                                           only_swissprot,
                                           mapper)
         
         self.reptm = re.compile(r'([A-Z\d]{6,10})_([A-Z])(\d*)')
         
         self.ptm_orthology()
-        self.seq = uniprot_input.swissprot_seq(self.target, isoforms = True)
+        self.set_seq(seq)
+    
+    def set_seq(self, seq = None):
+        
+        self.seq = (
+            seq or
+            uniprot_input.swissprot_seq(self.target, isoforms = True)
+        )
     
     def translate_site(self, protein, res, offset,
+                       source_taxon = None,
                        isoform = 1, typ = 'phosphorylation',
                        strict = False):
         """
@@ -152,7 +183,11 @@ class PTMHomology(ProteinHomology):
         
         result = set([])
         
-        sourceptm = (protein, isoform, res, offset, self.source, typ)
+        self.set_default_source(source_taxon)
+        
+        source = self.get_source(source)
+        
+        sourceptm = (protein, isoform, res, offset, source, typ)
         
         if sourceptm in self.ptmhomo:
             
@@ -273,7 +308,7 @@ class PTMHomology(ProteinHomology):
         - one UniProt ID
         - one PTM provided as tuple of (UniProt, amino acid, offest)
         - one PTM provided as string (e.g. `P00533_S231`)
-        - any instance from pypath.intera: DomainMotif, Motif, Ptm, Residue
+        - instance from pypath.intera: DomainMotif, Domain or Ptm
         
         Additional arguments can be isoform and typ (modification type).
         
@@ -299,18 +334,10 @@ class PTMHomology(ProteinHomology):
             result = list(map(lambda r:
                               '%s_%s%u' % (r[0], r[2], r[3]),
                               result))
-        
-        if type(x) is pypath.intera.Residue:
-            
-            result = self.translate_residue(x)
             
         elif type(x) is pypath.intera.Ptm:
             
             result = self.translate_ptm(x)
-            
-        elif type(x) is pypath.intera.Motif:
-            
-            result = self.translate_motif(x)
             
         elif type(x) is pypath.intera.Domain:
             

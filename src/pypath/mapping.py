@@ -24,6 +24,7 @@ import codecs
 import re
 import imp
 import copy
+import itertools
 
 import urllib
 
@@ -557,7 +558,7 @@ class Mapper(object):
                  ncbi_tax_id=None,
                  strict=False,
                  silent=True):
-        r'''
+        r"""
         This function should be used to convert individual IDs.
         It takes care about everything, you don't need to think
         on the details. How does it work: looks up dictionaries 
@@ -592,7 +593,8 @@ class Mapper(object):
             To use other IDs, you need to define the input method
             and load the table before calling :py:func:Mapper.map_name().
 
-        '''
+        """
+        
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
         if type(nameType) is list:
             mappedNames = []
@@ -650,7 +652,34 @@ class Mapper(object):
                 self.uniprot_mapped.append((orig, mappedNames))
             mappedNames = [u for u in mappedNames if self.reup.match(u)]
         return common.uniqList(mappedNames)
-
+    
+    def map_names(self,
+                 names,
+                 nameType,
+                 targetNameType,
+                 ncbi_tax_id=None,
+                 strict=False,
+                 silent=True):
+        """
+        Same as `map_name` just with multiple IDs.
+        
+        """
+        
+        return (
+            common.uniqList(
+                itertools.chain(
+                    *map(
+                        lambda n:
+                            self.map_name(n, nameType, targetNameType,
+                                          ncbi_tax_id = ncbi_tax_id,
+                                          strict = strict,
+                                          silent = silent),
+                        names
+                    )
+                )
+            )
+        )
+    
     def map_refseq(self, refseq, nameType, targetNameType,
                    ncbi_tax_id, strict=False):
         mappedNames = []

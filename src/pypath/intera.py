@@ -43,6 +43,7 @@ if 'unicode' not in __builtins__:
 
 
 class Residue(object):
+    
     def __init__(self,
                  number,
                  name,
@@ -97,6 +98,7 @@ class Residue(object):
 
 
 class Mutation(object):
+    
     def __init__(self, original, mutated, sample, properties={}):
         if original.protein == mutated.protein and \
                 original.number == mutated.number:
@@ -150,6 +152,7 @@ class Mutation(object):
 
 
 class Ptm(object):
+    
     def __init__(self,
                  protein,
                  id_type='uniprot',
@@ -306,6 +309,7 @@ class Ptm(object):
 
 
 class Motif(object):
+    
     def __init__(self,
                  protein,
                  start,
@@ -424,6 +428,7 @@ class Motif(object):
 
 
 class Domain(object):
+    
     def __init__(self,
                  protein,
                  id_type='uniprot',
@@ -542,6 +547,7 @@ class Domain(object):
 
 
 class DomainDomain(object):
+    
     def __init__(self,
                  domain_a,
                  domain_b,
@@ -614,6 +620,7 @@ class DomainDomain(object):
 
 
 class DomainMotif(object):
+    
     def __init__(self, domain, ptm, sources=None, refs=None, pdbs=None):
         self.ptm = ptm
         self.domain = domain

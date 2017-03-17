@@ -3761,7 +3761,7 @@ class PyPath(object):
                         (nameA, nameB), sources=True) + e['dirs'].get_sign(
                             (nameB, nameA), sources=True)
                 ]
-                thisEdge.append(e['type'])
+                thisEdge.append(';'.join(e['type']))
                 for k, v in iteritems(extraEdgeAttrs):
                     thisEdge.append(';'.join([
                         x.strip()
@@ -3781,7 +3781,7 @@ class PyPath(object):
                                                json.dumps(self.graph.vs[
                                                    e.target][v])).split(',')
                     ]))
-                f.write('\t'.join(thisEdge) + '\n')
+                f.write('%s\n' % '\t'.join(thisEdge))
                 prg.step()
         prg.terminate()
 
@@ -7286,35 +7286,59 @@ class PyPath(object):
             sum_row=False,
             **kwargs)
 
-    def load_omnipath(self, threshold=1, pfile=None, **kwargs):
+    def load_omnipath(self, pfile=None,
+                      kinase_substrate_extra=False,
+                      remove_htp=True,
+                      htp_threshold=1,
+                      **kwargs):
         """
         Loads the OmniPath network the way it has been described in the paper.
         """
         
         self.init_network(lst = data_formats.omnipath, pfile=pfile, **kwargs)
+        
+        if kinase_substrate_extra:
+            self.load_resources(data_formats.ptm_misc)
+        
         self.third_source_directions()
-        self.remove_htp(threshold=threshold, keep_directed=True)
+        self.remove_htp(threshold=threshold, keep_directed=keep_directed)
         self.remove_undirected(min_refs=2)
     
     def load_old_omnipath(self,
                           kinase_substrate_extra = False,
                           remove_htp = False,
                           htp_threshold = 1,
-                          keep_directed = True,
-                          min_refs_undeirected = 2):
+                          keep_directed = False,
+                          min_refs_undirected = 2):
         """
         Loads the OmniPath network as it was before August 2016.
         Furthermore it gives some more options.
-        
         """
         
-        omnipath = copy.deepcopy(data_formats.omnipath)
+        self.load_omnipath(**locals())
+    
+    def load_omnipath(self,
+                      kinase_substrate_extra = False,
+                      remove_htp = False,
+                      htp_threshold = 1,
+                      keep_directed = True,
+                      min_refs_undirected = 2,
+                      old_omnipath_resources=False):
+        """
+        Loads the OmniPath network.
+        """
         
-        omnipath['biogrid'] = data_formats.interaction['biogrid']
-        omnipath['alz'] = data_formats.interaction['alz']
-        omnipath['netpath'] = data_formats.interaction['netpath']
+        if old_omnipath:
+            omnipath = copy.deepcopy(data_formats.omnipath)
+            omnipath['biogrid'] = data_formats.interaction['biogrid']
+            omnipath['alz'] = data_formats.interaction['alz']
+            omnipath['netpath'] = data_formats.interaction['netpath']
+            exclude = ['intact', 'hprd']
+        else:
+            omnipath = data_formats.omnipath
+            exclude = []
         
-        self.load_resources(omnipath, exclude = ['intact', 'hprd'])
+        self.load_resources(omnipath, exclude = exclude)
         
         if kinase_substrate_extra:
             self.load_resources(data_formats.ptm_misc)
@@ -7323,7 +7347,9 @@ class PyPath(object):
         
         if remove_htp:
             self.remove_htp(threshold=htp_threshold, keep_directed=keep_directed)
-            self.remove_undirected(min_refs=min_refs_undeirected)
+        
+        if not keep_directed:
+            self.remove_undirected(min_refs=min_refs_undirected)
     
     def remove_htp(self, threshold=50, keep_directed=False):
         self.htp_stats()
