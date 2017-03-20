@@ -7332,7 +7332,7 @@ class PyPath(object):
         Loads the OmniPath network.
         """
         
-        if old_omnipath:
+        if old_omnipath_resources:
             omnipath = copy.deepcopy(data_formats.omnipath)
             omnipath['biogrid'] = data_formats.interaction['biogrid']
             omnipath['alz'] = data_formats.interaction['alz']
