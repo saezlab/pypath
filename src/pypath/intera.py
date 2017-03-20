@@ -707,6 +707,18 @@ class DomainMotif(object):
             self.add_refs(other.refs)
             self.add_pdbs(other.pdbs)
             self.pnetw_score = self.pnetw_score or other.pnetw_score
+    
+    def get_line(self):
+        return [
+            self.domain.protein,
+            self.ptm.protein,
+            ';'.join(map(lambda i: '%u' % i, sorted(self.ptm.isoforms))),
+            self.ptm.residue.name,
+            '%u' % self.ptm.residue.number,
+            self.ptm.typ,
+            ';'.join(sorted(self.sources)),
+            ';'.join(sorted(self.refs))
+        ]
 
 
 class Regulation(object):

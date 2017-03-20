@@ -15,69 +15,71 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
+from future.utils import iteritems
+from past.builtins import xrange, range
+
 import sys
 import imp
+import itertools
 
 import pypath.dataio as dataio
 import pypath.common as common
 import pypath.mapping as mapping
 import pypath.homology as homology
+import pypath.uniprot_input as uniprot_input
+import pypath.intera as intera
+import pypath.progress as progress
 
-class PtmProcessor(object):
+class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
     
     methods = {
-        'Signor': 'load_signor_ptms',
-        'MIMP': 'get_mimp',
-        'PhosphoNetworks': 'get_phosphonetworks',
-        'phosphoELM': 'get_phosphoelm',
-        'dbPTM': 'get_dbptm',
-        'PhosphoSite': 'get_psite_phos',
-        'HPRD': 'get_hprd_ptms',
-        'Li2012': 'li2012_phospho'
+        'signor': 'load_signor_ptms',
+        'mimp': 'get_mimp',
+        'phosphonetworks': 'get_phosphonetworks',
+        'phosphoelm': 'get_phosphoelm',
+        'dbptm': 'get_dbptm',
+        'phosphosite': 'get_psite_phos',
+        'hprd': 'get_hprd_ptms',
+        'li2012': 'li2012_phospho'
     }
     
-    organisms_supported = set(['Signor', 'PhosphoSite',
-                               'phosphoELM', 'dbPTM'])
+    organisms_supported = set(['signor', 'phosphosite',
+                               'phosphoelm', 'dbptm'])
     
-    enzyme_id_uniprot = set(['PhosphoSite', 'phosphoELM', 'Signor'])
+    enzyme_id_uniprot = set(['phosphosite', 'phosphoelm', 'signor'])
     
     substrate_id_types = {
-        'MIMP': [('genesymbol', 'substrate'), ('refseq', 'substrate_refseq')],
-        'PhosphoNetworks': ['genesymbol'],
-        'phosphoELM': ['uniprot'],
-        'Li2012': ['genesymbol'],
-        'dbPTM': ['uniprot'],
-        'PhosphoSite': ['uniprot'],
-        'Signor': ['uniprot'],
-        'HPRD': [('refseqp', 'substrate_refseqp')]
+        'mimp': [('genesymbol', 'substrate'), ('refseq', 'substrate_refseq')],
+        'phosphonetworks': ['genesymbol'],
+        'phosphoelm': ['uniprot'],
+        'li2012': ['genesymbol'],
+        'dbptm': ['uniprot'],
+        'phosphosite': ['uniprot'],
+        'signor': ['uniprot'],
+        'hprd': [('refseqp', 'substrate_refseqp')]
     }
     
-    __init__(self, source,
+    def __init__(self, input_method,
              ncbi_tax_id = 9606,
              trace = False,
              mapper = None,
-             seq = None,
              enzyme_id_type = 'genesymbol',
              substrate_id_type = 'genesymbol',
+             name = None,
+             allow_mixed_organisms = False,
              **kwargs):
         """
         Processes enzyme-substrate interaction data from various databases.
         Provedes generators to iterate over these interactions.
         For organisms other than human obtains the organism specific
-        interactions from databases whereever it is possible and translates
-        the human interactions by homology. By default it does both of them
-        and iterates over all the interactions.
+        interactions from databases.
         
-        :param str source: Either a method name in `dataio` or a database
-                           name e.g. `PhosphoSite` or a callable which
-                           returns data in list of dicts format.
+        :param str input_method: Either a method name in `dataio` or a database
+                                 name e.g. `PhosphoSite` or a callable which
+                                 returns data in list of dicts format.
         :param int ncbi_tax_id: NCBI Taxonomy ID used at the database lookups.
         :param bool trace: Keep data about ambiguous ID mappings and PTM data
                            in mismatch with UniProt sequences.
-        :param list map_by_homology_from: Look up by these taxons in database
-                                          and map them by homology.
-        :param int map_by_homology_to: The target taxon of the homology
-                                       translation.
         :param pypath.mapping.Mapper: A `Mapper` instance. If `None` a new
                                       instance will be created.
         :param str enzyme_id_type: The ID type of the enzyme in the database.
@@ -90,14 +92,26 @@ class PtmProcessor(object):
         
         """
         
+        self.mammal_taxa = set([9606, 10090, 10116])
         self.nomatch = []
         self.kin_ambig = {}
         self.sub_ambig = {}
         
-        self.seq = seq
-        self.source = source
+        self.name = name
+        self.allow_mixed_organisms = allow_mixed_organisms
+        self.input_method = input_method
         self.trace = trace
         self.ncbi_tax_id = ncbi_tax_id
+        
+        homology.SequenceContainer.__init__(self)
+        self.load_seq(self.ncbi_tax_id)
+        
+        if self.allow_mixed_organisms:
+            for taxon in self.mammal_taxa:
+                self.load_seq(taxon = taxon)
+        
+        homology.Proteomes.__init__(self)
+        
         self.mapper = mapper
         self.enzyme_id_type = enzyme_id_type
         self.set_method()
@@ -108,7 +122,6 @@ class PtmProcessor(object):
     def load(self):
         
         self._setup()
-        self.load_seq()
         self.load_data()
     
     def reload(self):
@@ -123,7 +136,7 @@ class PtmProcessor(object):
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
         
         self.set_taxon(ncbi_tax_id)
-        self.load_seq(seq)
+        self.load_seq(ncbi_tax_id)
         self.load_data()
     
     def set_taxon(self, ncbi_tax_id):
@@ -137,14 +150,19 @@ class PtmProcessor(object):
         
         def f(**kwargs): return []
         
-        if hasattr(self.source, '__call__'):
-            self.inputm = self.source
-        elif hasattr(dataio, self.source):
-            self.inputm = getattr(dataio, self.source)
-        elif self.source in self.methods:
-            self.inputm = self.methods[self.source]
+        if hasattr(self.input_method, '__call__'):
+            self.inputm = self.input_method
+            self.name = self.name or self.input_method.__name__
+        elif hasattr(dataio, self.input_method):
+            self.inputm = getattr(dataio, self.input_method)
+            self.name = self.name or self.inputm.__name__
+        elif self.input_is(self.methods, '__contains__'):
+            self.inputm = getattr(dataio,
+                                  self.methods[self.input_method.lower()])
+            self.name = self.name or self.input_method
         else:
             self.inputm = f
+            self.name = self.name or 'Unknown'
     
     def set_inputargs(self, **inputargs):
         """
@@ -168,10 +186,13 @@ class PtmProcessor(object):
     
     def _phosphosite_setup(self):
         
-        self.ncbi_tax_id in common.taxids:
-        
         if 'strict' not in self.inputargs:
             self.inputargs['strict'] = False
+        
+        if self.inputargs['organism'] in common.taxids:
+            self.inputargs['organism'] = (
+                common.taxids[self.inputargs['organism']]
+            )
         
         self.inputargs['mapper'] = self.mapper
     
@@ -183,218 +204,249 @@ class PtmProcessor(object):
     
     def _setup(self):
         
-        setupmethod = '_%s_setup' % self.source.lower()
+        setupmethod = '_%s_setup' % self.input_method.lower()
+        
+        self._organism_setup()
         
         if hasattr(self, setupmethod):
             
             getattr(self, setupmethod)()
         
-        self._organism_setup()
+        # database specific id conversions
+        if self.input_is(self.enzyme_id_uniprot, '__contains__'):
+            self.enzyme_id_type = 'uniprot'
     
     def _organism_setup(self):
         
-        if self.source in self.organisms_supported:
+        if self.input_is(self.organisms_supported, '__contains__'):
+            
+            if self.ncbi_tax_id in common.taxa:
+                self.ncbi_tax_id = common.taxa[self.ncbi_tax_id]
             
             self.inputargs['organism'] = self.ncbi_tax_id
-    
-    def load_seq(self, seq = None):
         
-        self.seq = (
-            seq or
-            uniprot_input.swissprot_seq(organism = self.ncbi_tax_id,
-                                        isoforms=True)
-        )
+        self.load_proteome(self.ncbi_tax_id, False)
     
     def _process(self, p):
         
-        for p in self.data:
+        # human leukocyte antigenes result a result an
+        # extremely high number of combinations
+        if not p['kinase'] or p['substrate'].startswith('HLA'):
+            return []
+        
+        if not isinstance(p['kinase'], list):
+            p['kinase'] = [p['kinase']]
+        
+        kinase_ups = self.mapper.map_names(p['kinase'],
+                        self.enzyme_id_type,
+                        'uniprot',
+                        ncbi_tax_id = self.ncbi_tax_id)
+        
+        substrate_ups_all = set([])
+        
+        for sub_id_type in (
+            self.substrate_id_types[self.input_method.lower()]
+            if self.input_is(self.substrate_id_types, '__contains__')
+            else [self.substrate_id_type]
+        ):
             
-            if p['kinase'] is not None and len(p['kinase']) > 0:
-                
-                # database specific id conversions
-                if source in self.enzyme_id_uniprot:
-                    self.enzyme_id_type = 'uniprot'
-                
-                if not isinstance(p['kinase'], list):
-                    p['kinase'] = [p['kinase']]
-                
-                kinase_ups = self.mapper.map_name(p['kinase'],
-                                self.enzyme_id_type,
-                                'uniprot',
-                                ncbi_tax_id = self.ncbi_tax_id)
-                
-                if p['substrate'].startswith('HLA'):
-                    # human leukocyte antigenes result a result an
-                    # extremely high number of combinations
-                    continue
-                
-                self.substrate_ups_all = set([])
-                
-                for sub_id_type in (
-                    self.substrate_id_types[self.source]
-                    if self.source in self.substrate_id_types else
-                    [self.substrate_id_type]
-                ):
-                    
-                    if type(sub_id_type) is tuple:
-                        sub_id_type, sub_id_attr = sub_id_type
-                    else:
-                        sub_id_attr = 'substrate'
-                    
-                    self.substrate_ups_all.update(
-                        set(
-                            self.mapper.map_name(
-                                p[sub_id_attr],
-                                sub_id_type,
-                                'uniprot',
-                                self.ncbi_tax_id
-                            )
-                        )
+            if type(sub_id_type) is tuple:
+                sub_id_type, sub_id_attr = sub_id_type
+            else:
+                sub_id_attr = 'substrate'
+            
+            substrate_ups_all.update(
+                set(
+                    self.mapper.map_name(
+                        p[sub_id_attr],
+                        sub_id_type,
+                        'uniprot',
+                        self.ncbi_tax_id
                     )
+                )
+            )
+        
+        # looking up sequences in all isoforms:
+        substrate_ups = []
+        
+        for s in substrate_ups_all:
+            
+            se = self.get_seq(s)
+            
+            if se is None:
+                continue
+            
+            for isof in se.isoforms():
                 
-                # looking up sequences in all isoforms:
-                substrate_ups = []
+                if p['instance'] is not None:
+                    
+                    if se.match(
+                        p['instance'],
+                        p['start'],
+                        p['end'],
+                        isoform=isof
+                    ):
+                        
+                        substrate_ups.append((s, isof))
+                    
+                else:
+                    
+                    if se.match(
+                        p['resaa'],
+                        p['resnum'],
+                        isoform=isof
+                    ):
+                        
+                        substrate_ups.append((s, isof))
+        
+        if self.trace:
+            
+            if p['substrate'] not in self.sub_ambig:
+                
+                self.sub_ambig[p['substrate']] = substrate_ups
+            
+            for k in p['kinase']:
+                
+                if k not in self.kin_ambig:
+                    
+                    self.kin_ambig[k] = kinase_ups
+            # generating report on non matching substrates
+            if len(substrate_ups) == 0:
                 
                 for s in substrate_ups_all:
                     
-                    if s in self.seq:
-                        
-                        for isof in self.seq[s].isoforms():
-                            
-                            if p['instance'] is not None:
-                                
-                                if self.seq[s].match(
-                                        p['instance'],
-                                        p['start'],
-                                        p['end'],
-                                        isoform=isof):
-                                    substrate_ups.append((s, isof))
-                            else:
-                                
-                                if self.seq[s].match(
-                                        p['resaa'],
-                                        p['resnum'],
-                                        isoform=isof):
-                                    
-                                    substrate_ups.append((s, isof))
-                
-                if self.trace:
+                    se = self.get_seq(s[0])
                     
-                    if p['substrate'] not in self.sub_ambig:
-                        
-                        self.sub_ambig[p['substrate']] = substrate_ups
+                    if se is None:
+                        continue
                     
-                    for k in p['kinase']:
-                        
-                        if k not in self.kin_ambig:
-                            
-                            self.kin_ambig[k] = kinase_ups
-                    # generating report on non matching substrates
-                    if len(substrate_ups) == 0:
-                        
-                        for s in substrate_ups_all:
-                            
-                            if s[0] in self.seq:
-                                
-                                nomatch.append((s[0], s[1],
-                                    ((p['substrate_refseq']
-                                    if 'substrate_refseq' in p
-                                    else ''),
-                                    s, p['instance'],
-                                    self.seq[s].get(
-                                        p['start'],
-                                        p['end'])
-                                    )
-                                ))
-                
-                # adding kinase-substrate interactions
-                for k in kinase_ups:
-                    
-                    for s in substrate_ups:
-                        
-                        res = intera.Residue(
-                            p['resnum'],
-                            p['resaa'],
-                            s[0],
-                            isoform=s[1])
-                        
-                        if p['instance'] is None:
-                            
-                            reg = self.seq[s[0]].get_region(
-                                p['resnum'],
-                                p['start'],
-                                p['end'],
-                                isoform=s[1])
-                            
-                            if reg is not None:
-                                
-                                p['instance'] = reg[2]
-                                p['start'] = reg[0]
-                                p['end'] = reg[1]
-                                
-                        if 'typ' not in p:
-                            p['typ'] = 'phosphorylation'
-                            
-                        mot = intera.Motif(
-                            s[0],
+                    nomatch.append((s[0], s[1],
+                        ((p['substrate_refseq']
+                        if 'substrate_refseq' in p
+                        else ''),
+                        s, p['instance'],
+                        se.get(
                             p['start'],
-                            p['end'],
-                            instance=p['instance'],
-                            isoform=s[1])
+                            p['end'])
+                        )
+                    ))
+        
+        # adding kinase-substrate interactions
+        
+        for k in kinase_ups:
+            
+            for s in substrate_ups:
+                
+                if (
+                    not self.allow_mixed_organisms and (
+                        self.get_taxon(k) != self.ncbi_tax_id or
+                        self.get_taxon(s[0]) != self.ncbi_tax_id
+                    )
+                ):
+                    continue
+                
+                se = self.get_seq(s[0])
+                
+                if se is None:
+                    continue
+                
+                res = intera.Residue(
+                    p['resnum'],
+                    p['resaa'],
+                    s[0],
+                    isoform=s[1])
+                
+                if p['instance'] is None:
+                    
+                    reg = se.get_region(
+                        p['resnum'],
+                        p['start'],
+                        p['end'],
+                        isoform=s[1])
+                    
+                    if reg is not None:
                         
-                        ptm = intera.Ptm(s[0],
-                                            motif=mot,
-                                            residue=res,
-                                            typ=p['typ'],
-                                            source=[self.source],
-                                            isoform=s[1])
+                        p['instance'] = reg[2]
+                        p['start'] = reg[0]
+                        p['end'] = reg[1]
                         
-                        dom = intera.Domain(protein=k)
-                        
-                        if 'references' not in p:
-                            p['references'] = []
-                            
-                        dommot = intera.DomainMotif(
-                            domain=dom,
-                            ptm=ptm,
-                            sources=[self.source],
-                            refs=p['references'])
-                        
-                        if self.source == 'MIMP':
-                            dommot.mimp_sources = ';'.split(p[
-                                'databases'])
-                            dommot.npmid = p['npmid']
-                            
-                        elif source == 'PhosphoNetworks':
-                            dommot.pnetw_score = p['score']
-                            
-                        elif source == 'dbPTM':
-                            dommot.dbptm_sources = [p['source']]
-                            
-                        yield dommot
+                if 'typ' not in p:
+                    p['typ'] = 'phosphorylation'
+                    
+                mot = intera.Motif(
+                    s[0],
+                    p['start'],
+                    p['end'],
+                    instance=p['instance'],
+                    isoform=s[1])
+                
+                ptm = intera.Ptm(s[0],
+                                    motif=mot,
+                                    residue=res,
+                                    typ=p['typ'],
+                                    source=[self.name],
+                                    isoform=s[1])
+                
+                dom = intera.Domain(protein=k)
+                
+                if 'references' not in p:
+                    p['references'] = []
+                    
+                dommot = intera.DomainMotif(
+                    domain=dom,
+                    ptm=ptm,
+                    sources=[self.name],
+                    refs=p['references'])
+                
+                if self.input_is('mimp'):
+                    dommot.mimp_sources = ';'.split(p[
+                        'databases'])
+                    dommot.npmid = p['npmid']
+                    
+                elif self.input_is('phosphonetworks'):
+                    dommot.pnetw_score = p['score']
+                    
+                elif self.input_is('dbptm'):
+                    dommot.dbptm_sources = [p['source']]
+                    
+                yield dommot
+    
+    def input_is(self, i, op = '__eq__'):
+        
+        return (
+            type(self.input_method) in common.charTypes and
+            getattr(i, op)(self.input_method.lower())
+        )
     
     def __iter__(self):
         """
         Iterates through the enzyme-substrate interactions.
         """
-        
+        #prg = progress.Progress(len(self.data), 'Processing PTMs', 1)
         for p in self.data:
             
-            for ptm in self._process(p)
+            #prg.step()
+            
+            for ptm in self._process(p):
                 
                 yield ptm
+        
+        #prg.terminate()
 
-    
-class PtmHomologyProcessor(PtmProcessor, homology.PtmHomology):
+
+class PtmHomologyProcessor(
+        homology.PtmHomology,
+        PtmProcessor):
     
     def __init__(self,
-        source,
+        input_method,
         ncbi_tax_id,
         map_by_homology_from = [9606],
         trace = False,
         mapper = None,
         enzyme_id_type = 'genesymbol',
         substrate_id_type = 'genesymbol',
+        name = None,
         homology_only_swissprot = True,
         ptm_homology_strict = False,
         **kwargs):
@@ -412,7 +464,7 @@ class PtmHomologyProcessor(PtmProcessor, homology.PtmHomology):
         and also from multiple databases, whatmore all these merged
         into a single set, use the `PtmAggregator`.
         
-        :param str source: Data source for `PtmProcessor`.
+        :param str input_method: Data source for `PtmProcessor`.
         :param int ncbi_tax_id: The NCBI Taxonomy ID the interactions
                                 should be translated to.
         :param bool homology_only_swissprot: Use only SwissProt
@@ -428,16 +480,19 @@ class PtmHomologyProcessor(PtmProcessor, homology.PtmHomology):
         """
         
         self.map_by_homology_from = map_by_homology_from
-
-        PtmProcessor.__init__(self, source, ncbi_tax_id,
-                              trace = trace, mapper = mapper,
-                              enzyme_id_type = enzyme_id_type,
-                              substrate_id_type = substrate_id_type,
-                              **kwargs)
         
-        homology.PtmTranslator.__init__(self, target = self.ncbi_tax_id,
+        self.target_taxon = ncbi_tax_id
+        self.input_method = input_method
+        self.trace = trace
+        self.enzyme_id_type = enzyme_id_type
+        self.substrate_id_type = substrate_id_type
+        self.name = name
+        self.ptmprocargs = kwargs
+        
+        homology.PtmHomology.__init__(self, target = ncbi_tax_id,
                                         only_swissprot = homology_only_swissprot,
-                                        strict = ptm_homology_strict)
+                                        strict = ptm_homology_strict,
+                                        mapper = mapper)
     
     def __iter__(self):
         """
@@ -448,7 +503,15 @@ class PtmHomologyProcessor(PtmProcessor, homology.PtmHomology):
         for source_taxon in self.map_by_homology_from:
             
             self.set_default_source(source_taxon)
-            self.reset_ptmprocessor(ncbi_tax_id = source_taxon)
+            
+            PtmProcessor.__init__(self, self.input_method, source_taxon,
+                              trace = self.trace, mapper = self.mapper,
+                              enzyme_id_type = self.enzyme_id_type,
+                              substrate_id_type = self.substrate_id_type,
+                              name = self.name, allow_mixed_organisms = True,
+                              **self.ptmprocargs)
+            
+            #self.reset_ptmprocessor(ncbi_tax_id = source_taxon)
             
             for ptm in PtmProcessor.__iter__(self):
                 
@@ -459,7 +522,7 @@ class PtmHomologyProcessor(PtmProcessor, homology.PtmHomology):
 class PtmAggregator(object):
     
     def __init__(self,
-        sources,
+        input_methods = None,
         ncbi_tax_id = 9606,
         map_by_homology_from = [9606],
         trace = False,
@@ -474,57 +537,102 @@ class PtmAggregator(object):
         Docs not written yet.
         """
         
+        self.builtin_inputs = ['PhosphoSite', 'phosphoELM',
+                               'Signor', 'dbPTM', 'HPRD',
+                               'Li2012', 'PhosphoNetworks',
+                               'MIMP']
+        
         for k, v in iteritems(locals()):
             setattr(self, k, v)
+        
+        self.set_inputs()
         
         self.init_mapper()
         
         self.map_by_homology_from = set(self.map_by_homology_from)
         self.map_by_homology_from.discard(self.ncbi_tax_id)
+        
+        self.build_list()
+        self.unique()
     
     def __iter__(self):
         
-        for ptm in self.unique_list:
+        for ptm in itertools.chain(*self.full_list.values()):
             
             yield ptm
+    
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    def set_inputs(self):
+        
+        if self.input_methods is None:
+            self.input_methods = self.builtin_inputs
     
     def build_list(self):
         """
         Builds a full list of enzyme-substrate interactions from
         all the requested sources. This list might contain redundant
         elements which later will be merged by `unique`.
+        This 'full list' is organised into a dict by pairs of proteins
+        in order to make it more efficient to compile a unique set
+        for each pair.
         """
         
-        self.full_list = []
+        def extend_lists(ptms):
+            
+            for ptm in ptms:
+                
+                key = (ptm.domain.protein, ptm.ptm.protein)
+                
+                if key not in self.full_list:
+                    
+                    self.full_list[key] = []
+                
+                self.full_list[key].append(ptm)
         
-        for source in sources:
+        self.full_list = {}
+        
+        for input_method in self.input_methods:
             
             inputargs = (
-                self.inputargs[source]
-                if source in self.inputargs
+                self.inputargs[input_method]
+                if input_method in self.inputargs
                 else {}
             )
             
-            if ncbi_tax_id == 9606 or self.nonhuman_direct_lookup:
+            if self.ncbi_tax_id == 9606 or self.nonhuman_direct_lookup:
                 
-                proc = PtmProcessor(source, self.ncbi_tax_id, self.trace,
-                                    self.mapper, self.enzyme_id_type,
-                                    self.substrate_id_type, **inputargs)
+                proc = PtmProcessor(input_method = input_method,
+                                    ncbi_tax_id = self.ncbi_tax_id,
+                                    trace = self.trace,
+                                    mapper = self.mapper,
+                                    enzyme_id_type = self.enzyme_id_type,
+                                    substrate_id_type = self.substrate_id_type,
+                                    **inputargs)
                 
-                self.full_list.extend(list(proc.__iter__()))
+                extend_lists(proc.__iter__())
             
             if self.map_by_homology_from:
                 
-                proc = PtmHomologyProcessor(source, self.ncbi_tax_id,
-                                            self.map_by_homology_from,
-                                            self.trace, self.mapper,
-                                            self.enzyme_id_type,
-                                            self.substrate_id_type,
-                                            self.homology_only_swissprot,
-                                            self.ptm_homology_strict,
-                                            **inputargs)
+                proc = PtmHomologyProcessor(
+                    input_method = input_method,
+                    ncbi_tax_id = self.ncbi_tax_id,
+                    map_by_homology_from = self.map_by_homology_from,
+                    trace = self.trace,
+                    mapper = self.mapper,
+                    enzyme_id_type = self.enzyme_id_type,
+                    substrate_id_type = self.substrate_id_type,
+                    homology_only_swissprot = self.homology_only_swissprot,
+                    ptm_homology_strict = self.ptm_homology_strict,
+                    **inputargs
+                )
                 
-                self.full_list.extend(list(proc.__iter__()))
+                extend_lists(proc.__iter__())
     
     def unique(self):
         """
@@ -535,7 +643,15 @@ class PtmAggregator(object):
         
         self.unique_list = set([])
         
+        for key, ptms in iteritems(self.full_list):
+            
+            self.full_list[key] = self.uniq_ptms(ptms)
+    
+    @staticmethod
+    def uniq_ptms(ptms):
+        
         ptms_uniq = []
+        
         for ptm in ptms:
             merged = False
             for i, ptmu in enumerate(ptms_uniq):
@@ -544,11 +660,26 @@ class PtmAggregator(object):
                     merged = True
             if not merged:
                 ptms_uniq.append(ptm)
+        
         return ptms_uniq
     
     def init_mapper(self):
         
         self.mapper = self.mapper or mapping.Mapper()
+    
+    def export_table(self, fname):
+        
+        hdr = ['enzyme', 'substrate', 'isoforms',
+               'residue', 'offset', 'modification',
+               'sources', 'references']
+        
+        with open(fname, 'w') as fp:
+            
+            fp.write('%s\n' % '\t'.join(hdr))
+            
+            for dm in self:
+                
+                fp.write('%s\n' % '\t'.join(dm.get_line()))
     
     def assign_to_network(self, pa):
         """
@@ -557,22 +688,24 @@ class PtmAggregator(object):
         """
         
         pa.update_vname()
+        
         if 'ptm' not in pa.graph.es.attributes():
             pa.graph.es['ptm'] = [[] for _ in pa.graph.es]
         
-        for es in self:
+        for key, ptms in iteritems(self.full_list):
             
-            nodes = pa.get_node_pair(es.domain.protein, es.ptm.protein,
+            nodes = pa.get_node_pair(key[0], key[1],
                     directed = pa.graph.is_directed())
             
             e = None
+            
             if nodes:
                 e = pa.graph.get_eid(
-                    nodes[0], nodes[1], error=False)
+                    nodes[0], nodes[1], error = False)
             
             if isinstance(e, int) and e > 0:
                 
                 if pa.graph.es[e]['ptm'] is None:
                     pa.graph.es[e]['ptm'] = []
                 
-                pa.graph.es[e]['ptm'].append(es)
+                pa.graph.es[e]['ptm'].extend(ptms)

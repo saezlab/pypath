@@ -31,7 +31,106 @@ import pypath.urls as urls
 import pypath.curl as curl
 import pypath.uniprot_input as uniprot_input
 
-class ProteinHomology(object):
+class SequenceContainer(object):
+    
+    def __init__(self, preload_seq = [], isoforms = True):
+        """
+        This is an object to store sequences of multiple
+        organisms and select the appropriate one.
+        """
+        
+        self.seq_isoforms = isoforms
+        
+        for taxon in preload_seq:
+            
+            self.load_seq(taxon)
+    
+    def load_seq(self, taxon):
+        
+        if not hasattr(self, 'seq'):
+            self.seq = {}
+        
+        taxon = taxon or self.ncbi_tax_id
+        
+        if taxon not in self.seq:
+            
+            self.seq[taxon] = uniprot_input.swissprot_seq(
+                organism = taxon,
+                isoforms = self.seq_isoforms)
+    
+    def get_seq(self, protein, taxon = None):
+        
+        if taxon is not None:
+            
+            if taxon not in self.seq:
+                
+                self.load_seq(taxon)
+            
+            if protein in self.seq[taxon]:
+                
+                return self.seq[taxon][protein]
+        
+        else:
+            
+            for taxon, seq in iteritems(self.seq):
+                
+                if protein in seq:
+                    
+                    return seq[protein]
+
+
+class Proteomes(object):
+    
+    def __init__(self, preload_prot = [], swissprot_only = True):
+        
+        if not hasattr(self, '_taxonomy'):
+            self._taxonomy = {}
+            self._proteomes = {}
+        
+        for taxon in preload_prot:
+            
+            self.load_proteome(taxon, swissprot_only)
+    
+    def load_proteome(self, taxon, swissprot_only = True):
+        
+        key = (taxon, swissprot_only)
+        
+        if key not in self._proteomes:
+            
+            self._proteomes[key] = (
+                set(uniprot_input.all_uniprots(*key))
+            )
+            
+            for protein in self._proteomes[key]:
+                
+                self._taxonomy[protein] = key
+            
+            if not swissprot_only:
+                
+                self.load_proteome(taxon, True)
+    
+    def get_taxon(self, protein, swissprot_only = True):
+        
+        if not swissprot_only or self.is_swissprot(protein):
+            
+            return self._taxonomy[protein][0]
+    
+    def get_taxon_trembl(self, protein):
+        
+        if self.has_protein(protein):
+            
+            return self._taxonomy[protein][0]
+        
+    def has_protein(self, protein):
+        
+        return protein in self._taxonomy
+    
+    def is_swissprot(self, protein):
+        
+        return self.has_protein(protein) and self._taxonomy[protein][1]
+
+
+class ProteinHomology(Proteomes):
     
     def __init__(self, target, source = None, only_swissprot = True, mapper = None):
         """
@@ -50,11 +149,17 @@ class ProteinHomology(object):
         """
         
         self.homo = {}
+        self.only_swissprot = only_swissprot
         self.target = target
+        self.source = source
         self.set_default_source(source)
         self.mapper = mapping.Mapper() if mapper is None else mapper
         
-        self.homologene_uniprot_dict()
+        Proteomes.__init__(self)
+        self.load_proteome(self.target, self.only_swissprot)
+        
+        if source is not None:
+            self.homologene_uniprot_dict(source)
     
     def reload(self):
         modname = self.__class__.__module__
@@ -82,6 +187,9 @@ class ProteinHomology(object):
         from the target organism.
         """
         
+        if self.get_taxon(protein) == self.target:
+            return [protein]
+        
         source = self.get_source(source)
         
         if source not in self.homo:
@@ -91,6 +199,10 @@ class ProteinHomology(object):
         if protein in self.homo[source]:
             
             return self.homo[source][protein]
+        
+        else:
+            
+            return []
     
     def homologene_uniprot_dict(self, source):
         """
@@ -99,21 +211,16 @@ class ProteinHomology(object):
         translation.
         """
         
+        source = self.get_source(source)
+        
         self.homo[source] = {}
         
         hge = dataio.homologene_dict(source, self.target, 'entrez')
         hgr = dataio.homologene_dict(source, self.target, 'refseq')
         
-        all_source[source] = set(dataio.all_uniprots(
-            organism = source,
-            swissprot = 'YES'))
+        self.load_proteome(source, self.only_swissprot)
         
-        if not self.only_swissprot:
-            all_source_trembl = dataio.all_uniprots(
-                organism = source, swissprot = 'NO')
-            all_source[source].update(set(all_source_trembl))
-        
-        for u in all_source[source]:
+        for u in self._proteomes[(source, self.only_swissprot)]:
             
             source_e = self.mapper.map_name(
                 u, 'uniprot', 'entrez', source)
@@ -133,50 +240,46 @@ class ProteinHomology(object):
             
             for e in target_e:
                 target_u.update(set(self.mapper.map_name(
-                    e, 'entrez', 'uniprot', target)))
+                    e, 'entrez', 'uniprot', self.target)))
             
             for r in target_r:
                 target_u.update(set(self.mapper.map_name(
-                    e, 'refseqp', 'uniprot', target)))
+                    e, 'refseqp', 'uniprot', self.target)))
             
             target_u = \
                 itertools.chain(
                     *map(
                         lambda tu:
                             self.mapper.map_name(
-                                tu, 'uniprot', 'uniprot', target),
+                                tu, 'uniprot', 'uniprot', self.target),
                         target_u
                     )
                 )
             
             self.homo[source][u] = sorted(list(target_u))
 
-class PtmHomology(ProteinHomology):
+class PtmHomology(ProteinHomology,SequenceContainer):
     
-    __init__(self, target, source = None, only_swissprot = True,
-             mapper = None, seq = None):
+    def __init__(self, target, source = None, only_swissprot = True,
+             mapper = None, strict = True):
         
-        super(PtmHomology, self).__init__(target,
-                                          source,
-                                          only_swissprot,
-                                          mapper)
+        ProteinHomology.__init__(self, target,
+                                       source,
+                                       only_swissprot,
+                                       mapper)
+        
+        SequenceContainer.__init__(self)
+        self.load_seq(taxon = self.target)
         
         self.reptm = re.compile(r'([A-Z\d]{6,10})_([A-Z])(\d*)')
         
-        self.ptm_orthology()
-        self.set_seq(seq)
-    
-    def set_seq(self, seq = None):
+        self.strict = strict
         
-        self.seq = (
-            seq or
-            uniprot_input.swissprot_seq(self.target, isoforms = True)
-        )
+        self.ptm_orthology()
     
     def translate_site(self, protein, res, offset,
-                       source_taxon = None,
                        isoform = 1, typ = 'phosphorylation',
-                       strict = False):
+                       source_taxon = None):
         """
         Translates one PTM site.
         """
@@ -185,9 +288,13 @@ class PtmHomology(ProteinHomology):
         
         self.set_default_source(source_taxon)
         
-        source = self.get_source(source)
+        source = self.get_source(source_taxon)
         
         sourceptm = (protein, isoform, res, offset, source, typ)
+        
+        if self.get_taxon(protein) == self.target:
+            result.add(sourceptm)
+            return result
         
         if sourceptm in self.ptmhomo:
             
@@ -195,20 +302,22 @@ class PtmHomology(ProteinHomology):
                 
                 result = self.ptmhomo[sourceptm]
         
-        if not result and not strict:
+        if not result and not self.strict:
             
-            tsubs = super(PTMHomology, self).translate(protein)
+            tsubs = ProteinHomology.translate(self, protein, source = source)
             
             for tsub in tsubs:
                 
-                if tsub not in self. tseq:
+                se = self.get_seq(tsub)
+                
+                if se is None:
                     continue
                 
                 for toffset in xrange(offset, offset + 3):
                     
-                    for i in self.seq[tsub].isoforms():
+                    for i in se.isoforms():
                         
-                        tres = self.seq[tsub].get(toffset, isoform = i)
+                        tres = se.get(toffset, isoform = i)
                         
                         if tres == res:
                             
@@ -233,37 +342,49 @@ class PtmHomology(ProteinHomology):
                 map(
                     lambda x:
                         intera.Domain(x),
-                    super(PTMHomology, self).translate(domain.protein)
+                    ProteinHomology.translate(
+                        self,
+                        domain.protein,
+                        source = self.get_source()
+                    )
                 )
             )
         )
     
-    def translate_ptm(self, ptm, strict = False):
+    def translate_ptm(self, ptm):
         
         tptms = self.translate_site(ptm.protein,
-                                    ptm.motif.residue.name,
-                                    ptm.motif.residue.number,
-                                    ptm.motif.residue.isoform,
-                                    ptm.typ,
-                                    strict)
+                                    ptm.residue.name,
+                                    ptm.residue.number,
+                                    ptm.residue.isoform,
+                                    ptm.typ)
         
         result = []
         
-        for x in tptms:
+        if self.target in tptms:
             
-            res = intera.Residue(x[3], x[2], x[0], isoform = x[1])
-            start, end, region = (
-                self.tseq[x[0]].get_region(x[3], isoform = x[1])
-            )
-            mot = intera.Motif(x[0], start = start, end = end,
-                               instance = region,
-                               isoform = x[1])
-            
-            ptm = intera.Ptm(x[0], motif = mot, residue = res,
-                             typ = x[5], isoform = x[1],
-                             source = ptm.sources)
-            
-            result.append(ptm)
+            for x in tptms[self.target]:
+                
+                se = self.get_seq(x[0])
+                
+                if (se is None or x[1] not in se.isof) and self.strict:
+                    continue
+                
+                res = intera.Residue(x[3], x[2], x[0], isoform = x[1])
+                start, end, region = (
+                    se.get_region(x[3], isoform = x[1])
+                    if se is not None and x[1] in se.isof
+                    else (None, None, None)
+                )
+                mot = intera.Motif(x[0], start = start, end = end,
+                                instance = region,
+                                isoform = x[1])
+                
+                ptm = intera.Ptm(x[0], motif = mot, residue = res,
+                                typ = x[5], isoform = x[1],
+                                source = ptm.sources)
+                
+                result.append(ptm)
         
         return result
     
@@ -322,7 +443,7 @@ class PtmHomology(ProteinHomology):
         
         elif type(x) in common.charTypes:
             
-            ptm = reptm.match(x)
+            ptm = self.reptm.match(x)
             
             if ptm is not None:
                 
@@ -335,21 +456,21 @@ class PtmHomology(ProteinHomology):
                               '%s_%s%u' % (r[0], r[2], r[3]),
                               result))
             
-        elif type(x) is pypath.intera.Ptm:
+        elif type(x) is intera.Ptm:
             
             result = self.translate_ptm(x)
             
-        elif type(x) is pypath.intera.Domain:
+        elif type(x) is intera.Domain:
             
             result = self.translate_domain(x)
             
-        elif type(x) is pypath.intera.DomainMotif:
+        elif type(x) is intera.DomainMotif:
             
             result = self.translate_domain_motif(x)
         
         return result
     
-    def ptm_orthology():
+    def ptm_orthology(self):
         """
         Creates an orthology translation dict of phosphosites
         based on phosphorylation sites table from PhosphoSitePlus.

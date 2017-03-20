@@ -5741,6 +5741,10 @@ class PyPath(object):
                                             s, p['instance'], self.seq[s].get(
                                                 p['start'], p['end'])))
                 # adding kinase-substrate interactions
+                
+                print(kinase_ups)
+                print(substrate_ups)
+                
                 for k in kinase_ups:
                     for s in substrate_ups:
                         nodes = self.get_node_pair(k, s[0],
