@@ -617,7 +617,8 @@ urls = {
     },
     'matrixdb': {
         'label': 'MatrixDB in house curated interactions, PSI-MI tab format',
-        'url': 'http://matrixdb.ibcp.fr/download/matrixdb_CORE.tab.gz'
+        'old_url': 'http://matrixdb.ibcp.fr/download/matrixdb_CORE.tab.gz',
+        'url': 'http://matrixdb.univ-lyon1.fr/download/matrixdb_CORE.tab.gz'
     },
     'innatedb': {
         'label': 'InnateDB PSI-MI tab',

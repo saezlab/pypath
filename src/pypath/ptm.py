@@ -232,7 +232,7 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         # human leukocyte antigenes result a result an
         # extremely high number of combinations
         if not p['kinase'] or p['substrate'].startswith('HLA'):
-            return []
+            return
         
         if not isinstance(p['kinase'], list):
             p['kinase'] = [p['kinase']]

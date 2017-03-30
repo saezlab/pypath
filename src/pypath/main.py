@@ -328,7 +328,7 @@ class Direction(object):
 
     def tgt(self):
         '''
-        Returns the IDs of the target moleculess in the inter-
+        Returns the IDs of the target molecules in the inter-
         action. Same behaviour as `Direction.src()`.
         '''
         return [
@@ -7289,24 +7289,6 @@ class PyPath(object):
             by_category=by_category,
             sum_row=False,
             **kwargs)
-
-    def load_omnipath(self, pfile=None,
-                      kinase_substrate_extra=False,
-                      remove_htp=True,
-                      htp_threshold=1,
-                      **kwargs):
-        """
-        Loads the OmniPath network the way it has been described in the paper.
-        """
-        
-        self.init_network(lst = data_formats.omnipath, pfile=pfile, **kwargs)
-        
-        if kinase_substrate_extra:
-            self.load_resources(data_formats.ptm_misc)
-        
-        self.third_source_directions()
-        self.remove_htp(threshold=threshold, keep_directed=keep_directed)
-        self.remove_undirected(min_refs=2)
     
     def load_old_omnipath(self,
                           kinase_substrate_extra = False,
