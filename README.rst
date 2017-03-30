@@ -2,7 +2,7 @@ pypath
 ######
 
 
-:note: Pypath supports both Python 2.7 and Python 3.5. In the beginning, pypath has been developed only for Python 2.7. The methods are adjusted to Py3 in arbitrary order, depending on their importance. The vaste majority of the module already has been tested in Py3.
+:note: Pypath supports both Python 2.7 and Python 3.5+. In the beginning, pypath has been developed only for Python 2.7. The methods are adjusted to Py3 in arbitrary order, depending on their importance. The vaste majority of the module already has been tested in Py3.
 
 :contributions: denes@ebi.ac.uk
 :documentation: http://pypath.omnipathdb.org/

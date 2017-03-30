@@ -160,6 +160,9 @@ then
     
     # update repositories
     brew update
+    # installing curl and openssl
+    brew install curl
+    brew install openssl
     # obtaining a recent python distribution from brew:
     brew install $PYTHONNAME
     # optionally install (py)cairo:
@@ -173,6 +176,9 @@ then
     
     # installing another python modules by pip
     $LOCALPIP install --upgrade pip
+    export LIBRARY_PATH=/usr/local/opt/openssl/lib
+    export CPATH=/usr/local/opt/openssl/include
+    $LOCALPIP --no-cache-dir install pycurl
     $LOCALPIP install python-igraph
     $LOCALPIP install pysftp
     $LOCALPIP install $PYFABRIC
@@ -220,7 +226,7 @@ then
         echo -en "\t [ OK ] HomeBrew is available.\n"
     fi
 
-    declare -a formulas=($PYTHONNAME $PYCAIRONAME homebrew/science/igraph graphviz)
+    declare -a formulas=(curl openssl $PYTHONNAME $PYCAIRONAME homebrew/science/igraph graphviz)
 
     for frm in "${formulas[@]}"
     do

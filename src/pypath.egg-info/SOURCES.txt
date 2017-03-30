@@ -24,6 +24,7 @@ src/pypath/giant.py
 src/pypath/go.py
 src/pypath/gr_plot.py
 src/pypath/gsea.py
+src/pypath/homology.py
 src/pypath/ig_drawing.py
 src/pypath/ig_drawing_edge.py
 src/pypath/ig_drawing_vertex.py
@@ -46,6 +47,7 @@ src/pypath/pdb.py
 src/pypath/plot.py
 src/pypath/progress.py
 src/pypath/proteomicsdb.py
+src/pypath/ptm.py
 src/pypath/pyreact.py
 src/pypath/reaction2.py
 src/pypath/reflists.py

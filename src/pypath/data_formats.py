@@ -1035,7 +1035,9 @@ interaction_misc = {
         isDirected=False,
         sign=False,
         ncbiTaxId=9606,
-        inFile='/home/denes/Dokumentumok/pw/data/hi3.tsv',
+        # note: obtain the file yourself, and replace
+        # this location
+        inFile='/home/denes/Documents/pw/data/hi3.tsv',
         references=False,
         header=True,
         extraEdgeAttrs={},

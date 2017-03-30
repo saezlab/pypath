@@ -25,7 +25,8 @@ import pypath.seq as se
 
 
 def all_uniprots(organism=9606, swissprot=None):
-    rev = '' if swissprot is None else ' AND reviewed:%s' % swissprot
+    swissprot = 'YES' if swissprot == True else swissprot
+    rev = '' if not swissprot else ' AND reviewed: %s' % swissprot
     url = urls.urls['uniprot_basic']['url']
     post = {
         'query': 'organism:%s%s' % (str(organism), rev),
