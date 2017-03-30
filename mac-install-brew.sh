@@ -163,6 +163,10 @@ then
     # installing curl and openssl
     brew install curl
     brew install openssl
+    brew install --force libxml2
+    brew install --force libxslt
+    brew link libxml2 --force
+    brew link libxslt --force
     # obtaining a recent python distribution from brew:
     brew install $PYTHONNAME
     # optionally install (py)cairo:
@@ -176,9 +180,17 @@ then
     
     # installing another python modules by pip
     $LOCALPIP install --upgrade pip
-    export LIBRARY_PATH=/usr/local/opt/openssl/lib
+    if [[ `$LOCALPIP show pycurl` ]];
+        then $LOCALPIP uninstall pycurl
+    fi
+    if [[ `$LOCALPIP show lxml` ]];
+        then $LOCALPIP uninstall lxml
+    fi
+    export LD_LIBRARY_PATH=/usr/local/opt/curl/lib
     export CPATH=/usr/local/opt/openssl/include
+    export LIBRARY_PATH=/usr/local/opt/openssl/lib
     $LOCALPIP --no-cache-dir install pycurl
+    STATIC_DEPS=true $LOCALPIP --no-cache-dir install lxml
     $LOCALPIP install python-igraph
     $LOCALPIP install pysftp
     $LOCALPIP install $PYFABRIC
