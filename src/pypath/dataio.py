@@ -6878,3 +6878,13 @@ def homologene_uniprot_dict(source, target, only_swissprot = True, mapper = None
         result[u] = sorted(list(target_u))
     
     return result
+
+def mir2disease_interactions():
+    
+    url = urls.urls['mir2dis']['url']
+    c = curl.Curl(url, silent = True, large = True)
+    
+    for _ in xrange(4):
+        c.result.readline()
+    
+    return [l.decode('iso-8859-1').strip().split('\t') for l in c.result]

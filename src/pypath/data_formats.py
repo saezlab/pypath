@@ -1389,6 +1389,32 @@ transcription_deprecated = {
         extraNodeAttrsA={},
         extraNodeAttrsB={})
 }
+
+'''
+miRNA-target resources
+'''
+mirna_target = {
+    'mir2dis': input_formats.ReadSettings(
+        name="miR2Disease",
+        separator=None,
+        nameColA=0,
+        nameColB=1,
+        nameTypeA="mir-mat-name",
+        nameTypeB="genesymbol",
+        typeA="mirna",
+        typeB="protein",
+        isDirected=True,
+        sign=False,
+        ncbiTaxId=9606,
+        inFile='mir2disease_interactions',
+        interactionType='MTI',
+        references=None,
+        header=False,
+        extraEdgeAttrs={},
+        extraNodeAttrsA={},
+        extraNodeAttrsB={})
+}
+
 '''
 The default set of resources in OmniPath.
 '''

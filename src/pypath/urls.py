@@ -688,6 +688,12 @@ urls = {
     'mirbase' : {
         'label': 'miRBase: miRNA main reference database',
         'aliases': 'ftp://mirbase.org/pub/mirbase/CURRENT/aliases.txt.gz'
+    },
+    'mir2dis': {
+        'label': 'miR2Disease experimentally validated'\
+            'miRNA-target interactions',
+        'url': 'http://watson.compbio.iupui.edu:8080'\
+            '/miR2Disease/download/miRtar.txt'
     }
 }
 

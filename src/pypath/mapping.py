@@ -674,6 +674,14 @@ class Mapper(object):
                                                  'genesymbol5',
                                                  targetNameType,
                                                  ncbi_tax_id)
+        
+        if not len(mappedNames) and nameType == 'mir-mat-name':
+            
+            mappedNames = self._map_name(name,
+                                         'mir-name',
+                                         targetNameType,
+                                         ncbi_tax_id)
+        
         if targetNameType == 'uniprot':
             orig = mappedNames
             mappedNames = self.primary_uniprot(mappedNames)
