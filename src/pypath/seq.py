@@ -15,17 +15,17 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
-#
-# this module provides a class to look up or match
-# residues and regions in sequences of
-# proteins, by default in the canonical
-# sequence, and optionally in other isoforms.
-#
-
 
 class Seq(object):
     
     def __init__(self, protein, sequence, isoform=1):
+        """
+        This class is to look up or match
+        residues and regions in sequences of
+        proteins, by default in the canonical
+        sequence, and optionally in other isoforms.
+        """
+        
         self.isof = {}
         self.protein = protein
         self.canonical = isoform

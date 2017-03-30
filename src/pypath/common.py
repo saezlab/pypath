@@ -441,6 +441,98 @@ def dict_sym_diff(d1, d2):
             diff[k] = d1[k] ^ d2[k]
     return diff
 
+def swap_dict(d):
+    """
+    Interchanges the keys and values of a dict.
+    Results dict of sets even if the values are strings or ints
+    and are unique.
+    """
+    
+    _d = {}
+    
+    for key, vals in iteritems(d):
+        
+        vals = [vals] if type(vals) in simpleTypes else vals
+        
+        for val in vals:
+            
+            if val not in _d:
+                _d[val] = set([])
+            
+            _d[val].add(key)
+    
+    return _d
+
+def swap_dict_simple(d):
+    """
+    Interchanges the keys and values of a dict.
+    Assumes the values are unique and hashable,
+    otherwise overwrites duplicates or raises error.
+    """
+    
+    return dict((v, k) for k, v in iteritems(d))
+
+def join_dicts(d1, d2, _from = 'keys', to = 'values'):
+    
+    result = {}
+    
+    if to == 'keys':
+        
+        d2 = swap_dict(d2)
+    
+    for key1, val1 in iteritems(d1):
+        
+        sources = (
+            [key1] if _from == 'keys' else
+            [val1] if type(val1) in simpleTypes else
+            val1)
+        
+        meds = ([key1] if _from == 'values' else
+            [val1] if type(val1) in simpleTypes else
+            val1)
+        
+        targets = set([])
+        
+        for med in meds:
+            
+            if med in d2:
+                
+                if type(targets) is list:
+                    targets.append(d2[med])
+                elif type(d2[med]) in simpleTypes:
+                    targets.add(d2[med])
+                elif type(d2[med]) is list:
+                    targets.update(set(d2[med]))
+                elif type(d2[med]) is set:
+                    targets.update(d2[med])
+                elif d2[med].__hash__ is not None:
+                    targets.add(d2[med])
+                else:
+                    targets = list(targets)
+                    targets.append(d2[med])
+        
+        for source in sources:
+            
+            if type(targets) is list:
+                
+                if source not in result:
+                    result[source] = []
+                
+                result[source].extend(targets)
+                
+                
+            elif type(targets) is set:
+                
+                if source not in result:
+                    result[source] = set([])
+                
+                result[source].update(targets)
+    
+    if all(len(x) <= 1 for x in result.values()):
+        
+        result = dict((k, list(v)[0]) for k, v in iteritems(result) if len(v))
+    
+    return result
 
 class Namespace(object):
     pass
@@ -548,3 +640,9 @@ psite_mod_types2 = [
         ('sn', 'nitrosylation'),
         ('ca', 'caspase-cleavage')
     ]
+
+mirbase_taxids = {
+    9606: 'hsa',
+    10090: 'mmu',
+    10116: 'rno'
+}
