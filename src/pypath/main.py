@@ -605,7 +605,8 @@ class PyPath(object):
     default_name_type = {
         'protein': 'uniprot',
         'mirna': 'mirbase',
-        'drug': 'chembl'
+        'drug': 'chembl',
+        'lncrna': 'lncrna-genesymbol'
     }
 
     def __init__(self,
@@ -848,7 +849,9 @@ class PyPath(object):
             return (self.get_taxon(tax_dict['A'], fields),
                     self.get_taxon(tax_dict['B'], fields))
         else:
-            if fields[tax_dict['col']] in tax_dict['dict']:
+            if 'dict' not in tax_dict:
+                return int(fields[tax_dict['col']])
+            elif fields[tax_dict['col']] in tax_dict['dict']:
                 return tax_dict['dict'][fields[tax_dict['col']]]
             else:
                 return None
@@ -1100,9 +1103,17 @@ class PyPath(object):
                         silent=False,
                         large=True,
                         cache=curl_use_cache)
-                    infile = c.result
+                    infile = c.result.read()
+                    if type(infile) is bytes:
+                        try:
+                            infile = infile.decode('utf-8')
+                        except:
+                            try:
+                                infile = infile.decode('iso-8859-1')
+                            except:
+                                pass
                     infile = [
-                        x for x in infile.read().replace('\r', '').split('\n')
+                        x for x in infile.replace('\r', '').split('\n')
                         if len(x) > 0
                     ]
                     self.ownlog.msg(2, "Retrieving data from%s ..." %
@@ -1231,18 +1242,43 @@ class PyPath(object):
                     if len(refs) == 0 and settings.must_have_references:
                         rFiltered += 1
                         continue
+                    
                     # to give an easy way:
                     if isinstance(settings.ncbiTaxId, int):
                         taxA = settings.ncbiTaxId
                         taxB = settings.ncbiTaxId
+                        
                     # to enable more sophisticated inputs:
                     elif isinstance(settings.ncbiTaxId, dict):
+                        
                         taxx = self.get_taxon(settings.ncbiTaxId, line)
                         if isinstance(taxx, tuple):
                             taxA = taxx[0]
                             taxB = taxx[1]
                         else:
                             taxA = taxB = taxx
+                        
+                        taxdA = (
+                            settings.ncbiTaxId['A']
+                            if 'A' in settings.ncbiTaxId else
+                            settings.ncbiTaxId)
+                        taxdB = (
+                            settings.ncbiTaxId['B']
+                            if 'B' in settings.ncbiTaxId else
+                            settings.ncbiTaxId)
+                        
+                        if (('include' in taxdA and
+                            taxA not in taxdA['include']) or
+                            ('include' in taxdB and
+                            taxB not in taxdB['include']) or
+                            ('exclude' in taxdA and
+                            taxA in taxdA['exclude']) or
+                            ('exclude' in taxdB and
+                            taxB in taxdB['exclude'])):
+                            
+                            tFiltered += 1
+                            continue
+                        
                     else:
                         taxA = taxB = self.ncbi_tax_id
                     if taxA is None or taxB is None:
@@ -2906,23 +2942,35 @@ class PyPath(object):
             self.genesymbol_labels(graph=self.dgraph, remap_all=remap_all)
         g = self.graph if graph is None else graph
         defaultNameType = self.default_name_type["protein"]
-        geneSymbol = "genesymbol"
+        labelNameTypes = {'protein': 'genesymbol',
+                          'mirna': 'mir-mat-name'}
+        
         if 'label' not in g.vs.attributes():
             remap_all = True
+        
         labels = [
             None if remap_all or v['label'] == v['name'] else v['label']
             for v in g.vs
         ]
+        
         for v, l, i in zip(g.vs, labels, xrange(g.vcount())):
-            if l is None and v['type'] == 'protein':
-                label = self.mapper.map_name(v['name'],
-                                             defaultNameType,
-                                             geneSymbol,
-                                             ncbi_tax_id = v['ncbi_tax_id'])
-                if len(label) == 0:
+            
+            if l is None:
+                
+                label = []
+                
+                if v['type'] in labelNameTypes:
+                    
+                    label = self.mapper.map_name(v['name'],
+                                                self.default_name_type[v['type']],
+                                                labelNameTypes[v['type']],
+                                                ncbi_tax_id = v['ncbi_tax_id'])
+                
+                if not len(label):
                     labels[i] = v['name']
                 else:
                     labels[i] = label[0]
+            
         g.vs['label'] = labels
 
     def network_stats(self, outfile=None):

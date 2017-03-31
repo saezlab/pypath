@@ -474,7 +474,8 @@ class Mapper(object):
             'gi': 'GI',
             'refseqp': 'RefSeq',
             'refseqn': 'RefSeq_NT',
-            'ensg': 'Ensembl',
+            'ensembl': 'Ensembl',
+            'ensg': 'Ensembl Genome',
             'ensp': 'Ensembl_PRO',
             'enst': 'Ensembl_TRS',
             'hgnc': 'HGNC'

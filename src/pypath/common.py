@@ -461,6 +461,9 @@ def swap_dict(d):
             
             _d[val].add(key)
     
+    if all(len(v) <= 1 for v in _d.values()):
+        _d = dict((k, list(v)[0]) for k, v in iteritems(_d) if len(v))
+    
     return _d
 
 def swap_dict_simple(d):
@@ -644,5 +647,6 @@ psite_mod_types2 = [
 mirbase_taxids = {
     9606: 'hsa',
     10090: 'mmu',
-    10116: 'rno'
+    10116: 'rno',
+    7227: 'dme'
 }

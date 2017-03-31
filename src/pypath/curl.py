@@ -109,6 +109,7 @@ CACHEDEL = False
 CACHEPRINT = False
 DRYRUN = False
 PRESERVE = False
+DEBUG = False
 
 LASTCURL = None
 
@@ -415,6 +416,55 @@ class preserve_off(_global_context_off):
     def __init__(self):
         super(preserve_off, self).__init__('PRESERVE')
 
+class debug_on(_global_context_on):
+    """
+    This is a context handler which results pypath.curl.Curl() to print
+    debug information. 
+    This is useful if you have some issue with `Curl`, and you want to
+    see what`s going on.
+
+    Behind the scenes it sets the value of the `pypath.curl.DEBUG`
+    module level variable to `True` (by default it is `False`).
+
+    Example: ::
+
+        import pypath
+        from pypath import curl, data_formats
+
+        pa = pypath.PyPath()
+
+        with curl.cache_debug_on():
+            pa.load_resources({'signor': data_formats.pathway['signor']})
+    """
+
+    def __init__(self):
+        super(debug_on, self).__init__('DEBUG')
+
+
+class debug_off(_global_context_off):
+    """
+    This is a context handler which avoids pypath.curl.Curl() to print
+    debug information.
+    By default it does not do this, so this context only restores the
+    default.
+
+    Behind the scenes it sets the value of the `pypath.curl.DEBUG`
+    module level variable to `False`.
+
+    Example: ::
+
+        import pypath
+        from pypath import curl, data_formats
+
+        pa = pypath.PyPath()
+
+        with curl.cache_debug_off():
+            pa.load_resources({'signor': data_formats.pathway['signor']})
+    """
+
+    def __init__(self):
+        super(debug_off, self).__init__('DEBUG')
+
 
 class RemoteFile(object):
     def __init__(self,
@@ -636,7 +686,7 @@ class Curl(FileOpener):
         self.get = get
         self.large = large
         self.silent = silent
-        self.debug = debug
+        self.debug = debug or DEBUG
         self.url = url
         self.get = get
         self.force_quote = force_quote

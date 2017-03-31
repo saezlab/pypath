@@ -98,6 +98,7 @@ class FileMapping(object):
 
 
 class UniprotMapping(object):
+    
     def __init__(self, nameType, bi=False, ncbi_tax_id=9606, swissprot='yes'):
         '''
         Defines an ID conversion table to retrieve from UniProt.

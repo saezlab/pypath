@@ -56,7 +56,7 @@ def get_mirbase_aliases(organism = 9606):
         mborganism = organism
     elif organism not in common.mirbase_taxids:
         raise ValueError('Organism not known: %u. Try to pass miRBase '
-                         'taxon prefix as string, e.g. `hsa`.')
+                         'taxon prefix as string, e.g. `hsa`.' % organism)
     else:
         mborganism = common.mirbase_taxids[organism]
     
@@ -106,6 +106,32 @@ def mirbase_precursor(organism = 9606):
         for mpre in mpres:
             
             yield mi, mpre
+
+def mirbase_precursor_to_mature(organism = 9606):
+    
+    pre = mirbase_precursor(organism)
+    ids = mirbase_ids(organism)
+    
+    _ids = {}
+    
+    for mpre, mmat in ids:
+        
+        if mpre not in _ids:
+            _ids[mpre] = set([])
+        
+        _ids[mpre].add(mmat)
+    
+    result = {}
+    
+    for prename, mpres in pre:
+        
+        for mpre in mpres:
+            
+            if mpre in _ids:
+                
+                for mmat in _ids[mpre]:
+                    
+                    yield prename, mmat
 
 def mirbase_ids(organism = 9606):
     

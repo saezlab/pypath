@@ -160,10 +160,13 @@ mapListUniprot = {
 mapListMirbase = {
     ('mir-mat-name', 'mirbase'): input_formats.FileMapping(
         'mirbase_mature', 1, 0, None, header = 0),
-    ('mir-name', 'mirbase'): input_formats.FileMapping(
+    ('mir-name', 'mir-pre'): input_formats.FileMapping(
         'mirbase_precursor', 1, 0, None, header = 0),
     ('mir-pre', 'mirbase'): input_formats.FileMapping(
-        'mirbase_ids', 1, 0, None, header = 0)
+        'mirbase_ids', 1, 0, None, header = 0),
+    ('mir-name', 'mirbase'): input_formats.FileMapping(
+        'mirbase_precursor_to_mature',
+        1, 0, None, header = 0),
 }
 
 mapListBasic = {
