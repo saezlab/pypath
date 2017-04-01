@@ -60,6 +60,7 @@ class FileMapping(object):
                  bi=False,
                  ncbi_tax_id=9606,
                  typ='protein'):
+        
         self.input = input
         self.oneCol = oneCol
         self.twoCol = twoCol
@@ -68,10 +69,15 @@ class FileMapping(object):
         self.typ = typ
         self.bi = bi
         self.ncbi_tax_id = ncbi_tax_id
+        self.inputArgs = {'organism': ncbi_tax_id}
     
     def set_organism(self, ncbi_tax_id):
         other_organism = copy.deepcopy(self)
         other_organism.ncbi_tax_id = ncbi_tax_id
+        
+        if 'organism' in other_organism.inputArgs:
+            other_organism.inputArgs['organism'] = ncbi_tax_id
+        
         return other_organism
 
 # class UniprotMapping(object):
@@ -92,6 +98,7 @@ class FileMapping(object):
 
 
 class UniprotMapping(object):
+    
     def __init__(self, nameType, bi=False, ncbi_tax_id=9606, swissprot='yes'):
         '''
         Defines an ID conversion table to retrieve from UniProt.

@@ -1,10 +1,10 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2015 - EMBL-EBI
+#  Copyright (c) 2014-2017 - EMBL-EBI
 #
 #  File author(s): Dénes Türei (denes@ebi.ac.uk)
 #
@@ -39,6 +39,7 @@ import pypath.mysql_connect as mysql_connect
 
 
 class MysqlRunner(object):
+    
     def __init__(self,
                  param,
                  cursor='serverside',
@@ -206,7 +207,7 @@ class MysqlRunner(object):
             except MySQLdb.Error as e:
                 emsg = 'MySQL error occured. See `mysql.error` for details.'
                 self.send_error(emsg)
-                out = "MySQL Error [%d]: %s\n\n" % (e.args[0], e.args[1])
+                out  = "MySQL Error [%d]: %s\n\n" % (e.args[0], e.args[1])
                 out += "Failed to execute query:\n\n"
                 out += query
                 self.lock.acquire()

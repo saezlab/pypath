@@ -3286,6 +3286,7 @@ def get_acsn():
 
 
 def get_abs():
+    
     result = []
     url = urls.urls['abs']['url']
     c = curl.Curl(url, silent=False)
@@ -3299,28 +3300,38 @@ def get_abs():
 
 
 def get_pazar():
+    
     url = urls.urls['pazar']['url']
     c = curl.Curl(url, silent=False)
     data = c.result
     return [
-        map(x.split('\t').__getitem__, (1, 4, 10))
+        list(map(x.split('\t').__getitem__, (1, 4, 10)))
         for x in ''.join(data.values()).split('\n') if len(x) > 0
     ]
 
 
 def get_htri():
+    
     c = curl.Curl(
         urls.urls['htri']['url'],
         init_url=urls.urls['htri']['init_url'],
         silent=False)
     data = c.result
+    
     return [
-        map(x.split(';').__getitem__, (1, 3, 6)) for x in data.split('\n')
+        list(map(x.split(';').__getitem__, (1, 3, 6)))
+        for x in data.split('\n')
         if len(x) > 0
     ][1:]
 
 
-def get_oreganno_old(organism='Homo sapiens'):
+def get_oreganno_old(organism=9606):
+    
+    taxids = common.swap_dict(common.taxids)
+    
+    if organism in taxids:
+        organism = taxids[organism]
+    
     nsep = re.compile(r'([-A-Za-z0-9]{3,})[\s/\(]*.*')
     nrem = re.compile(r'[-/]')
     result = []
@@ -3343,33 +3354,44 @@ def get_oreganno_old(organism='Homo sapiens'):
             ])
     return result
 
-
-def get_oreganno(organism='Homo sapiens'):
+def get_oreganno(organism=9606):
+    
+    taxids = common.phosphoelm_taxids
+    
+    if organism in taxids:
+        organism = taxids[organism]
+    
     nsep = re.compile(r'([-A-Za-z0-9]{3,})[\s/\(]*.*')
     nrem = re.compile(r'[-/]')
     result = []
+    
     url = urls.urls['oreganno']['url']
     c = curl.Curl(url, silent=False, large=True)
     data = c.result
     null = data.readline()
     del null
+    
     for l in data:
+        
         l = l.decode('utf-8')
-        if len(l) > 0:
+        
+        if len(l):
+            
             l = [x.strip() for x in l.split('\t')]
-            if l[1] == organism and \
-                l[3] == 'TRANSCRIPTION FACTOR BINDING SITE' and \
-                l[2] == 'POSITIVE OUTCOME' and \
-                    not l[4] == 'N/A' and not l[7] == 'N/A':
-                result.append([
+            
+            if (l[1] == organism and
+                l[3] == 'TRANSCRIPTION FACTOR BINDING SITE' and
+                l[2] == 'POSITIVE OUTCOME' and
+                l[4] != 'N/A' and
+                l[7] != 'N/A'):
+                
+                yield (
                     l[7]
                     if len(l[7]) < 3 else nrem.sub('',
                                                    nsep.findall(l[7])[0]), l[4]
                     if len(l[4]) < 3 else nrem.sub('', nsep.findall(l[4])[0]),
                     l[11] if l[11] != 'N/A' else ''
-                ])
-    return result
-
+                )
 
 def get_cpdb_ltp():
     return get_cpdb(
@@ -6878,3 +6900,153 @@ def homologene_uniprot_dict(source, target, only_swissprot = True, mapper = None
         result[u] = sorted(list(target_u))
     
     return result
+
+def mir2disease_interactions():
+    
+    url = urls.urls['mir2dis']['url']
+    c = curl.Curl(url, silent = True, large = True)
+    
+    for _ in xrange(4):
+        c.result.readline()
+    
+    return [l.decode('iso-8859-1').strip().split('\t') for l in c.result]
+
+def mirdeathdb_interactions():
+    
+    url = urls.urls['mirdeathdb']['url']
+    c = curl.Curl(url, silent = False, large = True)
+    
+    _ = c.result.readline()
+    
+    for l in c.result:
+        
+        l = l.decode('utf-8').strip().split('\t')
+        
+        if len(l) < 11:
+            continue
+        
+        mirnas = l[2].replace('"', '').split(',')
+        organism = int(l[9])
+        pubmed = l[8]
+        geneid = l[10]
+        function = '%s_%s' % (l[4], l[5])
+        
+        for mirna in mirnas:
+            
+            yield (mirna, geneid, organism, pubmed, function)
+
+def mirecords_interactions():
+    
+    url = urls.urls['mirecords']['url']
+    c = curl.Curl(url, silent = False, large = True)
+    
+    tbl = read_xls(c.fileobj.name)
+    
+    c.close()
+    
+    return (
+        (l[6], l[3], l[2], l[1], l[5], l[0].split('.')[0])
+        for l in
+        ([f.strip() for f in ll] for ll in tbl[1:])
+    )
+
+def mirtarbase_interactions():
+    
+    url = urls.urls['mirtarbase']['strong']
+    c = curl.Curl(url, silent = False, large = True)
+    
+    tbl = read_xls(c.fileobj.name)
+    
+    c.close()
+    
+    for i in xrange(len(tbl)):
+        tbl[i][4] = tbl[i][4].split('.')[0]
+        tbl[i][8] = tbl[i][8].split('.')[0]
+    
+    return tbl[1:]
+
+def lncdisease_interactions():
+    
+    url = urls.urls['lncdisease']['url']
+    c = curl.Curl(url, silent = False, large = True)
+    
+    for l in c.result:
+        
+        l = l.decode('utf-8').strip().split('\t')
+        
+        yield (l[1],
+               l[2],
+               l[3].split('-')[0],
+               l[3].split('-')[1] if '-' in l[3] else '',
+               l[4].lower(),
+               l[6].lower(),
+               l[9])
+
+def lncrnadb_interactions():
+    
+    renondigit = re.compile(r'[^\d]+')
+    
+    url = urls.urls['lncrnadb']['url']
+    c = curl.Curl(url, silent = False, large = True,
+                  encoding = 'utf-8')
+    
+    b = bs4.BeautifulSoup(c.result, 'lxml')
+    
+    for res in b.findAll('results'):
+        
+        lncrna = res.find('nomenclature').find('name').text
+        
+        for sp in res.find('species').findAll('entry'):
+        
+            spec = sp.attrs['species'].split('(')[0].strip()
+            
+            for assoc in res.find('association').findAll('association'):
+                
+                partner  = assoc.find('componentid').text
+                typ      = assoc.find('componenttype').text.lower()
+                pmid     = renondigit.sub('', assoc.find('pubmedid').text)
+                
+                yield (lncrna, partner, typ, spec, pmid)
+
+def transmir_interactions():
+    
+    url = urls.urls['transmir']['url']
+    c = curl.Curl(url, silent = False, large = True,
+                  encoding = 'utf-8')
+    
+    _ = c.result.readline()
+    
+    taxids = common.join_dicts(
+        common.taxids,
+        common.mirbase_taxids,
+        _from = 'values')
+    
+    for l in c.result:
+        
+        l = l.decode('iso-8859-1').strip().split('\t')
+        
+        if len(l) < 9:
+            print(l)
+            continue
+        
+        l[3] = '%s%s' % (
+            '%s-' % taxids[l[9]] if len(l) >= 10 and l[9] in taxids else '',
+            l[3])
+        
+        yield (l[0], l[1], l[3], l[6], l[7],
+               l[8].lower(),
+               l[9] if len(l) >= 10 else '')
+
+def encode_tf_mirna_interactions():
+    
+    url = urls.urls['encode']['tf-mirna']
+    c = curl.Curl(url, silent = False, large = True,
+                  encoding = 'ascii')
+    
+    for l in c.result:
+        
+        l = l.decode('ascii').strip().split()
+        
+        if l[1] == '(TF-miRNA)':
+            
+            yield (l[0], l[2])

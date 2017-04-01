@@ -1312,7 +1312,7 @@ transcription = {
         nameColA=0,
         nameColB=1,
         nameTypeA="enst",
-        nameTypeB="ensg",
+        nameTypeB="ensembl",
         typeA="protein",
         typeB="protein",
         isDirected=True,
@@ -1389,6 +1389,205 @@ transcription_deprecated = {
         extraNodeAttrsA={},
         extraNodeAttrsB={})
 }
+
+'''
+miRNA-target resources
+'''
+mirna_target = {
+    'mir2dis': input_formats.ReadSettings(
+        name="miR2Disease",
+        separator=None,
+        nameColA=0,
+        nameColB=1,
+        nameTypeA="mir-mat-name",
+        nameTypeB="genesymbol",
+        typeA="mirna",
+        typeB="protein",
+        isDirected=True,
+        sign=False,
+        ncbiTaxId=9606,
+        inFile='mir2disease_interactions',
+        interactionType='MTI',
+        references=None,
+        header=False,
+        extraEdgeAttrs={},
+        extraNodeAttrsA={},
+        extraNodeAttrsB={}),
+    'mirdeath': input_formats.ReadSettings(
+        name="miRDeathDB",
+        separator=None,
+        nameColA=0,
+        nameColB=1,
+        nameTypeA="mirbase",
+        nameTypeB="entrez",
+        typeA="mirna",
+        typeB="protein",
+        isDirected=True,
+        sign=False,
+        ncbiTaxId={'col': 2,
+                   'include': set([9606])},
+        inFile='mirdeathdb_interactions',
+        interactionType='MTI',
+        references=3,
+        header=False,
+        extraEdgeAttrs={'mirdeathdb_function': 4},
+        extraNodeAttrsA={},
+        extraNodeAttrsB={}),
+    'mirecords': input_formats.ReadSettings(
+        name="miRecords",
+        separator=None,
+        nameColA=0,
+        nameColB=2,
+        nameTypeA="mir-mat-name",
+        nameTypeB="genesymbol",
+        typeA="mirna",
+        typeB="protein",
+        isDirected=True,
+        sign=False,
+        ncbiTaxId={'A': {
+                'col': 3,
+                'dict': common.swap_dict(common.phosphoelm_taxids),
+                'include': set([9606])
+            },
+            'B': {
+                'col': 4,
+                'dict': common.swap_dict(common.phosphoelm_taxids),
+                'include': set([9606])
+            }},
+        inFile='mirecords_interactions',
+        interactionType='MTI',
+        references=5,
+        header=False,
+        extraEdgeAttrs={'mirdeathdb_function': 4},
+        extraNodeAttrsA={},
+        extraNodeAttrsB={}),
+    'mirtarbase': input_formats.ReadSettings(
+        name="miRTarBase",
+        separator=None,
+        nameColA=1,
+        nameColB=3,
+        nameTypeA="mir-mat-name",
+        nameTypeB="genesymbol",
+        typeA="mirna",
+        typeB="protein",
+        isDirected=True,
+        sign=False,
+        ncbiTaxId={'A': {
+                'col': 2,
+                'dict': common.swap_dict(common.phosphoelm_taxids),
+                'include': set([9606])
+            },
+            'B': {
+                'col': 5,
+                'dict': common.swap_dict(common.phosphoelm_taxids),
+                'include': set([9606])
+            }},
+        positiveFilters=[(7, 'Functional MTI')],
+        inFile='mirtarbase_interactions',
+        interactionType='MTI',
+        references=8,
+        header=False,
+        extraEdgeAttrs={'mirtarbase_evidence': (6, '//')},
+        extraNodeAttrsA={},
+        extraNodeAttrsB={})
+}
+
+tf_mirna = {
+    'transmir': input_formats.ReadSettings(
+        name="TransmiR",
+        separator=None,
+        nameColA=0,
+        nameColB=2,
+        nameTypeA="genesymbol",
+        nameTypeB="mir-mat-name",
+        typeA="protein",
+        typeB="mirna",
+        isDirected=True,
+        sign=(4, 'activation', 'repression'),
+        ncbiTaxId= {
+                'col': 6,
+                'dict': common.swap_dict(common.taxids),
+                'include': set([9606])
+            },
+        inFile='transmir_interactions',
+        interactionType='TFMIRNA',
+        references=5,
+        header=False,
+        extraEdgeAttrs={},
+        extraNodeAttrsA={},
+        extraNodeAttrsB={}),
+    'encode': input_formats.ReadSettings(
+        name="ENCODE_tf-mirna",
+        separator=None,
+        nameColA=0,
+        nameColB=1,
+        nameTypeA="genesymbol",
+        nameTypeB="mir-mat-name",
+        typeA="protein",
+        typeB="mirna",
+        isDirected=True,
+        sign=False,
+        ncbiTaxId=9606,
+        inFile='encode_tf_mirna_interactions',
+        interactionType='TFMIRNA',
+        references=None,
+        header=False,
+        extraEdgeAttrs={},
+        extraNodeAttrsA={},
+        extraNodeAttrsB={})
+}
+
+lncrna_protein = {
+    'lncdisease': input_formats.ReadSettings(
+        name="LncRNADisease",
+        separator=None,
+        nameColA=0,
+        nameColB=1,
+        nameTypeA="lncrna-genesymbol",
+        nameTypeB="genesymbol",
+        typeA="lncrna",
+        typeB="protein",
+        isDirected=True,
+        sign=False,
+        ncbiTaxId= {
+                'col': 5,
+                'dict': common.swap_dict(common.taxids),
+                'include': set([9606])
+            },
+        positiveFilters=[(2, 'RNA'), (3, 'Protein')],
+        inFile='lncdisease_interactions',
+        interactionType='LNCRP',
+        references=6,
+        header=False,
+        extraEdgeAttrs={'lncrnadisease_mechanism': 4},
+        extraNodeAttrsA={},
+        extraNodeAttrsB={}),
+    'lncrnadb': input_formats.ReadSettings(
+        name="lncrnadb",
+        separator=None,
+        nameColA=0,
+        nameColB=1,
+        nameTypeA="lncrna-genesymbol",
+        nameTypeB="genesymbol",
+        typeA="lncrna",
+        typeB="protein",
+        isDirected=True,
+        sign=False,
+        ncbiTaxId= {
+                'col': 3,
+                'dict': common.swap_dict(common.phosphoelm_taxids),
+                'include': set([9606])
+            },
+        positiveFilters=[(2, 'protein')],
+        inFile='lncrnadb_interactions',
+        interactionType='LNCRP',
+        references=4,
+        header=False,
+        extraEdgeAttrs={},
+        extraNodeAttrsA={},
+        extraNodeAttrsB={})
+}
+
 '''
 The default set of resources in OmniPath.
 '''

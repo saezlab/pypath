@@ -684,6 +684,53 @@ urls = {
     'homologene': {
         'label': 'NCBI HomoloGene data, recent release',
         'url': 'ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/homologene.data'
+    },
+    'mirbase' : {
+        'label': 'miRBase: miRNA main reference database',
+        'aliases': 'ftp://mirbase.org/pub/mirbase/CURRENT/aliases.txt.gz'
+    },
+    'mir2dis': {
+        'label': 'miR2Disease experimentally validated'\
+            'miRNA-target interactions',
+        'url': 'http://watson.compbio.iupui.edu:8080'\
+            '/miR2Disease/download/miRtar.txt'
+    },
+    'mirdeathdb': {
+        'label': 'miRDeathDB experimentally verified'\
+            'miRNA-target interactions',
+        'url': 'http://www.rna-world.org/mirdeathdb/data'\
+            '/miRDeathDB_all_data.txt'
+    },
+    'mirecords': {
+        'label': 'miRecords experimentally validated'\
+            'miRNA-target interactions',
+        'url': 'http://c1.accurascience.com/miRecords/download_data.php?v=4'
+    },
+    'mirtarbase': {
+        'label': 'miRTarBase experimentally validated'\
+            'miRNA-target interactions',
+        'strong': 'http://mirtarbase.mbc.nctu.edu.tw/cache/download/'\
+            '6.1/miRTarBase_SE_WR.xls',
+        'all': 'http://mirtarbase.mbc.nctu.edu.tw/cache/download/'\
+            '6.1/miRTarBase_MTI.xlsx'
+    },
+    'lncdisease': {
+        'label': 'lncRNA and disease database: experimentally '\
+            'verified lncRNA interactions',
+        'url': 'http://210.73.221.6/files/images/ldd/data2.txt'
+    },
+    'lncrnadb': {
+        'label': 'Literature curated lncRNA interactions',
+        'url': 'http://lncrna.com/rest/all/nomenclature/species/association'
+    },
+    'transmir': {
+        'label': 'Literature curated TF-miRNA interactions',
+        'url': 'http://www.cuilab.cn/files/images/transmir/'\
+            'transmir_v1.2.txt'
+    },
+    'encode': {
+        'label': 'Interaction data from the Nature ENCODE project',
+        'tf-mirna': 'http://encodenets.gersteinlab.org/enets10.TF-miRNA.txt'
     }
 }
 
