@@ -5790,9 +5790,6 @@ class PyPath(object):
                                                 p['start'], p['end'])))
                 # adding kinase-substrate interactions
                 
-                print(kinase_ups)
-                print(substrate_ups)
-                
                 for k in kinase_ups:
                     for s in substrate_ups:
                         nodes = self.get_node_pair(k, s[0],
@@ -7353,7 +7350,7 @@ class PyPath(object):
     
     def load_omnipath(self,
                       kinase_substrate_extra = False,
-                      remove_htp = False,
+                      remove_htp = True,
                       htp_threshold = 1,
                       keep_directed = True,
                       min_refs_undirected = 2,
