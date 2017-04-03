@@ -2345,15 +2345,15 @@ class PyPath(object):
             return nodes
 
     def all_between(self, nameA, nameB):
-        '''
+        """
         Returns all edges between two given vertex names. Similar to
         straight_between(), but checks both directions, and returns
         list of edge ids in [undirected, straight, reversed] format,
         for both nameA -> nameB and nameB -> nameA edges.
-        '''
+        """
         g = self.graph
         edges = {'ab': [None, None, None], 'ba': [None, None, None]}
-        eid = self.edge_exists(self, nameA, nameB)
+        eid = self.edge_exists(nameA, nameB)
         if isinstance(eid, int):
             if g.es[eid]['dirs'].get_dir('undirected'):
                 edges['ab'][0] = eid
@@ -4508,8 +4508,8 @@ class PyPath(object):
 
     dups = duniprots
 
-    def protein(self, identifier):
-        '''
+    def get_node(self, identifier):
+        """
         Returns ``igraph.Vertex()`` object if the identifier
         is a valid vertex index in the default undirected graph,
         or a UniProt ID or GeneSymbol which can be found in the
@@ -4517,20 +4517,25 @@ class PyPath(object):
 
         @identifier : int, str
             Vertex index (int) or GeneSymbol (str) or UniProt ID (str).
-        '''
+        """
+        
         graph = self._get_undirected()
+        
         return graph.vs[identifier] \
             if isinstance(identifier, int) and identifier < graph.vcount() \
             else graph.vs[self.nodDct[identifier]] \
             if identifier in self.nodDct else \
             graph.vs[self.labDct[identifier]] \
             if identifier in self.labDct else None
+    
+    # synonyms
+    v = get_node
+    protein = get_node
+    p = get_node
 
-    p = protein
-
-    def dprotein(self, identifier):
+    def get_node_d(self, identifier):
         '''
-        Same as ``PyPath.protein``, just for the directed graph.
+        Same as ``PyPath.get_node``, just for the directed graph.
         Returns ``igraph.Vertex()`` object if the identifier
         is a valid vertex index in the default directed graph,
         or a UniProt ID or GeneSymbol which can be found in the
@@ -4546,18 +4551,26 @@ class PyPath(object):
             if identifier in self.dnodDct else \
             dgraph.vs[self.dlabDct[identifier]] \
             if identifier in self.dlabDct else None
+    
+    # synonyms
+    dv = get_node_d
+    dp = get_node_d
+    protein = get_node_d
 
-    dp = dprotein
+    def get_nodes(self, identifiers):
+        return filter(lambda v: v is not None, map(self.get_node, identifiers))
 
-    def proteins(self, proteins):
-        return filter(lambda v: v is not None, map(self.protein, proteins))
+    vs = get_nodes
+    proteins = get_nodes
+    ps = get_nodes
 
-    ps = proteins
-
-    def dproteins(self, proteins):
-        return filter(lambda v: v is not None, map(self.dprotein, proteins))
-
-    dps = dproteins
+    def get_nodes_d(self, identifiers):
+        return filter(lambda v: v is not None, map(self.get_node_d, identifiers))
+    
+    # these are just synonyms
+    dvs = get_nodes_d
+    dps = get_nodes_d
+    dproteins = get_nodes_d
 
     def up_edge(self, source, target, directed=True):
         '''
@@ -4601,7 +4614,7 @@ class PyPath(object):
                 return self.graph.es[eid]
         return None
 
-    def protein_edge(self, source, target, directed=True):
+    def get_edge(self, source, target, directed=True):
         '''
         Returns ``igraph.Edge`` object if an edge exist between
         the 2 proteins, otherwise ``None``.
@@ -4613,16 +4626,19 @@ class PyPath(object):
         @directed : bool
             To be passed to igraph.Graph.get_eid()
         '''
-        v_source = self.protein(source) \
-            if not self.graph.is_directed() else self.dprotein(source)
-        v_target = self.protein(target) \
-            if not self.graph.is_directed() else self.dprotein(target)
+        v_source = self.get_node(source) \
+            if not self.graph.is_directed() else self.get_node_d(source)
+        v_target = self.get_node(target) \
+            if not self.graph.is_directed() else self.get_node_d(target)
         if v_source is not None and v_target is not None:
             eid = self.graph.get_eid(
                 v_source.index, v_target.index, directed=directed, error=False)
             if eid != -1:
                 return self.graph.es[eid]
         return None
+    
+    # synonyms
+    protein_edge = get_edge
 
     def _has_directed(self):
         if self._directed is None:
@@ -4696,13 +4712,13 @@ class PyPath(object):
         return _NamedVertexSeq(vs, self.dnodNam, self.dnodLab)
 
     def affected_by(self, identifier):
-        vrtx = self.dprotein(identifier)
+        vrtx = self.get_node_d(identifier)
         if vrtx is not None:
             return self._affected_by(vrtx)
         return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
 
     def affects(self, identifier):
-        vrtx = self.dprotein(identifier)
+        vrtx = self.get_node_d(identifier)
         if vrtx is not None:
             return self._affects(vrtx)
         return _NamedVertexSeq([], self.dnodNam, self.dnodLab)
@@ -4820,14 +4836,14 @@ class PyPath(object):
         return _NamedVertexSeq([], self.nodNam, self.nodLab)
 
     def neighbors(self, identifier, mode='ALL'):
-        vrtx = self.protein(identifier)
+        vrtx = self.get_node(identifier)
         if vrtx is not None:
             return _NamedVertexSeq(
                 vrtx.neighbors(mode=mode), self.nodNam, self.nodLab)
         return _NamedVertexSeq([], self.nodNam, self.nodLab)
 
     def dneighbors(self, identifier, mode='ALL'):
-        vrtx = self.dprotein(identifier)
+        vrtx = self.get_node_d(identifier)
         if vrtx is not None:
             return _NamedVertexSeq(
                 vrtx.neighbors(mode=mode), self.dnodNam, self.dnodLab)
@@ -4861,7 +4877,7 @@ class PyPath(object):
     def neighborhood(self, identifiers, order=1, mode='ALL'):
         if type(identifiers) in common.simpleTypes:
             identifiers = [identifiers]
-        vs = self.proteins(identifiers)
+        vs = self.get_nodes(identifiers)
         return self._neighborhood(vs, order=order, mode=mode)
 
     # complexes
