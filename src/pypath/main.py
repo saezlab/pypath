@@ -2314,7 +2314,7 @@ class PyPath(object):
                 vids.append(self.nodDct[n])
         return vids
 
-    def get_edge(self, nodes):
+    def _get_edge(self, nodes):
         '''
         Returns the edge id only if there is an edge from nodes[0] to nodes[1],
         returns False if edge exists in opposite direction, or no edge exists
@@ -2338,7 +2338,7 @@ class PyPath(object):
             self.graph.vs['name'].index(nodNm[0]),
             self.graph.vs['name'].index(nodNm[1])
         ]
-        edge = self.get_edge(nodes)
+        edge = self._get_edge(nodes)
         if isinstance(edge, int):
             return edge
         else:
@@ -4615,17 +4615,18 @@ class PyPath(object):
         return None
 
     def get_edge(self, source, target, directed=True):
-        '''
+        """
         Returns ``igraph.Edge`` object if an edge exist between
         the 2 proteins, otherwise ``None``.
 
-        @source : int, str
+        :param int,str source:
             Vertex index or UniProt ID or GeneSymbol
-        @target : int, str
+        :param int,str target:
             Vertex index or UniProt ID or GeneSymbol
-        @directed : bool
+        :param bool directed:
             To be passed to igraph.Graph.get_eid()
-        '''
+        """
+        
         v_source = self.get_node(source) \
             if not self.graph.is_directed() else self.get_node_d(source)
         v_target = self.get_node(target) \
@@ -4639,6 +4640,21 @@ class PyPath(object):
     
     # synonyms
     protein_edge = get_edge
+    
+    def get_edges(self, sources, targets, directed=True):
+        """
+        Returns a generator with all edges between source and target vertices.
+        
+        :param iterable sources: Source vertex IDs, names or labels.
+        :param iterable targets: Target vertec IDs, names or labels.
+        :param bool directed: Passed to `igraph.get_eid()`.
+        """
+        
+        return (e for e in (
+            self.get_edge(s, t, directed)
+            for s in sources
+            for t in targets)
+            if e is not None)
 
     def _has_directed(self):
         if self._directed is None:
@@ -5446,7 +5462,7 @@ class PyPath(object):
                     if 'domain_name_type' not in d else d['domain_name_type'])
                 for mu in motif_ups:
                     if mu in self.seq and mu in self.nodInd and du in self.nodInd:
-                        edge = self.get_edge(
+                        edge = self._get_edge(
                             (self.nodDct[du], self.nodDct[mu]))
                         if edge:
                             mse = self.seq[mu]
