@@ -70,3 +70,9 @@ class Seq(object):
         start = max(start, 1)
         end = min(end, len(self.isof[isoform]))
         return (start, end, self.isof[isoform][start - 1:end])
+    
+    def get_biopython(self, isoform = 1):
+        
+        import Bio.Seq
+        
+        return Bio.Seq.Seq(self.isof[isoform], Bio.Alphabet.ProteinAlphabet())

@@ -731,6 +731,13 @@ urls = {
     'encode': {
         'label': 'Interaction data from the Nature ENCODE project',
         'tf-mirna': 'http://encodenets.gersteinlab.org/enets10.TF-miRNA.txt'
+    },
+    'imweb': {
+        'label': 'Imweb interaction score/prediction',
+        'url': 'https://www.intomics.com/inbio/map/api/'\
+            'get_data?file=InBio_Map_core_2016_09_12.tar.gz',
+        'login': 'https://www.intomics.com/inbio/api/login_guest?ref=&_=%u',
+        'refresh': 'https://www.intomics.com/inbio/api/refresh?_=%u'
     }
 }
 

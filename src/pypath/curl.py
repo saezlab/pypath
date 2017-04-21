@@ -660,11 +660,13 @@ class Curl(FileOpener):
                  timeout=300,
                  init_url=None,
                  init_fun='get_jsessionid',
+                 init_use_cache = False,
                  follow=True,
                  large=False,
                  override_post=False,
                  init_headers=False,
                  return_headers=False,
+                 compressed=False,
                  binary_data=None,
                  write_cache=True,
                  force_quote=False,
@@ -717,6 +719,7 @@ class Curl(FileOpener):
 
         self.init_url = init_url
         self.init_fun = init_fun
+        self.init_use_cache = init_use_cache
 
         self.sftp_host = sftp_host
         self.sftp_ask = sftp_ask
@@ -889,7 +892,7 @@ class Curl(FileOpener):
     def set_req_headers(self):
         if self.override_post:
             self.req_headers.append('X-HTTP-Method-Override: GET')
-        self.curl.setopt(self.curl.HTTPHEADER, self.req_headers)
+        self.curl.setopt(self.curl.HTTPHEADER, [h.encode('ascii') for h in self.req_headers])
 
     def set_resp_headers(self):
         self.resp_headers = []
@@ -899,7 +902,11 @@ class Curl(FileOpener):
         if self.debug:
             self.curl.setopt(pycurl.VERBOSE, 1)
             self.curl.setopt(pycurl.DEBUGFUNCTION, self.print_debug_info)
-
+    
+    def set_compressed(self):
+        if self.compressed:
+            self.curl.setopt(pycurl.ENCODING, 'gzip, deflate')
+    
     def curl_setup(self, url=False):
         self.curl_init(url=url)
         self.curl_progress_setup()
@@ -971,9 +978,13 @@ class Curl(FileOpener):
             except UnicodeDecodeError:
                 try:
                     return string.decode('utf-8')
-                except:
-                    self.print_debug_info('String decoding error')
-                    return u''
+                
+                except UnicodeDecodeError:
+                    try:
+                        return string.decode('iso-8859-1')
+                    except:
+                        self.print_debug_info('ERROR', 'String decoding error')
+                        return u''
 
     def unicode2bytes(self, string, encoding=None):
         if type(string) is bytes:
@@ -987,7 +998,7 @@ class Curl(FileOpener):
                 try:
                     return string.encode('utf-8')
                 except:
-                    self.print_debug_info('String encoding error')
+                    self.print_debug_info('ERROR', 'String encoding error')
                     return b''
 
     def bytes_prefix(self, b):
@@ -1066,7 +1077,8 @@ class Curl(FileOpener):
         if self.init_url is not None:
             if self.progress is not None:
                 self.progress.set_status('requesting cookie')
-            self.init_curl = Curl(self.init_url, silent=True, debug=self.debug)
+            self.init_curl = Curl(self.init_url, silent=True, debug=self.debug,
+                                  use_cache = self.init_use_cache)
             headers = getattr(self.init_curl, self.init_fun)()
             self.req_headers.extend(headers)
 
