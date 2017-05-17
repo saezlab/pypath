@@ -3633,7 +3633,7 @@ class PyPath(object):
         if 'ptm' not in g.es.attributes():
             g.es['ptm'] = [[] for _ in g.es]
         header = [
-            'UniProt_A', 'UniProt_B', 'GeneSymbol_B', 'GeneSymbol_A',
+            'UniProt_A', 'UniProt_B', 'GeneSymbol_A', 'GeneSymbol_B',
             'Databases', 'PubMed_IDs', 'Stimulation', 'Inhibition',
             'Substrate-isoform', 'Residue_number', 'Residue_letter', 'PTM_type'
         ]
