@@ -105,7 +105,7 @@ class ProteomicsDB(object):
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
     
-    def query(self, api, param, silent=False, large=True):
+    def query(self, api, param, silent=False, large=False):
         '''
         Retrieves data from the API. 
 
@@ -134,14 +134,14 @@ class ProteomicsDB(object):
         data = c.fileobj
         self.tmp = c
         
-        if self.output_format == 'json':
-            self.result = self.get_json(data)
+        if self.output_format == 'json' and not large:
+            self.result = self.get_json(c.result)
         else:
-            self.result = data
+            self.result = c.fileobj
 
-    def get_json(self, reply):
+    def get_json(self, content):
         
-        return json.load(reply)['d']['results']
+        return json.loads(content)['d']['results']
 
     def get_tissues(self):
         '''
@@ -194,7 +194,7 @@ class ProteomicsDB(object):
         '''
         piece = ''
         while True:
-            new = self.result.read(size)
+            new = self.result.read(size).decode('ascii')
             if len(new) == 0:
                 yield []
                 break
@@ -228,25 +228,27 @@ class ProteomicsDB(object):
             mean value per tissue.
         '''
         non_digit = re.compile(r'[^\d.-]+')
+        #try:
+        self.result.seek(0)
+        if hasattr(self.result, 'read'):
+            nul = self.result.read(17)
+            self.current_samples = set([])
+            for pp in self.get_pieces():
+                for p in pp:
+                    protein = json.loads(p)
+                    if protein['SAMPLE_NAME'] not in self.expression:
+                        self.expression[protein['SAMPLE_NAME']] = {}
+                    self.current_samples.add(protein['SAMPLE_NAME'])
+                    self.expression[protein['SAMPLE_NAME']]\
+                        [protein['UNIQUE_IDENTIFIER']] = \
+                        float(non_digit.sub('', protein['NORMALIZED_EXPRESSION']))\
+                        if normalized else \
+                        float(non_digit.sub('', protein[
+                                'UNNORMALIZED_EXPRESSION']))
+            self.result.close()
+            self.result = None
         try:
-            self.result.seek(0)
-            if type(self.result) is file:
-                nul = self.result.read(17)
-                self.current_samples = set([])
-                for pp in self.get_pieces():
-                    for p in pp:
-                        protein = json.loads(p)
-                        if protein['SAMPLE_NAME'] not in self.expression:
-                            self.expression[protein['SAMPLE_NAME']] = {}
-                        self.current_samples.add(protein['SAMPLE_NAME'])
-                        self.expression[protein['SAMPLE_NAME']]\
-                            [protein['UNIQUE_IDENTIFIER']] = \
-                            float(non_digit.sub('', protein['NORMALIZED_EXPRESSION']))\
-                            if normalized else \
-                            float(non_digit.sub('', protein[
-                                  'UNNORMALIZED_EXPRESSION']))
-                self.result.close()
-                self.result = None
+            pass
         except:
             sys.stdout.write(
                 'Error in pypath.proteomicsdb.py/get_expression():\n')

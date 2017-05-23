@@ -63,6 +63,7 @@ import os
 import re
 import time
 import itertools
+import collections
 from collections import Counter
 
 import gzip
@@ -7166,3 +7167,70 @@ def get_imweb_req():
         for block in r1.iter_content(4096):
             
             fp.write(block)
+
+def get_proteinatlas(normal = True, cancer = True, mapper = None):
+    
+    mapper = mapper or mapping.Mapper()
+    result = collections.defaultdict(lambda: {})
+    
+    def line(l):
+        
+        return l.decode('utf-8').strip().replace('"', '').split(',')
+    
+    def get_levels(levels):
+        
+        values = collections.Counter(dict((x[3], int(x[4])) for x in levels))
+        
+        total = int(levels[0][5])
+        
+        return (
+            values.most_common()[0][0],
+            'Supported'
+            if values.most_common()[1][1] * 2.0 >= total
+            else 'Uncertain'
+        )
+    
+    if normal:
+        
+        c = curl.Curl(urls.urls['proteinatlas']['normal'],
+                    silent = False, large = True)
+        fp = list(c.result.values())[0]
+        hdr = line(fp.readline())
+        
+        for l in fp:
+            
+            l = line(l)
+            
+            uniprots = mapper.map_name(l[0], 'ensembl', 'uniprot')
+            tissue = '%s:%s' % (l[2], l[3])
+            
+            for u in uniprots:
+                result[tissue][u] = (l[4], l[5])
+    
+    if cancer:
+        
+        c = curl.Curl(urls.urls['proteinatlas']['cancer'],
+                    silent = False, large = True)
+        fp = list(c.result.values())[0]
+        hdr = line(fp.readline())
+        
+        levels = []
+        
+        for l in fp:
+            
+            l = line(l)
+            
+            if len(levels) == 4:
+                
+                ll = get_levels(levels)
+                uniprots = mapper.map_name(ll[0], 'ensembl', 'uniprot')
+                
+                for u in uniprots:
+                    result[l[1]][u] = ll
+                
+                levels = []
+            
+            else:
+                levels.append(l)
+    
+    return result

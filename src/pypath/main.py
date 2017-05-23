@@ -6717,6 +6717,7 @@ class PyPath(object):
             nodes, implementation='create_from_scratch')
 
     def get_proteomicsdb(self, user, passwd, tissues=None, pickle=None):
+        
         self.proteomicsdb = proteomicsdb.ProteomicsDB(user, passwd)
         self.proteomicsdb.load(pfile=pickle)
         self.proteomicsdb.get_tissues()
@@ -6728,34 +6729,68 @@ class PyPath(object):
                          prdb=None,
                          graph=None,
                          occurrence=1,
-                         group_function=lambda x: sum(x) / float(len(x))):
+                         group_function=lambda x: sum(x) / float(len(x)),
+                         na_value = 0.0):
+        
         graph = self.graph if graph is None else graph
         prdb = self.proteomicsdb if prdb is None else prdb
-        nsamples = len(prdb.samples[tissue])
+        samples = (
+            prdb.samples[tissue]
+            if tissue in prdb.samples
+            else [tissue] if tissue in prdb.expression
+            else []
+        )
+        
+        nsamples = len(samples)
         occurrence = min(nsamples, occurrence) \
             if isinstance(occurrence, int) \
             else nsamples * occurrence
+        
         proteins_present = set([
             uniprot
-            for uniprot, cnt in Counter([
-                uniprot for uniprots in [
-                    expr.keys() for expr in [
-                        prdb.expression[sample]
-                        for sample in prdb.samples[tissue]
-                    ]
-                ] for uniprot in iteritems(uniprots)
-            ]) if cnt >= occurrence
+            for uniprot, cnt in iteritems(Counter(itertools.chain(*[
+                        prdb.expression[sample].keys()
+                        for sample in samples
+                    ])))
+            if cnt >= occurrence
         ]) & set(graph.vs['name'])
+        
         expressions = dict([(uniprot, group_function([
-            prdb.expression[sample][uniprot] for sample in prdb.samples[tissue]
+            prdb.expression[sample][uniprot] for sample in samples
             if uniprot in prdb.expression[sample]
         ])) for uniprot in proteins_present])
+        
         graph.vs[tissue] = [
-            0.0 if v['name'] not in expressions else expressions[v['name']]
+            na_value if v['name'] not in expressions else expressions[v['name']]
             for v in graph.vs
         ]
-
-    def prdb_tissue_network(self, tissue, graph=None):
+    
+    def load_hpa(self, normal = True, cancer = True, tissues = None,
+                 quality = set(['Supported', 'Approved']),
+                 levels  = {'High': 3, 'Medium': 2,
+                            'Low': 1, 'Not detected': 0},
+                 graph = None,
+                 na_value = 0):
+        
+        graph = graph or self.graph
+        
+        hpa = dataio.get_proteinatlas(normal = normal, cancer = cancer)
+        
+        for tissue, data in iteritems(hpa):
+            
+            if tissues is not None and tissue not in tissues:
+                continue
+            
+            graph.vs[tissue] = [na_value for v in xrange(graph.vcount())]
+            
+            for v in graph.vs:
+                
+                if v['name'] in data and data[v['name']][1] in quality:
+                    
+                    v[tissue] = levels[data[v['name']][0]]
+    
+    def tissue_network(self, tissue, graph=None):
+        
         graph = self.graph if graph is None else graph
         if tissue not in graph.vs.attributes():
             self.prdb_tissue_expr(tissue, graph=graph)
