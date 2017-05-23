@@ -23,6 +23,8 @@
 # processes them, sometimes parses html
 #
 
+from __future__ import print_function
+
 from future.utils import iteritems
 from past.builtins import xrange, range
 
@@ -4546,6 +4548,7 @@ def get_kegg(mapper=None):
 
 
 def kegg_pathways(mapper=None):
+    
     data = get_kegg(mapper=mapper)
     pws = common.uniqList(map(lambda i: i[3], data))
     proteins_pws = dict(map(lambda pw: (pw, set([])), pws))

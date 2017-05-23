@@ -1,10 +1,10 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2015 - EMBL-EBI
+#  Copyright (c) 2014-2017 - EMBL-EBI
 #
 #  File author(s): Dénes Türei (denes@ebi.ac.uk)
 #
@@ -317,7 +317,7 @@ class MappingTable(object):
         mapping_o = {}
         mapping_i = {}
         scolend = re.compile(r'$;')
-        rev = '' if param.swissprot is None \
+        rev = '' if not param.swissprot \
             else ' AND reviewed:%s' % param.swissprot
         query = 'organism:%u%s' % (int(ncbi_tax_id), rev)
         self.url = urls.urls['uniprot_basic']['url']
@@ -496,9 +496,10 @@ class Mapper(object):
     def which_table(self, nameType, targetNameType,
                     load=True, ncbi_tax_id = None):
         '''
-        Returns the table which is suitable to convert an ID of 
+        Returns the table which is suitable to convert an ID of
         nameType to targetNameType. If no such table have been loaded
-        yet, it attempts to load from UniProt.
+        yet, it attempts to load from UniProt. If all attempts failed
+        returns `None`.
         '''
         
         tbl = None

@@ -3633,7 +3633,7 @@ class PyPath(object):
         if 'ptm' not in g.es.attributes():
             g.es['ptm'] = [[] for _ in g.es]
         header = [
-            'UniProt_A', 'UniProt_B', 'GeneSymbol_B', 'GeneSymbol_A',
+            'UniProt_A', 'UniProt_B', 'GeneSymbol_A', 'GeneSymbol_B',
             'Databases', 'PubMed_IDs', 'Stimulation', 'Inhibition',
             'Substrate-isoform', 'Residue_number', 'Residue_letter', 'PTM_type'
         ]
@@ -5652,7 +5652,7 @@ class PyPath(object):
 
     def sequences(self, isoforms=True, update=False):
         if self.seq is None or update:
-            self.seq = uniprot_input.swissprot_seq(self.ncbi_tax_id, isoforms)
+            self.seq = se.swissprot_seq(self.ncbi_tax_id, isoforms)
 
     def load_ptms(self):
         self.load_depod_dmi()

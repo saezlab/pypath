@@ -667,7 +667,7 @@ urls = {
     'string': {
         'label': 'STRING',
         'actions': 'http://string-db.org/download/'
-        'protein.actions.v10/%u.protein.actions.v10.txt.gz',
+        'protein.actions.v10.5/%u.protein.actions.v10.5.txt.gz',
         'links': 'http://string-db.org/download/protein.links.detailed.v10/%u'
         '.protein.links.detailed.v10.txt.gz'
     },
