@@ -422,15 +422,11 @@ urls = {
         'http://www.humanproteomemap.org/Download_HPM/HPM_protein_level_'
         'expression_matrix_Kim_et_al_052914.csv'
     },
-    'proteinatlas_normal': {
+    'proteinatlas': {
         'label': 'Human Protein Atlas: Immuncytochemistry expression data in '
-        'healthy human cells',
-        'url': 'http://www.proteinatlas.org/download/normal_tissue.csv.zip'
-    },
-    'proteinatlas_cancer': {
-        'label': 'Human Protein Atlas: Immuncytochemistry expression data in '
-        'human tumour cells',
-        'url': 'http://www.proteinatlas.org/download/cancer.csv.zip'
+        'healthy human cells or cancer cells or cell lines',
+        'normal': 'http://www.proteinatlas.org/download/normal_tissue.csv.zip',
+        'cancer': 'http://www.proteinatlas.org/download/cancer.csv.zip'
     },
     'lincs-compounds': {
         'label':
@@ -667,7 +663,7 @@ urls = {
     'string': {
         'label': 'STRING',
         'actions': 'http://string-db.org/download/'
-        'protein.actions.v10/%u.protein.actions.v10.txt.gz',
+        'protein.actions.v10.5/%u.protein.actions.v10.5.txt.gz',
         'links': 'http://string-db.org/download/protein.links.detailed.v10/%u'
         '.protein.links.detailed.v10.txt.gz'
     },
@@ -731,6 +727,13 @@ urls = {
     'encode': {
         'label': 'Interaction data from the Nature ENCODE project',
         'tf-mirna': 'http://encodenets.gersteinlab.org/enets10.TF-miRNA.txt'
+    },
+    'imweb': {
+        'label': 'Imweb interaction score/prediction',
+        'url': 'https://www.intomics.com/inbio/map/api/'\
+            'get_data?file=InBio_Map_core_2016_09_12.tar.gz',
+        'login': 'https://www.intomics.com/inbio/api/login_guest?ref=&_=%u',
+        'refresh': 'https://www.intomics.com/inbio/api/refresh?_=%u'
     }
 }
 

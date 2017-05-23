@@ -27,6 +27,7 @@ import base64
 import re
 import os
 import sys
+import imp
 
 try:
     import cPickle as pickle
@@ -40,12 +41,13 @@ except ImportError:
     sys.stdout.flush()
 
 # from this module:
-from pypath import dataio
-from pypath.progress import Progress
+import pypath.curl as curl
+import pypath.progress as progress
 from pypath.common import *
 
 
 class ProteomicsDB(object):
+    
     def __init__(self, username, password, output_format='json'):
         '''
         This is an extensible class for downloading and processing data
@@ -68,8 +70,10 @@ class ProteomicsDB(object):
             JSON further and give certain objects.
         '''
         self.auth = [
-            'Authorization: Basic %s' %
-            base64.encodestring("%s:%s" % (username, password)).rstrip('\n')
+            (b'Authorization: Basic %s' %
+            base64.encodestring((
+                "%s:%s" % (username, password)).encode('ascii')
+            )).decode('ascii').rstrip('\n')
         ]
         self.port = 443
         self.output_format = output_format
@@ -93,8 +97,15 @@ class ProteomicsDB(object):
             'PEPTIDES,SAMPLE_NAME,SAMPLE_DESCRIPTION,UNNORMALIZED_EXPRESSION,'
             'NORMALIZED_EXPRESSION&$format=%s'
         }
-
-    def query(self, api, param, silent=True, large=False):
+    
+    def reload(self):
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    def query(self, api, param, silent=False, large=False):
         '''
         Retrieves data from the API. 
 
@@ -113,19 +124,24 @@ class ProteomicsDB(object):
         url = self.urls[api] % param
         # long timeout is given, because huge files (hundreds MB) take time to
         # load
-        data = dataio.curl(
+        c = curl.Curl(
             url,
             req_headers=self.auth,
             silent=silent,
             timeout=1200,
             large=large)
+        
+        data = c.fileobj
+        self.tmp = c
+        
         if self.output_format == 'json' and not large:
-            self.result = self.get_json(data)
+            self.result = self.get_json(c.result)
         else:
-            self.result = data
+            self.result = c.fileobj
 
-    def get_json(self, reply):
-        return json.loads(reply)['d']['results']
+    def get_json(self, content):
+        
+        return json.loads(content)['d']['results']
 
     def get_tissues(self):
         '''
@@ -153,12 +169,14 @@ class ProteomicsDB(object):
         '''
         '''
         for i in xrange(3):
+            
             self.query(
                 'proteinpertissue',
                 (tissue_id, calculation_method, swissprot_only, no_isoform,
                  self.output_format),
                 large=True)
-            if type(self.result) is file:
+            
+            if hasattr(self.result, 'read'):
                 break
 
     def get_pieces(self, size=20480, delimiters=('{', '}')):
@@ -176,7 +194,7 @@ class ProteomicsDB(object):
         '''
         piece = ''
         while True:
-            new = self.result.read(size)
+            new = self.result.read(size).decode('ascii')
             if len(new) == 0:
                 yield []
                 break
@@ -210,25 +228,27 @@ class ProteomicsDB(object):
             mean value per tissue.
         '''
         non_digit = re.compile(r'[^\d.-]+')
+        #try:
+        self.result.seek(0)
+        if hasattr(self.result, 'read'):
+            nul = self.result.read(17)
+            self.current_samples = set([])
+            for pp in self.get_pieces():
+                for p in pp:
+                    protein = json.loads(p)
+                    if protein['SAMPLE_NAME'] not in self.expression:
+                        self.expression[protein['SAMPLE_NAME']] = {}
+                    self.current_samples.add(protein['SAMPLE_NAME'])
+                    self.expression[protein['SAMPLE_NAME']]\
+                        [protein['UNIQUE_IDENTIFIER']] = \
+                        float(non_digit.sub('', protein['NORMALIZED_EXPRESSION']))\
+                        if normalized else \
+                        float(non_digit.sub('', protein[
+                                'UNNORMALIZED_EXPRESSION']))
+            self.result.close()
+            self.result = None
         try:
-            self.result.seek(0)
-            if type(self.result) is file:
-                nul = self.result.read(17)
-                self.current_samples = set([])
-                for pp in self.get_pieces():
-                    for p in pp:
-                        protein = json.loads(p)
-                        if protein['SAMPLE_NAME'] not in self.expression:
-                            self.expression[protein['SAMPLE_NAME']] = {}
-                        self.current_samples.add(protein['SAMPLE_NAME'])
-                        self.expression[protein['SAMPLE_NAME']]\
-                            [protein['UNIQUE_IDENTIFIER']] = \
-                            float(non_digit.sub('', protein['NORMALIZED_EXPRESSION']))\
-                            if normalized else \
-                            float(non_digit.sub('', protein[
-                                  'UNNORMALIZED_EXPRESSION']))
-                self.result.close()
-                self.result = None
+            pass
         except:
             sys.stdout.write(
                 'Error in pypath.proteomicsdb.py/get_expression():\n')
@@ -248,7 +268,7 @@ class ProteomicsDB(object):
             t['TISSUE_ID'] for t in self.tissues
             if tissues is None or t['TISSUE_ID'] in tissues
         ]) - self.tissues_loaded
-        prg = Progress(
+        prg = progress.Progress(
             len(tissues_selected),
             'Downloading expression data',
             1,
@@ -258,7 +278,7 @@ class ProteomicsDB(object):
             sys.stdout.write('Querying tissue %s\n' % tis)
             sys.stdout.flush()
             self.get_proteins(tis)
-            if type(self.result) is not file:
+            if not hasattr(self.result, 'read'):
                 sys.stdout.write('\tFailed: %s\n' % tis)
                 sys.stdout.flush()
             else:

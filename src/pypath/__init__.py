@@ -1,8 +1,10 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # try:
 #import __main__ as ext
+from __future__ import print_function
+
 import pypath.main as main
 import pypath.common as common
 #import descriptions
