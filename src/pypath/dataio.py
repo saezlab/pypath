@@ -411,32 +411,41 @@ def get_pfam_pdb():
 
 
 def get_corum():
+    
     complexes = {}
     members = {}
     c = curl.Curl(urls.urls['corum']['url'], silent=False)
     data = c.result
+    
     if data is None:
         return None, None
-    data = data.split('\n')
-    del data[0]
+    
+    data = data.split('\n')[1:]
     prg = progress.Progress(len(data), 'Processing data', 9)
+    
     for l in data:
-        l = l.replace('\n', '').replace('\r', '').split(';')
+        
+        l = l.replace('\n', '').replace('\r', '').split('\t')
+        
         if len(l) < 10:
             continue
-        uniprots = l[4].split(',')
+        
+        uniprots = l[5].split(';')
         name = l[1]
-        shortName = l[1].split('(')[0].strip()
-        pubmeds = l[7].split(',')
-        spec = l[3]
-        func = l[9].replace('"', '')
-        dise = l[10].replace('"', '')
+        shortName = l[1].split('(')[0].replace('complex', '').strip()
+        pubmeds = l[12].split(';')
+        spec = l[2]
+        func = l[11].replace('"', '')
+        dise = l[16].replace('"', '')
         complexes[name] = (uniprots, shortName, pubmeds, spec, func, dise)
+        
         for u in uniprots:
             if u not in members:
                 members[u] = []
             members[u].append((name, shortName, pubmeds, spec, func, dise))
+        
         prg.step()
+    
     prg.terminate()
     return complexes, members
 
@@ -587,6 +596,15 @@ def get_compleat():
 
 
 def get_pdb_chains():
+    
+    def to_int(i):
+        
+        if i == 'None':
+            
+            return None
+        
+        return int(non_digit.sub('', i))
+    
     c = curl.Curl(urls.urls['pdb_chains']['url'], silent=False)
     chains = c.result
     if chains is None:
@@ -597,6 +615,7 @@ def get_pdb_chains():
     pdb_u = {}
     u_pdb = {}
     non_digit = re.compile(r'[^\d.-]+')
+    
     for l in chains:
         l = l.split('\t')
         if len(l) > 8:
@@ -604,41 +623,55 @@ def get_pdb_chains():
                 pdb_u[l[0]] = {}
             pdb_u[l[0]][l[1]] = {
                 'uniprot': l[2],
-                'chain_beg': int(non_digit.sub('', l[3])),
-                'chain_end': int(non_digit.sub('', l[4])),
-                'pdb_beg': int(non_digit.sub('', l[5])),
-                'pdb_end': int(non_digit.sub('', l[6])),
-                'uniprot_beg': int(non_digit.sub('', l[7])),
-                'uniprot_end': int(non_digit.sub('', l[8]))
+                'chain_beg': to_int(l[3]),
+                'chain_end': to_int(l[4]),
+                'pdb_beg': to_int(l[5]),
+                'pdb_end': to_int(l[6]),
+                'uniprot_beg': to_int(l[7]),
+                'uniprot_end': to_int(l[8])
             }
-            if pdb_u[l[0]][l[1]]['pdb_end'] - pdb_u[l[0]][l[1]]['pdb_beg'] == \
-                    pdb_u[l[0]][l[1]]['uniprot_end'] - pdb_u[l[0]][l[1]]['uniprot_beg']:
+            if (
+                pdb_u[l[0]][l[1]]['pdb_end'] is not None and
+                pdb_u[l[0]][l[1]]['pdb_beg'] is not None and
+                pdb_u[l[0]][l[1]]['uniprot_beg'] is not None and
+                pdb_u[l[0]][l[1]]['uniprot_end'] is not None and
+                pdb_u[l[0]][l[1]]['pdb_end'] - pdb_u[l[0]][l[1]]['pdb_beg'] == \
+                    pdb_u[l[0]][l[1]]['uniprot_end'] - pdb_u[l[0]][l[1]]['uniprot_beg']
+            ):
+                
                 pdb_u[l[0]][l[1]]['offset'] = (pdb_u[l[0]][l[1]]['uniprot_beg']
                                                - pdb_u[l[0]][l[1]]['pdb_beg'])
+                
             else:
                 pdb_u[l[0]][l[1]]['offset'] = None
+            
             if l[2] not in u_pdb:
+                
                 u_pdb[l[2]] = []
+            
             u_pdb[l[2]].append({
                 'pdb': l[0],
                 'chain': l[1],
-                'chain_beg': int(non_digit.sub('', l[3])),
-                'chain_end': int(non_digit.sub('', l[4])),
-                'pdb_beg': int(non_digit.sub('', l[5])),
-                'pdb_end': int(non_digit.sub('', l[6])),
-                'uniprot_beg': int(non_digit.sub('', l[7])),
-                'uniprot_end': int(non_digit.sub('', l[8])),
+                'chain_beg': to_int(l[3]),
+                'chain_end': to_int(l[4]),
+                'pdb_beg': to_int(l[5]),
+                'pdb_end': to_int(l[6]),
+                'uniprot_beg': to_int(l[7]),
+                'uniprot_end': to_int(l[8]),
                 'offset': pdb_u[l[0]][l[1]]['offset']
             })
+    
     return u_pdb, pdb_u
 
 
 def get_3dcomplexes():
+    
     c = curl.Curl(urls.urls['3dcomplexes_contact']['url'], silent=False)
     contact = c.result
     c = curl.Curl(urls.urls['3dcomplexes_correspondancy']['url'], silent=False)
     corresp = c.result
     u_pdb, pdb_u = get_pdb_chains()
+    
     del u_pdb
     if contact is None or corresp is None or pdb_u is None:
         return None
@@ -646,6 +679,7 @@ def get_3dcomplexes():
     corresp = corresp.split('\n')
     del contact[0]
     corr_dict = {}
+    
     for l in corresp:
         l = l.replace('\r', '').split('\t')
         if len(l) > 2:
@@ -653,7 +687,9 @@ def get_3dcomplexes():
             if pdb not in corr_dict:
                 corr_dict[pdb] = {}
             corr_dict[pdb][l[1]] = l[2]
+    
     compl_dict = {}
+    
     for l in contact:
         l = l.replace('\r', '').split('\t')
         if len(l) > 11 and int(l[11]) == 0 and int(l[10]) == 0:
