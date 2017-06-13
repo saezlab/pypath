@@ -32,8 +32,10 @@ urls = {
     'corum': {
         'label':
         'CORUM is a database of protein complexes, downloadable in csv format',
+        'url_old':
+        'http://mips.helmholtz-muenchen.de/genre/proj/corum/allComplexes.csv',
         'url':
-        'http://mips.helmholtz-muenchen.de/genre/proj/corum/allComplexes.csv'
+        'http://mips.helmholtz-muenchen.de/corum/download/allComplexes.txt'
     },
     'pfam_pdb': {
         'label': 'PDB-Pfam mapping and names of Pfam domains',
