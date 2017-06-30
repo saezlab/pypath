@@ -30,6 +30,8 @@ import pypath.intera as intera
 import pypath.urls as urls
 import pypath.curl as curl
 import pypath.uniprot_input as uniprot_input
+import pypath.seq as _se
+
 
 class SequenceContainer(object):
     
@@ -54,7 +56,7 @@ class SequenceContainer(object):
         
         if taxon not in self.seq:
             
-            self.seq[taxon] = uniprot_input.swissprot_seq(
+            self.seq[taxon] = _se.swissprot_seq(
                 organism = taxon,
                 isoforms = self.seq_isoforms)
     

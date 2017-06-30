@@ -711,6 +711,7 @@ def get_3dcomplexes():
                             if uniprots not in compl_dict[compl]:
                                 compl_dict[compl][uniprots] = []
                             compl_dict[compl][uniprots].append(float(l[3]))
+    
     return compl_dict
 
 
