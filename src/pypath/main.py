@@ -4791,7 +4791,7 @@ class PyPath(object):
         dgraph = self._get_directed()
         if uniprot in self.dnodDct:
             vid = self.dnodDct[uniprot]
-            vs = self.up_affects(uniprot)
+            vs  = self.up_affects(uniprot)
             return _NamedVertexSeq(
                 filter(
                     lambda v: dgraph.es[dgraph.get_eid(vid, v.index)]['dirs'].positive[uniprot, v['name']],
