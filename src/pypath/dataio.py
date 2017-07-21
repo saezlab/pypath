@@ -4702,37 +4702,6 @@ def signor_pathways(**kwargs):
     
     return proteins_pathways, interactions_pathways
 
-#curl 'http://signor.uniroma2.it/download_entity.php' -H 'Host: signor.uniroma2.it' -H 'User-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US; rv:49.0) Gecko/20110304 Firefox/49.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' --compressed -H 'Content-Type: multipart/form-data; boundary=---------------------------2098317976242233111425838748' -H 'Referer: http://signor.uniroma2.it/downloads.php' -H 'Cookie: PHPSESSID=lmc6lud4qgpvvfbq1405pmbs27' -H 'DNT: 1' -H 'Connection: keep-alive' -H 'Upgrade-Insecure-Requests: 1' -H 'Pragma: no-cache' -H 'Cache-Control: no-cache' --data-binary $'-----------------------------2098317976242233111425838748\r\n\r\nContent-Disposition: form-data; name="pathway_list"\r\n\r\nSIGNOR-AML\r\n-----------------------------2098317976242233111425838748\r\n\r\nContent-Disposition: form-data; name="submit"\r\n\r\nDownload\r\n-----------------------------2098317976242233111425838748--\r\n'
-
-def signor_pathways_2(**kwargs):
-    
-    urls = signor_urls()
-    proteins_pathways = {}
-    interactions_pathways = {}
-    
-    prg = progress.Progress(
-        len(urls), 'Downloading data from Signor', 1, percent=False)
-    
-    for pathw, url in urls:
-        
-        prg.step()
-        c = curl.Curl(url)
-        data = c.result
-        data = filter(lambda l: len(l) > 6,
-                      map(lambda l: l.strip().split('\t'),
-                          data.split('\n')[1:]))
-        proteins_pathways[pathw] = set([])
-        proteins_pathways[pathw] = proteins_pathways[pathw] | \
-            set(map(lambda l: l[2], filter(lambda l: l[1] == 'PROTEIN', data)))
-        proteins_pathways[pathw] = proteins_pathways[pathw] | \
-            set(map(lambda l: l[6], filter(lambda l: l[5] == 'PROTEIN', data)))
-        interactions_pathways[pathw] = set(
-            map(lambda l: (l[2], l[6]),
-                filter(lambda l: l[1] == 'PROTEIN' and l[5] == 'PROTEIN',
-                       data)))
-    prg.terminate()
-    return proteins_pathways, interactions_pathways
-
 
 def csv_sep_change(csv, old, new):
 
