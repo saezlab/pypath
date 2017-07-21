@@ -4544,24 +4544,34 @@ def get_kegg(mapper=None):
     Returns list of interactions.
     '''
     rehsa = re.compile(r'.*(hsa[0-9]+).*')
+    req_hdrs = ['Referer: http://www.genome.jp/kegg-bin/show_pathway'
+        '?map=hsa04710&show_description=show']
     mapper = mapper if mapper is not None else mapping.Mapper()
     hsa_list = []
     interactions = []
+    
     c = curl.Curl(urls.urls['kegg_pws']['list_url'], silent=True)
     htmllst = c.result
     lstsoup = bs4.BeautifulSoup(htmllst, 'html.parser')
+    
     for a in lstsoup.find_all('a', href=True):
         m = rehsa.match(a['href'])
         if m:
             hsa_list.append((m.groups(0)[0], a.text))
+    
     prg = progress.Progress(
         len(hsa_list), 'Processing KEGG Pathways', 1, percent=False)
+    
     for hsa, pw in hsa_list:
+        
         prg.step()
-        c = curl.Curl(urls.urls['kegg_pws']['kgml_url'] % hsa, silent=True)
+        c = curl.Curl(urls.urls['kegg_pws']['kgml_url'] % hsa,
+                      silent=True,
+                      req_headers=req_hdrs)
         kgml = c.result
         kgmlsoup = bs4.BeautifulSoup(kgml, 'html.parser')
         entries = {}
+        
         for ent in kgmlsoup.find_all('entry'):
             gr = ent.find('graphics')
             if gr and 'name' in gr.attrs:
@@ -4569,11 +4579,13 @@ def get_kegg(mapper=None):
                     n.strip()
                     for n in gr.attrs['name'].replace('...', '').split(',')
                 ]
+        
         uentries = dict([(eid, common.uniqList(
             common.flatList([
                 mapper.map_name(
                     gn, 'genesymbol', 'uniprot', strict=True) for gn in gns
             ]))) for eid, gns in iteritems(entries)])
+        
         for rel in kgmlsoup.find_all('relation'):
             st = rel.find('subtype')
             if rel.attrs['entry1'] in uentries and rel.attrs['entry2'] in uentries and \
