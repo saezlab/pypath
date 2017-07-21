@@ -1709,7 +1709,7 @@ def main_page():
 
     notebook_names = [
         ('pypath_build_networks.html', 'Quick start'),
-        ('intro.html', 'Introduction (directions, enzyme-substrate, subnetworks)')
+        ('intro.html', 'Introduction (directions, enzyme-substrate, subnetworks)'),
         ('pypath_mapping.html', 'ID conversion'),
         ('pathway_extraction.html', 'Pathway annotations'),
         ('node_neighbourhood.html', 'Extracting signaling networks'),

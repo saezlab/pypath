@@ -4598,30 +4598,123 @@ def kegg_pathways(mapper=None):
     return proteins_pws, interactions_pws
 
 
-def signor_urls():
+def signor_pathways(**kwargs):
     '''
     This function is deprecated.
     '''
-    tsv_urls = []
+    
     url = urls.urls['signor']['list_url']
-    baseurl = urls.urls['signor']['base_url']
+    baseurl = urls.urls['signor']['all_url_new']
+    
+    proteins_pathways = {}
+    interactions_pathways = {}
+    
     c = curl.Curl(url, silent=True)
     html = c.result
+    
     soup = bs4.BeautifulSoup(html, 'html.parser')
-    for td in soup.find_all('td', style=lambda x: x.startswith('border')):
-        pw = td.text.strip().split(':')[0]
-        tsv_url = baseurl % td.find('a').attrs['href']
-        tsv_urls.append((pw, tsv_url))
-    return tsv_urls
+    
+    prg = progress.Progress(
+        len(soup.find('select', {'name': 'pathway_list'}).findAll('option')),
+        'Downloading data from Signor',
+        1,
+        percent=False
+    )
+    
+    for short, full in [
+        (opt['value'], opt.text)
+        for opt in soup.find(
+            'select', {'name': 'pathway_list'}
+        ).findAll('option')
+    ]:
+        
+        prg.step()
+        
+        if not short:
+            
+            continue
+        
+        binary_data = [
+            (b'pathway_list', short.encode('ascii')),
+            (b'submit', b'Download')
+        ]
+        
+        c_pw = curl.Curl(baseurl, silent = True, binary_data = binary_data)
+        
+        data = c_pw.result
+        
+        data = list(
+            filter(
+                lambda l:
+                    len(l) > 6,
+                map(
+                    lambda l:
+                        l.strip().split(';'),
+                    data.split('\n')[1:]
+                )
+            )
+        )
+        
+        proteins_pathways[full] = set([])
+        
+        proteins_pathways[full] = (
+            proteins_pathways[full] | set(
+                map(
+                    lambda l:
+                        l[2],
+                    filter(
+                        lambda l:
+                            l[1].lower() == 'protein',
+                        data
+                    )
+                )
+            )
+        )
+        
+        proteins_pathways[full] = (
+            proteins_pathways[full] | set(
+                map(
+                    lambda l:
+                        l[6],
+                    filter(
+                        lambda l:
+                            l[5].lower() == 'protein',
+                        data
+                    )
+                )
+            )
+        )
+        
+        interactions_pathways[full] = set(
+            map(
+                lambda l:
+                    (l[2], l[6]),
+                filter(
+                    lambda l:
+                        l[1].lower() == 'protein' and
+                        l[5].lower() == 'protein',
+                    data
+                )
+            )
+        )
+    
+    prg.terminate()
+    
+    return proteins_pathways, interactions_pathways
 
+#curl 'http://signor.uniroma2.it/download_entity.php' -H 'Host: signor.uniroma2.it' -H 'User-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US; rv:49.0) Gecko/20110304 Firefox/49.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' --compressed -H 'Content-Type: multipart/form-data; boundary=---------------------------2098317976242233111425838748' -H 'Referer: http://signor.uniroma2.it/downloads.php' -H 'Cookie: PHPSESSID=lmc6lud4qgpvvfbq1405pmbs27' -H 'DNT: 1' -H 'Connection: keep-alive' -H 'Upgrade-Insecure-Requests: 1' -H 'Pragma: no-cache' -H 'Cache-Control: no-cache' --data-binary $'-----------------------------2098317976242233111425838748\r\n\r\nContent-Disposition: form-data; name="pathway_list"\r\n\r\nSIGNOR-AML\r\n-----------------------------2098317976242233111425838748\r\n\r\nContent-Disposition: form-data; name="submit"\r\n\r\nDownload\r\n-----------------------------2098317976242233111425838748--\r\n'
 
-def signor_pathways(**kwargs):
+def signor_pathways_2(**kwargs):
+    
     urls = signor_urls()
     proteins_pathways = {}
     interactions_pathways = {}
+    
     prg = progress.Progress(
         len(urls), 'Downloading data from Signor', 1, percent=False)
+    
     for pathw, url in urls:
+        
         prg.step()
         c = curl.Curl(url)
         data = c.result
