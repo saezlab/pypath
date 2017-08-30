@@ -18,6 +18,8 @@
 import os
 
 def _get_version():
+    
+    ROOT = os.path.abspath(os.path.dirname(__file__))
     with open(os.path.join(ROOT, '__version__'), 'r') as v:
         return tuple([int(i) for i in v.read().strip().split('.')])
 
