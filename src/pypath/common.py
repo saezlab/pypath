@@ -4,7 +4,7 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2015 - EMBL-EBI
+#  Copyright (c) 2014-2017 - EMBL-EBI
 #
 #  File author(s): Dénes Türei (denes@ebi.ac.uk)
 #
@@ -29,7 +29,7 @@ __all__ = [
     'ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes', 'uniqList',
     'addToList', 'addToSet', 'gen_session_id', 'sorensen_index',
     'simpson_index', 'simpson_index_counts', 'jaccard_index', 'console', 'wcl',
-    'flatList', 'charTypes', 'delEmpty', '__version__', 'get_args',
+    'flatList', 'charTypes', 'delEmpty', 'get_args',
     'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs', 'md5',
     'mod_keywords', 'Namespace', 'fun', 'taxids', 'taxa', 'phosphoelm_taxids',
     'dbptm_taxids'
@@ -37,16 +37,6 @@ __all__ = [
 
 # get the location
 ROOT = os.path.abspath(os.path.dirname(__file__))
-
-
-def _get_version():
-    with open(os.path.join(ROOT, '__version__'), 'r') as v:
-        return tuple([int(i) for i in v.read().strip().split('.')])
-
-
-_MAJOR, _MINOR, _MICRO = _get_version()
-__version__ = '%d.%d.%d' % (_MAJOR, _MINOR, _MICRO)
-__release__ = '%d.%d' % (_MAJOR, _MINOR)
 
 default_name_type = {
     "protein": "uniprot",

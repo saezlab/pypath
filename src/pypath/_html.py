@@ -1655,7 +1655,7 @@ _header = u'''<!DOCTYPE html>
 
 _footer = u'''
         <br>
-        <p> <a href="http://www.ebi.ac.uk/~denes">Denes Turei, 2016.</a> 
+        <p> <a href="http://www.ebi.ac.uk/~denes">Dénes Türei, 2017.</a> 
             Feedback: omnipath@googlegroups.com </p>
         <p>
             <a href="https://validator.w3.org/check/referer">
@@ -1709,6 +1709,7 @@ def main_page():
 
     notebook_names = [
         ('pypath_build_networks.html', 'Quick start'),
+        ('intro.html', 'Introduction (directions, enzyme-substrate, subnetworks)'),
         ('pypath_mapping.html', 'ID conversion'),
         ('pathway_extraction.html', 'Pathway annotations'),
         ('node_neighbourhood.html', 'Extracting signaling networks'),
@@ -1723,13 +1724,17 @@ def main_page():
 
     with open(os.path.join(common.ROOT, 'data', 'main.html'), 'r') as f:
         doc = f.read()
-
-    doc += '<h3>Check out our tutorials:</h3>'
+    
+    tut = ''
+    
+    tut += '<h3>Check out our tutorials:</h3>'
     for nb, name in notebook_names:
         if nb in notebooks:
-            doc += '<p><a href="%s" title="%s">%s</a></p>' % (
+            tut += '<p><a href="%s" title="%s">%s</a></p>' % (
                 'http://pypath.omnipathdb.org/notebooks/%s' % nb, name, name)
-    doc += '<p>Special thanks for Luis Tobalina for providing some of the tutorials.</p>'
+    tut += '<p>Special thanks for Luis Tobalina for providing some of the tutorials.</p>'
+    
+    doc = doc.replace('<!--TUTORIALS-->', tut)
 
     return default_template(
         doc,

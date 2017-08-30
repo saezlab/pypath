@@ -15,13 +15,17 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
+from future.utils import iteritems
 
 import os
 import sys
+import re
 
 import pypath.common as common
 import pypath.dataio as dataio
 import pypath.uniprot_input as uniprot_input
+import pypath.urls as urls
+import pypath.curl as curl
 
 
 def swissprot_seq(organism=9606, isoforms=False):
@@ -47,7 +51,7 @@ def swissprot_seq(organism=9606, isoforms=False):
         l = l.strip().split('\t')
         
         if len(l) == 2:
-            result[l[0]] = se.Seq(l[0], l[1])
+            result[l[0]] = Seq(l[0], l[1])
     
     if isoforms:
         

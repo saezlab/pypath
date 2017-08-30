@@ -711,6 +711,7 @@ def get_3dcomplexes():
                             if uniprots not in compl_dict[compl]:
                                 compl_dict[compl][uniprots] = []
                             compl_dict[compl][uniprots].append(float(l[3]))
+    
     return compl_dict
 
 
@@ -4543,24 +4544,34 @@ def get_kegg(mapper=None):
     Returns list of interactions.
     '''
     rehsa = re.compile(r'.*(hsa[0-9]+).*')
+    req_hdrs = ['Referer: http://www.genome.jp/kegg-bin/show_pathway'
+        '?map=hsa04710&show_description=show']
     mapper = mapper if mapper is not None else mapping.Mapper()
     hsa_list = []
     interactions = []
+    
     c = curl.Curl(urls.urls['kegg_pws']['list_url'], silent=True)
     htmllst = c.result
     lstsoup = bs4.BeautifulSoup(htmllst, 'html.parser')
+    
     for a in lstsoup.find_all('a', href=True):
         m = rehsa.match(a['href'])
         if m:
             hsa_list.append((m.groups(0)[0], a.text))
+    
     prg = progress.Progress(
         len(hsa_list), 'Processing KEGG Pathways', 1, percent=False)
+    
     for hsa, pw in hsa_list:
+        
         prg.step()
-        c = curl.Curl(urls.urls['kegg_pws']['kgml_url'] % hsa, silent=True)
+        c = curl.Curl(urls.urls['kegg_pws']['kgml_url'] % hsa,
+                      silent=True,
+                      req_headers=req_hdrs)
         kgml = c.result
         kgmlsoup = bs4.BeautifulSoup(kgml, 'html.parser')
         entries = {}
+        
         for ent in kgmlsoup.find_all('entry'):
             gr = ent.find('graphics')
             if gr and 'name' in gr.attrs:
@@ -4568,11 +4579,13 @@ def get_kegg(mapper=None):
                     n.strip()
                     for n in gr.attrs['name'].replace('...', '').split(',')
                 ]
+        
         uentries = dict([(eid, common.uniqList(
             common.flatList([
                 mapper.map_name(
                     gn, 'genesymbol', 'uniprot', strict=True) for gn in gns
             ]))) for eid, gns in iteritems(entries)])
+        
         for rel in kgmlsoup.find_all('relation'):
             st = rel.find('subtype')
             if rel.attrs['entry1'] in uentries and rel.attrs['entry2'] in uentries and \
@@ -4597,46 +4610,108 @@ def kegg_pathways(mapper=None):
     return proteins_pws, interactions_pws
 
 
-def signor_urls():
+def signor_pathways(**kwargs):
     '''
     This function is deprecated.
     '''
-    tsv_urls = []
+    
     url = urls.urls['signor']['list_url']
-    baseurl = urls.urls['signor']['base_url']
-    c = curl.Curl(url, silent=True)
-    html = c.result
-    soup = bs4.BeautifulSoup(html, 'html.parser')
-    for td in soup.find_all('td', style=lambda x: x.startswith('border')):
-        pw = td.text.strip().split(':')[0]
-        tsv_url = baseurl % td.find('a').attrs['href']
-        tsv_urls.append((pw, tsv_url))
-    return tsv_urls
-
-
-def signor_pathways(**kwargs):
-    urls = signor_urls()
+    baseurl = urls.urls['signor']['all_url_new']
+    
     proteins_pathways = {}
     interactions_pathways = {}
+    
+    c = curl.Curl(url, silent=True)
+    html = c.result
+    
+    soup = bs4.BeautifulSoup(html, 'html.parser')
+    
     prg = progress.Progress(
-        len(urls), 'Downloading data from Signor', 1, percent=False)
-    for pathw, url in urls:
+        len(soup.find('select', {'name': 'pathway_list'}).findAll('option')),
+        'Downloading data from Signor',
+        1,
+        percent=False
+    )
+    
+    for short, full in [
+        (opt['value'], opt.text)
+        for opt in soup.find(
+            'select', {'name': 'pathway_list'}
+        ).findAll('option')
+    ]:
+        
         prg.step()
-        c = curl.Curl(url)
-        data = c.result
-        data = filter(lambda l: len(l) > 6,
-                      map(lambda l: l.strip().split('\t'),
-                          data.split('\n')[1:]))
-        proteins_pathways[pathw] = set([])
-        proteins_pathways[pathw] = proteins_pathways[pathw] | \
-            set(map(lambda l: l[2], filter(lambda l: l[1] == 'PROTEIN', data)))
-        proteins_pathways[pathw] = proteins_pathways[pathw] | \
-            set(map(lambda l: l[6], filter(lambda l: l[5] == 'PROTEIN', data)))
-        interactions_pathways[pathw] = set(
-            map(lambda l: (l[2], l[6]),
-                filter(lambda l: l[1] == 'PROTEIN' and l[5] == 'PROTEIN',
-                       data)))
+        
+        if not short:
+            
+            continue
+        
+        binary_data = [
+            (b'pathway_list', short.encode('ascii')),
+            (b'submit', b'Download')
+        ]
+        
+        c_pw = curl.Curl(baseurl, silent = True, binary_data = binary_data)
+        
+        data = c_pw.result
+        
+        data = list(
+            filter(
+                lambda l:
+                    len(l) > 6,
+                map(
+                    lambda l:
+                        l.strip().split(';'),
+                    data.split('\n')[1:]
+                )
+            )
+        )
+        
+        proteins_pathways[full] = set([])
+        
+        proteins_pathways[full] = (
+            proteins_pathways[full] | set(
+                map(
+                    lambda l:
+                        l[2],
+                    filter(
+                        lambda l:
+                            l[1].lower() == 'protein',
+                        data
+                    )
+                )
+            )
+        )
+        
+        proteins_pathways[full] = (
+            proteins_pathways[full] | set(
+                map(
+                    lambda l:
+                        l[6],
+                    filter(
+                        lambda l:
+                            l[5].lower() == 'protein',
+                        data
+                    )
+                )
+            )
+        )
+        
+        interactions_pathways[full] = set(
+            map(
+                lambda l:
+                    (l[2], l[6]),
+                filter(
+                    lambda l:
+                        l[1].lower() == 'protein' and
+                        l[5].lower() == 'protein',
+                    data
+                )
+            )
+        )
+    
     prg.terminate()
+    
     return proteins_pathways, interactions_pathways
 
 

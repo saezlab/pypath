@@ -22,8 +22,8 @@ from setuptools import setup, find_packages
 import glob
 import imp
 
-common = imp.load_source('common', os.path.join('src', 'pypath', 'common.py'))
-__version__ = common.__version__
+_version = imp.load_source('common', os.path.join('src', 'pypath', '_version.py'))
+__version__ = _version.__version__
 
 def which(exe):
     '''
