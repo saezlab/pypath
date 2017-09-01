@@ -186,12 +186,12 @@ class Giant(object):
                     if self.ventrez[e.target] is not None and self.ventrez[
                             e.target] not in entlst:
                         entlst.append(self.ventrez[e.target])
-                    print 'length of query list: %u' % len(entlst)
+                    #print 'length of query list: %u' % len(entlst)
                     if self.debug:
                         self.trace['input_edges'].append(e.index)
                     if len(entlst) > size or (e.index == graph.ecount() - 1 and
                                               len(entlst) > 0):
-                        print '\t:: starting query'
+                        #print '\t:: starting query'
                         if self.debug:
                             self.trace['entrez_list'] = entlst
                         prg.step(

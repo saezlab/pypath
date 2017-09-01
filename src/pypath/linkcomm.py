@@ -122,7 +122,7 @@ class HLC:
             self.Mfactor  # update partition density
 
     def single_linkage(self, threshold=None, w=None, dendro_flag=False):
-        print "clustering..."
+        #print "clustering..."
         self.list_D = [(1.0, 0.0)]  # list of (S_i,D_i) tuples...
         self.best_D = 0.0
         self.best_S = 1.0  # similarity threshold at best_D
@@ -164,7 +164,7 @@ def similarities_unweighted(adj):
     """Get all the edge similarities. Input dict maps nodes to sets of neighbors.
     Output is a list of decorated edge-pairs, (1-sim,eij,eik), ordered by similarity.
     """
-    print "computing similarities..."
+    # print "computing similarities..."
     i_adj = dict((n, adj[n] | set([n]))
                  for n in adj)  # node -> inclusive neighbors
     min_heap = []  # elements are (1-sim,eij,eik)
@@ -186,7 +186,7 @@ def similarities_weighted(adj, ij2wij):
     mapping nodes to sets of neighbors, ij2wij is a dict mapping an edge (ni,nj) tuple
     to the weight wij of that edge.  
     """
-    print "computing similarities..."
+    # print "computing similarities..."
     i_adj = dict((n, adj[n] | set([n]))
                  for n in adj)  # node -> inclusive neighbors
 
@@ -395,7 +395,7 @@ Output:
     is_weighted = options.is_weighted
     dendro_flag = options.dendro_flag
 
-    print "# loading network from edgelist..."
+    #print "# loading network from edgelist..."
     basename = os.path.splitext(args[0])[0]
     if is_weighted:
         adj, edges, ij2wij = read_edgelist_weighted(
@@ -410,7 +410,7 @@ Output:
                 threshold, w=ij2wij)
         else:
             edge2cid, D_thr = HLC(adj, edges).single_linkage(threshold)
-        print "# D_thr = %f" % D_thr
+        #print "# D_thr = %f" % D_thr
         write_edge2cid(
             edge2cid,
             "%s_thrS%f_thrD%f" % (basename, threshold, D_thr),
@@ -430,9 +430,10 @@ Output:
 
         f = open("%s_thr_D.txt" % basename, 'w')
         for s, D in list_D:
-            print >> f, s, D
+            #print >> f, s, D
+            pass
         f.close()
-        print "# D_max = %f\n# S_max = %f" % (D_max, S_max)
+        #print "# D_max = %f\n# S_max = %f" % (D_max, S_max)
         write_edge2cid(
             edge2cid,
             "%s_maxS%f_maxD%f" % (basename, S_max, D_max),
