@@ -6,9 +6,9 @@
 from __future__ import print_function
 
 import pypath.main as main
-import pypath.common as common
+import pypath._version as _version
 #import descriptions
 #import pypath.common as common
 
-__version__ = common.__version__
+__version__ = _version.__version__
 PyPath = main.PyPath

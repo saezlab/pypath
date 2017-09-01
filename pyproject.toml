@@ -1,0 +1,37 @@
+[package]
+name = "pypath"
+summary = """A module for working with molecular interaction networks."""
+url = "http://pypath.omnipathdb.org/"
+author = "Dénes Türei"
+author-email = "turei.denes@gmail.com"
+license = "GPLv3"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Natural Language :: English",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Scientific/Engineering :: Mathematics"
+]
+
+[package.dependencies]
+runtime = []
+
+[package.build]
+dependencies = [
+    "setuptools",
+    "wheel",
+    "numpy"
+]
+
+[build-system]
+requires = [
+    "setuptools",
+    "wheel",
+    "numpy"
+]
