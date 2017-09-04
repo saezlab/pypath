@@ -92,6 +92,7 @@ import pypath.plot as plot
 
 import pypath.ig_drawing as ig_drawing
 import pypath.common as common
+import pypath._version as _version
 from pypath.gr_plot import *
 from pypath.progress import *
 
@@ -647,7 +648,7 @@ class PyPath(object):
         @loops : bool
             Whether to allow loop edges in the graph. Default is False.
         '''
-        self.__version__ = common.__version__
+        self.__version__ = _version.__version__
         for d in ['results', 'log', 'cache']:
             if not os.path.exists(d):
                 os.makedirs(d)
@@ -737,7 +738,7 @@ class PyPath(object):
             sys.stdout.write(
                 """\t> New session started,\n\tsession ID: '%s'\n\tlogfile: """
                 """'./%s'\n\tpypath version: %s\n""" % (
-                    self.session, self.ownlog.logfile, common.__version__))
+                    self.session, self.ownlog.logfile, _version.__version__))
 
         else:
             self.copy(copy)

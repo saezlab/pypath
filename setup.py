@@ -22,8 +22,19 @@ from setuptools import setup, find_packages
 import glob
 import imp
 
+from setuptools.command.install import install as _install
+import pip
+
 _version = imp.load_source('common', os.path.join('src', 'pypath', '_version.py'))
 __version__ = _version.__version__
+
+class __install(_install):
+    
+    def run(self):
+        
+        pip.main(['install', 'git+git://github.com/fabioticconi/fishers_exact_test@fix-setup-deps'])
+        
+        _install.run(self)
 
 def which(exe):
     '''
@@ -133,7 +144,6 @@ deps = [
     'numpy',
     'scipy',
     'matplotlib',
-    'fisher',
     'statsmodels',
     'pycurl',
     'lxml',
@@ -143,7 +153,12 @@ deps = [
     'tqdm'
 ]
 
+#deplinks = [
+    #'https://github.com/fabioticconi/fishers_exact_test/tarball/fix-setup-deps#egg=fisher-0.1.5'
+#]
+
 setup(
+    cmdclass = {'install': __install},
     name = 'pypath',
     version = metainfo['version'],
     maintainer = metainfo['authors']['Türei'][0],
@@ -163,4 +178,5 @@ setup(
     packages = list(set(find_packages() + ['pypath', 'pypath.data'])),
     include_package_data = True,
     install_requires = deps
+    # dependency_links = deplinks
 )
