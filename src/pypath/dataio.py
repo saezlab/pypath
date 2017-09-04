@@ -4612,7 +4612,7 @@ def kegg_pathways(mapper=None):
 
 def signor_pathways(**kwargs):
     '''
-    This function is deprecated.
+    Obtains pathway annotations from Signor.
     '''
     
     url = urls.urls['signor']['list_url']
