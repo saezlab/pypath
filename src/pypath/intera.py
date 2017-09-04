@@ -165,7 +165,7 @@ class Ptm(object):
         self.non_digit = re.compile(r'[^\d.-]+')
         self.protein = protein
         self.id_type = id_type
-        self.typ = typ
+        self.typ = typ.lower()
         self.seq = seq
         self.motif = motif
         self.residue = residue
