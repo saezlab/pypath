@@ -3841,10 +3841,8 @@ def get_guide2pharma(organism='human', endogenous=True):
         'reversible inhibition'
     ]
     url = urls.urls['gtp']['url']
-    c = curl.Curl(url, silent=False)
-    data = c.result
-    buff = StringIO()
-    buff.write(data)
+    c = curl.Curl(url, silent=False, large = True, encoding = 'utf-8')
+    buff = c.result
     cols = {
         'receptor_uniprot': 3,
         'ligand_uniprot': 7,
@@ -3865,7 +3863,7 @@ def get_guide2pharma(organism='human', endogenous=True):
         'endogenous': 18,
         'pubmed': 33
     }
-    data = read_table(cols=cols, fileObject=buff, sep=',', hdr=1)
+    data = read_table(cols=cols, fileObject=buff, sep=',', hdr=1, encoding = 'utf-8')
     if organism is not None:
         data = [
             d for d in data
