@@ -11,28 +11,7 @@ How to import OmniPath data into R igraph
 
 .. code:: r
 
-    source('r_import.r')
-
-
-.. parsed-literal::
-
-    Loading required package: dplyr
-    
-    Attaching package: ‘dplyr’
-    
-    The following objects are masked from ‘package:igraph’:
-    
-        as_data_frame, groups, union
-    
-    The following objects are masked from ‘package:stats’:
-    
-        filter, lag
-    
-    The following objects are masked from ‘package:base’:
-    
-        intersect, setdiff, setequal, union
-    
-
+    source('https://raw.githubusercontent.com/saezlab/pypath/master/r_import/r_import.r')
 
 .. code:: r
 
