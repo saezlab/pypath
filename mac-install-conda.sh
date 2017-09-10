@@ -108,7 +108,7 @@ then
         then
             $CONDA install -y -c richlewis pycairo=1.10.0
         else
-            $CONDA install -y -c pkgw py2cairo
+            $CONDA install -y -c pkgw/label/superseded py2cairo
         fi
     fi
     $CONDA install -y pymysql
