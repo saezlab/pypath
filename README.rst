@@ -55,6 +55,13 @@ To list all PTMs similarly:
 
     http://omnipathdb.org/ptms
 
+Can I use OmniPath in R?
+========================
+
+You can download the data from the webservice and load into R. Look here for an example:
+    
+    https://github.com/saezlab/pypath/tree/master/r_import
+
 Installation
 ============
 
