@@ -31,7 +31,8 @@ import json
 import pypath.descriptions as descriptions
 import pypath._html as _html
 import pypath.urls as urls
-from pypath.common import flatList, __version__
+from pypath.common import flatList
+from pypath._version import __version__
 
 if 'unicode' not in __builtins__:
     unicode = str
@@ -104,6 +105,19 @@ class RestResource(resource.Resource):
 
     def root(self, req):
         return _html.main_page()
+    
+    def _bool(self, arg):
+        
+        if type(arg) is list and len(arg):
+            arg = arg[0]
+        if hasattr(arg, 'decode'):
+            arg = arg.decode('utf-8')
+        if hasattr(arg, 'isdigit') and arg.isdigit():
+            arg = int(arg)
+        if arg == 'no':
+            arg = False
+        
+        return bool(arg)
 
     def network(self, req):
         hdr = ['nodes', 'edges', 'is_directed', 'sources']
@@ -118,6 +132,7 @@ class RestResource(resource.Resource):
                 [str(v) if type(v) is not list else ';'.join(v) for v in val]))
 
     def interactions(self, req):
+        
         fields = [b'sources', b'references']
         result = []
         elist = self._get_eids(req)
@@ -126,22 +141,44 @@ class RestResource(resource.Resource):
             'source', 'target', 'is_directed', 'is_stimulation',
             'is_inhibition'
         ]
+        
         if b'fields' in req.args:
             hdr += [
                 f.decode('utf-8') for f in fields if f in req.args[b'fields']
             ]
+        
+        if b'genesymbols' in req.args and self._bool(req.args[b'genesymbols']):
+            genesymbols = True
+            hdr.insert(2, 'source_genesymbol')
+            hdr.insert(3, 'target_genesymbol')
+        else:
+            genesymbols = False
+        
         all_sources = set([])
         for eid in elist:
             e = self.g.es[eid]
             all_sources = all_sources | e['sources']
             for d in ['straight', 'reverse']:
                 uniprots = getattr(e['dirs'], d)
+                
                 if e['dirs'].dirs[uniprots]:
+                    
                     thisEdge = [
-                        uniprots[0], uniprots[1], 1,
+                        uniprots[0], uniprots[1]
+                    ]
+                    
+                    if genesymbols:
+                        
+                        thisEdge.extend([
+                            self.g.vs[self.p.nodDct[uniprots[0]]]['label'],
+                            self.g.vs[self.p.nodDct[uniprots[1]]]['label']
+                        ])
+                    
+                    thisEdge.extend([
+                        1,
                         int(e['dirs'].is_stimulation(uniprots)),
                         int(e['dirs'].is_inhibition(uniprots))
-                    ]
+                    ])
                     dsources = e['dirs'].get_dir(uniprots, sources=True)
                     dsources = dsources | e['dirs'].get_dir(
                         'undirected', sources=True)
@@ -157,14 +194,25 @@ class RestResource(resource.Resource):
                         ])
                     thisEdge.append(self._dip_urls(e))
                     res.append(thisEdge)
+            
             if not e['dirs'].is_directed():
-                thisEdge = [e['dirs'].nodes[0], e['dirs'].nodes[1], 0, 0, 0]
+                
+                thisEdge = [e['dirs'].nodes[0], e['dirs'].nodes[1]]
+                if genesymbols:
+                    
+                    thisEdge.extend([
+                        self.g.vs[self.p.nodDct[e['dirs'].nodes[0]]]['label'],
+                        self.g.vs[self.p.nodDct[e['dirs'].nodes[1]]]['label']
+                    ])
+                
+                thisEdge.extend([0, 0, 0])
                 if 'sources' in hdr:
                     thisEdge.append(list(e['sources']))
                 if 'references' in hdr:
                     thisEdge.append([r.pmid for r in e['references']])
                 thisEdge.append(self._dip_urls(e))
                 res.append(thisEdge)
+        
         if 'DIP' in all_sources:
             hdr.append('dip_url')
         else:
@@ -214,6 +262,14 @@ class RestResource(resource.Resource):
             'enzyme', 'substrate', 'residue_type', 'residue_offset',
             'modification'
         ]
+        
+        if b'genesymbols' in req.args and self._bool(req.args[b'genesymbols']):
+            genesymbols = True
+            hdr.insert(2, 'enzyme_genesymbol')
+            hdr.insert(3, 'substrate_genesymbol')
+        else:
+            genesymbols = False
+        
         if b'fields' in req.args:
             hdr += [
                 f.decode('utf-8') for f in fields if f in req.args[b'fields']
@@ -225,29 +281,47 @@ class RestResource(resource.Resource):
                     if 'ptmtype' not in req.args or ptm.ptm.typ in req.args[
                             'ptmtype']:
                         thisPtm = [
-                            ptm.domain.protein, ptm.ptm.protein,
+                            ptm.domain.protein, ptm.ptm.protein
+                        ]
+                        
+                        if genesymbols:
+                            
+                            thisPtm.extend([
+                                self.g.vs[self.p.nodDct[
+                                    ptm.domain.protein]]['label'],
+                                self.g.vs[self.p.nodDct[
+                                    ptm.ptm.protein]]['label']
+                            ])
+                        
+                        thisPtm.extend([
                             ptm.ptm.residue.name, ptm.ptm.residue.number,
                             ptm.ptm.typ
-                        ]
+                        ])
+                        
                         if 'is_stimulation' in hdr:
                             thisPtm.append(
                                 int(e['dirs'].is_stimulation((
                                     ptm.domain.protein, ptm.ptm.protein))))
+                        
                         if 'is_inhibition' in hdr:
                             thisPtm.append(
                                 int(e['dirs'].is_inhibition((
                                     ptm.domain.protein, ptm.ptm.protein))))
+                        
                         if 'sources' in hdr:
                             thisPtm.append(list(ptm.ptm.sources))
+                        
                         if 'references' in hdr:
                             thisPtm.append(list(ptm.refs))
                         res.append(thisPtm)
+        
         if b'format' in req.args and req.args[b'format'] == b'json':
             return json.dumps([dict(zip(hdr, r)) for r in res])
         else:
             return self._table_output(res, hdr, req)
 
     def resources(self, req):
+        
         hdr = [
             'database', 'proteins', 'interactions', 'directions',
             'stimulations', 'inhibitions', 'signs'
@@ -283,6 +357,11 @@ class RestResource(resource.Resource):
         result = []
         if 'dip_id' in e.attributes():
             for dip_id in e['dip_id']:
-                result.append(urls.urls['dip']['ik'] %
-                              int(dip_id.split('-')[1][:-1]))
+                try:
+                    result.append(urls.urls['dip']['ik'] %
+                                int(dip_id.split('-')[1][:-1]))
+                except:
+                    
+                    print(dip_id)
+                
         return ';'.join(result)

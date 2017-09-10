@@ -3,9 +3,9 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2017 - EMBL-EBI
+#  Copyright (c) 2014-2017 - EMBL
 #
-#  File author(s): Dénes Türei (denes@ebi.ac.uk)
+#  File author(s): Dénes Türei (turei.denes@gmail.com)
 #
 #  Distributed under the GNU GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -108,7 +108,7 @@ then
         then
             $CONDA install -y -c richlewis pycairo=1.10.0
         else
-            $CONDA install -y -c pkgw py2cairo
+            $CONDA install -y -c pkgw/label/superseded py2cairo
         fi
     fi
     $CONDA install -y pymysql
