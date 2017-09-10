@@ -2409,7 +2409,9 @@ class PyPath(object):
                 self.ownlog.msg(2, 'Edge attribute `%s` has only None values' %
                                 (attr), 'WARNING')
             if len(types) > 0:
-                if list in types:
+                if set in types:
+                    self.edgeAttrs[attr] = set
+                elif list in types:
                     self.edgeAttrs[attr] = list
                 else:
                     self.edgeAttrs[attr] = types[0]
@@ -2433,11 +2435,21 @@ class PyPath(object):
         lists if in `edgeAttrs` the attribute is registered as list.
         """
         for e in self.graph.es:
+            
             if e[attr] is None:
                 e[attr] = self.edgeAttrs[attr]()
-            if self.edgeAttrs[attr] is list and type(e[
+            
+            if (self.edgeAttrs[attr] is list or
+                self.edgeAttrs[attr] is set) and type(e[
                     attr]) in common.simpleTypes:
-                e[attr] = [e[attr]] if len(e[attr]) > 0 else []
+                
+                e[attr] = [e[attr]] if (
+                    type(e[attr]) not in common.charTypes or
+                    len(e[attr]) > 0) else []
+            
+            if self.edgeAttrs[attr] is set and type(e[attr]) is list:
+                
+                e[attr] = set(e[attr])
 
     def attach_network(self, edgeList=False, regulator=False):
         """

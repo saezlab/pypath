@@ -31,7 +31,8 @@ import json
 import pypath.descriptions as descriptions
 import pypath._html as _html
 import pypath.urls as urls
-from pypath.common import flatList, __version__
+from pypath.common import flatList
+from pypath._version import __version__
 
 if 'unicode' not in __builtins__:
     unicode = str
@@ -104,6 +105,19 @@ class RestResource(resource.Resource):
 
     def root(self, req):
         return _html.main_page()
+    
+    def _bool(self, arg):
+        
+        if type(arg) is list and len(arg):
+            arg = arg[0]
+        if hasattr(arg, 'decode'):
+            arg = arg.decode('utf-8')
+        if hasattr(arg, 'isdigit') and arg.isdigit():
+            arg = int(arg)
+        if arg == 'no':
+            arg = False
+        
+        return bool(arg)
 
     def network(self, req):
         hdr = ['nodes', 'edges', 'is_directed', 'sources']
@@ -133,7 +147,7 @@ class RestResource(resource.Resource):
                 f.decode('utf-8') for f in fields if f in req.args[b'fields']
             ]
         
-        if b'genesymbols' in req.args and req.args[b'genesymbols'] == '1':
+        if b'genesymbols' in req.args and self._bool(req.args[b'genesymbols']):
             genesymbols = True
             hdr.insert(2, 'source_genesymbol')
             hdr.insert(3, 'target_genesymbol')
@@ -249,7 +263,7 @@ class RestResource(resource.Resource):
             'modification'
         ]
         
-        if b'genesymbols' in req.args and req.args[b'genesymbols'] == '1':
+        if b'genesymbols' in req.args and self._bool(req.args[b'genesymbols']):
             genesymbols = True
             hdr.insert(2, 'enzyme_genesymbol')
             hdr.insert(3, 'substrate_genesymbol')
@@ -307,6 +321,7 @@ class RestResource(resource.Resource):
             return self._table_output(res, hdr, req)
 
     def resources(self, req):
+        
         hdr = [
             'database', 'proteins', 'interactions', 'directions',
             'stimulations', 'inhibitions', 'signs'
@@ -342,6 +357,11 @@ class RestResource(resource.Resource):
         result = []
         if 'dip_id' in e.attributes():
             for dip_id in e['dip_id']:
-                result.append(urls.urls['dip']['ik'] %
-                              int(dip_id.split('-')[1][:-1]))
+                try:
+                    result.append(urls.urls['dip']['ik'] %
+                                int(dip_id.split('-')[1][:-1]))
+                except:
+                    
+                    print(dip_id)
+                
         return ';'.join(result)
