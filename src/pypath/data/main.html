@@ -1,0 +1,121 @@
+
+<p>
+  <a class="topmenu" href="#data"><span class="nav">data</span></a>
+  <a class="topmenu" href="#code"><span class="nav">code</span></a>
+  <a class="topmenu" href="#install"><span class="nav">install</span></a>
+  <a class="topmenu" href="#tutorial"><span class="nav">tutorials</span></a>
+  <a class="topmenu" href="#docs"><span class="nav">documentation</span></a>
+  <a class="topmenu" href="#paper"><span class="nav">article</span></a>
+  <a class="topmenu" href="mailto:omnipath@googlegroups.com"><span class="nav">contact</span></a>
+</p>
+<p>Welcome to the home of OmniPath, a comprehensive collection of 
+literature curated human signaling pathways. And pypath, a powerful 
+Python module for molecular networks and pathways analysis.</p>
+<p>
+    <img src="http://www.ebi.ac.uk/~denes/omnipath_cover_webpage_980px.jpeg"
+    title="Illustration by Spencer Phillips, EMBL-EBI. This cover artwork is the result of a collaboration between Spencer Phillips, Mary Todd-Bergman, Denes Turei, Tamas Korcsmaros and Julio Saez-Rodriguez, starting with the initial idea of using lenses by Jakob Wirbel (RWTH-Aachen). A modified version of this figure appeared in the Cover of Nature Methods Dec 2016."
+    style="width: 100%; max-width: 980px;"/>
+</p>
+
+<p style="font-size: small; max-width: 980px;"><em>
+Illustration by Spencer Phillips, EMBL-EBI. This cover artwork is the result of a collaboration between Spencer Phillips, Mary Todd-Bergman, Denes Turei, Tamas Korcsmaros and Julio Saez-Rodriguez, starting with the initial idea of using lenses by Jakob Wirbel (RWTH-Aachen). A modified version of this figure appeared in the
+<a target="_blank" href="http://www.nature.com/nmeth/journal/v13/n12/covers/index.html">Cover of Nature Methods Dec 2016</a>
+</em></p>
+
+<h2 id="paper">
+    <a class="omnipath" href="http://www.nature.com/nmeth/journal/v13/n12/full/nmeth.4077.html" target="_blank">The article</a>
+</h2>
+
+<a href="http://rdcu.be/m53B" target="_blank" title="Access the paper via readcube">
+    <span class="paper-link">click here for the paper</span>
+</a>
+
+<p>D Turei, T Korcsmaros and J Saez-Rodriguez (2016) OmniPath: guidelines and gateway for literature-curated signaling pathway resources. <em>Nature Methods</em> 13(12) </p>
+
+
+<p>
+<!--
+    <a target="_blank" href="http://www.nature.com/nmeth/journal/v13/n12/full/nmeth.4077.html">full text</a>&nbsp;
+    <span style="width: 1.33em; display: inline-block; text-align: center;">|</span>
+    <a target="_blank" href="http://www.nature.com/nmeth/journal/v13/n12/pdf/nmeth.4077.pdf">pdf</a>&nbsp;
+    <span style="width: 1.33em; display: inline-block; text-align: center;">|</span>
+    <a href="http://www.nature.com/nmeth/journal/v13/n12/extref/nmeth.4077-S1.pdf">supplementary pdf</a>&nbsp;
+    <span style="width: 1.33em; display: inline-block; text-align: center;">|</span>
+    -->
+    
+    <a target="_blank" href="https://www.ncbi.nlm.nih.gov/pubmed/27898060">PMID: 27898060</a>
+</p>
+
+<h2 id="data"><a class="omnipath" href="https://github.com/saezlab/pypath/blob/master/webservice.rst" 
+target="_blank">How to access the data?</a></h2>
+<p>OmniPath data is available via a webservice. <a href="https://github.com/saezlab/pypath/blob/master/webservice.rst" target="_blank">See example queries here.</a></p>
+<h2 id="pypath">What you can do with pypath?</h2>
+<p><em>pypath</em> is a Python module for building molecular interaction networks.
+It is able to combine multiple resources, process custom files, and convert between different identifiers.
+Undirected and directed networks are supported.
+Once the network is constructed, you can load additional annotations and perform analysis tasks.
+A large collection of these are already included in pypath.
+Thanks to the flexibility and power of Python, you can handle and process many ways your network.</p>
+<h2 id="code"><a class="omnipath" href="http://github.com/saezlab/pypath" target="_blank">pypath
+ code</a></h2>
+ <p>Pypath is available under GPLv3 license. For the git repository, <a href="http://github.com/saezlab/pypath" target="_blank">click here.</a></p>
+ <p>Forks, pull requests, bug reports and feature requests are welcome!</p>
+<h3 id="install">Installation</h3>
+<p><strong>Linux:</strong></p>
+<div class="box codebox">pip install git+git://github.com/saezlab/pypath.git</div>
+<p><strong>OS X:</strong> Installation on Mac might be challenging, mainly because of cairo. Follow the scripts below, go step-by-step and watch out for errors. We tested these methods on several computers, but every system is different. We appreciate if you report any error you experience, and we will do our best to find a solution. Please contact omnipath@googlegroups.com.</p>
+  <ul>
+  <li><a href="https://github.com/saezlab/pypath/blob/master/mac-install-brew.sh"
+    target="_blank">With HomeBrew</a>
+  </li>
+  <li><a href="https://github.com/saezlab/pypath/blob/master/mac-install-conda.sh"
+    target="_blank">With Anaconda</a>
+  </li>
+  </ul>
+<h2 id="docs"><a class="omnipath" href="http://pypath.omnipathdb.org/" target = "_blank">pypath
+ documentation</a></h2>
+ <p>For the reference documentation of the pypath module <a href="http://pypath.omnipathdb.org/" target="_blank">click here.</a></p>
+
+<h2 id="resources"><a class="omnipath" href="/info">Metainformation about signaling pathway resources
+ </a></h2>
+ <p><a href="/info">Find here a comprehensive list of signaling pathway resources.</a></p>
+<h2 id="tutorial">Tutorials</h2>
+ <p>Pypath allows to access and integrate dozens of bioinformatics resources in an easy way. Using the capabilities of Python you can handle them with a lot of flexibility.
+ Just pop up a Python shell, and type:</p>
+ <div class="codebox box">
+  import pypath<br>
+  <br>
+  pa = pypath.PyPath()<br>
+  <br>
+  pa.load_omnipath()
+ </div>
+
+<!--TUTORIALS-->
+
+<h2>Miscellanous</h2>
+
+<h3>OmniPath in meta-databases</h3>
+<p>
+<ul>
+<li><a href="https://omictools.com/omnipath-tool" target="_blank">OmicTools</a></li>
+<li><a href="http://pathguide.org/fullrecord.php?organisms=all&availability=all&standards=all&order=alphabetic&DBID=582" target="_blank">PathGuide</a></li>
+</ul>
+
+<h3>OmniPath press releases</h3>
+<p>
+<ul>
+<li><a href="https://www.ebi.ac.uk/about/news/press-releases/omnipath-sends-strong-signal" target="_blank">EMBL-EBI</a></li>
+<li><a href="http://www.earlham.ac.uk/newsroom/omnipath-sends-strong-signal" target="_blank">Earlham Institute</a></li>
+<li><a href="https://phys.org/news/2016-11-combining-pathway-resources-clearer-view.html" target="_blank">Phys.org</a></li>
+</ul>
+</p>
+
+<h3>Contributing groups</h3>
+<p>
+<ul>
+<li><a href="http://saezlab.org/" target="_blank">Saez Lab</a></li>
+<li><a href="http://www.earlham.ac.uk/korcsmaros-group" target="_blank">Korcsmaros Lab</a></li>
+</ul>
+</p>
+
+<h3><a href="https://scholar.google.co.uk/scholar?oi=bibs&hl=en&cites=2131297002329856377" target="_blank">Papers citing OmniPath</a></h3>
