@@ -1,12 +1,12 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2015 - EMBL-EBI
+#  Copyright (c) 2014-2017 - EMBL
 #
-#  File author(s): Dénes Türei (denes@ebi.ac.uk)
+#  File author(s): Dénes Türei (turei.denes@gmail.com)
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -39,6 +39,7 @@ __all__ = ['Plot', 'InterSet']
 
 
 class Plot(object):
+    
     def __init__(self,
                  graph=None,
                  filename=None,
@@ -254,10 +255,10 @@ class Plot(object):
         alpha = alpha if alpha is not None else self.default_alpha['%s_%s' % (
             what, attr)]
         pal = self.palettes[what] if palette is None else palette
-        if type(coldef) in [str, unicode] and coldef in seq.attributes():
+        if type(coldef) in charTypes and coldef in seq.attributes():
             lev = list(set(seq[coldef]))
             seq[attr] = [pal[lev.index(i[coldef])] for i in seq]
-        elif type(coldef) in [str, unicode] and len(coldef) <= 9:
+        elif type(coldef) in charTypes and len(coldef) <= 9:
             seq[attr] = [coldef for _ in seq]
         elif type(coldef) is list and len(coldef) == len(seq):
             seq[attr] = coldef
