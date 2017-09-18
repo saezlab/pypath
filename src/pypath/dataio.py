@@ -78,6 +78,7 @@ import json
 import pycurl
 import webbrowser
 import requests
+import codecs
 try:
     import bioservices
 except:
@@ -104,6 +105,9 @@ if 'long' not in __builtins__:
 
 if 'unicode' not in __builtins__:
     unicode = str
+
+CURSOR_UP_ONE = '\x1b[1A'
+ERASE_LINE = '\x1b[2K'
 
 #
 # thanks for http://stackoverflow.com/a/3239248/854988
@@ -1150,7 +1154,7 @@ def get_3did_ddi(residues=False, ddi_flat=None, organism=9606):
     ddi_collect = False
     con_collect = False
     non_digit = re.compile(r'[^\d.-]+')
-    with codecs.open(tmpfile, encoding='utf-8', mode='r') as f:
+    with open(tmpfile, 'r') as f:
         prg = progress.Progress(lnum, 'Reading data', 33)
         for l in f:
             prg.step()
@@ -1252,7 +1256,7 @@ def get_3did(ddi_flat=None, res=True, organism=9606, pickl=True):
         tmpfile = '3did_flat_tmp'
         if data is None:
             return None
-        with codecs.open(tmpfile, encoding='utf-8', mode='w') as f:
+        with open(tmpfile, 'w') as f:
             f.write(data)
         lnum = data.count('\n')
         del data
@@ -1270,7 +1274,7 @@ def get_3did(ddi_flat=None, res=True, organism=9606, pickl=True):
     skip = True
     non_digit = re.compile(r'[^\d.-]+')
     rmap = residues.ResidueMapper()
-    with codecs.open(tmpfile, encoding='utf-8', mode='r') as f:
+    with open(tmpfile, 'r') as f:
         prg = progress.Progress(
             lnum, 'Processing 3DID domain-domain interactions', 33)
         for l in f:
@@ -1364,7 +1368,7 @@ def get_3did_dmi(dmi_flat=None):
         tmpfile = '3did_dmi_flat_tmp'
         if data is None:
             return None
-        with codecs.open(tmpfile, encoding='utf-8', mode='w') as f:
+        with open(tmpfile, 'w') as f:
             f.write(data)
         lnum = data.count('\n')
         del data
@@ -1378,7 +1382,7 @@ def get_3did_dmi(dmi_flat=None):
     dmi = {}
     non_digit = re.compile(r'[^\d.-]+')
     rmap = residues.ResidueMapper()
-    with codecs.open(tmpfile, encoding='utf-8', mode='r') as f:
+    with open(tmpfile, 'r') as f:
         prg = progress.Progress(lnum,
                                 'Processing 3DID domain-motif interactions', 1)
         for l in f:
@@ -2578,7 +2582,7 @@ def get_ielm(ppi,
         #'File no longer available']) == 0:
         sys.stdout.write(ERASE_LINE + CURSOR_UP_ONE)
         sys.stdout.write('\t:: Waiting for result. Wait time: %u sec. '
-                         'Max waiting time: %u sec.' % (wait, maxwait))
+                         'Max waiting time: %u sec.\n' % (wait, maxwait))
         sys.stdout.flush()
         post = {
             'session_ID': sessid,
@@ -2616,10 +2620,13 @@ def get_ielm(ppi,
     if tbl:
         url = urls.urls['elm_depr']['url']
         depr_c = curl.Curl(url)
-        depr_list = c.result
+        depr_list = depr_c.result
         depr_list = depr_list.replace('"', '').split('\n')[5:]
         depr = [tuple(x.split('\t')) for x in depr_list if len(x) > 0]
-        depr = dict(depr + [tuple([x[0].lower(), x[1]]) for x in depr])
+        try:
+            depr = dict(depr + [tuple([x[0].lower(), x[1]]) for x in depr])
+        except:
+            print('\n\n\n', depr, '\n\n\n\n')
         # redepr = re.compile(r'\b(' + '|'.join(depr.keys()) + r')\b') :(
         rows = tbl.find_all('tr')
         prg = progress.Progress(
@@ -2662,7 +2669,7 @@ def get_pepcyber(cache=None):
 
     url = urls.urls['pepcyber']['url']
     # this is huge, takes a few minutes!
-    c = curl.Curl(url, silent=False, timeout=600)
+    c = curl.Curl(url, silent=False, timeout=600, encoding = 'iso-8859-1')
     data = c.result
     soup = bs4.BeautifulSoup(data, 'html.parser')
     rows = soup.find_all('tr')
@@ -2674,7 +2681,9 @@ def get_pepcyber(cache=None):
         with open(cache, 'r') as f:
             for l in f:
                 l = l.split('\t')
-                l += ['', '']
+                if l[0] == u'\xce':
+                    continue
+                l.extend(['', ''])
                 uniprots[l[0].strip()] = [l[1].strip(), l[2].strip()]
     prg = progress.Progress(len(rows), 'Retrieving and processing data', 7)
     notfound = []
@@ -2691,7 +2700,8 @@ def get_pepcyber(cache=None):
             thisRow[9] = None if 'p' not in thisRow[4] else \
                 thisRow[4][thisRow[4].index('p') + 1]
             if thisRow[2] not in uniprots or thisRow[3] not in uniprots:
-                uniprots.update(pepcyber_uniprot(inum))
+                up = pepcyber_uniprot(inum)
+                uniprots.update(up)
             if thisRow[2] in uniprots and thisRow[3] in uniprots:
                 thisRow.extend(uniprots[thisRow[2]])
                 thisRow.extend(uniprots[thisRow[3]])
@@ -2701,6 +2711,8 @@ def get_pepcyber(cache=None):
     prg.terminate()
     with open(cache, 'w') as f:
         for g, u in iteritems(uniprots):
+            if g[0] == u'\xce':
+                continue
             f.write('\t'.join([g] + u) + '\n')
     return result
 
@@ -2708,7 +2720,7 @@ def get_pepcyber(cache=None):
 def pepcyber_uniprot(num):
     result = {}
     url = urls.urls['pepcyber_details']['url'] % num
-    c = curl.Curl(url, cache=False)
+    c = curl.Curl(url, cache=False, encoding = 'iso-8859-1')
     data = c.result
     if data is None:
         return result
@@ -2722,7 +2734,7 @@ def pepcyber_uniprot(num):
             refseq = td.text.strip()
         if prev.startswith('SwissProt') and gname is not None:
             swprot = td.text.strip()
-            if len(gname) > 0:
+            if len(gname) > 0 and gname[0] != u'\xce':
                 result[gname] = [swprot, refseq]
             gname = None
         prev = td.text.strip()

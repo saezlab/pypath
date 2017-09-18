@@ -6979,6 +6979,11 @@ class PyPath(object):
         return proteins_pws, interactions_pws
 
     def pathway_members(self, pathway, source):
+        """
+        Returns an iterator with the members of a single pathway.
+        Apart from the pathway name you need to supply its source
+        database too.
+        """
         attr = '%s_pathways' % source
         if attr in self.graph.vs.attribute_names():
             return _NamedVertexSeq(
@@ -6986,6 +6991,20 @@ class PyPath(object):
                 self.nodNam, self.nodLab)
         else:
             return _NamedVertexSeq([], self.nodNam, self.nodLab)
+    
+    def pathway_names(self, source, graph = None):
+        """
+        Returns the names of all pathways having at least one member
+        in the current graph.
+        """
+        
+        graph = graph or self.graph
+        
+        attr = '%s_pathways' % source
+        
+        if attr in graph.vertex_attributes():
+            
+            return set.union(*graph.vs[attr])
 
     def load_all_pathways(self, graph=None):
         self.kegg_pathways(graph=graph)
@@ -7822,7 +7841,7 @@ class PyPath(object):
                     'unknown': '#CCCCCC'
                 },
                 'directed': {
-                    'stimulation': '#00CC00',
+                    'stimulation': '#00AA00',
                     'inhibition': '#CC0000',
                     'unknown': '#0000CC'
                 },

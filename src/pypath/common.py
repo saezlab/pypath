@@ -640,3 +640,18 @@ mirbase_taxids = {
     10116: 'rno',
     7227: 'dme'
 }
+
+class silent(object):
+   
+    def __init__(self):
+       
+        pass
+   
+    def __enter__(self):
+        self.aux = sys.stdout
+        sys.stdout = open(os.devnull, 'w')
+   
+    def __exit__(self, exception_type, exception_value, traceback):
+       
+        sys.stdout.close()
+        sys.stdout = self.aux
