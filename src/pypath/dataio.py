@@ -165,6 +165,9 @@ def read_table(cols,
             sys.stdout.write(
                 '\tERROR: %s() expects file like object (file opened for read'
                 ', or StringIO buffer, etc)\n' % funname)
+            return []
+        if data is None:
+            return []
         fileObject.seek(0)
         if hdr:
             for h in xrange(0, hdr):
