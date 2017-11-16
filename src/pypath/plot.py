@@ -3024,6 +3024,7 @@ class HtpCharacteristics(object):
 
 
 class RefsComposite(object):
+    
     def __init__(self,
                  pp,
                  fname,
