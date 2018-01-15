@@ -20,7 +20,7 @@ from collections import Counter, OrderedDict
 
 # from this package:
 from pypath import dataio
-import pypath.progress
+from pypath import progress
 from pypath import enrich
 from pypath.common import *
 
