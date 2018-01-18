@@ -736,6 +736,11 @@ urls = {
             'get_data?file=InBio_Map_core_2016_09_12.tar.gz',
         'login': 'https://www.intomics.com/inbio/api/login_guest?ref=&_=%u',
         'refresh': 'https://www.intomics.com/inbio/api/refresh?_=%u'
+    },
+    'rami': {
+        'label': 'Ligand-receptor interactions from Ramilowski 2015',
+        'url': 'https://media.nature.com/original/nature-assets/ncomms/'\
+            '2015/150722/ncomms8866/extref/ncomms8866-s3.xlsx'
     }
 }
 

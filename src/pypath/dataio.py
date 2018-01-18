@@ -3795,6 +3795,33 @@ def get_lincs_compounds():
              ]).split('\n')[1:] if len(a) > 0]] for key in pair[0]])
 
 
+def ramilowski_interactions(putative = False):
+    """
+    Downloads and processes ligand-receptor interactions from
+    Supplementary Table 2 of Ramilowski 2015.
+    """
+    
+    c = curl.Curl(urls.urls['rami']['url'], silent = False, large = True)
+    xls = c.result
+    xlsfile = xls.name
+    xls.close()
+    raw = read_xls(xlsfile, 'All.Pairs')[1:]
+    
+    return [
+        [
+            r[1],
+            r[3],
+            r[13].replace(' ', ''),
+            ';'.join(filter(len, itertools.chain(r[5:11], [r[15]])))
+        ]
+        for r in raw
+        if r[15] != 'EXCLUDED not ligand' and (
+            putative or r[15] != 'putative'
+        )
+    ]
+    
+    return raw
+
 def get_hpmr():
     '''
     Downloads and processes the list of all human receptors from

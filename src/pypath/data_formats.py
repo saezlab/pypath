@@ -29,7 +29,8 @@ __all__ = [
     'reaction', 'interaction', 'interaction_misc', 'pathway',
     'interaction_htp', 'ptm', 'ptm_misc', 'obsolate',
     'transcription_deprecated', 'omnipath', 'transcription', 'negative',
-    'gdsc_comp_target', 'cgc', 'reactome_modifications', 'reaction_misc'
+    'gdsc_comp_target', 'cgc', 'reactome_modifications', 'reaction_misc',
+    'ligand_receptor'
 ]
 
 ROOT = common.ROOT
@@ -1586,6 +1587,30 @@ lncrna_protein = {
         extraEdgeAttrs={},
         extraNodeAttrsA={},
         extraNodeAttrsB={})
+}
+
+ligand_receptor = {
+    'ramilowski2015': input_formats.ReadSettings(
+        name="Ramilowski2015",
+        separator=None,
+        nameColA=0,
+        nameColB=1,
+        nameTypeA="genesymbol",
+        nameTypeB="genesymbol",
+        typeA="protein",
+        typeB="protein",
+        isDirected=True,
+        sign=None,
+        inFile='ramilowski_interactions',
+        references=(2, ','),
+        ncbiTaxId=9606,
+        extraEdgeAttrs={"ramilowski_sources": (3, ';')},
+        extraNodeAttrsA={},
+        extraNodeAttrsB={},
+        must_have_references=False,
+        inputArgs={
+            'putative': False
+        })
 }
 
 '''
