@@ -4737,15 +4737,12 @@ def csv_sep_change(csv, old, new):
         if char == '\r':
             continue
         elif char == '"':
-            if bw_quotes:
-                bw_quotes = False
-            else:
-                bw_quotes = True
+            bw_quotes = not bw_quotes
         elif char == '\n':
             if not bw_quotes:
                 clean_csv.append(char)
             else:
-                continue
+                clean_csv.append(' ')
         elif char == old:
             if bw_quotes:
                 clean_csv.append(char)
@@ -4793,7 +4790,7 @@ def signor_interactions(organism=9606):
     _ = c.result.readline()
     sep = '@#@#@'
     lines = c.result.read().decode('utf-8')
-    lines = csv_sep_change(lines, ';', sep).split('\n')
+    lines = csv_sep_change(lines, '\t', sep).split('\n')
 
     i = 0
     result = filter(lambda l: len(l) > 1, map(lambda l: l.split(sep), lines))

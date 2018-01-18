@@ -15,13 +15,15 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
+from future.utils import iteritems
+
 import sys
 from collections import Counter, OrderedDict
 
 # from this package:
-from pypath import dataio
-import pypath.progress
-from pypath import enrich
+import pypath.dataio as dataio
+import pypath.progress as progress
+import pypath.enrich as enrich
 from pypath.common import *
 
 
@@ -32,7 +34,7 @@ class GOAnnotation(object):
         self.f = go['terms']['F']
         self.p = go['terms']['P']
         self.name = go['names']
-        self.term = dict([(v, k) for k, v in self.name.iteritems()])
+        self.term = dict([(v, k) for k, v in iteritems(self.name)])
 
     def get_name(self, term):
         return None if term not in self.name else self.name[term]
@@ -102,7 +104,7 @@ class GOEnrichmentSet(enrich.EnrichmentSet):
     def calculate(self):
         data = dict([(term, (cnt, self.counts_pop[term], self.set_size,
                              self.annotation.name[term]))
-                     for term, cnt in self.counts_set.iteritems()])
+                     for term, cnt in iteritems(self.counts_set)])
         enrich.EnrichmentSet.__init__(
             self,
             data,
@@ -116,11 +118,11 @@ class GOEnrichmentSet(enrich.EnrichmentSet):
                 organism=self.organism, swissprot='yes'))
         return dict(
             filter(lambda x: x[0] in swissprots,
-                   getattr(self.annotation, self.aspect.lower()).iteritems()))
+                   iteritems(getattr(self.annotation, self.aspect.lower()))))
 
     def get_annot(self, set_names):
         return dict(
-            filter(lambda x: x[0] in set_names, self.basic_set.iteritems()))
+            filter(lambda x: x[0] in set_names, iteritems(self.basic_set)))
 
     def count(self, data):
         return Counter(flatList(list(vals) for vals in data.values()))
