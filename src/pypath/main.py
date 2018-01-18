@@ -3832,15 +3832,21 @@ class PyPath(object):
                     thisEdge.append(';'.join([
                         x.strip()
                         for x in stripJson.sub('',
-                                               json.dumps(self.graph.vs[
-                                                   e.source][v])).split(',')
+                            json.dumps(
+                                list(self.graph.vs[e.source][v])
+                                if type(self.graph.vs[e.source][v]) is set
+                                else self.graph.vs[e.source][v]
+                            )).split(',')
                     ]))
                 for k, v in iteritems(extraNodeAttrs):
                     thisEdge.append(';'.join([
                         x.strip()
                         for x in stripJson.sub('',
-                                               json.dumps(self.graph.vs[
-                                                   e.target][v])).split(',')
+                                json.dumps(
+                                list(self.graph.vs[e.target][v])
+                                if type(self.graph.vs[e.target][v]) is set
+                                else self.graph.vs[e.target][v]
+                            )).split(',')
                     ]))
                 f.write('%s\n' % '\t'.join(thisEdge))
                 prg.step()
@@ -4298,7 +4304,7 @@ class PyPath(object):
             self.ownlog.msg(
                 2, 'Complexes from Complex Portal have been retrieved.',
                 'INFO')
-
+    
     def load_3dcomplexes(self, graph=None):
         graph = graph if graph is not None else self.graph
         c3d = dataio.get_3dcomplexes()
@@ -4421,11 +4427,25 @@ class PyPath(object):
                             graph.es[e]['interfaces']['pisa'][pdb] = []
                         graph.es[e]['interfaces']['pisa'][pdb].append(intf)
         return unmapped
-
-    #
-    # methods with biological meaning
-    #
-
+    
+    def find_complex(self, search):
+        """
+        Finds complexes by their non standard names.
+        E.g. to find DNA polymerases you can use the search
+        term `DNA pol` which will be tested against complex names
+        in CORUM.
+        """
+        result = []
+        comp, memb = dataio.get_corum()
+        
+        for cname, cdata in comp.items():
+            
+            if search.lower() in cname.lower():
+                
+                result.append((cname, cdata[0]))
+        
+        return result
+    
     def genesymbol(self, genesymbol):
         '''
         Returns ``igraph.Vertex()`` object if the GeneSymbol

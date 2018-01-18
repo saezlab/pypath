@@ -220,7 +220,7 @@ class Chembl(object):
             prg.terminate()
             self.mysql_ready(qids)
             for qid in qids:
-                self.result += list(self.mysql.get_result(qid))
+                self.result.extend(list(self.mysql.get_result(qid)))
 
     def compound_target(self,
                         id_list,
@@ -233,7 +233,10 @@ class Chembl(object):
                         action_type=False,
                         activities=False,
                         pchembl=False,
-                        wait=True):
+                        wait=True,
+                        select_extra = '',
+                        join_extra = '',
+                        where_extra = ''):
         '''Get compounds for list of targets or targets for a list of compounds
 
         Inputs:
@@ -326,7 +329,7 @@ class Chembl(object):
         else:
             return qid
         result = self.mysql.get_result(qid)
-        self.result = result
+        self.result = list(result)
 
     def compounds_targets_mechanism(self,
                                     id_list,
