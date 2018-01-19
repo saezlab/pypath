@@ -427,8 +427,8 @@ urls = {
     'proteinatlas': {
         'label': 'Human Protein Atlas: Immuncytochemistry expression data in '
         'healthy human cells or cancer cells or cell lines',
-        'normal': 'http://www.proteinatlas.org/download/normal_tissue.csv.zip',
-        'cancer': 'http://www.proteinatlas.org/download/cancer.csv.zip'
+        'normal': 'http://www.proteinatlas.org/download/normal_tissue.tsv.zip',
+        'pathology': 'http://www.proteinatlas.org/download/pathology.tsv.zip'
     },
     'lincs-compounds': {
         'label':

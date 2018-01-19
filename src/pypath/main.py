@@ -46,6 +46,7 @@ import threading
 import traceback
 import itertools
 from itertools import chain
+import collections
 from collections import Counter
 from scipy import stats
 import numpy as np
@@ -6798,7 +6799,12 @@ class PyPath(object):
             for v in graph.vs
         ]
     
-    def load_hpa(self, normal = True, cancer = True, tissues = None,
+    def load_hpa(self,
+                 normal = True,
+                 pathology = True,
+                 cancer = True,
+                 summarize_pathology = True,
+                 tissues = None,
                  quality = set(['Supported', 'Approved']),
                  levels  = {'High': 3, 'Medium': 2,
                             'Low': 1, 'Not detected': 0},
@@ -6807,20 +6813,53 @@ class PyPath(object):
         
         graph = graph or self.graph
         
-        hpa = dataio.get_proteinatlas(normal = normal, cancer = cancer)
+        hpa = dataio.get_proteinatlas(
+            normal = normal, pathology = pathology or cancer)
         
-        for tissue, data in iteritems(hpa):
+        if normal:
             
-            if tissues is not None and tissue not in tissues:
-                continue
-            
-            graph.vs[tissue] = [na_value for v in xrange(graph.vcount())]
-            
-            for v in graph.vs:
+            for tissue, data in iteritems(hpa['normal']):
                 
-                if v['name'] in data and data[v['name']][1] in quality:
+                if tissues is not None and tissue not in tissues:
+                    continue
+                
+                graph.vs[tissue] = [na_value for v in xrange(graph.vcount())]
+                
+                for v in graph.vs:
                     
-                    v[tissue] = levels[data[v['name']][0]]
+                    if v['name'] in data and data[v['name']][1] in quality:
+                        
+                        v[tissue] = levels[data[v['name']][0]]
+        
+        if cancer or pathology:
+            
+            counts = set(['Not detected', 'Low', 'Medium', 'High'])
+            
+            for tissue, data in iteritems(hpa['pathology']):
+                
+                if tissues is not None and tissue not in tissues:
+                    continue
+                
+                graph.vs[tissue] = [{} if summarize_pathology else na_value
+                                    for v in xrange(graph.vcount())]
+                
+                for v in graph.vs:
+                    
+                    if v['name'] in data:
+                        
+                        if summarize_pathology:
+                            
+                            patho_sum = collections.Counter(dict(
+                                i for i in data[v['name']].items()
+                                if i[0] in counts
+                            ))
+                            
+                            if len(patho_sum):
+                                v[tissue] = levels[patho_sum.most_common()[0][0]]
+                            
+                        else:
+                            
+                            v[tissue] = data[v['name']]
     
     def tissue_network(self, tissue, graph=None):
         

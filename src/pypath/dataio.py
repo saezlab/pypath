@@ -7316,34 +7316,25 @@ def get_imweb_req():
             
             fp.write(block)
 
-def get_proteinatlas(normal = True, cancer = True, mapper = None):
+def get_proteinatlas(normal = True, pathology = True,
+                     cancer = True, mapper = None):
     
     mapper = mapper or mapping.Mapper()
-    result = collections.defaultdict(lambda: {})
+    result = {
+        'normal':    collections.defaultdict(lambda: {}),
+        'pathology': collections.defaultdict(lambda: {})
+    }
     
     def line(l):
         
-        return l.decode('utf-8').strip().replace('"', '').split(',')
-    
-    def get_levels(levels):
-        
-        values = collections.Counter(dict((x[3], int(x[4])) for x in levels))
-        
-        total = int(levels[0][5])
-        
-        return (
-            values.most_common()[0][0],
-            'Supported'
-            if values.most_common()[1][1] * 2.0 >= total
-            else 'Uncertain'
-        )
+        return l.decode('utf-8').split('\t')
     
     if normal:
         
         c = curl.Curl(urls.urls['proteinatlas']['normal'],
                     silent = False, large = True)
         fp = list(c.result.values())[0]
-        hdr = line(fp.readline())
+        hdr = line(fp.readline().strip())
         
         for l in fp:
             
@@ -7353,32 +7344,28 @@ def get_proteinatlas(normal = True, cancer = True, mapper = None):
             tissue = '%s:%s' % (l[2], l[3])
             
             for u in uniprots:
-                result[tissue][u] = (l[4], l[5])
+                result['normal'][tissue][u] = (l[4], l[5].strip())
     
-    if cancer:
+    if cancer or pathology:
         
-        c = curl.Curl(urls.urls['proteinatlas']['cancer'],
+        c = curl.Curl(urls.urls['proteinatlas']['pathology'],
                     silent = False, large = True)
         fp = list(c.result.values())[0]
         hdr = line(fp.readline())
         
-        levels = []
-        
         for l in fp:
             
             l = line(l)
+            uniprots = mapper.map_name(l[0], 'ensembl', 'uniprot')
+            tissue   = l[2]
             
-            if len(levels) == 4:
-                
-                ll = get_levels(levels)
-                uniprots = mapper.map_name(ll[0], 'ensembl', 'uniprot')
-                
-                for u in uniprots:
-                    result[l[1]][u] = ll
-                
-                levels = []
+            values = dict(
+                (h, float(l[i + 3]) if '.' in l[i + 3] else int(l[i + 3]))
+                for i, h in enumerate(hdr[3:])
+                if len(l) and len(l[i + 3].strip())
+            )
             
-            else:
-                levels.append(l)
+            for u in uniprots:
+                result['pathology'][tissue][u] = values
     
     return result
