@@ -90,6 +90,7 @@ import pypath.reflists as reflists
 import pypath.input_formats as input_formats
 import pypath.refs as _refs
 import pypath.plot as plot
+import pypath.ptm
 
 import pypath.ig_drawing as ig_drawing
 import pypath.common as common
@@ -5687,8 +5688,73 @@ class PyPath(object):
     def sequences(self, isoforms=True, update=False):
         if self.seq is None or update:
             self.seq = se.swissprot_seq(self.ncbi_tax_id, isoforms)
-
+    
+    def load_ptms2(self,
+        input_methods = None,
+        map_by_homology_from = [9606],
+        homology_only_swissprot = True,
+        ptm_homology_strict = False,
+        nonhuman_direct_lookup = True,
+        inputargs = {}):
+        """
+        This is a new method which will replace `load_ptms`.
+        It uses `pypath.ptm.PtmAggregator`, a newly introduced
+        module for combining enzyme-substrate data from multiple
+        resources using homology translation on users demand.
+        
+        :param list input_methods: Resources to collect enzyme-substrate
+            interactions from. E.g. `['Signor', 'phosphoELM']`. By default
+            it contains Signor, PhosphoSitePlus, HPRD, phosphoELM, dbPTM,
+            PhosphoNetworks, Li2012 and MIMP.
+        :param list map_by_homology_from: List of NCBI Taxonomy IDs of
+            source taxons used for homology translation of enzyme-substrate
+            interactions. If you have a human network and you add here
+            `[10090, 10116]` then mouse and rat interactions from the source
+            databases will be translated to human.
+        :param bool homology_only_swissprot: `True` by default which means
+            only SwissProt IDs are accepted at homology translateion, Trembl
+            IDs will be dropped.
+        :param bool ptm_homology_strict: For homology translation use
+            PhosphoSite's PTM homology table. This guarantees that only
+            truely homologous sites will be included. Otherwise we only
+            check if at the same numeric offset in the homologous sequence
+            the appropriate residue can be find.
+        :param bool nonhuman_direct_lookup: Fetch also directly nonhuman
+            data from the resources whereever it's available. PhosphoSite
+            contains mouse enzyme-substrate interactions and it is possible
+            to extract these directly beside translating the human ones
+            to mouse.
+        :param dict inputargs: Additional arguments passed to `PtmProcessor`.
+            A `dict` can be supplied for each resource, e.g.
+            `{'Signor': {...}, 'PhosphoSite': {...}, ...}`.
+            Those not used by `PtmProcessor` are forwarded to the
+            `pypath.dataio` methods.
+        """
+        
+        ptma = pypath.ptm.PtmAggregator(
+            input_methods = input_methods,
+            ncbi_tax_id = self.ncbi_tax_id,
+            map_by_homology_from = map_by_homology_from,
+            # here we don't share the mapper as later many
+            # tables which we don't need any more would
+            # just occupy memory
+            mapper = self.mapper,
+            homology_only_swissprot = homology_only_swissprot,
+            ptm_homology_strict = ptm_homology_strict,
+            nonhuman_direct_lookup = nonhuman_direct_lookup,
+            inputargs = inputargs
+        )
+        
+        ptma.assign_to_network(self)
+        
+        if self.ncbi_tax_id == 9606:
+            self.load_depod_dmi()
+        
+        self.uniq_ptms()
+        self.phosphorylation_directions()
+    
     def load_ptms(self):
+        
         self.load_depod_dmi()
         self.load_signor_ptms()
         self.load_li2012_ptms()
