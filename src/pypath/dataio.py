@@ -4083,25 +4083,29 @@ def get_disgenet(dataset='curated'):
     url = urls.urls['disgenet']['url'] % dataset
     c = curl.Curl(
         url,
-        silent=False,
-        files_needed=[url.split('/')[-1].replace('tar.gz', 'txt')])
-    data = c.result
+        silent=False
+    )
+    
     cols = {
         'entrez': 0,
         'genesymbol': 1,
-        'umls': 3,
-        'disease': 4,
-        'score': 5,
-        'assoc_typ': 7,
-        'source': 8
+        'umls': 2,
+        'disease': 3,
+        'score': 4,
+        'nof_pmids': 5,
+        'nof_snps':  6,
+        'source': 7
     }
-    data = read_table(cols=cols, data=list(data.values())[0], hdr=1, sep='\t')
+    
+    data = read_table(cols=cols, data=c.result, hdr=1, sep='\t')
+    
     for i, d in enumerate(data):
-        data[i]['score'] = float(data[i]['score'])
-        data[i]['assoc_typ'] = [
-            x.strip() for x in data[i]['assoc_typ'].split(',')
-        ]
-        data[i]['source'] = [x.strip() for x in data[i]['source'].split(',')]
+        
+        data[i]['score']  = float(data[i]['score'])
+        data[i]['nof_pmids'] = int(data[i]['nof_pmids'])
+        data[i]['nof_snps']  = int(data[i]['nof_snps'])
+        data[i]['source'] = [x.strip() for x in data[i]['source'].split(';')]
+    
     return data
 
 

@@ -486,7 +486,7 @@ urls = {
     'disgenet': {
         'label': 'Disease-gene associations',
         'url':
-        'http://www.disgenet.org/ds/DisGeNET/results/%s_gene_disease_associations.tar.gz',
+        'http://www.disgenet.org/ds/DisGeNET/results/%s_gene_disease_associations.tsv.gz',
         'datasets': ['curated', 'literature', 'befree', 'all']
     },
     'hsn': {

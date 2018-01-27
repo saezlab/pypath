@@ -7231,18 +7231,53 @@ class PyPath(object):
     def set_tfs(self, classes=['a', 'b', 'other']):
         self.set_transcription_factors(classes)
 
-    def load_disgenet(self, dataset='curated', score=0.0):
+    def load_disgenet(self, dataset='curated', score=0.0, umls = False,
+                      full_data = False):
+        """
+        Assigns DisGeNet disease-gene associations to the proteins
+        in the network. Disease annotations will be added to the `dis`
+        vertex attribute.
+        
+        :param float score: Confidence score from DisGeNet. Only associations
+            above the score provided will be considered.
+        :param bool ulms: By default we assign a list of disease names to
+            each protein. To use Unified Medical Language System IDs instead
+            set this to `True`.
+        :param bool full_data: By default we load only disease names. Set this
+            to `True` if you wish to load additional annotations like number
+            of PubMed IDs, number of SNPs and original sources.
+        """
+        
         self.update_vname()
         data = dataio.get_disgenet(dataset=dataset)
         self.graph.vs['dis'] = [[] for _ in self.graph.vs]
+        
         for d in data:
+            
             if d['score'] >= score:
+                
                 uniprots = self.mapper.map_name(d['entrez'], 'entrez',
                                                 'uniprot')
+                
                 for up in uniprots:
+                    
                     if up in self.nodInd:
-                        self.graph.vs[self.nodDct[up]]['dis'].append(d[
-                            'disease'])
+                        
+                        if full_data:
+                            
+                            _ = d.pop('entrez', None)
+                            _ = d.pop('genesymbol', None)
+                            self.graph.vs[self.nodDct[up]]['dis'].append(d)
+                            
+                        elif umls:
+                            
+                            self.graph.vs[self.nodDct[up]]['dis'].append(d[
+                                'umls'])
+                            
+                        else:
+                            
+                            self.graph.vs[self.nodDct[up]]['dis'].append(d[
+                                'disease'])
 
     def curation_stats(self, by_category=True):
         result = {}
