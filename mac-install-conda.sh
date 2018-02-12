@@ -120,7 +120,7 @@ then
     fi
     
     # installing igraph
-    $CONDA install -y -c bioconda python-igraph
+    $CONDA install -y -c marufr python-igraph
 
     if [[ $PYMAINVER == "3" ]];
     then

@@ -3822,6 +3822,76 @@ def ramilowski_interactions(putative = False):
     
     return raw
 
+def kirouac2010_interactions():
+    
+    def get_names(s):
+        
+        rename = re.compile(r'[A-Z]{2}[A-Z0-9][-A-Z0-9]*')
+        rerange = re.compile(r'([0-9])-([0-9])')
+        reslash = re.compile(r'.*?([A-Z0-9]{1,3}/[/A-Z0-9]+)')
+        
+        names = set([])
+        prev = None
+        
+        for n in s.split():
+            
+            m = rename.findall(n)
+            
+            if m:
+                
+                prev = m
+                
+                m = reslash.match(n)
+                
+                if m:
+                    
+                    for post in m.groups()[0].split('/'):
+                        
+                        for pre in prev:
+                            
+                            names.add('%s%s' % (pre, post))
+                
+                else:
+                    
+                    m = rerange.match(n)
+                    
+                    if m:
+                        
+                        intv = m.groups()
+                        
+                        for post in range(int(intv[0]), int(intv[1]) + 1):
+                            
+                            for pre in prev:
+                                
+                                names.add('%s%u' % (pre, post))
+                        
+                    else:
+                        
+                        names.update(prev)
+            
+            prev = None
+        
+        return names
+    
+    url = urls.urls['kirouac2010']['url']
+    c = curl.Curl(url, silent = False, large = True)
+    xls = c.result
+    xlsfile = xls.name
+    xls.close()
+    tbl = read_xls(xlsfile, sheet='S12')
+    
+    result = []
+    
+    for r in tbl[2:]:
+        
+        namesA = get_names(r[0])
+        namesB = get_names(r[1])
+        
+        result.extend(list(itertools.product(namesA, namesB)))
+    
+    return result
+
+
 def get_hpmr():
     '''
     Downloads and processes the list of all human receptors from

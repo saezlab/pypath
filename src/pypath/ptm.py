@@ -4,7 +4,7 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2017 - EMBL-EBI
+#  Copyright (c) 2014-2018 - EMBL
 #
 #  File author(s): Dénes Türei (denes@ebi.ac.uk)
 #

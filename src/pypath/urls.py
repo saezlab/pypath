@@ -741,6 +741,12 @@ urls = {
         'label': 'Ligand-receptor interactions from Ramilowski 2015',
         'url': 'https://media.nature.com/original/nature-assets/ncomms/'\
             '2015/150722/ncomms8866/extref/ncomms8866-s3.xlsx'
+    },
+    'kirouac2010': {
+        'label': 'Intercellular (cytokine-receptor) interactions from'\
+            'Kirouac et al 2010',
+        'url': 'http://msb.embopress.org/content/msb/6/1/417/DC3/embed/'\
+            'inline-supplementary-material-3.xls?download=true'
     }
 }
 

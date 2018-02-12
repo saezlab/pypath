@@ -1079,6 +1079,24 @@ interaction_misc = {
         header=False,
         extraEdgeAttrs={},
         extraNodeAttrsA={},
+        extraNodeAttrsB={}),
+    'kirouac2010': input_formats.ReadSettings(
+        name="Kirouac2010",
+        separator=None,
+        nameColA=0,
+        nameColB=1,
+        nameTypeA="genesymbol",
+        nameTypeB="genesymbol",
+        typeA="protein",
+        typeB="protein",
+        isDirected=True,
+        sign=False,
+        ncbiTaxId=9606,
+        inFile='kirouac2010_interactions',
+        references=False,
+        header=False,
+        extraEdgeAttrs={},
+        extraNodeAttrsA={},
         extraNodeAttrsB={})
 }
 
