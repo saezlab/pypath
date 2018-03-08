@@ -4765,9 +4765,19 @@ def signor_pathways(**kwargs):
             (b'submit', b'Download')
         ]
         
-        c_pw = curl.Curl(baseurl, silent = True, binary_data = binary_data)
+        c_pw = curl.Curl(
+            baseurl,
+            silent = True,
+            large = True,
+            binary_data = binary_data
+        )
         
-        data = c_pw.result
+        sep = '@#@#@'
+        lines = csv_sep_change(
+            c_pw.result.read().decode('utf-8'),
+            '\t',
+            sep
+        ).split('\n')[1:]
         
         data = list(
             filter(
@@ -4775,8 +4785,8 @@ def signor_pathways(**kwargs):
                     len(l) > 6,
                 map(
                     lambda l:
-                        l.strip().split(';'),
-                    data.split('\n')[1:]
+                        l.strip().split(sep),
+                    lines
                 )
             )
         )
@@ -4787,10 +4797,10 @@ def signor_pathways(**kwargs):
             proteins_pathways[full] | set(
                 map(
                     lambda l:
-                        l[2],
+                        l[5],
                     filter(
                         lambda l:
-                            l[1].lower() == 'protein',
+                            l[4].lower() == 'protein',
                         data
                     )
                 )
@@ -4801,10 +4811,10 @@ def signor_pathways(**kwargs):
             proteins_pathways[full] | set(
                 map(
                     lambda l:
-                        l[6],
+                        l[10],
                     filter(
                         lambda l:
-                            l[5].lower() == 'protein',
+                            l[9].lower() == 'protein',
                         data
                     )
                 )
@@ -4814,15 +4824,17 @@ def signor_pathways(**kwargs):
         interactions_pathways[full] = set(
             map(
                 lambda l:
-                    (l[2], l[6]),
+                    (l[5], l[10]),
                 filter(
                     lambda l:
-                        l[1].lower() == 'protein' and
-                        l[5].lower() == 'protein',
+                        l[4].lower() == 'protein' and
+                        l[9].lower() == 'protein',
                     data
                 )
             )
         )
+        
+        break
     
     prg.terminate()
     
@@ -4891,7 +4903,7 @@ def signor_interactions(organism=9606):
     _ = c.result.readline()
     sep = '@#@#@'
     lines = c.result.read().decode('utf-8')
-    lines = csv_sep_change(lines, ';', sep).split('\n')
+    lines = csv_sep_change(lines, '\t', sep).split('\n')
 
     result = filter(lambda l: len(l) > 1, map(lambda l: l.split(sep), lines))
 
