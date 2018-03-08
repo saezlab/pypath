@@ -4891,9 +4891,8 @@ def signor_interactions(organism=9606):
     _ = c.result.readline()
     sep = '@#@#@'
     lines = c.result.read().decode('utf-8')
-    lines = csv_sep_change(lines, '\t', sep).split('\n')
+    lines = csv_sep_change(lines, ';', sep).split('\n')
 
-    i = 0
     result = filter(lambda l: len(l) > 1, map(lambda l: l.split(sep), lines))
 
     return result
