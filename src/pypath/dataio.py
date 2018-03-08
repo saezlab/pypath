@@ -4833,8 +4833,6 @@ def signor_pathways(**kwargs):
                 )
             )
         )
-        
-        break
     
     prg.terminate()
     
