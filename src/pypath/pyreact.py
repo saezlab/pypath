@@ -45,6 +45,7 @@ import pypath.intera as intera
 import pypath.refs as refs
 import pypath.uniprot_input as uniprot_input
 import pypath.urls as urls
+import pypath.seq as seq
 
 
 class BioPaxReader(object):
@@ -2198,7 +2199,7 @@ class PyReact(object):
 
     def load_sequences(self):
         if self.seq is None:
-            self.seq = uniprot_input.swissprot_seq(
+            self.seq = seq.swissprot_seq(
                 self.ncbi_tax_id, isoforms=True)
 
     def load_reflists(self, reflst=None):
