@@ -7715,7 +7715,12 @@ class PyPath(object):
             }
         self.htp = htdata
 
-    def third_source_directions(self, graph=None, use_string_effects=False):
+    def third_source_directions(
+            self,
+            graph=None,
+            use_string_effects=False,
+            use_laudanna_data=False
+        ):
         '''
         This method calls a series of methods to get
         additional direction & effect information
@@ -7729,8 +7734,9 @@ class PyPath(object):
             self.string_effects(graph = graph)
             
         self.kegg_directions(graph=graph)
-        self.laudanna_effects(graph=graph)
-        self.laudanna_directions(graph=graph)
+        if use_laudanna_data:
+            self.laudanna_effects(graph=graph)
+            self.laudanna_directions(graph=graph)
         self.wang_effects(graph=graph)
         self.acsn_effects(graph=graph)
         self.phosphosite_directions(graph=graph)

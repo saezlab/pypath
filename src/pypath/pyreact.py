@@ -4,9 +4,9 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2017 - EMBL-EBI
+#  Copyright (c) 2014-2018 - EMBL-EBI
 #
-#  File author(s): Dénes Türei (denes@ebi.ac.uk)
+#  File author(s): Dénes Türei (turei.denes@gmail.com)
 #
 #  Distributed under the GNU GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
