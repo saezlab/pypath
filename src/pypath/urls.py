@@ -749,8 +749,8 @@ urls = {
             'inline-supplementary-material-3.xls?download=true'
     },
     'tfregulons': {
-        'label': 'A comprehensive resource of TF-target regulons',
-        'url': 'http://www.ebi.ac.uk/~denes/tfregulons/tfregulons.csv'
+        'label': 'A comprehensive resource of TF-target interactions',
+        'url': 'http://saezlab.org/tfregulons/tfregulons_database_v01_20180216__%s.tsv'
     }
 }
 

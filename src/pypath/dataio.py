@@ -7452,3 +7452,53 @@ def get_proteinatlas(normal = True, pathology = True,
                 result['pathology'][tissue][u] = values
     
     return result
+
+def get_tfregulons(
+        levels = {'A', 'B'},
+        only_curated = False
+    ):
+    """
+    Retrieves TF-target interactions from TF regulons.
+    
+    :param set levels:
+        Confidence levels to be used.
+    :param bool only_curated:
+            Retrieve only literature curated interactions.
+    
+    Details
+    -------
+    TF regulons is a comprehensive resource of TF-target interactions
+    combining multiple lines of evidences: literature curated databases,
+    ChIP-Seq data, PWM based prediction using HOCOMOCO and JASPAR matrices
+    and prediction from GTEx expression data by ARACNe.
+    
+    For details see https://github.com/saezlab/DoRothEA.
+    """
+    
+    url = urls.urls['tfregulons']['url'] % (
+        'all' if 'E' in levels else
+        'ABCD' if 'D' in levels else
+        'ABC' if 'C' in levels else
+        'AB' if 'B' in levels else
+        'A'
+    )
+    
+    c = curl.Curl(url, silent = False, large = True)
+    _ = c.result.readline()
+    
+    return (
+        list(
+            itertools.chain(
+                ll[:4],
+                (s == 'TRUE' for s in ll[4:8]),
+                ll[-4:],
+                [','.join(s for s in ll[-4:] if s)]
+            )
+        )
+        for ll in (
+            l.decode('utf-8').strip('\n\r').split('\t') for l in c.result
+        ) if (
+            ll[3] in levels and
+            not only_curated or ll[4] == 'TRUE'
+        )
+    )

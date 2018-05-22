@@ -122,9 +122,7 @@ class Direction(object):
         'positive',
         'negative',
         'positive_sources',
-        'negative_sources',
-        'mechanisms',
-        'methods'
+        'negative_sources'
     ]
     
     def __init__(self, nameA, nameB):
@@ -146,8 +144,6 @@ class Direction(object):
         self.negative = {self.straight: False, self.reverse: False}
         self.positive_sources = {self.straight: set([]), self.reverse: set([])}
         self.negative_sources = {self.straight: set([]), self.reverse: set([])}
-        self.mechanisms = {}
-        self.methods = {}
 
     def __str__(self):
         s = 'Directions and signs of interaction between %s and %s\n\n' % \
