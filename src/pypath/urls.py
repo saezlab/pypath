@@ -747,6 +747,10 @@ urls = {
             'Kirouac et al 2010',
         'url': 'http://msb.embopress.org/content/msb/6/1/417/DC3/embed/'\
             'inline-supplementary-material-3.xls?download=true'
+    },
+    'tfregulons': {
+        'label': 'A comprehensive resource of TF-target regulons',
+        'url': 'http://www.ebi.ac.uk/~denes/tfregulons/tfregulons.csv'
     }
 }
 

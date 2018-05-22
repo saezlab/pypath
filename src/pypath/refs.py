@@ -4,7 +4,7 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2017 - EMBL-EBI
+#  Copyright (c) 2014-2018 - EMBL
 #
 #  File author(s): Dénes Türei (denes@ebi.ac.uk)
 #
@@ -32,6 +32,9 @@ import pypath.dataio as dataio
 
 
 class Reference(object):
+    
+    __slots__ = ['pmid']
+    
     def __init__(self, pmid):
         self.pmid = str(pmid).strip()
 
@@ -65,7 +68,7 @@ def open_pubmed(pmid):
 
 def only_pmids(idList, strict=True):
     '''
-    Return elements unchanged which compy to PubMed ID format,
+    Return elements unchanged which comply with PubMed ID format,
     and attempts to translate the DOIs and PMC IDs using NCBI
     E-utils.
     Returns list containing only PMIDs.

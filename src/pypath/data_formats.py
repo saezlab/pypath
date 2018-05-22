@@ -1381,6 +1381,25 @@ transcription = {
         header=False,
         extraEdgeAttrs={},
         extraNodeAttrsA={},
+        extraNodeAttrsB={}),
+    'tfregulons': input_formats.ReadSettings(
+        name="TFRegulons",
+        separator=None,
+        nameColA=0,
+        nameColB=1,
+        nameTypeA="genesymbol",
+        nameTypeB="genesymbol",
+        typeA="protein",
+        typeB="protein",
+        isDirected=True,
+        sign=False,
+        ncbiTaxId=9606,
+        inFile='get_tfregulons',
+        interactionType='TF',
+        references=2,
+        header=False,
+        extraEdgeAttrs={},
+        extraNodeAttrsA={},
         extraNodeAttrsB={})
 }
 '''
@@ -1887,7 +1906,11 @@ categories = {
     'ENCODE_proximal': 't',
     'ORegAnno': 't',
     'HTRI': 't',
-    'MIMP': 'm'
+    'MIMP': 'm',
+    'PhosphoNetworks': 'm',
+    'Li2012': 'm',
+    'PhosphoPoint': 'm',
+    'PhosphoSite_noref': 'm'
 }
 
 p = set([])

@@ -112,6 +112,21 @@ __all__ = [
 
 
 class Direction(object):
+    
+    __slots__ = [
+        'nodes',
+        'straight',
+        'reverse',
+        'dirs',
+        'sources',
+        'positive',
+        'negative',
+        'positive_sources',
+        'negative_sources',
+        'mechanisms',
+        'methods'
+    ]
+    
     def __init__(self, nameA, nameB):
         self.nodes = [nameA, nameB]
         self.nodes.sort()
@@ -573,6 +588,13 @@ class AttrHelper(object):
 
 
 class _NamedVertexSeq(object):
+    
+    __slots__ = [
+        '_vs',
+        '_nodNam',
+        '_nodLab'
+    ]
+    
     def __init__(self, _vs, _nodNam, _nodLab):
         self._vs = _vs
         self._nodNam = _nodNam
@@ -6281,7 +6303,8 @@ class PyPath(object):
         desc = descriptions.descriptions
         for s in sorted(stats['single']['nodes'].keys()):
             d = desc[s] if s in desc else desc[
-                'HPRD'] if s == 'HPRD-phos' else {}
+                'HPRD'] if s == 'HPRD-phos' else desc[
+                'PhosphoSite'] if s == 'PhosphoSite_noref' else {}
             annot = ', '.join(d['annot']) if 'annot' in d else ''
             recom = d['recommend'] if 'recommend' in d else ''
             url = d['urls']['webpages'][0] \
@@ -6394,7 +6417,12 @@ class PyPath(object):
                 else:
                     out[k][2] = r'$\bigstar$' if bool(out[k][2]) else ''
                     out[k][3] = r'$\bigstar$' if bool(out[k][3]) else ''
-                    row = ' & '.join([k] + [
+                    k0 = (
+                        r'PhosphoSite\textsubscript{noref}'
+                        if k == 'PhosphoSite_noref'
+                        else k
+                    )
+                    row = ' & '.join([k0] + [
                         xx.replace('_', r'\_') if not isinstance(xx, int) else
                         '{:,}'.format(xx) for xx in out[k]
                     ]) + '\\\\\n'
