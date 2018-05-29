@@ -1309,8 +1309,13 @@ class PyPath(object):
                     inh = False
                     if isinstance(sign, tuple):
                         stim, inh = self.process_sign(line[sign[0]], sign)
-                    resource = line[settings.resource] if isinstance(
-                        settings.resource, int) else settings.resource
+                    resource = (
+                        [line[settings.resource]]
+                        if type(settings.resource) is int else
+                        line[settings.resource[0]].split(settings.resource[1])
+                        if type(settings.resource) is tuple else
+                        [settings.resource]
+                    )
                     newEdge = {
                         "nameA": line[settings.nameColA].strip(),
                         "nameB": line[settings.nameColB].strip(),
@@ -2102,7 +2107,9 @@ class PyPath(object):
         refs = [_refs.Reference(pmid) for pmid in refs]
         self.add_list_eattr(edge, 'references', refs)
         # updating references-by-source dict:
-        self.add_grouped_set_eattr(edge, 'refs_by_source', source, refs)
+        if refs:
+            for src in source:
+                self.add_grouped_set_eattr(edge, 'refs_by_source', src, refs)
         # updating refrences-by-type dict:
         self.add_grouped_set_eattr(edge, 'refs_by_type', typ, refs)
         # setting directions:
@@ -2164,7 +2171,7 @@ class PyPath(object):
             edge,
             attr,
             group,
-            value, ):
+            value):
         value = value if isinstance(value, list) else [value]
         e = self.graph.es[edge]
         if attr not in self.graph.es.attributes():
@@ -3446,6 +3453,39 @@ class PyPath(object):
         for k, v in iteritems(negative):
             sys.stdout.write(' > ' + v.name + '\n')
             self.apply_negative(v)
+
+    def load_tfregulons(self, levels = {'A', 'B'}, only_curated = False):
+        """
+        Adds TF-target interactions from TF regulons to the network.
+        
+        :param set levels:
+            Confidence levels to be used.
+        :param bool only_curated:
+            Retrieve only literature curated interactions.
+        
+        Details
+        -------
+        TF regulons is a comprehensive resource of TF-target interactions
+        combining multiple lines of evidences: literature curated databases,
+        ChIP-Seq data, PWM based prediction using HOCOMOCO and JASPAR matrices
+        and prediction from GTEx expression data by ARACNe.
+        
+        For details see https://github.com/saezlab/DoRothEA.
+        
+        Example
+        -------
+        >>> import pypath
+        >>> pa = pypath.PyPath()
+        >>> pa.load_tfregulons(levels = {'A'})
+        """
+        
+        settings = copy.deepcopy(data_formats.transcription['tfregulons'])
+        settings.inputArgs = {
+            'levels': levels,
+            'only_curated': only_curated
+        }
+        
+        self.load_resources({'tfregulons': settings})
 
     def list_resources(self):
         sys.stdout.write(' > omnipath\n')
@@ -8874,7 +8914,128 @@ class PyPath(object):
         if return_graph:
             return graph
     
+    def random_walk_with_return(self, q, graph = None, c = .5, niter = 1000):
+        """
+        Random walk with return (RWR) starting from one or more query nodes.
+        Returns affinity (probability) vector of all nodes in the graph.
+        
+        Args:
+        -----
+            :param int,list q:
+                Vertex IDs of query nodes.
+            :param igraph.Graph graph:
+                An `igraph.Graph` object.
+            :param float c:
+                Probability of restart.
+            :param int niter:
+                Number of iterations.
+        
+        Example:
+        --------
+            >>> import igraph
+            >>> import pypath
+            >>> pa = pypath.PyPath()
+            >>> pa.init_network({
+                    'signor': pypath.data_formats.pathway['signor']
+                })
+            >>> q = [
+                    pa.gs('EGFR').index,
+                    pa.gs('ATG4B').index
+                ]
+            >>> rwr = pa.random_walk_with_return(q = q)
+            >>> palette = igraph.RainbowPalette(n = 100)
+            >>> colors  = [palette.get(int(round(i))) for i in rwr / max(rwr) * 99]
+            >>> igraph.plot(pa.graph, vertex_color = colors)
+        """
+        
+        graph = graph or self._get_directed()
+        
+        if not graph.is_directed():
+            
+            sys.stdout.write('\t:: Warning: undirected graph provided\n')
+        
+        # making q a set of vertex IDs
+        q = (
+            q if type(q) is set else
+            set(q) if type(q) is list else
+            {q} if type(q) is int else
+            None
+        )
+        
+        if not q:
+            
+            sys.stdout.write('\t:: Warning: no starting node(s)\n')
+            return np.array([0.] * graph.vcount())
+        
+        # probability per start node
+        cp = c / len(q)
+        # vector with restarting at starting nodes and 0 at all other nodes
+        _q = np.array([cp if v in q else .0 for v in xrange(graph.vcount())])
+        
+        # vector of probabilities;
+        # this will be subject of iteration
+        # and its final state will be the result
+        _p = copy.copy(_q)
+        
+        # transition matrix
+        __A = np.array(list(graph.get_adjacency()), dtype = np.float64).T
+        __A = np.nan_to_num(__A / __A.sum(0), copy = False)
+        
+        #return __A, _p, _q
+        
+        # iteration converges to affinity vector
+        for _ in xrange(niter):
+            
+            _p = (1. - c) * __A.dot(_p) + _q
+        
+        return _p
+    
+    def random_walk_with_return2(self, q, c = .5, niter = 1000):
+        """
+        Literally does random walks.
+        Only for testing of the other method, to be deleted later.
+        """
+        
+        # making q a set of vertex IDs
+        q = (
+            q if type(q) is set else
+            set(q) if type(q) is list else
+            {q} if type(q) is int else
+            None
+        )
+        
+        graph = self._get_directed()
+        
+        p = np.array([0] * graph.vcount())
+        
+        for qq in q:
+            
+            current = qq
+            
+            for _ in xrange(niter):
+                
+                p[current] += 1
+                
+                if random.random() <= c:
+                    
+                    current = qq
+                    
+                else:
+                    
+                    successors = graph.successors(current)
+                    
+                    if not successors:
+                        
+                        current = qq
+                        
+                    else:
+                        
+                        current = random.choice(successors)
+        
+        return p
+    
     def reload(self):
+        
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist=[modname.split('.')[0]])
         imp.reload(mod)

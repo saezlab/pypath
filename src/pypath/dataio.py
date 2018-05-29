@@ -7493,6 +7493,7 @@ def get_tfregulons(
                 (s == 'TRUE' for s in ll[4:8]),
                 ll[-4:],
                 [','.join(s for s in ll[-4:] if s)]
+                if not only_curated else ll[8]
             )
         )
         for ll in (

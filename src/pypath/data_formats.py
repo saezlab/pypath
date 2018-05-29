@@ -28,7 +28,8 @@ from pypath import common
 __all__ = [
     'reaction', 'interaction', 'interaction_misc', 'pathway',
     'interaction_htp', 'ptm', 'ptm_misc', 'obsolate',
-    'transcription_deprecated', 'omnipath', 'transcription', 'negative',
+    'transcription_deprecated', 'transcription_onebyone',
+    'omnipath', 'transcription', 'negative',
     'gdsc_comp_target', 'cgc', 'reactome_modifications', 'reaction_misc',
     'ligand_receptor'
 ]
@@ -1267,7 +1268,7 @@ interaction_htp = {
 '''
 Transcriptional regulatory interactions.
 '''
-transcription = {
+transcription_onebyone = {
     'abs': input_formats.ReadSettings(
         name="ABS",
         separator=None,
@@ -1382,6 +1383,60 @@ transcription = {
         extraEdgeAttrs={},
         extraNodeAttrsA={},
         extraNodeAttrsB={}),
+    'signor': input_formats.ReadSettings(
+        name="Signor",
+        separator=None,
+        nameColA=2,
+        nameColB=6,
+        nameTypeA="uniprot",
+        nameTypeB="uniprot",
+        # only direct TF-target interactions
+        positiveFilters=[(22, 'YES'), (9, 'transcriptional regulation')],
+        typeA="protein",
+        typeB="protein",
+        ncbiTaxId={'col': 12,
+                   'dict': {
+                       '9606;9606': 9606,
+                       '9606': 9606
+                   }},
+        isDirected=True,
+        sign=(8, [
+            'up-regulates', 'up-regulates activity',
+            'up-regulates quantity by stabilization'
+        ], [
+            'down-regulates', 'down-regulates activity',
+            'down-regulates quantity by destabilization'
+        ]),
+        inFile='signor_interactions',
+        references=(21, ";"),
+        header=True,
+        extraEdgeAttrs={"signor_mechanism": (9, ';')},
+        extraNodeAttrsA={},
+        extraNodeAttrsB={})
+}
+
+"""
+New default transcription dataset is only TFregulons
+as it is already an integrated resource and
+has sufficient coverage.
+
+Example
+-------
+import pypath
+
+# load only `A` confidence level:
+pypath.data_formats.transcription['tfregulons'].inputArgs['levels'] = {'A'}
+pa = pypath.PyPath()
+pa.init_network(pypath.data_formats.transcription)
+
+pypath.data_formats.transcription['tfregulons'].inputArgs['levels'] = {
+    'A', 'B', 'C', 'D'
+}
+pa = pypath.PyPath()
+pa.init_network(pypath.data_formats.transcription)
+
+"""
+transcription = {
     'tfregulons': input_formats.ReadSettings(
         name="TFRegulons",
         separator=None,
@@ -1392,16 +1447,23 @@ transcription = {
         typeA="protein",
         typeB="protein",
         isDirected=True,
-        sign=False,
+        sign=(2, '1', '-1'),
         ncbiTaxId=9606,
         inFile='get_tfregulons',
         interactionType='TF',
-        references=2,
+        resource=(12, ','),
+        references=None,
         header=False,
-        extraEdgeAttrs={},
+        extraEdgeAttrs={
+            'tfregulons_curated': 4,
+            'tfregulons_chipseq': 5,
+            'tfregulons_tfbs':    6,
+            'tfregulons_coexp':   7
+        },
         extraNodeAttrsA={},
         extraNodeAttrsB={})
 }
+
 '''
 Old transctiptional regulation input formats.
 Should not be used.
