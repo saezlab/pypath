@@ -76,7 +76,6 @@ import pypath.mapping as mapping
 import pypath.descriptions as descriptions
 import pypath.chembl as chembl
 import pypath.mysql as mysql
-
 import pypath.dataio as dataio
 import pypath.uniprot_input as uniprot_input
 import pypath.curl as curl
@@ -91,7 +90,7 @@ import pypath.input_formats as input_formats
 import pypath.refs as _refs
 import pypath.plot as plot
 import pypath.ptm
-
+import pypath.export as export
 import pypath.ig_drawing as ig_drawing
 import pypath.common as common
 import pypath._version as _version
@@ -107,7 +106,7 @@ if 'unicode' not in __builtins__:
     unicode = str
 
 __all__ = [
-    'PyPath', 'Direction', '__version__', 'a', 'AttrHelper', 'ReferenceList'
+    'PyPath', 'Direction', '__version__', 'a', 'AttrHelper', 'ReferenceList', 'omnipath'
 ]
 
 
@@ -3839,7 +3838,14 @@ class PyPath(object):
             prg.terminate()
             console(':: Data has been written to %s' % outfile)
 
-    def export_tab(self, extraNodeAttrs={}, extraEdgeAttrs={}, outfile=None):
+    def export_tab(
+            self,
+            outfile = None,
+            extra_node_attrs = {},
+            extra_edge_attrs={},
+            unique_pairs = True,
+            **kwargs
+        ):
         """
         Exports the network in a tabular format.
         
@@ -3849,6 +3855,9 @@ class PyPath(object):
         
         Args:
         -----
+        :param str outfile:
+            Name of the output file. If `None` a file name
+            "netrowk-<session id>.tab" is used.
         :param dict extraNodeAttrs:
             Additional node attributes to be included in the exported table.
             Keys are column ames used in the header while values are names
@@ -3859,86 +3868,15 @@ class PyPath(object):
             Additional edge attributes to be included in the exported table.
             Keys are column ames used in the header while values are names
             of edge attributes.
-        :param str outfile:
-            Name of the output file. If `None` a file name
-            "netrowk-<session id>.tab" is used.
         """
-        if outfile is None:
-            outfile = os.path.join(self.outdir,
-                                   'network-' + self.session + '.tab')
-        self.genesymbol_labels()
-        header = [
-            'UniProt_A', 'GeneSymbol_A', 'UniProt_B', 'GeneSymbol_B',
-            'Databases', 'PubMed_IDs', 'Undirected', 'Direction_A-B',
-            'Direction_B-A', 'Stimulatory_A-B', 'Inhibitory_A-B',
-            'Stimulatory_B-A', 'Inhibitory_B-A', 'Category'
-        ]
-        header += extraEdgeAttrs.keys()
-        header += [x + '_A' for x in extraNodeAttrs.keys()]
-        header += [x + '_B' for x in extraNodeAttrs.keys()]
-        stripJson = re.compile(r'[\[\]{}\"]')
-        with codecs.open(outfile, encoding='utf-8', mode='w') as f:
-            f.write('\t'.join(header) + '\n')
-            prg = Progress(
-                total=self.graph.ecount(), name='Writing table', interval=31)
-            for e in self.graph.es:
-                nameA = self.graph.vs[e.source]['name']
-                nameB = self.graph.vs[e.target]['name']
-                thisEdge = []
-                thisEdge += [
-                    nameA.replace(' ', ''),
-                    self.graph.vs[e.source]['label'].replace(' ', '')
-                ]
-                thisEdge += [
-                    nameB.replace(' ', ''), self.graph.vs[e.target]['label']
-                ]
-                thisEdge += [
-                    ';'.join(list(e['sources'])),
-                    ';'.join(map(lambda r: r.pmid, e['references']))
-                ]
-                thisEdge += [
-                    ';'.join(e['dirs'].get_dir(
-                        'undirected', sources=True)),
-                    ';'.join(e['dirs'].get_dir(
-                        (nameA, nameB), sources=True)),
-                    ';'.join(e['dirs'].get_dir(
-                        (nameB, nameA), sources=True))
-                ]
-                thisEdge += [
-                    ';'.join(a)
-                    for a in e['dirs'].get_sign(
-                        (nameA, nameB), sources=True) + e['dirs'].get_sign(
-                            (nameB, nameA), sources=True)
-                ]
-                thisEdge.append(';'.join(e['type']))
-                for k, v in iteritems(extraEdgeAttrs):
-                    thisEdge.append(';'.join([
-                        x.strip()
-                        for x in stripJson.sub('', json.dumps(e[v])).split(',')
-                    ]))
-                for k, v in iteritems(extraNodeAttrs):
-                    thisEdge.append(';'.join([
-                        x.strip()
-                        for x in stripJson.sub('',
-                            json.dumps(
-                                list(self.graph.vs[e.source][v])
-                                if type(self.graph.vs[e.source][v]) is set
-                                else self.graph.vs[e.source][v]
-                            )).split(',')
-                    ]))
-                for k, v in iteritems(extraNodeAttrs):
-                    thisEdge.append(';'.join([
-                        x.strip()
-                        for x in stripJson.sub('',
-                                json.dumps(
-                                list(self.graph.vs[e.target][v])
-                                if type(self.graph.vs[e.target][v]) is set
-                                else self.graph.vs[e.target][v]
-                            )).split(',')
-                    ]))
-                f.write('%s\n' % '\t'.join(thisEdge))
-                prg.step()
-        prg.terminate()
+        
+        e = export.Export(
+            pa = self,
+            extra_node_attrs = extra_node_attrs,
+            extra_edge_attrs = extra_edge_attrs,
+            **kwargs
+        )
+        e.write_tab(unique_pairs = unique_pairs, outfile = outfile)
 
     def export_sif(self, outfile=None):
         outfile = outfile if outfile is not None \

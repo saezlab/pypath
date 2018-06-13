@@ -15,14 +15,6 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
-#
-# this module makes possible
-# dynamic data integration, downloads
-# files from various resources, in standard
-# or non-standard text based and xml formats,
-# processes them, sometimes parses html
-#
-
 from __future__ import print_function
 
 from future.utils import iteritems
@@ -35,10 +27,13 @@ import re
 import json
 import copy
 import pandas as pd
+import itertools
 
 import pypath.progress as progress
 import pypath.urls as urls
+import pypath.data_formats as data_formats
 
+strip_json = re.compile(r'[\[\]{}\"]')
 
 class Export(object):
     
@@ -60,7 +55,9 @@ class Export(object):
             pa,
             extra_node_attrs = {},
             extra_edge_attrs = {},
-            outfile = None
+            outfile = None,
+            default_vertex_attr_processor = None,
+            default_edge_attr_processor   = None
         ):
         
         self.extra_node_attrs = extra_node_attrs
@@ -68,6 +65,23 @@ class Export(object):
         self.outfile = outfile
         self.pa    = pa
         self.graph = pa._get_undirected()
+        
+        self.default_vertex_attr_processor = (
+            default_vertex_attr_processor or
+            self.default_vertex_attr_processor
+        )
+        self.default_edge_attr_processor = (
+            default_edge_attr_processor or
+            self.default_edge_attr_processor
+        )
+    
+    def reload(self):
+        
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
     
     def make_df(
             self,
@@ -110,10 +124,10 @@ class Export(object):
         
         result = []
         
-        self.genesymbol_labels()
+        self.pa.genesymbol_labels()
         
-        extra_node_attrs = extra_node_attrs or self.extra_node_attrs
-        extra_edge_attrs = extra_edge_attrs or self.extra_edge_attrs
+        self.extra_node_attrs = extra_node_attrs or self.extra_node_attrs
+        self.extra_edge_attrs = extra_edge_attrs or self.extra_edge_attrs
         
         suffix_a = 'A' if unique_pairs else 'source'
         suffix_b = 'B' if unique_pairs else 'target'
@@ -126,8 +140,6 @@ class Export(object):
         header += extra_edge_attrs.keys()
         header += ['%s_%s' (x, suffix_a) for x in extra_node_attrs.keys()]
         header += ['%s_%s' (x, suffix_b) for x in extra_node_attrs.keys()]
-        
-        stripJson = re.compile(r'[\[\]{}\"]')
         
         prg = progress.Progress(
             total = self.graph.ecount(),
@@ -144,44 +156,7 @@ class Export(object):
                 self.process_edge_bydirection(e)
             )
             
-            # extra edge attributes on demand of the user
-            for k, v in iteritems(extra_edge_attrs):
-                
-                value = (
-                    v(e)
-                    if hasattr(v, '__call__') else
-                    ';'.join([
-                        x.strip()
-                        for x in stripJson.sub('', json.dumps(e[v])).split(',')
-                    ])
-                )
-                
-                for l in lines:
-                    
-                    l.append(value)
-            
-            # extra vertex attributes
-            for vertex in (self.graph.vs[e.source], self.graph.vs[e.target]):
-                
-                for k, v in iteritems(extra_node_attrs):
-                    
-                    value = (
-                        v(vertex)
-                        if hasattr(v, '__call__') else
-                        ';'.join([
-                            x.strip()
-                            for x in stripJson.sub('',
-                                json.dumps(
-                                    list(vertex[v])
-                                    if type(vertex[v]) is set
-                                    else vertex[v]
-                                )).split(',')
-                        ])
-                    )
-                    
-                    for l in lines:
-                        
-                        l.append(value)
+
             
             result.extend(lines)
             
@@ -189,7 +164,7 @@ class Export(object):
         
         prg.terminate()
         
-        self.df = pd.DataFrame(result, columns = header, index = False)
+        self.df = pd.DataFrame(result, columns = header)
     
     def process_edge_uniquepairs(self, e):
         """
@@ -207,28 +182,37 @@ class Export(object):
         name_b = self.graph.vs[e.target]['name']
         
         return [
-            [
-            # uniprots, genesymbols
-                name_a.replace(' ', ''),
-                self.graph.vs[e.source]['label'].replace(' ', ''),
-                name_b.replace(' ', ''),
-                self.graph.vs[e.target]['label'].replace(' ', ''),
-            # sources, references
-                ';'.join(list(e['sources'])),
-                ';'.join(map(lambda r: r.pmid, e['references'])),
-            # directions
-                ';'.join(e['dirs'].get_dir(
-                    'undirected', sources=True)),
-                ';'.join(e['dirs'].get_dir(
-                    (name_a, name_b), sources=True)),
-                ';'.join(e['dirs'].get_dir(
-                    (name_b, name_a), sources=True)),
-                ';'.join(a)
-                for a in e['dirs'].get_sign(
-                    (name_a, name_b), sources=True) + e['dirs'].get_sign(
-                        (name_b, name_a), sources=True),
-                ';'.join(e['type'])
-            ]
+            list(itertools.chain(
+                (
+                    # uniprots, genesymbols
+                        name_a.replace(' ', ''),
+                        self.graph.vs[e.source]['label'].replace(' ', ''),
+                        name_b.replace(' ', ''),
+                        self.graph.vs[e.target]['label'].replace(' ', ''),
+                    # sources, references
+                        ';'.join(list(e['sources'])),
+                        ';'.join(map(lambda r: r.pmid, e['references'])),
+                    # directions
+                        ';'.join(e['dirs'].get_dir(
+                            'undirected', sources=True)),
+                        ';'.join(e['dirs'].get_dir(
+                            (name_a, name_b), sources=True)),
+                        ';'.join(e['dirs'].get_dir(
+                            (name_b, name_a), sources=True))
+                ),
+                (
+                    # signs
+                    ';'.join(a) for a in
+                    itertools.chain(
+                            e['dirs'].get_sign((name_a, name_b), sources=True),
+                            e['dirs'].get_sign((name_b, name_a), sources=True)
+                    )
+                ),
+                (
+                    # category
+                    ';'.join(e['type']),
+                )
+            ))
         ]
     
     def process_edge_bydirection(self, e):
@@ -256,8 +240,8 @@ class Export(object):
                 this_edge = [
                     uniprots[0],
                     uniprots[1],
-                    self.g.vs[self.p.nodDct[uniprots[0]]]['label'],
-                    self.g.vs[self.p.nodDct[uniprots[1]]]['label'],
+                    self.pa.nodLab[self.pa.nodDct[uniprots[0]]],
+                    self.pa.nodLab[self.pa.nodDct[uniprots[1]]],
                     1, # is_directed
                     int(e['dirs'].is_stimulation(uniprots)),
                     int(e['dirs'].is_inhibition(uniprots))
@@ -272,14 +256,16 @@ class Export(object):
                     sorted(dsources),
                     [
                         r.pmid
-                        for r in flatList([
+                        for r in itertools.chain(*(
                             rs for s, rs in iteritems(e['refs_by_source'])
                             if s in dsources
-                        ])
+                        ))
                     ]
                 ])
                 
                 this_edge.append(self._dip_urls(e))
+                
+                this_edge = self.add_extra_fields(e, this_edge, uniprots)
                 
                 lines.append(this_edge)
         
@@ -288,19 +274,113 @@ class Export(object):
             this_edge = [
                 e['dirs'].nodes[0],
                 e['dirs'].nodes[1],
-                self.g.vs[self.p.nodDct[e['dirs'].nodes[0]]]['label'],
-                self.g.vs[self.p.nodDct[e['dirs'].nodes[1]]]['label'],
+                self.pa.nodLab[self.pa.nodDct[e['dirs'].nodes[0]]],
+                self.pa.nodLab[self.pa.nodDct[e['dirs'].nodes[1]]],
                 0,
                 0,
                 0,
-                this_edge.append(list(e['sources'])),
+                sorted(e['sources']),
                 [r.pmid for r in e['references']],
                 self._dip_urls(e)
             ]
             
+            this_edge = self.add_extra_fields(e, this_edge, 'undirected')
+            
             lines.append(this_edge)
         
         return lines
+    
+    def add_extra_fields(self, e, line, dr = None):
+        """
+        Takes one table row and using the `igraph.Edge` object and the
+        direction provided adds the extra node and edge attribute fields
+        as they are defined in `extra_node_attrs` and `extra_edge_attrs`.
+        
+        Returns the row with extra fields added.
+        
+        Args:
+        -----
+        :param igraph.Edge e:
+            One edge.
+        :param list line:
+            A table row.
+        :param tuple,str dr:
+            Direction key. A tuple of names (most often UniProt IDs) or
+            `undirected`.
+        """
+        
+        # extra edge attributes on demand of the user
+        for k, v in iteritems(self.extra_edge_attrs):
+            
+            line.append(
+                self.generic_attr_processor(v, e, dr)
+                if hasattr(v, '__call__') else
+                self.default_edge_attr_processor(
+                    e[v]
+                    if v in self.graph.es.attributes() else
+                    None
+                )
+            )
+        
+        # extra vertex attributes
+        for vertex in (self.graph.vs[e.source], self.graph.vs[e.target]):
+            
+            for k, v in iteritems(self.extra_node_attrs):
+                
+                line.append(
+                    self.generic_attr_processor(v, vertex, dr)
+                    if hasattr(v, '__call__') else
+                    self.default_vertex_attr_processor(
+                        vertex[v]
+                        if v in self.graph.vs.attributes() else
+                        None
+                    )
+                )
+        
+        return line
+    
+    @staticmethod
+    def default_vertex_attr_processor(vattr):
+            
+            return (
+                ';'.join([
+                    x.strip()
+                    for x in strip_json.sub('',
+                        json.dumps(
+                            list(vattr)
+                            if type(vattr) is set
+                            else vattr
+                        )).split(',')
+                ])
+            )
+    
+    @staticmethod
+    def default_edge_attr_processor(eattr):
+        
+        return (
+            ';'.join([
+                x.strip()
+                for x in strip_json.sub('', json.dumps(eattr)).split(',')
+            ])
+        )
+    
+    @staticmethod
+    def generic_attr_processor(proc, obj, dr = None):
+        """
+        Wraps the attribute processor to handle unknown number of arguments.
+        
+        Not knowing if the attribute processor expects one or two arguments,
+        have no better way than try: if calling with 2 arguments fails with
+        `TypeError` we call with one argument.
+        """
+        
+        try:
+            
+            return proc(obj, dr)
+            
+        except TypeError:
+            
+            return proc(obj)
     
     def write_tab(self, outfile = None, **kwargs):
         """
@@ -315,7 +395,7 @@ class Export(object):
         self.make_df(**kwargs)
         
         outfile = outfile or self.outfile or os.path.join(
-            self.outdir, 'network-%s.tab' % self.pa.session
+            self.pa.outdir, 'network-%s.tab' % self.pa.session
         )
         
         self.df.to_csv(outfile, sep = '\t', index = False)
@@ -333,3 +413,29 @@ class Export(object):
                     sys.stdout.write('Could not find DIP ID: %s\n' % dip_id)
         
         return ';'.join(result)
+    
+    def webservice_interactions_df(self):
+        
+        sources_omnipath = set(f.name for f in data_formats.omnipath.values())
+        sources_kinase_extra = set(f.name for f in data_formats.ptm_misc.values())
+        sources_mirna = set(f.name for f in data_formats.mirna_target.values())
+        
+        self.make_df(
+            unique_pairs = False,
+            extra_edge_attrs = {
+                'omnipath': lambda e, d: bool(
+                    e['dirs'].sources[d] & sources_omnipath
+                ),
+                'kinaseextra': lambda e, d: bool(
+                    e['dirs'].sources[d] & sources_kinase_extra
+                ),
+                'mirnatarget': lambda e, d: bool(
+                    e['dirs'].sources[d] & sources_mirna
+                ),
+                'tfregulons': lambda e, d: 'TFRegulons' in e['dirs'].sources[d],
+                'tfregulons_curated': 'tfregulons_curated',
+                'tfregulons_chipseq': 'tfregulons_chipseq',
+                'tfregulons_tfbs':    'tfregulons_tfbs',
+                'tfregulons_coexp':   'tfregulons_coexp'
+            }
+        )
