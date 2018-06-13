@@ -21,6 +21,7 @@ from past.builtins import xrange, range
 import sys
 import imp
 import itertools
+import pandas as pd
 
 import pypath.dataio as dataio
 import pypath.common as common
@@ -667,19 +668,21 @@ class PtmAggregator(object):
         
         self.mapper = self.mapper or mapping.Mapper()
     
-    def export_table(self, fname):
+    def make_df(self):
         
         hdr = ['enzyme', 'substrate', 'isoforms',
-               'residue', 'offset', 'modification',
+               'residue_type', 'residue_offset', 'modification',
                'sources', 'references']
         
-        with open(fname, 'w') as fp:
-            
-            fp.write('%s\n' % '\t'.join(hdr))
-            
-            for dm in self:
-                
-                fp.write('%s\n' % '\t'.join(dm.get_line()))
+        self.df = pd.DataFrame(
+            [dm.get_line() for dm in self],
+            columns = hdr
+        )
+    
+    def export_table(self, fname):
+        
+        self.make_df()
+        self.df.to_csv(fname, sep = '\t', index = False)
     
     def assign_to_network(self, pa):
         """

@@ -3858,13 +3858,13 @@ class PyPath(object):
         :param str outfile:
             Name of the output file. If `None` a file name
             "netrowk-<session id>.tab" is used.
-        :param dict extraNodeAttrs:
+        :param dict extra_node_attrs:
             Additional node attributes to be included in the exported table.
             Keys are column ames used in the header while values are names
             of vertex attributes. In the header `_A` and `_B` suffixes will
             be appended to the column names so the values can be assigned to
             A and B side interaction partners.
-        :param dict extraEdgeAttrs:
+        :param dict extra_edge_attrs:
             Additional edge attributes to be included in the exported table.
             Keys are column ames used in the header while values are names
             of edge attributes.
