@@ -4,9 +4,9 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2017 - EMBL-EBI
+#  Copyright (c) 2014-2018 - EMBL
 #
-#  File author(s): Dénes Türei (denes@ebi.ac.uk)
+#  File author(s): Dénes Türei (turei.denes@gmail.com)
 #
 #  Distributed under the GNU GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
@@ -39,45 +39,57 @@ if 'unicode' not in __builtins__:
 
 
 def stop_server():
+    
     reactor.removeAll()
 
 
-class Rest(object):
-    def __init__(self, pypath, port):
-        self.port = port
-        self.site = server.Site(RestResource(pypath))
-        reactor.listenTCP(self.port, self.site)
-        reactor.run()
-
-
-class RestResource(resource.Resource):
-    def __init__(self, pypath):
-        self.p = pypath
-        self.g = pypath.graph
-        self.isLeaf = True
+class BaseServer(resource.Resource):
+    
+    def __init__(self):
+        
         self.htmls = ['info', '']
-
+        self.welcome_message = (
+            'Hello, this is the REST service of pypath %s. Welcome!\n'\
+            'For the descriptions of pathway resources go to `/info`.' % (
+                __version__
+            )
+        )
+    
     def render_GET(self, request):
-        request.postpath = list(
-            map(lambda i: i.decode('utf-8'), request.postpath))
+        
+        request.postpath = [i.decode('utf-8') for i in request.postpath]
+        
         html = len(request.postpath) == 0 or request.postpath[0] in self.htmls
         self.set_defaults(request, html=html)
-        if len(request.postpath) > 0 and hasattr(self, request.postpath[0]) \
-                and request.postpath[0][0] != '_':
+        
+        if (
+            request.postpath and
+            hasattr(self, request.postpath[0]) and
+            request.postpath[0][0] != '_'
+        ):
+            
             toCall = getattr(self, request.postpath[0])
+            
             if hasattr(toCall, '__call__'):
+                
                 response = toCall(request)
-                return response.encode('utf-8') \
-                    if type(response) is unicode else response
-        elif len(request.postpath) == 0:
+                return (
+                    response.encode('utf-8')
+                    if type(response) is unicode else
+                    response
+                )
+            
+        elif request.postpath:
+            
             return self.root(request)
-        # return str(request.__dict__)
+        
         return "Not found: %s%s" % (
             '/'.join(request.postpath), ''
             if len(request.args) == 0 else '?%s' %
-            '&'.join(['%s=%s' % (k, v) for k, v in iteritems(request.args)]))
-
-    def set_defaults(self, request, html=False):
+            '&'.join(['%s=%s' % (k, v) for k, v in iteritems(request.args)])
+        )
+    
+        def set_defaults(self, request, html=False):
         request.setHeader('Cache-Control', 'Public')
         if '' in request.postpath:
             request.postpath.remove('')
@@ -97,8 +109,7 @@ class RestResource(resource.Resource):
             else request.args[b'fields']
 
     def about(self, req):
-        return 'Hello, this is the REST service of pypath %s. Welcome!\n'\
-            'For the descriptions of pathway resources go to `/info`.' % __version__
+        return self.welcome_message
 
     def info(self, req):
         return descriptions.gen_html()
@@ -106,7 +117,7 @@ class RestResource(resource.Resource):
     def root(self, req):
         return _html.main_page()
     
-    def _bool(self, arg):
+    def _parse_arg(self, arg):
         
         if type(arg) is list and len(arg):
             arg = arg[0]
@@ -119,6 +130,78 @@ class RestResource(resource.Resource):
         
         return bool(arg)
 
+
+class TableServer(BaseServer):
+    
+    def __init__(self, tbls = {}):
+        
+        self.tbls = tbls
+        self.read_tables()
+        
+        BaseServer.__init__(self)
+    
+    def read_tables(self):
+        
+        for name, fname in iteritems(self.tbls):
+            
+            if not os.path.exists(fname):
+                
+                sys.stdout.write('\t:: Server: missing table: `%s`\n' % (
+                    fname
+                ))
+                continue
+            
+            self.data[name] = pd.DataFrame.from_csv(
+                fname,
+                sep = '\t',
+                index_col = None
+            )
+    
+    def network(self, req):
+        
+        hdr = ['nodes', 'edges', 'is_directed', 'sources']
+        tbl = self.data['network'].field
+        val = dict(zip(tbl.field, tbl.value))
+        
+        if b'format' in req.args and req.args[b'format'] == b'json':
+            return json.dumps(val)
+        else:
+            return '%s\n%s' % ('\t'.join(hdr), '\t'.join(
+                [str(val[h]) for h in hdr]))
+    
+    def interactions(self, req):
+        
+        hdr = [
+            'source', 'target', 'is_directed', 'is_stimulation',
+            'is_inhibition'
+        ]
+        
+        if b'fields' in req.args:
+            hdr += [
+                f.decode('utf-8') for f in fields if f in req.args[b'fields']
+            ]
+        
+        if (
+            b'genesymbols' in req.args and
+            self._parse_arg(req.args[b'genesymbols'])
+        ):
+            genesymbols = True
+            hdr.insert(2, 'source_genesymbol')
+            hdr.insert(3, 'target_genesymbol')
+        else:
+            genesymbols = False
+        
+        
+
+class PypathServer(BaseServer):
+    
+    def __init__(self, pypath):
+        self.p = pypath
+        self.g = pypath.graph
+        self.isLeaf = True
+        
+        BaseServer.__init__(self)
+    
     def network(self, req):
         hdr = ['nodes', 'edges', 'is_directed', 'sources']
         val = [
@@ -147,7 +230,10 @@ class RestResource(resource.Resource):
                 f.decode('utf-8') for f in fields if f in req.args[b'fields']
             ]
         
-        if b'genesymbols' in req.args and self._bool(req.args[b'genesymbols']):
+        if (
+            b'genesymbols' in req.args and
+            self._parse_arg(req.args[b'genesymbols'])
+        ):
             genesymbols = True
             hdr.insert(2, 'source_genesymbol')
             hdr.insert(3, 'target_genesymbol')
@@ -263,7 +349,10 @@ class RestResource(resource.Resource):
             'modification'
         ]
         
-        if b'genesymbols' in req.args and self._bool(req.args[b'genesymbols']):
+        if (
+            b'genesymbols' in req.args and
+            self._parse_arg(req.args[b'genesymbols'])
+        ):
             genesymbols = True
             hdr.insert(2, 'enzyme_genesymbol')
             hdr.insert(3, 'substrate_genesymbol')
@@ -365,3 +454,26 @@ class RestResource(resource.Resource):
                     print(dip_id)
                 
         return ';'.join(result)
+
+
+class Rest(object):
+    
+    def __init__(self, port, serverclass = PypathServer, **kwargs):
+        """
+        Runs a webserver serving a `PyPath` instance listening
+        to a custom port.
+        
+        Args:
+        -----
+        :param int port:
+            The port to listen to.
+        :param str serverclass'
+            The class implementing the server.
+        :param **kwargs:
+            Arguments for initialization of the server class.
+        """
+        
+        self.port = port
+        self.site = server.Site(serverclass(kwargs))
+        reactor.listenTCP(self.port, self.site)
+        reactor.run()

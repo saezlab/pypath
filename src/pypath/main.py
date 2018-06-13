@@ -193,19 +193,19 @@ class Direction(object):
                                        self.check_nodes(di)))
     
     def set_dir(self, direction, source):
-        '''
+        """
         Adds directionality information with
         the corresponding data source named.
-        '''
+        """
         if self.check_param(direction) and len(source):
             self.dirs[direction] = True
             source = common.addToSet(set([]), source)
             self.sources[direction] = self.sources[direction] | source
 
     def get_dir(self, direction, sources=False):
-        '''
+        """
         Returns boolean or list of sources
-        '''
+        """
         if self.check_param(direction):
             if sources:
                 return self.sources[direction]
@@ -215,10 +215,10 @@ class Direction(object):
             return None
 
     def get_dirs(self, src, tgt, sources=False):
-        '''
+        """
         Returns all directions with boolean values
         or list of sources.
-        '''
+        """
         query = (src, tgt)
         if self.check_nodes(query):
             if sources:
@@ -238,10 +238,10 @@ class Direction(object):
         return [d for d, s in iteritems(self.dirs) if s and d != 'undirected']
 
     def unset_dir(self, direction, source=None):
-        '''
+        """
         Removes directionality information,
         or single source.
-        '''
+        """
         if check_param(direction):
             if source is not None:
                 try:
@@ -330,21 +330,21 @@ class Direction(object):
                 self.negative[direction] = False
 
     def src(self):
-        '''
+        """
         Returns the IDs of effector molecules in this directed
         interaction. If the interaction is bidirectional, the
         list will contain 2 IDs. If the interaction is undirec-
         ted, an empty list will be returned.
-        '''
+        """
         return [
             k[0] for k, v in iteritems(self.dirs) if k != 'undirected' and v
         ]
 
     def tgt(self):
-        '''
+        """
         Returns the IDs of the target molecules in the inter-
         action. Same behaviour as `Direction.src()`.
-        '''
+        """
         return [
             k[1] for k, v in iteritems(self.dirs) if k != 'undirected' and v
         ]
@@ -640,7 +640,7 @@ class PyPath(object):
                  outdir='results',
                  loglevel='INFO',
                  loops=False):
-        '''
+        """
         Currently only one organism molecular interaction networks
         are supported. Some functions supports multi-species networks,
         and maybe once the whole module will support that.
@@ -667,7 +667,7 @@ class PyPath(object):
             Passed to logging module.
         @loops : bool
             Whether to allow loop edges in the graph. Default is False.
-        '''
+        """
         self.__version__ = _version.__version__
         for d in ['results', 'log', 'cache']:
             if not os.path.exists(d):
@@ -764,7 +764,7 @@ class PyPath(object):
             self.copy(copy)
 
     def set_chembl_mysql(self, title, config_file=None):
-        '''
+        """
         Sets the ChEMBL MySQL config according to
         `title` section in `config_file` ini style config.
 
@@ -772,7 +772,7 @@ class PyPath(object):
             config_file (str, NoneType): config file name;
                 if None, the `mysql_config/defaults.mysql`
                 will be used
-        '''
+        """
         self.chembl_mysql = (config_file, title)
 
     def copy(self, other):
@@ -788,11 +788,11 @@ class PyPath(object):
                      reread=False,
                      redownload=False,
                      **kwargs):
-        '''
+        """
         This is a lazy way to start the module, load data
         and build the high confidence, literature curated
         part of the signaling network.
-        '''
+        """
         if pfile:
             pfile = pfile if not isinstance(pfile, bool) \
                 else os.path.join('cache', 'default_network.pickle')
@@ -908,11 +908,11 @@ class PyPath(object):
         return self.numof_references() / float(self.graph.ecount())
 
     def get_giant(self, replace=False, graph=None):
-        '''
+        """
         Returns the giant component of the graph, or
         replaces the igraph object with only the giant
         component.
-        '''
+        """
         g = graph if graph is not None else self.graph
         gg = g if replace else copy.deepcopy(g)
         cl = gg.components(mode='WEAK')
@@ -929,13 +929,13 @@ class PyPath(object):
             return gg
 
     def update_vname(self):
-        '''
+        """
         For fast lookup of node names and indexes, these are
         hold in a list and a dict as well. However, every time
         new nodes are added, these should be updated. This
         function is automatically called after all operations
         affecting node indices.
-        '''
+        """
         self.genesymbol_labels()
         graph = self._get_undirected()
         self._already_has_directed()
@@ -964,19 +964,19 @@ class PyPath(object):
         return _NamedVertexSeq(self.graph.vs, self.nodNam, self.nodLab).gs()
 
     def update_vindex(self):
-        '''
+        """
         This is deprecated.
-        '''
+        """
         self.nodNam = dict(
             zip(range(0, self.graph.vcount()), self.graph.vs['name']))
 
     def vertex_pathways(self):
-        '''
+        """
         Some resources assignes interactions some others
         proteins to pathways.
         This function converts pathway annotations from
         edge attributes to vertex attributes.
-        '''
+        """
         for eattr in self.graph.es.attributes():
             if eattr.endswith('pathways'):
                 if eattr not in self.graph.vs.attributes():
@@ -1057,7 +1057,7 @@ class PyPath(object):
                        cache_files={},
                        reread=False,
                        redownload=False):
-        '''
+        """
         Interaction data with node and edge attributes can be read
         from simple text based files. This function works not only
         with files, but with lists as well. Any other function can
@@ -1071,7 +1071,7 @@ class PyPath(object):
         @keep_raw : boolean
             To keep the raw data read by this function, in order for
             debugging purposes, or further use.
-        '''
+        """
         listLike = set([list, tuple])
         edgeList = []
         nodeList = []
@@ -1437,6 +1437,7 @@ class PyPath(object):
         Loads the list of all disease related genes from DisGeNet.
         This resource is human only.
         """
+        
         diss = dataio.get_disgenet(dataset=dataset)
         dis = []
         for di in diss:
@@ -1450,6 +1451,7 @@ class PyPath(object):
         like metabolic enzymes, matrix proteins), by looking up a few simple
         keywords in short description of GO terms.
         """
+        
         goq = dataio.get_go_quick()
 
         gosig = set([])
@@ -1614,9 +1616,9 @@ class PyPath(object):
         self.lists[settings.name] = itemListMapped
 
     def map_list(self, lst, singleList=False):
-        '''
+        """
         Only a wrapper for map_edge()
-        '''
+        """
         listMapped = []
         if singleList:
             for item in lst:
@@ -1953,7 +1955,7 @@ class PyPath(object):
         self.update_db_dict()
 
     def delete_unknown(self, tax, typ='protein', defaultNameType=None):
-        '''
+        """
         Removes those proteins which are not in the list of all default
         IDs of the organisms. By default, it means to remove all protein
         nodes not having a human SwissProt ID.
@@ -1966,7 +1968,7 @@ class PyPath(object):
         @defaultNameType : str
             The default name type of the given molecular species.
             For proteins it's 'uniprot' by default.
-        '''
+        """
         g = self.graph
         if not defaultNameType:
             defaultNameType = self.default_name_type[typ]
@@ -2042,13 +2044,13 @@ class PyPath(object):
                           originalNameType,
                           extraAttrs={},
                           add=False):
-        '''
+        """
         Updates the attributes of one node in the network.
         Optionally it creates a new node and sets the attributes,
         but it is not efficient as igraph needs to reindex vertices
         after this operation, so better to create new nodes and
         edges in batch.
-        '''
+        """
         g = self.graph
         if not defAttrs["name"] in g.vs["name"]:
             if not add:
@@ -2238,10 +2240,10 @@ class PyPath(object):
         prg = Progress(
             total=g.ecount(), name="Setting directions", interval=17)
         for e in g.es:
-            '''
+            """
             This works because in directed graphs get_eid() defaults to
             directed = True, so the source -> target edge is returned.
-            '''
+            """
             dir_one = (g.vs['name'][e.source], g.vs['name'][e.target])
             dir_two = (g.vs['name'][e.target], g.vs['name'][e.source])
             dir_edge_one = d.get_eid(
@@ -2343,12 +2345,12 @@ class PyPath(object):
         return vids
 
     def _get_edge(self, nodes):
-        '''
+        """
         Returns the edge id only if there is an edge from nodes[0] to nodes[1],
         returns False if edge exists in opposite direction, or no edge exists
         between the two vertices, or any of the vertice ids doesn't exist.
         To find edges without regarding their direction, see edge_exists().
-        '''
+        """
         g = self.graph
         try:
             e = g.get_eid(nodes[0], nodes[1])
@@ -2357,10 +2359,10 @@ class PyPath(object):
             return False
 
     def straight_between(self, nameA, nameB):
-        '''
+        """
         This does actually the same as get_edge(), but by names
         instead of vertex ids.
-        '''
+        """
         nodNm = sorted([nameA, nameB])
         nodes = [
             self.graph.vs['name'].index(nodNm[0]),
@@ -3014,10 +3016,10 @@ class PyPath(object):
         g.vs['label'] = labels
 
     def network_stats(self, outfile=None):
-        '''
+        """
         Calculates basic statistics for the whole network
         and each of sources. Writes the results in a tab file.
-        '''
+        """
         if outfile is None:
             outfile = '-'.join(["pwnet", self.session, "stats"])
         stats = {}
@@ -3371,13 +3373,13 @@ class PyPath(object):
                        cache_files={},
                        reread=False,
                        redownload=False):
-        '''
+        """
         Loads multiple resources, and cleans up after.
         Looks up ID types, and loads all ID conversion
         tables from UniProt if necessary. This is much
         faster than loading the ID conversion and the
         resources one by one.
-        '''
+        """
         self.load_reflists()
         huge = dict(
             (k, v) for k, v in iteritems(lst)
@@ -3385,8 +3387,11 @@ class PyPath(object):
         nothuge = dict(
             (k, v) for k, v in iteritems(lst)
             if (not v.huge or v.name in cache_files) and k not in exclude)
+        
         for lst in [huge, nothuge]:
+            
             for k, v in iteritems(lst):
+                
                 self.load_resource(
                     v,
                     clean=False,
@@ -3412,8 +3417,8 @@ class PyPath(object):
         self.update_sources()
         self.update_vertex_sources()
         sys.stdout.write(
-            '''\n > %u interactions between %u nodes\n from %u'''
-            ''' resources have been loaded,\n for details see the log: ./%s\n'''
+            """\n > %u interactions between %u nodes\n from %u"""
+            """ resources have been loaded,\n for details see the log: ./%s\n"""
             % (self.graph.ecount(), self.graph.vcount(), len(self.sources),
                self.ownlog.logfile))
 
@@ -3835,6 +3840,29 @@ class PyPath(object):
             console(':: Data has been written to %s' % outfile)
 
     def export_tab(self, extraNodeAttrs={}, extraEdgeAttrs={}, outfile=None):
+        """
+        Exports the network in a tabular format.
+        
+        By default UniProt IDs, Gene Symbols, source databases, literature
+        references, directionality and sign information and interaction type
+        are included.
+        
+        Args:
+        -----
+        :param dict extraNodeAttrs:
+            Additional node attributes to be included in the exported table.
+            Keys are column ames used in the header while values are names
+            of vertex attributes. In the header `_A` and `_B` suffixes will
+            be appended to the column names so the values can be assigned to
+            A and B side interaction partners.
+        :param dict extraEdgeAttrs:
+            Additional edge attributes to be included in the exported table.
+            Keys are column ames used in the header while values are names
+            of edge attributes.
+        :param str outfile:
+            Name of the output file. If `None` a file name
+            "netrowk-<session id>.tab" is used.
+        """
         if outfile is None:
             outfile = os.path.join(self.outdir,
                                    'network-' + self.session + '.tab')
@@ -3945,12 +3973,12 @@ class PyPath(object):
                      ('DirectionBA', 'string'), ('StimulatoryAB', 'string'),
                      ('InhibitoryAB', 'string'), ('StimulatoryBA', 'string'),
                      ('InhibitoryBA', 'string'), ('Category', 'string')]
-        header = '''<?xml version="1.0" encoding="UTF-8"?>
+        header = """<?xml version="1.0" encoding="UTF-8"?>
                     <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                     xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
                     http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">\n\n
-                '''
+                """
         with codecs.open(outfile, encoding='utf-8', mode='w') as f:
             f.write(header)
             for attr in nodeAttrs:
@@ -3961,9 +3989,9 @@ class PyPath(object):
                 f.write(
                     '\t<key id="%s" for="edge" attr.name="%s" attr.type="%s" />\n'
                     % (attr[0], attr[0], attr[1]))
-            f.write('''\n<graph id="%s" edgedefault="%s"
+            f.write("""\n<graph id="%s" edgedefault="%s"
                         parse.nodeids="free" parse.edgeids="canonical"
-                        parse.order="nodesfirst">\n\n''' % (name, isDir))
+                        parse.order="nodesfirst">\n\n""" % (name, isDir))
             prg = Progress(total=g.vcount(), name='Writing nodes', interval=31)
             f.write('\n\t<!-- graph properties -->\n\n')
             f.write('\n\t<!-- vertices -->\n\n')
@@ -4068,11 +4096,11 @@ class PyPath(object):
             % (hascomp, percent * 100.0))
 
     def network_filter(self, p=2.0):
-        '''
+        """
         This function aims to cut the number of edges in the network,
         without loosing nodes, to make the network less connected,
         less hairball-like, more usable for analysis.
-        '''
+        """
         ref_freq = {}
         for s in self.sources:
             ref_freq[s] = {}
@@ -4105,11 +4133,11 @@ class PyPath(object):
                            subset=None,
                            outfile=None,
                            **kwargs):
-        '''
+        """
         subset is a tuple of two lists if you wish to look for
         paths between elements of two groups, or a list if you
         wish to look for shortest paths within this group
-        '''
+        """
         graph = graph if graph is not None else self.graph
         shortest_paths = []
         subset = subset if isinstance(subset, tuple) or subset is None else (
@@ -4507,14 +4535,14 @@ class PyPath(object):
         return result
     
     def genesymbol(self, genesymbol):
-        '''
+        """
         Returns ``igraph.Vertex()`` object if the GeneSymbol
         can be found in the default undirected network,
         otherwise ``None``.
 
         @genesymbol : str
             GeneSymbol.
-        '''
+        """
         graph = self._get_undirected()
         return graph.vs[self.labDct[genesymbol]] \
             if genesymbol in self.labDct else None
@@ -4522,14 +4550,14 @@ class PyPath(object):
     gs = genesymbol
 
     def dgenesymbol(self, genesymbol):
-        '''
+        """
         Returns ``igraph.Vertex()`` object if the GeneSymbol
         can be found in the default directed network,
         otherwise ``None``.
 
         @genesymbol : str
             GeneSymbol.
-        '''
+        """
         dgraph = self._get_directed()
         return dgraph.vs[self.dlabDct[genesymbol]] \
             if genesymbol in self.dlabDct else None
@@ -4549,14 +4577,14 @@ class PyPath(object):
     dgss = dgenesymbols
 
     def uniprot(self, uniprot):
-        '''
+        """
         Returns ``igraph.Vertex()`` object if the UniProt
         can be found in the default undirected network,
         otherwise ``None``.
 
         @uniprot : str
             UniProt ID.
-        '''
+        """
         graph = self._get_undirected()
         return graph.vs[self.nodDct[uniprot]] \
             if uniprot in self.nodDct else None
@@ -4564,7 +4592,7 @@ class PyPath(object):
     up = uniprot
 
     def duniprot(self, uniprot):
-        '''
+        """
         Same as ``PyPath.uniprot(), just for directed graph.
         Returns ``igraph.Vertex()`` object if the UniProt
         can be found in the default directed network,
@@ -4572,7 +4600,7 @@ class PyPath(object):
 
         @uniprot : str
             UniProt ID.
-        '''
+        """
         dgraph = self._get_directed()
         return dgraph.vs[self.dnodDct[uniprot]] \
             if uniprot in self.dnodDct else None
@@ -4580,23 +4608,23 @@ class PyPath(object):
     dup = duniprot
 
     def uniprots(self, uniprots):
-        '''
+        """
         Returns list of ``igraph.Vertex()`` object
         for a list of UniProt IDs omitting those
         could not be found in the default
         undirected graph.
-        '''
+        """
         return filter(lambda v: v is not None, map(self.uniprot, uniprots))
 
     ups = uniprots
 
     def duniprots(self, uniprots):
-        '''
+        """
         Returns list of ``igraph.Vertex()`` object
         for a list of UniProt IDs omitting those
         could not be found in the default
         directed graph.
-        '''
+        """
         return filter(lambda v: v is not None, map(self.duniprot, uniprots))
 
     dups = duniprots
@@ -4627,7 +4655,7 @@ class PyPath(object):
     p = get_node
 
     def get_node_d(self, identifier):
-        '''
+        """
         Same as ``PyPath.get_node``, just for the directed graph.
         Returns ``igraph.Vertex()`` object if the identifier
         is a valid vertex index in the default directed graph,
@@ -4636,7 +4664,7 @@ class PyPath(object):
 
         @identifier : int, str
             Vertex index (int) or GeneSymbol (str) or UniProt ID (str).
-        '''
+        """
         dgraph = self._get_directed()
         return dgraph.vs[identifier] \
             if isinstance(identifier, int) and identifier < dgraph.vcount() \
@@ -4666,7 +4694,7 @@ class PyPath(object):
     dproteins = get_nodes_d
 
     def up_edge(self, source, target, directed=True):
-        '''
+        """
         Returns ``igraph.Edge`` object if an edge exist between
         the 2 proteins, otherwise ``None``.
 
@@ -4676,7 +4704,7 @@ class PyPath(object):
             UniProt ID
         @directed : bool
             To be passed to igraph.Graph.get_eid()
-        '''
+        """
         v_source = self.uniprot(source)
         v_target = self.uniprot(target)
         if v_source is not None and v_target is not None:
@@ -4687,7 +4715,7 @@ class PyPath(object):
         return None
 
     def gs_edge(self, source, target, directed=True):
-        '''
+        """
         Returns ``igraph.Edge`` object if an edge exist between
         the 2 proteins, otherwise ``None``.
 
@@ -4697,7 +4725,7 @@ class PyPath(object):
             GeneSymbol
         @directed : bool
             To be passed to igraph.Graph.get_eid()
-        '''
+        """
         v_source = self.genesymbol(source)
         v_target = self.genesymbol(target)
         if v_source is not None and v_target is not None:
@@ -4764,10 +4792,10 @@ class PyPath(object):
                 self._directed = self.dgraph
 
     def _get_directed(self):
-        '''
+        """
         Returns the directed instance of the graph.
         If not available, creates one at ``PyPath.dgraph``.
-        '''
+        """
         self._has_directed()
         return self._directed
 
@@ -5019,7 +5047,7 @@ class PyPath(object):
         pass
 
     def edges_in_comlexes(self, csources=['corum'], graph=None):
-        '''
+        """
         Creates edge attributes ``complexes`` and ``in_complex``.
         These are both dicts where the keys are complex resources.
         The values in ``complexes`` are the list of complex names
@@ -5032,7 +5060,7 @@ class PyPath(object):
             List of complex resources. Should be already loaded.
         @graph : igraph.Graph()
             The graph object to do the calculations on.
-        '''
+        """
         graph = graph if graph is not None else self.graph
         if 'complexes' not in graph.es.attributes():
             graph.es['complexes'] = [{} for _ in graph.es]
@@ -5055,7 +5083,7 @@ class PyPath(object):
                   csources)
 
     def sum_in_complex(self, csources=['corum'], graph=None):
-        '''
+        """
         Returns the total number of edges in the network falling
         between two members of the same complex.
         Returns as a dict by complex resources.
@@ -5066,7 +5094,7 @@ class PyPath(object):
             List of complex resources. Should be already loaded.
         @graph : igraph.Graph()
             The graph object to do the calculations on.
-        '''
+        """
         graph = graph if graph is not None else self.graph
         self.edges_in_comlexes(csources=csources, graph=graph)
         return dict(map(lambda cs:
@@ -5229,10 +5257,10 @@ class PyPath(object):
         prg.terminate()
 
     def load_ddi(self, ddi):
-        '''
+        """
         ddi is either a list of intera.DomainDomain objects,
         or a function resulting this list
-        '''
+        """
         data = ddi if not hasattr(ddi, '__call__') else ddi()
         if data is None:
             if ddi.__module__.split('.')[1] == 'dataio':
@@ -5256,10 +5284,10 @@ class PyPath(object):
         prg.terminate()
 
     def load_dmi(self, dmi):
-        '''
+        """
         dmi is either a list of intera.DomainMotif objects,
         or a function resulting this list
-        '''
+        """
         data = dmi if not hasattr(dmi, '__call__') else dmi()
         if data is None:
             if dmi.__module__.split('.')[1] == 'dataio':
@@ -5517,12 +5545,12 @@ class PyPath(object):
         pass
 
     def process_dmi(self, source, **kwargs):
-        '''
+        """
         This is an universal function
         for loading domain-motif objects
         like load_phospho_dmi() for PTMs.
         TODO this will replace load_elm, load_ielm, etc
-        '''
+        """
         functions = {'LMPID': 'lmpid_dmi'}
         motif_plus = {'LMPID': []}
         self.update_vname()
@@ -5805,7 +5833,11 @@ class PyPath(object):
         
         ptma.assign_to_network(self)
         
-        if self.ncbi_tax_id == 9606:
+        if self.ncbi_tax_id == 9606 and (
+                input_methods is None or
+                'DEPOD' in input_methods
+            ):
+            
             self.load_depod_dmi()
         
         self.uniq_ptms()
@@ -6305,7 +6337,7 @@ class PyPath(object):
                     use_cats=['p', 'm', 'i', 'r'],
                     urls=True,
                     annots=False):
-        '''
+        """
         Returns basic numbers about the network resources, e.g. edge and
         node counts.
 
@@ -6313,7 +6345,7 @@ class PyPath(object):
             Return table in a LaTeX document. This can be compiled by
             PDFLaTeX:
             latex stats.tex
-        '''
+        """
         url_strip = {
             'SPIKE': 4,
             'PDZbase': 4,
@@ -6398,15 +6430,15 @@ class PyPath(object):
 
             texnewline = r'\\' + '\n'
 
-            _latex_tab = r'''%s
+            _latex_tab = r"""%s
                     \begin{tabularx}{0.95\textwidth}{%s}
                     \toprule
                         %s
                     \midrule
                         %s
                     \bottomrule
-                    \end{tabularx}%s'''
-            _latex_hdr = r'''\documentclass[a4paper,%upt]{extarticle}
+                    \end{tabularx}%s"""
+            _latex_hdr = r"""\documentclass[a4paper,%upt]{extarticle}
                     \usepackage{fontspec}
                     \usepackage{xunicode}
                     \usepackage{polyglossia}
@@ -6427,10 +6459,10 @@ class PyPath(object):
                     \color{grey875}
                     \thispagestyle{empty}
                     \vfill
-                ''' % (fontsize, font) if latex_hdr else ''
-            _latex_end = r'''
+                """ % (fontsize, font) if latex_hdr else ''
+            _latex_end = r"""
                     \end{document}
-                ''' if latex_hdr else ''
+                """ if latex_hdr else ''
 
             _hdr_row = ' & '.join(
                 [header_format % h.replace(r'%', r'\%')
@@ -6483,9 +6515,9 @@ class PyPath(object):
             sys.stdout.flush()
 
     def source_network(self, font='HelveticaNeueLTStd'):
-        '''
+        """
         For EMBL branding, use Helvetica Neue Linotype Standard light
-        '''
+        """
         stats = self.sources_overlap()
         tupleListNodes = []
         tupleListEdges = []
@@ -6566,12 +6598,12 @@ class PyPath(object):
                        attributes=None,
                        gdsc_datadir=None,
                        mutation_file=None):
-        '''
+        """
         Mutations are listed in vertex attributes. Mutation() objects
         offers methods to identify residues and look up in Ptm(), Motif()
         and Domain() objects, to check if those residues are
         modified, or are in some short motif or domain.
-        '''
+        """
         self.mutation_samples = []
         attributes = attributes if attributes is not None else [
             'Consequence', 'COSMIC_ID', 'SAMPLE_NAME', 'Tissue_TCGA',
@@ -6601,11 +6633,11 @@ class PyPath(object):
         data = None
 
     def load_expression(self, array=False):
-        '''
+        """
         Expression data can be loaded into vertex attributes,
         or into a pandas DataFrame – the latter offers faster
         ways to process and use these huge matrices.
-        '''
+        """
         self.update_vname()
         data = gdsc.read_transcriptomics()
         if 'exp' not in self.graph.vs.attributes():
@@ -6631,7 +6663,7 @@ class PyPath(object):
         prg.terminate()
 
     def edges_expression(self, func=lambda x, y: x * y):
-        '''
+        """
         Executes function `func` for each pairs of connected proteins in the
         network, for every expression dataset. By default, `func` simply
         gives the product the (normalized) expression values.
@@ -6639,7 +6671,7 @@ class PyPath(object):
         func : callable
             Function to handle 2 vectors (pandas.Series() objects), should
             return one vector of the same length.
-        '''
+        """
         self.update_vindex()
         self.exp_prod = pandas.DataFrame(index=self.exp.index, columns=[])
         prg = Progress(self.graph.ecount(),
@@ -6660,11 +6692,11 @@ class PyPath(object):
     #
 
     def mutated_edges(self, sample):
-        '''
+        """
         Compares the mutated residues and the modified residues in PTMs.
         Interactions are marked as mutated if the target residue in the
         underlying PTM is mutated.
-        '''
+        """
         toDel = []
         disrupted = {}
         for e in self.graph.es:
@@ -6757,7 +6789,7 @@ class PyPath(object):
     
     def find_all_paths(self, start, end, mode='OUT', maxlen=2,
                        graph=None, silent=False):
-        '''
+        """
         Finds all paths up to length `maxlen` between groups of
         vertices. This function is needed only becaues igraph`s
         get_all_shortest_paths() finds only the shortest, not any
@@ -6774,7 +6806,7 @@ class PyPath(object):
             the longest path may consist of 3 edges and 4 nodes.
         @graph : igraph.Graph object
             The graph you want to find paths in. self.graph by default.
-        '''
+        """
 
         def find_all_paths_aux(start, end, path, maxlen=None):
             path = path + [start]
@@ -6940,11 +6972,17 @@ class PyPath(object):
                             'Low': 1, 'Not detected': 0},
                  graph = None,
                  na_value = 0):
+        """
+        Loads Human Protein Atlas data into vertex attributes.
+        """
         
         graph = graph or self.graph
         
         hpa = dataio.get_proteinatlas(
-            normal = normal, pathology = pathology or cancer)
+            normal = normal, pathology = pathology or cancer
+        )
+        
+        graph.vs['hpa'] = [{} for _ in xrange(graph.vcount())]
         
         if normal:
             
@@ -6953,13 +6991,13 @@ class PyPath(object):
                 if tissues is not None and tissue not in tissues:
                     continue
                 
-                graph.vs[tissue] = [na_value for v in xrange(graph.vcount())]
-                
                 for v in graph.vs:
                     
-                    if v['name'] in data and data[v['name']][1] in quality:
-                        
-                        v[tissue] = levels[data[v['name']][0]]
+                    v['hpa'][tissue] = (
+                        levels[data[v['name']][0]]
+                        if v['name'] in data and data[v['name']][1] in quality
+                        else na_value
+                    )
         
         if cancer or pathology:
             
@@ -6992,6 +7030,18 @@ class PyPath(object):
                             v[tissue] = data[v['name']]
     
     def tissue_network(self, tissue, graph=None):
+        """
+        Returns a network which includes the proteins expressed in
+        certain tissue according to ProteomicsDB.
+        
+        Args:
+        -----
+        :param str tissue:
+            Tissue name as used in ProteomicsDB.
+        :param igraph.Graph graph:
+            A graph object, by default the `graph` attribute of
+            the current instance.
+        """
         
         graph = self.graph if graph is None else graph
         if tissue not in graph.vs.attributes():
@@ -7000,9 +7050,9 @@ class PyPath(object):
             [v.index for v in graph.vs if v[tissue] > 0.0])
 
     def small_plot(self, graph, **kwargs):
-        '''
+        """
         This method is deprecated, do not use it.
-        '''
+        """
         arrow_size = []
         arrow_width = []
         edge_color = []
@@ -7069,10 +7119,10 @@ class PyPath(object):
         return comm
 
     def set_receptors(self):
-        '''
+        """
         Creates a vertex attribute `rec` with value *True* if
         the protein is a receptor, otherwise *False*.
-        '''
+        """
         self.update_vname()
         self.graph.vs['rec'] = [False for _ in self.graph.vs]
         if 'rec' not in self.lists:
@@ -7082,10 +7132,10 @@ class PyPath(object):
                 self.graph.vs[self.nodDct[rec]]['rec'] = True
 
     def set_kinases(self):
-        '''
+        """
         Creates a vertex attribute `kin` with value *True* if
         the protein is a kinase, otherwise *False*.
-        '''
+        """
         self.update_vname()
         self.graph.vs['kin'] = [False for _ in self.graph.vs]
         if 'kin' not in self.lists:
@@ -7095,10 +7145,10 @@ class PyPath(object):
                 self.graph.vs[self.nodDct[kin]]['kin'] = True
 
     def set_signaling_proteins(self):
-        '''
+        """
         Creates a vertex attribute `kin` with value *True* if
         the protein is a kinase, otherwise *False*.
-        '''
+        """
         self.update_vname()
         self.graph.vs['sig'] = [False for _ in self.graph.vs]
         if 'kin' not in self.lists:
@@ -7108,10 +7158,10 @@ class PyPath(object):
                 self.graph.vs[self.nodDct[sig]]['sig'] = True
 
     def set_druggability(self):
-        '''
+        """
         Creates a vertex attribute `dgb` with value *True* if
         the protein is druggable, otherwise *False*.
-        '''
+        """
         self.update_vname()
         self.graph.vs['dgb'] = [False for _ in self.graph.vs]
         if 'dgb' not in self.lists:
@@ -7121,11 +7171,17 @@ class PyPath(object):
                 self.graph.vs[self.nodDct[dgb]]['dgb'] = True
 
     def set_drugtargets(self, pchembl=5.0):
-        '''
+        """
         Creates a vertex attribute `dtg` with value *True* if
         the protein has at least one compound binding with
         affinity higher than `pchembl`, otherwise *False*.
-        '''
+        
+        Args:
+        -----
+        :param float pchembl:
+            Pchembl threshold.
+        """
+        
         self.update_vname()
         self.graph.vs['dtg'] = [False for _ in self.graph.vs]
         if 'compounds_data' not in self.graph.vs.attributes():
@@ -7138,10 +7194,15 @@ class PyPath(object):
                         v['dtg'] = True
 
     def set_transcription_factors(self, classes=['a', 'b', 'other']):
-        '''
+        """
         Creates a vertex attribute `tf` with value *True* if
         the protein is a transcription factor, otherwise *False*.
-        '''
+        
+        Args:
+        -----
+        :param list classes:
+            Classes to use from TF Census. Default is `['a', 'b', 'other']`.
+        """
         self.update_vname()
         self.graph.vs['tf'] = [False for _ in self.graph.vs]
         if 'tf' not in self.lists:
@@ -7151,6 +7212,17 @@ class PyPath(object):
                 self.graph.vs[self.nodDct[tf]]['tf'] = True
 
     def set_disease_genes(self, dataset='curated'):
+        """
+        Creates a vertex attribute named `dis` with boolean values *True*
+        if the protein encoded by a disease related gene according to
+        DisGeNet.
+        
+        Args:
+        -----
+        :param str dataset:
+            Which dataset to use from DisGeNet. Default is `curated`.
+        """
+        
         self.update_vname()
         self.graph.vs['dis'] = [False for _ in self.graph.vs]
         self.disease_genes_list(dataset=dataset)
@@ -7201,6 +7273,24 @@ class PyPath(object):
         self.pathway_attributes(graph=graph)
 
     def load_pathways(self, source, graph=None):
+        """
+        Generic method to load pathway annotations from a resource.
+        We don't recommend calling this method but either specific
+        methods for a single source e.g. `kegg_pathways()`
+        or `sirnor_pathways()` or call `load_all_pathways()` to
+        load all resources.
+        
+        Args:
+        ----
+        
+        :param str source:
+            Name of the source, this need to match a method in the dict
+            in `get_pathways()` method and the edge and vertex attributes
+            with pathway annotations will be called "<source>_pathways".
+        :param igraph.Graph graph:
+            A graph, by default the default the `graph` attribute of the
+            current instance.
+        """
         attrname = '%s_pathways' % source
         g = self.graph if graph is None else graph
         nodDct = dict(zip(g.vs['name'], xrange(g.vcount())))
@@ -7493,7 +7583,7 @@ class PyPath(object):
         non_digit = re.compile(r'[^\d.-]+')
         row_order = sorted(data.keys(), key=lambda x: x.upper()) \
             if row_order is None else row_order
-        _latex_tab = r'''%s
+        _latex_tab = r"""%s
                 \begin{tabularx}{\textwidth}{%s}
                 \toprule
                     %s
@@ -7502,8 +7592,8 @@ class PyPath(object):
                 %s\bottomrule
                 \end{tabularx}
                 %s
-            '''
-        _latex_hdr = r'''\documentclass[a4wide,%upt]{extarticle}
+            """
+        _latex_hdr = r"""\documentclass[a4wide,%upt]{extarticle}
                 \usepackage{fontspec}
                 \usepackage{xunicode}
                 \usepackage{polyglossia}
@@ -7524,12 +7614,12 @@ class PyPath(object):
                 \thispagestyle{empty}
                 \vfill
                 \begin{table}[h]
-            ''' % (fontsize, font) if latex_hdr else ''
-        _latex_end = r'''
+            """ % (fontsize, font) if latex_hdr else ''
+        _latex_end = r"""
                 \caption{%s}
                 \end{table}
                 \end{document}
-            ''' % caption if latex_hdr else ''
+            """ % caption if latex_hdr else ''
         _hdr_row = ' & '.join([''] + [
             header_format % h[1].replace(r'%', r'\%') for h in header
         ]) + '\\\\'
@@ -7785,14 +7875,14 @@ class PyPath(object):
             use_string_effects=False,
             use_laudanna_data=False
         ):
-        '''
+        """
         This method calls a series of methods to get
         additional direction & effect information
         from sources having no literature curated references,
         but giving sufficient evidence about the directionality
         for interactions already supported by literature
         evidences from other sources.
-        '''
+        """
         
         if use_string_effects:
             self.string_effects(graph = graph)
@@ -7953,13 +8043,13 @@ class PyPath(object):
             (sourcedirs, name, newdirs, newsigns))
 
     def curation_effort(self, sum_by_source=False):
-        '''
+        """
         Returns the total number of reference-interactions pairs.
 
         @sum_by_source : bool
             If True, counts the refrence-interaction pairs by
             sources, and returns the sum of these values.
-        '''
+        """
         if sum_by_source:
             return sum(
                 map(sum,
@@ -7989,7 +8079,7 @@ class PyPath(object):
                    hide_nodes=[],
                    defaults={},
                    **kwargs):
-        '''
+        """
         Builds a pygraphviz.AGraph() object with filtering the edges
         and vertices along arbitrary criteria.
         Returns the Agraph object if requesred, or exports the dot
@@ -8061,7 +8151,7 @@ class PyPath(object):
                 label_font = 'HelveticaNeueLTStd Med Cn',
                 edge_sources = ['SignaLink3'],
                 dir_sources = ['SignaLink3'], hide = True)
-        '''
+        """
         _attrs = {}
         _custom_attrs = kwargs
         graph_attrs, vertex_attrs, edge_attrs = dataio.get_graphviz_attrs()
