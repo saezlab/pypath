@@ -4,11 +4,11 @@
 
 
 :note: ``pypath`` supports both Python 2.7 and Python 3.6+. In the beginning,
-pypath has been developed only for Python 2.7. Then the code have been
-adjusted to Py3 however we can not guarantee no incompatibilities remained.
-If you find any method does not work please submit an issue on github.
-For few years I develop and test ``pypath`` in Python 3. Therefore this is the
-better supported Python variant.
+    pypath has been developed only for Python 2.7. Then the code have been
+    adjusted to Py3 however we can not guarantee no incompatibilities 
+    remained. If you find any method does not work please submit an issue on
+    github. For few years I develop and test ``pypath`` in Python 3. Therefore
+    this is the better supported Python variant.
 
 :contributions: turei.denes@gmail.com
 :documentation: http://pypath.omnipathdb.org/
