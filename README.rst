@@ -18,6 +18,7 @@
 network representations e.g. protein, miRNA and drug compound interaction
 networks.
 
+
 Webservice
 ==========
 
@@ -35,8 +36,10 @@ The webservice currently recognizes 3 types of queries: ``interactions``,
 ``ptms`` and ``info``. The query types ``resources``, ``network`` and
 ``about`` have not been implemented yet in the new webservice.
 
+
 Mouse and rat
 -------------
+
 Except the miRNA interactions all interactions are available for human, mouse
 and rat. The rodent data has been translated from human using the NCBI
 Homologene database. Many human proteins have no known homolog in rodents
