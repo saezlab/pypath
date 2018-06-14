@@ -8827,8 +8827,12 @@ class PyPath(object):
         vids = dict(map(lambda v: (v['id_new'], v.index), graph.vs))
         # id_new > uniprot
         vnms = dict(map(lambda v: (v['id_new'], v['name']), graph.vs))
+        
+        prg = Progress(graph.ecount(), 'Translating network by homology', 21)
         # setting attributes on old and new edges:
         for e in graph.es:
+            
+            prg.step()
             
             d = e['dirs']
             
@@ -8890,6 +8894,7 @@ class PyPath(object):
                             if eattr != 'dirs' and eattr != 'refs_by_dir':
                                 eenew[eattr] = copy.deepcopy(e[eattr])
         
+        prg.terminate()
         # id_new > current index
         vids = dict(map(lambda v: (v['id_new'], v.index), graph.vs))
         
@@ -8943,6 +8948,8 @@ class PyPath(object):
         
         if return_graph:
             return graph
+    
+    homology_translation = orthology_translation
     
     def random_walk_with_return(self, q, graph = None, c = .5, niter = 1000):
         """
