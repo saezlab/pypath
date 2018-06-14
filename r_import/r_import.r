@@ -6,7 +6,7 @@
 require(igraph)
 require(dplyr)
 
-url <- 'http://omnipathdb.org/interactions?fields=sources&fields=references&genesymbols=1'
+url <- 'http://omnipathdb.org/interactions?fields=sources,eferences&genesymbols=1'
 
 download_omnipath <- function(){
     
