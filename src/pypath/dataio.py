@@ -1919,7 +1919,6 @@ def get_psite_phos(raw=True, organism='human', strict=True, mapper=None):
         'motif': 11
     }
     data = read_table(cols=cols, fileObject=data, sep='\t', hdr=4)
-    return data
     result = []
     non_digit = re.compile(r'[^\d.-]+')
     motre = re.compile(r'(_*)([A-Za-z]+)(_*)')
