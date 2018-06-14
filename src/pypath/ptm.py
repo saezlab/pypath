@@ -668,9 +668,10 @@ class PtmAggregator(object):
         
         self.mapper = self.mapper or mapping.Mapper()
     
-    def make_df(self):
+    def make_df(self, tax_id = False):
         
-        hdr = ['enzyme', 'substrate', 'isoforms',
+        hdr = ['enzyme', 'substrate', 'enzyme_genesymbol',
+               'substrate_genesymbol', 'isoforms',
                'residue_type', 'residue_offset', 'modification',
                'sources', 'references']
         
@@ -678,6 +679,10 @@ class PtmAggregator(object):
             [dm.get_line() for dm in self],
             columns = hdr
         )
+        
+        if tax_id:
+            
+            self.df['ncbi_tax_id'] = [self.ncbi_tax_id] * self.df.shape[0]
     
     def export_table(self, fname):
         

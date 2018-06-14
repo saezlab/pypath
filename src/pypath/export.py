@@ -34,6 +34,8 @@ import pypath.urls as urls
 import pypath.data_formats as data_formats
 
 strip_json = re.compile(r'[\[\]{}\"]')
+simple_types = {bool, int, float, type(None)}
+
 
 class Export(object):
     
@@ -138,8 +140,8 @@ class Export(object):
             self.default_header_bydirs
         )
         header += extra_edge_attrs.keys()
-        header += ['%s_%s' (x, suffix_a) for x in extra_node_attrs.keys()]
-        header += ['%s_%s' (x, suffix_b) for x in extra_node_attrs.keys()]
+        header += ['%s_%s' % (x, suffix_a) for x in extra_node_attrs.keys()]
+        header += ['%s_%s' % (x, suffix_b) for x in extra_node_attrs.keys()]
         
         prg = progress.Progress(
             total = self.graph.ecount(),
@@ -253,14 +255,14 @@ class Export(object):
                 )
                 
                 this_edge.extend([
-                    sorted(dsources),
-                    [
+                    ';'.join(sorted(dsources)),
+                    ';'.join(
                         r.pmid
                         for r in itertools.chain(*(
                             rs for s, rs in iteritems(e['refs_by_source'])
                             if s in dsources
                         ))
-                    ]
+                    )
                 ])
                 
                 this_edge.append(self._dip_urls(e))
@@ -279,8 +281,8 @@ class Export(object):
                 0,
                 0,
                 0,
-                sorted(e['sources']),
-                [r.pmid for r in e['references']],
+                ';'.join(sorted(e['sources'])),
+                ';'.join([r.pmid for r in e['references']]),
                 self._dip_urls(e)
             ]
             
@@ -343,6 +345,7 @@ class Export(object):
     def default_vertex_attr_processor(vattr):
             
             return (
+                vattr if type(vattr) in simple_types else
                 ';'.join([
                     x.strip()
                     for x in strip_json.sub('',
@@ -358,6 +361,7 @@ class Export(object):
     def default_edge_attr_processor(eattr):
         
         return (
+            eattr if type(eattr) in simple_types else
             ';'.join([
                 x.strip()
                 for x in strip_json.sub('', json.dumps(eattr)).split(',')
@@ -422,20 +426,39 @@ class Export(object):
         
         self.make_df(
             unique_pairs = False,
+            extra_node_attrs = {
+                'ncbi_tax_id': 'ncbi_tax_id'
+            },
             extra_edge_attrs = {
-                'omnipath': lambda e, d: bool(
-                    e['dirs'].sources[d] & sources_omnipath
+                'omnipath': lambda e, d: (
+                    bool(e['dirs'].sources[d] & sources_omnipath) and
+                    'PPI' in e['type']
                 ),
-                'kinaseextra': lambda e, d: bool(
-                    e['dirs'].sources[d] & sources_kinase_extra
+                'kinaseextra': lambda e, d: (
+                    bool(e['dirs'].sources[d] & sources_kinase_extra) and
+                    'PPI' in e['type']
                 ),
-                'mirnatarget': lambda e, d: bool(
-                    e['dirs'].sources[d] & sources_mirna
+                'mirnatarget': lambda e, d: (
+                    bool(e['dirs'].sources[d] & sources_mirna) and
+                    'MTI' in e['type']
                 ),
-                'tfregulons': lambda e, d: 'TFRegulons' in e['dirs'].sources[d],
+                'tfregulons': lambda e, d: (
+                    'TF' in e['sources_by_type'] and bool(
+                        e['sources_by_type']['TF'] &
+                        e['dirs'].sources[d]
+                    )
+                ),
                 'tfregulons_curated': 'tfregulons_curated',
                 'tfregulons_chipseq': 'tfregulons_chipseq',
                 'tfregulons_tfbs':    'tfregulons_tfbs',
-                'tfregulons_coexp':   'tfregulons_coexp'
+                'tfregulons_coexp':   'tfregulons_coexp',
+                'tfregulons_level': lambda e, d: (
+                    ';'.join(sorted(e['tfregulons_level'])) if
+                    'tfregulons_level' in e.attributes() and
+                    'TF' in e['sources_by_type'] and bool(
+                        e['sources_by_type']['TF'] &
+                        e['dirs'].sources[d]
+                    ) else ''),
+                'type': lambda e: e['type'][0]
             }
         )

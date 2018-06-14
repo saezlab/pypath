@@ -23,6 +23,7 @@ building the tables for the webservice.
 from future.utils import iteritems
 
 import imp
+import copy
 import pandas as pd
 
 import pypath.ptm as ptm
@@ -42,6 +43,8 @@ class WebserviceTables(object):
         ):
         
         self.only_human = only_human
+        self.outfile_interactions = outfile_interactions
+        self.outfile_ptms = outfile_ptms
     
     def reload(self):
         
@@ -51,12 +54,11 @@ class WebserviceTables(object):
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
     
-    
     def main(self):
         
         self.init_mapper()
-        self.ptm()
-        self.interactions()
+        #self.interactions()
+        self.ptms()
     
     def init_mapper(self):
         
@@ -66,9 +68,15 @@ class WebserviceTables(object):
         
         dataframes = []
         
+        tfregulons = copy.deepcopy(data_formats.transcription)
+        tfregulons['tfregulons'].inputArgs['levels'] = {
+            #'A', 'B', 'C', 'D', 'E'
+            'A', 'B'
+        }
+        
         param = (
             ('load_omnipath', {'kinase_substrate_extra': True}),
-            ('init_network',  {'lst': data_formats.transcription}),
+            ('init_network',  {'lst': tfregulons}),
             ('init_network',  {'lst': data_formats.mirna_target})
         )
         
@@ -84,24 +92,40 @@ class WebserviceTables(object):
             
             if not self.only_human:
                 
-                graph_human = copy.deepcopy(pa.graph)
+                graph_human = None
                 
-                # mouse
-                pa.orthology_translation(10090)
-                e = export.Export(pa)
-                e.webservice_interactions_df()
-                dataframes.append(e.df)
-                
-                # return to the human network
-                # in order to translate also to rat
-                pa.graph = graph_human
-                pa.genesymbol_labels(remap_all = True)
-                pa.update_vname()
-                
-                pa.orthology_translation(10116)
-                e = export.Export(pa)
-                e.webservice_interactions_df()
-                dataframes.append(e.df)
+                for rodent in (10090, 10116):
+                    
+                    if pa.ncbi_tax_id == 9606:
+                        
+                        if pa.graph.ecount() < 100000:
+                            
+                            graph_human = copy.deepcopy(pa.graph)
+                        
+                    else:
+                        
+                        if graph_human:
+                            
+                            pa.graph = graph_human
+                            pa.ncbi_tax_id = 9606
+                            pa.genesymbol_labels(remap_all = True)
+                            pa.update_vname()
+                            
+                        else:
+                            
+                            del e
+                            del pa
+                            pa = main.PyPath()
+                            pa.mapper = self.mapper
+                            getattr(pa, to_call)(**kwargs)
+                    
+                    pa.orthology_translation(rodent)
+                    e = export.Export(pa)
+                    e.webservice_interactions_df()
+                    dataframes.append(e.df)
+        
+        del e
+        del pa
         
         self.df_interactions = pd.concat(dataframes)
         self.df_interactions.to_csv(
@@ -110,12 +134,12 @@ class WebserviceTables(object):
             index = False
         )
     
-    def ptm(self):
+    def ptms(self):
         
         dataframes = []
         
         ptma = ptm.PtmAggregator(mapper = self.mapper)
-        ptma.make_df()
+        ptma.make_df(tax_id = True)
         dataframes.append(ptma.df)
         
         if not self.only_human:
@@ -127,7 +151,7 @@ class WebserviceTables(object):
                     map_by_homology_from = (9606, rodent2),
                     mapper = self.mapper
                 )
-                ptma.make_df()
+                ptma.make_df(tax_id = True)
                 dataframes.append(ptma.df)
         
         self.df_ptms = pd.concat(dataframes)

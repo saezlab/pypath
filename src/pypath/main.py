@@ -843,7 +843,7 @@ class PyPath(object):
 
     def get_attrs(self, line, spec, lnum):
         attrs = {}
-        for col in spec:
+        for col in spec.keys():
             # extraEdgeAttrs and extraNodeAttrs are dicts
             # of additional parameters assigned to edges and nodes respectively;
             # key is the name of the parameter, value is the col number,
@@ -851,7 +851,10 @@ class PyPath(object):
             # if the column contains additional subfields e.g. (5, ";")
             try:
                 if spec[col].__class__ is tuple:
-                    fieldVal = line[spec[col][0]].split(spec[col][1])
+                    if hasattr(spec[col][1], '__call__'):
+                        fieldVal = spec[col][1](line[spec[col][0]])
+                    else:
+                        fieldVal = line[spec[col][0]].split(spec[col][1])
                 else:
                     fieldVal = line[spec[col]]
             except:
@@ -2108,9 +2111,8 @@ class PyPath(object):
         refs = [_refs.Reference(pmid) for pmid in refs]
         self.add_list_eattr(edge, 'references', refs)
         # updating references-by-source dict:
-        if refs:
-            for src in source:
-                self.add_grouped_set_eattr(edge, 'refs_by_source', src, refs)
+        for src in source:
+            self.add_grouped_set_eattr(edge, 'refs_by_source', src, refs)
         # updating refrences-by-type dict:
         self.add_grouped_set_eattr(edge, 'refs_by_type', typ, refs)
         # setting directions:

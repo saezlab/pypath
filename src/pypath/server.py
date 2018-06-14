@@ -18,6 +18,7 @@
 from future.utils import iteritems
 
 import sys
+import os
 
 try:
     from twisted.web import server, resource
@@ -27,6 +28,9 @@ except:
 
 import urllib
 import json
+
+import pandas as pd
+import numpy as np
 
 import pypath.descriptions as descriptions
 import pypath._html as _html
@@ -47,6 +51,8 @@ class BaseServer(resource.Resource):
     
     def __init__(self):
         
+        sys.stdout.write('BaseServer initialized\n')
+        
         self.htmls = ['info', '']
         self.welcome_message = (
             'Hello, this is the REST service of pypath %s. Welcome!\n'\
@@ -54,13 +60,16 @@ class BaseServer(resource.Resource):
                 __version__
             )
         )
+        
+        self.isLeaf = True
+        resource.Resource.__init__(self)
     
     def render_GET(self, request):
         
         request.postpath = [i.decode('utf-8') for i in request.postpath]
         
         html = len(request.postpath) == 0 or request.postpath[0] in self.htmls
-        self.set_defaults(request, html=html)
+        self._set_defaults(request, html=html)
         
         if (
             request.postpath and
@@ -79,32 +88,42 @@ class BaseServer(resource.Resource):
                     response
                 )
             
-        elif request.postpath:
+        elif not request.postpath:
             
             return self.root(request)
         
-        return "Not found: %s%s" % (
-            '/'.join(request.postpath), ''
-            if len(request.args) == 0 else '?%s' %
-            '&'.join(['%s=%s' % (k, v) for k, v in iteritems(request.args)])
-        )
+        return (
+                "Not found: %s%s" % (
+                '/'.join(request.postpath), ''
+                if len(request.args) == 0 else '?%s' %
+                '&'.join(['%s=%s' % (k, v) for k, v in iteritems(request.args)])
+            )
+        ).encode('utf-8')
     
-        def set_defaults(self, request, html=False):
+    def _set_defaults(self, request, html=False):
+        
         request.setHeader('Cache-Control', 'Public')
+        
         if '' in request.postpath:
             request.postpath.remove('')
+        
         request.setHeader('Access-Control-Allow-Origin', '*')
+        
         if html:
             request.setHeader('Content-Type', 'text/html; charset=utf-8')
-        elif b'format' in request.args and request.args[b'format'][
-                0] == b'json':
+        elif (
+            b'format' in request.args and
+            request.args[b'format'][0] == b'json'
+        ):
             request.args[b'format'] = b'json'
             request.setHeader('Content-Type', 'text/json; charset=utf-8')
         else:
             request.args[b'format'] = b'text'
             request.setHeader('Content-Type', 'text/plain; charset=utf-8')
+        
         request.args[b'header'] = 1 if b'header' not in request.args \
             else int(request.args[b'header'][0])
+        
         request.args[b'fields'] = [] if b'fields' not in request.args \
             else request.args[b'fields']
 
@@ -133,14 +152,38 @@ class BaseServer(resource.Resource):
 
 class TableServer(BaseServer):
     
-    def __init__(self, tbls = {}):
+    datasets = {'omnipath', 'tfregulons', 'kinaseextra', 'mirnatarget'}
+    tfregulons_methods = {'curated', 'coexp', 'chipseq', 'tfbs'}
+    dataset2type = {
+        'omnipath': 'PPI',
+        'tfregulons': 'TF',
+        'kinaseextra': 'PPI',
+        'mirnatarget': 'MTI'
+    }
+    interaction_fields = {
+        'references', 'sources', 'tfregulons_level',
+        'tfregulons_curated', 'tfregulons_chipseq',
+        'tfregulons_tfbs', 'tfregulons_coexp', 'type',
+        'ncbi_tax_id', 'databases'
+    }
+    
+    def __init__(self, a = 'hey', tbls = {
+            'interactions': 'omnipath_webservice_interactions.tsv',
+            'ptms': 'omnipath_webservice_ptms.tsv'
+        }):
+        
+        sys.stdout.write('TableServer initialized\n')
         
         self.tbls = tbls
-        self.read_tables()
+        self.data = {}
+        self._read_tables()
+        self._preprocess_interactions()
         
         BaseServer.__init__(self)
     
-    def read_tables(self):
+    def _read_tables(self):
+        
+        sys.stdout.write('Loading data tables\n')
         
         for name, fname in iteritems(self.tbls):
             
@@ -156,8 +199,12 @@ class TableServer(BaseServer):
                 sep = '\t',
                 index_col = None
             )
+            
+            sys.stdout.write(
+                'Table `%s` loaded from file `%s`\n' % (name, fname)
+            )
     
-    def network(self, req):
+    def _network(self, req):
         
         hdr = ['nodes', 'edges', 'is_directed', 'sources']
         tbl = self.data['network'].field
@@ -169,18 +216,80 @@ class TableServer(BaseServer):
             return '%s\n%s' % ('\t'.join(hdr), '\t'.join(
                 [str(val[h]) for h in hdr]))
     
-    def interactions(self, req):
+    def _preprocess_interactions(self):
+        
+        sys.stdout.write('Preprocessing interactions\n')
+        tbl = self.data['interactions']
+        tbl['set_sources'] = pd.Series(
+            [set(s.split(';')) for s in tbl.sources]
+        )
+        tbl['set_tfregulons_level'] = pd.Series(
+            [
+                set(s.split(';'))
+                if not pd.isnull(s) else
+                set([])
+                for s in tbl.tfregulons_level
+            ]
+        )
+    
+    def interactions(
+            self,
+            req,
+            datasets  = {'omnipath'},
+            databases = None,
+            tfregulons_levels = {'A', 'B'},
+            organisms = {9606},
+            source_target = 'OR'
+        ):
         
         hdr = [
             'source', 'target', 'is_directed', 'is_stimulation',
-            'is_inhibition'
+            'is_inhibition', 'dip_url'
         ]
         
-        if b'fields' in req.args:
-            hdr += [
-                f.decode('utf-8') for f in fields if f in req.args[b'fields']
-            ]
+        if b'source_target' in req.args:
+            
+            source_target = (
+                req.args[b'source_target'][0].decode('utf-8').upper()
+            )
         
+        args = {}
+        
+        for arg in (
+            'datasets', 'types', 'tfregulons_levels',
+            'sources', 'targets', 'partners', 'databases',
+            'tfregulons_methods', 'organisms'
+        ):
+            
+            args[arg] = self._args_set(req, arg)
+        
+        # if user requested TF type interactions
+        # they likely want the tfregulons dataset
+        if 'TF' in args['types']:
+            args['datasets'].add('tfregulons')
+        if 'MTI' in args['types']:
+            args['datasets'].add('mirnatarget')
+        
+        # here adjust on the defaults otherwise we serve empty
+        # response by default
+        args['datasets'] = args['datasets'] or datasets
+        args['datasets'] = args['datasets'] & self.datasets
+        
+        args['organisms'] = set(
+            int(t) for t in args['organisms'] if t.isdigit()
+        )
+        args['organisms'] = args['organisms'] or organisms
+        
+        # do not allow impossible values
+        # those would result KeyError later
+        args['tfregulons_levels'] = (
+            args['tfregulons_levels'] or tfregulons_levels
+        )
+        args['tfregulons_methods'] = (
+            args['tfregulons_methods'] & self.tfregulons_methods
+        )
+        
+        # provide genesymbols: yes or no
         if (
             b'genesymbols' in req.args and
             self._parse_arg(req.args[b'genesymbols'])
@@ -191,7 +300,150 @@ class TableServer(BaseServer):
         else:
             genesymbols = False
         
+        # if user requested TF Regulons they likely want us
+        # to serve TF-target interactions
+        # but if they requested other types, then we
+        # serve those as well
+        if 'tfregulons' in args['datasets']:
+            args['types'].add('TF')
+        if 'mirnatarget' in args['datasets']:
+            args['types'].add('MTI')
         
+        # if no types provided we collect the types
+        # for the datasets requested
+        # or by default only the 'omnipath' dataset
+        # which belongs to the 'PPI' type
+        if not args['types']:
+            args['types'] = set(
+                [self.dataset2type[ds] for ds in args['datasets']]
+            )
+        
+        # starting from the entire dataset
+        tbl = self.data['interactions']
+        
+        # filter by type
+        tbl = tbl[tbl.type.isin(args['types'])]
+        
+        # if partners provided those will overwrite
+        # sources and targets
+        args['sources'] = args['sources'] or args['partners']
+        args['targets'] = args['targets'] or args['partners']
+        
+        # then we filter by source and target
+        # which matched against both standard names
+        # and gene symbols
+        if args['sources'] and args['targets'] and source_target == 'OR':
+            
+            tbl = tbl[
+                tbl.target.isin(args['targets']) |
+                tbl.target_genesymbol.isin(args['targets']) |
+                tbl.source.isin(args['sources']) |
+                tbl.source_genesymbol.isin(args['sources'])
+            ]
+        
+        else:
+            
+            if args['sources']:
+                tbl = tbl[
+                    tbl.source.isin(args['sources']) |
+                    tbl.source_genesymbol.isin(args['sources'])
+                ]
+            
+            if args['targets']:
+                tbl = tbl[
+                    tbl.target.isin(args['targets']) |
+                    tbl.target_genesymbol.isin(args['targets'])
+                ]
+        
+        # filter by datasets
+        if args['datasets']:
+            tbl = tbl.query(' or '.join(args['datasets']))
+        
+        # filter by organism
+        tbl = tbl[
+            tbl.ncbi_tax_id_source.isin(args['organisms']) |
+            tbl.ncbi_tax_id_target.isin(args['organisms'])
+        ]
+        
+        # filter by TG Regulons confidence levels
+        if 'TF' in args['types'] and args['tfregulons_levels']:
+            
+            tbl = tbl[
+                np.logical_not(tbl.tfregulons) |
+                (tbl.set_tfregulons_level & args['tfregulons_levels'])
+            ]
+        
+        # filter by databases
+        if args['databases']:
+            
+            tbl = tbl[tbl.set_sources & args['databases']]
+        
+        # filtering by TF Regulons methods
+        if 'TF' in args['types'] and args['tfregulons_methods']:
+            
+            q = ['tfregulons_%s' % m for m in args['tfregulons_methods']]
+            
+            tbl = tbl[
+                tbl[q].any(1) | np.logical_not(tbl.tfregulons)
+            ]
+        
+        if req.args[b'fields']:
+            
+            _fields = [
+                f for f in
+                req.args[b'fields'][0].decode('utf-8').split(',')
+                if f in self.interaction_fields
+            ]
+            
+            for f in _fields:
+                
+                if f == 'ncbi_tax_id' or f == 'organism':
+                    
+                    hdr.append('ncbi_tax_id_source')
+                    hdr.append('ncbi_tax_id_target')
+                    
+                elif f == 'databases':
+                    
+                    hdr.append('sources')
+                    
+                else:
+                    
+                    hdr.append(f)
+        
+        tbl = tbl.loc[:,hdr]
+        
+        return self._serve_dataframe(tbl, req)
+    
+    def ptms(
+            self,
+            req,
+            organisms = {9606}
+        ):
+        
+        
+    
+    @staticmethod
+    def _serve_dataframe(tbl, req):
+        
+        if b'format' in req.args and req.args[b'format'][0] == b'json':
+            
+            return tbl.to_json(orient = 'records')
+            
+        else:
+            
+            return tbl.to_csv(sep = '\t', index = False)
+    
+    @staticmethod
+    def _args_set(req, arg):
+        
+        arg = arg.encode('utf-8')
+        
+        return (
+            set(req.args[arg][0].decode('utf-8').split(','))
+            if arg in req.args
+            else set([])
+        )
+
 
 class PypathServer(BaseServer):
     

@@ -147,7 +147,7 @@ if 'unicode' not in __builtins__:
 
 aaletters = dict(zip(aacodes.values(), aacodes.keys()))
 
-simpleTypes = set([int, long, float, str, unicode, bytes])
+simpleTypes = set([int, long, float, str, unicode, bytes, bool, type(None)])
 
 numTypes = set([int, long, float])
 

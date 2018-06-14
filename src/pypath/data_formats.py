@@ -1458,7 +1458,8 @@ transcription = {
             'tfregulons_curated': 4,
             'tfregulons_chipseq': 5,
             'tfregulons_tfbs':    6,
-            'tfregulons_coexp':   7
+            'tfregulons_coexp':   7,
+            'tfregulons_level': 3
         },
         extraNodeAttrsA={},
         extraNodeAttrsB={})
