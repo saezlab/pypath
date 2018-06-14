@@ -670,8 +670,7 @@ class PtmAggregator(object):
     
     def make_df(self, tax_id = False):
         
-        hdr = ['enzyme', 'substrate', 'enzyme_genesymbol',
-               'substrate_genesymbol', 'isoforms',
+        hdr = ['enzyme', 'substrate', 'isoforms',
                'residue_type', 'residue_offset', 'modification',
                'sources', 'references']
         
@@ -679,6 +678,28 @@ class PtmAggregator(object):
             [dm.get_line() for dm in self],
             columns = hdr
         )
+        
+        self.df['enzyme_genesymbol'] = pd.Series([
+            gss[0] if gss else '' for gss in
+            (
+                self.mapper.map_name(
+                    u, 'uniprot', 'genesymbol', ncbi_tax_id = self.ncbi_tax_id
+                ) for u in self.df.enzyme
+            )
+        ])
+        self.df['substrate_genesymbol'] = pd.Series([
+            gss[0] if gss else '' for gss in
+            (
+                self.mapper.map_name(
+                    u, 'uniprot', 'genesymbol', ncbi_tax_id = self.ncbi_tax_id
+                ) for u in self.df.substrate
+            )
+        ])
+        
+        hdr.insert(2, 'enzyme_genesymbol')
+        hdr.insert(3, 'substrate_genesymbol')
+        
+        self.df = self.df.loc[:,hdr]
         
         if tax_id:
             

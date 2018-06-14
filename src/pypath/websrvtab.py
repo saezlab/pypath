@@ -57,7 +57,7 @@ class WebserviceTables(object):
     def main(self):
         
         self.init_mapper()
-        #self.interactions()
+        self.interactions()
         self.ptms()
     
     def init_mapper(self):
@@ -70,8 +70,7 @@ class WebserviceTables(object):
         
         tfregulons = copy.deepcopy(data_formats.transcription)
         tfregulons['tfregulons'].inputArgs['levels'] = {
-            #'A', 'B', 'C', 'D', 'E'
-            'A', 'B'
+            'A', 'B', 'C', 'D', 'E'
         }
         
         param = (

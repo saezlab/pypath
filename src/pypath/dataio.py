@@ -166,8 +166,6 @@ def read_table(cols,
                 '\tERROR: %s() expects file like object (file opened for read'
                 ', or StringIO buffer, etc)\n' % funname)
             return []
-        if data is None:
-            return []
         fileObject.seek(0)
         if hdr:
             for h in xrange(0, hdr):
@@ -1921,10 +1919,12 @@ def get_psite_phos(raw=True, organism='human', strict=True, mapper=None):
         'motif': 11
     }
     data = read_table(cols=cols, fileObject=data, sep='\t', hdr=4)
+    return data
     result = []
     non_digit = re.compile(r'[^\d.-]+')
     motre = re.compile(r'(_*)([A-Za-z]+)(_*)')
     for r in data:
+        
         if organism is None or \
             ((r['kinase_org'] == organism or not strict) and \
             r['substrate_org'] == organism):

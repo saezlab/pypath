@@ -166,6 +166,10 @@ class TableServer(BaseServer):
         'tfregulons_tfbs', 'tfregulons_coexp', 'type',
         'ncbi_tax_id', 'databases'
     }
+    ptms_fields = {
+        'references', 'sources', 'databases',
+        'isoforms', 'organism', 'ncbi_tax_id'
+    }
     
     def __init__(self, a = 'hey', tbls = {
             'interactions': 'omnipath_webservice_interactions.tsv',
@@ -178,6 +182,7 @@ class TableServer(BaseServer):
         self.data = {}
         self._read_tables()
         self._preprocess_interactions()
+        self._preprocess_ptms()
         
         BaseServer.__init__(self)
     
@@ -230,6 +235,14 @@ class TableServer(BaseServer):
                 set([])
                 for s in tbl.tfregulons_level
             ]
+        )
+    
+    def _preprocess_ptms(self):
+        
+        sys.stdout.write('Preprocessing ptms\n')
+        tbl = self.data['ptms']
+        tbl['set_sources'] = pd.Series(
+            [set(s.split(';')) for s in tbl.sources]
         )
     
     def interactions(
@@ -417,10 +430,118 @@ class TableServer(BaseServer):
     def ptms(
             self,
             req,
-            organisms = {9606}
+            organisms = {9606},
+            enzyme_substrate = 'OR'
         ):
         
+        hdr = [
+            'enzyme', 'substrate', 'residue_type',
+            'residue_offset', 'modification'
+        ]
         
+        if b'enzyme_substrate' in req.args:
+            
+            enzyme_substrate = (
+                req.args[b'enzyme_substrate'][0].decode('utf-8').upper()
+            )
+        
+        args = {}
+        
+        for arg in (
+            'enzymes', 'substrates', 'partners',
+            'databases', 'organisms', 'types',
+            'residues'
+        ):
+            
+            args[arg] = self._args_set(req, arg)
+        
+        args['organisms'] = set(
+            int(t) for t in args['organisms'] if t.isdigit()
+        )
+        args['organisms'] = args['organisms'] or organisms
+        
+        # provide genesymbols: yes or no
+        if (
+            b'genesymbols' in req.args and
+            self._parse_arg(req.args[b'genesymbols'])
+        ):
+            genesymbols = True
+            hdr.insert(2, 'enzyme_genesymbol')
+            hdr.insert(3, 'substrate_genesymbol')
+        else:
+            genesymbols = False
+        
+        # starting from the entire dataset
+        tbl = self.data['ptms']
+        
+        # filter by type
+        if args['types']:
+            tbl = tbl[tbl.modification.isin(args['types'])]
+        
+        # if partners provided those will overwrite
+        # enzymes and substrates
+        args['enzymes'] = args['enzymes'] or args['partners']
+        args['substrates'] = args['substrates'] or args['partners']
+        
+        # then we filter by enzyme and substrate
+        # which matched against both standard names
+        # and gene symbols
+        if args['enzymes'] and args['substrates'] and enzyme_substrate == 'OR':
+            
+            tbl = tbl[
+                tbl.substrate.isin(args['substrates']) |
+                tbl.substrate_genesymbol.isin(args['substrates']) |
+                tbl.enzyme.isin(args['enzymes']) |
+                tbl.enzyme_genesymbol.isin(args['enzymes'])
+            ]
+        
+        else:
+            
+            if args['enzymes']:
+                tbl = tbl[
+                    tbl.enzyme.isin(args['enzymes']) |
+                    tbl.enzyme_genesymbol.isin(args['enzymes'])
+                ]
+            
+            if args['substrates']:
+                tbl = tbl[
+                    tbl.substrate.isin(args['substrates']) |
+                    tbl.substrate_genesymbol.isin(args['substrates'])
+                ]
+        
+        # filter by organism
+        tbl = tbl[tbl.ncbi_tax_id.isin(args['organisms'])]
+        
+        # filter by databases
+        if args['databases']:
+            
+            tbl = tbl[tbl.set_sources & args['databases']]
+        
+        if req.args[b'fields']:
+            
+            _fields = [
+                f for f in
+                req.args[b'fields'][0].decode('utf-8').split(',')
+                if f in self.ptms_fields
+            ]
+            
+            for f in _fields:
+                
+                if f == 'ncbi_tax_id' or f == 'organism':
+                    
+                    hdr.append('ncbi_tax_id')
+                    
+                elif f == 'databases':
+                    
+                    hdr.append('sources')
+                    
+                else:
+                    
+                    hdr.append(f)
+        
+        tbl = tbl.loc[:,hdr]
+        
+        return self._serve_dataframe(tbl, req)
     
     @staticmethod
     def _serve_dataframe(tbl, req):
