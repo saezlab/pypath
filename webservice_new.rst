@@ -42,41 +42,43 @@ The TF Regulons database assigns confidence levels to the interactions. You migh
 
 Show the transcriptional targets of Smad2 homology translated to rat including the confidence levels from TF Regulons:
 
-    http://localhost:33333/interactions/?genesymbols=1&fields=type,ncbi_tax_id,tfregulons_level&organisms=10116&sources=Smad2&types=TF
+    http://omnipathdb.org/interactions/?genesymbols=1&fields=type,ncbi_tax_id,tfregulons_level&organisms=10116&sources=Smad2&types=TF
 
 Query interactions from PhosphoNetworks which is part of the *kinaseextra* dataset:
 
-    http://localhost:33333/interactions/?genesymbols=1&fields=sources&databases=PhosphoNetworks&datasets=kinaseextra
+    http://omnipathdb.org/interactions/?genesymbols=1&fields=sources&databases=PhosphoNetworks&datasets=kinaseextra
 
 Get the interactions from Signor, SPIKE and SignaLink3:
 
-    http://localhost:33333/interactions/?genesymbols=1&fields=sources,references&databases=Signor,SPIKE,SignaLink3
+    http://omnipathdb.org/interactions/?genesymbols=1&fields=sources,references&databases=Signor,SPIKE,SignaLink3
 
 All interactions of MAP1LC3B:
 
-    http://localhost:33333/interactions/?genesymbols=1&partners=MAP1LC3B
+    http://omnipathdb.org/interactions/?genesymbols=1&partners=MAP1LC3B
 
 By default `partners` queries the interaction where either the source or the target is among the partners. If you set the `source_target` parameter to `AND` both the source and the target must be in the queried set:
     
-    http://localhost:33333/interactions/?genesymbols=1&fields=sources,references&sources=ATG3,ATG7,ATG4B,SQSTM1&targets=MAP1LC3B,MAP1LC3A,MAP1LC3C,Q9H0R8,GABARAP,GABARAPL2&source_target=AND
+    http://omnipathdb.org/interactions/?genesymbols=1&fields=sources,references&sources=ATG3,ATG7,ATG4B,SQSTM1&targets=MAP1LC3B,MAP1LC3A,MAP1LC3C,Q9H0R8,GABARAP,GABARAPL2&source_target=AND
 
 As you see above you can use UniProt IDs and Gene Symbols in the queries and also mix them.
 Get the miRNA regulating NOTCH1:
     
-    http://localhost:33333/interactions/?genesymbols=1&fields=sources,references&datasets=mirnatarget&targets=NOTCH1
+    http://omnipathdb.org/interactions/?genesymbols=1&fields=sources,references&datasets=mirnatarget&targets=NOTCH1
 
 Note: with the exception of mandatory fields and genesymbols, the columns appear exactly in the order you provided in your query.
 
 Another query type available is ``ptms`` which provides enzyme-substrate interactions. It is very similar to the ``interactions``:
 
-    http://localhost:33333/ptms?genesymbols=1&fields=sources,references,isoforms&enzymes=FYN
+    http://omnipathdb.org/ptms?genesymbols=1&fields=sources,references,isoforms&enzymes=FYN
 
 Is there any ubiquitination reaction?
 
-    http://localhost:33333/ptms?genesymbols=1&fields=sources,references&types=ubiquitination
+    http://omnipathdb.org/ptms?genesymbols=1&fields=sources,references&types=ubiquitination
 
 And acetylation in mouse?
 
-    http://localhost:33333/ptms?genesymbols=1&fields=sources,references&types=acetylation&organisms=10090
+    http://omnipathdb.org/ptms?genesymbols=1&fields=sources,references&types=acetylation&organisms=10090
 
-Rat interactions and 
+Rat interactions, both directly from rat and homology translated from human, from the PhosphoSite database:
+    
+    http://omnipathdb.org/ptms?genesymbols=1&fields=sources,references&organisms=10116&databases=PhosphoSite,PhosphoSite_noref
