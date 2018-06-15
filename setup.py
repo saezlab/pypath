@@ -24,6 +24,7 @@ import imp
 
 from setuptools.command.install import install as _install
 import pip
+import pip._internal
 
 _version = imp.load_source('_version', os.path.join('src', 'pypath', '_version.py'))
 __version__ = _version.__version__
