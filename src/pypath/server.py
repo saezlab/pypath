@@ -115,14 +115,13 @@ class BaseServer(resource.Resource):
             b'format' in request.args and
             request.args[b'format'][0] == b'json'
         ):
-            request.args[b'format'] = b'json'
             request.setHeader('Content-Type', 'text/json; charset=utf-8')
         else:
-            request.args[b'format'] = b'text'
+            request.args[b'format'] = [b'text']
             request.setHeader('Content-Type', 'text/plain; charset=utf-8')
         
-        request.args[b'header'] = 1 if b'header' not in request.args \
-            else int(request.args[b'header'][0])
+        request.args[b'header'] = [b'1'] if b'header' not in request.args \
+            else request.args[b'header']
         
         request.args[b'fields'] = [] if b'fields' not in request.args \
             else request.args[b'fields']
@@ -146,6 +145,8 @@ class BaseServer(resource.Resource):
             arg = int(arg)
         if arg == 'no':
             arg = False
+        if arg == 'yes':
+            arg = True
         
         return bool(arg)
 
@@ -154,6 +155,14 @@ class TableServer(BaseServer):
     
     args_reference = {
         'interactions': {
+            'header': None,
+            'format': {
+                'json',
+                'tab',
+                'text',
+                'tsv',
+                'table'
+            },
             'datasets': {
                 'omnipath',
                 'tfregulons',
@@ -168,7 +177,7 @@ class TableServer(BaseServer):
             'sources':  None,
             'targets':  None,
             'partners': None,
-            'genesymbols': {1, 0},
+            'genesymbols': {'1', '0', 'no', 'yes'},
             'fields': {
                 'references',
                 'sources',
@@ -190,21 +199,35 @@ class TableServer(BaseServer):
                 'tfbs'
             },
             'organisms': {
-                9606,
-                10090,
-                10116
+                '9606',
+                '10090',
+                '10116'
             },
-            'databases': None
+            'databases': None,
+            'source_target': {
+                'AND',
+                'OR',
+                'and',
+                'or'
+            }
         },
         'ptms': {
+            'header':      None,
+            'format': {
+                'json',
+                'tab',
+                'text',
+                'tsv',
+                'table'
+            },
             'enzymes':     None,
             'substrates':  None,
             'partners':    None,
-            'genesymbols': {1, 0},
+            'genesymbols': {'1', '0', 'no', 'yes'},
             'organisms': {
-                9606,
-                10090,
-                10116
+                '9606',
+                '10090',
+                '10116'
             },
             'databases': None,
             'residues':  None,
@@ -217,6 +240,12 @@ class TableServer(BaseServer):
                 'organism',
                 'databases',
                 'isoforms'
+            },
+            'enzyme_substrate': {
+                'AND',
+                'OR',
+                'and',
+                'or'
             }
         }
     }
@@ -325,11 +354,16 @@ class TableServer(BaseServer):
             
             if arg in ref:
                 
-                if not ref[arg]:
+                if not ref[arg] or not val:
                     
                     continue
                 
-                val = set(val[0].decode('utf-8').split(','))
+                val = (
+                    {val[0]}
+                    if type(val[0]) is int else
+                    set(val[0].decode('utf-8').split(','))
+                )
+                
                 unknowns = val - ref[arg]
                 
                 if unknowns:
@@ -345,16 +379,18 @@ class TableServer(BaseServer):
                 
                 result.append(' ==> Unknown argument: `%s`' % arg)
         
+        req.args[b'header'] = self._parse_arg(req.args[b'header'])
+        
         if result:
             
             return (
-                'Something is not entirely good:\n%s\n'
+                'Something is not entirely good:\n%s\n\n'
                 'Please check the examples at\n'
                 'https://github.com/saezlab/omnipath\n'
                 'and\n'
                 'https://github.com/saezlab/DoRothEA\n'
                 'If you still experiencing issues contact us at\n'
-                'omnipathdb@googlegroups.com' % '\n'.join(result)
+                'omnipath@googlegroups.com' % '\n'.join(result)
             )
     
     def interactions(
@@ -448,9 +484,6 @@ class TableServer(BaseServer):
             args['types'].update(set(
                 self.dataset2type[ds] for ds in args['datasets']
             ))
-        
-        print(args['types'])
-        print(args['datasets'])
         
         # starting from the entire dataset
         tbl = self.data['interactions']
@@ -679,7 +712,11 @@ class TableServer(BaseServer):
             
         else:
             
-            return tbl.to_csv(sep = '\t', index = False)
+            return tbl.to_csv(
+                sep = '\t',
+                index = False,
+                header = bool(req.args[b'header'])
+            )
     
     @staticmethod
     def _args_set(req, arg):
