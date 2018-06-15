@@ -75,7 +75,12 @@ By default ``partners`` queries the interaction where either the source or the
 arget is among the partners. If you set the ``source_target`` parameter to
 ``AND`` both the source and the target must be in the queried set:
 
+
     http://omnipathdb.org/interactions/?genesymbols=1&fields=sources,references&sources=ATG3,ATG7,ATG4B,SQSTM1&targets=MAP1LC3B,MAP1LC3A,MAP1LC3C,Q9H0R8,GABARAP,GABARAPL2&source_target=AND
+
+You can also request the data in JSON format:
+
+    http://omnipathdb.org/interactions/?genesymbols=1&fields=sources,references&sources=ATG3,ATG7,ATG4B,SQSTM1&targets=MAP1LC3B,MAP1LC3A,MAP1LC3C,Q9H0R8,GABARAP,GABARAPL2&source_target=AND&format=json
 
 As you see above you can use UniProt IDs and Gene Symbols in the queries and
 also mix them. Get the miRNA regulating NOTCH1:

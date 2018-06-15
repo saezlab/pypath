@@ -152,6 +152,75 @@ class BaseServer(resource.Resource):
 
 class TableServer(BaseServer):
     
+    args_reference = {
+        'interactions': {
+            'datasets': {
+                'omnipath',
+                'tfregulons',
+                'kinaseextra',
+                'mirnatarget'
+            },
+            'types': {
+                'PPI',
+                'TF',
+                'MTI'
+            },
+            'sources':  None,
+            'targets':  None,
+            'partners': None,
+            'genesymbols': {1, 0},
+            'fields': {
+                'references',
+                'sources',
+                'tfregulons_level',
+                'tfregulons_curated',
+                'tfregulons_chipseq',
+                'tfregulons_tfbs',
+                'tfregulons_coexp',
+                'type',
+                'ncbi_tax_id',
+                'databases',
+                'organism'
+            },
+            'tfregulons_levels':  {'A', 'B', 'C', 'D', 'E'},
+            'tfregulons_methods': {
+                'curated',
+                'chipseq',
+                'coexp',
+                'tfbs'
+            },
+            'organisms': {
+                9606,
+                10090,
+                10116
+            },
+            'databases': None
+        },
+        'ptms': {
+            'enzymes':     None,
+            'substrates':  None,
+            'partners':    None,
+            'genesymbols': {1, 0},
+            'organisms': {
+                9606,
+                10090,
+                10116
+            },
+            'databases': None,
+            'residues':  None,
+            'modification': None,
+            'types': None,
+            'fields': {
+                'sources',
+                'references',
+                'ncbi_tax_id',
+                'organism',
+                'databases',
+                'isoforms'
+            }
+        }
+    }
+    
     datasets = {'omnipath', 'tfregulons', 'kinaseextra', 'mirnatarget'}
     tfregulons_methods = {'curated', 'coexp', 'chipseq', 'tfbs'}
     dataset2type = {
@@ -164,7 +233,7 @@ class TableServer(BaseServer):
         'references', 'sources', 'tfregulons_level',
         'tfregulons_curated', 'tfregulons_chipseq',
         'tfregulons_tfbs', 'tfregulons_coexp', 'type',
-        'ncbi_tax_id', 'databases'
+        'ncbi_tax_id', 'databases', 'organism'
     }
     ptms_fields = {
         'references', 'sources', 'databases',
@@ -245,6 +314,49 @@ class TableServer(BaseServer):
             [set(s.split(';')) for s in tbl.sources]
         )
     
+    def _check_args(self, req):
+        
+        result = []
+        ref = self.args_reference[req.postpath[0]]
+        
+        for arg, val in iteritems(req.args):
+            
+            arg = arg.decode('utf-8')
+            
+            if arg in ref:
+                
+                if not ref[arg]:
+                    
+                    continue
+                
+                val = set(val[0].decode('utf-8').split(','))
+                unknowns = val - ref[arg]
+                
+                if unknowns:
+                    
+                    result.append(
+                        ' ==> Unknown values for argument `%s`: `%s`' % (
+                            arg,
+                            ', '.join(str(u) for u in unknowns)
+                        )
+                    )
+                
+            else:
+                
+                result.append(' ==> Unknown argument: `%s`' % arg)
+        
+        if result:
+            
+            return (
+                'Something is not entirely good:\n%s\n'
+                'Please check the examples at\n'
+                'https://github.com/saezlab/omnipath\n'
+                'and\n'
+                'https://github.com/saezlab/DoRothEA\n'
+                'If you still experiencing issues contact us at\n'
+                'omnipathdb@googlegroups.com' % '\n'.join(result)
+            )
+    
     def interactions(
             self,
             req,
@@ -254,6 +366,12 @@ class TableServer(BaseServer):
             organisms = {9606},
             source_target = 'OR'
         ):
+        
+        bad_req = self._check_args(req)
+        
+        if bad_req:
+            
+            return bad_req
         
         hdr = [
             'source', 'target', 'is_directed', 'is_stimulation',
@@ -326,10 +444,13 @@ class TableServer(BaseServer):
         # for the datasets requested
         # or by default only the 'omnipath' dataset
         # which belongs to the 'PPI' type
-        if not args['types']:
-            args['types'] = set(
-                [self.dataset2type[ds] for ds in args['datasets']]
-            )
+        if not args['types'] or args['datasets']:
+            args['types'].update(set(
+                self.dataset2type[ds] for ds in args['datasets']
+            ))
+        
+        print(args['types'])
+        print(args['datasets'])
         
         # starting from the entire dataset
         tbl = self.data['interactions']
@@ -433,6 +554,12 @@ class TableServer(BaseServer):
             organisms = {9606},
             enzyme_substrate = 'OR'
         ):
+        
+        bad_req = self._check_args(req)
+        
+        if bad_req:
+            
+            return bad_req
         
         hdr = [
             'enzyme', 'substrate', 'residue_type',
