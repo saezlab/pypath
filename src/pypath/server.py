@@ -112,6 +112,7 @@ class BaseServer(resource.Resource):
                                     v[0].decode('utf-8')
                                 )
                                 for k, v in iteritems(request.args)
+                                if v
                             ])
                     )
                 ).encode('utf-8')
@@ -161,7 +162,7 @@ class BaseServer(resource.Resource):
         ):
             request.setHeader(
                 'Content-Type',
-                'application/json; charset=utf-8'
+                'application/json'
             )
         else:
             request.args[b'format'] = [b'text']
