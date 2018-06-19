@@ -125,7 +125,7 @@ class BaseServer(resource.Resource):
     
     def render_POST(self, request):
         
-        if request.getHeader(b'content-type') == b'application/json':
+        if request.getHeader(b'content-type').startsWith(b'application/json'):
             
             args_raw = json.loads(request.content.getvalue())
             request.args = dict(
@@ -159,7 +159,10 @@ class BaseServer(resource.Resource):
             b'format' in request.args and
             request.args[b'format'][0] == b'json'
         ):
-            request.setHeader('Content-Type', 'text/json; charset=utf-8')
+            request.setHeader(
+                'Content-Type',
+                'application/json; charset=utf-8'
+            )
         else:
             request.args[b'format'] = [b'text']
             request.setHeader('Content-Type', 'text/plain; charset=utf-8')
