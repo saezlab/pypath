@@ -66,6 +66,8 @@ class BaseServer(resource.Resource):
     
     def render_GET(self, request):
         
+        response = []
+        
         request.postpath = [i.decode('utf-8') for i in request.postpath]
         
         html = len(request.postpath) == 0 or request.postpath[0] in self.htmls
@@ -77,30 +79,72 @@ class BaseServer(resource.Resource):
             request.postpath[0][0] != '_'
         ):
             
+            self._process_postpath(request)
+            
             toCall = getattr(self, request.postpath[0])
             
             if hasattr(toCall, '__call__'):
                 
                 response = toCall(request)
-                return (
+                response = (
                     response.encode('utf-8')
                     if type(response) is unicode else
                     response
                 )
+                response = [response]
             
         elif not request.postpath:
             
-            return self.root(request)
+            response = [self.root(request)]
         
-        return (
-                "Not found: %s%s" % (
-                '/'.join(request.postpath), ''
-                if len(request.args) == 0 else '?%s' %
-                '&'.join(['%s=%s' % (k, v) for k, v in iteritems(request.args)])
+        if not response:
+            
+            response = [
+                (
+                    "Not found: %s%s" % (
+                        '/'.join(request.postpath),
+                        ''
+                        if len(request.args) == 0 else
+                        '?%s' %
+                            '&'.join([
+                                '%s=%s' % (
+                                    k.decode('utf-8'),
+                                    v[0].decode('utf-8')
+                                )
+                                for k, v in iteritems(request.args)
+                            ])
+                    )
+                ).encode('utf-8')
+            ]
+        
+        request.write(response[0])
+        
+        request.finish()
+        
+        return server.NOT_DONE_YET
+    
+    def render_POST(self, request):
+        
+        if request.getHeader(b'content-type') == b'application/json':
+            
+            args_raw = json.loads(request.content.getvalue())
+            request.args = dict(
+                (
+                    k.encode('utf-8'),
+                    [v.encode('utf-8')]
+                    if type(v) is not list else
+                    [','.join(v).encode('utf-8')]
+                )
+                for k, v in iteritems(args_raw)
             )
-        ).encode('utf-8')
+        
+        return self.render_GET(request)
     
     def _set_defaults(self, request, html=False):
+        
+        for k, v in iteritems(request.args):
+            
+            request.args[k] = [b','.join(v)]
         
         request.setHeader('Cache-Control', 'Public')
         
@@ -125,7 +169,47 @@ class BaseServer(resource.Resource):
         
         request.args[b'fields'] = [] if b'fields' not in request.args \
             else request.args[b'fields']
-
+    
+    def _process_postpath(self, req):
+        
+        if len(req.postpath) > 1:
+            
+            ids_left = [req.postpath[1].encode('utf-8')]
+            
+            ids_right = (
+                [req.postpath[2].encode('utf-8')]
+                if (
+                    len(req.postpath) > 2 and
+                    req.postpath[2].lower() not in {'and', 'or'}
+                ) else
+                None
+            )
+            
+            left_right = (
+                [b'OR']
+                if req.postpath[-1].lower() not in {'and', 'or'} else
+                [req.postpath[-1].encode('utf-8')]
+            )
+            
+            if ids_right:
+                
+                if req.postpath[0] == 'ptms':
+                    
+                    req.args[b'enzymes'] = ids_left
+                    req.args[b'substrates'] = ids_right
+                    
+                else:
+                    req.args[b'sources'] = ids_left
+                    req.args[b'targets'] = ids_right
+                
+            else:
+                req.args[b'partners'] = ids_left
+            
+            if req.postpath[0] == 'ptms':
+                req.args[b'enzyme_substrate'] = left_right
+            else:
+                req.args[b'source_target'] = left_right
+    
     def about(self, req):
         return self.welcome_message
 
