@@ -241,6 +241,19 @@ class BaseServer(resource.Resource):
 
 class TableServer(BaseServer):
     
+    list_fields = {
+        'tfregulons_methods',
+        'tfregulons_levels',
+        'sources',
+        'references',
+        'isoforms'
+    }
+    
+    int_list_fields = {
+        'references',
+        'isoforms'
+    }
+    
     args_reference = {
         'interactions': {
             'header': None,
@@ -791,12 +804,29 @@ class TableServer(BaseServer):
         
         return self._serve_dataframe(tbl, req)
     
-    @staticmethod
-    def _serve_dataframe(tbl, req):
+    @classmethod
+    def _serve_dataframe(cls, tbl, req):
         
         if b'format' in req.args and req.args[b'format'][0] == b'json':
             
-            return tbl.to_json(orient = 'records')
+            data_json = tbl.to_json(orient = 'records')
+            # this is necessary because in the data frame we keep lists
+            # as `;` separated strings but in json we is nicer to serve
+            # them as lists
+            data_json = json.loads(data_json)
+            
+            for i in data_json:
+                
+                for k, v in iteritems(i):
+                    
+                    if k in cls.list_fields:
+                        
+                        i[k] = [
+                            int(f) if k in cls.int_list_fields else f
+                            for f in v.split(';')
+                        ]
+            
+            return json.dumps(data_json)
             
         else:
             
