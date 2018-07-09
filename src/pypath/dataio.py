@@ -3823,11 +3823,11 @@ def ramilowski_interactions(putative = False):
 
 def kirouac2010_interactions():
     
+    rename = re.compile(r'[A-Z]{2}[A-Z0-9][-A-Z0-9]*')
+    rerange = re.compile(r'([0-9])-([0-9])')
+    reslash = re.compile(r'.*?([A-Z0-9]{1,3}/[/A-Z0-9]+)')
+    
     def get_names(s):
-        
-        rename = re.compile(r'[A-Z]{2}[A-Z0-9][-A-Z0-9]*')
-        rerange = re.compile(r'([0-9])-([0-9])')
-        reslash = re.compile(r'.*?([A-Z0-9]{1,3}/[/A-Z0-9]+)')
         
         names = set([])
         prev = None
@@ -3901,11 +3901,10 @@ def get_hpmr():
     html = c.result
     soup = bs4.BeautifulSoup(html, 'html.parser')
     gnames = [
-        gname
-        for gname in [
-            tr.find_all('td')[1].text for tr in soup.find_all(
-                'tr', class_='res_receptor_rec')
-        ] if not gname.lower().startswith('similar')
+        row[1].text for row in (
+            tr.find_all('td')
+            for tr in soup.find('table', {'class': 'gridtable'}).find_all('tr')
+        ) if len(row) > 1 and not row[1].text.lower().startswith('similar')
     ]
     return common.uniqList(gnames)
 

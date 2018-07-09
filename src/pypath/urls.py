@@ -419,7 +419,8 @@ urls = {
     },
     'proteomemap': {
         'label':
-        'Human Proteome Map: Mass-spec expression data in healthy human tissues',
+        'Human Proteome Map: Mass-spec expression data in '\
+            'healthy human tissues',
         'url':
         'http://www.humanproteomemap.org/Download_HPM/HPM_protein_level_'
         'expression_matrix_Kim_et_al_052914.csv'
@@ -449,7 +450,7 @@ urls = {
     'hpmr': {
         'label': 'Human Plasma Membrane Receptome',
         'url':
-        'http://receptome.stanford.edu/hpmr/SearchDB/findGenes.asp?textName=*'
+        'http://www.receptome.org/SearchDB/findGenes.asp?textName='
     },
     'tfcensus': {
         'label': 'A census of human transcription factors (Vaquerizas 2009)',
@@ -468,7 +469,8 @@ urls = {
         'label': 'JSON network from GIANT by gene based query',
         'init_url': 'http://giant.princeton.edu/',
         'url':
-        'http://giant.princeton.edu/contexts/integration/query/%u/?%s&prior=0.1'
+        'http://giant.princeton.edu/contexts/integration/'\
+            'query/%u/?%s&prior=0.1'
     },
     'msigdb': {
         'label': 'Molecular Signatures Database',
@@ -486,7 +488,8 @@ urls = {
     'disgenet': {
         'label': 'Disease-gene associations',
         'url':
-        'http://www.disgenet.org/ds/DisGeNET/results/%s_gene_disease_associations.tsv.gz',
+        'http://www.disgenet.org/ds/DisGeNET/results/'\
+            '%s_gene_disease_associations.tsv.gz',
         'datasets': ['curated', 'literature', 'befree', 'all']
     },
     'hsn': {
@@ -522,7 +525,8 @@ urls = {
     'kinome': {
         'label': 'List of human kinases',
         'url':
-        'http://kinase.com/static/colt/data/human/kinome/tables/Kincat_Hsap.08.02.xls'
+        'http://kinase.com/static/colt/data/human/kinome/tables/'\
+            'Kincat_Hsap.08.02.xls'
     },
     'dgidb': {
         'label': 'Druggable genes compiled from multiple resources',
@@ -546,7 +550,8 @@ urls = {
     'nci-pid': {
         'label': 'National Cancer Institute -- Pathway Interaction Database',
         'biopax_l3':
-        'ftp://ftp1.nci.nih.gov/pub/PID/BioPAX_Level_3/NCI-Nature_Curated.bp3.owl.gz'
+        'ftp://ftp1.nci.nih.gov/pub/PID/BioPAX_Level_3/'\
+            'NCI-Nature_Curated.bp3.owl.gz'
     },
     'panther': {
         'label': 'PANTHER pathways',
@@ -555,16 +560,19 @@ urls = {
     },
     'laudanna': {
         'label':
-        'Directionality and effect information inferred from multiple sources by Laudanna Lab',
+        'Directionality and effect information inferred from multiple'\
+            ' sources by Laudanna Lab',
         'sigflow':
         'http://dp.univr.it/~laudanna/LCTST/downloads/files/SignalingFlow.EA',
         'sigdir':
-        'http://dp.univr.it/~laudanna/LCTST/downloads/files/SignalingDirection.EA'
+        'http://dp.univr.it/~laudanna/LCTST/downloads/files/'\
+            'SignalingDirection.EA'
     },
     'biogrid': {
         'label': 'BioGRID version 2 tab format',
         'url':
-        'http://thebiogrid.org/downloads/archives/Latest%20Release/BIOGRID-MV-Physical-LATEST.tab2.zip'
+        'http://thebiogrid.org/downloads/archives/Latest%20Release/'\
+            'BIOGRID-MV-Physical-LATEST.tab2.zip'
     },
     'wang': {
         'label':
@@ -579,7 +587,8 @@ urls = {
     'hid': {
         'label': 'CCSB Human Interactome Project',
         'lit-bm-13':
-        'http://interactome.dfci.harvard.edu/H_sapiens/download/Lit-BM-13.tsv',
+        'http://interactome.dfci.harvard.edu/H_sapiens/'\
+            'download/Lit-BM-13.tsv',
         'hi-ii-14':
         'http://interactome.dfci.harvard.edu/H_sapiens/download/HI-II-14.tsv',
         'hi-i-05':
@@ -593,15 +602,19 @@ urls = {
     'ccmap': {
         'label': 'Cancer Cell Map from PathwayCommons 2011 snapshot',
         'edges':
-        'http://www.pathwaycommons.org/archives/PC1/last_release-2011/tab_delim_network/by_source/cell-map-edge-attributes.txt.zip',
+        'http://www.pathwaycommons.org/archives/PC1/last_release-2011/'\
+            'tab_delim_network/by_source/cell-map-edge-attributes.txt.zip',
         'nodes':
-        'http://www.pathwaycommons.org/archives/PC1/last_release-2011/tab_delim_network/by_source/cell-map-node-attributes.txt.zip'
+        'http://www.pathwaycommons.org/archives/PC1/last_release-2011/'\
+            'tab_delim_network/by_source/cell-map-node-attributes.txt.zip'
     },
     'pathguide': {
         'label':
-        'Collection of metabolic and signaling pathway and molecular interaction resources',
+        'Collection of metabolic and signaling pathway and molecular '\
+            'interaction resources',
         'url':
-        'http://pathguide.org/fullrecord.php?organisms=all&availability=all&standards=all&order=alphabetic&DBID=%u'
+        'http://pathguide.org/fullrecord.php?organisms=all&'\
+            'availability=all&standards=all&order=alphabetic&DBID=%u'
     },
     'cgc': {
         'label': 'Cancer Gene Census: list of cancer related (driver) genes',
@@ -750,7 +763,8 @@ urls = {
     },
     'tfregulons': {
         'label': 'A comprehensive resource of TF-target interactions',
-        'url': 'http://saezlab.org/tfregulons/tfregulons_database_v01_20180216__%s.tsv'
+        'url': 'http://saezlab.org/tfregulons/tfregulons_database_v01_'\
+            '20180216__%s.tsv'
     }
 }
 
