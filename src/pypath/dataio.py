@@ -3892,11 +3892,12 @@ def kirouac2010_interactions():
 
 
 def get_hpmr():
-    '''
+    """
     Downloads and processes the list of all human receptors from
     human receptor census (HPMR -- Human Plasma Membrane Receptome).
     Returns list of GeneSymbols.
-    '''
+    """
+    
     c = curl.Curl(urls.urls['hpmr']['url'], silent=False)
     html = c.result
     soup = bs4.BeautifulSoup(html, 'html.parser')
@@ -3907,6 +3908,106 @@ def get_hpmr():
         ) if len(row) > 1 and not row[1].text.lower().startswith('similar')
     ]
     return common.uniqList(gnames)
+
+
+def hpmr_interactions():
+    """
+    Downloads ligand-receptor and receptor-receptor interactions from the
+    Human Plasma Membrane Receptome database.
+    """
+    
+    cachefile = os.path.join('cache', 'hpmr_interactions')
+    
+    if os.path.exists(cachefile):
+        
+        with open(cachefile, 'r') as fp:
+            
+            result = [r.split('\t') for r in fp.read().split('\n')[1:]]
+        
+        return result
+    
+    rerecname = re.compile(r'Receptor ([A-z0-9]+) interacts with:')
+    reint = re.compile(r'(Receptor|Ligand) ([A-z0-9]+) -')
+    rerefid = re.compile(r'list_uids=([- \.:,0-9A-z]+)')
+    
+    result = []
+    recpages = []
+    
+    c = curl.Curl(urls.urls['hpmri']['browse'])
+    soup = bs4.BeautifulSoup(c.result, 'html.parser')
+    
+    for rec in soup.find_all('a', {'title': 'Open Receptor Page'}):
+        
+        recpages.append(rec.attrs['href'])
+    
+    prg = progress.Progress(len(recpages), 'Downloading HPMR data', 1)
+    
+    for url in recpages:
+        
+        prg.step()
+        
+        c = curl.Curl(url)
+        
+        if c.result is None:
+            
+            #print('No receptor page: %s' % url)
+            continue
+        
+        soup = bs4.BeautifulSoup(c.result, 'html.parser')
+        ints = soup.find('div', {'id': 'GeneInts'})
+        
+        if not ints:
+            
+            #print('No interactions: %s' % url)
+            continue
+        
+        recname = rerecname.search(
+            ints.find_previous_sibling('span').text
+        )
+        recname = recname.groups()[0] if recname else 'Unknown'
+        
+        if recname == 'Unknown':
+            
+            # print('Could not find receptor name: %s' % url)
+            continue
+        
+        for td in ints.find_all('td'):
+            
+            interactors = []
+            
+            for span in td.find_all('span', {'class': 'IntRow'}):
+                
+                ints = reint.search(span.text)
+                
+                if ints:
+                    
+                    interactors.append(ints.groups())
+            
+            references = []
+            
+            for ref in td.find_all(
+                'a', {'title': 'click to open reference in new window'}):
+                
+                references.append(
+                    rerefid.search(ref.attrs['href']).groups()[0]
+                )
+            
+            result.extend([
+                [recname, i[0], i[1], ';'.join(references)]
+                for i in interactors
+            ])
+    
+    prg.terminate()
+    
+    with open(cachefile, 'w') as fp:
+        
+        fp.write('%s\n' % '\t'.join([
+            'receptor', 'partner', 'partner_type', 'references'
+        ]))
+        
+        fp.write('\n'.join('\t'.join(r) for r in result))
+    
+    return result
 
 
 def get_tfcensus(classes=['a', 'b', 'other']):

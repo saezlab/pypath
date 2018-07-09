@@ -1710,9 +1710,35 @@ ligand_receptor = {
         header=False,
         extraEdgeAttrs={},
         extraNodeAttrsA={},
-        extraNodeAttrsB={})
+        extraNodeAttrsB={}),
+    'hpmr': input_formats.ReadSettings(
+        name="HPMR",
+        separator=None,
+        nameColA=2,
+        nameColB=0,
+        nameTypeA="genesymbol",
+        nameTypeB="genesymbol",
+        typeA="protein",
+        typeB="protein",
+        isDirected=True,
+        sign=False,
+        ncbiTaxId=9606,
+        inFile='hpmr_interactions',
+        references=(3, ';'),
+        must_have_references=False,
+        header=False,
+        extraEdgeAttrs={},
+        extraNodeAttrsA={},
+        extraNodeAttrsB={},
+        positiveFilters=[(1, 'Ligand')])
 }
 
+ligand_receptor['guide2pharma'] = pathway['guide2pharma']
+pathway['hpmr'] = copy.deepcopy(ligand_receptor['hpmr'])
+pathway['hpmr'].must_have_references = True
+pathway['hpmr'].positiveFilters = []
+pathway['ramilowski2015'] = copy.deepcopy(ligand_receptor['ramilowski2015'])
+pathway['ramilowski2015'].must_have_references = True
 '''
 The default set of resources in OmniPath.
 '''

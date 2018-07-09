@@ -765,6 +765,11 @@ urls = {
         'label': 'A comprehensive resource of TF-target interactions',
         'url': 'http://saezlab.org/tfregulons/tfregulons_database_v01_'\
             '20180216__%s.tsv'
+    },
+    'hpmri': {
+        'label': 'Human Plasma Membrane Receptome "browse" view',
+        'browse': 'http://www.receptome.org/Families/FamNav/'\
+            'famnav.asp?undefined'
     }
 }
 

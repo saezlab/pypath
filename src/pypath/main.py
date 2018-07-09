@@ -2671,7 +2671,7 @@ class PyPath(object):
         """
         Save current state into pickle dump.
         """
-        pickleFile = "pwnet-" + self.session + ".pickle"
+        pickleFile = "pypath-" + self.session + ".pickle"
         self.ownlog.msg(1, ("""Saving session to %s... """ % pickleFile),
                         'INFO')
         with open(pickleFile, "wb") as f:
