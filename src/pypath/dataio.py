@@ -244,13 +244,13 @@ def get_pfam(uniprots=None, organism=None):
             to = i + 30
             thisPart = uniprots[i:to]
             thisPart = ' OR '.join(['accession:%s' % u for u in thisPart])
-            post = {
+            get = {
                 'query': thisPart,
                 'format': 'tab',
                 'columns': 'id,database(Pfam)'
             }
             for j in xrange(3):
-                c = curl.Curl(urls.urls['uniprot_basic']['url'], post=post)
+                c = curl.Curl(urls.urls['uniprot_basic']['url'], get=get)
                 data = c.result
                 if data is not None:
                     break
@@ -269,7 +269,7 @@ def get_pfam(uniprots=None, organism=None):
             except:
                 return None, None
         organismQuery = 'organism:%u AND reviewed:yes' % organism
-        post = {
+        get = {
             'query': organismQuery,
             'format': 'tab',
             'columns': 'id,database(Pfam)'
@@ -277,7 +277,7 @@ def get_pfam(uniprots=None, organism=None):
         for j in xrange(3):
             c = curl.Curl(
                 urls.urls['uniprot_basic']['url'],
-                post=post,
+                get=get,
                 silent=False,
                 outf='uniprot-pfam-%u.tab' % organism)
             data_all = c.result
@@ -3558,8 +3558,8 @@ def get_go(organism=9606, swissprot='yes'):
         else ' AND reviewed:%s' % swissprot
     query = 'organism:%u%s' % (int(organism), rev)
     url = urls.urls['uniprot_basic']['url']
-    post = {'query': query, 'format': 'tab', 'columns': 'id,go-id'}
-    c = curl.Curl(url, post=post, silent=False)
+    get = {'query': query, 'format': 'tab', 'columns': 'id,go-id'}
+    c = curl.Curl(url, get=get, silent=False)
     data = c.result
     return dict([(x[0], [go.strip() for go in x[1].split(';')])
                  for x in [x.split('\t') for x in data.split('\n')]

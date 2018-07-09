@@ -33,7 +33,7 @@ class __install(_install):
     
     def run(self):
         
-        pip._internal.main(['install', 'git+git://github.com/fabioticconi/fishers_exact_test@fix-setup-deps'])
+        pip._internal.main(['install', 'git+https://github.com/brentp/fishers_exact_test'])
         
         _install.run(self)
 

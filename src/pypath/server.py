@@ -242,8 +242,6 @@ class BaseServer(resource.Resource):
 class TableServer(BaseServer):
     
     list_fields = {
-        'tfregulons_methods',
-        'tfregulons_levels',
         'sources',
         'references',
         'isoforms'
