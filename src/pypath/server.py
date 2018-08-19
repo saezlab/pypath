@@ -308,7 +308,9 @@ class TableServer(BaseServer):
                 'OR',
                 'and',
                 'or'
-            }
+            },
+            'directed': {'1', '0', 'no', 'yes'},
+            'signed': {'1', '0', 'no', 'yes'},
         },
         'ptms': {
             'header':      None,
@@ -349,7 +351,7 @@ class TableServer(BaseServer):
         }
     }
     
-    datasets = {'omnipath', 'tfregulons', 'kinaseextra', 'mirnatarget'}
+    datasets_ = {'omnipath', 'tfregulons', 'kinaseextra', 'mirnatarget'}
     tfregulons_methods = {'curated', 'coexp', 'chipseq', 'tfbs'}
     dataset2type = {
         'omnipath': 'PPI',
@@ -621,7 +623,7 @@ class TableServer(BaseServer):
         # here adjust on the defaults otherwise we serve empty
         # response by default
         args['datasets'] = args['datasets'] or datasets
-        args['datasets'] = args['datasets'] & self.datasets
+        args['datasets'] = args['datasets'] & self.datasets_
         
         args['organisms'] = set(
             int(t) for t in args['organisms'] if t.isdigit()
@@ -734,6 +736,24 @@ class TableServer(BaseServer):
             tbl = tbl[
                 tbl[q].any(1) | np.logical_not(tbl.tfregulons)
             ]
+        
+        # filter directed & signed
+        if (
+            b'directed' in req.args and
+            self._parse_arg(req.args[b'directed'])
+        ):
+            
+            tbl = tbl[tbl.is_directed == 1]
+        
+        if (
+            b'signed' in req.args and
+            self._parse_arg(req.args[b'signed'])
+        ):
+            
+            tbl = tbl[np.logical_or(
+                tbl.is_stimulation == 1,
+                tbl.is_inhibition == 1
+            )]
         
         if req.args[b'fields']:
             
