@@ -49,6 +49,9 @@ human (for example using the ``pypath.homology`` module) and use human
 interaction data.
 
 
+Examples
+--------
+
 A request without any parameter, gives some basic numbers about the actual
 loaded dataset:
 
@@ -197,42 +200,42 @@ Troubleshooting
 ~~~~~~~~~~~~~~~
 
 * ``no module named ...`` when you try to load a module in Python. Did
-theinstallation of the module run without error? Try to run again the specific
-part from the mac install shell script to see if any error comes up. Is the
-path where the module has been installed in your ``$PYTHONPATH``? Try ``echo
-$PYTHONPATH`` to see the current paths. Add your local install directories if
-those are not there, e.g.
-``export PYTHONPATH="/Users/me/local/python2.7/site-packages:$PYTHONPATH"``.
-If it works afterwards, don't forget to append these export path statements to
-your ``~/.bash_profile``, so these will be set every time you launch a new
-shell.
+  theinstallation of the module run without error? Try to run again the specific
+  part from the mac install shell script to see if any error comes up. Is the
+  path where the module has been installed in your ``$PYTHONPATH``? Try ``echo
+  $PYTHONPATH`` to see the current paths. Add your local install directories if
+  those are not there, e.g.
+  ``export PYTHONPATH="/Users/me/local/python2.7/site-packages:$PYTHONPATH"``.
+  If it works afterwards, don't forget to append these export path statements to
+  your ``~/.bash_profile``, so these will be set every time you launch a new
+  shell.
 
 * ``pkgconfig`` not found. Check if the ``$PKG_CONFIG_PATH`` variable is
-set correctly, and pointing on a directory where pkgconfig really can be
-found.
+  set correctly, and pointing on a directory where pkgconfig really can be
+  found.
 
 * Error while trying to install py(2)cairo by pip. py(2)cairo could not be
-installed by pip, but only by waf. Please set the ``$PKG_CONFIG_PATH`` before.
-See **mac-install-source.sh** on how to install with waf.
+  installed by pip, but only by waf. Please set the ``$PKG_CONFIG_PATH`` before.
+  See **mac-install-source.sh** on how to install with waf.
 
 * Error at pygraphviz build: ``graphviz/cgraph.h file not found``. This is
-because the directory of graphviz detected wrong by pkgconfig. See
-**mac-install-source.sh** how to set include dirs and library dirs by
-``--global-option`` parameters.
+  because the directory of graphviz detected wrong by pkgconfig. See
+  **mac-install-source.sh** how to set include dirs and library dirs by
+  ``--global-option`` parameters.
 
 * Can not install bioservices, because installation of jurko-suds fails. Ok,
-this fails because pip is not able to install the recent version of
-setuptools, because a very old version present in the system path. The
-development version of jurko-suds does not require setuptools, so you can
-install it directly from git as it is done in **mac-install-source.sh**.
+  this fails because pip is not able to install the recent version of
+  setuptools, because a very old version present in the system path. The
+  development version of jurko-suds does not require setuptools, so you can
+  install it directly from git as it is done in **mac-install-source.sh**.
 
 * In **Anaconda**, *pypath* can be imported, but the modules and classes are
-missing. Apparently Anaconda has some built-in stuff called *pypath*. This has
-nothing to do with this module. Please be aware that Anaconda installs a
-completely separated Python distribution, and does not detect modules in the
-main Python installation. You need to install all modules within Anaconda's
-directory. **mac-install-conda.sh** does exactly this. If you still experience
-issues, please contact us.
+  missing. Apparently Anaconda has some built-in stuff called *pypath*. This
+  has nothing to do with this module. Please be aware that Anaconda installs a
+  completely separated Python distribution, and does not detect modules in the
+  main Python installation. You need to install all modules within Anaconda's
+  directory. **mac-install-conda.sh** does exactly this. If you still
+  experience issues, please contact us.
 
 Microsoft Windows
 -----------------
@@ -278,12 +281,12 @@ Known issues
 ~~~~~~~~~~~~
 
 * *"No module fabric available."* -- or *pysftp* missing: this is not
-important, only certain data download methods rely on these modules, but
-likely you won't call those at all.
+  important, only certain data download methods rely on these modules, but
+  likely you won't call those at all.
 * Progress indicator floods terminal: sorry about that, will be fixed soon.
 * Encoding related exceptions in Python2: these might occur at some points in
-the module, please send the traceback if you encounter one, and we will fix as
-soon as possible.
+  the module, please send the traceback if you encounter one, and we will fix
+  as soon as possible.
 
 *Special thanks to Jorge Ferreira for testing pypath on Windows!*
 
@@ -300,9 +303,9 @@ Main improvements in the past releases:
 -----
 * Lots of small improvements in almost every module
 * Networks can be read from local files, remote files, lists or provided by
-any function
+  any function
 * Almost all redistributed data have been removed, every source downloaded
-from the original provider.
+  from the original provider.
 
 0.3.0:
 ------
@@ -312,7 +315,7 @@ from the original provider.
 ------
 * **pyreact** module with **BioPaxReader** and **PyReact** classes added
 * Process description databases, BioPax and PathwayCommons SIF conversion
-rules are supported
+  rules are supported
 * Format definitions for 6 process description databases included.
 
 0.5.0:

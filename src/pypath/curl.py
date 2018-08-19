@@ -760,7 +760,21 @@ class Curl(FileOpener):
             self.print_debug_info('INFO', 'PRESERVING Curl() INSTANCE '
                                   'IN pypath.curl.LASTCURL')
             setattr(sys.modules[__name__], 'LASTCURL', self)
-
+    
+    def __del__(self):
+        
+        fileattrs = ['tarfile', 'zipfile', 'gzfile', 'fileobj']
+        
+        for fattr in fileattrs:
+            
+            if hasattr(self, fattr):
+                
+                f = getattr(self, fattr)
+                
+                if hasattr(f, 'close'):
+                    
+                    f.close()
+    
     def reload(self):
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist=[modname.split('.')[0]])

@@ -492,6 +492,88 @@ class TableServer(BaseServer):
                 'omnipath@googlegroups.com' % '\n'.join(result)
             )
     
+    def databases(self, req):
+        
+        query_type = (
+            req.postpath[1]
+                if len(req.postpath) > 1 else
+            'interactions'
+        )
+        
+        datasets = (
+            set(req.postpath[2].split(','))
+                if len(req.postpath) > 2 else
+            None
+        )
+        
+        tbl = (
+            self.data[query_type]
+                if query_type in self.data else
+            self.data['interactions']
+        )
+        
+        # filter for datasets
+        if query_type == 'interactions':
+            
+            if datasets is not None:
+                
+                tbl = tbl[tbl.type.isin(datasets)]
+                
+            else:
+                
+                datasets = self._get_datasets()
+            
+            result = {}
+            
+            for dataset in datasets:
+                
+                result[dataset] = sorted(set.union(
+                    *tbl[tbl.type == dataset].set_sources)
+                )
+            
+        else:
+            
+            result = {}
+            result['*'] = sorted(set.union(*tbl.set_sources))
+        
+        if b'format' in req.args and req.args[b'format'][0] == b'json':
+            
+            return json.dumps(result)
+            
+        else:
+            
+            return 'dataset\tdatabases\n%s' % '\n'.join(
+                '%s\t%s' % (k, ';'.join(v)) for k, v in iteritems(result)
+            )
+    
+    def _get_datasets(self):
+        
+        return list(self.data['interactions'].type.unique())
+    
+    def datasets(self, req):
+        
+        query_type = (
+            req.postpath[1]
+                if len(req.postpath) > 1 else
+            'interactions'
+        )
+        
+        if query_type == 'interactions':
+            
+            result = self._get_datasets()
+        
+        else:
+            
+            result = []
+        
+        if b'format' in req.args and req.args[b'format'][0] == b'json':
+            
+            return json.dumps(result)
+            
+        else:
+            
+            return ';'.join(result)
+    
     def interactions(
             self,
             req,
