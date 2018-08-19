@@ -494,6 +494,53 @@ class TableServer(BaseServer):
                 'omnipath@googlegroups.com' % '\n'.join(result)
             )
     
+    def queries(self, req):
+        
+        query_type = (
+            req.postpath[1]
+                if len(req.postpath) > 1 else
+            'interactions'
+        )
+        
+        query_param = (
+            req.postpath[2]
+                if len(req.postpath) > 2 else
+            None
+        )
+        
+        if query_type in self.args_reference:
+            
+            result = self.args_reference[query_type]
+            
+            if query_param is not None and query_param in result:
+                
+                result = {}
+                result[query_param] = (
+                    self.args_reference[query_type][query_param]
+                )
+            
+        else:
+            
+            result = {}
+            result[query_type] = (
+                'No possible arguments defined for'
+                'query `%s` or no such query available.' % query_type
+            )
+        
+        if b'format' in req.args and req.args[b'format'][0] == b'json':
+            
+            return json.dumps(result)
+            
+        else:
+            
+            return 'argument\tvalues\n%s' % '\n'.join(
+                '%s\t%s' % (
+                    k,
+                    ';'.join(v) if type(v) in {list, set} else str(v)
+                )
+                for k, v in iteritems(result)
+            )
+    
     def databases(self, req):
         
         query_type = (
