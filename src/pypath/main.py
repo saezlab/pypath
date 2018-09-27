@@ -6711,9 +6711,17 @@ class PyPath(object):
     def label_by_go(self, label, go_terms, **kwargs):
         """
         Assigns a boolean vertex attribute to nodes which tells whether
-        the node is annotated by any of the GO terms.
+        the node is annotated by all or any (see ``method`` parameter of
+        ``select_by_go``) the GO terms.
         """
         
+        vids = self.select_by_go(go_terms, **kwargs)
+        
+        self.graph.vs[label] = [False for _ in xrange(self.graph.vcount())]
+        
+        for vid in vids:
+            
+            self.graph.vs[label][vid] = True
     
     def load_ligand_receptor_network(
             self,
