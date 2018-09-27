@@ -6656,7 +6656,65 @@ class PyPath(object):
                                         {'ptms': len(e['ptm']), 'disr': 0}
                                 disrupted[e.index]['disr'] += 1
         return toDel, disrupted
-
+    
+    def select_by_go(
+            self,
+            go_terms,
+            go_desc = None,
+            aspects = ('C', 'F', 'P'),
+            method = 'ANY',
+        ):
+        """
+        Selects the nodes annotated by certain GO terms.
+        
+        Returns set of vertex IDs.
+        
+        :param str method:
+            If `ANY` nodes annotated with any of the terms returned.
+            If `ALL` nodes annotated with all the terms returned.
+        """
+        
+        _method = (
+            lambda s1, s2: not s2.difference(s1)
+            if method == 'ALL' else
+            lambda s1, s2: s1.intersection(s2)
+        )
+        
+        if go_desc is None:
+            
+            go_desc = dataio.go_descendants_goose(aspects = aspects)
+        
+        go_terms = (
+            set(go_terms)
+            if type(go_terms) in {set, list, tuple} else
+            {go_terms}
+        )
+        
+        all_desc = set.union(
+            *(go_desc[term] for term in go_terms if term in go_desc)
+        )
+        
+        if 'go' not in self.graph.vs.attributes():
+            
+            self.load_go(aspects = aspects)
+            
+            vids = set(
+                i for i in enumerate(self.graph.vs)
+                if any(
+                    _method(v['go'][a], all_desc)
+                    for a in aspects
+                )
+            )
+        
+        return vids
+    
+    def label_by_go(self, label, go_terms, **kwargs):
+        """
+        Assigns a boolean vertex attribute to nodes which tells whether
+        the node is annotated by any of the GO terms.
+        """
+        
+    
     def load_ligand_receptor_network(
             self,
             sources = data_formats.pathway,
@@ -6675,13 +6733,15 @@ class PyPath(object):
         
         if inference_from_go:
             
+            godesc = dataio.go_descendants_goose(aspects = ('C', 'F'))
+            
             self.init_network(sources)
             
-            self.load_go(aspect = ('C', 'F'))
+            
         
         self.load_resources(data_formats.ligand_receptor)
 
-    def load_go(self, aspect=('C', 'F', 'P')):
+    def load_go(self, aspects=('C', 'F', 'P')):
         go.load_go(self.graph, aspect=aspect)
 
     def go_dict(self, organism=9606):

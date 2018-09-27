@@ -3602,6 +3602,83 @@ def get_go_goa(organism='human'):
     
     return result
 
+def go_ancestors_goose(aspects=('C','F','P')):
+    """
+    Queries the ancestors of GO terms by AmiGO goose.
+    
+    Returns dict of sets where keys are GO accessions and values are sets
+    of their ancestors.
+    
+    :param tuple aspects:
+        GO aspects: `C`, `F` and `P` for cellular_component,
+        molecular_function and biological_process, respectively.
+    """
+    
+    aspects_part = ''
+    respaces = re.compile(r'[\s\n]+')
+    
+    ontologies = {
+        'C': 'cellular_component',
+        'F': 'molecular_function',
+        'P': 'biological_process',
+    }
+    
+    if set(aspects) != {'C', 'F', 'P'}:
+        
+        aspects_part = 'WHERE (%s)' % (
+            ' OR '.join(
+                'term.term_type = "%s"' % ontologies[asp]
+                for asp in aspects
+            )
+        )
+    
+    sql_path = os.path.join(common.DATA, 'goose_ancestors.sql')
+    
+    with open(sql_path, 'r') as fp:
+        
+        query = fp.read()
+    
+    query = query % aspects_part
+    query = respaces.sub(r' ', query).strip()
+    
+    url = urls.urls['goose']['url'] % query
+    
+    c = curl.Curl(url, silent = False, large = True)
+    
+    ancestors = collections.defaultdict(set)
+    
+    for l in c.result:
+        
+        l = l.decode('utf-8').strip().split('\t')
+        
+        ancestors[l[0]].add(l[1])
+    
+    return ancestors
+
+def go_descendants_goose(aspects=('C','F','P')):
+    """
+    Queries descendants of GO terms by AmiGO goose.
+    
+    Returns dict of sets where keys are GO accessions and values are sets
+    of their descendants.
+    
+    :param tuple aspects:
+        GO aspects: `C`, `F` and `P` for cellular_component,
+        molecular_function and biological_process, respectively.
+    """
+    
+    desc = collections.defaultdict(set)
+    
+    anc = go_ancestors_goose(aspects = aspects)
+    
+    for term, ancs in iteritems(anc):
+        
+        for terma in ancs:
+            
+            desc[terma].add(term)
+    
+    return desc
+
 def go_terms_goose(aspects=('C','F','P')):
     """
     Queries GO terms by AmiGO goose.
@@ -3635,7 +3712,7 @@ def go_terms_goose(aspects=('C','F','P')):
             )
         )
     
-    sql_path = os.path.join(common.ROOT, 'data', 'goose_terms.sql')
+    sql_path = os.path.join(common.DATA, 'goose_terms.sql')
     
     with open(sql_path, 'r') as fp:
         
@@ -3712,7 +3789,7 @@ def go_annotations_goose(organism=9606, aspects=('C','F','P'), uniprots=None):
             ','.join('"%s"' % uniprot for uniprot in uniprots)
         )
     
-    sql_path = os.path.join(common.ROOT, 'data', 'goose_annotations.sql')
+    sql_path = os.path.join(common.DATA, 'goose_annotations.sql')
     
     with open(sql_path, 'r') as fp:
         

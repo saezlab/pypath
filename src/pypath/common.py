@@ -39,6 +39,7 @@ __all__ = [
 
 # get the location
 ROOT = os.path.abspath(os.path.dirname(__file__))
+DATA = os.path.join(ROOT, 'data')
 
 default_name_type = {
     "protein": "uniprot",
