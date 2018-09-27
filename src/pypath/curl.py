@@ -773,7 +773,10 @@ class Curl(FileOpener):
                 
                 f = getattr(self, fattr)
                 
-                if hasattr(f, 'close'):
+                if hasattr(f, 'close') and (
+                    not self.large or
+                    id(f) != id(self.result)
+                ):
                     
                     f.close()
     

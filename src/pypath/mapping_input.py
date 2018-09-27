@@ -34,7 +34,8 @@ def get_uniprot_sec(organism=9606):
     Downloads and processes the mapping between secondary and
     primary UniProt IDs.
     
-    :param int organism: NCBI Taxonomy ID of the organism.
+    :param int organism:
+        NCBI Taxonomy ID of the organism.
     """
     
     if organism is not None:
@@ -43,11 +44,19 @@ def get_uniprot_sec(organism=9606):
     sec_pri = []
     url = urls.urls['uniprot_sec']['url']
     c = curl.Curl(url, silent=False, large=True)
-    data = c.result
+    
     return filter(
-        lambda line: len(line) == 2 and (organism is None or line[1] in proteome),
-        map(lambda i: i[1].decode('utf-8').split(),
-            filter(lambda i: i[0] >= 30, enumerate(data))))
+        lambda line:
+            len(line) == 2 and (organism is None or line[1] in proteome),
+            map(
+                lambda i:
+                    i[1].decode('utf-8').split(),
+                filter(
+                    lambda i: i[0] >= 30,
+                    enumerate(c.result)
+                )
+            )
+        )
 
 def get_mirbase_aliases(organism = 9606):
     """
