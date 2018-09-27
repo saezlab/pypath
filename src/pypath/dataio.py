@@ -214,7 +214,7 @@ def get_pdb():
     pdb_re = re.compile(r'[0-9A-Z]{4}')
     for l in data:
         l = re.split('[ ]{2,}',
-                     re.sub('[ ]+,[ ]+', ',', re.sub('[ ]*\(', '(', l)))
+                     re.sub('[ ]+,[ ]+', ',', re.sub(r'[ ]*\(', '(', l)))
         if len(l[0]) == 4 and pdb_re.match(l[0]):
             pdb = l[0].lower()
             res = None if l[2] == '-' else float(l[2].replace(' A', ''))
@@ -3602,41 +3602,142 @@ def get_go_goa(organism='human'):
     
     return result
 
-def get_go_quick(organism=9606, slim=False, names_only=False):
+def go_annotations_goose(organism=9606, aspects=('C','F','P'), uniprots=None):
+    """
+    Queries GO annotations by AmiGO goose.
+    
+    Before other methods have been provided to access GO.
+    Now this is the preferred method to get terms and annotations.
+    Returns terms in dict of dicts and annotations in dict of dicts of sets.
+    In both dicts the keys are aspects by their one letter codes.
+    In the term dicts keys are GO accessions and values are their names.
+    In the annotation dicts keys are UniProt IDs and values are sets
+    of GO accessions.
+    
+    :param int organism:
+        NCBI Taxonomy ID of one organism. Default is human (9606).
+    :param tuple aspects:
+        GO aspects: `C`, `F` and `P` for cellular_component,
+        molecular_function and biological_process, respectively.
+    :param list uniprots:
+        Optionally a list of UniProt IDs. If `None`, results for all proteins
+        returned.
+    """
+    
+    aspects_part = ''
+    uniprot_part = ''
+    respaces = re.compile(r'[\s\n]+')
+    
+    ontologies = {
+        'C': 'cellular_component',
+        'F': 'molecular_function',
+        'P': 'biological_process',
+    }
+    ontol_short = dict(reversed(i) for i in ontologies.items())
+    
+    if set(aspects) != {'C', 'F', 'P'}:
+        
+        aspects_part = '(%s) AND' % (
+            ' OR '.join(
+                'term.term_type = "%s"' % ontologies[asp]
+                for asp in aspects
+            )
+        )
+    
+    if uniprots is not None:
+        
+        uniprot_part = 'dbxref.xref_key IN (%s) AND' % (
+            ','.join('"%s"' % uniprot for uniprot in uniprots)
+        )
+    
+    sql_path = os.path.join(common.ROOT, 'data', 'goose_annotations.sql')
+    
+    with open(sql_path, 'r') as fp:
+        
+        query = fp.read()
+    
+    query = query % (organism, aspects_part, uniprot_part)
+    query = respaces.sub(r' ', query).strip()
+    
+    url = urls.urls['goose']['url'] % query
+    
+    c = curl.Curl(url, silent = False, large = True)
+    
+    terms = {'P': {}, 'C': {}, 'F': {}}
+    annot = {
+        'C': collections.defaultdict(set),
+        'F': collections.defaultdict(set),
+        'P': collections.defaultdict(set),
+    }
+    
+    for l in c.result:
+        
+        l = l.decode('utf-8').strip().split('\t')
+        
+        aspect = ontol_short[l[1]]
+        
+        terms[aspect][l[2]] = l[0]
+        annot[aspect][l[5]].add(l[2])
+    
+    return terms, annot
+
+def get_go_desc(go_ids, organism=9606):
+    
+    go_ids = (
+        ','.join(sorted(go_ids))
+        if type(go_ids) in {list, tuple, set} else
+        go_ids
+    )
+    
+    url = urls.urls['quickgo_desc']['url'] % (organism, go_ids)
+    print(url)
+    
+    c = curl.Curl(url, silent=False, large=True, req_headers = {'Accept': 'text/tsv'})
+    _ = c.result.readline()
+    
+    for l in c.result:
+        
+        print(l.decode('utf-8').split('\t'))
+    
+    return set(l.decode('utf-8').split('\t')[1] for l in c.result)
+
+def get_go_quick(organism=9606, slim=False, names_only=False, aspects = ('C', 'F', 'P')):
     """
     Loads GO terms and annotations from QuickGO.
     Returns 2 dicts: `names` are GO terms by their IDs,
     `terms` are proteins GO IDs by UniProt IDs.
     """
     
-    def add_term(a, terms, names, names_only):
-        if not names_only:
-            if a[0] not in terms[a[3][0]]:
-                terms[a[3][0]][a[0]] = set([])
-            terms[a[3][0]][a[0]].add(a[1])
-        names[a[1]] = a[2]
+    ontologies = {
+        'C': 'cellular_component',
+        'F': 'molecular_function',
+        'P': 'biological_process',
+    }
     
-    termuse = 'slim' if slim or slim is None else 'ancestor'
-    goslim = '' if termuse == 'ancestor' \
-        else '&goid=%s' % ','.join(get_goslim(url=slim))
-    terms = {'C': {}, 'F': {}, 'P': {}}
+    terms = {
+        'C': collections.defaultdict(set),
+        'F': collections.defaultdict(set),
+        'P': collections.defaultdict(set),
+    }
     names = {}
-    url = urls.urls['quickgo']['url'] % (goslim, termuse, organism)
+    aspects_param = ','.join(sorted(ontologies[a] for a in aspects))
+    url = urls.urls['quickgo']['url'] % (
+        organism,
+        aspects_param,
+        '&goUsage=slim' if slim else '',
+    )
+    
+    print(url)
     c = curl.Curl(url, silent=False, large=True)
     _ = c.result.readline()
     
-    _ = \
-        list(
-            map(
-                lambda l:
-                    add_term(l, terms, names, names_only),
-                map(
-                    lambda l:
-                        l.decode('ascii').strip().split('\t'),
-                    c.result
-                )
-            )
-        )
+    for l in result:
+        
+        l = l.split('\t')
+        
+        if not names_only:
+            
+            terms[l[5]][l[1]].add(l[4])
     
     return {'terms': terms, 'names': names}
 
@@ -6915,7 +7016,7 @@ def negatome_pairs():
 
 
 def trim_macrophage_gname(gname):
-    gname = re.sub('\[.*\]', '', re.sub('\(.*\)', '', gname))
+    gname = re.sub(r'\[.*\]', '', re.sub(r'\(.*\)', '', gname))
     gname = re.sub(r'[A-Z]{0,1}[a-z]{1,}', '', gname)
     gname = gname.split(':')
     for i, g in enumerate(gname):

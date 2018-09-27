@@ -392,10 +392,27 @@ urls = {
         'url': 'ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/%s/'
         'goa_%s.gaf.gz'
     },
-    'quickgo': {
+    'quickgo_old': {
         'label': 'UniProt GO annotations from QuickGO',
         'url': 'http://www.ebi.ac.uk/QuickGO/GAnnotation?format=tsv&'
         'limit=-1%s&termUse=%s&tax=%u&col=proteinID,goID,goName,aspect'
+    },
+    'quickgo': {
+        'label': 'UniProt GO annotations from QuickGO',
+        'url': 'https://www.ebi.ac.uk/QuickGO/services/annotation/'\
+        'downloadSearch?includeFields=goName,name&taxonId=%u'
+        '&aspect=%s%s'
+    },
+    'quickgo_desc': {
+        'label': 'UniProt GO annotations from QuickGO',
+        'url': 'https://www.ebi.ac.uk/QuickGO/services/annotation/'\
+        'downloadSearch?includeFields=goName,name&taxonId=%u'\
+        '&goUsage=descendants&goId=%s'
+    },
+    'goose': {
+        'label': 'Legacy MySQL query interface of AmiGO',
+        'url': 'http://amigo.geneontology.org/goose?query=%s'\
+            '&mirror=bbop&limit=0&format=text',
     },
     'goslim_gen': {
         'label': 'Generic GOSlim from GO Consortium',
