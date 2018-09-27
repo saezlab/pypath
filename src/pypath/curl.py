@@ -583,7 +583,7 @@ class FileOpener(object):
         self.gzfile = gzip.GzipFile(fileobj=self.fileobj, mode='rb')
         # try:
         if self.large:
-            self.result = self.gzfile
+            self.result = self.iterfile(self.gzfile)
         else:
             self.result = self.gzfile.read()
             self.gzfile.close()
@@ -612,7 +612,7 @@ class FileOpener(object):
     def open_plain(self):
         self.size = os.path.getsize(self.fileobj.name)
         if self.large:
-            self.result = self.fileobj
+            self.result = self.iterfile(self.fileobj)
         else:
             self.result = self.fileobj.read()
             self.fileobj.close()
@@ -631,6 +631,13 @@ class FileOpener(object):
             self.type = 'gz'
         else:
             self.type = 'plain'
+    
+    @staticmethod
+    def iterfile(fileobj):
+        
+        for line in fileobj:
+            
+            yield line
 
 
 class Curl(FileOpener):
@@ -773,10 +780,7 @@ class Curl(FileOpener):
                 
                 f = getattr(self, fattr)
                 
-                if hasattr(f, 'close') and (
-                    not self.large or
-                    id(f) != id(self.result)
-                ):
+                if hasattr(f, 'close'):
                     
                     f.close()
     
@@ -1047,7 +1051,7 @@ class Curl(FileOpener):
             if not self.use_cache:
                 if 'content-type' in self.resp_headers:
                     content_type = self.resp_headers['content-type'].lower()
-                    match = re.search('charset=(\S+)', content_type)
+                    match = re.search(r'charset=(\S+)', content_type)
                     if match:
                         self.encoding = match.group(1)
 
