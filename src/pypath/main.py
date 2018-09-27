@@ -6657,7 +6657,31 @@ class PyPath(object):
                                 disrupted[e.index]['disr'] += 1
         return toDel, disrupted
 
-    def load_go(self, aspect=['C', 'F', 'P']):
+    def load_ligand_receptor_network(
+            self,
+            sources = data_formats.pathway,
+            inference_from_go = True,
+            lig_rec_resources = True,
+            only_lig_rec = False,
+        ):
+        """
+        Initializes a ligand-receptor network.
+        """
+        
+        CC_EXTRACELL   = 'GO:0005576'
+        CC_PLASMAMEM   = 'GO:0005887'
+        MF_RECBINDING  = 'GO:0005102'
+        MF_RECACTIVITY = 'GO:0038023'
+        
+        if inference_from_go:
+            
+            self.init_network(sources)
+            
+            self.load_go(aspect = ('C', 'F'))
+        
+        self.load_resources(data_formats.ligand_receptor)
+
+    def load_go(self, aspect=('C', 'F', 'P')):
         go.load_go(self.graph, aspect=aspect)
 
     def go_dict(self, organism=9606):

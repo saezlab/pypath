@@ -3602,6 +3602,68 @@ def get_go_goa(organism='human'):
     
     return result
 
+def go_terms_goose(aspects=('C','F','P')):
+    """
+    Queries GO terms by AmiGO goose.
+    
+    Return dict of dicts where upper level keys are one letter codes of the
+    aspects `C`, `F` and `P` for cellular_component, molecular_function and
+    biological_process, respectively. Lower level keys are GO accessions
+    and values are names of the terms.
+    
+    :param tuple aspects:
+        GO aspects: `C`, `F` and `P` for cellular_component,
+        molecular_function and biological_process, respectively.
+    """
+    
+    aspects_part = ''
+    respaces = re.compile(r'[\s\n]+')
+    
+    ontologies = {
+        'C': 'cellular_component',
+        'F': 'molecular_function',
+        'P': 'biological_process',
+    }
+    ontol_short = dict(reversed(i) for i in ontologies.items())
+    
+    if set(aspects) != {'C', 'F', 'P'}:
+        
+        aspects_part = 'WHERE (%s)' % (
+            ' OR '.join(
+                'term.term_type = "%s"' % ontologies[asp]
+                for asp in aspects
+            )
+        )
+    
+    sql_path = os.path.join(common.ROOT, 'data', 'goose_terms.sql')
+    
+    with open(sql_path, 'r') as fp:
+        
+        query = fp.read()
+    
+    query = query % aspects_part
+    query = respaces.sub(r' ', query).strip()
+    
+    url = urls.urls['goose']['url'] % query
+    
+    c = curl.Curl(url, silent = False, large = True)
+    
+    terms = {'P': {}, 'C': {}, 'F': {}}
+    
+    for l in c.result:
+        
+        l = l.decode('utf-8').strip().split('\t')
+        
+        if l[1] not in ontol_short:
+            
+            continue
+        
+        aspect = ontol_short[l[1]]
+        
+        terms[aspect][l[2]] = l[0]
+    
+    return terms
+
 def go_annotations_goose(organism=9606, aspects=('C','F','P'), uniprots=None):
     """
     Queries GO annotations by AmiGO goose.

@@ -55,12 +55,12 @@ class GOAnnotation(object):
         return result
 
 
-def load_go(graph, aspect=['C', 'F', 'P']):
+def load_go(graph, aspect=('C', 'F', 'P')):
     '''
     @graph : igraph.Graph
     Any igraph.Graph object with uniprot IDs in its `name` vertex attribute.
     '''
-    aspect = aspect if type(aspect) is list else [aspect]
+    aspect = aspect if type(aspect) in {list, tuple} else (aspect, )
     graph.vs['go'] = [{'C': [], 'F': [], 'P': []} for _ in graph.vs]
     go = dataio.get_go_goa()
     prg = progress.Progress(graph.vcount(), 'Loading GO annotations', 9)
@@ -68,7 +68,7 @@ def load_go(graph, aspect=['C', 'F', 'P']):
         prg.step()
         for asp in aspect:
             if v['name'] in go[asp]:
-                v['go'][asp] = go[asp][v['name']]
+                v['go'][asp] = set(go[asp][v['name']])
     prg.terminate()
 
 
