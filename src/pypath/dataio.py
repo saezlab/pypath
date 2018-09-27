@@ -4043,10 +4043,9 @@ def ramilowski_interactions(putative = False):
     """
     
     c = curl.Curl(urls.urls['rami']['url'], silent = False, large = True)
-    xls = c.result
-    xlsfile = xls.name
-    xls.close()
-    raw = read_xls(xlsfile, 'All.Pairs')[1:]
+    xlsname = c.fname
+    del(c)
+    raw = read_xls(xlsname, 'All.Pairs')[1:]
     
     return [
         [
@@ -5239,9 +5238,9 @@ def signor_interactions(organism=9606):
         binary_data=binary_data,
         return_headers=True)
     
-    _ = c.result.readline()
+    _ = next(c.result)
     sep = '@#@#@'
-    lines = c.result.read().decode('utf-8')
+    lines = ''.join(l.decode('utf-8') for l in c.result)
     lines = csv_sep_change(lines, '\t', sep).split('\n')
 
     result = filter(lambda l: len(l) > 1, map(lambda l: l.split(sep), lines))

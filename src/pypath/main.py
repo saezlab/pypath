@@ -6696,7 +6696,7 @@ class PyPath(object):
         
         if 'go' not in self.graph.vs.attributes():
             
-            self.load_go(aspects = aspects)
+            self.go_annotate(aspects = aspects)
             
             vids = set(
                 i for i in enumerate(self.graph.vs)
@@ -6741,16 +6741,34 @@ class PyPath(object):
         
         if inference_from_go:
             
-            godesc = dataio.go_descendants_goose(aspects = ('C', 'F'))
+            go_desc = dataio.go_descendants_goose(aspects = ('C', 'F'))
             
             self.init_network(sources)
             
+            if 'go' not in self.graph.vs.attributes():
+                
+                self.go_annotate()
             
+            vids_extracell   = self.label_by_go(CC_EXTRACELL,   'extracell', go_desc)
+            vids_plasmamem   = self.label_by_go(CC_PLASMAMEM,   'plasmamem', go_desc)
+            vids_recbinding  = self.label_by_go(MF_RECBINDING,  'recbinding', go_desc)
+            vids_recactivity = self.label_by_go(MF_RECACTIVITY, 'recactivity', go_desc)
+            
+            return vids_extracell, vids_plasmamem, vids_recbinding, vids_recactivity
         
         self.load_resources(data_formats.ligand_receptor)
 
-    def load_go(self, aspects=('C', 'F', 'P')):
-        go.load_go(self.graph, aspect=aspect)
+    def go_annotate(self, aspects = ('C', 'F', 'P')):
+        """
+        Annotates protein nodes with GO terms. In the ``go`` vertex
+        attribute each node is annotated by a dict of sets where keys are
+        one letter codes of GO aspects and values are sets of GO accessions.
+        """
+        
+        go.annotate(self.graph, aspects = aspects)
+    
+    # old name as synonym
+    load_go = go_annotate
 
     def go_dict(self, organism=9606):
         if not hasattr(self, 'go'):

@@ -55,21 +55,41 @@ class GOAnnotation(object):
         return result
 
 
-def load_go(graph, aspect=('C', 'F', 'P')):
-    '''
-    @graph : igraph.Graph
-    Any igraph.Graph object with uniprot IDs in its `name` vertex attribute.
-    '''
+def annotate(graph, aspects = ('C', 'F', 'P')):
+    """
+    Adds Gene Ontology annotations to the nodes of a graph.
+    
+    :param igraph.Graph graph:
+        Any ``igraph.Graph`` object with uniprot IDs
+        in its ``name`` vertex attribute.
+    """
+    
     aspect = aspect if type(aspect) in {list, tuple} else (aspect, )
-    graph.vs['go'] = [{'C': [], 'F': [], 'P': []} for _ in graph.vs]
-    go = dataio.get_go_goa()
+    
+    graph.vs['go'] = [
+        {'C': set(), 'F': set(), 'P': set()}
+        for _ in xrange(graph.vcount())
+    ]
+    
+    terms, annot = dataio.go_annotations_goose(aspects = aspects)
+    
     prg = progress.Progress(graph.vcount(), 'Loading GO annotations', 9)
+    
     for v in graph.vs:
+        
         prg.step()
+        
         for asp in aspect:
-            if v['name'] in go[asp]:
-                v['go'][asp] = set(go[asp][v['name']])
+            
+            if v['name'] in annot[asp]:
+                
+                v['go'][asp] = annot[asp][v['name']]
+    
     prg.terminate()
+
+
+# old name as synonym
+load_go = annotate
 
 
 class GOEnrichmentSet(enrich.EnrichmentSet):
