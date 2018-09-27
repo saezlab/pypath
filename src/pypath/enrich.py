@@ -27,9 +27,13 @@ import sys
 try:
     import fisher
 except:
-    sys.stdout.write('\t:: No module `fisher` available.\n')
+    sys.stdout.write('\t:: Module `fisher` not available.\n')
 
-import statsmodels.stats.multitest as smm
+try:
+    import statsmodels.stats.multitest as smm
+except ModuleNotFoundError:
+    sys.stdout.write('\t:: Module `statsmodels` not available.\n')
+
 from collections import OrderedDict
 
 

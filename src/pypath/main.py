@@ -27,11 +27,14 @@ import re
 import imp
 import math
 from functools import reduce
+
 try:
     import cairo
 except:
-    sys.stdout.write('No module `cairo` available.'
-                     '\nSome plotting functionalities won\'t be accessible.\n')
+    sys.stdout.write(
+        '\t:: Module `cairo` not available.\n'
+        '\t   Some plotting functionalities won\'t be accessible.\n'
+    )
 
 import igraph
 import codecs
@@ -57,16 +60,16 @@ except ImportError:
 
 try:
     import pygraphviz as graphviz
-except:
+except ModuleNotFoundError:
     sys.stdout.write(
-        '\t:: No module `pygraphviz` available.\n'
-        '\tYou don\'t need it unless you want to export dot files.\n')
+        '\t:: Module `pygraphviz` not available.\n'
+        '\t   You don\'t need it unless you want to export dot files.\n')
     sys.stdout.flush()
 
 try:
     import pandas
-except:
-    sys.stdout.write('\nNo module `pandas` available.\n')
+except ModuleNotFoundError:
+    sys.stdout.write('\t:: Module `pandas` not available.\n')
     sys.stdout.flush()
 
 # from this module:

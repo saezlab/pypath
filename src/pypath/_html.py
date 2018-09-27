@@ -1627,7 +1627,23 @@ _default_css = u'''
                     margin: 10px 1.8%% 10px 0;
                 }
                 html {
-                    padding-bottom: 1024px;
+                    padding-bottom: 24px;
+                }
+                #top-left {
+                    width: calc(100%% - 245px);
+                    min-width: 400px;
+                    float: left;
+                }
+                #top-right {
+                    width: 240px;
+                    padding-left: 5px;
+                    float: left;
+                }
+                .timeline-Header-title {
+                    color: #6EA945!important;
+                }
+                .timeline-Header-byline {
+                    color: #6EA945!important;
                 }
                 .paper-link {
                     font-size: larger;

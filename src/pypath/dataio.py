@@ -81,8 +81,8 @@ import requests
 import codecs
 try:
     import bioservices
-except:
-    sys.stdout.write('\t:: No `bioservices` available.\n')
+except ModuleNotFoundError:
+    sys.stdout.write('\t:: Module `bioservices` not available.\n')
     sys.stdout.flush()
 
 from xlrd import open_workbook

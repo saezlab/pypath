@@ -86,7 +86,7 @@ try:
     from fabric.network import connect, HostConnectionCache
     from fabric.state import env
 except:
-    sys.stdout.write('No `fabric` available.\n')
+    sys.stdout.write('\t:: Module `fabric` not available.\n')
     sys.stdout.flush()
 
 from contextlib import closing
