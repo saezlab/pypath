@@ -1,3 +1,34 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#
+#  This file is part of the `pypath` python module
+#
+#  Copyright
+#  2014-2018
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+#
+#  File author(s): Dénes Türei (turei.denes@gmail.com)
+#
+#  Distributed under the GPLv3 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Website: http://www.ebi.ac.uk/~denes
+#
+
+#
+#  This module is from `python-igraph`.
+#
+#  Authors: Gábor Csárdi & Tamás Nepusz
+#
+#  Distributed under GNU GPLv2 License.
+#  See the license here:
+#  https://github.com/igraph/python-igraph/blob/master/LICENSE
+#
+#  Website: http://igraph.org/
+#
+
 """
 Drawers for various edge styles in graph plots.
 """

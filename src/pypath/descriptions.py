@@ -1,12 +1,14 @@
-#!/usr/bin/env python2
-# -*coding: utf-8 -*-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2015 EMBL-EBI
+#  Copyright
+#  2014-2018
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
-#  File author(s): Dénes Türei (denes@ebi.ac.uk)
+#  File author(s): Dénes Türei (turei.denes@gmail.com)
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
