@@ -2120,7 +2120,8 @@ class PyPath(object):
         refs = [_refs.Reference(pmid) for pmid in refs]
         self.add_list_eattr(edge, 'references', refs)
         # updating references-by-source dict:
-        for src in source:
+        sources = source if type(source) in {tuple, set, list} else (source,)
+        for src in sources:
             self.add_grouped_set_eattr(edge, 'refs_by_source', src, refs)
         # updating refrences-by-type dict:
         self.add_grouped_set_eattr(edge, 'refs_by_type', typ, refs)
