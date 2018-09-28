@@ -6680,6 +6680,10 @@ class PyPath(object):
             lambda s1, s2: s1.intersection(s2)
         )
         
+        def _method(s1, s2):
+            
+            return s1.intersection(s2)
+        
         if go_desc is None:
             
             go_desc = dataio.go_descendants_goose(aspects = aspects)
@@ -6697,14 +6701,14 @@ class PyPath(object):
         if 'go' not in self.graph.vs.attributes():
             
             self.go_annotate(aspects = aspects)
-            
-            vids = set(
-                i for i in enumerate(self.graph.vs)
-                if any(
-                    _method(v['go'][a], all_desc)
-                    for a in aspects
-                )
+        
+        vids = set(
+            i for i, v in enumerate(self.graph.vs)
+            if any(
+                _method(v['go'][a], all_desc)
+                for a in aspects
             )
+        )
         
         return vids
     
@@ -6721,7 +6725,7 @@ class PyPath(object):
         
         for vid in vids:
             
-            self.graph.vs[label][vid] = True
+            self.graph.vs[vid][label] = True
     
     def load_ligand_receptor_network(
             self,
@@ -6749,10 +6753,10 @@ class PyPath(object):
                 
                 self.go_annotate()
             
-            vids_extracell   = self.label_by_go(CC_EXTRACELL,   'extracell', go_desc)
-            vids_plasmamem   = self.label_by_go(CC_PLASMAMEM,   'plasmamem', go_desc)
-            vids_recbinding  = self.label_by_go(MF_RECBINDING,  'recbinding', go_desc)
-            vids_recactivity = self.label_by_go(MF_RECACTIVITY, 'recactivity', go_desc)
+            vids_extracell   = self.label_by_go('extracell', CC_EXTRACELL, go_desc = go_desc)
+            vids_plasmamem   = self.label_by_go('plasmamem', CC_PLASMAMEM,   go_desc = go_desc)
+            vids_recbinding  = self.label_by_go('recbinding', MF_RECBINDING,  go_desc = go_desc)
+            vids_recactivity = self.label_by_go('recactivity', MF_RECACTIVITY, go_desc = go_desc)
             
             return vids_extracell, vids_plasmamem, vids_recbinding, vids_recactivity
         

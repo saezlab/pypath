@@ -18,6 +18,7 @@
 #
 
 from future.utils import iteritems
+from past.builtins import xrange, range
 
 import sys
 from collections import Counter, OrderedDict
@@ -64,7 +65,7 @@ def annotate(graph, aspects = ('C', 'F', 'P')):
         in its ``name`` vertex attribute.
     """
     
-    aspect = aspect if type(aspect) in {list, tuple} else (aspect, )
+    aspects = aspects if type(aspects) in {list, tuple} else (aspects, )
     
     graph.vs['go'] = [
         {'C': set(), 'F': set(), 'P': set()}
@@ -79,7 +80,7 @@ def annotate(graph, aspects = ('C', 'F', 'P')):
         
         prg.step()
         
-        for asp in aspect:
+        for asp in aspects:
             
             if v['name'] in annot[asp]:
                 
