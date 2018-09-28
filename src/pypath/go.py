@@ -31,12 +31,14 @@ from pypath.common import *
 
 
 class GOAnnotation(object):
+    
     def __init__(self, organism=9606):
-        go = dataio.get_go_quick(organism=organism)
-        self.c = go['terms']['C']
-        self.f = go['terms']['F']
-        self.p = go['terms']['P']
-        self.name = go['names']
+        
+        terms, annot = dataio.go_annotations_goose(organism=organism)
+        self.c = annot['C']
+        self.f = annot['F']
+        self.p = annot['P']
+        self.name = dict(v for vv in terms.values() for v in iteritems(vv))
         self.term = dict([(v, k) for k, v in iteritems(self.name)])
 
     def get_name(self, term):

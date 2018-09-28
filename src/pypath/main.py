@@ -6849,8 +6849,10 @@ class PyPath(object):
     load_go = go_annotate
 
     def go_dict(self, organism=9606):
+        
         if not hasattr(self, 'go'):
             self.go = {}
+        
         self.go[organism] = go.GOAnnotation(organism)
 
     def go_enrichment(self,
