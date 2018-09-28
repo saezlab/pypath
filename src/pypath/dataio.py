@@ -4115,10 +4115,9 @@ def kirouac2010_interactions():
     
     url = urls.urls['kirouac2010']['url']
     c = curl.Curl(url, silent = False, large = True)
-    xls = c.result
-    xlsfile = xls.name
-    xls.close()
-    tbl = read_xls(xlsfile, sheet='S12')
+    xlsname = c.fname
+    del(c)
+    tbl = read_xls(xlsname, sheet='S12')
     
     result = []
     

@@ -126,7 +126,7 @@ class Direction(object):
         'positive',
         'negative',
         'positive_sources',
-        'negative_sources'
+        'negative_sources',
     ]
     
     def __init__(self, nameA, nameB):
@@ -333,7 +333,7 @@ class Direction(object):
             if len(self.negative_sources[direction]) == 0:
                 self.negative[direction] = False
 
-    def src(self):
+    def src(self, undirected = False):
         """
         Returns the IDs of effector molecules in this directed
         interaction. If the interaction is bidirectional, the
@@ -341,16 +341,20 @@ class Direction(object):
         ted, an empty list will be returned.
         """
         return [
-            k[0] for k, v in iteritems(self.dirs) if k != 'undirected' and v
+            k[0]
+            for k, v in iteritems(self.dirs)
+            if (k != 'undirected' or undirected) and v
         ]
 
-    def tgt(self):
+    def tgt(self, undirected = False):
         """
         Returns the IDs of the target molecules in the inter-
         action. Same behaviour as `Direction.src()`.
         """
         return [
-            k[1] for k, v in iteritems(self.dirs) if k != 'undirected' and v
+            k[1]
+            for k, v in iteritems(self.dirs)
+            if (k != 'undirected' or undirected) and v
         ]
 
     def src_by_source(self, source):
@@ -6729,10 +6733,12 @@ class PyPath(object):
     
     def load_ligand_receptor_network(
             self,
-            sources = data_formats.pathway,
-            inference_from_go = True,
             lig_rec_resources = True,
-            only_lig_rec = False,
+            inference_from_go = True,
+            sources = data_formats.pathway,
+            keep_undirected = False,
+            keep_rec_rec = False,
+            keep_lig_lig = False,
         ):
         """
         Initializes a ligand-receptor network.
@@ -6753,14 +6759,82 @@ class PyPath(object):
                 
                 self.go_annotate()
             
-            vids_extracell   = self.label_by_go('extracell', CC_EXTRACELL, go_desc = go_desc)
-            vids_plasmamem   = self.label_by_go('plasmamem', CC_PLASMAMEM,   go_desc = go_desc)
-            vids_recbinding  = self.label_by_go('recbinding', MF_RECBINDING,  go_desc = go_desc)
-            vids_recactivity = self.label_by_go('recactivity', MF_RECACTIVITY, go_desc = go_desc)
+            vids_extracell   = self.select_by_go(CC_EXTRACELL,   go_desc)
+            vids_plasmamem   = self.select_by_go(CC_PLASMAMEM,   go_desc)
+            vids_recbinding  = self.select_by_go(MF_RECBINDING,  go_desc)
+            vids_recactivity = self.select_by_go(MF_RECACTIVITY, go_desc)
             
-            return vids_extracell, vids_plasmamem, vids_recbinding, vids_recactivity
+            receptors = vids_plasmamem & vids_recactivity
+            ligands   = vids_extracell & vids_recbinding
+            
+            lig_with_interactions = set()
+            rec_with_interactions = set()
+            lig_rec_edges = set()
+            lig_lig_edges = set()
+            rec_rec_edges = set()
+            
+            for e in self.graph.es:
+                
+                srcs = set(
+                    self.up(u).index
+                    for u in e['dirs'].src(keep_undirected)
+                )
+                tgts = set(
+                    self.up(u).index
+                    for u in e['dirs'].tgt(keep_undirected)
+                )
+                
+                if srcs & ligands and tgts & receptors:
+                    
+                    lig_rec_edges.add(e.index)
+                    lig_with_interactions.update(srcs)
+                    rec_with_interactions.update(tgts)
+                    
+                elif keep_lig_lig and srcs & ligands and tgts & ligands:
+                    
+                    lig_lig_edges.add(e.index)
+                    
+                elif keep_rec_rec and srcs & receptors and tgts & receptors:
+                    
+                    rec_rec_edges.add(e.index)
+            
+            self.set_boolean_vattr('ligand_go',   lig_with_interactions)
+            self.set_boolean_vattr('receptor_go', rec_with_interactions)
+            
+            edges_to_delete = (
+                set(xrange(self.graph.ecount())) -
+                set.union(
+                    lig_rec_edges,
+                    rec_rec_edges,
+                    lig_lig_edges,
+                )
+            )
+            
+            self.graph.delete_edges(edges_to_delete)
+            self.graph.delete_vertices(
+                [i for i, d in enumerate(self.graph.degree()) if not d]
+            )
+            
+            for e in self.graph.es:
+                
+                e['sources'].add('GO_lig_rec')
         
-        self.load_resources(data_formats.ligand_receptor)
+        self.update_vname()
+        self.update_sources()
+        
+        if lig_rec_resources:
+            
+            self.load_resources(data_formats.ligand_receptor)
+
+    def set_boolean_vattr(self, attr, vids, negate = False):
+        
+        vids = set(vids)
+        
+        if negate:
+            
+            vids = set(xrange(self.graph.vcount())) - vids
+        
+        self.graph.vs[attr] = [i in vids for i in xrange(self.graph.vcount())]
 
     def go_annotate(self, aspects = ('C', 'F', 'P')):
         """
