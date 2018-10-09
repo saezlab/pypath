@@ -3045,7 +3045,47 @@ def pfam_uniprot(uniprots, infile=None):
     return result
 
 
-def get_dbptm(organism=9606):
+def get_dbptm(organism = 9606):
+    
+    if organism is None:
+        _organism = None
+    elif organism in common.dbptm_taxids:
+        _organism = common.dbptm_taxids[organism]
+    else:
+        sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
+        return []
+    
+    fname = urls.files['dbptm']['old_dbptm']
+    data = []
+    
+    with open(fname, 'r') as fp:
+        
+        hdr = fp.readline.strip().split('\t')
+        
+        for l in fp:
+            
+            l = l.strip().split('\t')
+            
+            data.append(dict(
+                (
+                    key,
+                    (
+                        None
+                            if val == '' else
+                        val.split(';')
+                            if key == 'references' else
+                        int(val)
+                            if val.isdigit() else
+                        val
+                    )
+                )
+                for key, val in zip(hdr, l)
+            ))
+    
+    return data
+
+
+def get_dbptm_old(organism=9606):
     """
     Downloads enzyme-substrate interactions from dbPTM.
     Returns list of dicts.
@@ -3076,9 +3116,10 @@ def get_dbptm(organism=9606):
                 
                 if len(l) > 8:
                     
-                    mnemonic = l[0].split('_')[1].strip()
-                    if mnemonic != _organism:
-                        continue
+                    if _organism:
+                        mnemonic = l[0].split('_')[1].strip()
+                        if mnemonic != _organism:
+                            continue
                     
                     resnum = int(non_digit.sub('', l[2]))
                     

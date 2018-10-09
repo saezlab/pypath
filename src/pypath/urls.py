@@ -279,8 +279,44 @@ urls = {
             'http://dbptm.mbc.nctu.edu.tw/download/Sulfation.tgz',
             'http://dbptm.mbc.nctu.edu.tw/download/Ubiquitylation.tgz',
             'http://dbptm.mbc.nctu.edu.tw/download/Sumoylation.tgz',
-            'http://dbptm.mbc.nctu.edu.tw/download/Nitrosylation.tgz'
-        ]
+            'http://dbptm.mbc.nctu.edu.tw/download/Nitrosylation.tgz',
+        ],
+        'url': 'http://dbptm.mbc.nctu.edu.tw/download/experiment/%s.txt.gz',
+        'datasets': [
+            'Phosphorylation',
+            'Acetylation',
+            'Ubiquitination',
+            'Succinylation',
+            'Methylation',
+            'Malonylation',
+            'N-linkedGlycosylation',
+            'O-linkedGlycosylation',
+            'Sumoylation',
+            'S-nitrosylation',
+            'Glutathionylation',
+            'Amidation',
+            'Hydroxylation',
+            'PyrrolidoneCarboxylicAcid',
+            'Glutarylation',
+            'Palmitoylation',
+            'Gamma-carboxyglutamicAcid',
+            'Crotonylation',
+            'Oxidation',
+            'Myristoylation',
+            'C-linkedGlycosylation',
+            'Sulfation',
+            'Formylation',
+            'Citrullination',
+            'GPI-anchor',
+            'Nitration',
+            'S-diacylglycerol',
+            'Carboxylation',
+            'Lipoylation',
+            'Carbamidation',
+            'Neddylation',
+            'Pyruvate',
+            'S-linkedGlycosylation',
+        ],
     },
     'phosnw': {
         'label': 'Human kinase-substrate relationships and phosphosites',
@@ -807,5 +843,8 @@ files = {
     'phosphosite': {
         'curated': os.path.join('cache', 'phosphosite_curated.pickle'),
         'noref': os.path.join('cache', 'phosphosite_noref.pickle')
-    }
+    },
+    'dbptm': {
+        'old_dbptm': os.path.join(common.ROOT, 'data', 'old_dbptm.tab'),
+    },
 }
