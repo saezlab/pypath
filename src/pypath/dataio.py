@@ -3964,10 +3964,11 @@ def netpath_interactions():
                 mols[pid] += (roles, )
             intTyp = theInt.find(mi + 'interactionType').find(mi + 'names')\
                 .find(mi + 'shortLabel').text
+            molkeys = list(mols.keys())
             for i in range(0, len(mols) - 1):
                 for j in range(i, len(mols)):
-                    A = mols[mols.keys()[i]][0:2]
-                    B = mols[mols.keys()[j]][0:2]
+                    A = mols[molkeys[i]][0:2]
+                    B = mols[molkeys[j]][0:2]
                     result.append(
                         list(A) + list(B) +
                         [';'.join(refs), ';'.join(mets), intTyp, pwname])
