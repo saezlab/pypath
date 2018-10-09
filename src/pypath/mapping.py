@@ -435,7 +435,11 @@ class MappingTable(object):
         return {"one": self.maxlOne, "two": self.maxlTwo}
     
     def get_tax_id(self, ncbi_tax_id):
-        return ncbi_tax_id if ncbi_tax_id is not None else self.param.ncbi_tax_id
+        return (
+            ncbi_tax_id
+                if ncbi_tax_id is not None else
+            self.param.ncbi_tax_id
+        )
 
 
 class Mapper(object):
@@ -633,8 +637,10 @@ class Mapper(object):
         if type(nameType) is list:
             mappedNames = []
             for nt in nameType:
-                mappedNames += self.map_name(name, nt, targetNameType, strict,
-                                             silent)
+                mappedNames += self.map_name(
+                    name, nt, targetNameType, strict = strict,
+                    silent = silent, ncbi_tax_id = ncbi_tax_id,
+                )
             return common.uniqList(mappedNames)
         if nameType == targetNameType:
             if targetNameType != 'uniprot':

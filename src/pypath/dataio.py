@@ -3060,7 +3060,7 @@ def get_dbptm(organism = 9606):
     
     with open(fname, 'r') as fp:
         
-        hdr = fp.readline.strip().split('\t')
+        hdr = fp.readline().strip().split('\t')
         
         for l in fp:
             
@@ -3073,7 +3073,7 @@ def get_dbptm(organism = 9606):
                         None
                             if val == '' else
                         val.split(';')
-                            if key == 'references' else
+                            if key in {'references', 'kinase'} else
                         int(val)
                             if val.isdigit() else
                         val
