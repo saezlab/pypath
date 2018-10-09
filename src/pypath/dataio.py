@@ -6480,7 +6480,7 @@ def get_phosphosite(cache=True):
     result_noref = []
     url = urls.urls['psite_bp']['url']
     c = curl.Curl(url, silent=False, large=True)
-    bpax = c.result
+    bpax = c.gzfile
     xml = ET.parse(bpax)
     xmlroot = xml.getroot()
     bpprefix = '{http://www.biopax.org/release/biopax-level3.owl#}'
