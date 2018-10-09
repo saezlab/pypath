@@ -96,6 +96,11 @@ from contextlib import closing
 import pypath.progress as progress
 import pypath.common as common
 
+try:
+    basestring
+except NameError:
+    basestring = str
+
 if 'long' not in __builtins__:
     long = int
 
@@ -906,7 +911,12 @@ class Curl(FileOpener):
         self.curl.setopt(self.curl.CONNECTTIMEOUT, self.timeout)
 
     def set_url(self, url=False):
-        self.curl.setopt(self.curl.URL, url or self.url)
+        url = url or self.url
+        
+        if isinstance(url, basestring):
+            url = url.encode('utf-8')
+        
+        self.curl.setopt(self.curl.URL, url)
 
     def set_target(self):
         self.target = open(self.cache_file_name, 'wb')

@@ -158,8 +158,6 @@ class Export(object):
                 self.process_edge_bydirection(e)
             )
             
-
-            
             result.extend(lines)
             
             prg.step()
@@ -420,9 +418,15 @@ class Export(object):
     
     def webservice_interactions_df(self):
         
-        sources_omnipath = set(f.name for f in data_formats.omnipath.values())
-        sources_kinase_extra = set(f.name for f in data_formats.ptm_misc.values())
-        sources_mirna = set(f.name for f in data_formats.mirna_target.values())
+        sources_omnipath = set(
+            f.name for f in data_formats.omnipath.values()
+        )
+        sources_kinase_extra = set(
+            f.name for f in data_formats.ptm_misc.values()
+        )
+        sources_mirna = set(
+            f.name for f in data_formats.mirna_target.values()
+        )
         
         self.make_df(
             unique_pairs = False,

@@ -34,12 +34,17 @@ __all__ = [
     'flatList', 'charTypes', 'delEmpty', 'get_args',
     'something', 'rotate', 'cleanDict', 'igraph_graphics_attrs', 'md5',
     'mod_keywords', 'Namespace', 'fun', 'taxids', 'taxa', 'phosphoelm_taxids',
-    'dbptm_taxids'
+    'dbptm_taxids',
 ]
 
 # get the location
 ROOT = os.path.abspath(os.path.dirname(__file__))
 DATA = os.path.join(ROOT, 'data')
+
+try:
+    basestring
+except NameError:
+    basestring = str
 
 default_name_type = {
     "protein": "uniprot",
