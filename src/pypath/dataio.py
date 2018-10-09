@@ -7158,9 +7158,8 @@ def trim_macrophage_gname(gname):
 def macrophage_interactions():
     url = urls.urls['macrophage']['url']
     c = curl.Curl(url, silent=False, large=True)
-    data = c.result
-    fname = data.name
-    data.close()
+    fname = c.fileobj.name
+    del c
     tbl = read_xls(fname)[5:]
     types = ["Protein", "Complex"]
     lst = []
@@ -7185,6 +7184,7 @@ def macrophage_interactions():
                                         pm
                                     ])
         lnum += 1
+    
     return lst
 
 
