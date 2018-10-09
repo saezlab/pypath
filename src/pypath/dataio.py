@@ -7027,7 +7027,7 @@ def spike_interactions(high_confidence=True):
 def mppi_interactions(organism=9606):
     url = urls.urls['mppi']['url']
     c = curl.Curl(url, silent=False, large=True)
-    xmlfile = c.result
+    xmlfile = c.gzfile
 
     prefix = '{net:sf:psidev:mi}'
 
