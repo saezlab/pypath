@@ -162,17 +162,11 @@ def read_table(cols,
         Strings to remove. For each line these elements will be replaced with ''.
     '''
     if data is None:
-        if 'readline' not in fileObject.__class__.__dict__:
-            funname = sys._getframe().f_code.co_name
-            sys.stdout.write(
-                '\tERROR: %s() expects file like object (file opened for read'
-                ', or StringIO buffer, etc)\n' % funname)
-            return []
-        fileObject.seek(0)
+        if hasattr(fileObject, 'readline'):
+            fileObject.seek(0)
         if hdr:
             for h in xrange(0, hdr):
-                null = fileObject.readline()
-                del null
+                _ = next(fileObject)
         data = fileObject
     else:
         data = [l.strip() for l in data.split('\n') if len(l) > 0][hdr:]
@@ -4311,8 +4305,8 @@ def get_guide2pharma(organism='human', endogenous=True):
         # Potentiation, //
         # Inhibition, weak inhibition, Negative,
         # Reversible inhibition, Irreversible inhibition
-        'endogenous': 18,
-        'pubmed': 33
+        'endogenous': 19,
+        'pubmed': 34
     }
     data = read_table(cols=cols, fileObject=buff, sep=',', hdr=1, encoding = 'utf-8')
     if organism is not None:
