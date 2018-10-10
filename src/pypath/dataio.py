@@ -5111,9 +5111,8 @@ def signor_pathways(**kwargs):
     interactions_pathways = {}
     
     c = curl.Curl(url, silent=True)
-    html = c.result
     
-    soup = bs4.BeautifulSoup(html, 'html.parser')
+    soup = bs4.BeautifulSoup(c.result, 'html.parser')
     
     prg = progress.Progress(
         len(soup.find('select', {'name': 'pathway_list'}).findAll('option')),
@@ -5143,13 +5142,13 @@ def signor_pathways(**kwargs):
         c_pw = curl.Curl(
             baseurl,
             silent = True,
-            large = True,
-            binary_data = binary_data
+            binary_data = binary_data,
+            encoding = 'utf-8',
         )
         
         sep = '@#@#@'
         lines = csv_sep_change(
-            c_pw.result.read().decode('utf-8'),
+            c_pw.result,
             '\t',
             sep
         ).split('\n')[1:]
