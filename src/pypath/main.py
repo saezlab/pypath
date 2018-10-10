@@ -836,7 +836,7 @@ class PyPath(object):
     def save_network(self, pfile=None):
         pfile = pfile if pfile is not None \
             else os.path.join('cache', 'default_network.pickle')
-        pickle.dump(self.graph, open(pfile, 'wb'))
+        pickle.dump(self.graph, open(pfile, 'wb'), -1)
     ###
     # functions to read networks from text files or mysql
     ###
@@ -1384,7 +1384,7 @@ class PyPath(object):
                 (lnum - 1, settings.inFile, len(edgeListMapped), lFiltered,
                  rFiltered, tFiltered))
             if reread or redownload:
-                pickle.dump(edgeListMapped, open(edges_cache, 'wb'))
+                pickle.dump(edgeListMapped, open(edges_cache, 'wb'), -1)
                 self.ownlog.msg(2,
                                 'Mapped edge list saved to %s' % edges_cache)
         if keep_raw:
@@ -2685,7 +2685,7 @@ class PyPath(object):
         self.ownlog.msg(1, ("""Saving session to %s... """ % pickleFile),
                         'INFO')
         with open(pickleFile, "wb") as f:
-            pickle.dump(self, f)
+            pickle.dump(self, f, -1)
 
     ###
     # functions for plotting // with custom typeface ;)
