@@ -43,6 +43,7 @@ DATA = os.path.join(ROOT, 'data')
 
 try:
     basestring
+
 except NameError:
     basestring = str
 
@@ -248,14 +249,48 @@ def addToSet(st, toadd):
 
 
 def something(anything):
+    """
+    Checks if *anything* is something or not empty.
+
+    * Arguments:
+        - *anything*: Self-explanatory.
+
+    * Returns:
+        - [bool]: ``False`` if *anyhting* is ``None`` or any empty data
+          type.
+
+    * Examples:
+        >>> something(None)
+        False
+        >>> something(123)
+        True
+        >>> something('Hello world!')
+        True
+        >>> something('')
+        False
+        >>> something([])
+        False
+    """
+
     return not (anything is None or
                 (type(anything) in [list, set, dict, str, unicode] and
                  len(anything) == 0))
 
 
 def gen_session_id(length=5):
+    """
+    Generates a random alphanumeric string.
+
+    * Arguments:
+        - *length* [int]: Optional, ``5`` by default. Specifies the
+          length of the random string.
+
+    * Returns:
+        - [str]: Random alphanumeric string of the specified length.
+    """
+
     abc = '0123456789abcdefghijklmnopqrstuvwxyz'
-    return ''.join(random.choice(abc) for i in range(length))
+    return ''.join(random.choice(abc) for i in xrange(length))
 
 
 def simpson_index(a, b):
@@ -284,6 +319,14 @@ def jaccard_index(a, b):
 
 
 def console(message):
+    """
+    Prints a *message* to the standard output (e.g. terminal) formatted
+    to 80 characters per line plus first-level indentation.
+
+    * Arguments:
+        - *message* [str]: The message to be printed.
+    """
+
     message = '\n\t'.join(textwrap.wrap(message, 80))
     sys.stdout.write(('\n\t' + message).ljust(80))
     sys.stdout.write('\n')
@@ -445,23 +488,23 @@ def swap_dict(d):
     Results dict of sets even if the values are strings or ints
     and are unique.
     """
-    
+
     _d = {}
-    
+
     for key, vals in iteritems(d):
-        
+
         vals = [vals] if type(vals) in simpleTypes else vals
-        
+
         for val in vals:
-            
+
             if val not in _d:
                 _d[val] = set([])
-            
+
             _d[val].add(key)
-    
+
     if all(len(v) <= 1 for v in _d.values()):
         _d = dict((k, list(v)[0]) for k, v in iteritems(_d) if len(v))
-    
+
     return _d
 
 def swap_dict_simple(d):
@@ -470,34 +513,34 @@ def swap_dict_simple(d):
     Assumes the values are unique and hashable,
     otherwise overwrites duplicates or raises error.
     """
-    
+
     return dict((v, k) for k, v in iteritems(d))
 
 def join_dicts(d1, d2, _from = 'keys', to = 'values'):
-    
+
     result = {}
-    
+
     if to == 'keys':
-        
+
         d2 = swap_dict(d2)
-    
+
     for key1, val1 in iteritems(d1):
-        
+
         sources = (
             [key1] if _from == 'keys' else
             [val1] if type(val1) in simpleTypes else
             val1)
-        
+
         meds = ([key1] if _from == 'values' else
             [val1] if type(val1) in simpleTypes else
             val1)
-        
+
         targets = set([])
-        
+
         for med in meds:
-            
+
             if med in d2:
-                
+
                 if type(targets) is list:
                     targets.append(d2[med])
                 elif type(d2[med]) in simpleTypes:
@@ -511,28 +554,28 @@ def join_dicts(d1, d2, _from = 'keys', to = 'values'):
                 else:
                     targets = list(targets)
                     targets.append(d2[med])
-        
+
         for source in sources:
-            
+
             if type(targets) is list:
-                
+
                 if source not in result:
                     result[source] = []
-                
+
                 result[source].extend(targets)
-                
-                
+
+
             elif type(targets) is set:
-                
+
                 if source not in result:
                     result[source] = set([])
-                
+
                 result[source].update(targets)
-    
+
     if all(len(x) <= 1 for x in result.values()):
-        
+
         result = dict((k, list(v)[0]) for k, v in iteritems(result) if len(v))
-    
+
     return result
 
 class Namespace(object):
@@ -650,16 +693,16 @@ mirbase_taxids = {
 }
 
 class silent(object):
-   
+
     def __init__(self):
-       
+
         pass
-   
+
     def __enter__(self):
         self.aux = sys.stdout
         sys.stdout = open(os.devnull, 'w')
-   
+
     def __exit__(self, exception_type, exception_value, traceback):
-       
+
         sys.stdout.close()
         sys.stdout = self.aux
