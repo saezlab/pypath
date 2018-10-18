@@ -1443,7 +1443,7 @@ transcription = {
             'tfregulons_chipseq': 5,
             'tfregulons_tfbs':    6,
             'tfregulons_coexp':   7,
-            'tfregulons_level': 3
+            'tfregulons_level':   3,
         },
         extraNodeAttrsA={},
         extraNodeAttrsB={})
@@ -1732,13 +1732,36 @@ ligand_receptor = {
         extraEdgeAttrs={},
         extraNodeAttrsA={},
         extraNodeAttrsB={},
-        positiveFilters=[(1, 'Ligand')])
+        positiveFilters=[(1, 'Ligand')]),
+    'cellphonedb': input_formats.ReadSettings(
+        name="CellPhoneDB",
+        separator=None,
+        nameColA=0,
+        nameColB=1,
+        nameTypeA="uniprot",
+        nameTypeB="uniprot",
+        typeA="protein",
+        typeB="protein",
+        isDirected=(4, 'ligand-receptor'),
+        sign=False,
+        ncbiTaxId=9606,
+        inFile='cellphonedb_interactions',
+        references=(3, ';'),
+        resource=(2, ';'),
+        must_have_references=False,
+        header=False,
+        extraEdgeAttrs={'cellphonedb_type': 4},
+        extraNodeAttrsA={'cellphonedb_type': 5},
+        extraNodeAttrsB={'cellphonedb_type': 6},
+        positiveFilters=[]),
 }
 
 ligand_receptor['guide2pharma'] = pathway['guide2pharma']
 pathway['hpmr'] = copy.deepcopy(ligand_receptor['hpmr'])
 pathway['hpmr'].must_have_references = True
 pathway['hpmr'].positiveFilters = []
+pathway['cellphonedb'] = copy.deepcopy(ligand_receptor['cellphonedb'])
+pathway['cellphonedb'].must_have_references = True
 pathway['ramilowski2015'] = copy.deepcopy(ligand_receptor['ramilowski2015'])
 pathway['ramilowski2015'].must_have_references = True
 '''
