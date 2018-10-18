@@ -17,6 +17,8 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
+# XXX: Missing module docstring
+
 # try:
 #import __main__ as ext
 from __future__ import print_function
@@ -27,4 +29,4 @@ import pypath._version as _version
 #import pypath.common as common
 
 __version__ = _version.__version__
-PyPath = main.PyPath
+PyPath = main.PyPath # This is an alias
