@@ -6825,7 +6825,14 @@ class PyPath(object):
         
         if lig_rec_resources:
             
-            self.load_resources(data_formats.ligand_receptor)
+            datasets = copy.deepcopy(data_formats.ligand_receptor)
+            
+            datasets['cellphonedb'].inputArgs = {
+                'ligand_ligand':     keep_lig_lig,
+                'receptor_receptor': keep_rec_rec,
+            }
+            
+            self.load_resources(datasets)
 
     def set_boolean_vattr(self, attr, vids, negate = False):
         
