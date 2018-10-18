@@ -825,6 +825,15 @@ urls = {
         'label': 'Human Plasma Membrane Receptome "browse" view',
         'browse': 'http://www.receptome.org/Families/FamNav/'\
             'famnav.asp?undefined'
+    },
+    'cellphonedb': {
+        'label': 'Intercellular communication database from Teichmann lab',
+        'interactions': 'https://www.cellphonedb.org/downloads/'\
+            'interactions_cellphonedb.csv',
+        'heterodimers': 'https://www.cellphonedb.org/downloads/'\
+            'heterodimers.csv',
+        'proteins': 'https://www.cellphonedb.org/downloads/'\
+            'protein_complex_cellphonedb.csv',
     }
 }
 

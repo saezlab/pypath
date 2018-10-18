@@ -4369,6 +4369,117 @@ def get_guide2pharma(organism='human', endogenous=True):
     return data
 
 
+def cellphonedb_interactions():
+    
+    repmid = re.compile(r'PMID: ([0-9]+)')
+    
+    receptors = set()
+    ligands   = set()
+    
+    url = urls.urls['cellphonedb']['proteins']
+    
+    c = curl.Curl(url, large = True)
+    
+    _ = next(c.result)
+    
+    for l in c.result:
+        
+        l = l.decode('utf-8').strip().split(',')
+        
+        if l[2] == 'True' or l[4] == 'True':
+            
+            receptors.add(l[0])
+        
+        if l[3] == 'True':
+            
+            ligands.add(l[0])
+    
+    url = urls.urls['cellphonedb']['interactions']
+    
+    c = curl.Curl(url, silent = False, large = True)
+    
+    _ = next(c.result)
+    
+    for l in c.result:
+        
+        l = l.decode('utf-8').strip().split(',')
+        
+        if l[2][:6] != 'simple' or l[3][:6] != 'simple':
+            
+            continue
+        
+        uniprot1 = l[2].split(':')[1]
+        uniprot2 = l[3].split(':')[1]
+        
+        sources = (
+            'CellPhoneDB'
+                if l[1] == 'curated' else
+            '%s;CellPhoneDB' % l[1]
+        )
+        refs   = ';'.join(repmid.findall(l[8]))
+        
+        if uniprot1 in ligands and uniprot2 in receptors:
+            
+            yield (
+                uniprot1,
+                uniprot2,
+                sources,
+                refs,
+                'ligand-receptor',
+                'ligand',
+                'receptor',
+            )
+        
+        if uniprot2 in ligands and uniprot1 in receptors:
+            
+            yield (
+                uniprot2,
+                uniprot1,
+                sources,
+                refs,
+                'ligand-receptor',
+                'ligand',
+                'receptor',
+            )
+    
+    url = urls.urls['cellphonedb']['heterodimers']
+    
+    c = curl.Curl(url, silent = False, large = True)
+    
+    _ = next(c.result)
+    
+    for l in c.result:
+        
+        l = l.decode('utf-8').strip().split(',')
+        
+        uniprot1 = l[11]
+        uniprot2 = l[16]
+        
+        if l[1] == 'True' or l[3] == 'True':
+            
+            yield (
+                uniprot1,
+                uniprot2,
+                'CellPhoneDB',
+                '',
+                'receptor-receptor',
+                'receptor',
+                'receptor',
+            )
+        
+        if l[2] == 'True':
+            
+            yield (
+                uniprot1,
+                uniprot2,
+                'CellPhoneDB',
+                '',
+                'ligand-ligand',
+                'ligand',
+                'ligand',
+            )
+
+
 def open_pubmed(pmid):
     '''
     Opens PubMed record in web browser.
