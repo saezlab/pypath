@@ -364,16 +364,33 @@ def addToList(lst, toadd):
 
 def addToSet(st, toadd):
     """
+    Appends *toadd* to *st*. Function is capable to handle different
+    input data types. This is, if *toadd* is a list, it will be
+    converted to a set and added.
 
+    * Arguments:
+        - *st* [set]: Original set to which *toadd* will be added.
+        - *toadd*: Element(s) to be added into *st*.
+
+    * Returns:
+        - [set]: Contains the element(s) from the union of *st* and
+          *toadd*.
+
+    * Examples:
+        >>> st = set([0, 1, 2])
+        >>> addToSet(st, 3)
+        set([0, 1, 2, 3])
+        >>> addToSet(st, [4, 2, 5])
+        set([0, 1, 2, 4, 5])
     """
 
     if type(toadd) in simpleTypes:
         st.add(toadd)
 
-    if type(toadd) is list: # XXX: elif?
+    if type(toadd) is list:
         toadd = set(toadd)
 
-    if type(toadd) is set: # XXX: elif?
+    if type(toadd) is set:
         st.update(toadd)
 
     return st
@@ -425,9 +442,17 @@ def gen_session_id(length=5):
     return ''.join(random.choice(abc) for i in xrange(length))
 
 
+# XXX: Are you sure this is the way to compute Simpson's index?
 def simpson_index(a, b):
     """
+    Given two sets *a* and *b*, returns the Simpson index.
 
+    * Arguments:
+        - *a* [set]: Or any iterable type (will be converted to set).
+        - *b* [set]: Or any iterable type (will be converted to set).
+
+    * Returns:
+        - [float]: The Simpson index between *a* and *b*.
     """
 
     a = set(a)
@@ -437,9 +462,16 @@ def simpson_index(a, b):
     return float(len(ab)) / float(min(len(a), len(b)))
 
 
+# XXX: Related to comment above, what is this exactly?
 def simpson_index_counts(a, b, c):
     """
+    * Arguments:
+        - *a* []: .
+        - *b* []: .
+        - *c* []: .
 
+    * Returns:
+        - [float]: .
     """
 
     return float(c) / float(min(a, b)) if min(a, b) > 0 else 0.0
@@ -447,7 +479,14 @@ def simpson_index_counts(a, b, c):
 
 def sorensen_index(a, b):
     """
+    Computes the Sorensen-Dice coefficient between two sets *a* and *b*.
 
+    * Arguments:
+        - *a* [set]: Or any iterable type (will be converted to set).
+        - *b* [set]: Or any iterable type (will be converted to set).
+
+    * Returns:
+        - [float]: The Sorensen-Dice coefficient between *a* and *b*.
     """
 
     a = set(a)
@@ -459,7 +498,14 @@ def sorensen_index(a, b):
 
 def jaccard_index(a, b):
     """
+    Computes the Jaccard index between two sets *a* and *b*.
 
+    * Arguments:
+        - *a* [set]: Or any iterable type (will be converted to set).
+        - *b* [set]: Or any iterable type (will be converted to set).
+
+    * Returns:
+        - [float]: The Jaccard index between *a* and *b*.
     """
 
     a = set(a)
@@ -484,7 +530,7 @@ def console(message):
     sys.stdout.flush()
 
 
-def wcl(f):
+def wcl(f): # XXX: Not used (another function w/ same name defined in curl.py)
     """
 
     """
@@ -492,7 +538,7 @@ def wcl(f):
     toClose = type(f) is file
     f = f if type(f) is file else open(f, 'r')
 
-    for i, l in enumerate(f): # XXX: WHY?
+    for i, l in enumerate(f):
         pass
 
     if toClose:
@@ -504,9 +550,23 @@ def wcl(f):
     return i + 1
 
 
+# XXX: Not very clear to me the purpose of this function.
 def get_args(loc_dict, remove=set([])):
     """
+    Given a dictionary of local variables, returns a copy of it without
+    ``self``, ``kwargs`` (in the scope of a ``class``) plus any other
+    specified in the keyword argument *remove*.
 
+    * Arguments:
+        - *loc_dict* [dict]: Dictionary containing the local variables
+          (e.g. a call to ``locals()`` in a given scope).
+        - *remove* [set]: Optional, ``set([])`` by default. Can also be
+          a list. Contains the keys of the elements in *loc_dict* that
+          will be removed.
+
+    * Returns:
+        - [dict]: Copy of *loc_dict* without ``self``, ``kwargs`` and
+          any other element specified in *remove*.
     """
 
     if type(remove) not in [set, list]:
@@ -525,11 +585,24 @@ def get_args(loc_dict, remove=set([])):
     return args
 
 
-# from http://stackoverflow.com/a/20024348/854988
-def rotate(point, angle, center=(0.0, 0.0)):
+# From http://stackoverflow.com/a/20024348/854988
+def rotate(point, angle, center=(0.0, 0.0)): # XXX: Not used? Wrote the docs before checking XD
     """
-    Rotates a point around center. Angle is in degrees.
-    Rotation is counter-clockwise
+    Rotates a given *point* around a *center* according to the specified
+    *angle* (in degrees) in a two-dimensional space. The rotation is
+    counter-clockwise.
+
+    * Arguments:
+        - *point* [tuple]: Or list. Contains the two coordinates of the
+          point to be rotated.
+        - *angle* [float]: Angle (in degrees) from which the point
+          will be rotated with respect to *center* (counter-clockwise).
+        - *center* [tuple]: Optional, ``(0.0, 0.0)`` by default. Can
+          also be a list. Determines the two coordinates of the center
+          relative to which the point has to be rotated.
+
+    * Returns:
+        - [tuple]: Pair of coordinates of the rotated point.
     """
 
     angle = math.radians(angle)
@@ -545,7 +618,15 @@ def rotate(point, angle, center=(0.0, 0.0)):
 
 def cleanDict(dct):
     """
-    Removes ``None`` values from dict and casts everything else to ``str``.
+    Removes ``None`` values from  a dictionary *dct* and casts all other
+    values to strings.
+
+    * Arguments:
+        - *dct* [dict]: Dictionary to be cleaned from ``None`` values.
+
+    * Returns:
+        - [dict]: Copy of *dct* without ``None`` value entries and all
+          other values formatted to strings.
     """
 
     toDel = []
@@ -566,24 +647,39 @@ def cleanDict(dct):
 
 def md5(value):
     """
-    Returns the ms5sum of ``value`` as string.
+    Computes the sum of MD5 hash of a given string *value*.
+
+    * Arguments:
+        - *value* [str]: Or any other type (will be converted to
+          string). Value for which the MD5 sum will be computed. Must
+          follow ASCII encoding.
+
+    * Return:
+        - [str]: Hash resulting from the MD5 sum of the *value* string.
     """
 
     try:
         string = str(value).encode('ascii')
 
-    except:
-        string = str(value).encode('ascii')
+    except: # XXX: Bad practice to catch any exception
+        string = str(value).encode('ascii') # XXX: Same as the try statement!?
 
     return hashlib.md5(string).hexdigest()
 
 
+# XXX: Shouldn't we keep all functions and variables separated
+#      (together among them)?
 igraph_graphics_attrs = {'vertex': ['size', ' color', 'frame_color',
                                     'frame_width', 'shape', 'label',
                                     'label_dist', 'label_color', 'label_size',
                                     'label_angle'],
                          'edge': ['curved', 'color', 'width', 'arrow_size',
                                   'arrow_width']}
+
+##############################################################################
+#                            |   DU BIST HIER   |                            #
+#                            V                  V                            #
+##############################################################################
 
 
 def merge_dicts(d1, d2):
