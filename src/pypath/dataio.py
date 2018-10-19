@@ -4369,7 +4369,11 @@ def get_guide2pharma(organism='human', endogenous=True):
     return data
 
 
-def cellphonedb_interactions():
+def cellphonedb_interactions(
+        ligand_receptor = True,
+        receptor_receptor = True,
+        ligand_ligand = True,
+    ):
     
     repmid = re.compile(r'PMID: ([0-9]+)')
     
@@ -4442,6 +4446,10 @@ def cellphonedb_interactions():
                 'receptor',
             )
     
+    if not ligand_ligand and not receptor_receptor:
+        
+        return
+    
     url = urls.urls['cellphonedb']['heterodimers']
     
     c = curl.Curl(url, silent = False, large = True)
@@ -4455,7 +4463,7 @@ def cellphonedb_interactions():
         uniprot1 = l[11]
         uniprot2 = l[16]
         
-        if l[1] == 'True' or l[3] == 'True':
+        if receptor_receptor and (l[1] == 'True' or l[3] == 'True'):
             
             yield (
                 uniprot1,
@@ -4467,7 +4475,7 @@ def cellphonedb_interactions():
                 'receptor',
             )
         
-        if l[2] == 'True':
+        if ligand_ligand and l[2] == 'True':
             
             yield (
                 uniprot1,
