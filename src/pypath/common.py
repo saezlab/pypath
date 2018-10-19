@@ -186,8 +186,8 @@ def uniqList(seq):
 
     return list({}.fromkeys(seq).keys())
 
-# XXX: Not used
-def uniqList1(seq):
+
+def uniqList1(seq): # XXX: Not used
     """
     Not order preserving
     From http://www.peterbe.com/plog/uniqifiers-benchmark
@@ -195,8 +195,8 @@ def uniqList1(seq):
 
     return list(set(seq))
 
-# XXX: Not used
-def uniqList2(seq):
+
+def uniqList2(seq): # XXX: Not used
     """
     Not order preserving
     From http://www.peterbe.com/plog/uniqifiers-benchmark
@@ -231,7 +231,7 @@ def flatList(lst):
     return [it for sl in lst for it in sl]
 
 
-def delEmpty(lst):
+def delEmpty(lst): # XXX: Only used in main.py line: 1278
     """
     Removes empty entries of a list.
 
@@ -253,7 +253,38 @@ def delEmpty(lst):
 # From http://www.peterbe.com/plog/uniqifiers-benchmark
 def uniqOrdList(seq, idfun=None): # XXX: Only used in plot.py line: 510
     """
+    Returns a copy of *seq* without repeated elements. Preserves the
+    order.
 
+    * Arguments:
+        - *seq* [list]: Or any other iterable type. The sequence from
+          which repeated elements are to be removed.
+        - *idfun* [function]: Optional, ``None`` by default. Identifier
+          function, for each entry of *seq*, returns a identifier of
+          that entry from which uniqueness is determined. Default
+          behavior is f(x) = x. See examples below.
+
+    * Returns:
+        - [list]: Copy of *seq* without the repeated elements (according
+          to *idfun*). If any element is repeated, the first instance is
+          kept.
+
+    * Examples:
+        >>> uniqOrdList([0, 1, 2, 1, 5])
+        [0, 1, 2, 5]
+        >>> uniqOrdList('abracadabra')
+        ['a', 'b', 'r', 'c', 'd']
+        >>> def f(x):
+        ...     if x > 0:
+        ...             return 0
+        ...     else:
+        ...             return 1
+        >>> uniqOrdList([-32, -42, 1, 15, -12], idfun=f)
+        [-32, 1]
+        >>> def g(x): # Given a file name, return it without extension
+        ...    return x.split('.')[0]
+        >>> uniqOrdList(['a.png', 'a.txt', 'b.pdf'], idfun=g)
+        ['a.png', 'b.pdf']
     """
 
     if idfun is None:
@@ -278,7 +309,30 @@ def uniqOrdList(seq, idfun=None): # XXX: Only used in plot.py line: 510
 
 def addToList(lst, toadd):
     """
+    Appends *toadd* to *lst*. Function differs from ``lst.append`` since
+    is capable to handle different data types. This is, if *lst* is not
+    a list, it will be converted to one. Similarly, if *toadd* is not a
+    list, it will be converted and added. If *toadd* is or contains
+    ``None``, these will be ommited. The returned list will only contain
+    unique elements and does not necessarily preserve order.
 
+    * Arguments:
+        - *lst*: List or any other type (will be converted into a list).
+          Original sequence to which *toadd* will be appended.
+        - *toadd*: Element(s) to be added into *lst*.
+
+    * Returns:
+        - [list]: Contains the unique element(s) from the union of *lst*
+          and *toadd*. **NOTE:** Makes use of ``common.uniqList``, does
+          not preserve order of elements.
+
+    * Examples:
+        >>> addToList('ab', 'cd')
+        ['ab', 'cd']
+        >>> addToList('ab', ['cd', None, 'ab', 'ef'])
+        ['ab', 'ef', 'cd']
+        >>> addToList((0, 1, 2), 4)
+        [0, 1, 2, 4]
     """
 
     if type(lst) is not list:
@@ -853,7 +907,7 @@ mirbase_taxids = {9606: 'hsa',
                   7227: 'dme'}
 
 
-class silent(object):
+class silent(object): # XXX: Never used
     """
 
     """
