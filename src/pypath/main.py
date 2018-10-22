@@ -104,89 +104,123 @@ import pypath.plot as plot
 import pypath.ptm
 import pypath.export as export
 import pypath.ig_drawing as ig_drawing
-import pypath.common as common
-import pypath._version as _version
+import pypath.common as common #
+import pypath._version as _version #
 from pypath.gr_plot import *
 from pypath.progress import *
 
 omnipath = data_formats.omnipath
 
+# XXX: The following aliases are already defined in common.py
 if 'long' not in __builtins__:
     long = int
 
 if 'unicode' not in __builtins__:
     unicode = str
 
-__all__ = [
-    'PyPath', 'Direction', '__version__', 'a', 'AttrHelper', 'ReferenceList', 'omnipath'
-]
+__all__ = ['PyPath', 'Direction', '__version__', 'a', # XXX: What is this "a"?
+           'AttrHelper', 'ReferenceList', 'omnipath']
 
 
 class Direction(object):
+    """
+    Object storing directionality information of an edge.
 
-    __slots__ = [
-        'nodes',
-        'straight',
-        'reverse',
-        'dirs',
-        'sources',
-        'positive',
-        'negative',
-        'positive_sources',
-        'negative_sources',
-    ]
+    * Arguments:
+        - *nameA* [str]: Name of the source node.
+        - *nameB* [str]: Name of the target node.
+
+    * Attributes:
+        - *dirs* [dict]: Dictionary containing the presence of
+          directionality of the given edge. Keys are *straight*,
+          *reverse* and ``'undirected'`` and their values denote the
+          presence/absence [bool].
+        - *negative* [dict]: Dictionary contianing the presence/absence
+          [bool] of negative interactions for both *straight* and
+          *reverse* directions.
+        - *negative_sources* [dict]: Contains the resource names [str]
+          supporting a negative interaction on *straight* and *reverse*
+          directions.
+        - *nodes* [list]: Contains the node names [str] sorted
+          alphabetically (*nameA*, *nameB*).
+        - *positive* [dict]:  Dictionary contianing the presence/absence
+          [bool] of positive interactions for both *straight* and
+          *reverse* directions.
+        - *positive_sources* [dict]: Contains the resource names [str]
+          supporting a positive interaction on *straight* and *reverse*
+          directions.
+        - *reverse* [tuple]: Contains the node names [str] in the original
+          order e.g. (source, target).
+        - *sources* [dict]: Contains the resource names [str] of a given
+          edge for each directionality (*straight*, *reverse* and
+          ``'undirected'``). Values are sets containing the names of
+          those resources supporting such directionality.
+        - *straight* [tuple]: Contains the node names [str] in reverse
+          order e.g. (target, source).
+    """
+
+    __slots__ = ['nodes', 'straight', 'reverse', 'dirs', 'sources', 'positive',
+                 'negative', 'positive_sources', 'negative_sources']
 
     def __init__(self, nameA, nameB):
         self.nodes = [nameA, nameB]
         self.nodes.sort()
+
         self.straight = (self.nodes[0], self.nodes[1])
         self.reverse = (self.nodes[1], self.nodes[0])
-        self.dirs = {
-            self.straight: False,
-            self.reverse: False,
-            'undirected': False
-        }
-        self.sources = {
-            self.straight: set([]),
-            self.reverse: set([]),
-            'undirected': set([])
-        }
+
+        self.dirs = {self.straight: False,
+                     self.reverse: False,
+                     'undirected': False}
+        self.sources = {self.straight: set([]),
+                        self.reverse: set([]),
+                        'undirected': set([])}
+
         self.positive = {self.straight: False, self.reverse: False}
         self.negative = {self.straight: False, self.reverse: False}
+
         self.positive_sources = {self.straight: set([]), self.reverse: set([])}
         self.negative_sources = {self.straight: set([]), self.reverse: set([])}
 
     def __str__(self):
         s = 'Directions and signs of interaction between %s and %s\n\n' % \
             (self.nodes[0], self.nodes[1])
+
         if self.dirs[self.straight]:
             s += '\t%s ===> %s :: %s\n' % \
                 (self.nodes[0], self.nodes[1], ', '.join(
                     self.sources[self.straight]))
+
         if self.dirs[self.reverse]:
             s += '\t%s <=== %s :: %s\n' % \
                 (self.nodes[0], self.nodes[1],
                  ', '.join(self.sources[self.reverse]))
+
         if self.dirs['undirected']:
             s += '\t%s ==== %s :: %s\n' % \
                 (self.nodes[0], self.nodes[1],
                  ', '.join(self.sources['undirected']))
+
         if self.positive[self.straight]:
             s += '\t%s =+=> %s :: %s\n' % (
                 self.nodes[0], self.nodes[1],
                 ', '.join(self.positive_sources[self.straight]))
+
         if self.positive[self.reverse]:
             s += '\t%s <=+= %s :: %s\n' % (
                 self.nodes[0], self.nodes[1],
                 ', '.join(self.positive_sources[self.reverse]))
+
         if self.negative[self.straight]:
             s += '\t%s =-=> %s :: %s\n' % (
                 self.nodes[0], self.nodes[1],
                 ', '.join(self.negative_sources[self.straight]))
+
         if self.negative[self.reverse]:
             s += '\t%s <=-= %s :: %s\n' % (
                 self.nodes[0], self.nodes[1],
                 ', '.join(self.negative_sources[self.reverse]))
+
         return s
 
     def reload(self):
@@ -633,6 +667,349 @@ class _NamedVertexSeq(object):
 
 
 class PyPath(object):
+    """
+    * Attributes:
+        - *acsn_effects* []:
+        - *add_genesets* []:
+        - *add_grouped_eattr* []:
+        - *add_grouped_set_eattr* []:
+        - *add_list_eattr* []:
+        - *add_set_eattr* []:
+        - *add_update_edge* []:
+        - *add_update_vertex* []:
+        - *affected_by* []:
+        - *affects* []:
+        - *all_between* []:
+        - *all_neighbours* []:
+        - *apply_list* []:
+        - *apply_negative* []:
+        - *attach_network* []:
+        - *basic_stats* []:
+        - *basic_stats_intergroup* []:
+        - *cancer_drivers_list* []:
+        - *cancer_gene_census_list* []:
+        - *clean_graph* []:
+        - *collapse_by_name* []:
+        - *combine_attr* []:
+        - *communities* []:
+        - *complex_comembership_network* []:
+        - *complexes* []:
+        - *complexes_in_network* []:
+        - *compounds_from_chembl* []:
+        - *consistency* []:
+        - *copy* []:
+        - *copy_edges* []:
+        - *count_sol* []:
+        - *coverage* []:
+        - *curation_effort* []:
+        - *curation_stats* []:
+        - *curation_tab* []:
+        - *curators_work* []:
+        - *databases_similarity* []:
+        - *default_name_type* []:
+        - *degree_dist* []:
+        - *degree_dists* []:
+        - *delete_by_source* []:
+        - *delete_by_taxon* []:
+        - *delete_unknown* []:
+        - *delete_unmapped* []:
+        - *dgenesymbol* []:
+        - *dgenesymbols* []:
+        - *dgs* []:
+        - *dgss* []:
+        - *disease_genes_list* []:
+        - *dneighbors* []:
+        - *dp* []:
+        - *dproteins* []:
+        - *dps* []:
+        - *druggability_list* []:
+        - *duniprot* []:
+        - *duniprots* []:
+        - *dup* []:
+        - *dups* []:
+        - *dv* []:
+        - *dvs* []:
+        - *edge_exists* []:
+        - *edge_loc* []:
+        - *edge_names* []:
+        - *edges_3d* []:
+        - *edges_expression* []:
+        - *edges_in_comlexes* []:
+        - *edges_ptms* []:
+        - *edgeseq_inverse* []:
+        - *export_dot* []:
+        - *export_edgelist* []:
+        - *export_graphml* []:
+        - *export_ptms_tab* []:
+        - *export_sif* []:
+        - *export_struct_tab* []:
+        - *export_tab* []:
+        - *filters* []:
+        - *find_all_paths* []:
+        - *find_all_paths2* []:
+        - *find_complex* []:
+        - *first_neighbours* []:
+        - *fisher_enrichment* []:
+        - *geneset_enrichment* []:
+        - *genesymbol* []:
+        - *genesymbol_labels* []:
+        - *genesymbols* []:
+        - *get_attrs* []:
+        - *get_directed* []:
+        - *get_dirs_signs* []:
+        - *get_edge* []:
+        - *get_edges* []:
+        - *get_function* []:
+        - *get_giant* []:
+        - *get_max* []:
+        - *get_network* []:
+        - *get_node* []:
+        - *get_node_d* []:
+        - *get_node_pair* []:
+        - *get_nodes* []:
+        - *get_nodes_d* []:
+        - *get_pathways* []:
+        - *get_proteomicsdb* []:
+        - *get_sub* []:
+        - *get_taxon* []:
+        - *go_annotate* []:
+        - *go_dict* []:
+        - *go_enrichment* []:
+        - *gs* []:
+        - *gs_affected_by* []:
+        - *gs_affects* []:
+        - *gs_edge* []:
+        - *gs_in_directed* []:
+        - *gs_in_undirected* []:
+        - *gs_inhibited_by* []:
+        - *gs_inhibits* []:
+        - *gs_neighborhood* []:
+        - *gs_neighbors* []:
+        - *gs_stimulated_by* []:
+        - *gs_stimulates* []:
+        - *gss* []:
+        - *guide2pharma* []:
+        - *having_attr* []:
+        - *having_eattr* []:
+        - *having_ptm* []:
+        - *having_vattr* []:
+        - *homology_translation* []:
+        - *htp_stats* []:
+        - *in_complex* []:
+        - *in_directed* []:
+        - *in_undirected* []:
+        - *info* []:
+        - *init_complex_attr* []:
+        - *init_edge_attr* []:
+        - *init_gsea* []:
+        - *init_network* []:
+        - *init_vertex_attr* []:
+        - *intergroup_shortest_paths* []:
+        - *intogen_cancer_drivers_list* []:
+        - *jaccard_edges* []:
+        - *jaccard_meta* []:
+        - *kegg_directions* []:
+        - *kegg_pathways* []:
+        - *kinase_stats* []:
+        - *kinases_list* []:
+        - *label_by_go* []:
+        - *laudanna_directions* []:
+        - *laudanna_effects* []:
+        - *licence* []:
+        - *list_resources* []:
+        - *load_3dcomplexes* []:
+        - *load_3did_ddi* []:
+        - *load_3did_ddi2* []:
+        - *load_3did_dmi* []:
+        - *load_3did_interfaces* []:
+        - *load_all_pathways* []:
+        - *load_compleat* []:
+        - *load_complexportal* []:
+        - *load_comppi* []:
+        - *load_corum* []:
+        - *load_dbptm* []:
+        - *load_ddi* []:
+        - *load_ddis* []:
+        - *load_depod_dmi* []:
+        - *load_disgenet* []:
+        - *load_dmi* []:
+        - *load_dmis* []:
+        - *load_domino_dmi* []:
+        - *load_elm* []:
+        - *load_expression* []:
+        - *load_go* []:
+        - *load_havugimana* []:
+        - *load_hpa* []:
+        - *load_hprd_ptms* []:
+        - *load_ielm* []:
+        - *load_interfaces* []:
+        - *load_li2012_ptms* []:
+        - *load_ligand_receptor_network* []:
+        - *load_list* []:
+        - *load_lmpid* []:
+        - *load_mappings* []:
+        - *load_mimp_dmi* []:
+        - *load_mutations* []:
+        - *load_negatives* []:
+        - *load_old_omnipath* []:
+        - *load_omnipath* []:
+        - *load_pathways* []:
+        - *load_pdb* []:
+        - *load_pepcyber* []:
+        - *load_pfam* []:
+        - *load_pfam2* []:
+        - *load_pfam3* []:
+        - *load_phospho_dmi* []:
+        - *load_phosphoelm* []:
+        - *load_pisa* []:
+        - *load_pnetworks_dmi* []:
+        - *load_psite_phos* []:
+        - *load_psite_reg* []:
+        - *load_ptms* []:
+        - *load_ptms2* []:
+        - *load_reflist* []:
+        - *load_reflists* []:
+        - *load_resource* []:
+        - *load_resources* []:
+        - *load_signor_ptms* []:
+        - *load_tfregulons* []:
+        - *lookup_cache* []:
+        - *loop_edges* []:
+        - *map_edge* []:
+        - *map_item* []:
+        - *map_list* []:
+        - *mean_reference_per_interaction* []:
+        - *merge_lists* []:
+        - *merge_nodes* []:
+        - *mimp_directions* []:
+        - *mutated_edges* []:
+        - *names2vids* []:
+        - *negative_report* []:
+        - *neighborhood* []:
+        - *neighbors* []:
+        - *neighbourhood_network* []:
+        - *network_filter* []:
+        - *network_stats* []:
+        - *new_edges* []:
+        - *new_nodes* []:
+        - *node_exists* []:
+        - *numof_directed_edges* []:
+        - *numof_reference_interaction_pairs* []:
+        - *numof_references* []:
+        - *numof_undirected_edges* []:
+        - *orthology_translation* []:
+        - *p* []:
+        - *pathway_attributes* []:
+        - *pathway_members* []:
+        - *pathway_names* []:
+        - *pathway_similarity* []:
+        - *pathways_table* []:
+        - *pfam_regions* []:
+        - *phosphonetworks_directions* []:
+        - *phosphopoint_directions* []:
+        - *phosphorylation_directions* []:
+        - *phosphorylation_signs* []:
+        - *phosphosite_directions* []:
+        - *prdb_tissue_expr* []:
+        - *process_direction* []:
+        - *process_directions* []:
+        - *process_dmi* []:
+        - *process_sign* []:
+        - *protein* []:
+        - *protein_edge* []:
+        - *proteins* []:
+        - *proteome_list* []:
+        - *ps* []:
+        - *random_walk_with_return* []:
+        - *random_walk_with_return2* []:
+        - *read_data_file* []:
+        - *read_from_cache* []:
+        - *read_list_file* []:
+        - *receptors_list* []:
+        - *reference_edge_ratio* []:
+        - *reference_hist* []:
+        - *reload* []:
+        - *remove_htp* []:
+        - *remove_undirected* []:
+        - *run_batch* []:
+        - *save_network* []:
+        - *save_session* []:
+        - *search_attr_and* []:
+        - *search_attr_or* []:
+        - *second_neighbours* []:
+        - *select_by_go* []:
+        - *separate* []:
+        - *separate_by_category* []:
+        - *sequences* []:
+        - *set_boolean_vattr* []:
+        - *set_categories* []:
+        - *set_chembl_mysql* []:
+        - *set_disease_genes* []:
+        - *set_druggability* []:
+        - *set_drugtargets* []:
+        - *set_kinases* []:
+        - *set_receptors* []:
+        - *set_signaling_proteins* []:
+        - *set_tfs* []:
+        - *set_transcription_factors* []:
+        - *shortest_path_dist* []:
+        - *signaling_proteins_list* []:
+        - *signor_pathways* []:
+        - *similarity_groups* []:
+        - *small_plot* []:
+        - *sorensen_pathways* []:
+        - *source_diagram* []:
+        - *source_network* []:
+        - *source_similarity* []:
+        - *source_stats* []:
+        - *sources_hist* []:
+        - *sources_overlap* []:
+        - *sources_venn_data* []:
+        - *straight_between* []:
+        - *string_effects* []:
+        - *sum_in_complex* []:
+        - *table_latex* []:
+        - *tfs_list* []:
+        - *third_source_directions* []:
+        - *tissue_network* []:
+        - *transcription_factors* []:
+        - *translate_refsdir* []:
+        - *uniprot* []:
+        - *uniprots* []:
+        - *uniq_node_list* []:
+        - *uniq_ptm* []:
+        - *uniq_ptms* []:
+        - *up* []:
+        - *up_affected_by* []:
+        - *up_affects* []:
+        - *up_edge* []:
+        - *up_in_directed* []:
+        - *up_in_undirected* []:
+        - *up_inhibited_by* []:
+        - *up_inhibits* []:
+        - *up_neighborhood* []:
+        - *up_neighbors* []:
+        - *up_stimulated_by* []:
+        - *up_stimulates* []:
+        - *update_adjlist* []:
+        - *update_attrs* []:
+        - *update_cats* []:
+        - *update_db_dict* []:
+        - *update_pathway_types* []:
+        - *update_pathways* []:
+        - *update_sources* []:
+        - *update_vertex_sources* []:
+        - *update_vindex* []:
+        - *update_vname* []:
+        - *ups* []:
+        - *v* []:
+        - *vertex_pathways* []:
+        - *vs* []:
+        - *vsgs* []:
+        - *vsup* []:
+        - *wang_effects* []:
+        - *write_table* []:
+    """
 
     ###
     # main network object
