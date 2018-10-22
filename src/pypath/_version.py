@@ -41,3 +41,4 @@ def _get_version():
 _MAJOR, _MINOR, _MICRO = _get_version()
 __version__ = '%d.%d.%d' % (_MAJOR, _MINOR, _MICRO)
 __release__ = '%d.%d' % (_MAJOR, _MINOR) # XXX: Not used
+__author__ = u'Dénes Türei'
