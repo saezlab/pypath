@@ -661,7 +661,7 @@ def md5(value):
     try:
         string = str(value).encode('ascii')
 
-    except: # XXX: Bad practice to catch any exception
+    except: # XXX: Bad practice to catch all exceptions
         string = str(value).encode('ascii') # XXX: Same as the try statement!?
 
     return hashlib.md5(string).hexdigest()
@@ -676,15 +676,18 @@ igraph_graphics_attrs = {'vertex': ['size', ' color', 'frame_color',
                          'edge': ['curved', 'color', 'width', 'arrow_size',
                                   'arrow_width']}
 
-##############################################################################
-#                            |   DU BIST HIER   |                            #
-#                            V                  V                            #
-##############################################################################
-
 
 def merge_dicts(d1, d2):
     """
-    Merges dicts recursively
+    Merges dictionaries recursively. If a key exists in both
+    dictionaries, the values will be merged.
+
+    * Arguments:
+        - *d1* [dict]: Base dictionary where *d2* will be merged.
+        - *d2* [dict]: Dictionary to be merged.
+
+    * Returns:
+        - [dict]: Resulting dictionary from the merging.
     """
 
     for k2, v2 in iteritems(d2):
@@ -705,11 +708,28 @@ def merge_dicts(d1, d2):
     return d1
 
 
+# XXX: Not 100% clear, correct if I'm mistaken. What do you mean by
+#      simple heuristic?
 def dict_set_path(d, path):
     """
-    In dict of dicts ``d`` looks up the keys following ``path``,
-    creates new subdicts and keys if those do not exist yet,
+    Given a dictionary of dictionaries *d* looks up the keys according
+    to *path*, creates new subdicts and keys if those do not exist yet,
     and sets/merges the leaf element according to simple heuristic.
+
+    * Arguments:
+        - *d* [dict]: Dictionary of dictionaries for which the path is
+          to be set.
+        - *path* [list]: Or tuple, contains the path of keys being the
+          first element a key of *d* (if doesn't exist will be created),
+          and the subsequent of the inner dictionaries. The last element
+          is the value that will be set/merged on the specified path.
+
+    * Returns:
+        - [dict]: Copy of *d* including the specified *path*.
+
+    * Examples:
+        >>> dict_set_path(dict(), ['a', 'b', 1])
+        {'a': {'b': 1}}
     """
 
     val = path[-1]
@@ -757,7 +777,24 @@ def dict_set_path(d, path):
 
 def dict_diff(d1, d2):
     """
+    Compares two given dictionaries *d1* and *d2* whose values are sets
+    or dictionaries (in such case the function is called recursively).
+    **NOTE:** The comparison is only performed on the values of the
+    keys that are common in *d1* and *d2* (see example below).
 
+    * Arguments:
+        - *d1* [dict]: First dictionary of the comparison.
+        - *d2* [dict]: Second dictionary of the comparison.
+
+    * Returns:
+        - [dict]: Unique elements of *d1* when compared to *d2*.
+        - [dict]: Unique elements of *d2* when compared to *d1*.
+
+    * Examples:
+        >>> d1 = {'a': {1}, 'b': {2}, 'c': {3}} # 'c' is unique to d1
+        >>> d2 = {'a': {1}, 'b': {3}}
+        >>> dict_diff(d1, d2)
+        ({'a': set([]), 'b': set([2])}, {'a': set([2]), 'b': set([3])})
     """
 
     ldiff = {}
@@ -775,7 +812,7 @@ def dict_diff(d1, d2):
     return ldiff, rdiff
 
 
-def dict_sym_diff(d1, d2):
+def dict_sym_diff(d1, d2): # XXX: Not used
     """
 
     """
@@ -796,9 +833,27 @@ def dict_sym_diff(d1, d2):
 
 def swap_dict(d):
     """
-    Interchanges the keys and values of a dict.
-    Results dict of sets even if the values are strings or ints
-    and are unique.
+    Interchanges the keys and values of a dictionary. If the values are
+    lists (or any iterable type) and/or not unique, each unique element
+    will be a key and values sets of the original keys of *d* (see
+    example below).
+
+    * Arguments:
+        - *d* [dict]: Original dictionary to be swapped.
+
+    * Returns:
+        - [dict]: The swapped dictionary.
+
+    * Example:
+        >>> d = {'a': 1, 'b': 2}
+        >>> swap_dict(d)
+        {1: 'a', 2: 'b'}
+        >>> d = {'a': 1, 'b': 1, 'c': 2}
+        >>> swap_dict(d)
+        {1: set(['a', 'b']), 2: set(['c'])}
+        d = {'a': [1, 2, 3], 'b': [2, 3]}
+        >>> swap_dict(d)
+        {1: set(['a']), 2: set(['a', 'b']), 3: set(['a', 'b'])}
     """
 
     _d = {}
@@ -819,19 +874,40 @@ def swap_dict(d):
     return _d
 
 
-def swap_dict_simple(d):
+def swap_dict_simple(d): # XXX: Not used
     """
-    Interchanges the keys and values of a dict.
-    Assumes the values are unique and hashable,
-    otherwise overwrites duplicates or raises error.
+    Interchanges the keys and values of a dictionary. Assumes the values
+    are unique and hashable, otherwise overwrites duplicates or raises
+    error.
+
+    * Arguments:
+        - *d* [dict]: Original dictionary to be swapped.
+
+    * Returns:
+        - [dict]: The swapped dictionary.
     """
 
     return dict((v, k) for k, v in iteritems(d))
 
 
-def join_dicts(d1, d2, _from = 'keys', to = 'values'):
-    """
+# XXX: Not sure what this joins exactly... I tried:
+#      >>> a = {'a': [1], 'b': [2]}
+#      >>> b = {'a': [2], 'b': [4]}
+#      >>> join_dicts(a, b)
+#      and got an empty dictionary (?)
 
+def join_dicts(d1, d2, _from='keys', to='values'):
+    """
+    Joins a pair of dictionaries.
+
+    * Arguments:
+        - *d1* [dict]: Dictionary to be merged with *d2*
+        - *d2* [dict]: Dictionary to be merged with *d1*
+        - *_from* [str]: Optional, ``'keys'`` by default.
+        - *to* [str]: Optional, ``'values'`` by default.
+
+    * Returns:
+        - [dict]
     """
 
     result = {}
@@ -893,11 +969,11 @@ def join_dicts(d1, d2, _from = 'keys', to = 'values'):
     return result
 
 
-class Namespace(object): # XXX: WHY?
+class Namespace(object): # XXX: WHY? + Not used anywhere
     pass
 
 
-def fun(): # XXX: Best name for a function
+def fun(): # XXX: Best name for a function. Not sure if used...
     """
 
     """
@@ -911,6 +987,8 @@ def fun(): # XXX: Best name for a function
     return __name__
 
 
+# XXX: Shouldn't we keep all functions and variables separated
+#      (together among them)?
 taxids = {9606: 'human',
           10090: 'mouse',
           10116: 'rat',
