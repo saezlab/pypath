@@ -67,7 +67,7 @@ class logw(object):
 
             # Creates a symbolic link to logfile (of current session) in
             # log/recent.log under the current working directory
-            os.symlink(self.logfile, self.wd + recent)
+            os.symlink(self.logfile, os.path.join(self.wd, recent))
 
     def msg(self, indent, message, loglevel=None):
         """
