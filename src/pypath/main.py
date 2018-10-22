@@ -68,7 +68,7 @@ except ImportError:
 try:
     import pygraphviz as graphviz
 
-except ModuleNotFoundError:
+except ImportError:#ModuleNotFoundError:
     sys.stdout.write(
         '\t:: Module `pygraphviz` not available.\n'
         '\t   You don\'t need it unless you want to export dot files.\n')
@@ -77,7 +77,7 @@ except ModuleNotFoundError:
 try:
     import pandas
 
-except ModuleNotFoundError:
+except ImportError:#ModuleNotFoundError:
     sys.stdout.write('\t:: Module `pandas` not available.\n')
     sys.stdout.flush()
 
