@@ -149,6 +149,8 @@ mod_keywords = {'Reactome': [('phosphopantetheinylation', ['phosphopantet']),
 # Running from file does not raise error, but if you run the lines in
 # the interpreter, raises TypeError: argument of type 'module' is not iterable
 # TODO: __builtins__ -> dir(__builtins__)
+
+# XXX: This is also in main.py, could be directly added in __all__?
 if 'long' not in __builtins__:
     long = int
 

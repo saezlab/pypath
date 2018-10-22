@@ -9,9 +9,6 @@
 .. Indices and tables
 .. ==================
 
-.. * :ref:`genindex`
-.. * :ref:`modindex`
-.. * :ref:`search`
 ############################################################
 *pypath:* A Python module for molecular interaction networks
 ############################################################
@@ -19,9 +16,15 @@
 .. Welcome to pypath's documentation!
 .. ==================================
 
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
 .. toctree::
     :maxdepth: 2
     :caption: Contents:
+
+    main
 
 :note: ``pypath`` supports both Python 2.7 and Python 3.6+. In the beginning,
     pypath has been developed only for Python 2.7. Then the code have been
