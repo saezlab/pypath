@@ -15,18 +15,21 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
+import time
+
+import pypath._version as _version
 
 
 # -- Project information -----------------------------------------------------
 
 project = u'pypath'
-copyright = u'2018, Dénes Türei'
-author = u'Dénes Türei'
+copyright = ', '.join([time.strftime('%Y'), _version.__author__])
+author = _version.__author__
 
 # The short X.Y version
-version = u''
+version = _version.__version__
 # The full version, including alpha/beta/rc tags
-release = u'0.7.96'
+release = _version.__version__
 
 
 # -- General configuration ---------------------------------------------------
@@ -78,7 +81,7 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'classic'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
