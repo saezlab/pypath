@@ -166,6 +166,10 @@
 <span class="sd">    information about the reverse direction, mode of regulation and</span>
 <span class="sd">    sources of that information.</span>
 
+<span class="sd">    * Arguments:</span>
+<span class="sd">        - *nameA* [str]: Name of the source node.</span>
+<span class="sd">        - *nameB* [str]: Name of the target node.</span>
+
 <span class="sd">    * Attributes:</span>
 <span class="sd">        - *dirs* [dict]: Dictionary containing the presence of</span>
 <span class="sd">          directionality of the given edge. Keys are *straight*,</span>
@@ -201,10 +205,6 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nameA</span><span class="p">,</span> <span class="n">nameB</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the edge object between the given nodes.</span>
-
-<span class="sd">        * Arguments:</span>
-<span class="sd">            - *nameA* [str]: Name of the source node.</span>
-<span class="sd">            - *nameB* [str]: Name of the target node.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">nameA</span><span class="p">,</span> <span class="n">nameB</span><span class="p">]</span>
