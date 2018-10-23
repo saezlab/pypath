@@ -891,57 +891,56 @@ class Direction(object):
 
     def consensus_edges(self):
         """
-        Returns list of edges based on majority consensus of directions and signs.
+        Infers the consensus edge(s) according to the number of
+        supporting sources. This includes direction and sign attributes.
+
+        * Returns:
+            - [list]: Contains the consensus edge(s) along with the
+              consensus sign. If there is no major directionality, both
+              are returned. The structure is as follows:
+              ``['<source>', '<target>', '<(un)directed>', '<sign>']``
         """
 
         result = []
         d = self.majority_dir()
         s = self.majority_sign()
 
+# XXX: This case could actually return directly, would save up some time
         if d == 'undirected':
-            result.append(
-                [self.straight[0], self.straight[1], 'undirected', 'unknown'])
+            result.append([self.straight[0], self.straight[1],
+                           'undirected', 'unknown'])
 
         if d is None or d == self.straight:
 
             if s[self.straight] is not None:
 
                 if s[self.straight][0]:
-                    result.append([
-                        self.straight[0], self.straight[1], 'directed',
-                        'positive'
-                    ])
+                    result.append([self.straight[0], self.straight[1],
+                                   'directed', 'positive'])
 
                 if s[self.straight][1]:
-                    result.append([
-                        self.straight[0], self.straight[1], 'directed',
-                        'negative'
-                    ])
+                    result.append([self.straight[0], self.straight[1],
+                                   'directed', 'negative'])
 
             else:
-                result.append([
-                    self.straight[0], self.straight[1], 'directed', 'unknown'
-                ])
+                result.append([self.straight[0], self.straight[1],
+                               'directed', 'unknown'])
 
         if d is None or d == self.reverse:
 
             if s[self.reverse] is not None:
 
                 if s[self.reverse][0]:
-                    result.append([
-                        self.reverse[0], self.reverse[1], 'directed',
-                        'positive'
-                    ])
+                    result.append([self.reverse[0], self.reverse[1],
+                                   'directed', 'positive'])
 
                 if s[self.reverse][1]:
-                    result.append([
-                        self.reverse[0], self.reverse[1], 'directed',
-                        'negative'
-                    ])
+                    result.append([self.reverse[0], self.reverse[1],
+                                   'directed', 'negative'])
 
             else:
-                result.append(
-                    [self.reverse[0], self.reverse[1], 'directed', 'unknown'])
+                result.append([self.reverse[0], self.reverse[1],
+                               'directed', 'unknown'])
 
         return result
 
