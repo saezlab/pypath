@@ -967,6 +967,17 @@ class Direction(object):
 
     def translate(self, ids):
         """
+        Translates the node names/identifiers according to the
+        dictionary *ids*.
+
+        * Arguments:
+            - *ids* [dict]: Dictionary containing (at least) the current
+              names of the nodes as keys and their translation as
+              values.
+
+        * Returns:
+            - [pypath.main.Direction]: The copy of current edge object
+              with translated node names.
         """
 
         # new Direction object
