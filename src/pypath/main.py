@@ -193,6 +193,9 @@ class Direction(object):
         Custom string/printing function for the object.
         """
 
+# XXX: Pretty sure this could be refactored and implemented more efficiently
+#      like using str.format()
+
         s = 'Directions and signs of interaction between %s and %s\n\n' % \
             (self.nodes[0], self.nodes[1])
 
@@ -253,8 +256,8 @@ class Direction(object):
                edges to be checked.
 
         * Returns:
-        - [bool]: True if all elements in *nodes* are contained in the
-          object's node list.
+            - [bool]: True if all elements in *nodes* are contained in
+              the object's node list.
         """
 
         return not bool(len(set(self.nodes) - set(nodes)))
@@ -931,32 +934,34 @@ class Direction(object):
 
     def merge(self, other):
         """
+        Merges current edge with another (if and only if they are the
+        same class and contain the same nodes). Updates the attributes
+        *dirs*, *sources*, *positive*, *negative*, *positive_sources*
+        and *negative_sources*.
+
+        * Arguments:
+            - *other* [pypath.main.Direction]: The new edge object to be
+              merged with the current one.
         """
 
-        if other.__class__.__name__ == 'Direction' and self.check_nodes(
-                other.nodes):
-            self.dirs[self.straight] = self.dirs[self.straight] or \
-                other.dirs[self.straight]
-            self.dirs[self.reverse] = self.dirs[self.reverse] or \
-                other.dirs[self.reverse]
-            self.dirs['undirected'] = self.dirs['undirected'] or \
-                other.dirs['undirected']
-            self.sources[self.straight] = self.sources[self.straight] | \
-                other.sources[self.straight]
-            self.sources[self.reverse] = self.sources[self.reverse] | \
-                other.sources[self.reverse]
-            self.sources['undirected'] = self.sources['undirected'] | \
-                other.sources['undirected']
-            self.positive[self.straight] = self.positive[self.straight] or \
-                other.positive[self.straight]
-            self.negative[self.reverse] = self.negative[self.reverse] or \
-                other.negative[self.reverse]
-            self.positive_sources[self.straight] = \
-                                 self.positive_sources[self.straight] | \
-                                other.positive_sources[self.straight]
-            self.negative_sources[self.reverse] = \
-                                 self.negative_sources[self.reverse] | \
-                                other.negative_sources[self.reverse]
+# XXX: Not best way to check the class. Probably never happens, but there
+#      may be other class out there with the same name
+#      >  if (other.__class__.__name__ == 'Direction' and self.check_nodes(
+#                 other.nodes):
+        if other.__class__ == self.__class__ and self.check_nodes(other.nodes):
+            self.dirs[self.straight] = self.dirs[self.straight] or other.dirs[self.straight]
+            self.dirs[self.reverse] = self.dirs[self.reverse] or other.dirs[self.reverse]
+            self.dirs['undirected'] = self.dirs['undirected'] or other.dirs['undirected']
+
+            self.sources[self.straight] = self.sources[self.straight] | other.sources[self.straight]
+            self.sources[self.reverse] = self.sources[self.reverse] | other.sources[self.reverse]
+            self.sources['undirected'] = self.sources['undirected'] | other.sources['undirected']
+
+            self.positive[self.straight] = self.positive[self.straight] or other.positive[self.straight]
+            self.negative[self.reverse] = self.negative[self.reverse] or other.negative[self.reverse]
+
+            self.positive_sources[self.straight] = self.positive_sources[self.straight] | other.positive_sources[self.straight]
+            self.negative_sources[self.reverse] = self.negative_sources[self.reverse] | other.negative_sources[self.reverse]
 
     def translate(self, ids):
         """
