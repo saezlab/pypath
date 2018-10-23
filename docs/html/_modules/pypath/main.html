@@ -162,45 +162,51 @@
 
 <div class="viewcode-block" id="Direction"><a class="viewcode-back" href="../../main.html#pypath.main.Direction">[docs]</a><span class="k">class</span> <span class="nc">Direction</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Object storing directionality information of an edge.</span>
-
-<span class="sd">    * Arguments:</span>
-<span class="sd">        - *nameA* [str]: Name of the source node.</span>
-<span class="sd">        - *nameB* [str]: Name of the target node.</span>
+<span class="sd">    Object storing directionality information of an edge. Also includes</span>
+<span class="sd">    information about the reverse direction, mode of regulation and</span>
+<span class="sd">    sources of that information.</span>
 
 <span class="sd">    * Attributes:</span>
 <span class="sd">        - *dirs* [dict]: Dictionary containing the presence of</span>
-<span class="sd">          directionality of the given edge. Keys are ``straight``,</span>
-<span class="sd">          ``reverse`` and ``&#39;undirected&#39;`` and their values denote the</span>
+<span class="sd">          directionality of the given edge. Keys are *straight*,</span>
+<span class="sd">          *reverse* and ``&#39;undirected&#39;`` and their values denote the</span>
 <span class="sd">          presence/absence [bool].</span>
 <span class="sd">        - *negative* [dict]: Dictionary contianing the presence/absence</span>
-<span class="sd">          [bool] of negative interactions for both ``straight`` and</span>
-<span class="sd">          ``reverse`` directions.</span>
+<span class="sd">          [bool] of negative interactions for both *straight* and</span>
+<span class="sd">          *reverse* directions.</span>
 <span class="sd">        - *negative_sources* [dict]: Contains the resource names [str]</span>
-<span class="sd">          supporting a negative interaction on ``straight`` and</span>
-<span class="sd">          ``reverse`` directions.</span>
+<span class="sd">          supporting a negative interaction on *straight* and *reverse*</span>
+<span class="sd">          directions.</span>
 <span class="sd">        - *nodes* [list]: Contains the node names [str] sorted</span>
 <span class="sd">          alphabetically (*nameA*, *nameB*).</span>
 <span class="sd">        - *positive* [dict]:  Dictionary contianing the presence/absence</span>
-<span class="sd">          [bool] of positive interactions for both ``straight`` and</span>
-<span class="sd">          ``reverse`` directions.</span>
+<span class="sd">          [bool] of positive interactions for both *straight* and</span>
+<span class="sd">          *reverse* directions.</span>
 <span class="sd">        - *positive_sources* [dict]: Contains the resource names [str]</span>
-<span class="sd">          supporting a positive interaction on ``straight`` and</span>
-<span class="sd">          ``reverse`` directions.</span>
+<span class="sd">          supporting a positive interaction on *straight* and *reverse*</span>
+<span class="sd">          directions.</span>
 <span class="sd">        - *reverse* [tuple]: Contains the node names [str] in the original</span>
-<span class="sd">          order e.g. ``(source, target)``.</span>
+<span class="sd">          order e.g. (source, target).</span>
 <span class="sd">        - *sources* [dict]: Contains the resource names [str] of a given</span>
-<span class="sd">          edge for each directionality (``straight``, ``reverse`` and</span>
+<span class="sd">          edge for each directionality (*straight*, *reverse* and</span>
 <span class="sd">          ``&#39;undirected&#39;``). Values are sets containing the names of</span>
 <span class="sd">          those resources supporting such directionality.</span>
 <span class="sd">        - *straight* [tuple]: Contains the node names [str] in reverse</span>
-<span class="sd">          order e.g. ``(target, source)``.</span>
+<span class="sd">          order e.g. (target, source).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">,</span> <span class="s1">&#39;straight&#39;</span><span class="p">,</span> <span class="s1">&#39;reverse&#39;</span><span class="p">,</span> <span class="s1">&#39;dirs&#39;</span><span class="p">,</span> <span class="s1">&#39;sources&#39;</span><span class="p">,</span> <span class="s1">&#39;positive&#39;</span><span class="p">,</span>
                  <span class="s1">&#39;negative&#39;</span><span class="p">,</span> <span class="s1">&#39;positive_sources&#39;</span><span class="p">,</span> <span class="s1">&#39;negative_sources&#39;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nameA</span><span class="p">,</span> <span class="n">nameB</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the edge object between the given nodes.</span>
+
+<span class="sd">        * Arguments:</span>
+<span class="sd">            - *nameA* [str]: Name of the source node.</span>
+<span class="sd">            - *nameB* [str]: Name of the target node.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">nameA</span><span class="p">,</span> <span class="n">nameB</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
 
@@ -221,6 +227,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">:</span> <span class="nb">set</span><span class="p">([]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">:</span> <span class="nb">set</span><span class="p">([])}</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Custom string/printing function for the object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="c1"># XXX: Pretty sure this could be refactored and implemented more efficiently</span>
+<span class="c1">#      like using str.format()</span>
+
         <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;Directions and signs of interaction between </span><span class="si">%s</span><span class="s1"> and </span><span class="si">%s</span><span class="se">\n\n</span><span class="s1">&#39;</span> <span class="o">%</span> \
             <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
@@ -261,25 +274,61 @@
 
         <span class="k">return</span> <span class="n">s</span>
 
-    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Direction.reload"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reloads the object from the module level.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">modname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
         <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="n">modname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span>
         <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
         <span class="n">new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
-        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">check_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">nodes</span><span class="p">)))</span>
+<div class="viewcode-block" id="Direction.check_nodes"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.check_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">check_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if *nodes* is contained in the edge.</span>
 
-    <span class="k">def</span> <span class="nf">check_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">di</span><span class="p">):</span>
+<span class="sd">        * Arguments:</span>
+<span class="sd">             - *nodes* [list]: Or [tuple], contains the names of the</span>
+<span class="sd">               edges to be checked.</span>
+
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [bool]: True if all elements in *nodes* are contained in</span>
+<span class="sd">              the object&#39;s node list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">nodes</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="Direction.check_param"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.check_param">[docs]</a>    <span class="k">def</span> <span class="nf">check_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">di</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if *di* is ``&#39;undirected&#39;`` or contains the nodes of</span>
+<span class="sd">        the current edge. Used internally to check that *di* is a valid</span>
+<span class="sd">        key for the object attributes declared on dictionaries.</span>
+
+<span class="sd">        * Arguments:</span>
+<span class="sd">            - *di* [tuple]: Or [str], key to be tested for validity.</span>
+
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [bool]: ``True`` if *di* is ``&#39;undirected&#39;`` or a tuple</span>
+<span class="sd">              of node names contained in the edge, ``False`` otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">return</span> <span class="p">(</span><span class="n">di</span> <span class="o">==</span> <span class="s1">&#39;undirected&#39;</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">di</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span>
-                                       <span class="bp">self</span><span class="o">.</span><span class="n">check_nodes</span><span class="p">(</span><span class="n">di</span><span class="p">)))</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">check_nodes</span><span class="p">(</span><span class="n">di</span><span class="p">)))</span></div>
 
 <div class="viewcode-block" id="Direction.set_dir"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.set_dir">[docs]</a>    <span class="k">def</span> <span class="nf">set_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Adds directionality information with</span>
-<span class="sd">        the corresponding data source named.</span>
+<span class="sd">        Adds directionality information with the corresponding data</span>
+<span class="sd">        source named. Modifies self attributes *dirs* and *sources*.</span>
+
+<span class="sd">        * Arguments:</span>
+<span class="sd">            - *direction* [tuple]: Or [str], the directionality key for</span>
+<span class="sd">              which the value on *dirs* has to be set ``True``.</span>
+<span class="sd">            - *source* [set]: Contains the name(s) of the source(s) from</span>
+<span class="sd">              which such information was obtained.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_param</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">source</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">addToSet</span><span class="p">(</span><span class="nb">set</span><span class="p">([]),</span> <span class="n">source</span><span class="p">)</span>
@@ -287,313 +336,688 @@
 
 <div class="viewcode-block" id="Direction.get_dir"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.get_dir">[docs]</a>    <span class="k">def</span> <span class="nf">get_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns boolean or list of sources</span>
+<span class="sd">        Returns the state (or *sources* if specified) of the given</span>
+<span class="sd">        *direction*.</span>
+
+<span class="sd">        * Arguments:</span>
+<span class="sd">            - *direction* [tuple]: Or [str] (if ``&#39;undirected&#39;``). Pair</span>
+<span class="sd">              of nodes from which direction information is to be</span>
+<span class="sd">              retrieved.</span>
+<span class="sd">            - *sources* [bool]: Optional, ``&#39;False&#39;`` by default.</span>
+<span class="sd">              Specifies if the *sources* information of the given</span>
+<span class="sd">              direction is to be retrieved instead.</span>
+
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [bool] or [set] (if ``sources=True``). Presence/absence of</span>
+<span class="sd">              the requested direction (or the list of sources if</span>
+<span class="sd">              specified). Returns ``None`` if *direction* is not valid.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_param</span><span class="p">(</span><span class="n">direction</span><span class="p">):</span>
+
             <span class="k">if</span> <span class="n">sources</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span>
+
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span>
+
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="Direction.get_dirs"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.get_dirs">[docs]</a>    <span class="k">def</span> <span class="nf">get_dirs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">tgt</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns all directions with boolean values</span>
-<span class="sd">        or list of sources.</span>
+<span class="sd">        Returns all directions with boolean values or list of sources.</span>
+
+<span class="sd">        * Arguments:</span>
+<span class="sd">            - *src* [str]: Source node.</span>
+<span class="sd">            - *tgt* [str]: Target node.</span>
+<span class="sd">            - *sources* [bool]: Optional, ``False`` by default.</span>
+<span class="sd">              Specifies whether to return the *sources* attribute</span>
+<span class="sd">              instead of *dirs*.</span>
+
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [list]: Contains the *dirs* (or *sources* if specified) of</span>
+<span class="sd">              the given edge.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="c1"># XXX: What&#39;s the point of using src and tgt if in the end straigth, reverse</span>
+<span class="c1">#      and undirected are returned? Also, in such case:</span>
+<span class="c1">#      `return self.sources/dirs.values()` is more straightforward.</span>
+
         <span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">tgt</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_nodes</span><span class="p">(</span><span class="n">query</span><span class="p">):</span>
+
             <span class="k">if</span> <span class="n">sources</span><span class="p">:</span>
-                <span class="k">return</span> <span class="p">[</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">query</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[(</span><span class="n">query</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">query</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="s1">&#39;undirected&#39;</span><span class="p">]</span>
-                <span class="p">]</span>
+                <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">query</span><span class="p">],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[(</span><span class="n">query</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">query</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="s1">&#39;undirected&#39;</span><span class="p">]]</span>
+
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="p">[</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="n">query</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">[(</span><span class="n">query</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">query</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="s1">&#39;undirected&#39;</span><span class="p">]</span>
-                <span class="p">]</span>
+                <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="n">query</span><span class="p">],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">[(</span><span class="n">query</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">query</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="s1">&#39;undirected&#39;</span><span class="p">]]</span>
+
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-    <span class="k">def</span> <span class="nf">which_dirs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">)</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">and</span> <span class="n">d</span> <span class="o">!=</span> <span class="s1">&#39;undirected&#39;</span><span class="p">]</span>
+<div class="viewcode-block" id="Direction.which_dirs"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.which_dirs">[docs]</a>    <span class="k">def</span> <span class="nf">which_dirs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the pair(s) of nodes for which there is information</span>
+<span class="sd">        about their directionality.</span>
+
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [list]: List of tuples containing the nodes for which</span>
+<span class="sd">              theit attribute *dirs* is ``True``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">)</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">and</span> <span class="n">d</span> <span class="o">!=</span> <span class="s1">&#39;undirected&#39;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Direction.unset_dir"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.unset_dir">[docs]</a>    <span class="k">def</span> <span class="nf">unset_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Removes directionality information,</span>
-<span class="sd">        or single source.</span>
+<span class="sd">        Removes directionality and/or source information of the</span>
+<span class="sd">        specified *direction*. Modifies attribute *dirs* and *sources*</span>
+<span class="sd">        (or *sources* only if ``source=True``).</span>
+
+<span class="sd">        * Arguments:</span>
+<span class="sd">            - *direction* [tuple]: Or [str] (if ``&#39;undirected&#39;``) the</span>
+<span class="sd">              pair of nodes specifying the directionality from which the</span>
+<span class="sd">              information is to be removed.</span>
+<span class="sd">            - *source* [set]: Optional, ``None`` by default. If</span>
+<span class="sd">              specified, determines which source(s) is(are) to be</span>
+<span class="sd">              removed from *sources* attribute in the specified</span>
+<span class="sd">              *direction*.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="n">check_param</span><span class="p">(</span><span class="n">direction</span><span class="p">):</span>
+
             <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
                 <span class="k">try</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+
                 <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                     <span class="k">pass</span>
+
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">direction</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span></div>
 
-    <span class="k">def</span> <span class="nf">is_directed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span>
-            <span class="nb">sum</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">)</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;undirected&#39;</span><span class="p">]))</span>
+<div class="viewcode-block" id="Direction.is_directed"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.is_directed">[docs]</a>    <span class="k">def</span> <span class="nf">is_directed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if edge has any directionality information.</span>
 
-    <span class="k">def</span> <span class="nf">is_stimulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [bool]: Returns ``True```if any of the *dirs* attribute</span>
+<span class="sd">              values is ``True`` (except ``&#39;undirected&#39;``), ``False``</span>
+<span class="sd">              otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span>
+            <span class="nb">sum</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">)</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;undirected&#39;</span><span class="p">]))</span></div>
+
+<div class="viewcode-block" id="Direction.is_stimulation"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.is_stimulation">[docs]</a>    <span class="k">def</span> <span class="nf">is_stimulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if any (or for a specific *direction*) interaction is</span>
+<span class="sd">        activation (positive interaction).</span>
+
+<span class="sd">        * Arguments:</span>
+<span class="sd">            - *direction* [tuple]: Optional, ``None`` by default. If</span>
+<span class="sd">              specified, checks the *positive* attribute of that</span>
+<span class="sd">              specific directionality. If not specified, checks both.</span>
+
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [bool]: ``True`` if any interaction (or the specified</span>
+<span class="sd">              *direction*) is activatory (positive).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">is_inhibition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Direction.is_inhibition"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.is_inhibition">[docs]</a>    <span class="k">def</span> <span class="nf">is_inhibition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if any (or for a specific *direction*) interaction is</span>
+<span class="sd">        inhibition (negative interaction).</span>
+
+<span class="sd">        * Arguments:</span>
+<span class="sd">            - *direction* [tuple]: Optional, ``None`` by default. If</span>
+<span class="sd">              specified, checks the *negative* attribute of that</span>
+<span class="sd">              specific directionality. If not specified, checks both.</span>
+
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [bool]: ``True`` if any interaction (or the specified</span>
+<span class="sd">              *direction*) is inhibitory (negative).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">has_sign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Direction.has_sign"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.has_sign">[docs]</a>    <span class="k">def</span> <span class="nf">has_sign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks whether the edge (or for a specific *direction*) has</span>
+<span class="sd">        any signed information (about positive/negative interactions).</span>
+
+<span class="sd">        * Arguments:</span>
+<span class="sd">            - *direction* [tuple]: Optional, ``None`` by default. If</span>
+<span class="sd">              specified, only the information of that direction is</span>
+<span class="sd">              checked for sign.</span>
+
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [bool]: ``True`` if there exist any information on the</span>
+<span class="sd">              sign of the interaction, ``False`` otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> <span class="ow">or</span> \
-                <span class="nb">bool</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+                    <span class="ow">or</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
 
-    <span class="k">def</span> <span class="nf">set_sign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">sign</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Direction.set_sign"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.set_sign">[docs]</a>    <span class="k">def</span> <span class="nf">set_sign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">sign</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets sign and source information on a given direction of the</span>
+<span class="sd">        edge. Modifies the attributes *positive* and *positive_sources*</span>
+<span class="sd">        or *negative* and *negative_sources* depending on the sign.</span>
+<span class="sd">        Direction is also updated accordingly, which also modifies the</span>
+<span class="sd">        attributes *dirs*, *sources*,</span>
+
+<span class="sd">        * Arguments:</span>
+<span class="sd">            - *direction* [tuple]: Pair of edge nodes specifying the</span>
+<span class="sd">              direction from which the information is to be set/updated.</span>
+<span class="sd">            - *sign* [str]: Specifies the type of interaction. If</span>
+<span class="sd">              ``&#39;positive&#39;``, is considered activation, otherwise, is</span>
+<span class="sd">              assumed to be negative (inhibition).</span>
+<span class="sd">            - *source* [set]: Contains the name(s) of the source(s) from</span>
+<span class="sd">              which the information was obtained.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_nodes</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_dir</span><span class="p">(</span><span class="n">direction</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
             <span class="n">source</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">addToSet</span><span class="p">(</span><span class="nb">set</span><span class="p">([]),</span> <span class="n">source</span><span class="p">)</span>
+
             <span class="k">if</span> <span class="n">sign</span> <span class="o">==</span> <span class="s1">&#39;positive&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">=</span> \
                     <span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">|</span> <span class="n">source</span>
+
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">=</span> \
-                    <span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">|</span> <span class="n">source</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">|</span> <span class="n">source</span></div>
 
-    <span class="k">def</span> <span class="nf">get_sign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Direction.get_sign"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.get_sign">[docs]</a>    <span class="k">def</span> <span class="nf">get_sign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the sign information of the edge in the given</span>
+<span class="sd">        diretion. If specified in *sign*, only that sign&#39;s information</span>
+<span class="sd">        will be retrieved. If specified in *sources*, the sources of</span>
+<span class="sd">        that information will be retrieved instead.</span>
+
+<span class="sd">        * Arguments:</span>
+<span class="sd">            - *direction* [tuple]: Contains the pair of nodes specifying</span>
+<span class="sd">              the directionality of the edge from which th information</span>
+<span class="sd">              is to be retrieved.</span>
+<span class="sd">            - *sign* [str]: Optional, ``None`` by default. Denotes</span>
+<span class="sd">              whether to retrieve the ``&#39;positive&#39;`` or ``&#39;negative&#39;``</span>
+<span class="sd">              specific information.</span>
+<span class="sd">            - *sources* [bool]: Optional, ``False`` by default.</span>
+<span class="sd">              Specifies whether to return the sources instead of sign.</span>
+
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [list]: If ``sign=None`` containing [bool] values denoting</span>
+<span class="sd">              the presence of positive and negative sign on that</span>
+<span class="sd">              direction, if ``sources=True`` the [set] of sources for</span>
+<span class="sd">              each of them will be returned instead. If *sign* is</span>
+<span class="sd">              specified, returns [bool] or [set] (if ``sources=True``)</span>
+<span class="sd">              of that specific direction and sign.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_nodes</span><span class="p">(</span><span class="n">direction</span><span class="p">):</span>
+
             <span class="k">if</span> <span class="n">sources</span><span class="p">:</span>
+
                 <span class="k">if</span> <span class="n">sign</span> <span class="o">==</span> <span class="s1">&#39;positive&#39;</span><span class="p">:</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span>
+
                 <span class="k">elif</span> <span class="n">sign</span> <span class="o">==</span> <span class="s1">&#39;negative&#39;</span><span class="p">:</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span>
+
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="p">[</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="n">direction</span><span class="p">],</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span>
-                    <span class="p">]</span>
+                    <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="n">direction</span><span class="p">],</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="n">direction</span><span class="p">]]</span>
+
             <span class="k">else</span><span class="p">:</span>
+
                 <span class="k">if</span> <span class="n">sign</span> <span class="o">==</span> <span class="s1">&#39;positive&#39;</span><span class="p">:</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span>
+
                 <span class="k">elif</span> <span class="n">sign</span> <span class="o">==</span> <span class="s1">&#39;negative&#39;</span><span class="p">:</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">direction</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="n">direction</span><span class="p">]]</span>
 
-    <span class="k">def</span> <span class="nf">unset_sign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">sign</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">direction</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="n">direction</span><span class="p">]]</span></div>
+
+<div class="viewcode-block" id="Direction.unset_sign"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.unset_sign">[docs]</a>    <span class="k">def</span> <span class="nf">unset_sign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">sign</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes sign and/or source information of the specified</span>
+<span class="sd">        *direction* and *sign*. Modifies attribute *positive* and</span>
+<span class="sd">        *positive_sources* or *negative* and *negative_sources* (or</span>
+<span class="sd">        *positive_sources*/*negative_sources* only if ``source=True``).</span>
+
+<span class="sd">        * Arguments:</span>
+<span class="sd">            - *direction* [tuple]: The pair of nodes specifying the</span>
+<span class="sd">              directionality from which the information is to be</span>
+<span class="sd">              removed.</span>
+<span class="sd">            - *sign* [str]: Sign from which the information is to be</span>
+<span class="sd">              removed. Must be either ``&#39;positive&#39;`` or ``&#39;negative&#39;``.</span>
+<span class="sd">            - *source* [set]: Optional, ``None`` by default. If</span>
+<span class="sd">              specified, determines which source(s) is(are) to be</span>
+<span class="sd">              removed from the sources in the specified *direction* and</span>
+<span class="sd">              *sign*.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_nodes</span><span class="p">(</span><span class="n">direction</span><span class="p">):</span>
+
             <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
                 <span class="k">try</span><span class="p">:</span>
+
                     <span class="k">if</span> <span class="n">sign</span> <span class="o">==</span> <span class="s1">&#39;positive&#39;</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+
                     <span class="k">if</span> <span class="n">sign</span> <span class="o">==</span> <span class="s1">&#39;negative&#39;</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+
                 <span class="k">except</span><span class="p">:</span>
                     <span class="k">pass</span>
+
             <span class="k">else</span><span class="p">:</span>
+
                 <span class="k">if</span> <span class="n">sign</span> <span class="o">==</span> <span class="s1">&#39;positive&#39;</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
                 <span class="k">if</span> <span class="n">sign</span> <span class="o">==</span> <span class="s1">&#39;negative&#39;</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="n">direction</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="n">direction</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="Direction.src"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.src">[docs]</a>    <span class="k">def</span> <span class="nf">src</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">undirected</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="c1"># XXX: Not sure if intended or you noticed, but if undirected=True and</span>
+<span class="c1">#      self.dirs[&#39;undirected&#39;]=True, the returning list includes &#39;u&#39;.</span>
+<div class="viewcode-block" id="Direction.src"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.src">[docs]</a>    <span class="k">def</span> <span class="nf">src</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">undirected</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the IDs of effector molecules in this directed</span>
-<span class="sd">        interaction. If the interaction is bidirectional, the</span>
-<span class="sd">        list will contain 2 IDs. If the interaction is undirec-</span>
-<span class="sd">        ted, an empty list will be returned.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span>
-            <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">)</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;undirected&#39;</span> <span class="ow">or</span> <span class="n">undirected</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span>
-        <span class="p">]</span></div>
+<span class="sd">        Returns the name(s) of the source node(s) for each existing</span>
+<span class="sd">        direction on the interaction.</span>
 
-<div class="viewcode-block" id="Direction.tgt"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.tgt">[docs]</a>    <span class="k">def</span> <span class="nf">tgt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">undirected</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="sd">        * Arguments:</span>
+<span class="sd">            - *undirected* [bool]: Optional, ``False`` by default.</span>
+
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [list]: Contains the name(s) for the source node(s). This</span>
+<span class="sd">              means if the interaction is bidirectional, the list will</span>
+<span class="sd">              contain both identifiers of the edge. If the interaction</span>
+<span class="sd">              is undirected, an empty list will be returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;undirected&#39;</span> <span class="ow">or</span> <span class="n">undirected</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="p">]</span></div>
+
+<span class="c1"># XXX: Similarly, if undirected=True and self.dirs[&#39;undirected&#39;]=True,</span>
+<span class="c1">#      the returning list includes &#39;n&#39;.</span>
+<div class="viewcode-block" id="Direction.tgt"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.tgt">[docs]</a>    <span class="k">def</span> <span class="nf">tgt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">undirected</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the IDs of the target molecules in the inter-</span>
-<span class="sd">        action. Same behaviour as `Direction.src()`.</span>
+<span class="sd">        Returns the name(s) of the target node(s) for each existing</span>
+<span class="sd">        direction on the interaction.</span>
+
+<span class="sd">        * Arguments:</span>
+<span class="sd">            - *undirected* [bool]: Optional, ``False`` by default.</span>
+
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [list]: Contains the name(s) for the target node(s). This</span>
+<span class="sd">              means if the interaction is bidirectional, the list will</span>
+<span class="sd">              contain both identifiers of the edge. If the interaction</span>
+<span class="sd">              is undirected, an empty list will be returned.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span>
-            <span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">)</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;undirected&#39;</span> <span class="ow">or</span> <span class="n">undirected</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span>
-        <span class="p">]</span></div>
 
-    <span class="k">def</span> <span class="nf">src_by_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span>
-            <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;undirected&#39;</span> <span class="ow">and</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">v</span>
-        <span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;undirected&#39;</span> <span class="ow">or</span> <span class="n">undirected</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="p">]</span></div>
 
-    <span class="k">def</span> <span class="nf">tgt_by_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span>
-            <span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;undirected&#39;</span> <span class="ow">and</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">v</span>
-        <span class="p">]</span>
+<span class="c1"># FIXME: If the intended behavior of the functions above is to include</span>
+<span class="c1">#        &#39;undirected&#39; in the returned list if undirected=True and</span>
+<span class="c1">#        self.dirs[&#39;undirected&#39;]=True, then change return by:</span>
+<span class="c1">#</span>
+<span class="c1">#        `[k[0] if k != &#39;undirected&#39; else k for k, v in iteritems(self.dirs)</span>
+<span class="c1">#         if (k != &#39;undirected&#39; or undirected) and v]`</span>
+<span class="c1">#</span>
+<span class="c1">#        On the other hand, if the intended behavior is that returns an empty</span>
+<span class="c1">#        empty list if kwarg undirected=True, then add a simple if/else return</span>
 
-    <span class="k">def</span> <span class="nf">sources_straight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span>
+<div class="viewcode-block" id="Direction.src_by_source"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.src_by_source">[docs]</a>    <span class="k">def</span> <span class="nf">src_by_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the name(s) of the source node(s) for each existing</span>
+<span class="sd">        direction on the interaction for a specific *source*.</span>
 
-    <span class="k">def</span> <span class="nf">sources_reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span>
+<span class="sd">        * Arguments:</span>
+<span class="sd">            - *source* [str]: Name of the source according to which the</span>
+<span class="sd">              information is to be retrieved.</span>
 
-    <span class="k">def</span> <span class="nf">sources_undirected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="s1">&#39;undirected&#39;</span><span class="p">]</span>
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [list]: Contains the name(s) for the source node(s)</span>
+<span class="sd">              according to the specified *source*. This means if the</span>
+<span class="sd">              interaction is bidirectional, the list will contain both</span>
+<span class="sd">              identifiers of the edge. If the specified *source* is not</span>
+<span class="sd">              found or invalid, an empty list will be returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">positive_straight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;undirected&#39;</span> <span class="ow">and</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span></div>
 
-    <span class="k">def</span> <span class="nf">positive_reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span>
+<div class="viewcode-block" id="Direction.tgt_by_source"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.tgt_by_source">[docs]</a>    <span class="k">def</span> <span class="nf">tgt_by_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the name(s) of the target node(s) for each existing</span>
+<span class="sd">        direction on the interaction for a specific *source*.</span>
 
-    <span class="k">def</span> <span class="nf">negative_straight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span>
+<span class="sd">        * Arguments:</span>
+<span class="sd">            - *source* [str]: Name of the source according to which the</span>
+<span class="sd">              information is to be retrieved.</span>
 
-    <span class="k">def</span> <span class="nf">negative_reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span>
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [list]: Contains the name(s) for the target node(s)</span>
+<span class="sd">              according to the specified *source*. This means if the</span>
+<span class="sd">              interaction is bidirectional, the list will contain both</span>
+<span class="sd">              identifiers of the edge. If the specified *source* is not</span>
+<span class="sd">              found or invalid, an empty list will be returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">negative_sources_straight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;undirected&#39;</span> <span class="ow">and</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span></div>
 
-    <span class="k">def</span> <span class="nf">negative_sources_reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span>
+<div class="viewcode-block" id="Direction.sources_straight"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.sources_straight">[docs]</a>    <span class="k">def</span> <span class="nf">sources_straight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the list of sources for the straight direction.</span>
 
-    <span class="k">def</span> <span class="nf">positive_sources_straight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span>
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [set]: Contains the names of the sources supporting the</span>
+<span class="sd">              straight directionality of the edge.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">positive_sources_reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Direction.sources_reverse"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.sources_reverse">[docs]</a>    <span class="k">def</span> <span class="nf">sources_reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the list of sources for the reverse direction.</span>
+
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [set]: Contains the names of the sources supporting the</span>
+<span class="sd">              reverse directionality of the edge.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Direction.sources_undirected"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.sources_undirected">[docs]</a>    <span class="k">def</span> <span class="nf">sources_undirected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the list of sources without directed information.</span>
+
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [set]: Contains the names of the sources supporting the</span>
+<span class="sd">              edge presence but without specific directionality</span>
+<span class="sd">              information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="s1">&#39;undirected&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Direction.positive_straight"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.positive_straight">[docs]</a>    <span class="k">def</span> <span class="nf">positive_straight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the straight directionality is a positive interaction.</span>
+
+<span class="sd">        * Returns</span>
+<span class="sd">            - [bool]: ``True`` if there is supporting information on the</span>
+<span class="sd">              straight direction of the edge as activation. ``False``</span>
+<span class="sd">              otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Direction.positive_reverse"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.positive_reverse">[docs]</a>    <span class="k">def</span> <span class="nf">positive_reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the reverse directionality is a positive interaction.</span>
+
+<span class="sd">        * Returns</span>
+<span class="sd">            - [bool]: ``True`` if there is supporting information on the</span>
+<span class="sd">              reverse direction of the edge as activation. ``False``</span>
+<span class="sd">              otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Direction.negative_straight"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.negative_straight">[docs]</a>    <span class="k">def</span> <span class="nf">negative_straight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the straight directionality is a negative interaction.</span>
+
+<span class="sd">        * Returns</span>
+<span class="sd">            - [bool]: ``True`` if there is supporting information on the</span>
+<span class="sd">              straight direction of the edge as inhibition. ``False``</span>
+<span class="sd">              otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Direction.negative_reverse"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.negative_reverse">[docs]</a>    <span class="k">def</span> <span class="nf">negative_reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the reverse directionality is a negative interaction.</span>
+
+<span class="sd">        * Returns</span>
+<span class="sd">            - [bool]: ``True`` if there is supporting information on the</span>
+<span class="sd">              reverse direction of the edge as inhibition. ``False``</span>
+<span class="sd">              otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Direction.negative_sources_straight"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.negative_sources_straight">[docs]</a>    <span class="k">def</span> <span class="nf">negative_sources_straight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the list of sources for the straight direction and</span>
+<span class="sd">        negative sign.</span>
+
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [set]: Contains the names of the sources supporting the</span>
+<span class="sd">              straight directionality of the edge with a negative sign.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Direction.negative_sources_reverse"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.negative_sources_reverse">[docs]</a>    <span class="k">def</span> <span class="nf">negative_sources_reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the list of sources for the reverse direction and</span>
+<span class="sd">        negative sign.</span>
+
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [set]: Contains the names of the sources supporting the</span>
+<span class="sd">              reverse directionality of the edge with a negative sign.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Direction.positive_sources_straight"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.positive_sources_straight">[docs]</a>    <span class="k">def</span> <span class="nf">positive_sources_straight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the list of sources for the straight direction and</span>
+<span class="sd">        positive sign.</span>
+
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [set]: Contains the names of the sources supporting the</span>
+<span class="sd">              straight directionality of the edge with a positive sign.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Direction.positive_sources_reverse"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.positive_sources_reverse">[docs]</a>    <span class="k">def</span> <span class="nf">positive_sources_reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the list of sources for the reverse direction and</span>
+<span class="sd">        positive sign.</span>
+
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [set]: Contains the names of the sources supporting the</span>
+<span class="sd">              reverse directionality of the edge with a positive sign.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Direction.majority_dir"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.majority_dir">[docs]</a>    <span class="k">def</span> <span class="nf">majority_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns directionality based on majority consensus.</span>
-<span class="sd">        Returns `None` if the number of sources supporting the two opposite</span>
-<span class="sd">        directions are the same. Returns `&#39;undirected&#39;` if there is no directionality</span>
-<span class="sd">        information. Returns `tuple` of IDs if one direction is supported by</span>
-<span class="sd">        more sources.</span>
+<span class="sd">        Infers which is the major directionality of the edge by number</span>
+<span class="sd">        of supporting sources.</span>
+
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [tuple]: Contains the pair of nodes denoting the consensus</span>
+<span class="sd">              directionality. If the number of sources on both</span>
+<span class="sd">              directions is equal, ``None`` is returned. If there is no</span>
+<span class="sd">              directionality information, ``&#39;undirected&#39;``` will be</span>
+<span class="sd">              returned.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">])</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]):</span>
                 <span class="k">return</span> <span class="kc">None</span>
+
             <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">])</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]):</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">straight</span>
+
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span>
+
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="s1">&#39;undirected&#39;</span></div>
 
 <div class="viewcode-block" id="Direction.majority_sign"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.majority_sign">[docs]</a>    <span class="k">def</span> <span class="nf">majority_sign</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns signs based on majority consensus. Keys in the returned `dict` are directions.</span>
-<span class="sd">        Values are `None` if the direction lacks effect sign. Otherwise `tuples` with their</span>
-<span class="sd">        first element `True` if the number of sources supporting stimulation in the given</span>
-<span class="sd">        direction is greater or equal compared to those supporting inhibition. The second</span>
-<span class="sd">        value is the same for inhibition.</span>
+<span class="sd">        Infers which is the major sign (activation/inhibition) of the</span>
+<span class="sd">        edge by number of supporting sources on both directions.</span>
+
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [dict]: Keys are the node tuples on both directions</span>
+<span class="sd">              (straight/reverse) and values can be either ``None`` if</span>
+<span class="sd">              that direction has no sign information or a list of</span>
+<span class="sd">              two [bool] elements corresponding to majority of positive</span>
+<span class="sd">              and majority of negative support. In case both elements of</span>
+<span class="sd">              the list are ``True``, this means the number of supporting</span>
+<span class="sd">              sources for both signs in that direction is equal.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_sign</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">):</span>
-            <span class="n">pos</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">])</span>
-            <span class="n">neg</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">])</span>
-            <span class="n">result</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">pos</span><span class="p">,</span> <span class="n">neg</span><span class="p">]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_sign</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">):</span>
-            <span class="n">pos</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">])</span>
-            <span class="n">neg</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">])</span>
-            <span class="n">result</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">pos</span><span class="p">,</span> <span class="n">neg</span><span class="p">]</span>
+
+        <span class="n">dirs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{(</span><span class="n">d</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_sign</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="n">d</span><span class="p">):</span>
+                <span class="n">p</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">len</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="n">d</span><span class="p">],</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="n">d</span><span class="p">]])</span>
+
+                <span class="n">result</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="p">,</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">]</span>
+
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="Direction.consensus_edges"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.consensus_edges">[docs]</a>    <span class="k">def</span> <span class="nf">consensus_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns list of edges based on majority consensus of directions and signs.</span>
+<span class="sd">        Infers the consensus edge(s) according to the number of</span>
+<span class="sd">        supporting sources. This includes direction and sign attributes.</span>
+
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [list]: Contains the consensus edge(s) along with the</span>
+<span class="sd">              consensus sign. If there is no major directionality, both</span>
+<span class="sd">              are returned. The structure is as follows:</span>
+<span class="sd">              ``[&#39;&lt;source&gt;&#39;, &#39;&lt;target&gt;&#39;, &#39;&lt;(un)directed&gt;&#39;, &#39;&lt;sign&gt;&#39;]``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">majority_dir</span><span class="p">()</span>
         <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">majority_sign</span><span class="p">()</span>
+
+<span class="c1"># XXX: This case could actually return directly, would save up some time</span>
         <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;undirected&#39;</span><span class="p">:</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;undirected&#39;</span><span class="p">,</span> <span class="s1">&#39;unknown&#39;</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">d</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
-                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;directed&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;positive&#39;</span>
-                    <span class="p">])</span>
-                <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
-                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;directed&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;negative&#39;</span>
-                    <span class="p">])</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;directed&#39;</span><span class="p">,</span> <span class="s1">&#39;unknown&#39;</span>
-                <span class="p">])</span>
-        <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">d</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
-                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;directed&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;positive&#39;</span>
-                    <span class="p">])</span>
-                <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
-                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;directed&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;negative&#39;</span>
-                    <span class="p">])</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;directed&#39;</span><span class="p">,</span> <span class="s1">&#39;unknown&#39;</span><span class="p">])</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                           <span class="s1">&#39;undirected&#39;</span><span class="p">,</span> <span class="s1">&#39;unknown&#39;</span><span class="p">])</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dirs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span> <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[</span><span class="n">d</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+                    <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="n">d</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;directed&#39;</span><span class="p">,</span> <span class="s1">&#39;positive&#39;</span><span class="p">])</span>
+
+<span class="c1"># XXX: Technically, if s[d] is not None, this could be an elif right?</span>
+                    <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="n">d</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
+                        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;directed&#39;</span><span class="p">,</span> <span class="s1">&#39;negative&#39;</span><span class="p">])</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;directed&#39;</span><span class="p">,</span> <span class="s1">&#39;unknown&#39;</span><span class="p">])</span>
+
         <span class="k">return</span> <span class="n">result</span></div>
 
-    <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;Direction&#39;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_nodes</span><span class="p">(</span>
-                <span class="n">other</span><span class="o">.</span><span class="n">nodes</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span> <span class="ow">or</span> \
-                <span class="n">other</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span> <span class="ow">or</span> \
-                <span class="n">other</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="s1">&#39;undirected&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="s1">&#39;undirected&#39;</span><span class="p">]</span> <span class="ow">or</span> \
-                <span class="n">other</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="s1">&#39;undirected&#39;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span> <span class="o">|</span> \
-                <span class="n">other</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span> <span class="o">|</span> \
-                <span class="n">other</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="s1">&#39;undirected&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="s1">&#39;undirected&#39;</span><span class="p">]</span> <span class="o">|</span> \
-                <span class="n">other</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="s1">&#39;undirected&#39;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span> <span class="ow">or</span> \
-                <span class="n">other</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span> <span class="ow">or</span> \
-                <span class="n">other</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span> <span class="o">=</span> \
-                                 <span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span> <span class="o">|</span> \
-                                <span class="n">other</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span> <span class="o">=</span> \
-                                 <span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span> <span class="o">|</span> \
-                                <span class="n">other</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span>
+<div class="viewcode-block" id="Direction.merge"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.merge">[docs]</a>    <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Merges current edge with another (if and only if they are the</span>
+<span class="sd">        same class and contain the same nodes). Updates the attributes</span>
+<span class="sd">        *dirs*, *sources*, *positive*, *negative*, *positive_sources*</span>
+<span class="sd">        and *negative_sources*.</span>
 
-    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">):</span>
+<span class="sd">        * Arguments:</span>
+<span class="sd">            - *other* [pypath.main.Direction]: The new edge object to be</span>
+<span class="sd">              merged with the current one.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="c1"># XXX: Not best way to check the class. Probably never happens, but there</span>
+<span class="c1">#      may be other class out there with the same name</span>
+<span class="c1">#      &gt;  if (other.__class__.__name__ == &#39;Direction&#39; and self.check_nodes(</span>
+<span class="c1">#                 other.nodes):</span>
+        <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_nodes</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">nodes</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">,</span> <span class="s1">&#39;undirected&#39;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">|</span> <span class="n">other</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+<span class="c1"># XXX: Is there a reason to only update positive with straight and negative only with reverse?</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                                                <span class="o">|</span> <span class="n">other</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+
+                <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                                                <span class="o">|</span> <span class="n">other</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="n">k</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Direction.translate"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.translate">[docs]</a>    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Translates the node names/identifiers according to the</span>
+<span class="sd">        dictionary *ids*.</span>
+
+<span class="sd">        * Arguments:</span>
+<span class="sd">            - *ids* [dict]: Dictionary containing (at least) the current</span>
+<span class="sd">              names of the nodes as keys and their translation as</span>
+<span class="sd">              values.</span>
+
+<span class="sd">        * Returns:</span>
+<span class="sd">            - [pypath.main.Direction]: The copy of current edge object</span>
+<span class="sd">              with translated node names.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="c1"># new Direction object</span>
         <span class="n">newd</span> <span class="o">=</span> <span class="n">Direction</span><span class="p">(</span><span class="n">ids</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">ids</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
 
@@ -604,13 +1028,12 @@
 
         <span class="c1"># copying signs</span>
         <span class="k">for</span> <span class="n">di</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">]:</span>
-
             <span class="n">pos</span><span class="p">,</span> <span class="n">neg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sign</span><span class="p">(</span><span class="n">di</span><span class="p">,</span> <span class="n">sources</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 
             <span class="n">newd</span><span class="o">.</span><span class="n">set_sign</span><span class="p">((</span><span class="n">ids</span><span class="p">[</span><span class="n">di</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">ids</span><span class="p">[</span><span class="n">di</span><span class="p">[</span><span class="mi">1</span><span class="p">]]),</span> <span class="s1">&#39;positive&#39;</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
             <span class="n">newd</span><span class="o">.</span><span class="n">set_sign</span><span class="p">((</span><span class="n">ids</span><span class="p">[</span><span class="n">di</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">ids</span><span class="p">[</span><span class="n">di</span><span class="p">[</span><span class="mi">1</span><span class="p">]]),</span> <span class="s1">&#39;negative&#39;</span><span class="p">,</span> <span class="n">neg</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">newd</span></div>
+        <span class="k">return</span> <span class="n">newd</span></div></div>
 
 
 <span class="k">class</span> <span class="nc">AttrHelper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>

@@ -128,6 +128,10 @@ class Direction(object):
     information about the reverse direction, mode of regulation and
     sources of that information.
 
+    * Arguments:
+        - *nameA* [str]: Name of the source node.
+        - *nameB* [str]: Name of the target node.
+
     * Attributes:
         - *dirs* [dict]: Dictionary containing the presence of
           directionality of the given edge. Keys are *straight*,
@@ -163,10 +167,6 @@ class Direction(object):
     def __init__(self, nameA, nameB):
         """
         Initializes the edge object between the given nodes.
-
-        * Arguments:
-            - *nameA* [str]: Name of the source node.
-            - *nameB* [str]: Name of the target node.
         """
 
         self.nodes = [nameA, nameB]
