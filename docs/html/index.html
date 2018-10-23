@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>pypath: A Python module for molecular interaction networks &#8212; pypath 0.7.97 documentation</title>
+    <title>PyPath: A Python module for molecular interaction networks &#8212; pypath 0.7.97 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -15,7 +15,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="&lt;no title&gt;" href="main.html" /> 
+    <link rel="next" title="Installation" href="installation.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -27,7 +27,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="main.html" title="&lt;no title&gt;"
+          <a href="installation.html" title="Installation"
              accesskey="N">next</a> |</li>
         <li class="nav-item nav-item-0"><a href="#">pypath 0.7.97 documentation</a> &#187;</li> 
       </ul>
@@ -39,14 +39,10 @@
           <div class="body" role="main">
             
   <div class="section" id="pypath-a-python-module-for-molecular-interaction-networks">
-<h1><em>pypath:</em> A Python module for molecular interaction networks<a class="headerlink" href="#pypath-a-python-module-for-molecular-interaction-networks" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
-</ul>
-<div class="toctree-wrapper compound">
-</div>
+<h1>PyPath: <em>A Python module for molecular interaction networks</em><a class="headerlink" href="#pypath-a-python-module-for-molecular-interaction-networks" title="Permalink to this headline">¶</a></h1>
+<p><strong>pypath</strong> is a Python package built around igraph to work with molecular
+network representations e.g. protein, miRNA and drug compound interaction
+networks.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -66,314 +62,14 @@ this is the better supported Python variant.</td>
 </tr>
 </tbody>
 </table>
-<p><strong>pypath</strong> is a Python package built around igraph to work with molecular
-network representations e.g. protein, miRNA and drug compound interaction
-networks.</p>
-<div class="section" id="webservice">
-<h2>Webservice<a class="headerlink" href="#webservice" title="Permalink to this headline">¶</a></h2>
-<p><strong>New webservice</strong> from 14 June 2018: the queries slightly changed, have been
-largely extended. See the examples below.</p>
-<p>One instance of the pypath webservice runs at the domain
-<a class="reference external" href="http://omnipathdb.org/">http://omnipathdb.org/</a>, serving not only the OmniPath data but other datasets:
-TF-target interactions from TF Regulons, a large collection additional
-enzyme-substrate interactions, and literature curated miRNA-mRNA interacions
-combined from 4 databases. The webservice implements a very simple REST style
-API, you can make requests by HTTP protocol (browser, wget, curl or whatever).</p>
-<p>The webservice currently recognizes 3 types of queries: <code class="docutils literal notranslate"><span class="pre">interactions</span></code>,
-<code class="docutils literal notranslate"><span class="pre">ptms</span></code> and <code class="docutils literal notranslate"><span class="pre">info</span></code>. The query types <code class="docutils literal notranslate"><span class="pre">resources</span></code>, <code class="docutils literal notranslate"><span class="pre">network</span></code> and
-<code class="docutils literal notranslate"><span class="pre">about</span></code> have not been implemented yet in the new webservice.</p>
-<div class="section" id="mouse-and-rat">
-<h3>Mouse and rat<a class="headerlink" href="#mouse-and-rat" title="Permalink to this headline">¶</a></h3>
-<p>Except the miRNA interactions all interactions are available for human, mouse
-and rat. The rodent data has been translated from human using the NCBI
-Homologene database. Many human proteins have no known homolog in rodents
-hence rodent datasets are smaller than their human counterparts. Note, if you
-work with mouse omics data you might do better to translate your dataset to
-human (for example using the <code class="docutils literal notranslate"><span class="pre">pypath.homology</span></code> module) and use human
-interaction data.</p>
-</div>
-<div class="section" id="examples">
-<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
-<p>A request without any parameter, gives some basic numbers about the actual
-loaded dataset:</p>
-<blockquote>
-<div><a class="reference external" href="http://omnipathdb.org">http://omnipathdb.org</a></div></blockquote>
-<p>The <code class="docutils literal notranslate"><span class="pre">info</span></code> returns a HTML page with comprehensive information about the
-resources:</p>
-<blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/info">http://omnipathdb.org/info</a></div></blockquote>
-<p>The <code class="docutils literal notranslate"><span class="pre">interactions</span></code> query accepts some parameters and returns interactions in
-tabular format. This example returns all interactions of EGFR (P00533), with
-sources and references listed.</p>
-<blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/interactions/?partners=P00533&amp;fields=sources,references">http://omnipathdb.org/interactions/?partners=P00533&amp;fields=sources,references</a></div></blockquote>
-<p>By default only the OmniPath dataset used, to query the TF Regulons or add the
-extra enzyme-substrate interactions you need to set additional parameters. For
-example to query the transcriptional regulators of EGFR:</p>
-<blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/interactions/?targets=EGFR&amp;types=TF">http://omnipathdb.org/interactions/?targets=EGFR&amp;types=TF</a></div></blockquote>
-<p>The TF Regulons database assigns confidence levels to the interactions. You
-might want to select only the highest confidence, <em>A</em> category:</p>
-<blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/interactions/?targets=EGFR&amp;types=TF&amp;tfregulons_levels=A">http://omnipathdb.org/interactions/?targets=EGFR&amp;types=TF&amp;tfregulons_levels=A</a></div></blockquote>
-<p>Show the transcriptional targets of Smad2 homology translated to rat including
-the confidence levels from TF Regulons:</p>
-<blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=type,ncbi_tax_id,tfregulons_level&amp;organisms=10116&amp;sources=Smad2&amp;types=TF">http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=type,ncbi_tax_id,tfregulons_level&amp;organisms=10116&amp;sources=Smad2&amp;types=TF</a></div></blockquote>
-<p>Query interactions from PhosphoNetworks which is part of the <em>kinaseextra</em>
-dataset:</p>
-<blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources&amp;databases=PhosphoNetworks&amp;datasets=kinaseextra">http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources&amp;databases=PhosphoNetworks&amp;datasets=kinaseextra</a></div></blockquote>
-<p>Get the interactions from Signor, SPIKE and SignaLink3:</p>
-<blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources,references&amp;databases=Signor,SPIKE,SignaLink3">http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources,references&amp;databases=Signor,SPIKE,SignaLink3</a></div></blockquote>
-<p>All interactions of MAP1LC3B:</p>
-<blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/interactions/?genesymbols=1&amp;partners=MAP1LC3B">http://omnipathdb.org/interactions/?genesymbols=1&amp;partners=MAP1LC3B</a></div></blockquote>
-<p>By default <code class="docutils literal notranslate"><span class="pre">partners</span></code> queries the interaction where either the source or the
-arget is among the partners. If you set the <code class="docutils literal notranslate"><span class="pre">source_target</span></code> parameter to
-<code class="docutils literal notranslate"><span class="pre">AND</span></code> both the source and the target must be in the queried set:</p>
-<blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources,references&amp;sources=ATG3,ATG7,ATG4B,SQSTM1&amp;targets=MAP1LC3B,MAP1LC3A,MAP1LC3C,Q9H0R8,GABARAP,GABARAPL2&amp;source_target=AND">http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources,references&amp;sources=ATG3,ATG7,ATG4B,SQSTM1&amp;targets=MAP1LC3B,MAP1LC3A,MAP1LC3C,Q9H0R8,GABARAP,GABARAPL2&amp;source_target=AND</a></div></blockquote>
-<p>As you see above you can use UniProt IDs and Gene Symbols in the queries and
-also mix them. Get the miRNA regulating NOTCH1:</p>
-<blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources,references&amp;datasets=mirnatarget&amp;targets=NOTCH1">http://omnipathdb.org/interactions/?genesymbols=1&amp;fields=sources,references&amp;datasets=mirnatarget&amp;targets=NOTCH1</a></div></blockquote>
-<p>Note: with the exception of mandatory fields and genesymbols, the columns
-appear exactly in the order you provided in your query.</p>
-<p>Another query type available is <code class="docutils literal notranslate"><span class="pre">ptms</span></code> which provides enzyme-substrate
-interactions. It is very similar to the <code class="docutils literal notranslate"><span class="pre">interactions</span></code>:</p>
-<blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references,isoforms&amp;enzymes=FYN">http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references,isoforms&amp;enzymes=FYN</a></div></blockquote>
-<p>Is there any ubiquitination reaction?</p>
-<blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;types=ubiquitination">http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;types=ubiquitination</a></div></blockquote>
-<p>And acetylation in mouse?</p>
-<blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;types=acetylation&amp;organisms=10090">http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;types=acetylation&amp;organisms=10090</a></div></blockquote>
-<p>Rat interactions, both directly from rat and homology translated from human,
-from the PhosphoSite database:</p>
-<blockquote>
-<div><a class="reference external" href="http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;organisms=10116&amp;databases=PhosphoSite,PhosphoSite_noref">http://omnipathdb.org/ptms?genesymbols=1&amp;fields=sources,references&amp;organisms=10116&amp;databases=PhosphoSite,PhosphoSite_noref</a></div></blockquote>
-</div>
-</div>
-<div class="section" id="can-i-use-omnipath-in-r">
-<h2>Can I use OmniPath in R?<a class="headerlink" href="#can-i-use-omnipath-in-r" title="Permalink to this headline">¶</a></h2>
-<p>You can download the data from the webservice and load into R. Look here for
-an example:</p>
-<blockquote>
-<div><a class="reference external" href="https://github.com/saezlab/pypath/tree/master/r_import">https://github.com/saezlab/pypath/tree/master/r_import</a></div></blockquote>
-</div>
-<div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="linux">
-<h3>Linux<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h3>
-<p>In almost any up-to-date Linux distribution the dependencies of <strong>pypath</strong> are
-built-in, or provided by the distributors. You only need to install a couple
-of things in your package manager (cairo, py(2)cairo, igraph,
-python(2)-igraph, graphviz, pygraphviz), and after install <strong>pypath</strong> by <em>pip</em>
-(see below). If any module still missing, you can install them the usual way
-by <em>pip</em> or your package manager.</p>
-</div>
-<div class="section" id="igraph-c-library-cairo-and-pycairo">
-<h3>igraph C library, cairo and pycairo<a class="headerlink" href="#igraph-c-library-cairo-and-pycairo" title="Permalink to this headline">¶</a></h3>
-<p><em>python(2)-igraph</em> is a Python interface to use the igraph C library. The
-C library must be installed. The same goes for <em>cairo</em>, <em>py(2)cairo</em> and
-<em>graphviz</em>.</p>
-</div>
-<div class="section" id="directly-from-git">
-<h3>Directly from git<a class="headerlink" href="#directly-from-git" title="Permalink to this headline">¶</a></h3>
-<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">saezlab</span><span class="o">/</span><span class="n">pypath</span><span class="o">.</span><span class="n">git</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="with-pip">
-<h3>With pip<a class="headerlink" href="#with-pip" title="Permalink to this headline">¶</a></h3>
-<p>Download the package from /dist, and install with pip:</p>
-<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pypath</span><span class="o">-</span><span class="n">x</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">z</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="build-source-distribution">
-<h3>Build source distribution<a class="headerlink" href="#build-source-distribution" title="Permalink to this headline">¶</a></h3>
-<p>Clone the git repo, and run setup.py:</p>
-<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">sdist</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="mac-os-x">
-<h3>Mac OS X<a class="headerlink" href="#mac-os-x" title="Permalink to this headline">¶</a></h3>
-<p>On OS X installation is not straightforward primarily because cairo needs to
-be compiled from source. We provide 2 scripts here: the
-<strong>mac-install-brew.sh</strong> installs everything with HomeBrew, and
-<strong>mac-install-conda.sh</strong> installs from Anaconda distribution. With these
-scripts installation of igraph, cairo and graphviz goes smoothly most of the
-time, and options are available for omitting the 2 latter. To know more see
-the description in the script header. There is a third script
-<strong>mac-install-source.sh</strong> which compiles everything from source and presumes
-only Python 2.7 and Xcode installed. We do not recommend this as it is time
-consuming and troubleshooting requires expertise.</p>
-<div class="section" id="troubleshooting">
-<h4>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h4>
-<ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">no</span> <span class="pre">module</span> <span class="pre">named</span> <span class="pre">...</span></code> when you try to load a module in Python. Did
-theinstallation of the module run without error? Try to run again the specific
-part from the mac install shell script to see if any error comes up. Is the
-path where the module has been installed in your <code class="docutils literal notranslate"><span class="pre">$PYTHONPATH</span></code>? Try <code class="docutils literal notranslate"><span class="pre">echo</span>
-<span class="pre">$PYTHONPATH</span></code> to see the current paths. Add your local install directories if
-those are not there, e.g.
-<code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">PYTHONPATH=&quot;/Users/me/local/python2.7/site-packages:$PYTHONPATH&quot;</span></code>.
-If it works afterwards, don’t forget to append these export path statements to
-your <code class="docutils literal notranslate"><span class="pre">~/.bash_profile</span></code>, so these will be set every time you launch a new
-shell.</li>
-<li><code class="docutils literal notranslate"><span class="pre">pkgconfig</span></code> not found. Check if the <code class="docutils literal notranslate"><span class="pre">$PKG_CONFIG_PATH</span></code> variable is
-set correctly, and pointing on a directory where pkgconfig really can be
-found.</li>
-<li>Error while trying to install py(2)cairo by pip. py(2)cairo could not be
-installed by pip, but only by waf. Please set the <code class="docutils literal notranslate"><span class="pre">$PKG_CONFIG_PATH</span></code> before.
-See <strong>mac-install-source.sh</strong> on how to install with waf.</li>
-<li>Error at pygraphviz build: <code class="docutils literal notranslate"><span class="pre">graphviz/cgraph.h</span> <span class="pre">file</span> <span class="pre">not</span> <span class="pre">found</span></code>. This is
-because the directory of graphviz detected wrong by pkgconfig. See
-<strong>mac-install-source.sh</strong> how to set include dirs and library dirs by
-<code class="docutils literal notranslate"><span class="pre">--global-option</span></code> parameters.</li>
-<li>Can not install bioservices, because installation of jurko-suds fails. Ok,
-this fails because pip is not able to install the recent version of
-setuptools, because a very old version present in the system path. The
-development version of jurko-suds does not require setuptools, so you can
-install it directly from git as it is done in <strong>mac-install-source.sh</strong>.</li>
-<li>In <strong>Anaconda</strong>, <em>pypath</em> can be imported, but the modules and classes are
-missing. Apparently Anaconda has some built-in stuff called <em>pypath</em>. This
-has nothing to do with this module. Please be aware that Anaconda installs a
-completely separated Python distribution, and does not detect modules in the
-main Python installation. You need to install all modules within Anaconda’s
-directory. <strong>mac-install-conda.sh</strong> does exactly this. If you still
-experience issues, please contact us.</li>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="webservice.html">Webservice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Release history</a></li>
 </ul>
-</div>
-</div>
-<div class="section" id="microsoft-windows">
-<h3>Microsoft Windows<a class="headerlink" href="#microsoft-windows" title="Permalink to this headline">¶</a></h3>
-<p>Not many people have used <em>pypath</em> on Microsoft computers so far. Please share
-your experiences and contact us if you encounter any issue. We appreciate
-your feedback, and it would be nice to have better support for other computer
-systems.</p>
-<div class="section" id="with-anaconda">
-<h4>With Anaconda<a class="headerlink" href="#with-anaconda" title="Permalink to this headline">¶</a></h4>
-<p>The same workflow like you see in <code class="docutils literal notranslate"><span class="pre">mac-install-conda.sh</span></code> should work for
-Anaconda on Windows. The only problem you certainly will encounter is that not
-all the channels have packages for all platforms. If certain channel provides
-no package for Windows, or for your Python version, you just need to find an
-other one. For this, do a search:</p>
-<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">anaconda</span> <span class="n">search</span> <span class="o">-</span><span class="n">t</span> <span class="n">conda</span> <span class="o">&lt;</span><span class="n">package</span> <span class="n">name</span><span class="o">&gt;</span>
-</pre></div>
-</div>
-<p>For example, if you search for <em>pycairo</em>, you will find out that <em>vgauther</em>
-provides it for osx-64, but only for Python 3.4, while <em>richlewis</em> provides
-also for Python 3.5. And for win-64 platform, there is the channel of
-<em>KristanAmstrong</em>. Go along all the commands in <code class="docutils literal notranslate"><span class="pre">mac-install-conda.sh</span></code>, and
-modify the channel if necessary, until all packages install successfully.</p>
-</div>
-<div class="section" id="with-other-python-distributions">
-<h4>With other Python distributions<a class="headerlink" href="#with-other-python-distributions" title="Permalink to this headline">¶</a></h4>
-<p>Here the basic principles are the same as everywhere: first try to install all
-external dependencies, after <em>pip</em> install should work. On Windows certain
-packages can not be installed by compiled from source by <em>pip</em>, instead the
-easiest to install them precompiled. These are in our case <em>fisher, lxml,
-numpy (mkl version), pycairo, igraph, pygraphviz, scipy and statsmodels</em>. The
-precompiled packages are available here:
-<a class="reference external" href="http://www.lfd.uci.edu/~gohlke/pythonlibs/">http://www.lfd.uci.edu/~gohlke/pythonlibs/</a>. We tested the setup with Python
-3.4.3 and Python 2.7.11. The former should just work fine, while with the
-latter we have issues to be resolved.</p>
-</div>
-<div class="section" id="known-issues">
-<h4>Known issues<a class="headerlink" href="#known-issues" title="Permalink to this headline">¶</a></h4>
-<ul class="simple">
-<li><em>“No module fabric available.”</em> – or <em>pysftp</em> missing: this is not
-important, only certain data download methods rely on these modules, but
-likely you won’t call those at all.</li>
-<li>Progress indicator floods terminal: sorry about that, will be fixed soon.</li>
-<li>Encoding related exceptions in Python2: these might occur at some points in
-the module, please send the traceback if you encounter one, and we will fix
-as soon as possible.</li>
-</ul>
-<p><em>Special thanks to Jorge Ferreira for testing pypath on Windows!</em></p>
-</div>
-</div>
-</div>
-<div class="section" id="release-history">
-<h2>Release History<a class="headerlink" href="#release-history" title="Permalink to this headline">¶</a></h2>
-<p>Main improvements in the past releases:</p>
-<div class="section" id="id1">
-<h3>0.1.0:<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>First release of pypath, for initial testing.</li>
-</ul>
-</div>
-<div class="section" id="id2">
-<h3>0.2.0:<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>Lots of small improvements in almost every module</li>
-<li>Networks can be read from local files, remote files, lists or provided by
-any function</li>
-<li>Almost all redistributed data have been removed, every source downloaded
-from the original provider.</li>
-</ul>
-</div>
-<div class="section" id="id3">
-<h3>0.3.0:<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>First version whith partial Python 3 support.</li>
-</ul>
-</div>
-<div class="section" id="id4">
-<h3>0.4.0:<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><strong>pyreact</strong> module with <strong>BioPaxReader</strong> and <strong>PyReact</strong> classes added</li>
-<li>Process description databases, BioPax and PathwayCommons SIF conversion
-rules are supported</li>
-<li>Format definitions for 6 process description databases included.</li>
-</ul>
-</div>
-<div class="section" id="id5">
-<h3>0.5.0:<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>Many classes have been added to the <strong>plot</strong> module</li>
-<li>All figures and tables in the manuscript can be generated automatically</li>
-<li>This is supported by a new module, <strong>analysis</strong>, which implements a generic</li>
-</ul>
-<p>workflow in its <strong>Workflow</strong> class.</p>
-</div>
-<div class="section" id="id6">
-<h3>0.7.74:<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li><strong>homology</strong> module: finds the homologs of proteins using the NCBI</li>
-</ul>
-<p>Homologene database and the homologs of PTM sites using UniProt sequences
-and PhosphoSitePlus homology table
-* <strong>ptm</strong> module: fully integrated way of processing enzyme-substrate
-interactions from many databases and their translation by homology to other
-species
-* <strong>export</strong> module: creates <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> or exports the network into
-tabular file
-* New webservice
-* TF Regulons database included and provides much more comprehensive
-transcriptional regulation resources, including literature curated, in silico
-predicted, ChIP-Seq and expression pattern based approaches
-* Many network resources added, including miRNA-mRNA and TF-miRNA interactions</p>
-</div>
-<div class="section" id="upcoming">
-<h3>Upcoming:<a class="headerlink" href="#upcoming" title="Permalink to this headline">¶</a></h3>
-<ul class="simple">
-<li>New, more flexible network reader class</li>
-<li>Full support for multi-species molecular interaction networks</li>
-</ul>
-<p>(e.g. pathogene-host)
-* Better support for not protein only molecular interaction networks
-(metabolites, drug compounds, RNA)
-* ChEMBL webservice interface, interface for PubChem and eventually
-forDrugBank
-* Silent mode: a way to suppress messages and progress bars</p>
-</div>
 </div>
 <div class="section" id="features">
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
@@ -462,6 +158,17 @@ symlinks in case of using multiple working directories.</p>
 HTTP with REST style querying.</p>
 </div>
 </div>
+<div class="section" id="omnipath-in-r">
+<h2>OmniPath in R<a class="headerlink" href="#omnipath-in-r" title="Permalink to this headline">¶</a></h2>
+<p>You can download the data from the webservice and load into R. Look
+<a class="reference external" href="https://github.com/saezlab/pypath/tree/master/r_import">here</a> for an
+example.</p>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
 </div>
 
 
@@ -472,41 +179,7 @@ HTTP with REST style querying.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#"><em>pypath:</em> A Python module for molecular interaction networks</a><ul>
-<li><a class="reference internal" href="#webservice">Webservice</a><ul>
-<li><a class="reference internal" href="#mouse-and-rat">Mouse and rat</a></li>
-<li><a class="reference internal" href="#examples">Examples</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#can-i-use-omnipath-in-r">Can I use OmniPath in R?</a></li>
-<li><a class="reference internal" href="#installation">Installation</a><ul>
-<li><a class="reference internal" href="#linux">Linux</a></li>
-<li><a class="reference internal" href="#igraph-c-library-cairo-and-pycairo">igraph C library, cairo and pycairo</a></li>
-<li><a class="reference internal" href="#directly-from-git">Directly from git</a></li>
-<li><a class="reference internal" href="#with-pip">With pip</a></li>
-<li><a class="reference internal" href="#build-source-distribution">Build source distribution</a></li>
-<li><a class="reference internal" href="#mac-os-x">Mac OS X</a><ul>
-<li><a class="reference internal" href="#troubleshooting">Troubleshooting</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#microsoft-windows">Microsoft Windows</a><ul>
-<li><a class="reference internal" href="#with-anaconda">With Anaconda</a></li>
-<li><a class="reference internal" href="#with-other-python-distributions">With other Python distributions</a></li>
-<li><a class="reference internal" href="#known-issues">Known issues</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#release-history">Release History</a><ul>
-<li><a class="reference internal" href="#id1">0.1.0:</a></li>
-<li><a class="reference internal" href="#id2">0.2.0:</a></li>
-<li><a class="reference internal" href="#id3">0.3.0:</a></li>
-<li><a class="reference internal" href="#id4">0.4.0:</a></li>
-<li><a class="reference internal" href="#id5">0.5.0:</a></li>
-<li><a class="reference internal" href="#id6">0.7.74:</a></li>
-<li><a class="reference internal" href="#upcoming">Upcoming:</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#">PyPath: <em>A Python module for molecular interaction networks</em></a><ul>
 <li><a class="reference internal" href="#features">Features</a><ul>
 <li><a class="reference internal" href="#id-conversion">ID conversion</a></li>
 <li><a class="reference internal" href="#pathways">Pathways</a></li>
@@ -518,13 +191,14 @@ HTTP with REST style querying.</p>
 <li><a class="reference internal" href="#technical">Technical</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#omnipath-in-r">OmniPath in R</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Next topic</h4>
-  <p class="topless"><a href="main.html"
-                        title="next chapter">&lt;no title&gt;</a></p>
+  <p class="topless"><a href="installation.html"
+                        title="next chapter">Installation</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -558,7 +232,7 @@ HTTP with REST style querying.</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="main.html" title="&lt;no title&gt;"
+          <a href="installation.html" title="Installation"
              >next</a> |</li>
         <li class="nav-item nav-item-0"><a href="#">pypath 0.7.97 documentation</a> &#187;</li> 
       </ul>
