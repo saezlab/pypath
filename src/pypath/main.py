@@ -885,7 +885,7 @@ class Direction(object):
 
         for d in dirs:
             if self.has_sign(direction=d):
-                p, n = map(len, [self.positive_sources[d]
+                p, n = map(len, [self.positive_sources[d],
                                  self.negative_sources[d]])
 
                 result[d] = [p >= n, p <= n]
