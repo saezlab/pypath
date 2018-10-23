@@ -910,37 +910,22 @@ class Direction(object):
             result.append([self.straight[0], self.straight[1],
                            'undirected', 'unknown'])
 
-        if d is None or d == self.straight:
+        else:
+            dirs = [self.straight, self.reverse] if d is None else [d]
 
-            if s[self.straight] is not None:
+            for d in dirs:
 
-                if s[self.straight][0]:
-                    result.append([self.straight[0], self.straight[1],
-                                   'directed', 'positive'])
+                if s[d] is not None:
 
-                if s[self.straight][1]:
-                    result.append([self.straight[0], self.straight[1],
-                                   'directed', 'negative'])
+                    if s[d][0]:
+                        result.append([d[0], d[1], 'directed', 'positive'])
 
-            else:
-                result.append([self.straight[0], self.straight[1],
-                               'directed', 'unknown'])
+# XXX: Technically, if s[d] is not None, this could be an elif right?
+                    if s[d][1]:
+                        result.append([d[0], d[1], 'directed', 'negative'])
 
-        if d is None or d == self.reverse:
-
-            if s[self.reverse] is not None:
-
-                if s[self.reverse][0]:
-                    result.append([self.reverse[0], self.reverse[1],
-                                   'directed', 'positive'])
-
-                if s[self.reverse][1]:
-                    result.append([self.reverse[0], self.reverse[1],
-                                   'directed', 'negative'])
-
-            else:
-                result.append([self.reverse[0], self.reverse[1],
-                               'directed', 'unknown'])
+                else:
+                    result.append([d[0], d[1], 'directed', 'unknown'])
 
         return result
 
