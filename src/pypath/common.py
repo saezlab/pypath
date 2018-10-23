@@ -975,7 +975,7 @@ class Namespace(object): # XXX: WHY? + Not used anywhere
     pass
 
 
-def fun(): # XXX: Best name for a function. Not sure if used...
+def fun(): # XXX: Best name for a function. Not 100% sure if used anywhere...
     """
 
     """

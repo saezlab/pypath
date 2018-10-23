@@ -124,11 +124,9 @@ __all__ = ['PyPath', 'Direction', '__version__', 'a', # XXX: What is this "a"?
 
 class Direction(object):
     """
-    Object storing directionality information of an edge.
-
-    * Arguments:
-        - *nameA* [str]: Name of the source node.
-        - *nameB* [str]: Name of the target node.
+    Object storing directionality information of an edge. Also includes
+    information about the reverse direction, mode of regulation and
+    sources of that information.
 
     * Attributes:
         - *dirs* [dict]: Dictionary containing the presence of
@@ -163,6 +161,14 @@ class Direction(object):
                  'negative', 'positive_sources', 'negative_sources']
 
     def __init__(self, nameA, nameB):
+        """
+        Initializes the edge object between the given nodes.
+
+        * Arguments:
+            - *nameA* [str]: Name of the source node.
+            - *nameB* [str]: Name of the target node.
+        """
+
         self.nodes = [nameA, nameB]
         self.nodes.sort()
 
@@ -183,6 +189,10 @@ class Direction(object):
         self.negative_sources = {self.straight: set([]), self.reverse: set([])}
 
     def __str__(self):
+        """
+        Custom string/printing function for the object.
+        """
+
         s = 'Directions and signs of interaction between %s and %s\n\n' % \
             (self.nodes[0], self.nodes[1])
 
@@ -224,6 +234,10 @@ class Direction(object):
         return s
 
     def reload(self):
+        """
+        Reloads the object from the module level.
+        """
+
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist=[modname.split('.')[0]])
         imp.reload(mod)
@@ -231,17 +245,49 @@ class Direction(object):
         setattr(self, '__class__', new)
 
     def check_nodes(self, nodes):
+        """
+        Checks if *nodes* is contained in the edge.
+
+        * Arguments:
+             - *nodes* [list]: Or [tuple], contains the names of the
+               edges to be checked.
+
+        * Returns:
+        - [bool]: True if all elements in *nodes* are contained in the
+          object's node list.
+        """
+
         return not bool(len(set(self.nodes) - set(nodes)))
 
     def check_param(self, di):
+        """
+        Checks if *di* is ``'undirected'`` or contains the nodes of
+        the current edge. Used internally to check that *di* is a valid
+        key for the object attributes declared on dictionaries.
+
+        * Arguments:
+            - *di* [tuple]: Or [str], key to be tested for validity.
+
+        * Returns:
+            - [bool]: ``True`` if *di* is ``'undirected'`` or a tuple
+              of node names contained in the edge, ``False`` otherwise.
+        """
+
         return (di == 'undirected' or (isinstance(di, tuple) and
                                        self.check_nodes(di)))
 
     def set_dir(self, direction, source):
         """
-        Adds directionality information with
-        the corresponding data source named.
+        Adds directionality information with the corresponding data
+        source named. Modifies self attributes *dirs* and *sources*.
+
+        * Arguments:
+            - *direction* [tuple]: Or [str], the directionality key for
+              which the value on *dirs* has to be set ``True``.
+            - *source* [set]: Contains the name(s) of the source(s) from
+              which such information was obtained.
         """
+
         if self.check_param(direction) and len(source):
             self.dirs[direction] = True
             source = common.addToSet(set([]), source)
@@ -249,287 +295,667 @@ class Direction(object):
 
     def get_dir(self, direction, sources=False):
         """
-        Returns boolean or list of sources
+        Returns the state (or *sources* if specified) of the given
+        *direction*.
+
+        * Arguments:
+            - *direction* [tuple]: Or [str] (if ``'undirected'``). Pair
+              of nodes from which direction information is to be
+              retrieved.
+            - *sources* [bool]: Optional, ``'False'`` by default.
+              Specifies if the *sources* information of the given
+              direction is to be retrieved instead.
+
+        * Returns:
+            - [bool] or [set] (if ``sources=True``). Presence/absence of
+              the requested direction (or the list of sources if
+              specified). Returns ``None`` if *direction* is not valid.
         """
+
         if self.check_param(direction):
+
             if sources:
                 return self.sources[direction]
+
             else:
                 return self.dirs[direction]
+
         else:
             return None
 
     def get_dirs(self, src, tgt, sources=False):
         """
-        Returns all directions with boolean values
-        or list of sources.
+        Returns all directions with boolean values or list of sources.
+
+        * Arguments:
+            - *src* [str]: Source node.
+            - *tgt* [str]: Target node.
+            - *sources* [bool]: Optional, ``False`` by default.
+              Specifies whether to return the *sources* attribute
+              instead of *dirs*.
+
+        * Returns:
+            - [list]: Contains the *dirs* (or *sources* if specified) of
+              the given edge.
         """
+
+# XXX: What's the point of using src and tgt if in the end straigth, reverse
+#      and undirected are returned? Also, in such case:
+#      `return self.sources/dirs.values()` is more straightforward.
+
         query = (src, tgt)
+
         if self.check_nodes(query):
+
             if sources:
-                return [
-                    self.sources[query], self.sources[(query[1], query[0])],
-                    self.sources['undirected']
-                ]
+                return [self.sources[query],
+                        self.sources[(query[1], query[0])],
+                        self.sources['undirected']]
+
             else:
-                return [
-                    self.dirs[query], self.dirs[(query[1], query[0])],
-                    self.dirs['undirected']
-                ]
+                return [self.dirs[query],
+                        self.dirs[(query[1], query[0])],
+                        self.dirs['undirected']]
+
         else:
             return None
 
     def which_dirs(self):
+        """
+        Returns the pair(s) of nodes for which there is information
+        about their directionality.
+
+        * Returns:
+            - [list]: List of tuples containing the nodes for which
+              theit attribute *dirs* is ``True``.
+        """
+
         return [d for d, s in iteritems(self.dirs) if s and d != 'undirected']
 
     def unset_dir(self, direction, source=None):
         """
-        Removes directionality information,
-        or single source.
+        Removes directionality and/or source information of the
+        specified *direction*. Modifies attribute *dirs* and *sources*
+        (or *sources* only if ``source=True``).
+
+        * Arguments:
+            - *direction* [tuple]: Or [str] (if ``'undirected'``) the
+              pair of nodes specifying the directionality from which the
+              information is to be removed.
+            - *source* [set]: Optional, ``None`` by default. If
+              specified, determines which source(s) is(are) to be
+              removed from *sources* attribute in the specified
+              *direction*.
         """
+
         if check_param(direction):
+
             if source is not None:
+
                 try:
                     self.sources[direction].remove(source)
+
                 except ValueError:
                     pass
+
             else:
                 self.sources[direction] = []
+
             if len(self.sources[direction]) == 0:
                 self.dirs[direction] = False
 
     def is_directed(self):
+        """
+        Checks if edge has any directionality information.
+
+        * Returns:
+            - [bool]: Returns ``True```if any of the *dirs* attribute
+              values is ``True`` (except ``'undirected'``), ``False``
+              otherwise.
+        """
+
         return bool(
             sum([v for k, v in iteritems(self.dirs) if k != 'undirected']))
 
     def is_stimulation(self, direction=None):
+        """
+        Checks if any (or for a specific *direction*) interaction is
+        activation (positive interaction).
+
+        * Arguments:
+            - *direction* [tuple]: Optional, ``None`` by default. If
+              specified, checks the *positive* attribute of that
+              specific directionality. If not specified, checks both.
+
+        * Returns:
+            - [bool]: ``True`` if any interaction (or the specified
+              *direction*) is activatory (positive).
+        """
+
         if direction is None:
             return bool(sum(self.positive.values()))
+
         else:
             return self.positive[direction]
 
     def is_inhibition(self, direction=None):
+        """
+        Checks if any (or for a specific *direction*) interaction is
+        inhibition (negative interaction).
+
+        * Arguments:
+            - *direction* [tuple]: Optional, ``None`` by default. If
+              specified, checks the *negative* attribute of that
+              specific directionality. If not specified, checks both.
+
+        * Returns:
+            - [bool]: ``True`` if any interaction (or the specified
+              *direction*) is inhibitory (negative).
+        """
+
         if direction is None:
             return bool(sum(self.negative.values()))
+
         else:
             return self.negative[direction]
 
     def has_sign(self, direction=None):
+        """
+        Checks whether the edge (or for a specific *direction*) has
+        any signed information (about positive/negative interactions).
+
+        * Arguments:
+            - *direction* [tuple]: Optional, ``None`` by default. If
+              specified, only the information of that direction is
+              checked for sign.
+
+        * Returns:
+            - [bool]: ``True`` if there exist any information on the
+              sign of the interaction, ``False`` otherwise.
+        """
+
         if direction is None:
-            return bool(sum(self.positive.values())) or \
-                bool(sum(self.negative.values()))
+            return (bool(sum(self.positive.values()))
+                    or bool(sum(self.negative.values())))
+
         else:
             return self.negative[direction] or self.positive[direction]
 
     def set_sign(self, direction, sign, source):
+        """
+        Sets sign and source information on a given direction of the
+        edge. Modifies the attributes *positive* and *positive_sources*
+        or *negative* and *negative_sources* depending on the sign.
+        Direction is also updated accordingly, which also modifies the
+        attributes *dirs*, *sources*,
+
+        * Arguments:
+            - *direction* [tuple]: Pair of edge nodes specifying the
+              direction from which the information is to be set/updated.
+            - *sign* [str]: Specifies the type of interaction. If
+              ``'positive'``, is considered activation, otherwise, is
+              assumed to be negative (inhibition).
+            - *source* [set]: Contains the name(s) of the source(s) from
+              which the information was obtained.
+        """
+
         if self.check_nodes(direction) and len(source):
             self.set_dir(direction, source)
             source = common.addToSet(set([]), source)
+
             if sign == 'positive':
                 self.positive[direction] = True
                 self.positive_sources[direction] = \
                     self.positive_sources[direction] | source
+
             else:
                 self.negative[direction] = True
                 self.negative_sources[direction] = \
                     self.negative_sources[direction] | source
 
     def get_sign(self, direction, sign=None, sources=False):
+        """
+        Retrieves the sign information of the edge in the given
+        diretion. If specified in *sign*, only that sign's information
+        will be retrieved. If specified in *sources*, the sources of
+        that information will be retrieved instead.
+
+        * Arguments:
+            - *direction* [tuple]: Contains the pair of nodes specifying
+              the directionality of the edge from which th information
+              is to be retrieved.
+            - *sign* [str]: Optional, ``None`` by default. Denotes
+              whether to retrieve the ``'positive'`` or ``'negative'``
+              specific information.
+            - *sources* [bool]: Optional, ``False`` by default.
+              Specifies whether to return the sources instead of sign.
+
+        * Returns:
+            - [list]: If ``sign=None`` containing [bool] values denoting
+              the presence of positive and negative sign on that
+              direction, if ``sources=True`` the [set] of sources for
+              each of them will be returned instead. If *sign* is
+              specified, returns [bool] or [set] (if ``sources=True``)
+              of that specific direction and sign.
+        """
+
         if self.check_nodes(direction):
+
             if sources:
+
                 if sign == 'positive':
                     return self.positive_sources[direction]
+
                 elif sign == 'negative':
                     return self.negative_sources[direction]
+
                 else:
-                    return [
-                        self.positive_sources[direction],
-                        self.negative_sources[direction]
-                    ]
+                    return [self.positive_sources[direction],
+                            self.negative_sources[direction]]
+
             else:
+
                 if sign == 'positive':
                     return self.positive[direction]
+
                 elif sign == 'negative':
                     return self.negative[direction]
+
                 else:
                     return [self.positive[direction], self.negative[direction]]
 
     def unset_sign(self, direction, sign, source=None):
+        """
+        Removes sign and/or source information of the specified
+        *direction* and *sign*. Modifies attribute *positive* and
+        *positive_sources* or *negative* and *negative_sources* (or
+        *positive_sources*/*negative_sources* only if ``source=True``).
+
+        * Arguments:
+            - *direction* [tuple]: The pair of nodes specifying the
+              directionality from which the information is to be
+              removed.
+            - *sign* [str]: Sign from which the information is to be
+              removed. Must be either ``'positive'`` or ``'negative'``.
+            - *source* [set]: Optional, ``None`` by default. If
+              specified, determines which source(s) is(are) to be
+              removed from the sources in the specified *direction* and
+              *sign*.
+        """
+
         if self.check_nodes(direction):
+
             if source is not None:
+
                 try:
+
                     if sign == 'positive':
                         self.positive_sources[direction].remove(source)
+
                     if sign == 'negative':
                         self.negative_sources[direction].remove(source)
+
                 except:
                     pass
+
             else:
+
                 if sign == 'positive':
                     self.positive_sources[direction] = []
+
                 if sign == 'negative':
                     self.negative_sources[direction] = []
+
             if len(self.positive_sources[direction]) == 0:
                 self.positive[direction] = False
+
             if len(self.negative_sources[direction]) == 0:
                 self.negative[direction] = False
 
-    def src(self, undirected = False):
+# XXX: Not sure if intended or you noticed, but if undirected=True and
+#      self.dirs['undirected']=True, the returning list includes 'u'.
+    def src(self, undirected=False):
         """
-        Returns the IDs of effector molecules in this directed
-        interaction. If the interaction is bidirectional, the
-        list will contain 2 IDs. If the interaction is undirec-
-        ted, an empty list will be returned.
-        """
-        return [
-            k[0]
-            for k, v in iteritems(self.dirs)
-            if (k != 'undirected' or undirected) and v
-        ]
+        Returns the name(s) of the source node(s) for each existing
+        direction on the interaction.
 
-    def tgt(self, undirected = False):
+        * Arguments:
+            - *undirected* [bool]: Optional, ``False`` by default.
+
+        * Returns:
+            - [list]: Contains the name(s) for the source node(s). This
+              means if the interaction is bidirectional, the list will
+              contain both identifiers of the edge. If the interaction
+              is undirected, an empty list will be returned.
         """
-        Returns the IDs of the target molecules in the inter-
-        action. Same behaviour as `Direction.src()`.
+
+        return [k[0] for k, v in iteritems(self.dirs)
+                if (k != 'undirected' or undirected) and v]
+
+# XXX: Similarly, if undirected=True and self.dirs['undirected']=True,
+#      the returning list includes 'n'.
+    def tgt(self, undirected=False):
         """
-        return [
-            k[1]
-            for k, v in iteritems(self.dirs)
-            if (k != 'undirected' or undirected) and v
-        ]
+        Returns the name(s) of the target node(s) for each existing
+        direction on the interaction.
+
+        * Arguments:
+            - *undirected* [bool]: Optional, ``False`` by default.
+
+        * Returns:
+            - [list]: Contains the name(s) for the target node(s). This
+              means if the interaction is bidirectional, the list will
+              contain both identifiers of the edge. If the interaction
+              is undirected, an empty list will be returned.
+        """
+
+        return [k[1] for k, v in iteritems(self.dirs)
+                if (k != 'undirected' or undirected) and v]
+
+# FIXME: If the intended behavior of the functions above is to include
+#        'undirected' in the returned list if undirected=True and
+#        self.dirs['undirected']=True, then change return by:
+#
+#        `[k[0] if k != 'undirected' else k for k, v in iteritems(self.dirs)
+#         if (k != 'undirected' or undirected) and v]`
+#
+#        On the other hand, if the intended behavior is that returns an empty
+#        empty list if kwarg undirected=True, then add a simple if/else return
 
     def src_by_source(self, source):
-        return [
-            k[0] for k, v in iteritems(self.sources)
-            if k != 'undirected' and source in v
-        ]
+        """
+        Returns the name(s) of the source node(s) for each existing
+        direction on the interaction for a specific *source*.
+
+        * Arguments:
+            - *source* [str]: Name of the source according to which the
+              information is to be retrieved.
+
+        * Returns:
+            - [list]: Contains the name(s) for the source node(s)
+              according to the specified *source*. This means if the
+              interaction is bidirectional, the list will contain both
+              identifiers of the edge. If the specified *source* is not
+              found or invalid, an empty list will be returned.
+        """
+
+        return [k[0] for k, v in iteritems(self.sources)
+                if k != 'undirected' and source in v]
 
     def tgt_by_source(self, source):
-        return [
-            k[1] for k, v in iteritems(self.sources)
-            if k != 'undirected' and source in v
-        ]
+        """
+        Returns the name(s) of the target node(s) for each existing
+        direction on the interaction for a specific *source*.
+
+        * Arguments:
+            - *source* [str]: Name of the source according to which the
+              information is to be retrieved.
+
+        * Returns:
+            - [list]: Contains the name(s) for the target node(s)
+              according to the specified *source*. This means if the
+              interaction is bidirectional, the list will contain both
+              identifiers of the edge. If the specified *source* is not
+              found or invalid, an empty list will be returned.
+        """
+
+        return [k[1] for k, v in iteritems(self.sources)
+                if k != 'undirected' and source in v]
 
     def sources_straight(self):
+        """
+        Retrieves the list of sources for the straight direction.
+
+        * Returns:
+            - [set]: Contains the names of the sources supporting the
+              straight directionality of the edge.
+        """
+
         return self.sources[self.straight]
 
     def sources_reverse(self):
+        """
+        Retrieves the list of sources for the reverse direction.
+
+        * Returns:
+            - [set]: Contains the names of the sources supporting the
+              reverse directionality of the edge.
+        """
+
         return self.sources[self.reverse]
 
     def sources_undirected(self):
+        """
+        Retrieves the list of sources without directed information.
+
+        * Returns:
+            - [set]: Contains the names of the sources supporting the
+              edge presence but without specific directionality
+              information.
+        """
+
         return self.sources['undirected']
 
     def positive_straight(self):
+        """
+        Checks if the straight directionality is a positive interaction.
+
+        * Returns
+            - [bool]: ``True`` if there is supporting information on the
+              straight direction of the edge as activation. ``False``
+              otherwise.
+        """
+
         return self.positive[self.straight]
 
     def positive_reverse(self):
+        """
+        Checks if the reverse directionality is a positive interaction.
+
+        * Returns
+            - [bool]: ``True`` if there is supporting information on the
+              reverse direction of the edge as activation. ``False``
+              otherwise.
+        """
+
         return self.positive[self.reverse]
 
     def negative_straight(self):
+        """
+        Checks if the straight directionality is a negative interaction.
+
+        * Returns
+            - [bool]: ``True`` if there is supporting information on the
+              straight direction of the edge as inhibition. ``False``
+              otherwise.
+        """
+
         return self.negative[self.straight]
 
     def negative_reverse(self):
+        """
+        Checks if the reverse directionality is a negative interaction.
+
+        * Returns
+            - [bool]: ``True`` if there is supporting information on the
+              reverse direction of the edge as inhibition. ``False``
+              otherwise.
+        """
+
         return self.negative[self.reverse]
 
     def negative_sources_straight(self):
+        """
+        Retrieves the list of sources for the straight direction and
+        negative sign.
+
+        * Returns:
+            - [set]: Contains the names of the sources supporting the
+              straight directionality of the edge with a negative sign.
+        """
+
         return self.negative_sources[self.straight]
 
     def negative_sources_reverse(self):
+        """
+        Retrieves the list of sources for the reverse direction and
+        negative sign.
+
+        * Returns:
+            - [set]: Contains the names of the sources supporting the
+              reverse directionality of the edge with a negative sign.
+        """
+
         return self.negative_sources[self.reverse]
 
     def positive_sources_straight(self):
+        """
+        Retrieves the list of sources for the straight direction and
+        positive sign.
+
+        * Returns:
+            - [set]: Contains the names of the sources supporting the
+              straight directionality of the edge with a positive sign.
+        """
+
         return self.positive_sources[self.straight]
 
     def positive_sources_reverse(self):
+        """
+        Retrieves the list of sources for the reverse direction and
+        positive sign.
+
+        * Returns:
+            - [set]: Contains the names of the sources supporting the
+              reverse directionality of the edge with a positive sign.
+        """
+
         return self.positive_sources[self.reverse]
 
     def majority_dir(self):
         """
-        Returns directionality based on majority consensus.
-        Returns `None` if the number of sources supporting the two opposite
-        directions are the same. Returns `'undirected'` if there is no directionality
-        information. Returns `tuple` of IDs if one direction is supported by
-        more sources.
+        Infers which is the major directionality of the edge by number
+        of supporting sources.
+
+        * Returns:
+            - [tuple]: Contains the pair of nodes denoting the consensus
+              directionality. If the number of sources on both
+              directions is equal, ``None`` is returned. If there is no
+              directionality information, ``'undirected'``` will be
+              returned.
         """
+
         if self.is_directed():
+
             if len(self.sources[self.straight]) == len(self.sources[
                     self.reverse]):
                 return None
+
             elif len(self.sources[self.straight]) > len(self.sources[
                     self.reverse]):
                 return self.straight
+
             else:
                 return self.reverse
+
         else:
             return 'undirected'
 
     def majority_sign(self):
         """
-        Returns signs based on majority consensus. Keys in the returned `dict` are directions.
-        Values are `None` if the direction lacks effect sign. Otherwise `tuples` with their
-        first element `True` if the number of sources supporting stimulation in the given
-        direction is greater or equal compared to those supporting inhibition. The second
-        value is the same for inhibition.
+        Infers which is the major sign (activation/inhibition) of the
+        edge by number of supporting sources on both directions.
+
+        * Returns:
+            - [dict]: Keys are the node tuples on both directions
+              (straight/reverse) and values can be either ``None`` if
+              that direction has no sign information or a list of
+              two [bool] elements corresponding to majority of positive
+              and majority of negative support. In case both elements of
+              the list are ``True``, this means the number of supporting
+              sources for both signs in that direction is equal.
         """
+
         result = {self.straight: None, self.reverse: None}
+
         if self.has_sign(direction=self.straight):
-            pos = len(self.positive_sources[self.straight]) >= len(
-                self.negative_sources[self.straight])
-            neg = len(self.positive_sources[self.straight]) <= len(
-                self.negative_sources[self.straight])
+            pos = (len(self.positive_sources[self.straight])
+                   >= len(self.negative_sources[self.straight]))
+            neg = (len(self.positive_sources[self.straight])
+                   <= len(self.negative_sources[self.straight]))
+
             result[self.straight] = [pos, neg]
+
         if self.has_sign(direction=self.reverse):
-            pos = len(self.positive_sources[self.reverse]) >= len(
-                self.negative_sources[self.reverse])
-            neg = len(self.positive_sources[self.reverse]) <= len(
-                self.negative_sources[self.reverse])
+            pos = (len(self.positive_sources[self.reverse])
+                   >= len(self.negative_sources[self.reverse]))
+            neg = (len(self.positive_sources[self.reverse])
+                   <= len(self.negative_sources[self.reverse]))
+
             result[self.reverse] = [pos, neg]
+
         return result
 
     def consensus_edges(self):
         """
         Returns list of edges based on majority consensus of directions and signs.
         """
+
         result = []
         d = self.majority_dir()
         s = self.majority_sign()
+
         if d == 'undirected':
             result.append(
                 [self.straight[0], self.straight[1], 'undirected', 'unknown'])
+
         if d is None or d == self.straight:
+
             if s[self.straight] is not None:
+
                 if s[self.straight][0]:
                     result.append([
                         self.straight[0], self.straight[1], 'directed',
                         'positive'
                     ])
+
                 if s[self.straight][1]:
                     result.append([
                         self.straight[0], self.straight[1], 'directed',
                         'negative'
                     ])
+
             else:
                 result.append([
                     self.straight[0], self.straight[1], 'directed', 'unknown'
                 ])
+
         if d is None or d == self.reverse:
+
             if s[self.reverse] is not None:
+
                 if s[self.reverse][0]:
                     result.append([
                         self.reverse[0], self.reverse[1], 'directed',
                         'positive'
                     ])
+
                 if s[self.reverse][1]:
                     result.append([
                         self.reverse[0], self.reverse[1], 'directed',
                         'negative'
                     ])
+
             else:
                 result.append(
                     [self.reverse[0], self.reverse[1], 'directed', 'unknown'])
+
         return result
 
     def merge(self, other):
+        """
+        """
+
         if other.__class__.__name__ == 'Direction' and self.check_nodes(
                 other.nodes):
             self.dirs[self.straight] = self.dirs[self.straight] or \
@@ -556,6 +982,9 @@ class Direction(object):
                                 other.negative_sources[self.reverse]
 
     def translate(self, ids):
+        """
+        """
+
         # new Direction object
         newd = Direction(ids[self.nodes[0]], ids[self.nodes[1]])
 
@@ -566,7 +995,6 @@ class Direction(object):
 
         # copying signs
         for di in [self.straight, self.reverse]:
-
             pos, neg = self.get_sign(di, sources = True)
 
             newd.set_sign((ids[di[0]], ids[di[1]]), 'positive', pos)

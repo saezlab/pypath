@@ -27,7 +27,7 @@ def _get_version():
           micro version numbers.
 
     * Example:
-        If ``__version__`` contains ``1.11.0``:
+        # If ``__version__`` contains ``1.11.0``:
         >>> _get_version()
         (1, 11, 0)
     """
