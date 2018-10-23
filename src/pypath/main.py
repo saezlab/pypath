@@ -876,23 +876,16 @@ class Direction(object):
               sources for both signs in that direction is equal.
         """
 
-        result = {self.straight: None, self.reverse: None}
+        dirs = [self.straight, self.reverse]
 
-        if self.has_sign(direction=self.straight):
-            pos = (len(self.positive_sources[self.straight])
-                   >= len(self.negative_sources[self.straight]))
-            neg = (len(self.positive_sources[self.straight])
-                   <= len(self.negative_sources[self.straight]))
+        result = {(d, None) for d in dirs}
 
-            result[self.straight] = [pos, neg]
+        for d in dirs:
+            if self.has_sign(direction=d):
+                p, n = map(len, [self.positive_sources[d]
+                                 self.negative_sources[d]])
 
-        if self.has_sign(direction=self.reverse):
-            pos = (len(self.positive_sources[self.reverse])
-                   >= len(self.negative_sources[self.reverse]))
-            neg = (len(self.positive_sources[self.reverse])
-                   <= len(self.negative_sources[self.reverse]))
-
-            result[self.reverse] = [pos, neg]
+                result[d] = [p >= n, p <= n]
 
         return result
 
