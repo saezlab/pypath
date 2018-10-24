@@ -73,14 +73,14 @@ class MappingTable(object):
                  cache=False,
                  cachedir='cache',
                  uniprots = None):
-        
+
         '''
         When initializing ID conversion tables for the first time
         data is downloaded from UniProt and read into dictionaries.
-        It takes a couple of seconds. Data is saved to pickle 
+        It takes a couple of seconds. Data is saved to pickle
         dumps, this way later the tables load much faster.
         '''
-        
+
         self.param = param
         self.one = one
         self.two = two
@@ -91,25 +91,25 @@ class MappingTable(object):
         self.cache = cache
         self.cachedir = cachedir
         self.mapping = {"to": {}, "from": {}}
-        
+
         if log.__class__.__name__ != 'logw':
             self.session = common.gen_session_id()
             self.ownlog = logn.logw(self.session, 'INFO')
         else:
             self.ownlog = log
-        
+
         if param is not None:
-            
+
             self.mid = common.md5((one, two, self.param.bi, ncbi_tax_id))
             md5param = common.md5(json.dumps(self.param.__dict__))
             self.cachefile = os.path.join(self.cachedir, md5param)
-            
+
             if self.cache and os.path.isfile(self.cachefile):
                 self.mapping = pickle.load(open(self.cachefile, 'rb'))
-            
+
             elif len(self.mapping['to']) == 0 or (
                     param.bi and len(self.mapping['from']) == 0):
-                
+
                 if os.path.exists(self.cachefile):
                     os.remove(self.cachefile)
                 if source == "mysql":
@@ -124,7 +124,7 @@ class MappingTable(object):
                     self.read_mapping_uniprot_list(param,
                                                    uniprots = uniprots,
                                                    ncbi_tax_id = ncbi_tax_id)
-                
+
                 if len(self.mapping['to']) and (
                         not param.bi or len(self.mapping['from'])):
                     pickle.dump(self.mapping, open(self.cachefile, 'wb'))
@@ -142,142 +142,142 @@ class MappingTable(object):
         return mapping
 
     def read_mapping_file(self, param, ncbi_tax_id = None):
-        
+
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
-        
+
         if param.__class__.__name__ != "FileMapping":
             self.ownlog.msg(2, "Invalid parameter for read_mapping_file()",
                             'ERROR')
             return {}
-        
+
         if (not os.path.exists(param.input) and
             not hasattr(mapping_input, param.input)):
-            
+
             return {}
-        
+
         if hasattr(mapping_input, param.input):
-            
+
             toCall = getattr(mapping_input, param.input)
             inputArgs = param.inputArgs if hasattr(param, 'inputArgs') else {}
             infile = list(toCall(**inputArgs))
-            
+
             total = sum([sys.getsizeof(i) for i in infile])
-            
+
         else:
             infile = codecs.open(param.input, encoding='utf-8', mode='r')
             total = os.path.getsize(param.input)
-        
+
         prg = progress.Progress(
             total=total, name="Reading from file", interval=18)
-        
+
         lnum = 0
         lsum = 0
         mapping_o = {}
         mapping_i = {}
-        
+
         for line in infile:
-            
+
             if len(line) == 0:
                 continue
-            
+
             if lnum == 0 and param.header != 0:
                 lnum += 1
                 continue
-            
+
             if type(line is list):
                 prg.step(sys.getsizeof(line))
-                
+
             else:
                 line = line.decode('utf-8')
                 prg.step(len(line))
                 line = line.rstrip().split(param.separator)
-            
+
             if len(line) > max([param.oneCol, param.twoCol]):
-                
+
                 if line[param.oneCol] not in mapping_o:
-                    
+
                     mapping_o[line[param.oneCol]] = []
                 mapping_o[line[param.oneCol]].append(line[param.twoCol])
-                
+
                 if param.bi:
-                    
+
                     if line[param.twoCol] not in mapping_i:
-                        
+
                         mapping_i[line[param.twoCol]] = []
                     mapping_i[line[param.twoCol]].append(line[param.oneCol])
-            
+
             lnum += 1
-        
+
         if hasattr(infile, 'close'):
             infile.close()
-        
+
         self.mapping["to"] = mapping_o
         self.cleanDict(self.mapping["to"])
-        
+
         if param.bi:
             self.mapping["from"] = mapping_i
             self.cleanDict(self.mapping["from"])
-        
+
         prg.terminate()
-    
+
     def read_mapping_uniprot_list(self, param, uniprots = None,
                                   ncbi_tax_id = None):
-        
+
         mapping_o = {}
         mapping_i = {}
-        
+
         ncbi_tax_id = param.ncbi_tax_id \
             if ncbi_tax_id is None else ncbi_tax_id
-        
+
         if uniprots is None:
             uniprots = uniprot_input.all_uniprots(ncbi_tax_id,
                                                   swissprot = param.swissprot)
-        
+
         if param.targetNameType != 'uniprot':
             utarget = self._read_mapping_uniprot_list('ACC',
                                                       param.target_ac_name,
                                                       uniprots)
-            
+
             _ = utarget.readline()
             ac_list = list(map(lambda l:
                                    l.decode('ascii').split('\t')[1].strip(),
                                    utarget))
         else:
             ac_list = uniprots
-        
+
         udata = self._read_mapping_uniprot_list(param.target_ac_name,
                                    param.ac_name,
                                    ac_list)
-        
+
         _ = udata.readline()
-        
+
         for l in udata:
-            
+
             l = l.decode('ascii').strip().split('\t')
-            
+
             if l[1] not in mapping_o:
                 mapping_o[l[1]] = []
-            
+
             mapping_o[l[1]].append(l[0])
-            
+
             if param.bi:
-                
+
                 if l[0] not in mapping_i:
                     mapping_i[l[0]] = []
-                
+
                 mapping_i[l[0]].append(l[1])
-        
+
         self.mapping["to"] = mapping_o
         self.cleanDict(self.mapping["to"])
         if param.bi:
             self.mapping["from"] = mapping_i
             self.cleanDict(self.mapping["from"])
-    
+
     def _read_mapping_uniprot_list(self, source, target, ac_list):
         """
         Reads a mapping table from UniProt "upload lists" service.
         """
-        
+
         url = urls.urls['uniprot_basic']['lists']
         post = {
             'from': source,
@@ -285,21 +285,21 @@ class MappingTable(object):
             'to': target,
             'uploadQuery': ' '.join(ac_list)
         }
-        
+
         c = curl.Curl(url, post=post, large=True, silent = False)
-        
+
         if c.result is None:
             for i in xrange(3):
                 c = curl.Curl(url, post=post, large=True,
                               silent = False, cache = False)
                 if c.result is not None:
                     break
-            
+
             if c.result is None:
                 sys.stdout.write('\t:: Error at downloading from UniProt.\n')
-        
+
         return c.result
-    
+
     def read_mapping_uniprot(self, param, ncbi_tax_id = None):
         """
         Downloads ID mappings directly from UniProt.
@@ -309,7 +309,7 @@ class MappingTable(object):
         :param UniprotMapping param: UniprotMapping instance
         :param int ncbi_tax_id: Organism NCBI Taxonomy ID.
         """
-        
+
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
         resep = re.compile(r'[\s;]')
         if param.__class__.__name__ != "UniprotMapping":
@@ -384,7 +384,7 @@ class MappingTable(object):
         tax_filter = ("" if param.ncbi_tax_id is None else
                       "AND %s = %u" % (param.ncbi_tax_id, self.ncbi_tax_id))
         query = """
-            SELECT %s AS one,%s AS two FROM %s 
+            SELECT %s AS one,%s AS two FROM %s
             WHERE %s IS NOT NULL AND %s IS NOT NULL %s""" % (
             param.fieldOne, param.fieldTwo, param.tableName, param.fieldOne,
             param.fieldTwo, tax_filter)
@@ -433,7 +433,7 @@ class MappingTable(object):
             self.maxlTwo = max(
                 len(i) for i in flatList(self.mapping["from"].values()))
         return {"one": self.maxlOne, "two": self.maxlTwo}
-    
+
     def get_tax_id(self, ncbi_tax_id):
         return (
             ncbi_tax_id
@@ -443,14 +443,14 @@ class MappingTable(object):
 
 
 class Mapper(object):
-    
+
     def __init__(self,
                  ncbi_tax_id=9606,
                  mysql_conf=(None, 'mapping'),
                  log=None,
                  cache=True,
                  cachedir='cache'):
-        
+
         self.reup = re.compile(
             r'[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}'
         )
@@ -507,30 +507,30 @@ class Mapper(object):
         yet, it attempts to load from UniProt. If all attempts failed
         returns `None`.
         '''
-        
+
         tbl = None
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
         tblName = (nameType, targetNameType)
         tblNameRev = (targetNameType, nameType)
-        
+
         if ncbi_tax_id not in self.tables:
             self.tables[ncbi_tax_id] = {}
-        
+
         tables = self.tables[ncbi_tax_id]
-        
+
         if tblName in tables:
             tbl = tables[tblName].mapping['to']
-        
+
         elif tblNameRev in tables and \
                 len(tables[tblNameRev].mapping['from']) > 0:
             tbl = tables[tblNameRev].mapping['from']
-        
+
         elif load:
-            
+
             for form in ['mapListUniprot', 'mapListBasic', 'mapListMirbase']:
-                
+
                 frm = getattr(maps, form)
-                
+
                 if tblName in frm:
                     self.load_mappings(maplst={tblName: frm[tblName]},
                                        ncbi_tax_id=ncbi_tax_id)
@@ -538,7 +538,7 @@ class Mapper(object):
                         nameType, targetNameType, load=False,
                         ncbi_tax_id = ncbi_tax_id)
                     break
-                
+
                 if tblNameRev in frm:
                     frm[tblNameRev].bi = True
                     self.load_mappings(maplst={tblNameRev: frm[tblNameRev]},
@@ -547,18 +547,18 @@ class Mapper(object):
                         nameType, targetNameType, load=False,
                         ncbi_tax_id = ncbi_tax_id)
                     break
-                
+
                 if tbl is not None:
                     break
-            
+
             if tbl is None:
-                
+
                 if nameType in self.name_types:
                     this_param = input_formats.UniprotListMapping(
                         nameType = nameType,
                         targetNameType = targetNameType,
                         ncbi_tax_id = ncbi_tax_id)
-                    
+
                     tables[tblName] = MappingTable(
                         nameType,
                         targetNameType,
@@ -571,21 +571,21 @@ class Mapper(object):
                         cache=self.cache,
                         cachedir=self.cachedir
                     )
-                
+
                 tbl = self.which_table(
                         nameType, targetNameType, load=False,
                         ncbi_tax_id = ncbi_tax_id)
-            
+
             if tbl is None:
-                
+
                 if nameType in self.name_types:
                     self.load_uniprot_mappings([nameType])
-                    
+
                     tbl = self.which_table(
                             nameType, targetNameType, load=False,
                             ncbi_tax_id = ncbi_tax_id)
         return tbl
-    
+
     def get_tax_id(self, ncbi_tax_id):
         return self.default_ncbi_tax_id if ncbi_tax_id is None else ncbi_tax_id
 
@@ -596,21 +596,21 @@ class Mapper(object):
                  ncbi_tax_id=None,
                  strict=False,
                  silent=True):
-        r"""
+        """
         This function should be used to convert individual IDs.
         It takes care about everything, you don't need to think
-        on the details. How does it work: looks up dictionaries 
-        between the original and target ID type, if doesn't 
+        on the details. How does it work: looks up dictionaries
+        between the original and target ID type, if doesn't
         find, attempts to load from the predefined inputs.
         If the original name is genesymbol, first it looks up
-        among the preferred gene names from UniProt, if not 
+        among the preferred gene names from UniProt, if not
         found, it takes an attempt with the alternative gene
-        names. If the gene symbol still couldn't be found, and 
+        names. If the gene symbol still couldn't be found, and
         strict = False, the last attempt only the first 5 chara-
-        cters of the gene symbol matched. If the target name 
-        type is uniprot, then it converts all the ACs to primary. 
-        Then, for the Trembl IDs it looks up the preferred gene 
-        names, and find Swissprot IDs with the same preferred 
+        cters of the gene symbol matched. If the target name
+        type is uniprot, then it converts all the ACs to primary.
+        Then, for the Trembl IDs it looks up the preferred gene
+        names, and find Swissprot IDs with the same preferred
         gene name.
 
         @name : str
@@ -630,9 +630,8 @@ class Mapper(object):
             - embl_id (DDBJ/EMBL/GeneBank accession)
             To use other IDs, you need to define the input method
             and load the table before calling :py:func:Mapper.map_name().
-
         """
-        
+
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
         if type(nameType) is list:
             mappedNames = []
@@ -684,14 +683,14 @@ class Mapper(object):
                                                  'genesymbol5',
                                                  targetNameType,
                                                  ncbi_tax_id)
-        
+
         if not len(mappedNames) and nameType == 'mir-mat-name':
-            
+
             mappedNames = self._map_name(name,
                                          'mir-name',
                                          targetNameType,
                                          ncbi_tax_id)
-        
+
         if targetNameType == 'uniprot':
             orig = mappedNames
             mappedNames = self.primary_uniprot(mappedNames)
@@ -700,7 +699,7 @@ class Mapper(object):
                 self.uniprot_mapped.append((orig, mappedNames))
             mappedNames = [u for u in mappedNames if self.reup.match(u)]
         return common.uniqList(mappedNames)
-    
+
     def map_names(self,
                  names,
                  nameType,
@@ -710,9 +709,9 @@ class Mapper(object):
                  silent=True):
         """
         Same as `map_name` just with multiple IDs.
-        
+
         """
-        
+
         return (
             common.uniqList(
                 itertools.chain(
@@ -727,7 +726,7 @@ class Mapper(object):
                 )
             )
         )
-    
+
     def map_refseq(self, refseq, nameType, targetNameType,
                    ncbi_tax_id, strict=False):
         mappedNames = []
@@ -783,7 +782,7 @@ class Mapper(object):
     def trembl_swissprot(self, lst, ncbi_tax_id = None):
         '''
         For a list of Trembl and Swissprot IDs, returns possibly
-        only Swissprot, mapping from Trembl to gene names, and 
+        only Swissprot, mapping from Trembl to gene names, and
         then back to Swissprot.
         '''
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
@@ -821,15 +820,15 @@ class Mapper(object):
     def load_mappings(self, maplst=None, ncbi_tax_id = None):
         """
         mapList is a list of mappings to load;
-        elements of mapList are dicts containing the 
+        elements of mapList are dicts containing the
         id names, molecule type, and preferred source
-        e.g. ("one": "uniprot", "two": "refseq", "typ": "protein", 
+        e.g. ("one": "uniprot", "two": "refseq", "typ": "protein",
         "src": "mysql", "par": "mysql_param/file_param")
         by default those are loaded from pickle files
         """
-        
+
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
-        
+
         if maplst is None:
             try:
                 maplst = maps.mapList
@@ -838,32 +837,32 @@ class Mapper(object):
                                 'ERROR')
                 return None
         self.ownlog.msg(1, "Loading mapping tables...")
-        
+
         for mapName, param in iteritems(maplst):
-            
+
             tables = self.tables[ncbi_tax_id]
-            
+
             param = param.set_organism(ncbi_tax_id)
-            
+
             self.ownlog.msg(2, "Loading table %s ..." % str(mapName))
             sys.stdout.write("\t:: Loading '%s' to '%s' mapping table\n" %
                              (mapName[0], mapName[1]))
-            
+
             typ = param.__class__.__name__
-            
+
             if typ == 'FileMapping' and \
                     not os.path.isfile(param.input) and \
                     not hasattr(mapping_input, param.input):
                 self.ownlog.msg(2, "Error: no such file: %s" % param.input,
                                 "ERROR")
                 continue
-            
+
             if typ == 'PickleMapping' and \
                     not os.path.isfile(param.pickleFile):
                 self.ownlog.msg(2, "Error: no such file: %s" %
                                 m["par"].pickleFile, "ERROR")
                 continue
-            
+
             if typ == 'MysqlMapping':
                 if not self.mysql:
                     self.ownlog.msg(2, "Error: no mysql server known.",
@@ -873,14 +872,14 @@ class Mapper(object):
                     if self.mysql is None:
                         self.init_mysql()
                     param.mysql = self.mysql
-            
+
             if param.ncbi_tax_id != ncbi_tax_id:
                 if typ == 'FileMapping':
                     sys.stdout.write('\t:: No translation table for organism `%u`. '\
                                      'Available for `%u` in file `%s`.\n' % \
                                      (ncbi_tax_id, param.ncbi_tax_id, param.input))
                     return None
-            
+
             tables[mapName] = \
                 MappingTable(
                     mapName[0],
@@ -894,7 +893,7 @@ class Mapper(object):
                     cache=self.cache,
                     cachedir=self.cachedir
                 )
-            
+
             if ('genesymbol', 'uniprot') in tables \
                 and ('genesymbol-syn', 'swissprot') in tables \
                 and ('genesymbol5', 'uniprot') not in tables:
@@ -936,7 +935,7 @@ class Mapper(object):
 
     def load_uniprot_mappings(self, ac_types=None, bi=False,
                               ncbi_tax_id = None):
-        
+
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
         tables = self.tables[ncbi_tax_id]
         ac_types = ac_types if ac_types is not None else self.name_types.keys()
@@ -995,7 +994,7 @@ class Mapper(object):
                     cachefile = os.path.join('cache', md5ac)
                     pickle.dump(tables[(ac_typ, 'uniprot')].mapping,
                                 open(cachefile, 'wb'))
-    
+
     def save_all_mappings(self):
         self.ownlog.msg(1, "Saving all mapping tables...")
         for ncbi_tax_id in self.tables:
@@ -1010,7 +1009,7 @@ class Mapper(object):
         '''
         This is a wrapper to load a ... mapping table.
         '''
-        
+
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
         tables = self.tables[ncbi_tax_id]
         umap = self.read_mapping_uniprot(filename, ncbi_tax_id,

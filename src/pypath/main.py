@@ -193,8 +193,8 @@ class Direction(object):
         Custom string/printing function for the object.
         """
 
-# XXX: Pretty sure this could be refactored and implemented more efficiently
-#      like using str.format()
+    # XXX: Pretty sure this could be refactored and implemented more
+    #      efficiently like using str.format()
 
         s = 'Directions and signs of interaction between %s and %s\n\n' % \
             (self.nodes[0], self.nodes[1])
@@ -342,9 +342,9 @@ class Direction(object):
               the given edge.
         """
 
-# XXX: What's the point of using src and tgt if in the end straigth, reverse
-#      and undirected are returned? Also, in such case:
-#      `return self.sources/dirs.values()` is more straightforward.
+    # XXX: What's the point of using src and tgt if in the end straigth,
+    #      reverse and undirected are returned? Also, in such case:
+    #      `return self.sources/dirs.values()` is more straightforward.
 
         query = (src, tgt)
 
@@ -615,8 +615,8 @@ class Direction(object):
             if len(self.negative_sources[direction]) == 0:
                 self.negative[direction] = False
 
-# XXX: Not sure if intended or you noticed, but if undirected=True and
-#      self.dirs['undirected']=True, the returning list includes 'u'.
+    # XXX: Not sure if intended or you noticed, but if undirected=True and
+    #      self.dirs['undirected']=True, the returning list includes 'u'.
     def src(self, undirected=False):
         """
         Returns the name(s) of the source node(s) for each existing
@@ -635,8 +635,8 @@ class Direction(object):
         return [k[0] for k, v in iteritems(self.dirs)
                 if (k != 'undirected' or undirected) and v]
 
-# XXX: Similarly, if undirected=True and self.dirs['undirected']=True,
-#      the returning list includes 'n'.
+    # XXX: Similarly, if undirected=True and self.dirs['undirected']=True,
+    #      the returning list includes 'n'.
     def tgt(self, undirected=False):
         """
         Returns the name(s) of the target node(s) for each existing
@@ -655,15 +655,16 @@ class Direction(object):
         return [k[1] for k, v in iteritems(self.dirs)
                 if (k != 'undirected' or undirected) and v]
 
-# FIXME: If the intended behavior of the functions above is to include
-#        'undirected' in the returned list if undirected=True and
-#        self.dirs['undirected']=True, then change return by:
-#
-#        `[k[0] if k != 'undirected' else k for k, v in iteritems(self.dirs)
-#         if (k != 'undirected' or undirected) and v]`
-#
-#        On the other hand, if the intended behavior is that returns an empty
-#        empty list if kwarg undirected=True, then add a simple if/else return
+    # FIXME: If the intended behavior of the functions above is to include
+    #        'undirected' in the returned list if undirected=True and
+    #        self.dirs['undirected']=True, then change return by:
+    #
+    #        `[k[0] if k != 'undirected' else k for k, v in
+    #         iteritems(self.dirs) if (k != 'undirected' or undirected) and v]`
+    #
+    #        On the other hand, if the intended behavior is that returns an
+    #        empty list if kwarg undirected=True, then add a simple if/else
+    #        return
 
     def src_by_source(self, source):
         """
@@ -908,7 +909,7 @@ class Direction(object):
         d = self.majority_dir()
         s = self.majority_sign()
 
-# XXX: This case could actually return directly, would save up some time
+        # XXX: This case could actually return directly, would save some time
         if d == 'undirected':
             result.append([self.straight[0], self.straight[1],
                            'undirected', 'unknown'])
@@ -923,7 +924,7 @@ class Direction(object):
                     if s[d][0]:
                         result.append([d[0], d[1], 'directed', 'positive'])
 
-# XXX: Technically, if s[d] is not None, this could be an elif right?
+    # XXX: Technically, if s[d] is not None, this could be an elif right?
                     if s[d][1]:
                         result.append([d[0], d[1], 'directed', 'negative'])
 
@@ -944,17 +945,18 @@ class Direction(object):
               merged with the current one.
         """
 
-# XXX: Not best way to check the class. Probably never happens, but there
-#      may be other class out there with the same name
-#      >  if (other.__class__.__name__ == 'Direction' and self.check_nodes(
-#                 other.nodes):
+    # XXX: Not best way to check the class. Probably never happens, but there
+    #      may be other class out there with the same name
+    #      >  if (other.__class__.__name__ == 'Direction' and self.check_nodes(
+    #                 other.nodes):
         if other.__class__ == self.__class__ and self.check_nodes(other.nodes):
             for k in [self.straight, self.reverse, 'undirected']:
                 self.dirs[k] = self.dirs[k] or other.dirs[k]
 
                 self.sources[k] = self.sources[k] | other.sources[k]
 
-# XXX: Is there a reason to only update positive with straight and negative only with reverse?
+    # XXX: Is there a reason to only update positive with straight and negative
+    #      only with reverse?
                 if k == self.straight:
                     self.positive[k] = self.positive[k] or other.positive[k]
                     self.positive_sources[k] = (self.positive_sources[k]
@@ -1174,406 +1176,132 @@ class _NamedVertexSeq(object):
     up = uniprot
     vs = __iter__
 
-
+# TODO: Ask:
+#       - Which/how many organisms are accepted/available?
+#       - MySQL
 class PyPath(object):
     """
+    Main network object.
+
+    * Arguments:
+        - *ncbi_tax_id* [int]: Optional, ``9606`` (Homo sapiens) by
+          default. NCBI Taxonomic identifier of the organism from which
+          the data will be downloaded.
+        - *default_name_type* [dict]: Optional, ``{'protein': 'uniprot',
+          'mirna': 'mirbase', 'drug': 'chembl', 'lncrna':
+          'lncrna-genesymbol'}`` by default. Contains the default
+          identifier types to which the downloaded data will be
+          converted. If others are used, user may need to provide the
+          format definitions for the conversion tables.
+        - *copy* [pypath.main.PyPath]: Optional, ``None`` by default.
+          Other *PyPath* instance from which the data will be copied.
+        - *mysql* [tuple]: Optional, ``(None, 'mapping')`` by default.
+          Contains the MySQL parameters used by the ``mapping`` module
+          to load the ID conversion tables.
+        - *chembl_mysql* [tuple]: Optional, ``(None, 'chembl')`` by
+          default. Contains the MySQL parameters used by the ``mapping``
+          module to load the ChEMBL ID conversion tables.
+        - *name* [str]: Optional, ``'unnamed'`` by default. Session or
+          project name (custom).
+        - *outdir* [str]: Optional, ``'results'`` by default. Output
+          directory where to store all output files.
+        - *loglevel* [str]: Optional, ``'INFO'`` by default. Sets the
+          level of the logger. Possible levels are: ``'DEBUG'``,
+          ``'INFO'``, ``'WARNING'``, ``'ERROR'`` or ``'CRITICAL'``.
+        - *loops* [bool]: Optional, ``False`` by default. Determines if
+          self-loop edges are allowed in the graph.
+
     * Attributes:
-        - *acsn_effects* []:
-        - *add_genesets* []:
-        - *add_grouped_eattr* []:
-        - *add_grouped_set_eattr* []:
-        - *add_list_eattr* []:
-        - *add_set_eattr* []:
-        - *add_update_edge* []:
-        - *add_update_vertex* []:
-        - *affected_by* []:
-        - *affects* []:
-        - *all_between* []:
-        - *all_neighbours* []:
-        - *apply_list* []:
-        - *apply_negative* []:
-        - *attach_network* []:
-        - *basic_stats* []:
-        - *basic_stats_intergroup* []:
-        - *cancer_drivers_list* []:
-        - *cancer_gene_census_list* []:
-        - *clean_graph* []:
-        - *collapse_by_name* []:
-        - *combine_attr* []:
-        - *communities* []:
-        - *complex_comembership_network* []:
-        - *complexes* []:
-        - *complexes_in_network* []:
-        - *compounds_from_chembl* []:
-        - *consistency* []:
-        - *copy* []:
-        - *copy_edges* []:
-        - *count_sol* []:
-        - *coverage* []:
-        - *curation_effort* []:
-        - *curation_stats* []:
-        - *curation_tab* []:
-        - *curators_work* []:
-        - *databases_similarity* []:
-        - *default_name_type* []:
-        - *degree_dist* []:
-        - *degree_dists* []:
-        - *delete_by_source* []:
-        - *delete_by_taxon* []:
-        - *delete_unknown* []:
-        - *delete_unmapped* []:
-        - *dgenesymbol* []:
-        - *dgenesymbols* []:
-        - *dgs* []:
-        - *dgss* []:
-        - *disease_genes_list* []:
-        - *dneighbors* []:
-        - *dp* []:
-        - *dproteins* []:
-        - *dps* []:
-        - *druggability_list* []:
-        - *duniprot* []:
-        - *duniprots* []:
-        - *dup* []:
-        - *dups* []:
-        - *dv* []:
-        - *dvs* []:
-        - *edge_exists* []:
-        - *edge_loc* []:
-        - *edge_names* []:
-        - *edges_3d* []:
-        - *edges_expression* []:
-        - *edges_in_comlexes* []:
-        - *edges_ptms* []:
-        - *edgeseq_inverse* []:
-        - *export_dot* []:
-        - *export_edgelist* []:
-        - *export_graphml* []:
-        - *export_ptms_tab* []:
-        - *export_sif* []:
-        - *export_struct_tab* []:
-        - *export_tab* []:
-        - *filters* []:
-        - *find_all_paths* []:
-        - *find_all_paths2* []:
-        - *find_complex* []:
-        - *first_neighbours* []:
-        - *fisher_enrichment* []:
-        - *geneset_enrichment* []:
-        - *genesymbol* []:
-        - *genesymbol_labels* []:
-        - *genesymbols* []:
-        - *get_attrs* []:
-        - *get_directed* []:
-        - *get_dirs_signs* []:
-        - *get_edge* []:
-        - *get_edges* []:
-        - *get_function* []:
-        - *get_giant* []:
-        - *get_max* []:
-        - *get_network* []:
-        - *get_node* []:
-        - *get_node_d* []:
-        - *get_node_pair* []:
-        - *get_nodes* []:
-        - *get_nodes_d* []:
-        - *get_pathways* []:
-        - *get_proteomicsdb* []:
-        - *get_sub* []:
-        - *get_taxon* []:
-        - *go_annotate* []:
-        - *go_dict* []:
-        - *go_enrichment* []:
-        - *gs* []:
-        - *gs_affected_by* []:
-        - *gs_affects* []:
-        - *gs_edge* []:
-        - *gs_in_directed* []:
-        - *gs_in_undirected* []:
-        - *gs_inhibited_by* []:
-        - *gs_inhibits* []:
-        - *gs_neighborhood* []:
-        - *gs_neighbors* []:
-        - *gs_stimulated_by* []:
-        - *gs_stimulates* []:
-        - *gss* []:
-        - *guide2pharma* []:
-        - *having_attr* []:
-        - *having_eattr* []:
-        - *having_ptm* []:
-        - *having_vattr* []:
-        - *homology_translation* []:
-        - *htp_stats* []:
-        - *in_complex* []:
-        - *in_directed* []:
-        - *in_undirected* []:
-        - *info* []:
-        - *init_complex_attr* []:
-        - *init_edge_attr* []:
-        - *init_gsea* []:
-        - *init_network* []:
-        - *init_vertex_attr* []:
-        - *intergroup_shortest_paths* []:
-        - *intogen_cancer_drivers_list* []:
-        - *jaccard_edges* []:
-        - *jaccard_meta* []:
-        - *kegg_directions* []:
-        - *kegg_pathways* []:
-        - *kinase_stats* []:
-        - *kinases_list* []:
-        - *label_by_go* []:
-        - *laudanna_directions* []:
-        - *laudanna_effects* []:
-        - *licence* []:
-        - *list_resources* []:
-        - *load_3dcomplexes* []:
-        - *load_3did_ddi* []:
-        - *load_3did_ddi2* []:
-        - *load_3did_dmi* []:
-        - *load_3did_interfaces* []:
-        - *load_all_pathways* []:
-        - *load_compleat* []:
-        - *load_complexportal* []:
-        - *load_comppi* []:
-        - *load_corum* []:
-        - *load_dbptm* []:
-        - *load_ddi* []:
-        - *load_ddis* []:
-        - *load_depod_dmi* []:
-        - *load_disgenet* []:
-        - *load_dmi* []:
-        - *load_dmis* []:
-        - *load_domino_dmi* []:
-        - *load_elm* []:
-        - *load_expression* []:
-        - *load_go* []:
-        - *load_havugimana* []:
-        - *load_hpa* []:
-        - *load_hprd_ptms* []:
-        - *load_ielm* []:
-        - *load_interfaces* []:
-        - *load_li2012_ptms* []:
-        - *load_ligand_receptor_network* []:
-        - *load_list* []:
-        - *load_lmpid* []:
-        - *load_mappings* []:
-        - *load_mimp_dmi* []:
-        - *load_mutations* []:
-        - *load_negatives* []:
-        - *load_old_omnipath* []:
-        - *load_omnipath* []:
-        - *load_pathways* []:
-        - *load_pdb* []:
-        - *load_pepcyber* []:
-        - *load_pfam* []:
-        - *load_pfam2* []:
-        - *load_pfam3* []:
-        - *load_phospho_dmi* []:
-        - *load_phosphoelm* []:
-        - *load_pisa* []:
-        - *load_pnetworks_dmi* []:
-        - *load_psite_phos* []:
-        - *load_psite_reg* []:
-        - *load_ptms* []:
-        - *load_ptms2* []:
-        - *load_reflist* []:
-        - *load_reflists* []:
-        - *load_resource* []:
-        - *load_resources* []:
-        - *load_signor_ptms* []:
-        - *load_tfregulons* []:
-        - *lookup_cache* []:
-        - *loop_edges* []:
-        - *map_edge* []:
-        - *map_item* []:
-        - *map_list* []:
-        - *mean_reference_per_interaction* []:
-        - *merge_lists* []:
-        - *merge_nodes* []:
-        - *mimp_directions* []:
-        - *mutated_edges* []:
-        - *names2vids* []:
-        - *negative_report* []:
-        - *neighborhood* []:
-        - *neighbors* []:
-        - *neighbourhood_network* []:
-        - *network_filter* []:
-        - *network_stats* []:
-        - *new_edges* []:
-        - *new_nodes* []:
-        - *node_exists* []:
-        - *numof_directed_edges* []:
-        - *numof_reference_interaction_pairs* []:
-        - *numof_references* []:
-        - *numof_undirected_edges* []:
-        - *orthology_translation* []:
-        - *p* []:
-        - *pathway_attributes* []:
-        - *pathway_members* []:
-        - *pathway_names* []:
-        - *pathway_similarity* []:
-        - *pathways_table* []:
-        - *pfam_regions* []:
-        - *phosphonetworks_directions* []:
-        - *phosphopoint_directions* []:
-        - *phosphorylation_directions* []:
-        - *phosphorylation_signs* []:
-        - *phosphosite_directions* []:
-        - *prdb_tissue_expr* []:
-        - *process_direction* []:
-        - *process_directions* []:
-        - *process_dmi* []:
-        - *process_sign* []:
-        - *protein* []:
-        - *protein_edge* []:
-        - *proteins* []:
-        - *proteome_list* []:
-        - *ps* []:
-        - *random_walk_with_return* []:
-        - *random_walk_with_return2* []:
-        - *read_data_file* []:
-        - *read_from_cache* []:
-        - *read_list_file* []:
-        - *receptors_list* []:
-        - *reference_edge_ratio* []:
-        - *reference_hist* []:
-        - *reload* []:
-        - *remove_htp* []:
-        - *remove_undirected* []:
-        - *run_batch* []:
-        - *save_network* []:
-        - *save_session* []:
-        - *search_attr_and* []:
-        - *search_attr_or* []:
-        - *second_neighbours* []:
-        - *select_by_go* []:
-        - *separate* []:
-        - *separate_by_category* []:
-        - *sequences* []:
-        - *set_boolean_vattr* []:
-        - *set_categories* []:
-        - *set_chembl_mysql* []:
-        - *set_disease_genes* []:
-        - *set_druggability* []:
-        - *set_drugtargets* []:
-        - *set_kinases* []:
-        - *set_receptors* []:
-        - *set_signaling_proteins* []:
-        - *set_tfs* []:
-        - *set_transcription_factors* []:
-        - *shortest_path_dist* []:
-        - *signaling_proteins_list* []:
-        - *signor_pathways* []:
-        - *similarity_groups* []:
-        - *small_plot* []:
-        - *sorensen_pathways* []:
-        - *source_diagram* []:
-        - *source_network* []:
-        - *source_similarity* []:
-        - *source_stats* []:
-        - *sources_hist* []:
-        - *sources_overlap* []:
-        - *sources_venn_data* []:
-        - *straight_between* []:
-        - *string_effects* []:
-        - *sum_in_complex* []:
-        - *table_latex* []:
-        - *tfs_list* []:
-        - *third_source_directions* []:
-        - *tissue_network* []:
-        - *transcription_factors* []:
-        - *translate_refsdir* []:
-        - *uniprot* []:
-        - *uniprots* []:
-        - *uniq_node_list* []:
-        - *uniq_ptm* []:
-        - *uniq_ptms* []:
-        - *up* []:
-        - *up_affected_by* []:
-        - *up_affects* []:
-        - *up_edge* []:
-        - *up_in_directed* []:
-        - *up_in_undirected* []:
-        - *up_inhibited_by* []:
-        - *up_inhibits* []:
-        - *up_neighborhood* []:
-        - *up_neighbors* []:
-        - *up_stimulated_by* []:
-        - *up_stimulates* []:
-        - *update_adjlist* []:
-        - *update_attrs* []:
-        - *update_cats* []:
-        - *update_db_dict* []:
-        - *update_pathway_types* []:
-        - *update_pathways* []:
-        - *update_sources* []:
-        - *update_vertex_sources* []:
-        - *update_vindex* []:
-        - *update_vname* []:
-        - *ups* []:
-        - *v* []:
-        - *vertex_pathways* []:
-        - *vs* []:
-        - *vsgs* []:
-        - *vsup* []:
-        - *wang_effects* []:
-        - *write_table* []:
+        - *adjlist* [list]: List of [set] containing the adjacency of
+          each node. See ``PyPath.update_adjlist()`` method for more
+          information.
+        - *chembl* [pypath.chembl.Chembl]:
+        - *chembl_mysql* [tuple]: Contains the MySQL parameters used by
+          the ``mapping`` module to load the ChEMBL ID conversion
+          tables.
+        - *data* [dict?]:
+        - *db_dict* []:
+        - *dgraph* [igraph.Graph]: Directed network graph object.
+        - *disclaimer* [str]: Disclaimer text.
+        - *dlabDct* []:
+        - *dnodDct* []:
+        - *dnodInd* []:
+        - *dnodLab* []:
+        - *dnodNam* []:
+        - *edgeAttrs* []:
+        - *exp* []:
+        - *exp_prod* []:
+        - *exp_samples* []:
+        - *failed_edges* []:
+        - *go* []:
+        - *graph* [igraph.Graph]: Undirected network graph object.
+        - *gsea* []:
+        - *has_cats* []:
+        - *htp* []:
+        - *labDct* []:
+        - *lists* []:
+        - *loglevel* [str]: The level of the logger.
+        - *loops* [bool]: Whether if self-loop edges are allowed in the
+          graph.
+        - *mapper* []:
+        - *mutation_samples* []:
+        - *mysql_conf* [tuple]: Contains the MySQL parameters used by
+          the ``mapping`` module to load the ID conversion tables.
+        - *name* [str]: Session or project name (custom).
+        - *ncbi_tax_id* [int]: NCBI Taxonomic identifier of the organism
+          from which the data will be downloaded.
+        - *negatives* []:
+        - *nodDct* []:
+        - *nodInd* []:
+        - *nodLab* []:
+        - *nodNam* []:
+        - *outdir* [str]: Output directory where to store all output
+          files.
+        - *ownlog* []:
+        - *palette* []:
+        - *pathway_types* []:
+        - *pathways* []:
+        - *plots* []:
+        - *proteomicsdb* []:
+        - *raw_data* []:
+        - *reflists* []:
+        - *seq* []:
+        - *session* []:
+        - *session_name* []:
+        - *sourceNetEdges* []:
+        - *sourceNetNodes* []:
+        - *sources* []:
+        - *u_pfam* []:
+        - *uniprot_mapped* []:
+        - *unmapped* []:
+        - *vertexAttrs* []:
     """
 
-    ###
-    # main network object
-    ###
+    default_name_type = {'protein': 'uniprot',
+                         'mirna': 'mirbase',
+                         'drug': 'chembl',
+                         'lncrna': 'lncrna-genesymbol'}
 
-    default_name_type = {
-        'protein': 'uniprot',
-        'mirna': 'mirbase',
-        'drug': 'chembl',
-        'lncrna': 'lncrna-genesymbol'
-    }
-
-    def __init__(self,
-                 ncbi_tax_id=9606,
-                 default_name_type=default_name_type,
-                 copy=None,
-                 mysql=(None, 'mapping'),
-                 chembl_mysql=(None, 'chembl'),
-                 name='unnamed',
-                 outdir='results',
-                 loglevel='INFO',
-                 loops=False):
+    def __init__(self, ncbi_tax_id=9606, default_name_type=default_name_type,
+                 copy=None, mysql=(None, 'mapping'),
+                 chembl_mysql=(None, 'chembl'), name='unnamed',
+                 outdir='results', loglevel='INFO', loops=False):
         """
-        Currently only one organism molecular interaction networks
-        are supported. Some functions supports multi-species networks,
-        and maybe once the whole module will support that.
-
-        @ncbi_tax_id : int
-            The ID of the organism in NCBI Taxonomy. Defaults to human
-            (9606).
-        @mysql
-            The MySQL parameter used by the mapping module to load some
-            ID conversion tables from MySQL.
-        @default_name_type : dict
-            Dictionary of default ID types, what all identifiers of the
-            given molecular species should be converted to. By default,
-            for protein it is UniProt. It could be any other, only then
-            you need to supply the required format definitions for the
-            ID conversion tables.
-        @copy : BioGraph object
-            In case you copy an other instance.
-        @name : str
-            This is a custom session/project name.
-        @outdir : str
-            The directory where you wish to create all the output files.
-        @loglevel : str
-            Passed to logging module.
-        @loops : bool
-            Whether to allow loop edges in the graph. Default is False.
+        Initializes the network object. **NOTE:** Only the instance is
+        created, no data is donwloaded until the corresponding function
+        is called.
         """
+
         self.__version__ = _version.__version__
+
+        # Setting up the working directory
         for d in ['results', 'log', 'cache']:
+
             if not os.path.exists(d):
                 os.makedirs(d)
+
         if copy is None:
+            # Setting up graph object
             self.graph = igraph.Graph(0)
             g = self.graph
             g['entity_types'] = {}
@@ -1601,6 +1329,7 @@ class PyPath(object):
             g['layout_type'] = None
             g['layout_data'] = None
             g['only_directed'] = False
+
             # allow loop edges in the graph
             self.loops = loops
             self.dgraph = None
@@ -1632,15 +1361,15 @@ class PyPath(object):
             self.edgeAttrs = {}
             self.u_pfam = None
             self.seq = None
-            self.palette = [
-                '#6EA945', '#007B7F', '#FCCC06', '#DA0025', '#000000'
-            ]
+            self.palette = ['#6EA945', '#007B7F', '#FCCC06', '#DA0025',
+                            '#000000']
             self.session = common.gen_session_id()
             self.session_name = ''.join([self.name, '-', self.session])
             self.loglevel = loglevel
             self.ownlog = logn.logw(self.session, self.loglevel)
-            self.mapper = mapping.Mapper(
-                self.ncbi_tax_id, mysql_conf=self.mysql_conf, log=self.ownlog)
+            self.mapper = mapping.Mapper(self.ncbi_tax_id,
+                                         mysql_conf=self.mysql_conf,
+                                         log=self.ownlog)
             self.disclaimer = '\n\t=== d i s c l a i m e r ===\n\n'\
                 '\tAll data coming with this module\n'\
                 '\teither as redistributed copy or downloaded using the\n'\
@@ -7811,6 +7540,7 @@ class PyPath(object):
         enr.new_set(proteins)
         return enr
 
+    # XXX: False, does not create a dict but a list
     def update_adjlist(self, graph = None, mode = 'ALL'):
         """
         Creates an adjacency list in a dict of sets format.
