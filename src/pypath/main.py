@@ -2774,7 +2774,7 @@ class PyPath(object):
                     colnames=True,
                     rownames=True):
         out = ''
-        rn = tbl.keys()
+        rn = list(tbl.keys())
         if "header" in rn:
             cn = tbl["header"]
             del tbl["header"]
@@ -2790,7 +2790,7 @@ class PyPath(object):
                 out += str(r)[0:cut] + sep
             thisRow = [str(i) for i in tbl[r]]
             out += sep.join(thisRow) + "\n"
-        f = codecs.open(self.outdir + outfile, encoding='utf-8', mode='w')
+        f = open(os.path.join(self.outdir, outfile), 'w')
         f.write(out)
         f.close()
 
@@ -3271,7 +3271,7 @@ class PyPath(object):
             result["header"] = header
             self.write_table(result, outfile, colnames=True)
 
-    def sources_venn_data(self):
+    def sources_venn_data(self, fname = None, return_data = False):
         result = {}
         self.update_sources()
         g = self.graph
@@ -3288,7 +3288,14 @@ class PyPath(object):
                 onlyj = str(len(list(set(inj) - set(ini))))
                 inter = str(len(list(set(ini) & set(inj))))
                 result[i + "-" + j] = [i, j, onlyi, onlyj, inter]
-        self.write_table(result, "sources-venn-data.csv")
+                
+        if fname:
+            
+            self.write_table(result, fname)
+        
+        if return_data:
+            
+            return result
 
     def sources_hist(self):
         srcnum = []
@@ -4587,10 +4594,15 @@ class PyPath(object):
         default undirected network, otherwise ``None``.
 
         @identifier : int, str
-            Vertex index (int) or GeneSymbol (str) or UniProt ID (str).
+            Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or
+            ``igraph.Vertex`` object.
         """
         
         graph = self._get_undirected()
+        
+        if isinstance(identifier, igraph.Vertex):
+            
+            identifier = identifier['name']
         
         return graph.vs[identifier] \
             if isinstance(identifier, int) and identifier < graph.vcount() \
@@ -4613,9 +4625,16 @@ class PyPath(object):
         default directed network, otherwise ``None``.
 
         @identifier : int, str
-            Vertex index (int) or GeneSymbol (str) or UniProt ID (str).
+            Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or
+            ``igraph.Vertex`` object.
         """
+        
         dgraph = self._get_directed()
+        
+        if isinstance(identifier, igraph.Vertex):
+            
+            identifier = identifier['name']
+        
         return dgraph.vs[identifier] \
             if isinstance(identifier, int) and identifier < dgraph.vcount() \
             else dgraph.vs[self.dnodDct[identifier]] \
@@ -4691,22 +4710,32 @@ class PyPath(object):
         the 2 proteins, otherwise ``None``.
 
         :param int,str source:
-            Vertex index or UniProt ID or GeneSymbol
+            Vertex index or UniProt ID or GeneSymbol or ``igraph.Vertex``
+            object.
         :param int,str target:
-            Vertex index or UniProt ID or GeneSymbol
+            Vertex index or UniProt ID or GeneSymbol or ``igraph.Vertex``
+            object.
         :param bool directed:
             To be passed to igraph.Graph.get_eid()
         """
         
-        v_source = self.get_node(source) \
-            if not self.graph.is_directed() else self.get_node_d(source)
-        v_target = self.get_node(target) \
+        source = self.get_node(source) \
+                if not self.graph.is_directed() else self.get_node_d(source)
+        target = self.get_node(target) \
             if not self.graph.is_directed() else self.get_node_d(target)
-        if v_source is not None and v_target is not None:
+        
+        if source is not None and target is not None:
+            
             eid = self.graph.get_eid(
-                v_source.index, v_target.index, directed=directed, error=False)
+                source.index,
+                target.index,
+                directed=directed,
+                error=False
+            )
+            
             if eid != -1:
                 return self.graph.es[eid]
+        
         return None
     
     # synonyms
@@ -4716,9 +4745,14 @@ class PyPath(object):
         """
         Returns a generator with all edges between source and target vertices.
         
-        :param iterable sources: Source vertex IDs, names or labels.
-        :param iterable targets: Target vertec IDs, names or labels.
-        :param bool directed: Passed to `igraph.get_eid()`.
+        :param iterable sources:
+            Source vertex IDs, names, labels, or any iterable yielding
+            ``igraph.Vertex`` objects.
+        :param iterable targets:
+            Target vertec IDs, names, labels, or any iterable yielding
+            ``igraph.Vertex`` objects.
+        :param bool directed:
+            Passed to ``igraph.get_eid()``.
         """
         
         return (e for e in (
