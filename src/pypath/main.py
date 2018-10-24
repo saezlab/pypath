@@ -998,92 +998,178 @@ class Direction(object):
         return newd
 
 
+# TODO: Ask Dénes about this and finish docstrings
 class AttrHelper(object):
+    """
+    Attribute helper class.
+
+    * Initialization arguments:
+        - *value* [dict/str]?:
+        - *name* [str]?: Optional, ``None`` by default.
+        - *defaults* [dict]:
+
+    * Attributes:
+        - *value* [dict]?:
+        - *name* [str]?:
+        - *defaults* [dict]:
+        - *id_type* [type]:
+
+    * Call arguments:
+        - *instance* []:
+        - *thisDir* [tuple?]: Optional, ``None`` by default.
+        - *thisSign* []: Optional, ``None`` by default.
+        - *thisDirSources* []: Optional, ``None`` by default.
+        - *thisSources* []: Optional, ``None`` by default.
+
+    * Returns:
+        -
+    """
+
     def __init__(self, value, name=None, defaults={}):
+        """
+        """
+
         self.name = name
         self.value = value
         self.defaults = defaults
+
         if isinstance(self.value, dict):
             self.id_type = type(self.value.keys()[0])
 
-    def __call__(self,
-                 instance,
-                 thisDir=None,
-                 thisSign=None,
-                 thisDirSources=None,
-                 thisSources=None):
+    def __call__(self, instance, thisDir=None, thisSign=None,
+                 thisDirSources=None, thisSources=None):
+        """
+        """
+
         _thisDir = 'directed' if isinstance(thisDir, tuple) else thisDir
+
         # user supplied callback function:
         if hasattr(self.value, '__call__'):
             return self.value(instance)
+
         # special cases #1: by direction/effect
-        elif self.value == 'DIRECTIONS' and self.defaults is not None and \
-                self.name is not None and self.name in self.defaults:
+        elif (self.value == 'DIRECTIONS' and self.defaults is not None
+              and self.name is not None and self.name in self.defaults):
+
             if _thisDir in self.defaults[self.name]:
+
                 if thisSign in self.defaults[self.name][_thisDir]:
                     return self.defaults[self.name][_thisDir][thisSign]
+
         # special cases #2: by source category
         elif self.value == 'RESOURCE_CATEGORIES':
+
             for resource_type in ['pathway', 'ptm', 'reaction', 'interaction']:
-                if len(
-                        getattr(data_formats, '%s_resources' % resource_type) &
-                        thisSources) > 0:
-                    if self.name in self.defaults and \
-                            resource_type in self.defaults[self.name]:
+
+                if len(getattr(data_formats, '%s_resources' % resource_type)
+                       &thisSources) > 0:
+
+                    if (self.name in self.defaults
+                        and resource_type in self.defaults[self.name]):
                         return self.defaults[self.name][resource_type]
+
             sys.stdout.wrtie('No category for %s\n' % thisSources)
             sys.stdout.flush()
+
         # if value is constant:
         elif type(self.value) in common.simpleTypes:
             return self.value
+
         # if a dictionary given to map some igraph attribute to values:
         elif hasattr(self.value, '__call__'):
             return self.value(instance)
+
         elif isinstance(self.value, dict) and self.attr_name is not None:
+
             if hasattr(instance, self.value['_name']):
                 key_attr = getattr(instance, self.value['_name'])
+
             elif self.value['_name'] in instance.attributes():
                 key_attr = instance[self.value['_name']]
+
             if key_attr in self.value:
                 return self.value[key_attr]
+
         # if default value has been given for this attribute:
-        elif self.name is not None and self.defaults is not None and \
-                self.name in self.defaults:
+        elif (self.name is not None and self.defaults is not None
+              and self.name in self.defaults):
             return self.defaults[self.name]
+
         # ultimately, return None
         else:
             return None
 
 
 class _NamedVertexSeq(object):
+    """
+    Vertex sequence object. Combines the list of vertex objects, their
+    UniProt IDs and corresponding GeneSymbols.
 
-    __slots__ = [
-        '_vs',
-        '_nodNam',
-        '_nodLab'
-    ]
+    * Arguments:
+        - *_vs* [igraph.VertexSeq]: Collection of [igraph.Vertex]
+          objects.
+        - *_nodNam* [list]: List of [str] containing the node names
+          (UniProt IDs).
+        - *_nodLab* [list]: List of [str] containing the node labels
+          (GeneSymbols).
+
+    * Attributes:
+        - *_vs* [igraph.VertexSeq]: Collection of [igraph.Vertex]
+          objects.
+        - *_nodNam* [list]: List of [str] containing the node names
+          (UniProt IDs).
+        - *_nodLab* [list]: List of [str] containing the node labels
+          (GeneSymbols).
+    """
+
+    __slots__ = ['_vs', '_nodNam', '_nodLab']
 
     def __init__(self, _vs, _nodNam, _nodLab):
+        """
+        Initializes the object and sets the attributes according to the
+        passed arguments.
+        """
+
         self._vs = _vs
         self._nodNam = _nodNam
         self._nodLab = _nodLab
 
     def __iter__(self):
+        """
+        Iterator function yielding the [igraph.Vertex] instances
+        contained in *_vs*. It's accessed through the alias *vs*.
+        """
+
         for v in self._vs:
             yield v
 
     def genesymbol(self):
+        """
+        Iterator function yielding the GeneSymbols contained in
+        *_nodLab*. It can be accessed through the alias *gs*.
+        """
+
         for v in self._vs:
             yield self._nodLab[v.index]
 
     def uniprot(self):
+        """
+        Iterator function yielding the UniProt IDs contained in
+        *_nodNam*. It can be accessed through the alias *up*.
+        """
+
         for v in self._vs:
             yield self._nodNam[v.index]
 
     def ids(self):
+        """
+        Iterator function yielding the vertex indexes.
+        """
+
         for v in self._vs:
             yield v.index
 
+    # Aliases
     gs = genesymbol
     up = uniprot
     vs = __iter__
