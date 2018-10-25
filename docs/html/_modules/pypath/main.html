@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>pypath.main &#8212; pypath 0.7.97 documentation</title>
+    <title>pypath.main &#8212; pypath 0.7.98 documentation</title>
     <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -25,7 +25,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.97 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.98 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -142,8 +142,8 @@
 <span class="kn">import</span> <span class="nn">pypath.ptm</span>
 <span class="kn">import</span> <span class="nn">pypath.export</span> <span class="k">as</span> <span class="nn">export</span>
 <span class="kn">import</span> <span class="nn">pypath.ig_drawing</span> <span class="k">as</span> <span class="nn">ig_drawing</span>
-<span class="kn">import</span> <span class="nn">pypath.common</span> <span class="k">as</span> <span class="nn">common</span> <span class="c1">#</span>
-<span class="kn">import</span> <span class="nn">pypath._version</span> <span class="k">as</span> <span class="nn">_version</span> <span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">pypath.common</span> <span class="k">as</span> <span class="nn">common</span>
+<span class="kn">import</span> <span class="nn">pypath._version</span> <span class="k">as</span> <span class="nn">_version</span>
 <span class="kn">from</span> <span class="nn">pypath.gr_plot</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">pypath.progress</span> <span class="k">import</span> <span class="o">*</span>
 
@@ -231,8 +231,8 @@
 <span class="sd">        Custom string/printing function for the object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-<span class="c1"># XXX: Pretty sure this could be refactored and implemented more efficiently</span>
-<span class="c1">#      like using str.format()</span>
+    <span class="c1"># XXX: Pretty sure this could be refactored and implemented more</span>
+    <span class="c1">#      efficiently like using str.format()</span>
 
         <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;Directions and signs of interaction between </span><span class="si">%s</span><span class="s1"> and </span><span class="si">%s</span><span class="se">\n\n</span><span class="s1">&#39;</span> <span class="o">%</span> \
             <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -380,9 +380,9 @@
 <span class="sd">              the given edge.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-<span class="c1"># XXX: What&#39;s the point of using src and tgt if in the end straigth, reverse</span>
-<span class="c1">#      and undirected are returned? Also, in such case:</span>
-<span class="c1">#      `return self.sources/dirs.values()` is more straightforward.</span>
+    <span class="c1"># XXX: What&#39;s the point of using src and tgt if in the end straigth,</span>
+    <span class="c1">#      reverse and undirected are returned? Also, in such case:</span>
+    <span class="c1">#      `return self.sources/dirs.values()` is more straightforward.</span>
 
         <span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">tgt</span><span class="p">)</span>
 
@@ -653,8 +653,8 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">negative_sources</span><span class="p">[</span><span class="n">direction</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">negative</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span></div>
 
-<span class="c1"># XXX: Not sure if intended or you noticed, but if undirected=True and</span>
-<span class="c1">#      self.dirs[&#39;undirected&#39;]=True, the returning list includes &#39;u&#39;.</span>
+    <span class="c1"># XXX: Not sure if intended or you noticed, but if undirected=True and</span>
+    <span class="c1">#      self.dirs[&#39;undirected&#39;]=True, the returning list includes &#39;u&#39;.</span>
 <div class="viewcode-block" id="Direction.src"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.src">[docs]</a>    <span class="k">def</span> <span class="nf">src</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">undirected</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the name(s) of the source node(s) for each existing</span>
@@ -673,8 +673,8 @@
         <span class="k">return</span> <span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">)</span>
                 <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;undirected&#39;</span> <span class="ow">or</span> <span class="n">undirected</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="p">]</span></div>
 
-<span class="c1"># XXX: Similarly, if undirected=True and self.dirs[&#39;undirected&#39;]=True,</span>
-<span class="c1">#      the returning list includes &#39;n&#39;.</span>
+    <span class="c1"># XXX: Similarly, if undirected=True and self.dirs[&#39;undirected&#39;]=True,</span>
+    <span class="c1">#      the returning list includes &#39;n&#39;.</span>
 <div class="viewcode-block" id="Direction.tgt"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.tgt">[docs]</a>    <span class="k">def</span> <span class="nf">tgt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">undirected</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the name(s) of the target node(s) for each existing</span>
@@ -693,15 +693,16 @@
         <span class="k">return</span> <span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">)</span>
                 <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;undirected&#39;</span> <span class="ow">or</span> <span class="n">undirected</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="p">]</span></div>
 
-<span class="c1"># FIXME: If the intended behavior of the functions above is to include</span>
-<span class="c1">#        &#39;undirected&#39; in the returned list if undirected=True and</span>
-<span class="c1">#        self.dirs[&#39;undirected&#39;]=True, then change return by:</span>
-<span class="c1">#</span>
-<span class="c1">#        `[k[0] if k != &#39;undirected&#39; else k for k, v in iteritems(self.dirs)</span>
-<span class="c1">#         if (k != &#39;undirected&#39; or undirected) and v]`</span>
-<span class="c1">#</span>
-<span class="c1">#        On the other hand, if the intended behavior is that returns an empty</span>
-<span class="c1">#        empty list if kwarg undirected=True, then add a simple if/else return</span>
+    <span class="c1"># FIXME: If the intended behavior of the functions above is to include</span>
+    <span class="c1">#        &#39;undirected&#39; in the returned list if undirected=True and</span>
+    <span class="c1">#        self.dirs[&#39;undirected&#39;]=True, then change return by:</span>
+    <span class="c1">#</span>
+    <span class="c1">#        `[k[0] if k != &#39;undirected&#39; else k for k, v in</span>
+    <span class="c1">#         iteritems(self.dirs) if (k != &#39;undirected&#39; or undirected) and v]`</span>
+    <span class="c1">#</span>
+    <span class="c1">#        On the other hand, if the intended behavior is that returns an</span>
+    <span class="c1">#        empty list if kwarg undirected=True, then add a simple if/else</span>
+    <span class="c1">#        return</span>
 
 <div class="viewcode-block" id="Direction.src_by_source"><a class="viewcode-back" href="../../main.html#pypath.main.Direction.src_by_source">[docs]</a>    <span class="k">def</span> <span class="nf">src_by_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -946,7 +947,7 @@
         <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">majority_dir</span><span class="p">()</span>
         <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">majority_sign</span><span class="p">()</span>
 
-<span class="c1"># XXX: This case could actually return directly, would save up some time</span>
+        <span class="c1"># XXX: This case could actually return directly, would save some time</span>
         <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;undirected&#39;</span><span class="p">:</span>
             <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
                            <span class="s1">&#39;undirected&#39;</span><span class="p">,</span> <span class="s1">&#39;unknown&#39;</span><span class="p">])</span>
@@ -961,7 +962,7 @@
                     <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="n">d</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
                         <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;directed&#39;</span><span class="p">,</span> <span class="s1">&#39;positive&#39;</span><span class="p">])</span>
 
-<span class="c1"># XXX: Technically, if s[d] is not None, this could be an elif right?</span>
+    <span class="c1"># XXX: Technically, if s[d] is not None, this could be an elif right?</span>
                     <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="n">d</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
                         <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;directed&#39;</span><span class="p">,</span> <span class="s1">&#39;negative&#39;</span><span class="p">])</span>
 
@@ -982,17 +983,18 @@
 <span class="sd">              merged with the current one.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-<span class="c1"># XXX: Not best way to check the class. Probably never happens, but there</span>
-<span class="c1">#      may be other class out there with the same name</span>
-<span class="c1">#      &gt;  if (other.__class__.__name__ == &#39;Direction&#39; and self.check_nodes(</span>
-<span class="c1">#                 other.nodes):</span>
+    <span class="c1"># XXX: Not best way to check the class. Probably never happens, but there</span>
+    <span class="c1">#      may be other class out there with the same name</span>
+    <span class="c1">#      &gt;  if (other.__class__.__name__ == &#39;Direction&#39; and self.check_nodes(</span>
+    <span class="c1">#                 other.nodes):</span>
         <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_nodes</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">nodes</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">,</span> <span class="s1">&#39;undirected&#39;</span><span class="p">]:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">dirs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">|</span> <span class="n">other</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
 
-<span class="c1"># XXX: Is there a reason to only update positive with straight and negative only with reverse?</span>
+    <span class="c1"># XXX: Is there a reason to only update positive with straight and negative</span>
+    <span class="c1">#      only with reverse?</span>
                 <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">straight</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">positive</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positive_sources</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
@@ -1036,496 +1038,309 @@
         <span class="k">return</span> <span class="n">newd</span></div></div>
 
 
-<span class="k">class</span> <span class="nc">AttrHelper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="c1"># TODO: Ask Dénes about this and finish docstrings</span>
+<div class="viewcode-block" id="AttrHelper"><a class="viewcode-back" href="../../main.html#pypath.main.AttrHelper">[docs]</a><span class="k">class</span> <span class="nc">AttrHelper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Attribute helper class.</span>
+
+<span class="sd">    * Initialization arguments:</span>
+<span class="sd">        - *value* [dict/str]?:</span>
+<span class="sd">        - *name* [str]?: Optional, ``None`` by default.</span>
+<span class="sd">        - *defaults* [dict]:</span>
+
+<span class="sd">    * Attributes:</span>
+<span class="sd">        - *value* [dict]?:</span>
+<span class="sd">        - *name* [str]?:</span>
+<span class="sd">        - *defaults* [dict]:</span>
+<span class="sd">        - *id_type* [type]:</span>
+
+<span class="sd">    * Call arguments:</span>
+<span class="sd">        - *instance* []:</span>
+<span class="sd">        - *thisDir* [tuple?]: Optional, ``None`` by default.</span>
+<span class="sd">        - *thisSign* []: Optional, ``None`` by default.</span>
+<span class="sd">        - *thisDirSources* []: Optional, ``None`` by default.</span>
+<span class="sd">        - *thisSources* []: Optional, ``None`` by default.</span>
+
+<span class="sd">    * Returns:</span>
+<span class="sd">        -</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span> <span class="o">=</span> <span class="n">defaults</span>
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">id_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
 
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">instance</span><span class="p">,</span>
-                 <span class="n">thisDir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">thisSign</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">thisDirSources</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">thisSources</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">thisDir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">thisSign</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">thisDirSources</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">thisSources</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">_thisDir</span> <span class="o">=</span> <span class="s1">&#39;directed&#39;</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">thisDir</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">thisDir</span>
+
         <span class="c1"># user supplied callback function:</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;__call__&#39;</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+
         <span class="c1"># special cases #1: by direction/effect</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="s1">&#39;DIRECTIONS&#39;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> \
-                <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="s1">&#39;DIRECTIONS&#39;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+              <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">):</span>
+
             <span class="k">if</span> <span class="n">_thisDir</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]:</span>
+
                 <span class="k">if</span> <span class="n">thisSign</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="n">_thisDir</span><span class="p">]:</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="n">_thisDir</span><span class="p">][</span><span class="n">thisSign</span><span class="p">]</span>
+
         <span class="c1"># special cases #2: by source category</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="s1">&#39;RESOURCE_CATEGORIES&#39;</span><span class="p">:</span>
+
             <span class="k">for</span> <span class="n">resource_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;pathway&#39;</span><span class="p">,</span> <span class="s1">&#39;ptm&#39;</span><span class="p">,</span> <span class="s1">&#39;reaction&#39;</span><span class="p">,</span> <span class="s1">&#39;interaction&#39;</span><span class="p">]:</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span>
-                        <span class="nb">getattr</span><span class="p">(</span><span class="n">data_formats</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_resources&#39;</span> <span class="o">%</span> <span class="n">resource_type</span><span class="p">)</span> <span class="o">&amp;</span>
-                        <span class="n">thisSources</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span> <span class="ow">and</span> \
-                            <span class="n">resource_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]:</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">data_formats</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_resources&#39;</span> <span class="o">%</span> <span class="n">resource_type</span><span class="p">)</span>
+                       <span class="o">&amp;</span><span class="n">thisSources</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+
+                    <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span>
+                        <span class="ow">and</span> <span class="n">resource_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]):</span>
                         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="n">resource_type</span><span class="p">]</span>
+
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">wrtie</span><span class="p">(</span><span class="s1">&#39;No category for </span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">thisSources</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
         <span class="c1"># if value is constant:</span>
         <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="n">common</span><span class="o">.</span><span class="n">simpleTypes</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+
         <span class="c1"># if a dictionary given to map some igraph attribute to values:</span>
         <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;__call__&#39;</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">attr_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;_name&#39;</span><span class="p">]):</span>
                 <span class="n">key_attr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;_name&#39;</span><span class="p">])</span>
+
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;_name&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">instance</span><span class="o">.</span><span class="n">attributes</span><span class="p">():</span>
                 <span class="n">key_attr</span> <span class="o">=</span> <span class="n">instance</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;_name&#39;</span><span class="p">]]</span>
+
             <span class="k">if</span> <span class="n">key_attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">key_attr</span><span class="p">]</span>
+
         <span class="c1"># if default value has been given for this attribute:</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> \
-                <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+              <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+
         <span class="c1"># ultimately, return None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
 
 
 <span class="k">class</span> <span class="nc">_NamedVertexSeq</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vertex sequence object. Combines the list of vertex objects, their</span>
+<span class="sd">    UniProt IDs and corresponding GeneSymbols.</span>
 
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s1">&#39;_vs&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;_nodNam&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;_nodLab&#39;</span>
-    <span class="p">]</span>
+<span class="sd">    * Arguments:</span>
+<span class="sd">        - *_vs* [igraph.VertexSeq]: Collection of [igraph.Vertex]</span>
+<span class="sd">          objects.</span>
+<span class="sd">        - *_nodNam* [list]: List of [str] containing the node names</span>
+<span class="sd">          (UniProt IDs).</span>
+<span class="sd">        - *_nodLab* [list]: List of [str] containing the node labels</span>
+<span class="sd">          (GeneSymbols).</span>
+
+<span class="sd">    * Attributes:</span>
+<span class="sd">        - *_vs* [igraph.VertexSeq]: Collection of [igraph.Vertex]</span>
+<span class="sd">          objects.</span>
+<span class="sd">        - *_nodNam* [list]: List of [str] containing the node names</span>
+<span class="sd">          (UniProt IDs).</span>
+<span class="sd">        - *_nodLab* [list]: List of [str] containing the node labels</span>
+<span class="sd">          (GeneSymbols).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;_vs&#39;</span><span class="p">,</span> <span class="s1">&#39;_nodNam&#39;</span><span class="p">,</span> <span class="s1">&#39;_nodLab&#39;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_vs</span><span class="p">,</span> <span class="n">_nodNam</span><span class="p">,</span> <span class="n">_nodLab</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the object and sets the attributes according to the</span>
+<span class="sd">        passed arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_vs</span> <span class="o">=</span> <span class="n">_vs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nodNam</span> <span class="o">=</span> <span class="n">_nodNam</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nodLab</span> <span class="o">=</span> <span class="n">_nodLab</span>
 
     <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Iterator function yielding the [igraph.Vertex] instances</span>
+<span class="sd">        contained in *_vs*. It&#39;s accessed through the alias *vs*.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">v</span>
 
     <span class="k">def</span> <span class="nf">genesymbol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Iterator function yielding the GeneSymbols contained in</span>
+<span class="sd">        *_nodLab*. It can be accessed through the alias *gs*.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs</span><span class="p">:</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodLab</span><span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">uniprot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Iterator function yielding the UniProt IDs contained in</span>
+<span class="sd">        *_nodNam*. It can be accessed through the alias *up*.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs</span><span class="p">:</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodNam</span><span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Iterator function yielding the vertex indexes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">v</span><span class="o">.</span><span class="n">index</span>
 
+    <span class="c1"># Aliases</span>
     <span class="n">gs</span> <span class="o">=</span> <span class="n">genesymbol</span>
     <span class="n">up</span> <span class="o">=</span> <span class="n">uniprot</span>
     <span class="n">vs</span> <span class="o">=</span> <span class="fm">__iter__</span>
 
-
+<span class="c1"># TODO: Ask:</span>
+<span class="c1">#       - Which/how many organisms are accepted/available?</span>
+<span class="c1">#       - MySQL</span>
 <div class="viewcode-block" id="PyPath"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath">[docs]</a><span class="k">class</span> <span class="nc">PyPath</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main network object.</span>
+
+<span class="sd">    * Arguments:</span>
+<span class="sd">        - *ncbi_tax_id* [int]: Optional, ``9606`` (Homo sapiens) by</span>
+<span class="sd">          default. NCBI Taxonomic identifier of the organism from which</span>
+<span class="sd">          the data will be downloaded.</span>
+<span class="sd">        - *default_name_type* [dict]: Optional, ``{&#39;protein&#39;: &#39;uniprot&#39;,</span>
+<span class="sd">          &#39;mirna&#39;: &#39;mirbase&#39;, &#39;drug&#39;: &#39;chembl&#39;, &#39;lncrna&#39;:</span>
+<span class="sd">          &#39;lncrna-genesymbol&#39;}`` by default. Contains the default</span>
+<span class="sd">          identifier types to which the downloaded data will be</span>
+<span class="sd">          converted. If others are used, user may need to provide the</span>
+<span class="sd">          format definitions for the conversion tables.</span>
+<span class="sd">        - *copy* [pypath.main.PyPath]: Optional, ``None`` by default.</span>
+<span class="sd">          Other *PyPath* instance from which the data will be copied.</span>
+<span class="sd">        - *mysql* [tuple]: Optional, ``(None, &#39;mapping&#39;)`` by default.</span>
+<span class="sd">          Contains the MySQL parameters used by the ``mapping`` module</span>
+<span class="sd">          to load the ID conversion tables.</span>
+<span class="sd">        - *chembl_mysql* [tuple]: Optional, ``(None, &#39;chembl&#39;)`` by</span>
+<span class="sd">          default. Contains the MySQL parameters used by the ``mapping``</span>
+<span class="sd">          module to load the ChEMBL ID conversion tables.</span>
+<span class="sd">        - *name* [str]: Optional, ``&#39;unnamed&#39;`` by default. Session or</span>
+<span class="sd">          project name (custom).</span>
+<span class="sd">        - *outdir* [str]: Optional, ``&#39;results&#39;`` by default. Output</span>
+<span class="sd">          directory where to store all output files.</span>
+<span class="sd">        - *loglevel* [str]: Optional, ``&#39;INFO&#39;`` by default. Sets the</span>
+<span class="sd">          level of the logger. Possible levels are: ``&#39;DEBUG&#39;``,</span>
+<span class="sd">          ``&#39;INFO&#39;``, ``&#39;WARNING&#39;``, ``&#39;ERROR&#39;`` or ``&#39;CRITICAL&#39;``.</span>
+<span class="sd">        - *loops* [bool]: Optional, ``False`` by default. Determines if</span>
+<span class="sd">          self-loop edges are allowed in the graph.</span>
+
 <span class="sd">    * Attributes:</span>
-<span class="sd">        - *acsn_effects* []:</span>
-<span class="sd">        - *add_genesets* []:</span>
-<span class="sd">        - *add_grouped_eattr* []:</span>
-<span class="sd">        - *add_grouped_set_eattr* []:</span>
-<span class="sd">        - *add_list_eattr* []:</span>
-<span class="sd">        - *add_set_eattr* []:</span>
-<span class="sd">        - *add_update_edge* []:</span>
-<span class="sd">        - *add_update_vertex* []:</span>
-<span class="sd">        - *affected_by* []:</span>
-<span class="sd">        - *affects* []:</span>
-<span class="sd">        - *all_between* []:</span>
-<span class="sd">        - *all_neighbours* []:</span>
-<span class="sd">        - *apply_list* []:</span>
-<span class="sd">        - *apply_negative* []:</span>
-<span class="sd">        - *attach_network* []:</span>
-<span class="sd">        - *basic_stats* []:</span>
-<span class="sd">        - *basic_stats_intergroup* []:</span>
-<span class="sd">        - *cancer_drivers_list* []:</span>
-<span class="sd">        - *cancer_gene_census_list* []:</span>
-<span class="sd">        - *clean_graph* []:</span>
-<span class="sd">        - *collapse_by_name* []:</span>
-<span class="sd">        - *combine_attr* []:</span>
-<span class="sd">        - *communities* []:</span>
-<span class="sd">        - *complex_comembership_network* []:</span>
-<span class="sd">        - *complexes* []:</span>
-<span class="sd">        - *complexes_in_network* []:</span>
-<span class="sd">        - *compounds_from_chembl* []:</span>
-<span class="sd">        - *consistency* []:</span>
-<span class="sd">        - *copy* []:</span>
-<span class="sd">        - *copy_edges* []:</span>
-<span class="sd">        - *count_sol* []:</span>
-<span class="sd">        - *coverage* []:</span>
-<span class="sd">        - *curation_effort* []:</span>
-<span class="sd">        - *curation_stats* []:</span>
-<span class="sd">        - *curation_tab* []:</span>
-<span class="sd">        - *curators_work* []:</span>
-<span class="sd">        - *databases_similarity* []:</span>
-<span class="sd">        - *default_name_type* []:</span>
-<span class="sd">        - *degree_dist* []:</span>
-<span class="sd">        - *degree_dists* []:</span>
-<span class="sd">        - *delete_by_source* []:</span>
-<span class="sd">        - *delete_by_taxon* []:</span>
-<span class="sd">        - *delete_unknown* []:</span>
-<span class="sd">        - *delete_unmapped* []:</span>
-<span class="sd">        - *dgenesymbol* []:</span>
-<span class="sd">        - *dgenesymbols* []:</span>
-<span class="sd">        - *dgs* []:</span>
-<span class="sd">        - *dgss* []:</span>
-<span class="sd">        - *disease_genes_list* []:</span>
-<span class="sd">        - *dneighbors* []:</span>
-<span class="sd">        - *dp* []:</span>
-<span class="sd">        - *dproteins* []:</span>
-<span class="sd">        - *dps* []:</span>
-<span class="sd">        - *druggability_list* []:</span>
-<span class="sd">        - *duniprot* []:</span>
-<span class="sd">        - *duniprots* []:</span>
-<span class="sd">        - *dup* []:</span>
-<span class="sd">        - *dups* []:</span>
-<span class="sd">        - *dv* []:</span>
-<span class="sd">        - *dvs* []:</span>
-<span class="sd">        - *edge_exists* []:</span>
-<span class="sd">        - *edge_loc* []:</span>
-<span class="sd">        - *edge_names* []:</span>
-<span class="sd">        - *edges_3d* []:</span>
-<span class="sd">        - *edges_expression* []:</span>
-<span class="sd">        - *edges_in_comlexes* []:</span>
-<span class="sd">        - *edges_ptms* []:</span>
-<span class="sd">        - *edgeseq_inverse* []:</span>
-<span class="sd">        - *export_dot* []:</span>
-<span class="sd">        - *export_edgelist* []:</span>
-<span class="sd">        - *export_graphml* []:</span>
-<span class="sd">        - *export_ptms_tab* []:</span>
-<span class="sd">        - *export_sif* []:</span>
-<span class="sd">        - *export_struct_tab* []:</span>
-<span class="sd">        - *export_tab* []:</span>
-<span class="sd">        - *filters* []:</span>
-<span class="sd">        - *find_all_paths* []:</span>
-<span class="sd">        - *find_all_paths2* []:</span>
-<span class="sd">        - *find_complex* []:</span>
-<span class="sd">        - *first_neighbours* []:</span>
-<span class="sd">        - *fisher_enrichment* []:</span>
-<span class="sd">        - *geneset_enrichment* []:</span>
-<span class="sd">        - *genesymbol* []:</span>
-<span class="sd">        - *genesymbol_labels* []:</span>
-<span class="sd">        - *genesymbols* []:</span>
-<span class="sd">        - *get_attrs* []:</span>
-<span class="sd">        - *get_directed* []:</span>
-<span class="sd">        - *get_dirs_signs* []:</span>
-<span class="sd">        - *get_edge* []:</span>
-<span class="sd">        - *get_edges* []:</span>
-<span class="sd">        - *get_function* []:</span>
-<span class="sd">        - *get_giant* []:</span>
-<span class="sd">        - *get_max* []:</span>
-<span class="sd">        - *get_network* []:</span>
-<span class="sd">        - *get_node* []:</span>
-<span class="sd">        - *get_node_d* []:</span>
-<span class="sd">        - *get_node_pair* []:</span>
-<span class="sd">        - *get_nodes* []:</span>
-<span class="sd">        - *get_nodes_d* []:</span>
-<span class="sd">        - *get_pathways* []:</span>
-<span class="sd">        - *get_proteomicsdb* []:</span>
-<span class="sd">        - *get_sub* []:</span>
-<span class="sd">        - *get_taxon* []:</span>
-<span class="sd">        - *go_annotate* []:</span>
-<span class="sd">        - *go_dict* []:</span>
-<span class="sd">        - *go_enrichment* []:</span>
-<span class="sd">        - *gs* []:</span>
-<span class="sd">        - *gs_affected_by* []:</span>
-<span class="sd">        - *gs_affects* []:</span>
-<span class="sd">        - *gs_edge* []:</span>
-<span class="sd">        - *gs_in_directed* []:</span>
-<span class="sd">        - *gs_in_undirected* []:</span>
-<span class="sd">        - *gs_inhibited_by* []:</span>
-<span class="sd">        - *gs_inhibits* []:</span>
-<span class="sd">        - *gs_neighborhood* []:</span>
-<span class="sd">        - *gs_neighbors* []:</span>
-<span class="sd">        - *gs_stimulated_by* []:</span>
-<span class="sd">        - *gs_stimulates* []:</span>
-<span class="sd">        - *gss* []:</span>
-<span class="sd">        - *guide2pharma* []:</span>
-<span class="sd">        - *having_attr* []:</span>
-<span class="sd">        - *having_eattr* []:</span>
-<span class="sd">        - *having_ptm* []:</span>
-<span class="sd">        - *having_vattr* []:</span>
-<span class="sd">        - *homology_translation* []:</span>
-<span class="sd">        - *htp_stats* []:</span>
-<span class="sd">        - *in_complex* []:</span>
-<span class="sd">        - *in_directed* []:</span>
-<span class="sd">        - *in_undirected* []:</span>
-<span class="sd">        - *info* []:</span>
-<span class="sd">        - *init_complex_attr* []:</span>
-<span class="sd">        - *init_edge_attr* []:</span>
-<span class="sd">        - *init_gsea* []:</span>
-<span class="sd">        - *init_network* []:</span>
-<span class="sd">        - *init_vertex_attr* []:</span>
-<span class="sd">        - *intergroup_shortest_paths* []:</span>
-<span class="sd">        - *intogen_cancer_drivers_list* []:</span>
-<span class="sd">        - *jaccard_edges* []:</span>
-<span class="sd">        - *jaccard_meta* []:</span>
-<span class="sd">        - *kegg_directions* []:</span>
-<span class="sd">        - *kegg_pathways* []:</span>
-<span class="sd">        - *kinase_stats* []:</span>
-<span class="sd">        - *kinases_list* []:</span>
-<span class="sd">        - *label_by_go* []:</span>
-<span class="sd">        - *laudanna_directions* []:</span>
-<span class="sd">        - *laudanna_effects* []:</span>
-<span class="sd">        - *licence* []:</span>
-<span class="sd">        - *list_resources* []:</span>
-<span class="sd">        - *load_3dcomplexes* []:</span>
-<span class="sd">        - *load_3did_ddi* []:</span>
-<span class="sd">        - *load_3did_ddi2* []:</span>
-<span class="sd">        - *load_3did_dmi* []:</span>
-<span class="sd">        - *load_3did_interfaces* []:</span>
-<span class="sd">        - *load_all_pathways* []:</span>
-<span class="sd">        - *load_compleat* []:</span>
-<span class="sd">        - *load_complexportal* []:</span>
-<span class="sd">        - *load_comppi* []:</span>
-<span class="sd">        - *load_corum* []:</span>
-<span class="sd">        - *load_dbptm* []:</span>
-<span class="sd">        - *load_ddi* []:</span>
-<span class="sd">        - *load_ddis* []:</span>
-<span class="sd">        - *load_depod_dmi* []:</span>
-<span class="sd">        - *load_disgenet* []:</span>
-<span class="sd">        - *load_dmi* []:</span>
-<span class="sd">        - *load_dmis* []:</span>
-<span class="sd">        - *load_domino_dmi* []:</span>
-<span class="sd">        - *load_elm* []:</span>
-<span class="sd">        - *load_expression* []:</span>
-<span class="sd">        - *load_go* []:</span>
-<span class="sd">        - *load_havugimana* []:</span>
-<span class="sd">        - *load_hpa* []:</span>
-<span class="sd">        - *load_hprd_ptms* []:</span>
-<span class="sd">        - *load_ielm* []:</span>
-<span class="sd">        - *load_interfaces* []:</span>
-<span class="sd">        - *load_li2012_ptms* []:</span>
-<span class="sd">        - *load_ligand_receptor_network* []:</span>
-<span class="sd">        - *load_list* []:</span>
-<span class="sd">        - *load_lmpid* []:</span>
-<span class="sd">        - *load_mappings* []:</span>
-<span class="sd">        - *load_mimp_dmi* []:</span>
-<span class="sd">        - *load_mutations* []:</span>
-<span class="sd">        - *load_negatives* []:</span>
-<span class="sd">        - *load_old_omnipath* []:</span>
-<span class="sd">        - *load_omnipath* []:</span>
-<span class="sd">        - *load_pathways* []:</span>
-<span class="sd">        - *load_pdb* []:</span>
-<span class="sd">        - *load_pepcyber* []:</span>
-<span class="sd">        - *load_pfam* []:</span>
-<span class="sd">        - *load_pfam2* []:</span>
-<span class="sd">        - *load_pfam3* []:</span>
-<span class="sd">        - *load_phospho_dmi* []:</span>
-<span class="sd">        - *load_phosphoelm* []:</span>
-<span class="sd">        - *load_pisa* []:</span>
-<span class="sd">        - *load_pnetworks_dmi* []:</span>
-<span class="sd">        - *load_psite_phos* []:</span>
-<span class="sd">        - *load_psite_reg* []:</span>
-<span class="sd">        - *load_ptms* []:</span>
-<span class="sd">        - *load_ptms2* []:</span>
-<span class="sd">        - *load_reflist* []:</span>
-<span class="sd">        - *load_reflists* []:</span>
-<span class="sd">        - *load_resource* []:</span>
-<span class="sd">        - *load_resources* []:</span>
-<span class="sd">        - *load_signor_ptms* []:</span>
-<span class="sd">        - *load_tfregulons* []:</span>
-<span class="sd">        - *lookup_cache* []:</span>
-<span class="sd">        - *loop_edges* []:</span>
-<span class="sd">        - *map_edge* []:</span>
-<span class="sd">        - *map_item* []:</span>
-<span class="sd">        - *map_list* []:</span>
-<span class="sd">        - *mean_reference_per_interaction* []:</span>
-<span class="sd">        - *merge_lists* []:</span>
-<span class="sd">        - *merge_nodes* []:</span>
-<span class="sd">        - *mimp_directions* []:</span>
-<span class="sd">        - *mutated_edges* []:</span>
-<span class="sd">        - *names2vids* []:</span>
-<span class="sd">        - *negative_report* []:</span>
-<span class="sd">        - *neighborhood* []:</span>
-<span class="sd">        - *neighbors* []:</span>
-<span class="sd">        - *neighbourhood_network* []:</span>
-<span class="sd">        - *network_filter* []:</span>
-<span class="sd">        - *network_stats* []:</span>
-<span class="sd">        - *new_edges* []:</span>
-<span class="sd">        - *new_nodes* []:</span>
-<span class="sd">        - *node_exists* []:</span>
-<span class="sd">        - *numof_directed_edges* []:</span>
-<span class="sd">        - *numof_reference_interaction_pairs* []:</span>
-<span class="sd">        - *numof_references* []:</span>
-<span class="sd">        - *numof_undirected_edges* []:</span>
-<span class="sd">        - *orthology_translation* []:</span>
-<span class="sd">        - *p* []:</span>
-<span class="sd">        - *pathway_attributes* []:</span>
-<span class="sd">        - *pathway_members* []:</span>
-<span class="sd">        - *pathway_names* []:</span>
-<span class="sd">        - *pathway_similarity* []:</span>
-<span class="sd">        - *pathways_table* []:</span>
-<span class="sd">        - *pfam_regions* []:</span>
-<span class="sd">        - *phosphonetworks_directions* []:</span>
-<span class="sd">        - *phosphopoint_directions* []:</span>
-<span class="sd">        - *phosphorylation_directions* []:</span>
-<span class="sd">        - *phosphorylation_signs* []:</span>
-<span class="sd">        - *phosphosite_directions* []:</span>
-<span class="sd">        - *prdb_tissue_expr* []:</span>
-<span class="sd">        - *process_direction* []:</span>
-<span class="sd">        - *process_directions* []:</span>
-<span class="sd">        - *process_dmi* []:</span>
-<span class="sd">        - *process_sign* []:</span>
-<span class="sd">        - *protein* []:</span>
-<span class="sd">        - *protein_edge* []:</span>
-<span class="sd">        - *proteins* []:</span>
-<span class="sd">        - *proteome_list* []:</span>
-<span class="sd">        - *ps* []:</span>
-<span class="sd">        - *random_walk_with_return* []:</span>
-<span class="sd">        - *random_walk_with_return2* []:</span>
-<span class="sd">        - *read_data_file* []:</span>
-<span class="sd">        - *read_from_cache* []:</span>
-<span class="sd">        - *read_list_file* []:</span>
-<span class="sd">        - *receptors_list* []:</span>
-<span class="sd">        - *reference_edge_ratio* []:</span>
-<span class="sd">        - *reference_hist* []:</span>
-<span class="sd">        - *reload* []:</span>
-<span class="sd">        - *remove_htp* []:</span>
-<span class="sd">        - *remove_undirected* []:</span>
-<span class="sd">        - *run_batch* []:</span>
-<span class="sd">        - *save_network* []:</span>
-<span class="sd">        - *save_session* []:</span>
-<span class="sd">        - *search_attr_and* []:</span>
-<span class="sd">        - *search_attr_or* []:</span>
-<span class="sd">        - *second_neighbours* []:</span>
-<span class="sd">        - *select_by_go* []:</span>
-<span class="sd">        - *separate* []:</span>
-<span class="sd">        - *separate_by_category* []:</span>
-<span class="sd">        - *sequences* []:</span>
-<span class="sd">        - *set_boolean_vattr* []:</span>
-<span class="sd">        - *set_categories* []:</span>
-<span class="sd">        - *set_chembl_mysql* []:</span>
-<span class="sd">        - *set_disease_genes* []:</span>
-<span class="sd">        - *set_druggability* []:</span>
-<span class="sd">        - *set_drugtargets* []:</span>
-<span class="sd">        - *set_kinases* []:</span>
-<span class="sd">        - *set_receptors* []:</span>
-<span class="sd">        - *set_signaling_proteins* []:</span>
-<span class="sd">        - *set_tfs* []:</span>
-<span class="sd">        - *set_transcription_factors* []:</span>
-<span class="sd">        - *shortest_path_dist* []:</span>
-<span class="sd">        - *signaling_proteins_list* []:</span>
-<span class="sd">        - *signor_pathways* []:</span>
-<span class="sd">        - *similarity_groups* []:</span>
-<span class="sd">        - *small_plot* []:</span>
-<span class="sd">        - *sorensen_pathways* []:</span>
-<span class="sd">        - *source_diagram* []:</span>
-<span class="sd">        - *source_network* []:</span>
-<span class="sd">        - *source_similarity* []:</span>
-<span class="sd">        - *source_stats* []:</span>
-<span class="sd">        - *sources_hist* []:</span>
-<span class="sd">        - *sources_overlap* []:</span>
-<span class="sd">        - *sources_venn_data* []:</span>
-<span class="sd">        - *straight_between* []:</span>
-<span class="sd">        - *string_effects* []:</span>
-<span class="sd">        - *sum_in_complex* []:</span>
-<span class="sd">        - *table_latex* []:</span>
-<span class="sd">        - *tfs_list* []:</span>
-<span class="sd">        - *third_source_directions* []:</span>
-<span class="sd">        - *tissue_network* []:</span>
-<span class="sd">        - *transcription_factors* []:</span>
-<span class="sd">        - *translate_refsdir* []:</span>
-<span class="sd">        - *uniprot* []:</span>
-<span class="sd">        - *uniprots* []:</span>
-<span class="sd">        - *uniq_node_list* []:</span>
-<span class="sd">        - *uniq_ptm* []:</span>
-<span class="sd">        - *uniq_ptms* []:</span>
-<span class="sd">        - *up* []:</span>
-<span class="sd">        - *up_affected_by* []:</span>
-<span class="sd">        - *up_affects* []:</span>
-<span class="sd">        - *up_edge* []:</span>
-<span class="sd">        - *up_in_directed* []:</span>
-<span class="sd">        - *up_in_undirected* []:</span>
-<span class="sd">        - *up_inhibited_by* []:</span>
-<span class="sd">        - *up_inhibits* []:</span>
-<span class="sd">        - *up_neighborhood* []:</span>
-<span class="sd">        - *up_neighbors* []:</span>
-<span class="sd">        - *up_stimulated_by* []:</span>
-<span class="sd">        - *up_stimulates* []:</span>
-<span class="sd">        - *update_adjlist* []:</span>
-<span class="sd">        - *update_attrs* []:</span>
-<span class="sd">        - *update_cats* []:</span>
-<span class="sd">        - *update_db_dict* []:</span>
-<span class="sd">        - *update_pathway_types* []:</span>
-<span class="sd">        - *update_pathways* []:</span>
-<span class="sd">        - *update_sources* []:</span>
-<span class="sd">        - *update_vertex_sources* []:</span>
-<span class="sd">        - *update_vindex* []:</span>
-<span class="sd">        - *update_vname* []:</span>
-<span class="sd">        - *ups* []:</span>
-<span class="sd">        - *v* []:</span>
-<span class="sd">        - *vertex_pathways* []:</span>
-<span class="sd">        - *vs* []:</span>
-<span class="sd">        - *vsgs* []:</span>
-<span class="sd">        - *vsup* []:</span>
-<span class="sd">        - *wang_effects* []:</span>
-<span class="sd">        - *write_table* []:</span>
+<span class="sd">        - *adjlist* [list]: List of [set] containing the adjacency of</span>
+<span class="sd">          each node. See ``PyPath.update_adjlist()`` method for more</span>
+<span class="sd">          information.</span>
+<span class="sd">        - *chembl* [pypath.chembl.Chembl]: Contains the ChEMBL data. See</span>
+<span class="sd">          ``pypath.chembl`` module documentation for more information.</span>
+<span class="sd">        - *chembl_mysql* [tuple]: Contains the MySQL parameters used by</span>
+<span class="sd">          the ``mapping`` module to load the ChEMBL ID conversion</span>
+<span class="sd">          tables.</span>
+<span class="sd">        - *data* [dict?]:</span>
+<span class="sd">        - *db_dict* []:</span>
+<span class="sd">        - *dgraph* [igraph.Graph]: Directed network graph object.</span>
+<span class="sd">        - *disclaimer* [str]: Disclaimer text.</span>
+<span class="sd">        - *dlabDct* []:</span>
+<span class="sd">        - *dnodDct* []:</span>
+<span class="sd">        - *dnodInd* []:</span>
+<span class="sd">        - *dnodLab* []:</span>
+<span class="sd">        - *dnodNam* []:</span>
+<span class="sd">        - *edgeAttrs* []:</span>
+<span class="sd">        - *exp* []:</span>
+<span class="sd">        - *exp_prod* []:</span>
+<span class="sd">        - *exp_samples* []:</span>
+<span class="sd">        - *failed_edges* []:</span>
+<span class="sd">        - *go* []:</span>
+<span class="sd">        - *graph* [igraph.Graph]: Undirected network graph object.</span>
+<span class="sd">        - *gsea* []:</span>
+<span class="sd">        - *has_cats* []:</span>
+<span class="sd">        - *htp* []:</span>
+<span class="sd">        - *labDct* []:</span>
+<span class="sd">        - *lists* []:</span>
+<span class="sd">        - *loglevel* [str]: The level of the logger.</span>
+<span class="sd">        - *loops* [bool]: Whether if self-loop edges are allowed in the</span>
+<span class="sd">          graph.</span>
+<span class="sd">        - *mapper* []:</span>
+<span class="sd">        - *mutation_samples* []:</span>
+<span class="sd">        - *mysql_conf* [tuple]: Contains the MySQL parameters used by</span>
+<span class="sd">          the ``mapping`` module to load the ID conversion tables.</span>
+<span class="sd">        - *name* [str]: Session or project name (custom).</span>
+<span class="sd">        - *ncbi_tax_id* [int]: NCBI Taxonomic identifier of the organism</span>
+<span class="sd">          from which the data will be downloaded.</span>
+<span class="sd">        - *negatives* []:</span>
+<span class="sd">        - *nodDct* []:</span>
+<span class="sd">        - *nodInd* []:</span>
+<span class="sd">        - *nodLab* []:</span>
+<span class="sd">        - *nodNam* []:</span>
+<span class="sd">        - *outdir* [str]: Output directory where to store all output</span>
+<span class="sd">          files.</span>
+<span class="sd">        - *ownlog* []:</span>
+<span class="sd">        - *palette* []:</span>
+<span class="sd">        - *pathway_types* []:</span>
+<span class="sd">        - *pathways* []:</span>
+<span class="sd">        - *plots* []:</span>
+<span class="sd">        - *proteomicsdb* []:</span>
+<span class="sd">        - *raw_data* []:</span>
+<span class="sd">        - *reflists* []:</span>
+<span class="sd">        - *seq* []:</span>
+<span class="sd">        - *session* []:</span>
+<span class="sd">        - *session_name* []:</span>
+<span class="sd">        - *sourceNetEdges* []:</span>
+<span class="sd">        - *sourceNetNodes* []:</span>
+<span class="sd">        - *sources* []:</span>
+<span class="sd">        - *u_pfam* []:</span>
+<span class="sd">        - *uniprot_mapped* []:</span>
+<span class="sd">        - *unmapped* []:</span>
+<span class="sd">        - *vertexAttrs* []:</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1">###</span>
-    <span class="c1"># main network object</span>
-    <span class="c1">###</span>
+    <span class="n">default_name_type</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;protein&#39;</span><span class="p">:</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;mirna&#39;</span><span class="p">:</span> <span class="s1">&#39;mirbase&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;drug&#39;</span><span class="p">:</span> <span class="s1">&#39;chembl&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;lncrna&#39;</span><span class="p">:</span> <span class="s1">&#39;lncrna-genesymbol&#39;</span><span class="p">}</span>
 
-    <span class="n">default_name_type</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;protein&#39;</span><span class="p">:</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;mirna&#39;</span><span class="p">:</span> <span class="s1">&#39;mirbase&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;drug&#39;</span><span class="p">:</span> <span class="s1">&#39;chembl&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;lncrna&#39;</span><span class="p">:</span> <span class="s1">&#39;lncrna-genesymbol&#39;</span>
-    <span class="p">}</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">ncbi_tax_id</span><span class="o">=</span><span class="mi">9606</span><span class="p">,</span>
-                 <span class="n">default_name_type</span><span class="o">=</span><span class="n">default_name_type</span><span class="p">,</span>
-                 <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">mysql</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;mapping&#39;</span><span class="p">),</span>
-                 <span class="n">chembl_mysql</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;chembl&#39;</span><span class="p">),</span>
-                 <span class="n">name</span><span class="o">=</span><span class="s1">&#39;unnamed&#39;</span><span class="p">,</span>
-                 <span class="n">outdir</span><span class="o">=</span><span class="s1">&#39;results&#39;</span><span class="p">,</span>
-                 <span class="n">loglevel</span><span class="o">=</span><span class="s1">&#39;INFO&#39;</span><span class="p">,</span>
-                 <span class="n">loops</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span><span class="o">=</span><span class="mi">9606</span><span class="p">,</span> <span class="n">default_name_type</span><span class="o">=</span><span class="n">default_name_type</span><span class="p">,</span>
+                 <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mysql</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;mapping&#39;</span><span class="p">),</span>
+                 <span class="n">chembl_mysql</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;chembl&#39;</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;unnamed&#39;</span><span class="p">,</span>
+                 <span class="n">outdir</span><span class="o">=</span><span class="s1">&#39;results&#39;</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="s1">&#39;INFO&#39;</span><span class="p">,</span> <span class="n">loops</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Currently only one organism molecular interaction networks</span>
-<span class="sd">        are supported. Some functions supports multi-species networks,</span>
-<span class="sd">        and maybe once the whole module will support that.</span>
-
-<span class="sd">        @ncbi_tax_id : int</span>
-<span class="sd">            The ID of the organism in NCBI Taxonomy. Defaults to human</span>
-<span class="sd">            (9606).</span>
-<span class="sd">        @mysql</span>
-<span class="sd">            The MySQL parameter used by the mapping module to load some</span>
-<span class="sd">            ID conversion tables from MySQL.</span>
-<span class="sd">        @default_name_type : dict</span>
-<span class="sd">            Dictionary of default ID types, what all identifiers of the</span>
-<span class="sd">            given molecular species should be converted to. By default,</span>
-<span class="sd">            for protein it is UniProt. It could be any other, only then</span>
-<span class="sd">            you need to supply the required format definitions for the</span>
-<span class="sd">            ID conversion tables.</span>
-<span class="sd">        @copy : BioGraph object</span>
-<span class="sd">            In case you copy an other instance.</span>
-<span class="sd">        @name : str</span>
-<span class="sd">            This is a custom session/project name.</span>
-<span class="sd">        @outdir : str</span>
-<span class="sd">            The directory where you wish to create all the output files.</span>
-<span class="sd">        @loglevel : str</span>
-<span class="sd">            Passed to logging module.</span>
-<span class="sd">        @loops : bool</span>
-<span class="sd">            Whether to allow loop edges in the graph. Default is False.</span>
+<span class="sd">        Initializes the network object. **NOTE:** Only the instance is</span>
+<span class="sd">        created, no data is donwloaded until the corresponding function</span>
+<span class="sd">        is called.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">__version__</span> <span class="o">=</span> <span class="n">_version</span><span class="o">.</span><span class="n">__version__</span>
+
+        <span class="c1"># Setting up the working directory</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="s1">&#39;cache&#39;</span><span class="p">]:</span>
+
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">copy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Setting up graph object</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
             <span class="n">g</span><span class="p">[</span><span class="s1">&#39;entity_types&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1553,6 +1368,7 @@
             <span class="n">g</span><span class="p">[</span><span class="s1">&#39;layout_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">g</span><span class="p">[</span><span class="s1">&#39;layout_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">g</span><span class="p">[</span><span class="s1">&#39;only_directed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
             <span class="c1"># allow loop edges in the graph</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">loops</span> <span class="o">=</span> <span class="n">loops</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dgraph</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1584,15 +1400,15 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">edgeAttrs</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">u_pfam</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">seq</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">palette</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="s1">&#39;#6EA945&#39;</span><span class="p">,</span> <span class="s1">&#39;#007B7F&#39;</span><span class="p">,</span> <span class="s1">&#39;#FCCC06&#39;</span><span class="p">,</span> <span class="s1">&#39;#DA0025&#39;</span><span class="p">,</span> <span class="s1">&#39;#000000&#39;</span>
-            <span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">palette</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;#6EA945&#39;</span><span class="p">,</span> <span class="s1">&#39;#007B7F&#39;</span><span class="p">,</span> <span class="s1">&#39;#FCCC06&#39;</span><span class="p">,</span> <span class="s1">&#39;#DA0025&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;#000000&#39;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">gen_session_id</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">session_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span> <span class="o">=</span> <span class="n">loglevel</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span> <span class="o">=</span> <span class="n">logn</span><span class="o">.</span><span class="n">logw</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">Mapper</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span> <span class="n">mysql_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mysql_conf</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">Mapper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span>
+                                         <span class="n">mysql_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mysql_conf</span><span class="p">,</span>
+                                         <span class="n">log</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">disclaimer</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">=== d i s c l a i m e r ===</span><span class="se">\n\n</span><span class="s1">&#39;</span>\
                 <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">All data coming with this module</span><span class="se">\n</span><span class="s1">&#39;</span>\
                 <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">either as redistributed copy or downloaded using the</span><span class="se">\n</span><span class="s1">&#39;</span>\
@@ -7763,6 +7579,7 @@
         <span class="n">enr</span><span class="o">.</span><span class="n">new_set</span><span class="p">(</span><span class="n">proteins</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">enr</span>
 
+    <span class="c1"># XXX: False, does not create a dict but a list</span>
 <div class="viewcode-block" id="PyPath.update_adjlist"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.update_adjlist">[docs]</a>    <span class="k">def</span> <span class="nf">update_adjlist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;ALL&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates an adjacency list in a dict of sets format.</span>
@@ -10164,7 +9981,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.97 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.98 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
