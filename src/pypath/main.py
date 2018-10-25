@@ -6891,8 +6891,16 @@ class PyPath(object):
     load_go = go_annotate
 
     def go_dict(self, organism=9606):
+        """
+        Creates a ``pypath.go.GOAnnotation`` object for one organism in the
+        dict under ``go`` attribute.
+        
+        :param int organism:
+            NCBI Taxonomy ID of the organism.
+        """
         
         if not hasattr(self, 'go'):
+            
             self.go = {}
         
         self.go[organism] = go.GOAnnotation(organism)
@@ -6903,23 +6911,39 @@ class PyPath(object):
                       alpha=0.05,
                       correction_method='hommel',
                       all_proteins=None):
+        
         if not hasattr(self, 'go') or self.ncbi_tax_id not in self.go:
             self.go_dict()
-        all_proteins = set(all_proteins) \
-            if isinstance(all_proteins, list) else all_proteins \
-            if isinstance(all_proteins, set) else set(self.graph.vs['name'])
-        annotation = dict([(up, g)
-                           for up, g in getattr(self.go[self.ncbi_tax_id],
-                                                iteritems(aspect.lower()))
-                           if up in all_proteins])
+        
+        all_proteins = (
+            set(all_proteins)
+                if isinstance(all_proteins, list) else
+            all_proteins
+                if isinstance(all_proteins, set) else
+            set(self.graph.vs['name'])
+        )
+        
+        annotation = dict(
+            (up, g)
+            for up, g in iteritems(
+                getattr(
+                    self.go[self.ncbi_tax_id],
+                    aspect.lower()
+                )
+            )
+            if up in all_proteins
+        )
+        
         enr = go.GOEnrichmentSet(
             aspect=aspect,
             organism=self.ncbi_tax_id,
             basic_set=annotation,
             alpha=alpha,
             correction_method=correction_method)
+        
         if proteins is not None:
             enr.new_set(set_names=proteins)
+        
         return enr
 
     def init_gsea(self, user):
