@@ -17,7 +17,7 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
-import __main__
+import __main__ # XXX: Bad practice
 
 from future.utils import iteritems
 from past.builtins import xrange, range, reduce
@@ -32,15 +32,16 @@ from functools import reduce
 
 try:
     import cairo
-except:
+
+except: # XXX: Catching any exception like this is bad practice
     sys.stdout.write(
         '\t:: Module `cairo` not available.\n'
         '\t   Some plotting functionalities won\'t be accessible.\n'
-    )
+    ) # XXX: Single/double quotes are not consistent throughout the code
 
 import igraph
 import codecs
-import random
+import random # XXX: This and other Python built-in modules shoud be up
 import textwrap
 import copy
 import json
@@ -55,14 +56,19 @@ import collections
 from collections import Counter
 from scipy import stats
 import numpy as np
+
+# XXX: Put together all import tries
+
 try:
     import cPickle as pickle
+
 except ImportError:
     import pickle
 
 try:
     import pygraphviz as graphviz
-except ModuleNotFoundError:
+
+except ImportError:#ModuleNotFoundError:
     sys.stdout.write(
         '\t:: Module `pygraphviz` not available.\n'
         '\t   You don\'t need it unless you want to export dot files.\n')
@@ -70,7 +76,8 @@ except ModuleNotFoundError:
 
 try:
     import pandas
-except ModuleNotFoundError:
+
+except ImportError:#ModuleNotFoundError:
     sys.stdout.write('\t:: Module `pandas` not available.\n')
     sys.stdout.flush()
 
@@ -104,103 +111,186 @@ from pypath.progress import *
 
 omnipath = data_formats.omnipath
 
+# XXX: The following aliases are already defined in common.py
 if 'long' not in __builtins__:
     long = int
 
 if 'unicode' not in __builtins__:
     unicode = str
 
-__all__ = [
-    'PyPath', 'Direction', '__version__', 'a', 'AttrHelper', 'ReferenceList', 'omnipath'
-]
+__all__ = ['PyPath', 'Direction', '__version__', 'a', # XXX: What is this "a"?
+           'AttrHelper', 'ReferenceList', 'omnipath']
 
 
 class Direction(object):
-    
-    __slots__ = [
-        'nodes',
-        'straight',
-        'reverse',
-        'dirs',
-        'sources',
-        'positive',
-        'negative',
-        'positive_sources',
-        'negative_sources',
-    ]
-    
+    """
+    Object storing directionality information of an edge. Also includes
+    information about the reverse direction, mode of regulation and
+    sources of that information.
+
+    * Arguments:
+        - *nameA* [str]: Name of the source node.
+        - *nameB* [str]: Name of the target node.
+
+    * Attributes:
+        - *dirs* [dict]: Dictionary containing the presence of
+          directionality of the given edge. Keys are *straight*,
+          *reverse* and ``'undirected'`` and their values denote the
+          presence/absence [bool].
+        - *negative* [dict]: Dictionary contianing the presence/absence
+          [bool] of negative interactions for both *straight* and
+          *reverse* directions.
+        - *negative_sources* [dict]: Contains the resource names [str]
+          supporting a negative interaction on *straight* and *reverse*
+          directions.
+        - *nodes* [list]: Contains the node names [str] sorted
+          alphabetically (*nameA*, *nameB*).
+        - *positive* [dict]:  Dictionary contianing the presence/absence
+          [bool] of positive interactions for both *straight* and
+          *reverse* directions.
+        - *positive_sources* [dict]: Contains the resource names [str]
+          supporting a positive interaction on *straight* and *reverse*
+          directions.
+        - *reverse* [tuple]: Contains the node names [str] in the original
+          order e.g. (source, target).
+        - *sources* [dict]: Contains the resource names [str] of a given
+          edge for each directionality (*straight*, *reverse* and
+          ``'undirected'``). Values are sets containing the names of
+          those resources supporting such directionality.
+        - *straight* [tuple]: Contains the node names [str] in reverse
+          order e.g. (target, source).
+    """
+
+    __slots__ = ['nodes', 'straight', 'reverse', 'dirs', 'sources', 'positive',
+                 'negative', 'positive_sources', 'negative_sources']
+
     def __init__(self, nameA, nameB):
+        """
+        Initializes the edge object between the given nodes.
+        """
+
         self.nodes = [nameA, nameB]
         self.nodes.sort()
+
         self.straight = (self.nodes[0], self.nodes[1])
         self.reverse = (self.nodes[1], self.nodes[0])
-        self.dirs = {
-            self.straight: False,
-            self.reverse: False,
-            'undirected': False
-        }
-        self.sources = {
-            self.straight: set([]),
-            self.reverse: set([]),
-            'undirected': set([])
-        }
+
+        self.dirs = {self.straight: False,
+                     self.reverse: False,
+                     'undirected': False}
+        self.sources = {self.straight: set([]),
+                        self.reverse: set([]),
+                        'undirected': set([])}
+
         self.positive = {self.straight: False, self.reverse: False}
         self.negative = {self.straight: False, self.reverse: False}
+
         self.positive_sources = {self.straight: set([]), self.reverse: set([])}
         self.negative_sources = {self.straight: set([]), self.reverse: set([])}
 
     def __str__(self):
+        """
+        Custom string/printing function for the object.
+        """
+
+    # XXX: Pretty sure this could be refactored and implemented more
+    #      efficiently like using str.format()
+
         s = 'Directions and signs of interaction between %s and %s\n\n' % \
             (self.nodes[0], self.nodes[1])
+
         if self.dirs[self.straight]:
             s += '\t%s ===> %s :: %s\n' % \
                 (self.nodes[0], self.nodes[1], ', '.join(
                     self.sources[self.straight]))
+
         if self.dirs[self.reverse]:
             s += '\t%s <=== %s :: %s\n' % \
                 (self.nodes[0], self.nodes[1],
                  ', '.join(self.sources[self.reverse]))
+
         if self.dirs['undirected']:
             s += '\t%s ==== %s :: %s\n' % \
                 (self.nodes[0], self.nodes[1],
                  ', '.join(self.sources['undirected']))
+
         if self.positive[self.straight]:
             s += '\t%s =+=> %s :: %s\n' % (
                 self.nodes[0], self.nodes[1],
                 ', '.join(self.positive_sources[self.straight]))
+
         if self.positive[self.reverse]:
             s += '\t%s <=+= %s :: %s\n' % (
                 self.nodes[0], self.nodes[1],
                 ', '.join(self.positive_sources[self.reverse]))
+
         if self.negative[self.straight]:
             s += '\t%s =-=> %s :: %s\n' % (
                 self.nodes[0], self.nodes[1],
                 ', '.join(self.negative_sources[self.straight]))
+
         if self.negative[self.reverse]:
             s += '\t%s <=-= %s :: %s\n' % (
                 self.nodes[0], self.nodes[1],
                 ', '.join(self.negative_sources[self.reverse]))
+
         return s
 
     def reload(self):
+        """
+        Reloads the object from the module level.
+        """
+
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist=[modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-    
+
     def check_nodes(self, nodes):
+        """
+        Checks if *nodes* is contained in the edge.
+
+        * Arguments:
+             - *nodes* [list]: Or [tuple], contains the names of the
+               edges to be checked.
+
+        * Returns:
+            - [bool]: True if all elements in *nodes* are contained in
+              the object's node list.
+        """
+
         return not bool(len(set(self.nodes) - set(nodes)))
-    
+
     def check_param(self, di):
+        """
+        Checks if *di* is ``'undirected'`` or contains the nodes of
+        the current edge. Used internally to check that *di* is a valid
+        key for the object attributes declared on dictionaries.
+
+        * Arguments:
+            - *di* [tuple]: Or [str], key to be tested for validity.
+
+        * Returns:
+            - [bool]: ``True`` if *di* is ``'undirected'`` or a tuple
+              of node names contained in the edge, ``False`` otherwise.
+        """
+
         return (di == 'undirected' or (isinstance(di, tuple) and
                                        self.check_nodes(di)))
-    
+
     def set_dir(self, direction, source):
         """
-        Adds directionality information with
-        the corresponding data source named.
+        Adds directionality information with the corresponding data
+        source named. Modifies self attributes *dirs* and *sources*.
+
+        * Arguments:
+            - *direction* [tuple]: Or [str], the directionality key for
+              which the value on *dirs* has to be set ``True``.
+            - *source* [set]: Contains the name(s) of the source(s) from
+              which such information was obtained.
         """
+
         if self.check_param(direction) and len(source):
             self.dirs[direction] = True
             source = common.addToSet(set([]), source)
@@ -208,479 +298,1011 @@ class Direction(object):
 
     def get_dir(self, direction, sources=False):
         """
-        Returns boolean or list of sources
+        Returns the state (or *sources* if specified) of the given
+        *direction*.
+
+        * Arguments:
+            - *direction* [tuple]: Or [str] (if ``'undirected'``). Pair
+              of nodes from which direction information is to be
+              retrieved.
+            - *sources* [bool]: Optional, ``'False'`` by default.
+              Specifies if the *sources* information of the given
+              direction is to be retrieved instead.
+
+        * Returns:
+            - [bool] or [set] (if ``sources=True``). Presence/absence of
+              the requested direction (or the list of sources if
+              specified). Returns ``None`` if *direction* is not valid.
         """
+
         if self.check_param(direction):
+
             if sources:
                 return self.sources[direction]
+
             else:
                 return self.dirs[direction]
+
         else:
             return None
 
     def get_dirs(self, src, tgt, sources=False):
         """
-        Returns all directions with boolean values
-        or list of sources.
+        Returns all directions with boolean values or list of sources.
+
+        * Arguments:
+            - *src* [str]: Source node.
+            - *tgt* [str]: Target node.
+            - *sources* [bool]: Optional, ``False`` by default.
+              Specifies whether to return the *sources* attribute
+              instead of *dirs*.
+
+        * Returns:
+            - [list]: Contains the *dirs* (or *sources* if specified) of
+              the given edge.
         """
+
+    # XXX: What's the point of using src and tgt if in the end straigth,
+    #      reverse and undirected are returned? Also, in such case:
+    #      `return self.sources/dirs.values()` is more straightforward.
+
         query = (src, tgt)
+
         if self.check_nodes(query):
+
             if sources:
-                return [
-                    self.sources[query], self.sources[(query[1], query[0])],
-                    self.sources['undirected']
-                ]
+                return [self.sources[query],
+                        self.sources[(query[1], query[0])],
+                        self.sources['undirected']]
+
             else:
-                return [
-                    self.dirs[query], self.dirs[(query[1], query[0])],
-                    self.dirs['undirected']
-                ]
+                return [self.dirs[query],
+                        self.dirs[(query[1], query[0])],
+                        self.dirs['undirected']]
+
         else:
             return None
 
     def which_dirs(self):
+        """
+        Returns the pair(s) of nodes for which there is information
+        about their directionality.
+
+        * Returns:
+            - [list]: List of tuples containing the nodes for which
+              theit attribute *dirs* is ``True``.
+        """
+
         return [d for d, s in iteritems(self.dirs) if s and d != 'undirected']
 
     def unset_dir(self, direction, source=None):
         """
-        Removes directionality information,
-        or single source.
+        Removes directionality and/or source information of the
+        specified *direction*. Modifies attribute *dirs* and *sources*
+        (or *sources* only if ``source=True``).
+
+        * Arguments:
+            - *direction* [tuple]: Or [str] (if ``'undirected'``) the
+              pair of nodes specifying the directionality from which the
+              information is to be removed.
+            - *source* [set]: Optional, ``None`` by default. If
+              specified, determines which source(s) is(are) to be
+              removed from *sources* attribute in the specified
+              *direction*.
         """
+
         if check_param(direction):
+
             if source is not None:
+
                 try:
                     self.sources[direction].remove(source)
+
                 except ValueError:
                     pass
+
             else:
                 self.sources[direction] = []
+
             if len(self.sources[direction]) == 0:
                 self.dirs[direction] = False
 
     def is_directed(self):
+        """
+        Checks if edge has any directionality information.
+
+        * Returns:
+            - [bool]: Returns ``True```if any of the *dirs* attribute
+              values is ``True`` (except ``'undirected'``), ``False``
+              otherwise.
+        """
+
         return bool(
             sum([v for k, v in iteritems(self.dirs) if k != 'undirected']))
 
     def is_stimulation(self, direction=None):
+        """
+        Checks if any (or for a specific *direction*) interaction is
+        activation (positive interaction).
+
+        * Arguments:
+            - *direction* [tuple]: Optional, ``None`` by default. If
+              specified, checks the *positive* attribute of that
+              specific directionality. If not specified, checks both.
+
+        * Returns:
+            - [bool]: ``True`` if any interaction (or the specified
+              *direction*) is activatory (positive).
+        """
+
         if direction is None:
             return bool(sum(self.positive.values()))
+
         else:
             return self.positive[direction]
 
     def is_inhibition(self, direction=None):
+        """
+        Checks if any (or for a specific *direction*) interaction is
+        inhibition (negative interaction).
+
+        * Arguments:
+            - *direction* [tuple]: Optional, ``None`` by default. If
+              specified, checks the *negative* attribute of that
+              specific directionality. If not specified, checks both.
+
+        * Returns:
+            - [bool]: ``True`` if any interaction (or the specified
+              *direction*) is inhibitory (negative).
+        """
+
         if direction is None:
             return bool(sum(self.negative.values()))
+
         else:
             return self.negative[direction]
 
     def has_sign(self, direction=None):
+        """
+        Checks whether the edge (or for a specific *direction*) has
+        any signed information (about positive/negative interactions).
+
+        * Arguments:
+            - *direction* [tuple]: Optional, ``None`` by default. If
+              specified, only the information of that direction is
+              checked for sign.
+
+        * Returns:
+            - [bool]: ``True`` if there exist any information on the
+              sign of the interaction, ``False`` otherwise.
+        """
+
         if direction is None:
-            return bool(sum(self.positive.values())) or \
-                bool(sum(self.negative.values()))
+            return (bool(sum(self.positive.values()))
+                    or bool(sum(self.negative.values())))
+
         else:
             return self.negative[direction] or self.positive[direction]
 
     def set_sign(self, direction, sign, source):
+        """
+        Sets sign and source information on a given direction of the
+        edge. Modifies the attributes *positive* and *positive_sources*
+        or *negative* and *negative_sources* depending on the sign.
+        Direction is also updated accordingly, which also modifies the
+        attributes *dirs*, *sources*,
+
+        * Arguments:
+            - *direction* [tuple]: Pair of edge nodes specifying the
+              direction from which the information is to be set/updated.
+            - *sign* [str]: Specifies the type of interaction. If
+              ``'positive'``, is considered activation, otherwise, is
+              assumed to be negative (inhibition).
+            - *source* [set]: Contains the name(s) of the source(s) from
+              which the information was obtained.
+        """
+
         if self.check_nodes(direction) and len(source):
             self.set_dir(direction, source)
             source = common.addToSet(set([]), source)
+
             if sign == 'positive':
                 self.positive[direction] = True
                 self.positive_sources[direction] = \
                     self.positive_sources[direction] | source
+
             else:
                 self.negative[direction] = True
                 self.negative_sources[direction] = \
                     self.negative_sources[direction] | source
 
     def get_sign(self, direction, sign=None, sources=False):
+        """
+        Retrieves the sign information of the edge in the given
+        diretion. If specified in *sign*, only that sign's information
+        will be retrieved. If specified in *sources*, the sources of
+        that information will be retrieved instead.
+
+        * Arguments:
+            - *direction* [tuple]: Contains the pair of nodes specifying
+              the directionality of the edge from which th information
+              is to be retrieved.
+            - *sign* [str]: Optional, ``None`` by default. Denotes
+              whether to retrieve the ``'positive'`` or ``'negative'``
+              specific information.
+            - *sources* [bool]: Optional, ``False`` by default.
+              Specifies whether to return the sources instead of sign.
+
+        * Returns:
+            - [list]: If ``sign=None`` containing [bool] values denoting
+              the presence of positive and negative sign on that
+              direction, if ``sources=True`` the [set] of sources for
+              each of them will be returned instead. If *sign* is
+              specified, returns [bool] or [set] (if ``sources=True``)
+              of that specific direction and sign.
+        """
+
         if self.check_nodes(direction):
+
             if sources:
+
                 if sign == 'positive':
                     return self.positive_sources[direction]
+
                 elif sign == 'negative':
                     return self.negative_sources[direction]
+
                 else:
-                    return [
-                        self.positive_sources[direction],
-                        self.negative_sources[direction]
-                    ]
+                    return [self.positive_sources[direction],
+                            self.negative_sources[direction]]
+
             else:
+
                 if sign == 'positive':
                     return self.positive[direction]
+
                 elif sign == 'negative':
                     return self.negative[direction]
+
                 else:
                     return [self.positive[direction], self.negative[direction]]
 
     def unset_sign(self, direction, sign, source=None):
+        """
+        Removes sign and/or source information of the specified
+        *direction* and *sign*. Modifies attribute *positive* and
+        *positive_sources* or *negative* and *negative_sources* (or
+        *positive_sources*/*negative_sources* only if ``source=True``).
+
+        * Arguments:
+            - *direction* [tuple]: The pair of nodes specifying the
+              directionality from which the information is to be
+              removed.
+            - *sign* [str]: Sign from which the information is to be
+              removed. Must be either ``'positive'`` or ``'negative'``.
+            - *source* [set]: Optional, ``None`` by default. If
+              specified, determines which source(s) is(are) to be
+              removed from the sources in the specified *direction* and
+              *sign*.
+        """
+
         if self.check_nodes(direction):
+
             if source is not None:
+
                 try:
+
                     if sign == 'positive':
                         self.positive_sources[direction].remove(source)
+
                     if sign == 'negative':
                         self.negative_sources[direction].remove(source)
+
                 except:
                     pass
+
             else:
+
                 if sign == 'positive':
                     self.positive_sources[direction] = []
+
                 if sign == 'negative':
                     self.negative_sources[direction] = []
+
             if len(self.positive_sources[direction]) == 0:
                 self.positive[direction] = False
+
             if len(self.negative_sources[direction]) == 0:
                 self.negative[direction] = False
 
-    def src(self, undirected = False):
+    # XXX: Not sure if intended or you noticed, but if undirected=True and
+    #      self.dirs['undirected']=True, the returning list includes 'u'.
+    def src(self, undirected=False):
         """
-        Returns the IDs of effector molecules in this directed
-        interaction. If the interaction is bidirectional, the
-        list will contain 2 IDs. If the interaction is undirec-
-        ted, an empty list will be returned.
-        """
-        return [
-            k[0]
-            for k, v in iteritems(self.dirs)
-            if (k != 'undirected' or undirected) and v
-        ]
+        Returns the name(s) of the source node(s) for each existing
+        direction on the interaction.
 
-    def tgt(self, undirected = False):
+        * Arguments:
+            - *undirected* [bool]: Optional, ``False`` by default.
+
+        * Returns:
+            - [list]: Contains the name(s) for the source node(s). This
+              means if the interaction is bidirectional, the list will
+              contain both identifiers of the edge. If the interaction
+              is undirected, an empty list will be returned.
         """
-        Returns the IDs of the target molecules in the inter-
-        action. Same behaviour as `Direction.src()`.
+
+        return [k[0] for k, v in iteritems(self.dirs)
+                if (k != 'undirected' or undirected) and v]
+
+    # XXX: Similarly, if undirected=True and self.dirs['undirected']=True,
+    #      the returning list includes 'n'.
+    def tgt(self, undirected=False):
         """
-        return [
-            k[1]
-            for k, v in iteritems(self.dirs)
-            if (k != 'undirected' or undirected) and v
-        ]
+        Returns the name(s) of the target node(s) for each existing
+        direction on the interaction.
+
+        * Arguments:
+            - *undirected* [bool]: Optional, ``False`` by default.
+
+        * Returns:
+            - [list]: Contains the name(s) for the target node(s). This
+              means if the interaction is bidirectional, the list will
+              contain both identifiers of the edge. If the interaction
+              is undirected, an empty list will be returned.
+        """
+
+        return [k[1] for k, v in iteritems(self.dirs)
+                if (k != 'undirected' or undirected) and v]
+
+    # FIXME: If the intended behavior of the functions above is to include
+    #        'undirected' in the returned list if undirected=True and
+    #        self.dirs['undirected']=True, then change return by:
+    #
+    #        `[k[0] if k != 'undirected' else k for k, v in
+    #         iteritems(self.dirs) if (k != 'undirected' or undirected) and v]`
+    #
+    #        On the other hand, if the intended behavior is that returns an
+    #        empty list if kwarg undirected=True, then add a simple if/else
+    #        return
 
     def src_by_source(self, source):
-        return [
-            k[0] for k, v in iteritems(self.sources)
-            if k != 'undirected' and source in v
-        ]
+        """
+        Returns the name(s) of the source node(s) for each existing
+        direction on the interaction for a specific *source*.
+
+        * Arguments:
+            - *source* [str]: Name of the source according to which the
+              information is to be retrieved.
+
+        * Returns:
+            - [list]: Contains the name(s) for the source node(s)
+              according to the specified *source*. This means if the
+              interaction is bidirectional, the list will contain both
+              identifiers of the edge. If the specified *source* is not
+              found or invalid, an empty list will be returned.
+        """
+
+        return [k[0] for k, v in iteritems(self.sources)
+                if k != 'undirected' and source in v]
 
     def tgt_by_source(self, source):
-        return [
-            k[1] for k, v in iteritems(self.sources)
-            if k != 'undirected' and source in v
-        ]
+        """
+        Returns the name(s) of the target node(s) for each existing
+        direction on the interaction for a specific *source*.
+
+        * Arguments:
+            - *source* [str]: Name of the source according to which the
+              information is to be retrieved.
+
+        * Returns:
+            - [list]: Contains the name(s) for the target node(s)
+              according to the specified *source*. This means if the
+              interaction is bidirectional, the list will contain both
+              identifiers of the edge. If the specified *source* is not
+              found or invalid, an empty list will be returned.
+        """
+
+        return [k[1] for k, v in iteritems(self.sources)
+                if k != 'undirected' and source in v]
 
     def sources_straight(self):
+        """
+        Retrieves the list of sources for the straight direction.
+
+        * Returns:
+            - [set]: Contains the names of the sources supporting the
+              straight directionality of the edge.
+        """
+
         return self.sources[self.straight]
 
     def sources_reverse(self):
+        """
+        Retrieves the list of sources for the reverse direction.
+
+        * Returns:
+            - [set]: Contains the names of the sources supporting the
+              reverse directionality of the edge.
+        """
+
         return self.sources[self.reverse]
 
     def sources_undirected(self):
+        """
+        Retrieves the list of sources without directed information.
+
+        * Returns:
+            - [set]: Contains the names of the sources supporting the
+              edge presence but without specific directionality
+              information.
+        """
+
         return self.sources['undirected']
 
     def positive_straight(self):
+        """
+        Checks if the straight directionality is a positive interaction.
+
+        * Returns
+            - [bool]: ``True`` if there is supporting information on the
+              straight direction of the edge as activation. ``False``
+              otherwise.
+        """
+
         return self.positive[self.straight]
 
     def positive_reverse(self):
+        """
+        Checks if the reverse directionality is a positive interaction.
+
+        * Returns
+            - [bool]: ``True`` if there is supporting information on the
+              reverse direction of the edge as activation. ``False``
+              otherwise.
+        """
+
         return self.positive[self.reverse]
 
     def negative_straight(self):
+        """
+        Checks if the straight directionality is a negative interaction.
+
+        * Returns
+            - [bool]: ``True`` if there is supporting information on the
+              straight direction of the edge as inhibition. ``False``
+              otherwise.
+        """
+
         return self.negative[self.straight]
 
     def negative_reverse(self):
+        """
+        Checks if the reverse directionality is a negative interaction.
+
+        * Returns
+            - [bool]: ``True`` if there is supporting information on the
+              reverse direction of the edge as inhibition. ``False``
+              otherwise.
+        """
+
         return self.negative[self.reverse]
 
     def negative_sources_straight(self):
+        """
+        Retrieves the list of sources for the straight direction and
+        negative sign.
+
+        * Returns:
+            - [set]: Contains the names of the sources supporting the
+              straight directionality of the edge with a negative sign.
+        """
+
         return self.negative_sources[self.straight]
 
     def negative_sources_reverse(self):
+        """
+        Retrieves the list of sources for the reverse direction and
+        negative sign.
+
+        * Returns:
+            - [set]: Contains the names of the sources supporting the
+              reverse directionality of the edge with a negative sign.
+        """
+
         return self.negative_sources[self.reverse]
 
     def positive_sources_straight(self):
+        """
+        Retrieves the list of sources for the straight direction and
+        positive sign.
+
+        * Returns:
+            - [set]: Contains the names of the sources supporting the
+              straight directionality of the edge with a positive sign.
+        """
+
         return self.positive_sources[self.straight]
 
     def positive_sources_reverse(self):
+        """
+        Retrieves the list of sources for the reverse direction and
+        positive sign.
+
+        * Returns:
+            - [set]: Contains the names of the sources supporting the
+              reverse directionality of the edge with a positive sign.
+        """
+
         return self.positive_sources[self.reverse]
 
     def majority_dir(self):
         """
-        Returns directionality based on majority consensus.
-        Returns `None` if the number of sources supporting the two opposite
-        directions are the same. Returns `'undirected'` if there is no directionality
-        information. Returns `tuple` of IDs if one direction is supported by
-        more sources.
+        Infers which is the major directionality of the edge by number
+        of supporting sources.
+
+        * Returns:
+            - [tuple]: Contains the pair of nodes denoting the consensus
+              directionality. If the number of sources on both
+              directions is equal, ``None`` is returned. If there is no
+              directionality information, ``'undirected'``` will be
+              returned.
         """
+
         if self.is_directed():
+
             if len(self.sources[self.straight]) == len(self.sources[
                     self.reverse]):
                 return None
+
             elif len(self.sources[self.straight]) > len(self.sources[
                     self.reverse]):
                 return self.straight
+
             else:
                 return self.reverse
+
         else:
             return 'undirected'
 
     def majority_sign(self):
         """
-        Returns signs based on majority consensus. Keys in the returned `dict` are directions.
-        Values are `None` if the direction lacks effect sign. Otherwise `tuples` with their
-        first element `True` if the number of sources supporting stimulation in the given
-        direction is greater or equal compared to those supporting inhibition. The second
-        value is the same for inhibition.
+        Infers which is the major sign (activation/inhibition) of the
+        edge by number of supporting sources on both directions.
+
+        * Returns:
+            - [dict]: Keys are the node tuples on both directions
+              (straight/reverse) and values can be either ``None`` if
+              that direction has no sign information or a list of
+              two [bool] elements corresponding to majority of positive
+              and majority of negative support. In case both elements of
+              the list are ``True``, this means the number of supporting
+              sources for both signs in that direction is equal.
         """
-        result = {self.straight: None, self.reverse: None}
-        if self.has_sign(direction=self.straight):
-            pos = len(self.positive_sources[self.straight]) >= len(
-                self.negative_sources[self.straight])
-            neg = len(self.positive_sources[self.straight]) <= len(
-                self.negative_sources[self.straight])
-            result[self.straight] = [pos, neg]
-        if self.has_sign(direction=self.reverse):
-            pos = len(self.positive_sources[self.reverse]) >= len(
-                self.negative_sources[self.reverse])
-            neg = len(self.positive_sources[self.reverse]) <= len(
-                self.negative_sources[self.reverse])
-            result[self.reverse] = [pos, neg]
+
+        dirs = [self.straight, self.reverse]
+
+        result = {(d, None) for d in dirs}
+
+        for d in dirs:
+            if self.has_sign(direction=d):
+                p, n = map(len, [self.positive_sources[d],
+                                 self.negative_sources[d]])
+
+                result[d] = [p >= n, p <= n]
+
         return result
 
     def consensus_edges(self):
         """
-        Returns list of edges based on majority consensus of directions and signs.
+        Infers the consensus edge(s) according to the number of
+        supporting sources. This includes direction and sign attributes.
+
+        * Returns:
+            - [list]: Contains the consensus edge(s) along with the
+              consensus sign. If there is no major directionality, both
+              are returned. The structure is as follows:
+              ``['<source>', '<target>', '<(un)directed>', '<sign>']``
         """
+
         result = []
         d = self.majority_dir()
         s = self.majority_sign()
+
+        # XXX: This case could actually return directly, would save some time
         if d == 'undirected':
-            result.append(
-                [self.straight[0], self.straight[1], 'undirected', 'unknown'])
-        if d is None or d == self.straight:
-            if s[self.straight] is not None:
-                if s[self.straight][0]:
-                    result.append([
-                        self.straight[0], self.straight[1], 'directed',
-                        'positive'
-                    ])
-                if s[self.straight][1]:
-                    result.append([
-                        self.straight[0], self.straight[1], 'directed',
-                        'negative'
-                    ])
-            else:
-                result.append([
-                    self.straight[0], self.straight[1], 'directed', 'unknown'
-                ])
-        if d is None or d == self.reverse:
-            if s[self.reverse] is not None:
-                if s[self.reverse][0]:
-                    result.append([
-                        self.reverse[0], self.reverse[1], 'directed',
-                        'positive'
-                    ])
-                if s[self.reverse][1]:
-                    result.append([
-                        self.reverse[0], self.reverse[1], 'directed',
-                        'negative'
-                    ])
-            else:
-                result.append(
-                    [self.reverse[0], self.reverse[1], 'directed', 'unknown'])
+            result.append([self.straight[0], self.straight[1],
+                           'undirected', 'unknown'])
+
+        else:
+            dirs = [self.straight, self.reverse] if d is None else [d]
+
+            for d in dirs:
+
+                if s[d] is not None:
+
+                    if s[d][0]:
+                        result.append([d[0], d[1], 'directed', 'positive'])
+
+    # XXX: Technically, if s[d] is not None, this could be an elif right?
+                    if s[d][1]:
+                        result.append([d[0], d[1], 'directed', 'negative'])
+
+                else:
+                    result.append([d[0], d[1], 'directed', 'unknown'])
+
         return result
 
     def merge(self, other):
-        if other.__class__.__name__ == 'Direction' and self.check_nodes(
-                other.nodes):
-            self.dirs[self.straight] = self.dirs[self.straight] or \
-                other.dirs[self.straight]
-            self.dirs[self.reverse] = self.dirs[self.reverse] or \
-                other.dirs[self.reverse]
-            self.dirs['undirected'] = self.dirs['undirected'] or \
-                other.dirs['undirected']
-            self.sources[self.straight] = self.sources[self.straight] | \
-                other.sources[self.straight]
-            self.sources[self.reverse] = self.sources[self.reverse] | \
-                other.sources[self.reverse]
-            self.sources['undirected'] = self.sources['undirected'] | \
-                other.sources['undirected']
-            self.positive[self.straight] = self.positive[self.straight] or \
-                other.positive[self.straight]
-            self.negative[self.reverse] = self.negative[self.reverse] or \
-                other.negative[self.reverse]
-            self.positive_sources[self.straight] = \
-                                 self.positive_sources[self.straight] | \
-                                other.positive_sources[self.straight]
-            self.negative_sources[self.reverse] = \
-                                 self.negative_sources[self.reverse] | \
-                                other.negative_sources[self.reverse]
-    
+        """
+        Merges current edge with another (if and only if they are the
+        same class and contain the same nodes). Updates the attributes
+        *dirs*, *sources*, *positive*, *negative*, *positive_sources*
+        and *negative_sources*.
+
+        * Arguments:
+            - *other* [pypath.main.Direction]: The new edge object to be
+              merged with the current one.
+        """
+
+    # XXX: Not best way to check the class. Probably never happens, but there
+    #      may be other class out there with the same name
+    #      >  if (other.__class__.__name__ == 'Direction' and self.check_nodes(
+    #                 other.nodes):
+        if other.__class__ == self.__class__ and self.check_nodes(other.nodes):
+            for k in [self.straight, self.reverse, 'undirected']:
+                self.dirs[k] = self.dirs[k] or other.dirs[k]
+
+                self.sources[k] = self.sources[k] | other.sources[k]
+
+    # XXX: Is there a reason to only update positive with straight and negative
+    #      only with reverse?
+                if k == self.straight:
+                    self.positive[k] = self.positive[k] or other.positive[k]
+                    self.positive_sources[k] = (self.positive_sources[k]
+                                                | other.positive_sources[k])
+
+                elif k == self.reverse:
+                    self.negative[k] = self.negative[k] or other.negative[k]
+                    self.negative_sources[k] = (self.negative_sources[k]
+                                                | other.negative_sources[k])
+
     def translate(self, ids):
+        """
+        Translates the node names/identifiers according to the
+        dictionary *ids*.
+
+        * Arguments:
+            - *ids* [dict]: Dictionary containing (at least) the current
+              names of the nodes as keys and their translation as
+              values.
+
+        * Returns:
+            - [pypath.main.Direction]: The copy of current edge object
+              with translated node names.
+        """
+
         # new Direction object
         newd = Direction(ids[self.nodes[0]], ids[self.nodes[1]])
-        
+
         # copying directions
         for k, v in iteritems(self.sources):
             di = (ids[k[0]], ids[k[1]]) if type(k) is tuple else k
             newd.set_dir(di, v)
-        
+
         # copying signs
         for di in [self.straight, self.reverse]:
-            
             pos, neg = self.get_sign(di, sources = True)
-            
+
             newd.set_sign((ids[di[0]], ids[di[1]]), 'positive', pos)
             newd.set_sign((ids[di[0]], ids[di[1]]), 'negative', neg)
-        
+
         return newd
 
 
+# TODO: Ask Dénes about this and finish docstrings
 class AttrHelper(object):
+    """
+    Attribute helper class.
+
+    * Initialization arguments:
+        - *value* [dict/str]?:
+        - *name* [str]?: Optional, ``None`` by default.
+        - *defaults* [dict]:
+
+    * Attributes:
+        - *value* [dict]?:
+        - *name* [str]?:
+        - *defaults* [dict]:
+        - *id_type* [type]:
+
+    * Call arguments:
+        - *instance* []:
+        - *thisDir* [tuple?]: Optional, ``None`` by default.
+        - *thisSign* []: Optional, ``None`` by default.
+        - *thisDirSources* []: Optional, ``None`` by default.
+        - *thisSources* []: Optional, ``None`` by default.
+
+    * Returns:
+        -
+    """
+
     def __init__(self, value, name=None, defaults={}):
+        """
+        """
+
         self.name = name
         self.value = value
         self.defaults = defaults
+
         if isinstance(self.value, dict):
             self.id_type = type(self.value.keys()[0])
 
-    def __call__(self,
-                 instance,
-                 thisDir=None,
-                 thisSign=None,
-                 thisDirSources=None,
-                 thisSources=None):
+    def __call__(self, instance, thisDir=None, thisSign=None,
+                 thisDirSources=None, thisSources=None):
+        """
+        """
+
         _thisDir = 'directed' if isinstance(thisDir, tuple) else thisDir
+
         # user supplied callback function:
         if hasattr(self.value, '__call__'):
             return self.value(instance)
+
         # special cases #1: by direction/effect
-        elif self.value == 'DIRECTIONS' and self.defaults is not None and \
-                self.name is not None and self.name in self.defaults:
+        elif (self.value == 'DIRECTIONS' and self.defaults is not None
+              and self.name is not None and self.name in self.defaults):
+
             if _thisDir in self.defaults[self.name]:
+
                 if thisSign in self.defaults[self.name][_thisDir]:
                     return self.defaults[self.name][_thisDir][thisSign]
+
         # special cases #2: by source category
         elif self.value == 'RESOURCE_CATEGORIES':
+
             for resource_type in ['pathway', 'ptm', 'reaction', 'interaction']:
-                if len(
-                        getattr(data_formats, '%s_resources' % resource_type) &
-                        thisSources) > 0:
-                    if self.name in self.defaults and \
-                            resource_type in self.defaults[self.name]:
+
+                if len(getattr(data_formats, '%s_resources' % resource_type)
+                       &thisSources) > 0:
+
+                    if (self.name in self.defaults
+                        and resource_type in self.defaults[self.name]):
                         return self.defaults[self.name][resource_type]
+
             sys.stdout.wrtie('No category for %s\n' % thisSources)
             sys.stdout.flush()
+
         # if value is constant:
         elif type(self.value) in common.simpleTypes:
             return self.value
+
         # if a dictionary given to map some igraph attribute to values:
         elif hasattr(self.value, '__call__'):
             return self.value(instance)
+
         elif isinstance(self.value, dict) and self.attr_name is not None:
+
             if hasattr(instance, self.value['_name']):
                 key_attr = getattr(instance, self.value['_name'])
+
             elif self.value['_name'] in instance.attributes():
                 key_attr = instance[self.value['_name']]
+
             if key_attr in self.value:
                 return self.value[key_attr]
+
         # if default value has been given for this attribute:
-        elif self.name is not None and self.defaults is not None and \
-                self.name in self.defaults:
+        elif (self.name is not None and self.defaults is not None
+              and self.name in self.defaults):
             return self.defaults[self.name]
+
         # ultimately, return None
         else:
             return None
 
 
 class _NamedVertexSeq(object):
-    
-    __slots__ = [
-        '_vs',
-        '_nodNam',
-        '_nodLab'
-    ]
-    
+    """
+    Vertex sequence object. Combines the list of vertex objects, their
+    UniProt IDs and corresponding GeneSymbols.
+
+    * Arguments:
+        - *_vs* [igraph.VertexSeq]: Collection of [igraph.Vertex]
+          objects.
+        - *_nodNam* [list]: List of [str] containing the node names
+          (UniProt IDs).
+        - *_nodLab* [list]: List of [str] containing the node labels
+          (GeneSymbols).
+
+    * Attributes:
+        - *_vs* [igraph.VertexSeq]: Collection of [igraph.Vertex]
+          objects.
+        - *_nodNam* [list]: List of [str] containing the node names
+          (UniProt IDs).
+        - *_nodLab* [list]: List of [str] containing the node labels
+          (GeneSymbols).
+    """
+
+    __slots__ = ['_vs', '_nodNam', '_nodLab']
+
     def __init__(self, _vs, _nodNam, _nodLab):
+        """
+        Initializes the object and sets the attributes according to the
+        passed arguments.
+        """
+
         self._vs = _vs
         self._nodNam = _nodNam
         self._nodLab = _nodLab
 
     def __iter__(self):
+        """
+        Iterator function yielding the [igraph.Vertex] instances
+        contained in *_vs*. It's accessed through the alias *vs*.
+        """
+
         for v in self._vs:
             yield v
 
     def genesymbol(self):
+        """
+        Iterator function yielding the GeneSymbols contained in
+        *_nodLab*. It can be accessed through the alias *gs*.
+        """
+
         for v in self._vs:
             yield self._nodLab[v.index]
 
     def uniprot(self):
+        """
+        Iterator function yielding the UniProt IDs contained in
+        *_nodNam*. It can be accessed through the alias *up*.
+        """
+
         for v in self._vs:
             yield self._nodNam[v.index]
 
     def ids(self):
+        """
+        Iterator function yielding the vertex indexes.
+        """
+
         for v in self._vs:
             yield v.index
 
+    # Aliases
     gs = genesymbol
     up = uniprot
     vs = __iter__
 
-
+# TODO: Ask:
+#       - Which/how many organisms are accepted/available?
+#       - MySQL
 class PyPath(object):
+    """
+    Main network object.
 
-    ###
-    # main network object
-    ###
+    * Arguments:
+        - *ncbi_tax_id* [int]: Optional, ``9606`` (Homo sapiens) by
+          default. NCBI Taxonomic identifier of the organism from which
+          the data will be downloaded.
+        - *default_name_type* [dict]: Optional, ``{'protein': 'uniprot',
+          'mirna': 'mirbase', 'drug': 'chembl', 'lncrna':
+          'lncrna-genesymbol'}`` by default. Contains the default
+          identifier types to which the downloaded data will be
+          converted. If others are used, user may need to provide the
+          format definitions for the conversion tables.
+        - *copy* [pypath.main.PyPath]: Optional, ``None`` by default.
+          Other *PyPath* instance from which the data will be copied.
+        - *mysql* [tuple]: Optional, ``(None, 'mapping')`` by default.
+          Contains the MySQL parameters used by the ``mapping`` module
+          to load the ID conversion tables.
+        - *chembl_mysql* [tuple]: Optional, ``(None, 'chembl')`` by
+          default. Contains the MySQL parameters used by the ``mapping``
+          module to load the ChEMBL ID conversion tables.
+        - *name* [str]: Optional, ``'unnamed'`` by default. Session or
+          project name (custom).
+        - *outdir* [str]: Optional, ``'results'`` by default. Output
+          directory where to store all output files.
+        - *loglevel* [str]: Optional, ``'INFO'`` by default. Sets the
+          level of the logger. Possible levels are: ``'DEBUG'``,
+          ``'INFO'``, ``'WARNING'``, ``'ERROR'`` or ``'CRITICAL'``.
+        - *loops* [bool]: Optional, ``False`` by default. Determines if
+          self-loop edges are allowed in the graph.
 
-    default_name_type = {
-        'protein': 'uniprot',
-        'mirna': 'mirbase',
-        'drug': 'chembl',
-        'lncrna': 'lncrna-genesymbol'
-    }
+    * Attributes:
+        - *adjlist* [list]: List of [set] containing the adjacency of
+          each node. See ``PyPath.update_adjlist()`` method for more
+          information.
+        - *chembl* [pypath.chembl.Chembl]: Contains the ChEMBL data. See
+          ``pypath.chembl`` module documentation for more information.
+        - *chembl_mysql* [tuple]: Contains the MySQL parameters used by
+          the ``mapping`` module to load the ChEMBL ID conversion
+          tables.
+        - *data* [dict?]:
+        - *db_dict* []:
+        - *dgraph* [igraph.Graph]: Directed network graph object.
+        - *disclaimer* [str]: Disclaimer text.
+        - *dlabDct* []:
+        - *dnodDct* []:
+        - *dnodInd* []:
+        - *dnodLab* []:
+        - *dnodNam* []:
+        - *edgeAttrs* []:
+        - *exp* []:
+        - *exp_prod* []:
+        - *exp_samples* []:
+        - *failed_edges* []:
+        - *go* []:
+        - *graph* [igraph.Graph]: Undirected network graph object.
+        - *gsea* []:
+        - *has_cats* []:
+        - *htp* []:
+        - *labDct* []:
+        - *lists* []:
+        - *loglevel* [str]: The level of the logger.
+        - *loops* [bool]: Whether if self-loop edges are allowed in the
+          graph.
+        - *mapper* []:
+        - *mutation_samples* []:
+        - *mysql_conf* [tuple]: Contains the MySQL parameters used by
+          the ``mapping`` module to load the ID conversion tables.
+        - *name* [str]: Session or project name (custom).
+        - *ncbi_tax_id* [int]: NCBI Taxonomic identifier of the organism
+          from which the data will be downloaded.
+        - *negatives* []:
+        - *nodDct* []:
+        - *nodInd* []:
+        - *nodLab* []:
+        - *nodNam* []:
+        - *outdir* [str]: Output directory where to store all output
+          files.
+        - *ownlog* []:
+        - *palette* []:
+        - *pathway_types* []:
+        - *pathways* []:
+        - *plots* []:
+        - *proteomicsdb* []:
+        - *raw_data* []:
+        - *reflists* []:
+        - *seq* []:
+        - *session* []:
+        - *session_name* []:
+        - *sourceNetEdges* []:
+        - *sourceNetNodes* []:
+        - *sources* []:
+        - *u_pfam* []:
+        - *uniprot_mapped* []:
+        - *unmapped* []:
+        - *vertexAttrs* []:
+    """
 
-    def __init__(self,
-                 ncbi_tax_id=9606,
-                 default_name_type=default_name_type,
-                 copy=None,
-                 mysql=(None, 'mapping'),
-                 chembl_mysql=(None, 'chembl'),
-                 name='unnamed',
-                 outdir='results',
-                 loglevel='INFO',
-                 loops=False):
+    default_name_type = {'protein': 'uniprot',
+                         'mirna': 'mirbase',
+                         'drug': 'chembl',
+                         'lncrna': 'lncrna-genesymbol'}
+
+    def __init__(self, ncbi_tax_id=9606, default_name_type=default_name_type,
+                 copy=None, mysql=(None, 'mapping'),
+                 chembl_mysql=(None, 'chembl'), name='unnamed',
+                 outdir='results', loglevel='INFO', loops=False):
         """
-        Currently only one organism molecular interaction networks
-        are supported. Some functions supports multi-species networks,
-        and maybe once the whole module will support that.
-
-        @ncbi_tax_id : int
-            The ID of the organism in NCBI Taxonomy. Defaults to human
-            (9606).
-        @mysql
-            The MySQL parameter used by the mapping module to load some
-            ID conversion tables from MySQL.
-        @default_name_type : dict
-            Dictionary of default ID types, what all identifiers of the
-            given molecular species should be converted to. By default,
-            for protein it is UniProt. It could be any other, only then
-            you need to supply the required format definitions for the
-            ID conversion tables.
-        @copy : BioGraph object
-            In case you copy an other instance.
-        @name : str
-            This is a custom session/project name.
-        @outdir : str
-            The directory where you wish to create all the output files.
-        @loglevel : str
-            Passed to logging module.
-        @loops : bool
-            Whether to allow loop edges in the graph. Default is False.
+        Initializes the network object. **NOTE:** Only the instance is
+        created, no data is donwloaded until the corresponding function
+        is called.
         """
+
         self.__version__ = _version.__version__
+
+        # Setting up the working directory
         for d in ['results', 'log', 'cache']:
+
             if not os.path.exists(d):
                 os.makedirs(d)
+
         if copy is None:
+            # Setting up graph object
             self.graph = igraph.Graph(0)
             g = self.graph
             g['entity_types'] = {}
@@ -708,6 +1330,7 @@ class PyPath(object):
             g['layout_type'] = None
             g['layout_data'] = None
             g['only_directed'] = False
+
             # allow loop edges in the graph
             self.loops = loops
             self.dgraph = None
@@ -739,15 +1362,15 @@ class PyPath(object):
             self.edgeAttrs = {}
             self.u_pfam = None
             self.seq = None
-            self.palette = [
-                '#6EA945', '#007B7F', '#FCCC06', '#DA0025', '#000000'
-            ]
+            self.palette = ['#6EA945', '#007B7F', '#FCCC06', '#DA0025',
+                            '#000000']
             self.session = common.gen_session_id()
             self.session_name = ''.join([self.name, '-', self.session])
             self.loglevel = loglevel
             self.ownlog = logn.logw(self.session, self.loglevel)
-            self.mapper = mapping.Mapper(
-                self.ncbi_tax_id, mysql_conf=self.mysql_conf, log=self.ownlog)
+            self.mapper = mapping.Mapper(self.ncbi_tax_id,
+                                         mysql_conf=self.mysql_conf,
+                                         log=self.ownlog)
             self.disclaimer = '\n\t=== d i s c l a i m e r ===\n\n'\
                 '\tAll data coming with this module\n'\
                 '\teither as redistributed copy or downloaded using the\n'\
@@ -1274,22 +1897,22 @@ class PyPath(object):
                     if len(refs) == 0 and settings.must_have_references:
                         rFiltered += 1
                         continue
-                    
+
                     # to give an easy way:
                     if isinstance(settings.ncbiTaxId, int):
                         taxA = settings.ncbiTaxId
                         taxB = settings.ncbiTaxId
-                        
+
                     # to enable more sophisticated inputs:
                     elif isinstance(settings.ncbiTaxId, dict):
-                        
+
                         taxx = self.get_taxon(settings.ncbiTaxId, line)
                         if isinstance(taxx, tuple):
                             taxA = taxx[0]
                             taxB = taxx[1]
                         else:
                             taxA = taxB = taxx
-                        
+
                         taxdA = (
                             settings.ncbiTaxId['A']
                             if 'A' in settings.ncbiTaxId else
@@ -1298,7 +1921,7 @@ class PyPath(object):
                             settings.ncbiTaxId['B']
                             if 'B' in settings.ncbiTaxId else
                             settings.ncbiTaxId)
-                        
+
                         if (('include' in taxdA and
                             taxA not in taxdA['include']) or
                             ('include' in taxdB and
@@ -1307,10 +1930,10 @@ class PyPath(object):
                             taxA in taxdA['exclude']) or
                             ('exclude' in taxdB and
                             taxB in taxdB['exclude'])):
-                            
+
                             tFiltered += 1
                             continue
-                        
+
                     else:
                         taxA = taxB = self.ncbi_tax_id
                     if taxA is None or taxB is None:
@@ -1448,7 +2071,7 @@ class PyPath(object):
         Loads the list of all disease related genes from DisGeNet.
         This resource is human only.
         """
-        
+
         diss = dataio.get_disgenet(dataset=dataset)
         dis = []
         for di in diss:
@@ -1462,7 +2085,7 @@ class PyPath(object):
         like metabolic enzymes, matrix proteins), by looking up a few simple
         keywords in short description of GO terms.
         """
-        
+
         goq = dataio.get_go_quick()
 
         gosig = set([])
@@ -1499,7 +2122,7 @@ class PyPath(object):
 
     def cancer_gene_census_list(self):
         """
-        Loads the list of cancer driver proteins from the COSMIC Cancer 
+        Loads the list of cancer driver proteins from the COSMIC Cancer
         Gene Census.
         """
         self.read_list_file(data_formats.cgc)
@@ -1643,7 +2266,7 @@ class PyPath(object):
         """
         Translates the name in item representing a molecule.
         """
-        # TODO: include 
+        # TODO: include
         defaultNames = self.mapper.map_name(
             item['name'], item['nameType'],
             self.default_name_type[item['type']])
@@ -1681,7 +2304,7 @@ class PyPath(object):
                 edgeStack.append(edge)
                 # print 'new edge: %s' % str(edge)
         return edgeStack
-    
+
     def combine_attr(self, lst, num_method = max):
         """
         Combines multiple attributes into one. This method attempts
@@ -1695,7 +2318,7 @@ class PyPath(object):
             * dicts: calls `common.merge_dicts()`
             * Direction: calls their special `merge()` method
         Works on more than 2 attributes recursively.
-        
+
         :param list lst: List of one or two attribute values.
         :param callable num_method: Method to merge numeric attributes.
         """
@@ -1708,12 +2331,12 @@ class PyPath(object):
                     return list(one), list(two)
             else:
                 return one, two
-        
+
         # recursion:
         if len(lst) > 2:
             lst = [lst[0],
                    self.combine_attr(lst[1:], num_method = num_method)]
-        
+
         # quick and simple cases:
         if len(lst) == 0:
             return None
@@ -1725,14 +2348,14 @@ class PyPath(object):
             return lst[1]
         if lst[1] is None:
             return lst[0]
-        
+
         # merge numeric values
         if type(lst[0]) in common.numTypes and type(lst[1]) in common.numTypes:
             return num_method(lst)
-        
+
         # in case one is list other is set
         lst[0], lst[1] = list_or_set(lst[0], lst[1])
-        
+
         # merge lists:
         if isinstance(lst[0], list) and isinstance(lst[1], list):
             try:
@@ -1741,17 +2364,17 @@ class PyPath(object):
             except TypeError:
                 # if contain non-hashable elements:
                 return list(itertools.chain(lst[0], lst[1]))
-        
+
         # merge sets:
         if isinstance(lst[0], set):
             return common.addToSet(lst[0], lst[1])
         if isinstance(lst[1], set):
             return common.addToSet(lst[1], lst[0])
-        
+
         # merge dicts:
         if isinstance(lst[0], dict) and isinstance(lst[1], dict):
             return common.merge_dicts(lst[0], lst[1])
-        
+
         # 2 different strings: return a set with both of them
         if (isinstance(lst[0], str) or isinstance(lst[0], unicode)) and \
                 (isinstance(lst[1], str) or isinstance(lst[1], unicode)):
@@ -1760,7 +2383,7 @@ class PyPath(object):
             if len(lst[1]) == 0:
                 return lst[0]
             return set([lst[0], lst[1]])
-        
+
         # one attr is list, the other is simple value:
         if (isinstance(lst[0], list) and type(lst[1]) in common.simpleTypes):
             if lst[1] in common.numTypes or len(lst[1]) > 0:
@@ -1772,13 +2395,13 @@ class PyPath(object):
                 return common.addToList(lst[1], lst[0])
             else:
                 return lst[1]
-        
+
         # special: merging directions
         if lst[0].__class__.__name__ == 'Direction' and \
                 lst[1].__class__.__name__ == 'Direction':
             lst[0].merge(lst[1])
             return lst[0]
-        
+
         # in case the objects have `__add__()` method:
         if hasattr(lst[0], '__add__'):
             return lst[0] + lst[1]
@@ -1791,29 +2414,29 @@ class PyPath(object):
             else:
                 uniqLst[n[0]] = self.merge_attrs(uniqLst[n[0]], n[1])
         return uniqLst
-    
+
     def collapse_by_name(self, graph = None):
         """
         Collapses nodes with the same name with copying and merging
         all edges and attributes.
         """
         graph = self.graph if graph is None else graph
-        
+
         dupli = Counter(graph.vs['name'])
-        
+
         for name, count in iteritems(dupli):
             if count > 1:
                 nodes = graph.vs.select(name = name)
                 # the number of nodes might have changed
                 if len(nodes) > 1:
                     self.merge_nodes(nodes)
-    
+
     def merge_nodes(self, nodes, primary = None, graph = None):
         """
         Merges all attributes and all edges of selected nodes
         and assigns them to the primary node
         (by default the one with lowest ID).
-        
+
         :param list nodes: List of edge IDs.
         :param int primary: ID of the primary edge;
                             if None the lowest ID selected.
@@ -1826,7 +2449,7 @@ class PyPath(object):
         primary = primary.index if type(primary) is not int else primary
         nonprimary = list(filter(lambda n: n != primary, nodes))
         graph.vs['id_merge'] = list(range(graph.vcount()))
-        
+
         # combining vertex attributes:
         vprim = graph.vs[primary]
         for attr in vprim.attributes():
@@ -1841,22 +2464,22 @@ class PyPath(object):
                         )
                     )
                 )
-        
+
         # moving edges of non primary vertices to the primary one
         self.copy_edges(nonprimary, primary, move = True, graph = graph)
-        
+
         # deleting non primary vertices:
         toDel = list(map(lambda i: graph.vs.select(id_merge = i)[0].index,
                          nonprimary))
-        
+
         graph.delete_vertices(toDel)
         del graph.vs['id_merge']
-    
+
     def copy_edges(self, sources, target, move = False, graph = None):
         """
         Copies edges of one node to another,
         keeping attributes and directions.
-        
+
         :param list sources: Vertex IDs to copy from.
         :param int target: Vertex ID to copy for.
         :param bool move: Whether perform copy or move, i.e. remove or keep
@@ -1866,10 +2489,10 @@ class PyPath(object):
         graph = self.graph if graph is None else graph
         graph.vs['id_old'] = list(range(graph.vcount()))
         graph.es['id_old'] = list(range(graph.ecount()))
-        
+
         # preserve a permanent marker of the target vertex
         ovidt = graph.vs[target]['id_old']
-        
+
         # collecting the edges of all source vertices into dict
         ses = \
             dict(
@@ -1886,7 +2509,7 @@ class PyPath(object):
                     sources
                 )
             )
-        
+
         # collecting edges to be newly created
         toAdd = set([])
         for s, es in iteritems(ses):
@@ -1900,10 +2523,10 @@ class PyPath(object):
                 if te == -1:
                     # target edge not found, needs to be added:
                     toAdd.add((vid1, vid2))
-        
+
         # creating new edges
         graph.add_edges(toAdd)
-        
+
         # copying attributes:
         for ovids, es in iteritems(ses):
             for oeid in es:
@@ -1918,7 +2541,7 @@ class PyPath(object):
                 vid2 = t if e.target == s else e.target
                 vid_peer = e.source if e.target == s else e.target
                 te = graph.es[graph.get_eid(vid1, vid2)]
-                
+
                 # old direction:
                 d = e['dirs']
                 # dict from old names to new ones
@@ -1927,7 +2550,7 @@ class PyPath(object):
                     graph.vs[s]['name']: graph.vs[t]['name'],
                     graph.vs[vid_peer]['name']: graph.vs[vid_peer]['name']
                 }
-                
+
                 # copying directions and signs:
                 te['dirs'] = d.translate(ids).merge(te['dirs']) \
                     if isinstance(te['dirs'], Direction) else d.translate(ids)
@@ -1938,17 +2561,17 @@ class PyPath(object):
                 for eattr in e.attributes():
                     if eattr != 'dirs' and eattr != 'refs_by_dir':
                         te[eattr] = self.combine_attr([te[eattr], e[eattr]])
-                
+
                 # in case we want to delete old edges:
                 toDel.add(e.index)
-        
+
         if move:
             graph.delete_edges(list(toDel))
-        
+
         # removing temporary attributes
         del graph.es['id_old']
         del graph.vs['id_old']
-    
+
     def delete_by_taxon(self, tax):
         """
         Removes the proteins of all organisms which are not listed.
@@ -2475,20 +3098,20 @@ class PyPath(object):
         lists if in `edgeAttrs` the attribute is registered as list.
         """
         for e in self.graph.es:
-            
+
             if e[attr] is None:
                 e[attr] = self.edgeAttrs[attr]()
-            
+
             if (self.edgeAttrs[attr] is list or
                 self.edgeAttrs[attr] is set) and type(e[
                     attr]) in common.simpleTypes:
-                
+
                 e[attr] = [e[attr]] if (
                     type(e[attr]) not in common.charTypes or
                     len(e[attr]) > 0) else []
-            
+
             if self.edgeAttrs[attr] is set and type(e[attr]) is list:
-                
+
                 e[attr] = set(e[attr])
 
     def attach_network(self, edgeList=False, regulator=False):
@@ -2997,33 +3620,33 @@ class PyPath(object):
         defaultNameType = self.default_name_type["protein"]
         labelNameTypes = {'protein': 'genesymbol',
                           'mirna': 'mir-mat-name'}
-        
+
         if 'label' not in g.vs.attributes():
             remap_all = True
-        
+
         labels = [
             None if remap_all or v['label'] == v['name'] else v['label']
             for v in g.vs
         ]
-        
+
         for v, l, i in zip(g.vs, labels, xrange(g.vcount())):
-            
+
             if l is None:
-                
+
                 label = []
-                
+
                 if v['type'] in labelNameTypes:
-                    
+
                     label = self.mapper.map_name(v['name'],
                                                 self.default_name_type[v['type']],
                                                 labelNameTypes[v['type']],
                                                 ncbi_tax_id = v['ncbi_tax_id'])
-                
+
                 if not len(label):
                     labels[i] = v['name']
                 else:
                     labels[i] = label[0]
-            
+
         g.vs['label'] = labels
 
     def network_stats(self, outfile=None):
@@ -3405,11 +4028,11 @@ class PyPath(object):
         nothuge = dict(
             (k, v) for k, v in iteritems(lst)
             if (not v.huge or v.name in cache_files) and k not in exclude)
-        
+
         for lst in [huge, nothuge]:
-            
+
             for k, v in iteritems(lst):
-                
+
                 self.load_resource(
                     v,
                     clean=False,
@@ -3480,34 +4103,34 @@ class PyPath(object):
     def load_tfregulons(self, levels = {'A', 'B'}, only_curated = False):
         """
         Adds TF-target interactions from TF regulons to the network.
-        
+
         :param set levels:
             Confidence levels to be used.
         :param bool only_curated:
             Retrieve only literature curated interactions.
-        
+
         Details
         -------
         TF regulons is a comprehensive resource of TF-target interactions
         combining multiple lines of evidences: literature curated databases,
         ChIP-Seq data, PWM based prediction using HOCOMOCO and JASPAR matrices
         and prediction from GTEx expression data by ARACNe.
-        
+
         For details see https://github.com/saezlab/DoRothEA.
-        
+
         Example
         -------
         >>> import pypath
         >>> pa = pypath.PyPath()
         >>> pa.load_tfregulons(levels = {'A'})
         """
-        
+
         settings = copy.deepcopy(data_formats.transcription['tfregulons'])
         settings.inputArgs = {
             'levels': levels,
             'only_curated': only_curated
         }
-        
+
         self.load_resources({'tfregulons': settings})
 
     def list_resources(self):
@@ -3867,11 +4490,11 @@ class PyPath(object):
         ):
         """
         Exports the network in a tabular format.
-        
+
         By default UniProt IDs, Gene Symbols, source databases, literature
         references, directionality and sign information and interaction type
         are included.
-        
+
         Args:
         -----
         :param str outfile:
@@ -3888,7 +4511,7 @@ class PyPath(object):
             Keys are column ames used in the header while values are names
             of edge attributes.
         """
-        
+
         e = export.Export(
             pa = self,
             extra_node_attrs = extra_node_attrs,
@@ -4349,7 +4972,7 @@ class PyPath(object):
             self.ownlog.msg(
                 2, 'Complexes from Complex Portal have been retrieved.',
                 'INFO')
-    
+
     def load_3dcomplexes(self, graph=None):
         graph = graph if graph is not None else self.graph
         c3d = dataio.get_3dcomplexes()
@@ -4472,7 +5095,7 @@ class PyPath(object):
                             graph.es[e]['interfaces']['pisa'][pdb] = []
                         graph.es[e]['interfaces']['pisa'][pdb].append(intf)
         return unmapped
-    
+
     def find_complex(self, search):
         """
         Finds complexes by their non standard names.
@@ -4482,15 +5105,15 @@ class PyPath(object):
         """
         result = []
         comp, memb = dataio.get_corum()
-        
+
         for cname, cdata in comp.items():
-            
+
             if search.lower() in cname.lower():
-                
+
                 result.append((cname, cdata[0]))
-        
+
         return result
-    
+
     def genesymbol(self, genesymbol):
         """
         Returns ``igraph.Vertex()`` object if the GeneSymbol
@@ -4610,7 +5233,7 @@ class PyPath(object):
             if identifier in self.nodDct else \
             graph.vs[self.labDct[identifier]] \
             if identifier in self.labDct else None
-    
+
     # synonyms
     v = get_node
     protein = get_node
@@ -4641,7 +5264,7 @@ class PyPath(object):
             if identifier in self.dnodDct else \
             dgraph.vs[self.dlabDct[identifier]] \
             if identifier in self.dlabDct else None
-    
+
     # synonyms
     dv = get_node_d
     dp = get_node_d
@@ -4656,7 +5279,7 @@ class PyPath(object):
 
     def get_nodes_d(self, identifiers):
         return filter(lambda v: v is not None, map(self.get_node_d, identifiers))
-    
+
     # these are just synonyms
     dvs = get_nodes_d
     dps = get_nodes_d
@@ -4719,9 +5342,9 @@ class PyPath(object):
             To be passed to igraph.Graph.get_eid()
         """
         
-        source = self.get_node(source) \
-                if not self.graph.is_directed() else self.get_node_d(source)
-        target = self.get_node(target) \
+        v_source = self.get_node(source) \
+            if not self.graph.is_directed() else self.get_node_d(source)
+        v_target = self.get_node(target) \
             if not self.graph.is_directed() else self.get_node_d(target)
         
         if source is not None and target is not None:
@@ -4737,14 +5360,14 @@ class PyPath(object):
                 return self.graph.es[eid]
         
         return None
-    
+
     # synonyms
     protein_edge = get_edge
-    
+
     def get_edges(self, sources, targets, directed=True):
         """
         Returns a generator with all edges between source and target vertices.
-        
+
         :param iterable sources:
             Source vertex IDs, names, labels, or any iterable yielding
             ``igraph.Vertex`` objects.
@@ -4754,7 +5377,7 @@ class PyPath(object):
         :param bool directed:
             Passed to ``igraph.get_eid()``.
         """
-        
+
         return (e for e in (
             self.get_edge(s, t, directed)
             for s in sources
@@ -5461,9 +6084,9 @@ class PyPath(object):
             self.graph.es['ptm'] = [[] for _ in self.graph.es]
         elm = dataio.get_elm_interactions()
         prg = Progress(len(elm), 'Processing domain-motif interactions', 11)
-        
+
         self.sequences()
-        
+
         for l in elm:
             prg.step()
             if len(l) > 7:
@@ -5477,16 +6100,16 @@ class PyPath(object):
                         if e != -1:
                             if self.graph.es[e]['ptm'] is None:
                                 self.graph.es[e]['ptm'] = []
-                            
+
                             start = int(l[4])
                             end   = int(l[5])
-                            
+
                             if uniprot_elm in self.seq:
                                 inst = self.seq[uniprot_elm].get_region(start = start,
                                                                         end = end)[2]
                             else:
                                 inst = None
-                            
+
                             mot = intera.Motif(
                                 protein=uniprot_elm,
                                 motif_name=l[0],
@@ -5497,7 +6120,7 @@ class PyPath(object):
                             dstart = start = None if l[6] == 'None' else int(l[
                                 6])
                             dend = None if l[6] == 'None' else int(l[7])
-                            
+
                             doms = []
                             if self.u_pfam is not None and uniprot_dom in self.u_pfam:
                                 if l[1] in self.u_pfam[uniprot_dom]:
@@ -5758,7 +6381,7 @@ class PyPath(object):
     def sequences(self, isoforms=True, update=False):
         if self.seq is None or update:
             self.seq = se.swissprot_seq(self.ncbi_tax_id, isoforms)
-    
+
     def load_ptms2(self,
         input_methods = None,
         map_by_homology_from = [9606],
@@ -5771,7 +6394,7 @@ class PyPath(object):
         It uses `pypath.ptm.PtmAggregator`, a newly introduced
         module for combining enzyme-substrate data from multiple
         resources using homology translation on users demand.
-        
+
         :param list input_methods: Resources to collect enzyme-substrate
             interactions from. E.g. `['Signor', 'phosphoELM']`. By default
             it contains Signor, PhosphoSitePlus, HPRD, phosphoELM, dbPTM,
@@ -5800,7 +6423,7 @@ class PyPath(object):
             Those not used by `PtmProcessor` are forwarded to the
             `pypath.dataio` methods.
         """
-        
+
         ptma = pypath.ptm.PtmAggregator(
             input_methods = input_methods,
             ncbi_tax_id = self.ncbi_tax_id,
@@ -5814,21 +6437,21 @@ class PyPath(object):
             nonhuman_direct_lookup = nonhuman_direct_lookup,
             inputargs = inputargs
         )
-        
+
         ptma.assign_to_network(self)
-        
+
         if self.ncbi_tax_id == 9606 and (
                 input_methods is None or
                 'DEPOD' in input_methods
             ):
-            
+
             self.load_depod_dmi()
-        
+
         self.uniq_ptms()
         self.phosphorylation_directions()
-    
+
     def load_ptms(self):
-        
+
         self.load_depod_dmi()
         self.load_signor_ptms()
         self.load_li2012_ptms()
@@ -5896,28 +6519,28 @@ class PyPath(object):
             'HPRD': 'get_hprd_ptms',
             'Li2012': 'li2012_phospho'
         }
-        
+
         if source == 'PhosphoSite' and self.ncbi_tax_id in common.taxids:
             kwargs['organism'] = common.taxids[self.ncbi_tax_id]
             if 'strict' not in kwargs:
                 kwargs['strict'] = False
                 kwargs['mapper'] = self.mapper
-        
+
         if source == 'Signor':
             kwargs['organism'] = self.ncbi_tax_id
-        
+
         if source == 'phosphoELM':
             kwargs['organism'] = self.ncbi_tax_id
             if self.ncbi_tax_id != 9606 and 'ltp_only' not in kwargs:
                 kwargs['ltp_only'] = False
-        
+
         if source == 'dbPTM':
             kwargs['organism'] = self.ncbi_tax_id
-        
+
         if self.ncbi_tax_id != 9606 and source not in \
             ['Signor', 'PhosphoSite', 'phosphoELM', 'dbPTM']:
             return None
-        
+
         self.update_vname()
         toCall = getattr(dataio, functions[source])
         data = toCall(**kwargs)
@@ -5995,7 +6618,7 @@ class PyPath(object):
                                             s, p['instance'], self.seq[s].get(
                                                 p['start'], p['end'])))
                 # adding kinase-substrate interactions
-                
+
                 for k in kinase_ups:
                     for s in substrate_ups:
                         nodes = self.get_node_pair(k, s[0],
@@ -6695,7 +7318,7 @@ class PyPath(object):
                                         {'ptms': len(e['ptm']), 'disr': 0}
                                 disrupted[e.index]['disr'] += 1
         return toDel, disrupted
-    
+
     def select_by_go(
             self,
             go_terms,
@@ -6705,42 +7328,42 @@ class PyPath(object):
         ):
         """
         Selects the nodes annotated by certain GO terms.
-        
+
         Returns set of vertex IDs.
-        
+
         :param str method:
             If `ANY` nodes annotated with any of the terms returned.
             If `ALL` nodes annotated with all the terms returned.
         """
-        
+
         _method = (
             lambda s1, s2: not s2.difference(s1)
             if method == 'ALL' else
             lambda s1, s2: s1.intersection(s2)
         )
-        
+
         def _method(s1, s2):
-            
+
             return s1.intersection(s2)
-        
+
         if go_desc is None:
-            
+
             go_desc = dataio.go_descendants_goose(aspects = aspects)
-        
+
         go_terms = (
             set(go_terms)
             if type(go_terms) in {set, list, tuple} else
             {go_terms}
         )
-        
+
         all_desc = set.union(
             *(go_desc[term] for term in go_terms if term in go_desc)
         )
-        
+
         if 'go' not in self.graph.vs.attributes():
-            
+
             self.go_annotate(aspects = aspects)
-        
+
         vids = set(
             i for i, v in enumerate(self.graph.vs)
             if any(
@@ -6748,24 +7371,24 @@ class PyPath(object):
                 for a in aspects
             )
         )
-        
+
         return vids
-    
+
     def label_by_go(self, label, go_terms, **kwargs):
         """
         Assigns a boolean vertex attribute to nodes which tells whether
         the node is annotated by all or any (see ``method`` parameter of
         ``select_by_go``) the GO terms.
         """
-        
+
         vids = self.select_by_go(go_terms, **kwargs)
-        
+
         self.graph.vs[label] = [False for _ in xrange(self.graph.vcount())]
-        
+
         for vid in vids:
-            
+
             self.graph.vs[vid][label] = True
-    
+
     def load_ligand_receptor_network(
             self,
             lig_rec_resources = True,
@@ -6778,38 +7401,38 @@ class PyPath(object):
         """
         Initializes a ligand-receptor network.
         """
-        
+
         CC_EXTRACELL   = 'GO:0005576'
         CC_PLASMAMEM   = 'GO:0005887'
         MF_RECBINDING  = 'GO:0005102'
         MF_RECACTIVITY = 'GO:0038023'
-        
+
         if inference_from_go:
-            
+
             go_desc = dataio.go_descendants_goose(aspects = ('C', 'F'))
-            
+
             self.init_network(sources)
-            
+
             if 'go' not in self.graph.vs.attributes():
-                
+
                 self.go_annotate()
-            
+
             vids_extracell   = self.select_by_go(CC_EXTRACELL,   go_desc)
             vids_plasmamem   = self.select_by_go(CC_PLASMAMEM,   go_desc)
             vids_recbinding  = self.select_by_go(MF_RECBINDING,  go_desc)
             vids_recactivity = self.select_by_go(MF_RECACTIVITY, go_desc)
-            
+
             receptors = vids_plasmamem & vids_recactivity
             ligands   = vids_extracell & vids_recbinding
-            
+
             lig_with_interactions = set()
             rec_with_interactions = set()
             lig_rec_edges = set()
             lig_lig_edges = set()
             rec_rec_edges = set()
-            
+
             for e in self.graph.es:
-                
+
                 srcs = set(
                     self.up(u).index
                     for u in e['dirs'].src(keep_undirected)
@@ -6818,24 +7441,24 @@ class PyPath(object):
                     self.up(u).index
                     for u in e['dirs'].tgt(keep_undirected)
                 )
-                
+
                 if srcs & ligands and tgts & receptors:
-                    
+
                     lig_rec_edges.add(e.index)
                     lig_with_interactions.update(srcs)
                     rec_with_interactions.update(tgts)
-                    
+
                 elif keep_lig_lig and srcs & ligands and tgts & ligands:
-                    
+
                     lig_lig_edges.add(e.index)
-                    
+
                 elif keep_rec_rec and srcs & receptors and tgts & receptors:
-                    
+
                     rec_rec_edges.add(e.index)
-            
+
             self.set_boolean_vattr('ligand_go',   lig_with_interactions)
             self.set_boolean_vattr('receptor_go', rec_with_interactions)
-            
+
             edges_to_delete = (
                 set(xrange(self.graph.ecount())) -
                 set.union(
@@ -6844,38 +7467,38 @@ class PyPath(object):
                     lig_lig_edges,
                 )
             )
-            
+
             self.graph.delete_edges(edges_to_delete)
             self.graph.delete_vertices(
                 [i for i, d in enumerate(self.graph.degree()) if not d]
             )
-            
+
             for e in self.graph.es:
-                
+
                 e['sources'].add('GO_lig_rec')
-        
+
         self.update_vname()
         self.update_sources()
-        
+
         if lig_rec_resources:
-            
+
             datasets = copy.deepcopy(data_formats.ligand_receptor)
-            
+
             datasets['cellphonedb'].inputArgs = {
                 'ligand_ligand':     keep_lig_lig,
                 'receptor_receptor': keep_rec_rec,
             }
-            
+
             self.load_resources(datasets)
 
     def set_boolean_vattr(self, attr, vids, negate = False):
-        
+
         vids = set(vids)
-        
+
         if negate:
-            
+
             vids = set(xrange(self.graph.vcount())) - vids
-        
+
         self.graph.vs[attr] = [i in vids for i in xrange(self.graph.vcount())]
 
     def go_annotate(self, aspects = ('C', 'F', 'P')):
@@ -6884,9 +7507,9 @@ class PyPath(object):
         attribute each node is annotated by a dict of sets where keys are
         one letter codes of GO aspects and values are sets of GO accessions.
         """
-        
+
         go.annotate(self.graph, aspects = aspects)
-    
+
     # old name as synonym
     load_go = go_annotate
 
@@ -6894,7 +7517,7 @@ class PyPath(object):
         """
         Creates a ``pypath.go.GOAnnotation`` object for one organism in the
         dict under ``go`` attribute.
-        
+
         :param int organism:
             NCBI Taxonomy ID of the organism.
         """
@@ -6902,7 +7525,7 @@ class PyPath(object):
         if not hasattr(self, 'go'):
             
             self.go = {}
-        
+
         self.go[organism] = go.GOAnnotation(organism)
 
     def go_enrichment(self,
@@ -6975,19 +7598,20 @@ class PyPath(object):
             correction_method=correction_method)
         enr.new_set(proteins)
         return enr
-    
+
+    # XXX: False, does not create a dict but a list
     def update_adjlist(self, graph = None, mode = 'ALL'):
         """
         Creates an adjacency list in a dict of sets format.
         """
-        
+
         graph = graph or self.graph
-        
+
         self.adjlist = [
             set(graph.neighbors(
                 node, mode=mode)) for node in xrange(graph.vcount())
         ]
-    
+
     def find_all_paths(self, start, end, mode='OUT', maxlen=2,
                        graph=None, silent=False):
         """
@@ -7019,12 +7643,12 @@ class PyPath(object):
                     paths.extend(
                         find_all_paths_aux(node, end, path, maxlen))
             return paths
-        
+
         graph = graph or self.graph
-        
+
         if not hasattr(self, 'adjlist'):
             self.update_adjlist(graph, mode = mode)
-        
+
         all_paths = []
         start = start if isinstance(start, list) else [start]
         end = end if isinstance(end, list) else [end]
@@ -7039,9 +7663,9 @@ class PyPath(object):
                 all_paths.extend(find_all_paths_aux(s, e, [], maxlen))
         if not silent:
             prg.terminate()
-        
+
         return all_paths
-    
+
     def find_all_paths2(self,
                         graph,
                         start,
@@ -7114,7 +7738,7 @@ class PyPath(object):
             nodes, implementation='create_from_scratch')
 
     def get_proteomicsdb(self, user, passwd, tissues=None, pickle=None):
-        
+
         self.proteomicsdb = proteomicsdb.ProteomicsDB(user, passwd)
         self.proteomicsdb.load(pfile=pickle)
         self.proteomicsdb.get_tissues()
@@ -7128,7 +7752,7 @@ class PyPath(object):
                          occurrence=1,
                          group_function=lambda x: sum(x) / float(len(x)),
                          na_value = 0.0):
-        
+
         graph = self.graph if graph is None else graph
         prdb = self.proteomicsdb if prdb is None else prdb
         samples = (
@@ -7137,12 +7761,12 @@ class PyPath(object):
             else [tissue] if tissue in prdb.expression
             else []
         )
-        
+
         nsamples = len(samples)
         occurrence = min(nsamples, occurrence) \
             if isinstance(occurrence, int) \
             else nsamples * occurrence
-        
+
         proteins_present = set([
             uniprot
             for uniprot, cnt in iteritems(Counter(itertools.chain(*[
@@ -7151,17 +7775,17 @@ class PyPath(object):
                     ])))
             if cnt >= occurrence
         ]) & set(graph.vs['name'])
-        
+
         expressions = dict([(uniprot, group_function([
             prdb.expression[sample][uniprot] for sample in samples
             if uniprot in prdb.expression[sample]
         ])) for uniprot in proteins_present])
-        
+
         graph.vs[tissue] = [
             na_value if v['name'] not in expressions else expressions[v['name']]
             for v in graph.vs
         ]
-    
+
     def load_hpa(self,
                  normal = True,
                  pathology = True,
@@ -7176,65 +7800,65 @@ class PyPath(object):
         """
         Loads Human Protein Atlas data into vertex attributes.
         """
-        
+
         graph = graph or self.graph
-        
+
         hpa = dataio.get_proteinatlas(
             normal = normal, pathology = pathology or cancer
         )
-        
+
         graph.vs['hpa'] = [{} for _ in xrange(graph.vcount())]
-        
+
         if normal:
-            
+
             for tissue, data in iteritems(hpa['normal']):
-                
+
                 if tissues is not None and tissue not in tissues:
                     continue
-                
+
                 for v in graph.vs:
-                    
+
                     v['hpa'][tissue] = (
                         levels[data[v['name']][0]]
                         if v['name'] in data and data[v['name']][1] in quality
                         else na_value
                     )
-        
+
         if cancer or pathology:
-            
+
             counts = set(['Not detected', 'Low', 'Medium', 'High'])
-            
+
             for tissue, data in iteritems(hpa['pathology']):
-                
+
                 if tissues is not None and tissue not in tissues:
                     continue
-                
+
                 graph.vs[tissue] = [{} if summarize_pathology else na_value
                                     for v in xrange(graph.vcount())]
-                
+
                 for v in graph.vs:
-                    
+
                     if v['name'] in data:
-                        
+
                         if summarize_pathology:
-                            
+
                             patho_sum = collections.Counter(dict(
                                 i for i in data[v['name']].items()
                                 if i[0] in counts
                             ))
-                            
+
                             if len(patho_sum):
                                 v[tissue] = levels[patho_sum.most_common()[0][0]]
-                            
+
                         else:
-                            
+
                             v[tissue] = data[v['name']]
-    
+
     def tissue_network(self, tissue, graph=None):
         """
         Returns a network which includes the proteins expressed in
         certain tissue according to ProteomicsDB.
-        
+
         Args:
         -----
         :param str tissue:
@@ -7243,7 +7867,7 @@ class PyPath(object):
             A graph object, by default the `graph` attribute of
             the current instance.
         """
-        
+
         graph = self.graph if graph is None else graph
         if tissue not in graph.vs.attributes():
             self.prdb_tissue_expr(tissue, graph=graph)
@@ -7376,13 +8000,13 @@ class PyPath(object):
         Creates a vertex attribute `dtg` with value *True* if
         the protein has at least one compound binding with
         affinity higher than `pchembl`, otherwise *False*.
-        
+
         Args:
         -----
         :param float pchembl:
             Pchembl threshold.
         """
-        
+
         self.update_vname()
         self.graph.vs['dtg'] = [False for _ in self.graph.vs]
         if 'compounds_data' not in self.graph.vs.attributes():
@@ -7398,7 +8022,7 @@ class PyPath(object):
         """
         Creates a vertex attribute `tf` with value *True* if
         the protein is a transcription factor, otherwise *False*.
-        
+
         Args:
         -----
         :param list classes:
@@ -7417,13 +8041,13 @@ class PyPath(object):
         Creates a vertex attribute named `dis` with boolean values *True*
         if the protein encoded by a disease related gene according to
         DisGeNet.
-        
+
         Args:
         -----
         :param str dataset:
             Which dataset to use from DisGeNet. Default is `curated`.
         """
-        
+
         self.update_vname()
         self.graph.vs['dis'] = [False for _ in self.graph.vs]
         self.disease_genes_list(dataset=dataset)
@@ -7453,19 +8077,19 @@ class PyPath(object):
                 self.nodNam, self.nodLab)
         else:
             return _NamedVertexSeq([], self.nodNam, self.nodLab)
-    
+
     def pathway_names(self, source, graph = None):
         """
         Returns the names of all pathways having at least one member
         in the current graph.
         """
-        
+
         graph = graph or self.graph
-        
+
         attr = '%s_pathways' % source
-        
+
         if attr in graph.vertex_attributes():
-            
+
             return set.union(*graph.vs[attr])
 
     def load_all_pathways(self, graph=None):
@@ -7480,10 +8104,10 @@ class PyPath(object):
         methods for a single source e.g. `kegg_pathways()`
         or `sirnor_pathways()` or call `load_all_pathways()` to
         load all resources.
-        
+
         Args:
         ----
-        
+
         :param str source:
             Name of the source, this need to match a method in the dict
             in `get_pathways()` method and the edge and vertex attributes
@@ -7592,7 +8216,7 @@ class PyPath(object):
         Assigns DisGeNet disease-gene associations to the proteins
         in the network. Disease annotations will be added to the `dis`
         vertex attribute.
-        
+
         :param float score: Confidence score from DisGeNet. Only associations
             above the score provided will be considered.
         :param bool ulms: By default we assign a list of disease names to
@@ -7602,35 +8226,35 @@ class PyPath(object):
             to `True` if you wish to load additional annotations like number
             of PubMed IDs, number of SNPs and original sources.
         """
-        
+
         self.update_vname()
         data = dataio.get_disgenet(dataset=dataset)
         self.graph.vs['dis'] = [[] for _ in self.graph.vs]
-        
+
         for d in data:
-            
+
             if d['score'] >= score:
-                
+
                 uniprots = self.mapper.map_name(d['entrez'], 'entrez',
                                                 'uniprot')
-                
+
                 for up in uniprots:
-                    
+
                     if up in self.nodInd:
-                        
+
                         if full_data:
-                            
+
                             _ = d.pop('entrez', None)
                             _ = d.pop('genesymbol', None)
                             self.graph.vs[self.nodDct[up]]['dis'].append(d)
-                            
+
                         elif umls:
-                            
+
                             self.graph.vs[self.nodDct[up]]['dis'].append(d[
                                 'umls'])
-                            
+
                         else:
-                            
+
                             self.graph.vs[self.nodDct[up]]['dis'].append(d[
                                 'disease'])
 
@@ -7948,7 +8572,7 @@ class PyPath(object):
             by_category=by_category,
             sum_row=False,
             **kwargs)
-    
+
     def load_old_omnipath(self,
                           kinase_substrate_extra = False,
                           remove_htp = False,
@@ -7959,9 +8583,9 @@ class PyPath(object):
         Loads the OmniPath network as it was before August 2016.
         Furthermore it gives some more options.
         """
-        
+
         self.load_omnipath(**locals())
-    
+
     def load_omnipath(self,
                       kinase_substrate_extra = False,
                       remove_htp = True,
@@ -7972,7 +8596,7 @@ class PyPath(object):
         """
         Loads the OmniPath network.
         """
-        
+
         if old_omnipath_resources:
             omnipath = copy.deepcopy(data_formats.omnipath)
             omnipath['biogrid'] = data_formats.interaction['biogrid']
@@ -7982,20 +8606,20 @@ class PyPath(object):
         else:
             omnipath = data_formats.omnipath
             exclude = []
-        
+
         self.load_resources(omnipath, exclude = exclude)
-        
+
         if kinase_substrate_extra:
             self.load_resources(data_formats.ptm_misc)
-        
+
         self.third_source_directions()
-        
+
         if remove_htp:
             self.remove_htp(threshold=htp_threshold, keep_directed=keep_directed)
-        
+
         if not keep_directed:
             self.remove_undirected(min_refs=min_refs_undirected)
-    
+
     def remove_htp(self, threshold=50, keep_directed=False):
         self.htp_stats()
         vcount_before = self.graph.vcount()
@@ -8084,10 +8708,10 @@ class PyPath(object):
         for interactions already supported by literature
         evidences from other sources.
         """
-        
+
         if use_string_effects:
             self.string_effects(graph = graph)
-            
+
         self.kegg_directions(graph=graph)
         if use_laudanna_data:
             self.laudanna_effects(graph=graph)
@@ -8834,7 +9458,7 @@ class PyPath(object):
                                 s1, s2)]['minor'].add(e.index)
         prg.terminate()
         return con
-    
+
     def export_edgelist(self,
                         fname,
                         graph=None,
@@ -8888,26 +9512,26 @@ class PyPath(object):
             [sum([len(set(self.graph.vs[e.source]['complexes'][cs].keys()) &
                       set(self.graph.vs[e.target]['complexes'][cs].keys())) for cs in csources]) > 0
                 for e in self.graph.es]
-    
+
     #
     # Methods for translating network to other organism
     #
-    
+
     def translate_refsdir(self, rd, ids):
         new_refsdir = {}
         for k, v in iteritems(rd):
             di = (ids[k[0]], ids[k[1]]) if type(k) is tuple else k
             new_refsdir[di] = v
-            
+
             return new_refsdir
-    
+
     def orthology_translation(self, target, source = None,
                               only_swissprot = True,
                               graph = None):
         """
         Translates the current object to another organism by orthology.
         Proteins without known ortholog will be deleted.
-        
+
         :param int target: NCBI Taxonomy ID of the target organism.
             E.g. 10090 for mouse.
         """
@@ -8917,18 +9541,18 @@ class PyPath(object):
         orto = dataio.homologene_uniprot_dict(source, target,
                                               only_swissprot = only_swissprot,
                                               mapper = self.mapper)
-        
+
         vcount_before = graph.vcount()
         ecount_before = graph.ecount()
-        
+
         # nodes could not be mapped are to be deleted
         vids = dict(map(lambda v: (v[1], v[0]), enumerate(graph.vs['name'])))
-        
+
         orto = dict(filter(lambda i: i[0] in vids and len(i[1]),
                            iteritems(orto)))
-        
+
         # print(list(iteritems(vdict))[:10])
-        
+
         toDel = \
             list(
                 map(
@@ -8943,16 +9567,16 @@ class PyPath(object):
                     )
                 )
             )
-        
+
         ndel = len(toDel)
         graph.delete_vertices(toDel)
-        
+
         # this for permanent identification of nodes:
         graph.vs['id_old'] = list(range(graph.vcount()))
         # a dict of these permanent ids and the orthologs:
         ovid_orto = \
             dict(map(lambda v: (v['id_old'], orto[v['name']]), graph.vs))
-        
+
         # renaming vertices
         newnames = \
             list(
@@ -8965,9 +9589,9 @@ class PyPath(object):
                     graph.vs
                 )
             )
-        
+
         graph.vs['name'] = newnames
-        
+
         # the new nodes to be added because of ambiguous mapping
         toAdd = \
             list(
@@ -8982,12 +9606,12 @@ class PyPath(object):
                 # except those already exist:
                 ) - set(graph.vs['name'])
             )
-        
+
         graph += toAdd
-        
+
         # this for permanent identification of nodes:
         graph.vs['id_new'] = list(range(graph.vcount()))
-        
+
         # this is a dict of vertices to be multiplied:
         vmul = \
             dict(
@@ -9009,9 +9633,9 @@ class PyPath(object):
                     iteritems(ovid_orto)
                 )
             )
-        
+
         # compiling a dict of new edges to be added due to ambigous mapping
-        
+
         # this is for unambiguously identify edges both at directed and
         # undirected graphs after reindexing at adding new edges:
         graph.es['id_old'] = list(range(graph.ecount()))
@@ -9037,7 +9661,7 @@ class PyPath(object):
                     graph.es
                 )
             )
-        
+
         edgesToAdd = \
             dict(
                 map(
@@ -9065,7 +9689,7 @@ class PyPath(object):
                     )
                 )
             )
-        
+
         # translating the dict values to vertex indices
         edgesToAddVids = \
             list(set(
@@ -9080,56 +9704,56 @@ class PyPath(object):
                     )
                 )
             ))
-        
+
         # creating new edges
         graph += edgesToAddVids
-        
+
         # id_new > current index
         vids = dict(map(lambda v: (v['id_new'], v.index), graph.vs))
         # id_new > uniprot
         vnms = dict(map(lambda v: (v['id_new'], v['name']), graph.vs))
-        
+
         prg = Progress(graph.ecount(), 'Translating network by homology', 21)
         # setting attributes on old and new edges:
         for e in graph.es:
-            
+
             prg.step()
-            
+
             d = e['dirs']
-            
+
             # this lookup is appropriate as old node names are certainly
             # unique; for newly added edges `dirs` will be None
             if d is not None and d.nodes[0] in orto and d.nodes[1] in orto:
-                
+
                 # translation of direction object attached to original edges
                 ids = {
                     d.nodes[0]: orto[d.nodes[0]][0],
                     d.nodes[1]: orto[d.nodes[1]][0]
                 }
-                
+
                 e['dirs'] = d.translate(ids)
                 e['refs_by_dir'] = \
                     self.translate_refsdir(e['refs_by_dir'], ids)
-                
+
                 # if new edges have been introduced
                 # based on this specific edge
                 if e['id_old'] in edgesToAdd:
-                    
+
                     # iterating new edges between orthologs
                     for enew in edgesToAdd[e['id_old']]:
-                        
+
                         vid1 = vids[enew[0]]
                         vid2 = vids[enew[1]]
                         # in case of directed graphs this will be correct:
                         es = graph.es.select(_source = vid1,
                                              _target = vid2)
-                        
+
                         if not len(es):
                             # at undirected graphs
                             # source/target might be opposite:
                             es = graph.es.select(_source = vid2,
                                                  _target = vid1)
-                        
+
                         if not len(es):
                             sys.stdout.write('\t:: Could not find edge '\
                                              'between %s and %s!\n' % (
@@ -9137,28 +9761,28 @@ class PyPath(object):
                                                 graph.vs[vid2]['name']
                                                 ))
                             continue
-                        
+
                         # this is a new edge between orthologs
                         eenew = es[0]
-                        
+
                         ids = {
                             e['u_old'][0]: graph.vs[vid1]['name'],
                             e['u_old'][1]: graph.vs[vid2]['name']
                         }
-                        
+
                         eenew['dirs'] = e['dirs'].translate(ids)
                         eenew['refs_by_dir'] = \
                             self.translate_refsdir(e['refs_by_dir'], ids)
-                        
+
                         # copying the remaining attributes
                         for eattr in e.attributes():
                             if eattr != 'dirs' and eattr != 'refs_by_dir':
                                 eenew[eattr] = copy.deepcopy(e[eattr])
-        
+
         prg.terminate()
         # id_new > current index
         vids = dict(map(lambda v: (v['id_new'], v.index), graph.vs))
-        
+
         # setting attributes of vertices
         for vn0, vns in iteritems(vmul):
             # the first ortholog:
@@ -9172,19 +9796,19 @@ class PyPath(object):
                 for vattr in v0.attributes():
                     if vattr != 'name':
                         v[vattr] = copy.deepcopy(v0[vattr])
-        
+
         # removing temporary edge attributes
         del self.graph.es['id_old']
         del self.graph.vs['id_old']
         del self.graph.vs['id_new']
         del self.graph.es['s_t_old']
         del self.graph.es['u_old']
-        
+
         self.collapse_by_name(graph = graph)
-        
+
         if not return_graph:
             self.ncbi_tax_id = target
-            
+
             self.update_vname()
             self.update_vindex()
             self.genesymbol_labels(remap_all = True)
@@ -9193,30 +9817,30 @@ class PyPath(object):
                 'protein',
                 target
             )
-            
+
             if refl not in self.reflists:
                 self.load_reflists([
                     reflists.ReferenceList(*refl, inFile = 'all_uniprots')])
-            
+
             sys.stdout.write('\n')
-            
+
             self.clean_graph()
-        
+
         sys.stdout.write(' > Network successfully translated from `%u` to'\
             ' `%u`.\n   Nodes before: %u, after: %u\n   Edges before: %u,'\
-            ' after %u\n' % (source, target, vcount_before, graph.vcount(), 
+            ' after %u\n' % (source, target, vcount_before, graph.vcount(),
                             ecount_before, graph.ecount()))
-        
+
         if return_graph:
             return graph
-    
+
     homology_translation = orthology_translation
-    
+
     def random_walk_with_return(self, q, graph = None, c = .5, niter = 1000):
         """
         Random walk with return (RWR) starting from one or more query nodes.
         Returns affinity (probability) vector of all nodes in the graph.
-        
+
         Args:
         -----
             :param int,list q:
@@ -9227,7 +9851,7 @@ class PyPath(object):
                 Probability of restart.
             :param int niter:
                 Number of iterations.
-        
+
         Example:
         --------
             >>> import igraph
@@ -9245,13 +9869,13 @@ class PyPath(object):
             >>> colors  = [palette.get(int(round(i))) for i in rwr / max(rwr) * 99]
             >>> igraph.plot(pa.graph, vertex_color = colors)
         """
-        
+
         graph = graph or self._get_directed()
-        
+
         if not graph.is_directed():
-            
+
             sys.stdout.write('\t:: Warning: undirected graph provided\n')
-        
+
         # making q a set of vertex IDs
         q = (
             q if type(q) is set else
@@ -9259,41 +9883,41 @@ class PyPath(object):
             {q} if type(q) is int else
             None
         )
-        
+
         if not q:
-            
+
             sys.stdout.write('\t:: Warning: no starting node(s)\n')
             return np.array([0.] * graph.vcount())
-        
+
         # probability per start node
         cp = c / len(q)
         # vector with restarting at starting nodes and 0 at all other nodes
         _q = np.array([cp if v in q else .0 for v in xrange(graph.vcount())])
-        
+
         # vector of probabilities;
         # this will be subject of iteration
         # and its final state will be the result
         _p = copy.copy(_q)
-        
+
         # transition matrix
         __A = np.array(list(graph.get_adjacency()), dtype = np.float64).T
         __A = np.nan_to_num(__A / __A.sum(0), copy = False)
-        
+
         #return __A, _p, _q
-        
+
         # iteration converges to affinity vector
         for _ in xrange(niter):
-            
+
             _p = (1. - c) * __A.dot(_p) + _q
-        
+
         return _p
-    
+
     def random_walk_with_return2(self, q, c = .5, niter = 1000):
         """
         Literally does random walks.
         Only for testing of the other method, to be deleted later.
         """
-        
+
         # making q a set of vertex IDs
         q = (
             q if type(q) is set else
@@ -9301,47 +9925,47 @@ class PyPath(object):
             {q} if type(q) is int else
             None
         )
-        
+
         graph = self._get_directed()
-        
+
         p = np.array([0] * graph.vcount())
-        
+
         for qq in q:
-            
+
             current = qq
-            
+
             for _ in xrange(niter):
-                
+
                 p[current] += 1
-                
+
                 if random.random() <= c:
-                    
+
                     current = qq
-                    
+
                 else:
-                    
+
                     successors = graph.successors(current)
-                    
+
                     if not successors:
-                        
+
                         current = qq
-                        
+
                     else:
-                        
+
                         current = random.choice(successors)
-        
+
         return p
-    
+
     def reload(self):
-        
+
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist=[modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-    
+
     def _disclaimer(self):
         sys.stdout.write(self.disclaimer)
-    
+
     def licence(self):
         self._disclaimer()

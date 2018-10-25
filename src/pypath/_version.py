@@ -18,12 +18,27 @@
 import os
 
 def _get_version():
-    
+    """
+    Reads file named ``__version__`` and returns it as a tuple of
+    integers.
+
+    * Returns:
+        - [tuple]: Three element tuple containing the major, minor and
+          micro version numbers.
+
+    * Example:
+        # If ``__version__`` contains ``1.11.0``:
+        >>> _get_version()
+        (1, 11, 0)
+    """
+
+    # XXX: Why all caps? this is not a global variable
     ROOT = os.path.abspath(os.path.dirname(__file__))
+
     with open(os.path.join(ROOT, '__version__'), 'r') as v:
         return tuple([int(i) for i in v.read().strip().split('.')])
 
-
 _MAJOR, _MINOR, _MICRO = _get_version()
 __version__ = '%d.%d.%d' % (_MAJOR, _MINOR, _MICRO)
-__release__ = '%d.%d' % (_MAJOR, _MINOR)
+__release__ = '%d.%d' % (_MAJOR, _MINOR) # XXX: Not used
+__author__ = u'Dénes Türei'

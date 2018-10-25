@@ -1,0 +1,245 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>PyPath: A Python module for molecular interaction networks &#8212; pypath 0.7.98 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="N">next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">pypath 0.7.98 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pypath-a-python-module-for-molecular-interaction-networks">
+<h1>PyPath: <em>A Python module for molecular interaction networks</em><a class="headerlink" href="#pypath-a-python-module-for-molecular-interaction-networks" title="Permalink to this headline">¶</a></h1>
+<p><strong>pypath</strong> is a Python package built around igraph to work with molecular
+network representations e.g. protein, miRNA and drug compound interaction
+networks.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">note:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">pypath</span></code> supports both Python 2.7 and Python 3.6+. In the beginning,
+pypath has been developed only for Python 2.7. Then the code have been
+adjusted to Py3 however we can not guarantee no incompatibilities
+remained. If you find any method does not work please submit an issue on
+github. For few years I develop and test <code class="docutils literal notranslate"><span class="pre">pypath</span></code> in Python 3. Therefore
+this is the better supported Python variant.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">contributions:</th><td class="field-body"><a class="reference external" href="mailto:turei&#46;denes&#37;&#52;&#48;gmail&#46;com">turei<span>&#46;</span>denes<span>&#64;</span>gmail<span>&#46;</span>com</a></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">documentation:</th><td class="field-body"><a class="reference external" href="http://pypath.omnipathdb.org/">http://pypath.omnipathdb.org/</a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">issues:</th><td class="field-body"><a class="reference external" href="https://github.com/saezlab/pypath/issues">https://github.com/saezlab/pypath/issues</a></td>
+</tr>
+</tbody>
+</table>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="webservice.html">Webservice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Release history</a></li>
+</ul>
+</div>
+<div class="section" id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<p>The primary aim of <strong>pypath</strong> is to build up networks from multiple sources on
+one igraph object. <strong>pypath</strong> handles ambiguous ID conversion, reads custom
+edge and node attributes from text files and <strong>MySQL</strong>.</p>
+<p>Submodules perform various features, e.g. graph visualization, working with
+rug compound data, searching drug targets and compounds in <strong>ChEMBL</strong>.</p>
+<div class="section" id="id-conversion">
+<h3>ID conversion<a class="headerlink" href="#id-conversion" title="Permalink to this headline">¶</a></h3>
+<p>The ID conversion module <code class="docutils literal notranslate"><span class="pre">mapping</span></code> can be used independently. It has the
+feature to translate secondary UniProt IDs to primaries, and Trembl IDs to
+SwissProt, using primary Gene Symbols to find the connections. This module
+automatically loads and stores the necessary conversion tables. Many tables
+are predefined, such as all the IDs in <strong>UniProt mapping service,</strong> while
+users are able to load any table from <strong>file</strong> or <strong>MySQL,</strong> using the classes
+provided in the module <code class="docutils literal notranslate"><span class="pre">input_formats</span></code>.</p>
+</div>
+<div class="section" id="pathways">
+<h3>Pathways<a class="headerlink" href="#pathways" title="Permalink to this headline">¶</a></h3>
+<p><strong>pypath</strong> includes data and predefined format descriptions for more than 25
+high quality, literature curated databases. The inut formats are defined in
+the <code class="docutils literal notranslate"><span class="pre">data_formats</span></code> module. For some resources data downloaded on the fly,
+where it is not possible, data is redistributed with the module. Descriptions
+and comprehensive information about the resources is available in the
+<code class="docutils literal notranslate"><span class="pre">descriptions</span></code> module.</p>
+</div>
+<div class="section" id="structural-features">
+<h3>Structural features<a class="headerlink" href="#structural-features" title="Permalink to this headline">¶</a></h3>
+<p>One of the modules called <code class="docutils literal notranslate"><span class="pre">intera</span></code> provides many classes for representing
+structures and mechanisms behind protein interactions. These are <code class="docutils literal notranslate"><span class="pre">Residue</span></code>
+(optionally mutated), <code class="docutils literal notranslate"><span class="pre">Motif</span></code>, <code class="docutils literal notranslate"><span class="pre">Ptm</span></code>, <code class="docutils literal notranslate"><span class="pre">Domain</span></code>, <code class="docutils literal notranslate"><span class="pre">DomainMotif</span></code>,
+<code class="docutils literal notranslate"><span class="pre">DomainDomain</span></code> and <code class="docutils literal notranslate"><span class="pre">Interface</span></code>. All these classes have <code class="docutils literal notranslate"><span class="pre">__eq__()</span></code>
+methods to test equality between instances, and also <code class="docutils literal notranslate"><span class="pre">__contains__()</span></code>
+methods to look up easily if a residue is within a short motif or protein
+domain, or is the target residue of a PTM.</p>
+</div>
+<div class="section" id="sequences">
+<h3>Sequences<a class="headerlink" href="#sequences" title="Permalink to this headline">¶</a></h3>
+<p>The module <code class="docutils literal notranslate"><span class="pre">seq</span></code> contains a simple class for quick lookup any residue or
+segment in <strong>UniProt</strong> protein sequences while being aware of isoforms.</p>
+</div>
+<div class="section" id="tissue-expression">
+<h3>Tissue expression<a class="headerlink" href="#tissue-expression" title="Permalink to this headline">¶</a></h3>
+<p>For 3 protein expression databases there are functions and modules for
+downloading and combining the expression data with the network. These are the
+Human Protein Atlas, the ProteomicsDB and GIANT. The <code class="docutils literal notranslate"><span class="pre">giant</span></code> and
+<code class="docutils literal notranslate"><span class="pre">proteomicsdb</span></code> modules can be used also as stand alone Python clients for
+these resources.</p>
+</div>
+<div class="section" id="functional-annotations">
+<h3>Functional annotations<a class="headerlink" href="#functional-annotations" title="Permalink to this headline">¶</a></h3>
+<p><strong>GSEA</strong> and <strong>Gene Ontology</strong> are two approaches for annotating genes and
+gene products, and enrichment analysis technics aims to use these annotations
+to highlight the biological functions a given set of genes is related to. Here
+the <code class="docutils literal notranslate"><span class="pre">enrich</span></code> module gives abstract classes to calculate enrichment
+statistics, while the <code class="docutils literal notranslate"><span class="pre">go</span></code> and the <code class="docutils literal notranslate"><span class="pre">gsea</span></code> modules give access to GO and
+GSEA data, and make it easy to count enrichment statistics for sets of genes.</p>
+</div>
+<div class="section" id="drug-compounds">
+<h3>Drug compounds<a class="headerlink" href="#drug-compounds" title="Permalink to this headline">¶</a></h3>
+<p><strong>UniChem</strong> submodule provides an interface to effectively query the UniChem
+service, use connectivity search with custom settings, and translate SMILEs to
+ChEMBL IDs with ChEMBL web service.</p>
+<p><strong>ChEMBL</strong> submodule queries directly your own ChEMBL MySQL instance, has the
+features to search targets and compounds from custom assay types and
+relationship types, to get activity values, binding domains, and action types.
+You need to download the ChEMBL MySQL dump, and load into your own server.</p>
+</div>
+<div class="section" id="technical">
+<h3>Technical<a class="headerlink" href="#technical" title="Permalink to this headline">¶</a></h3>
+<p><strong>MySQL</strong> submodule helps to manage MySQL connections and track queries. It is
+able to run queries parallely to optimize CPU and memory usage on the server,
+handling queues, and serve the result by server side or client side storage.
+The <code class="docutils literal notranslate"><span class="pre">chembl</span></code> and potentially the <code class="docutils literal notranslate"><span class="pre">mapping</span></code> modules rely on this <code class="docutils literal notranslate"><span class="pre">mysql</span></code>
+module.</p>
+<p>The most important function in module <code class="docutils literal notranslate"><span class="pre">dataio</span></code> is a very flexible <strong>download
+manager</strong> built around <code class="docutils literal notranslate"><span class="pre">curl</span></code>. The function <code class="docutils literal notranslate"><span class="pre">dataio.curl()</span></code> accepts
+numerous arguments, tries to deal in a smart way with local <strong>cache,</strong>
+authentication, redirects, uncompression, character encodings, FTP and HTTP
+transactions, and many other stuff. Cache can grow to several GBs, and takes
+place in <code class="docutils literal notranslate"><span class="pre">./cache</span></code> by default. Please be aware of this, and use for example
+symlinks in case of using multiple working directories.</p>
+<p>A simple <strong>webservice</strong> comes with this module: the <code class="docutils literal notranslate"><span class="pre">server</span></code> module based on
+<code class="docutils literal notranslate"><span class="pre">twisted.web.server</span></code> opens a custom port and serves plain text tables over
+HTTP with REST style querying.</p>
+</div>
+</div>
+<div class="section" id="omnipath-in-r">
+<h2>OmniPath in R<a class="headerlink" href="#omnipath-in-r" title="Permalink to this headline">¶</a></h2>
+<p>You can download the data from the webservice and load into R. Look
+<a class="reference external" href="https://github.com/saezlab/pypath/tree/master/r_import">here</a> for an
+example.</p>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">PyPath: <em>A Python module for molecular interaction networks</em></a><ul>
+<li><a class="reference internal" href="#features">Features</a><ul>
+<li><a class="reference internal" href="#id-conversion">ID conversion</a></li>
+<li><a class="reference internal" href="#pathways">Pathways</a></li>
+<li><a class="reference internal" href="#structural-features">Structural features</a></li>
+<li><a class="reference internal" href="#sequences">Sequences</a></li>
+<li><a class="reference internal" href="#tissue-expression">Tissue expression</a></li>
+<li><a class="reference internal" href="#functional-annotations">Functional annotations</a></li>
+<li><a class="reference internal" href="#drug-compounds">Drug compounds</a></li>
+<li><a class="reference internal" href="#technical">Technical</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#omnipath-in-r">OmniPath in R</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="next chapter">Installation</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             >next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">pypath 0.7.98 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Dénes Türei.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

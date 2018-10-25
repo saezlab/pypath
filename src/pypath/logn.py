@@ -17,6 +17,8 @@
 #  Website: http://www.ebi.ac.uk/~denes
 #
 
+from past.builtins import xrange
+
 import os
 import logging
 
@@ -24,42 +26,86 @@ from pypath import common
 
 
 class logw(object):
+    """
+    Session logger object.
+
+    * Arguments:
+        - *session* [str]: Session identifier (a random alphanumeric
+          string). See ``common.gen_session_id()``.
+        - *loglevel* [str]: Optional, ``'INFO'`` by default. Specifies
+          the level of the logger. Possible levels are: ``'DEBUG'``,
+          ``'INFO'``, ``'WARNING'``, ``'ERROR'`` or ``'CRITICAL'``.
+
+    * Attributes:
+        - *logfile* [str]: Path to the log file (e.g. 'log/123ab.log')
+        - *logger* [logging.RootLogger]: Python's built-in logger
+          object.
+        - *loglevel* [str]: Level of logging.
+        - *session* [str]: Session identifier (a random alphanumeric
+          string).
+        - *wd* [str]: Path of the current working directiory.
+    """
+
     def __init__(self, session, loglevel='INFO'):
         self.session = session
         self.loglevel = loglevel
-        self.levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
+        self.__levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
+
         if not os.path.exists('log'):
             os.makedirs('log')
+
         self.logfile = 'log/' + self.session + '.log'
         self.init_logger()
         self.wd = os.getcwd()
-        open(self.logfile, 'a').close()
+        open(self.logfile, 'a').close() # Just creates the log file.
+
         if os.name == 'posix':
-            if os.path.islink('log/recent.log') or os.path.isfile(
-                    'log/recent.log'):
-                os.remove('log/recent.log')
-            os.symlink(self.logfile, self.wd + '/log/recent.log')
+            recent = 'log/recent.log'
+
+            if os.path.islink(recent) or os.path.isfile(recent):
+                os.remove(recent)
+
+            # Creates a symbolic link to logfile (of current session) in
+            # log/recent.log under the current working directory
+            os.symlink(self.logfile, os.path.join(self.wd, recent))
 
     def msg(self, indent, message, loglevel=None):
-        loglevel = 'INFO' if loglevel is None or loglevel not in self.levels else loglevel
+        """
+        Prints a message in the log file. If *loglevel* is ``'ERROR'``,
+        the message is also printed on the standard output.
+
+        * Arguments:
+            - *indent* [int]: Indentation level for the message.
+            - *message* [str]: Message to be added in the log.
+            - *loglevel* [str]: Level of the log message.
+        """
+
+        loglevel = ('INFO' if not loglevel or loglevel not in self.__levels
+                    else loglevel)
         # time = datetime.datetime.today().strftime('%c')
         # time = str(datetime.datetime.today().strftime('[%Y-%m-%d %H:%M:%S]'))
-        offset = ''.join('###' for i in range(indent))
+        offset = ''.join('###' for i in xrange(indent))
         message = ' '.join(['###', loglevel, offset, message])
         # lfile = codecs.open(self.logfile, encoding='utf-8', mode='a')
         # lfile.write(msg)
         # lfile.close()
         l = getattr(self.logger, loglevel.lower())
         l(message)
+
         if loglevel == 'ERROR':
             common.console(message)
 
     def init_logger(self):
-        logging.basicConfig(
-            filename=self.logfile,
-            format='%(asctime)s %(message)s',
-            datefmt='[%Y-%m-%d %H:%M:%S]',
-            level=getattr(logging, self.loglevel))
+        """
+        Initializes the logger object according to the parameters set on
+        the instance creation. Includes first line with date, time and
+        log file name (session ID).
+        """
+
+        logging.basicConfig(filename=self.logfile,
+                            format='%(asctime)s %(message)s',
+                            datefmt='[%Y-%m-%d %H:%M:%S]',
+                            level=getattr(logging, self.loglevel))
         self.logger = logging.getLogger(__name__)
         self.msg(1, "Logger initialized, logging to %s" % self.logfile, 'INFO')
 
