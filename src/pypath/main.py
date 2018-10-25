@@ -1215,7 +1215,8 @@ class PyPath(object):
         - *adjlist* [list]: List of [set] containing the adjacency of
           each node. See ``PyPath.update_adjlist()`` method for more
           information.
-        - *chembl* [pypath.chembl.Chembl]:
+        - *chembl* [pypath.chembl.Chembl]: Contains the ChEMBL data. See
+          ``pypath.chembl`` module documentation for more information.
         - *chembl_mysql* [tuple]: Contains the MySQL parameters used by
           the ``mapping`` module to load the ChEMBL ID conversion
           tables.
