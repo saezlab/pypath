@@ -7599,10 +7599,9 @@ class PyPath(object):
         enr.new_set(proteins)
         return enr
 
-    # XXX: False, does not create a dict but a list
     def update_adjlist(self, graph = None, mode = 'ALL'):
         """
-        Creates an adjacency list in a dict of sets format.
+        Creates an adjacency list in a list of sets format.
         """
 
         graph = graph or self.graph
