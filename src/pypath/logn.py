@@ -29,21 +29,24 @@ class logw(object):
     """
     Session logger object.
 
-    * Arguments:
-        - *session* [str]: Session identifier (a random alphanumeric
-          string). See ``common.gen_session_id()``.
-        - *loglevel* [str]: Optional, ``'INFO'`` by default. Specifies
-          the level of the logger. Possible levels are: ``'DEBUG'``,
-          ``'INFO'``, ``'WARNING'``, ``'ERROR'`` or ``'CRITICAL'``.
+    :arg str session:
+        Session identifier (a random alphanumeric string). See
+        :py:func:`common.gen_session_id()`.
+    :arg str loglevel:
+        Optional, ``'INFO'`` by default. Specifies the level of the
+        logger. Possible levels are: ``'DEBUG'``, ``'INFO'``,
+        ``'WARNING'``, ``'ERROR'`` or ``'CRITICAL'``.
 
-    * Attributes:
-        - *logfile* [str]: Path to the log file (e.g. 'log/123ab.log')
-        - *logger* [logging.RootLogger]: Python's built-in logger
-          object.
-        - *loglevel* [str]: Level of logging.
-        - *session* [str]: Session identifier (a random alphanumeric
-          string).
-        - *wd* [str]: Path of the current working directiory.
+    :var str logfile:
+        Path to the log file (e.g. 'log/123ab.log')
+    :var logging.RootLogger logger:
+        Python's built-in :py:class:`logger` object.
+    :var str loglevel:
+        Level of logging.
+    :var str session:
+        Session identifier (a random alphanumeric string).
+    :var str wd:
+        Path of the current working directiory.
     """
 
     def __init__(self, session, loglevel='INFO'):
@@ -74,10 +77,13 @@ class logw(object):
         Prints a message in the log file. If *loglevel* is ``'ERROR'``,
         the message is also printed on the standard output.
 
-        * Arguments:
-            - *indent* [int]: Indentation level for the message.
-            - *message* [str]: Message to be added in the log.
-            - *loglevel* [str]: Level of the log message.
+        :arg int indent:
+            Indentation level for the message (each level is three
+            character length).
+        :arg str message:
+            Message to be added in the log.
+        :arg str loglevel:
+            Level of the log message.
         """
 
         loglevel = ('INFO' if not loglevel or loglevel not in self.__levels
