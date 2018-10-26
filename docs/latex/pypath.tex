@@ -56,7 +56,7 @@
 
 
 \title{pypath Documentation}
-\date{Oct 25, 2018}
+\date{Oct 26, 2018}
 \release{0.7.98}
 \author{Dénes Türei}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -353,10 +353,16 @@ the \sphinxcode{\sphinxupquote{mapping}} module to load the ChEMBL ID conversion
 tables.
 
 \item {} 
-\sphinxstyleemphasis{data} {[}dict?{]}:
+\sphinxstyleemphasis{data} {[}dict{]}: Stores custom loaded interaction and attribute
+table. See \sphinxcode{\sphinxupquote{PyPath.read\_data\_filemethod()}} for more
+information.
 
 \item {} 
-\sphinxstyleemphasis{db\_dict} {[}{]}:
+\sphinxstyleemphasis{db\_dict} {[}dict{]}: Dictionary of dictionaries. Outer-level keys
+are \sphinxcode{\sphinxupquote{'nodes'}} and \sphinxcode{\sphinxupquote{'edges'}}, corresponding values are
+{[}dict{]} whose keys are the database sources with values of type
+{[}set{]} containing the edge/node indexes for which that database
+provided some information.
 
 \item {} 
 \sphinxstyleemphasis{dgraph} {[}igraph.Graph{]}: Directed network graph object.
@@ -517,6 +523,12 @@ files.
 \end{description}
 
 \end{itemize}
+\index{acsn\_effects() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.acsn_effects}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{acsn\_effects}}}{\emph{graph=None}}{}
+\end{fulllineitems}
+
 \index{add\_update\_vertex() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -645,6 +657,18 @@ Works on more than 2 attributes recursively.
 
 \end{fulllineitems}
 
+\index{communities() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.communities}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{communities}}}{\emph{method}, \emph{**kwargs}}{}
+\end{fulllineitems}
+
+\index{consistency() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.consistency}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{consistency}}}{}{}
+\end{fulllineitems}
+
 \index{copy\_edges() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -689,6 +713,18 @@ sources, and returns the sum of these values.
 
 \end{description}
 
+\end{fulllineitems}
+
+\index{curation\_stats() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.curation_stats}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{curation\_stats}}}{\emph{by\_category=True}}{}
+\end{fulllineitems}
+
+\index{curation\_tab() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.curation_tab}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{curation\_tab}}}{\emph{fname='curation\_stats.tex', by\_category=True, use\_cats={[}'p', 'm', 'i', 'r'{]}, header\_size='normalsize', **kwargs}}{}
 \end{fulllineitems}
 
 \index{delete\_by\_taxon() (pypath.main.PyPath method)}
@@ -1237,6 +1273,12 @@ Vertex index (int) or GeneSymbol (str) or UniProt ID (str).
 
 \end{fulllineitems}
 
+\index{get\_pathways() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.get_pathways}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_pathways}}}{\emph{source}}{}
+\end{fulllineitems}
+
 \index{go\_annotate() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -1282,6 +1324,12 @@ To be passed to igraph.Graph.get\_eid()
 
 \end{fulllineitems}
 
+\index{guide2pharma() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.guide2pharma}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{guide2pharma}}}{}{}
+\end{fulllineitems}
+
 \index{homology\_translation() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -1297,6 +1345,18 @@ E.g. 10090 for mouse.
 
 \end{fulllineitems}
 
+\index{htp\_stats() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.htp_stats}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{htp\_stats}}}{}{}
+\end{fulllineitems}
+
+\index{in\_complex() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.in_complex}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{in\_complex}}}{\emph{csources={[}'corum'{]}}}{}
+\end{fulllineitems}
+
 \index{init\_edge\_attr() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -1309,7 +1369,7 @@ lists if in \sphinxtitleref{edgeAttrs} the attribute is registered as list.
 \index{init\_network() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.init_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{init\_network}}}{\emph{lst=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafebc24f80\textgreater{}}, \emph{'biogrid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9a6128\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafebc24e60\textgreater{}}, \emph{'ccmap': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997440\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9b2248\textgreater{}}, \emph{'dbptm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997878\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997170\textgreater{}}, \emph{'depod': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9976c8\textgreater{}}, \emph{'dip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9974d0\textgreater{}}, \emph{'domino': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9977e8\textgreater{}}, \emph{'elm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9977a0\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafebc24d88\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9b21b8\textgreater{}}, \emph{'hprd': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9a6290\textgreater{}}, \emph{'hprd\_p': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9978c0\textgreater{}}, \emph{'innatedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997560\textgreater{}}, \emph{'intact': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9a60e0\textgreater{}}, \emph{'lmpid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997710\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997128\textgreater{}}, \emph{'matrixdb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997638\textgreater{}}, \emph{'mppi': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997488\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997098\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9971b8\textgreater{}}, \emph{'phelm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997758\textgreater{}}, \emph{'psite': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997680\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9b22d8\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafebc24d40\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9973b0\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafebc24cf8\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafebc24c20\textgreater{}\}}, \emph{exclude={[}{]}}, \emph{cache\_files=\{\}}, \emph{pfile=False}, \emph{save=False}, \emph{reread=False}, \emph{redownload=False}, \emph{**kwargs}}{}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.init_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{init\_network}}}{\emph{lst=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc950\textgreater{}}, \emph{'biogrid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6ab8\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc830\textgreater{}}, \emph{'ccmap': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcdd0\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25a47bd8\textgreater{}}, \emph{'dbptm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6248\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcb00\textgreater{}}, \emph{'depod': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6098\textgreater{}}, \emph{'dip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbce60\textgreater{}}, \emph{'domino': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc61b8\textgreater{}}, \emph{'elm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6170\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc758\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25a47b48\textgreater{}}, \emph{'hprd': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6c20\textgreater{}}, \emph{'hprd\_p': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6290\textgreater{}}, \emph{'innatedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcef0\textgreater{}}, \emph{'intact': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6a70\textgreater{}}, \emph{'lmpid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc60e0\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcab8\textgreater{}}, \emph{'matrixdb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcfc8\textgreater{}}, \emph{'mppi': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbce18\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbca28\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcb48\textgreater{}}, \emph{'phelm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6128\textgreater{}}, \emph{'psite': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6050\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25a47c68\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc710\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcd40\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc6c8\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc5f0\textgreater{}\}}, \emph{exclude={[}{]}}, \emph{cache\_files=\{\}}, \emph{pfile=False}, \emph{save=False}, \emph{reread=False}, \emph{redownload=False}, \emph{**kwargs}}{}
 This is a lazy way to start the module, load data
 and build the high confidence, literature curated
 part of the signaling network.
@@ -1333,6 +1393,18 @@ Loads the list of cancer driver proteins from IntOGen data.
 
 \end{fulllineitems}
 
+\index{kegg\_directions() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.kegg_directions}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{kegg\_directions}}}{\emph{graph=None}}{}
+\end{fulllineitems}
+
+\index{kegg\_pathways() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.kegg_pathways}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{kegg\_pathways}}}{\emph{graph=None}}{}
+\end{fulllineitems}
+
 \index{kinases\_list() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -1350,6 +1422,24 @@ Assigns a boolean vertex attribute to nodes which tells whether
 the node is annotated by all or any (see \sphinxcode{\sphinxupquote{method}} parameter of
 \sphinxcode{\sphinxupquote{select\_by\_go}}) the GO terms.
 
+\end{fulllineitems}
+
+\index{laudanna\_directions() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.laudanna_directions}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{laudanna\_directions}}}{\emph{graph=None}}{}
+\end{fulllineitems}
+
+\index{laudanna\_effects() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.laudanna_effects}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{laudanna\_effects}}}{\emph{graph=None}}{}
+\end{fulllineitems}
+
+\index{load\_all\_pathways() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_all_pathways}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_all\_pathways}}}{\emph{graph=None}}{}
 \end{fulllineitems}
 
 \index{load\_compleat() (pypath.main.PyPath method)}
@@ -1470,7 +1560,7 @@ Loads Human Protein Atlas data into vertex attributes.
 \index{load\_ligand\_receptor\_network() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_ligand_receptor_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_ligand\_receptor\_network}}}{\emph{lig\_rec\_resources=True}, \emph{inference\_from\_go=True}, \emph{sources=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafebc24f80\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafebc24e60\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9b2248\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997170\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafebc24d88\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9b21b8\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997128\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997098\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9971b8\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9b22d8\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafebc24d40\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9973b0\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafebc24cf8\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafebc24c20\textgreater{}\}}, \emph{keep\_undirected=False}, \emph{keep\_rec\_rec=False}, \emph{keep\_lig\_lig=False}}{}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_ligand_receptor_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_ligand\_receptor\_network}}}{\emph{lig\_rec\_resources=True}, \emph{inference\_from\_go=True}, \emph{sources=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc950\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc830\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25a47bd8\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcb00\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc758\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25a47b48\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcab8\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbca28\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcb48\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25a47c68\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc710\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcd40\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc6c8\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc5f0\textgreater{}\}}, \emph{keep\_undirected=False}, \emph{keep\_rec\_rec=False}, \emph{keep\_lig\_lig=False}}{}
 Initializes a ligand-receptor network.
 
 \end{fulllineitems}
@@ -1587,7 +1677,7 @@ Those not used by \sphinxtitleref{PtmProcessor} are forwarded to the
 \index{load\_resources() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_resources}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_resources}}}{\emph{lst=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafebc24f80\textgreater{}}, \emph{'biogrid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9a6128\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafebc24e60\textgreater{}}, \emph{'ccmap': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997440\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9b2248\textgreater{}}, \emph{'dbptm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997878\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997170\textgreater{}}, \emph{'depod': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9976c8\textgreater{}}, \emph{'dip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9974d0\textgreater{}}, \emph{'domino': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9977e8\textgreater{}}, \emph{'elm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9977a0\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafebc24d88\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9b21b8\textgreater{}}, \emph{'hprd': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9a6290\textgreater{}}, \emph{'hprd\_p': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9978c0\textgreater{}}, \emph{'innatedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997560\textgreater{}}, \emph{'intact': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9a60e0\textgreater{}}, \emph{'lmpid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997710\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997128\textgreater{}}, \emph{'matrixdb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997638\textgreater{}}, \emph{'mppi': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997488\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997098\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9971b8\textgreater{}}, \emph{'phelm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997758\textgreater{}}, \emph{'psite': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb997680\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9b22d8\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafebc24d40\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafeb9973b0\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafebc24cf8\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fafebc24c20\textgreater{}\}}, \emph{exclude={[}{]}}, \emph{cache\_files=\{\}}, \emph{reread=False}, \emph{redownload=False}}{}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_resources}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_resources}}}{\emph{lst=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc950\textgreater{}}, \emph{'biogrid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6ab8\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc830\textgreater{}}, \emph{'ccmap': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcdd0\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25a47bd8\textgreater{}}, \emph{'dbptm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6248\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcb00\textgreater{}}, \emph{'depod': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6098\textgreater{}}, \emph{'dip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbce60\textgreater{}}, \emph{'domino': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc61b8\textgreater{}}, \emph{'elm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6170\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc758\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25a47b48\textgreater{}}, \emph{'hprd': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6c20\textgreater{}}, \emph{'hprd\_p': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6290\textgreater{}}, \emph{'innatedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcef0\textgreater{}}, \emph{'intact': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6a70\textgreater{}}, \emph{'lmpid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc60e0\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcab8\textgreater{}}, \emph{'matrixdb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcfc8\textgreater{}}, \emph{'mppi': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbce18\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbca28\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcb48\textgreater{}}, \emph{'phelm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6128\textgreater{}}, \emph{'psite': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6050\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25a47c68\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc710\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcd40\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc6c8\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc5f0\textgreater{}\}}, \emph{exclude={[}{]}}, \emph{cache\_files=\{\}}, \emph{reread=False}, \emph{redownload=False}}{}
 Loads multiple resources, and cleans up after.
 Looks up ID types, and loads all ID conversion
 tables from UniProt if necessary. This is much
@@ -1683,6 +1773,12 @@ if None the lowest ID selected.
 
 \end{fulllineitems}
 
+\index{mimp\_directions() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.mimp_directions}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{mimp\_directions}}}{\emph{graph=None}}{}
+\end{fulllineitems}
+
 \index{mutated\_edges() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -1710,6 +1806,18 @@ less hairball-like, more usable for analysis.
 Calculates basic statistics for the whole network
 and each of sources. Writes the results in a tab file.
 
+\end{fulllineitems}
+
+\index{numof\_directed\_edges() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.numof_directed_edges}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{numof\_directed\_edges}}}{}{}
+\end{fulllineitems}
+
+\index{numof\_undirected\_edges() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.numof_undirected_edges}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{numof\_undirected\_edges}}}{}{}
 \end{fulllineitems}
 
 \index{orthology\_translation() (pypath.main.PyPath method)}
@@ -1743,6 +1851,12 @@ Vertex index (int) or GeneSymbol (str) or UniProt ID (str).
 
 \end{fulllineitems}
 
+\index{pathway\_attributes() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.pathway_attributes}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{pathway\_attributes}}}{\emph{graph=None}}{}
+\end{fulllineitems}
+
 \index{pathway\_members() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -1760,6 +1874,36 @@ database too.
 Returns the names of all pathways having at least one member
 in the current graph.
 
+\end{fulllineitems}
+
+\index{pathways\_table() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.pathways_table}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{pathways\_table}}}{\emph{filename='genes\_pathways.list', pw\_sources={[}'signalink', 'signor', 'netpath', 'kegg'{]}, graph=None}}{}
+\end{fulllineitems}
+
+\index{phosphonetworks\_directions() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.phosphonetworks_directions}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{phosphonetworks\_directions}}}{\emph{graph=None}}{}
+\end{fulllineitems}
+
+\index{phosphopoint\_directions() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.phosphopoint_directions}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{phosphopoint\_directions}}}{\emph{graph=None}}{}
+\end{fulllineitems}
+
+\index{phosphosite\_directions() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.phosphosite_directions}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{phosphosite\_directions}}}{\emph{graph=None}}{}
+\end{fulllineitems}
+
+\index{process\_directions() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.process_directions}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{process\_directions}}}{\emph{dirs}, \emph{name}, \emph{directed=None}, \emph{stimulation=None}, \emph{inhibition=None}, \emph{graph=None}, \emph{id\_type=None}, \emph{dirs\_only=False}}{}
 \end{fulllineitems}
 
 \index{process\_dmi() (pypath.main.PyPath method)}
@@ -1905,6 +2049,18 @@ This resource is human only.
 
 \end{fulllineitems}
 
+\index{remove\_htp() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.remove_htp}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{remove\_htp}}}{\emph{threshold=50}, \emph{keep\_directed=False}}{}
+\end{fulllineitems}
+
+\index{remove\_undirected() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.remove_undirected}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{remove\_undirected}}}{\emph{min\_refs=None}}{}
+\end{fulllineitems}
+
 \index{save\_session() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -2032,6 +2188,12 @@ the protein is a kinase, otherwise \sphinxstyleemphasis{False}.
 
 \end{fulllineitems}
 
+\index{set\_tfs() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.set_tfs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_tfs}}}{\emph{classes={[}'a', 'b', 'other'{]}}}{}
+\end{fulllineitems}
+
 \index{set\_transcription\_factors() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -2066,6 +2228,12 @@ keywords in short description of GO terms.
 
 \end{fulllineitems}
 
+\index{signor\_pathways() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.signor_pathways}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{signor\_pathways}}}{\emph{graph=None}}{}
+\end{fulllineitems}
+
 \index{small\_plot() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -2091,6 +2259,12 @@ instead of vertex ids.
 
 \end{fulllineitems}
 
+\index{string\_effects() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.string_effects}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{string\_effects}}}{\emph{graph=None}}{}
+\end{fulllineitems}
+
 \index{sum\_in\_complex() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -2109,6 +2283,12 @@ The graph object to do the calculations on.
 
 \end{description}
 
+\end{fulllineitems}
+
+\index{table\_latex() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.table_latex}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{table\_latex}}}{\emph{fname}, \emph{header}, \emph{data}, \emph{sum\_row=True}, \emph{row\_order=None}, \emph{latex\_hdr=True}, \emph{caption=''}, \emph{font='HelveticaNeueLTStd-LtCn'}, \emph{fontsize=8}, \emph{sum\_label='Total'}, \emph{sum\_cols=None}, \emph{header\_format='\%s'}, \emph{by\_category=True}}{}
 \end{fulllineitems}
 
 \index{tfs\_list() (pypath.main.PyPath method)}
@@ -2152,6 +2332,12 @@ the current instance.
 
 \end{description}\end{quote}
 
+\end{fulllineitems}
+
+\index{translate\_refsdir() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.translate_refsdir}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{translate\_refsdir}}}{\emph{rd}, \emph{ids}}{}
 \end{fulllineitems}
 
 \index{uniprot() (pypath.main.PyPath method)}
@@ -2232,6 +2418,12 @@ set of all categories in the current network.
 
 \end{fulllineitems}
 
+\index{update\_db\_dict() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.update_db_dict}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{update\_db\_dict}}}{}{}
+\end{fulllineitems}
+
 \index{update\_sources() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -2299,6 +2491,12 @@ edge attributes to vertex attributes.
 
 \end{fulllineitems}
 
+\index{wang\_effects() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.wang_effects}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{wang\_effects}}}{\emph{graph=None}}{}
+\end{fulllineitems}
+
 
 \end{fulllineitems}
 
@@ -2309,97 +2507,77 @@ edge attributes to vertex attributes.
 Object storing directionality information of an edge. Also includes
 information about the reverse direction, mode of regulation and
 sources of that information.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Arguments:}] \leavevmode\begin{itemize}
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleemphasis{nameA} {[}str{]}: Name of the source node.
+\sphinxstyleliteralstrong{\sphinxupquote{nameA}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Name of the source node.
 
 \item {} 
-\sphinxstyleemphasis{nameB} {[}str{]}: Name of the target node.
+\sphinxstyleliteralstrong{\sphinxupquote{nameB}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Name of the target node.
 
 \end{itemize}
 
-\end{description}
-
-\item {} \begin{description}
-\item[{Attributes:}] \leavevmode\begin{itemize}
+\item[{Variables}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleemphasis{dirs} {[}dict{]}: Dictionary containing the presence of
-directionality of the given edge. Keys are \sphinxstyleemphasis{straight},
-\sphinxstyleemphasis{reverse} and \sphinxcode{\sphinxupquote{'undirected'}} and their values denote the
-presence/absence {[}bool{]}.
+\sphinxstyleliteralstrong{\sphinxupquote{dirs}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Dictionary containing the presence of directionality of the
+given edge. Keys are \sphinxstyleemphasis{straight}, \sphinxstyleemphasis{reverse} and \sphinxcode{\sphinxupquote{'undirected'}}
+and their values denote the presence/absence {[}bool{]}.
 
 \item {} 
-\sphinxstyleemphasis{negative} {[}dict{]}: Dictionary contianing the presence/absence
-{[}bool{]} of negative interactions for both \sphinxstyleemphasis{straight} and
-\sphinxstyleemphasis{reverse} directions.
-
-\item {} 
-\sphinxstyleemphasis{negative\_sources} {[}dict{]}: Contains the resource names {[}str{]}
-supporting a negative interaction on \sphinxstyleemphasis{straight} and \sphinxstyleemphasis{reverse}
+\sphinxstyleliteralstrong{\sphinxupquote{negative}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Dictionary contianing the presence/absence {[}bool{]} of negative
+interactions for both \sphinxcode{\sphinxupquote{straight}} and \sphinxcode{\sphinxupquote{reverse}}
 directions.
 
 \item {} 
-\sphinxstyleemphasis{nodes} {[}list{]}: Contains the node names {[}str{]} sorted
-alphabetically (\sphinxstyleemphasis{nameA}, \sphinxstyleemphasis{nameB}).
-
-\item {} 
-\sphinxstyleemphasis{positive} {[}dict{]}:  Dictionary contianing the presence/absence
-{[}bool{]} of positive interactions for both \sphinxstyleemphasis{straight} and
-\sphinxstyleemphasis{reverse} directions.
-
-\item {} 
-\sphinxstyleemphasis{positive\_sources} {[}dict{]}: Contains the resource names {[}str{]}
-supporting a positive interaction on \sphinxstyleemphasis{straight} and \sphinxstyleemphasis{reverse}
+\sphinxstyleliteralstrong{\sphinxupquote{negative\_sources}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Contains the resource names {[}str{]} supporting a negative
+interaction on \sphinxcode{\sphinxupquote{straight}} and \sphinxcode{\sphinxupquote{reverse}}
 directions.
 
 \item {} 
-\sphinxstyleemphasis{reverse} {[}tuple{]}: Contains the node names {[}str{]} in the original
-order e.g. (source, target).
+\sphinxstyleliteralstrong{\sphinxupquote{nodes}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Contains the node names {[}str{]} sorted alphabetically (\sphinxstyleemphasis{nameA},
+\sphinxstyleemphasis{nameB}).
 
 \item {} 
-\sphinxstyleemphasis{sources} {[}dict{]}: Contains the resource names {[}str{]} of a given
-edge for each directionality (\sphinxstyleemphasis{straight}, \sphinxstyleemphasis{reverse} and
-\sphinxcode{\sphinxupquote{'undirected'}}). Values are sets containing the names of
-those resources supporting such directionality.
+\sphinxstyleliteralstrong{\sphinxupquote{positive}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Dictionary contianing the presence/absence {[}bool{]} of positive
+interactions for both \sphinxcode{\sphinxupquote{straight}} and \sphinxcode{\sphinxupquote{reverse}}
+directions.
 
 \item {} 
-\sphinxstyleemphasis{straight} {[}tuple{]}: Contains the node names {[}str{]} in reverse
-order e.g. (target, source).
+\sphinxstyleliteralstrong{\sphinxupquote{positive\_sources}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Contains the resource names {[}str{]} supporting a positive
+interaction on \sphinxcode{\sphinxupquote{straight}} and \sphinxcode{\sphinxupquote{reverse}}
+directions.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{reverse}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Contains the node names {[}str{]} in reverse order e.g. (\sphinxstyleemphasis{nameB},
+\sphinxstyleemphasis{nameA}).
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{sources}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Contains the resource names {[}str{]} of a given edge for each
+directionality (\sphinxcode{\sphinxupquote{straight}}, \sphinxcode{\sphinxupquote{reverse}} and
+\sphinxcode{\sphinxupquote{'undirected'}}). Values are sets containing the names of those
+resources supporting such directionality.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{straight}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Contains the node names {[}str{]} in the original order e.g.
+(\sphinxstyleemphasis{nameA}, \sphinxstyleemphasis{nameB}).
 
 \end{itemize}
 
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 \index{check\_nodes() (pypath.main.Direction method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.Direction.check_nodes}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{check\_nodes}}}{\emph{nodes}}{}
 Checks if \sphinxstyleemphasis{nodes} is contained in the edge.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Arguments:}] \leavevmode\begin{itemize}
-\item {} 
-\sphinxstyleemphasis{nodes} {[}list{]}: Or {[}tuple{]}, contains the names of the
-edges to be checked.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{nodes}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Or {[}tuple{]}, contains the names of the nodes to be checked.
 
-\end{itemize}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{bool}) \textendash{} \sphinxcode{\sphinxupquote{True}} if all elements in \sphinxstyleemphasis{nodes} are
+contained in the object \sphinxcode{\sphinxupquote{nodes}} list.
 
-\end{description}
-
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}bool{]}: True if all elements in \sphinxstyleemphasis{nodes} are contained in
-the object’s node list.
-
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2410,27 +2588,19 @@ the object’s node list.
 Checks if \sphinxstyleemphasis{di} is \sphinxcode{\sphinxupquote{'undirected'}} or contains the nodes of
 the current edge. Used internally to check that \sphinxstyleemphasis{di} is a valid
 key for the object attributes declared on dictionaries.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Arguments:}] \leavevmode\begin{itemize}
-\item {} 
-\sphinxstyleemphasis{di} {[}tuple{]}: Or {[}str{]}, key to be tested for validity.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{di}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Or {[}str{]}, key to be tested for validity.
 
-\end{itemize}
-
-\end{description}
-
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}bool{]}: \sphinxcode{\sphinxupquote{True}} if \sphinxstyleemphasis{di} is \sphinxcode{\sphinxupquote{'undirected'}} or a tuple
+\item[{Returns}] \leavevmode
+\begin{description}
+\item[{(\sphinxstyleemphasis{bool}) \textendash{} \sphinxcode{\sphinxupquote{True}} if \sphinxstyleemphasis{di} is \sphinxcode{\sphinxupquote{'undirected'}} or a tuple}] \leavevmode
 of node names contained in the edge, \sphinxcode{\sphinxupquote{False}} otherwise.
 
-\end{itemize}
-
 \end{description}
 
-\end{itemize}
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2439,21 +2609,15 @@ of node names contained in the edge, \sphinxcode{\sphinxupquote{False}} otherwis
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.Direction.consensus_edges}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{consensus\_edges}}}{}{}
 Infers the consensus edge(s) according to the number of
-supporting sources. This includes direction and sign attributes.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}list{]}: Contains the consensus edge(s) along with the
+supporting sources. This includes direction and sign.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{list}) \textendash{} Contains the consensus edge(s) along with the
 consensus sign. If there is no major directionality, both
 are returned. The structure is as follows:
 \sphinxcode{\sphinxupquote{{[}'\textless{}source\textgreater{}', '\textless{}target\textgreater{}', '\textless{}(un)directed\textgreater{}', '\textless{}sign\textgreater{}'{]}}}
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2463,35 +2627,25 @@ are returned. The structure is as follows:
 \phantomsection\label{\detokenize{main:pypath.main.Direction.get_dir}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_dir}}}{\emph{direction}, \emph{sources=False}}{}
 Returns the state (or \sphinxstyleemphasis{sources} if specified) of the given
 \sphinxstyleemphasis{direction}.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Arguments:}] \leavevmode\begin{itemize}
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleemphasis{direction} {[}tuple{]}: Or {[}str{]} (if \sphinxcode{\sphinxupquote{'undirected'}}). Pair
-of nodes from which direction information is to be
-retrieved.
+\sphinxstyleliteralstrong{\sphinxupquote{direction}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Or {[}str{]} (if \sphinxcode{\sphinxupquote{'undirected'}}). Pair of nodes from which
+direction information is to be retrieved.
 
 \item {} 
-\sphinxstyleemphasis{sources} {[}bool{]}: Optional, \sphinxcode{\sphinxupquote{'False'}} by default.
-Specifies if the \sphinxstyleemphasis{sources} information of the given
-direction is to be retrieved instead.
+\sphinxstyleliteralstrong{\sphinxupquote{sources}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{'False'}} by default. Specifies if the
+\sphinxcode{\sphinxupquote{sources}} information of the given direction is to
+be retrieved instead.
 
 \end{itemize}
 
-\end{description}
-
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}bool{]} or {[}set{]} (if \sphinxcode{\sphinxupquote{sources=True}}). Presence/absence of
-the requested direction (or the list of sources if
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{bool} or \sphinxstyleemphasis{set}) \textendash{} (if \sphinxcode{\sphinxupquote{sources=True}}). Presence/absence
+of the requested direction (or the list of sources if
 specified). Returns \sphinxcode{\sphinxupquote{None}} if \sphinxstyleemphasis{direction} is not valid.
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2500,35 +2654,25 @@ specified). Returns \sphinxcode{\sphinxupquote{None}} if \sphinxstyleemphasis{di
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.Direction.get_dirs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_dirs}}}{\emph{src}, \emph{tgt}, \emph{sources=False}}{}
 Returns all directions with boolean values or list of sources.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Arguments:}] \leavevmode\begin{itemize}
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleemphasis{src} {[}str{]}: Source node.
+\sphinxstyleliteralstrong{\sphinxupquote{src}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Source node.
 
 \item {} 
-\sphinxstyleemphasis{tgt} {[}str{]}: Target node.
+\sphinxstyleliteralstrong{\sphinxupquote{tgt}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Target node.
 
 \item {} 
-\sphinxstyleemphasis{sources} {[}bool{]}: Optional, \sphinxcode{\sphinxupquote{False}} by default.
-Specifies whether to return the \sphinxstyleemphasis{sources} attribute
-instead of \sphinxstyleemphasis{dirs}.
+\sphinxstyleliteralstrong{\sphinxupquote{sources}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Specifies whether to return
+the \sphinxcode{\sphinxupquote{sources}} attribute instead of \sphinxcode{\sphinxupquote{dirs}}.
 
 \end{itemize}
 
-\end{description}
+\item[{Returns}] \leavevmode
+Contains the \sphinxcode{\sphinxupquote{dirs}} (or \sphinxcode{\sphinxupquote{sources}} if
+specified) of the given edge.
 
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}list{]}: Contains the \sphinxstyleemphasis{dirs} (or \sphinxstyleemphasis{sources} if specified) of
-the given edge.
-
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2540,42 +2684,31 @@ Retrieves the sign information of the edge in the given
 diretion. If specified in \sphinxstyleemphasis{sign}, only that sign’s information
 will be retrieved. If specified in \sphinxstyleemphasis{sources}, the sources of
 that information will be retrieved instead.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Arguments:}] \leavevmode\begin{itemize}
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleemphasis{direction} {[}tuple{]}: Contains the pair of nodes specifying
-the directionality of the edge from which th information
-is to be retrieved.
+\sphinxstyleliteralstrong{\sphinxupquote{direction}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Contains the pair of nodes specifying the directionality of
+the edge from which th information is to be retrieved.
 
 \item {} 
-\sphinxstyleemphasis{sign} {[}str{]}: Optional, \sphinxcode{\sphinxupquote{None}} by default. Denotes
-whether to retrieve the \sphinxcode{\sphinxupquote{'positive'}} or \sphinxcode{\sphinxupquote{'negative'}}
-specific information.
+\sphinxstyleliteralstrong{\sphinxupquote{sign}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Denotes whether to retrieve
+the \sphinxcode{\sphinxupquote{'positive'}} or \sphinxcode{\sphinxupquote{'negative'}} specific information.
 
 \item {} 
-\sphinxstyleemphasis{sources} {[}bool{]}: Optional, \sphinxcode{\sphinxupquote{False}} by default.
-Specifies whether to return the sources instead of sign.
+\sphinxstyleliteralstrong{\sphinxupquote{sources}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Specifies whether to return
+the sources instead of sign.
 
 \end{itemize}
 
-\end{description}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{list}) \textendash{} If \sphinxcode{\sphinxupquote{sign=None}} containing {[}bool{]} values
+denoting the presence of positive and negative sign on that
+direction, if \sphinxcode{\sphinxupquote{sources=True}} the {[}set{]} of sources for each
+of them will be returned instead. If \sphinxstyleemphasis{sign} is specified,
+returns {[}bool{]} or {[}set{]} (if \sphinxcode{\sphinxupquote{sources=True}}) of that
+specific direction and sign.
 
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}list{]}: If \sphinxcode{\sphinxupquote{sign=None}} containing {[}bool{]} values denoting
-the presence of positive and negative sign on that
-direction, if \sphinxcode{\sphinxupquote{sources=True}} the {[}set{]} of sources for
-each of them will be returned instead. If \sphinxstyleemphasis{sign} is
-specified, returns {[}bool{]} or {[}set{]} (if \sphinxcode{\sphinxupquote{sources=True}})
-of that specific direction and sign.
-
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2585,29 +2718,20 @@ of that specific direction and sign.
 \phantomsection\label{\detokenize{main:pypath.main.Direction.has_sign}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{has\_sign}}}{\emph{direction=None}}{}
 Checks whether the edge (or for a specific \sphinxstyleemphasis{direction}) has
 any signed information (about positive/negative interactions).
-\begin{itemize}
-\item {} \begin{description}
-\item[{Arguments:}] \leavevmode\begin{itemize}
-\item {} 
-\sphinxstyleemphasis{direction} {[}tuple{]}: Optional, \sphinxcode{\sphinxupquote{None}} by default. If
-specified, only the information of that direction is
-checked for sign.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{direction}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. If specified, only the
+information of that direction is checked for sign.
 
-\end{itemize}
-
-\end{description}
-
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}bool{]}: \sphinxcode{\sphinxupquote{True}} if there exist any information on the
+\item[{Returns}] \leavevmode
+\begin{description}
+\item[{(\sphinxstyleemphasis{bool}) \textendash{} \sphinxcode{\sphinxupquote{True}} if there exist any information on the}] \leavevmode
 sign of the interaction, \sphinxcode{\sphinxupquote{False}} otherwise.
 
-\end{itemize}
-
 \end{description}
 
-\end{itemize}
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2616,19 +2740,13 @@ sign of the interaction, \sphinxcode{\sphinxupquote{False}} otherwise.
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.Direction.is_directed}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{is\_directed}}}{}{}
 Checks if edge has any directionality information.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}bool{]}: Returns \sphinxcode{\sphinxupquote{True{}`{}`{}`if any of the *dirs* attribute
-values is {}`{}`True}} (except \sphinxcode{\sphinxupquote{'undirected'}}), \sphinxcode{\sphinxupquote{False}}
-otherwise.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{bool}) \textendash{} Returns \sphinxcode{\sphinxupquote{True{}`{}`{}`if any of the :py:attr:{}`dirs{}`
+attribute values is {}`{}`True}} (except \sphinxcode{\sphinxupquote{'undirected'}}),
+\sphinxcode{\sphinxupquote{False}} otherwise.
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2638,29 +2756,17 @@ otherwise.
 \phantomsection\label{\detokenize{main:pypath.main.Direction.is_inhibition}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{is\_inhibition}}}{\emph{direction=None}}{}
 Checks if any (or for a specific \sphinxstyleemphasis{direction}) interaction is
 inhibition (negative interaction).
-\begin{itemize}
-\item {} \begin{description}
-\item[{Arguments:}] \leavevmode\begin{itemize}
-\item {} 
-\sphinxstyleemphasis{direction} {[}tuple{]}: Optional, \sphinxcode{\sphinxupquote{None}} by default. If
-specified, checks the \sphinxstyleemphasis{negative} attribute of that
-specific directionality. If not specified, checks both.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{direction}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. If specified, checks the
+\sphinxcode{\sphinxupquote{negative}} attribute of that specific
+directionality. If not specified, checks both.
 
-\end{itemize}
-
-\end{description}
-
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}bool{]}: \sphinxcode{\sphinxupquote{True}} if any interaction (or the specified
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{bool}) \textendash{} \sphinxcode{\sphinxupquote{True}} if any interaction (or the specified
 \sphinxstyleemphasis{direction}) is inhibitory (negative).
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2670,29 +2776,17 @@ specific directionality. If not specified, checks both.
 \phantomsection\label{\detokenize{main:pypath.main.Direction.is_stimulation}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{is\_stimulation}}}{\emph{direction=None}}{}
 Checks if any (or for a specific \sphinxstyleemphasis{direction}) interaction is
 activation (positive interaction).
-\begin{itemize}
-\item {} \begin{description}
-\item[{Arguments:}] \leavevmode\begin{itemize}
-\item {} 
-\sphinxstyleemphasis{direction} {[}tuple{]}: Optional, \sphinxcode{\sphinxupquote{None}} by default. If
-specified, checks the \sphinxstyleemphasis{positive} attribute of that
-specific directionality. If not specified, checks both.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{direction}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. If specified, checks the
+\sphinxcode{\sphinxupquote{positive}} attribute of that specific
+directionality. If not specified, checks both.
 
-\end{itemize}
-
-\end{description}
-
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}bool{]}: \sphinxcode{\sphinxupquote{True}} if any interaction (or the specified
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{bool}) \textendash{} \sphinxcode{\sphinxupquote{True}} if any interaction (or the specified
 \sphinxstyleemphasis{direction}) is activatory (positive).
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2702,21 +2796,15 @@ specific directionality. If not specified, checks both.
 \phantomsection\label{\detokenize{main:pypath.main.Direction.majority_dir}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{majority\_dir}}}{}{}
 Infers which is the major directionality of the edge by number
 of supporting sources.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}tuple{]}: Contains the pair of nodes denoting the consensus
-directionality. If the number of sources on both
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{tuple}) \textendash{} Contains the pair of nodes denoting the
+consensus directionality. If the number of sources on both
 directions is equal, \sphinxcode{\sphinxupquote{None}} is returned. If there is no
 directionality information, \sphinxcode{\sphinxupquote{'undirected'{}`}} will be
 returned.
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2726,23 +2814,18 @@ returned.
 \phantomsection\label{\detokenize{main:pypath.main.Direction.majority_sign}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{majority\_sign}}}{}{}
 Infers which is the major sign (activation/inhibition) of the
 edge by number of supporting sources on both directions.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}dict{]}: Keys are the node tuples on both directions
-(straight/reverse) and values can be either \sphinxcode{\sphinxupquote{None}} if
-that direction has no sign information or a list of
-two {[}bool{]} elements corresponding to majority of positive
-and majority of negative support. In case both elements of
-the list are \sphinxcode{\sphinxupquote{True}}, this means the number of supporting
-sources for both signs in that direction is equal.
-
-\end{itemize}
+\begin{description}
+\item[{{\color{red}\bfseries{}*}return:}] \leavevmode
+(\sphinxstyleemphasis{dict}) \textendash{} Keys are the node tuples on both directions
+(\sphinxcode{\sphinxupquote{straight}}/\sphinxcode{\sphinxupquote{reverse}}) and values can be
+either \sphinxcode{\sphinxupquote{None}} if that direction has no sign information or
+a list of two {[}bool{]} elements corresponding to majority of
+positive and majority of negative support. In case both
+elements of the list are \sphinxcode{\sphinxupquote{True}}, this means the number of
+supporting sources for both signs in that direction is
+equal.
 
 \end{description}
-
-\end{itemize}
 
 \end{fulllineitems}
 
@@ -2752,20 +2835,14 @@ sources for both signs in that direction is equal.
 \phantomsection\label{\detokenize{main:pypath.main.Direction.merge}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{merge}}}{\emph{other}}{}
 Merges current edge with another (if and only if they are the
 same class and contain the same nodes). Updates the attributes
-\sphinxstyleemphasis{dirs}, \sphinxstyleemphasis{sources}, \sphinxstyleemphasis{positive}, \sphinxstyleemphasis{negative}, \sphinxstyleemphasis{positive\_sources}
-and \sphinxstyleemphasis{negative\_sources}.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Arguments:}] \leavevmode\begin{itemize}
-\item {} 
-\sphinxstyleemphasis{other} {[}pypath.main.Direction{]}: The new edge object to be
-merged with the current one.
+\sphinxcode{\sphinxupquote{dirs}}, \sphinxcode{\sphinxupquote{sources}}, \sphinxcode{\sphinxupquote{positive}},
+\sphinxcode{\sphinxupquote{negative}}, \sphinxcode{\sphinxupquote{positive\_sources}} and
+\sphinxcode{\sphinxupquote{negative\_sources}}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{other}} ({\hyperref[\detokenize{main:pypath.main.Direction}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{pypath.main.Direction}}}}}) \textendash{} The new edge object to be merged with the current one.
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2773,20 +2850,15 @@ merged with the current one.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.Direction.negative_reverse}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{negative\_reverse}}}{}{}
-Checks if the reverse directionality is a negative interaction.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Returns}] \leavevmode\begin{itemize}
-\item {} 
-{[}bool{]}: \sphinxcode{\sphinxupquote{True}} if there is supporting information on the
-reverse direction of the edge as inhibition. \sphinxcode{\sphinxupquote{False}}
-otherwise.
+Checks if the \sphinxcode{\sphinxupquote{reverse}} directionality is a negative
+interaction.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{bool}) \textendash{} \sphinxcode{\sphinxupquote{True}} if there is supporting information on
+the \sphinxcode{\sphinxupquote{reverse}} direction of the edge as inhibition.
+\sphinxcode{\sphinxupquote{False}} otherwise.
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2794,20 +2866,15 @@ otherwise.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.Direction.negative_sources_reverse}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{negative\_sources\_reverse}}}{}{}
-Retrieves the list of sources for the reverse direction and
+Retrieves the list of sources for the \sphinxcode{\sphinxupquote{reverse}}
+direction and negative sign.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{set}) \textendash{} Contains the names of the sources supporting the
+\sphinxcode{\sphinxupquote{reverse}} directionality of the edge with a
 negative sign.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}set{]}: Contains the names of the sources supporting the
-reverse directionality of the edge with a negative sign.
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2815,20 +2882,15 @@ reverse directionality of the edge with a negative sign.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.Direction.negative_sources_straight}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{negative\_sources\_straight}}}{}{}
-Retrieves the list of sources for the straight direction and
+Retrieves the list of sources for the \sphinxcode{\sphinxupquote{straight}}
+direction and negative sign.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{set}) \textendash{} Contains the names of the sources supporting the
+\sphinxcode{\sphinxupquote{straight}} directionality of the edge with a
 negative sign.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}set{]}: Contains the names of the sources supporting the
-straight directionality of the edge with a negative sign.
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2836,20 +2898,15 @@ straight directionality of the edge with a negative sign.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.Direction.negative_straight}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{negative\_straight}}}{}{}
-Checks if the straight directionality is a negative interaction.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Returns}] \leavevmode\begin{itemize}
-\item {} 
-{[}bool{]}: \sphinxcode{\sphinxupquote{True}} if there is supporting information on the
-straight direction of the edge as inhibition. \sphinxcode{\sphinxupquote{False}}
-otherwise.
+Checks if the \sphinxcode{\sphinxupquote{straight}} directionality is a negative
+interaction.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{bool}) \textendash{} \sphinxcode{\sphinxupquote{True}} if there is supporting information on
+the \sphinxcode{\sphinxupquote{straight}} direction of the edge as inhibition.
+\sphinxcode{\sphinxupquote{False}} otherwise.
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2857,20 +2914,15 @@ otherwise.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.Direction.positive_reverse}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{positive\_reverse}}}{}{}
-Checks if the reverse directionality is a positive interaction.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Returns}] \leavevmode\begin{itemize}
-\item {} 
-{[}bool{]}: \sphinxcode{\sphinxupquote{True}} if there is supporting information on the
-reverse direction of the edge as activation. \sphinxcode{\sphinxupquote{False}}
-otherwise.
+Checks if the \sphinxcode{\sphinxupquote{reverse}} directionality is a positive
+interaction.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{bool}) \textendash{} \sphinxcode{\sphinxupquote{True}} if there is supporting information on
+the \sphinxcode{\sphinxupquote{reverse}} direction of the edge as activation.
+\sphinxcode{\sphinxupquote{False}} otherwise.
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2878,20 +2930,15 @@ otherwise.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.Direction.positive_sources_reverse}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{positive\_sources\_reverse}}}{}{}
-Retrieves the list of sources for the reverse direction and
+Retrieves the list of sources for the \sphinxcode{\sphinxupquote{reverse}}
+direction and positive sign.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{set}) \textendash{} Contains the names of the sources supporting the
+\sphinxcode{\sphinxupquote{reverse}} directionality of the edge with a
 positive sign.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}set{]}: Contains the names of the sources supporting the
-reverse directionality of the edge with a positive sign.
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2899,20 +2946,15 @@ reverse directionality of the edge with a positive sign.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.Direction.positive_sources_straight}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{positive\_sources\_straight}}}{}{}
-Retrieves the list of sources for the straight direction and
+Retrieves the list of sources for the \sphinxcode{\sphinxupquote{straight}}
+direction and positive sign.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{set}) \textendash{} Contains the names of the sources supporting the
+\sphinxcode{\sphinxupquote{straight}} directionality of the edge with a
 positive sign.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}set{]}: Contains the names of the sources supporting the
-straight directionality of the edge with a positive sign.
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2920,20 +2962,15 @@ straight directionality of the edge with a positive sign.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.Direction.positive_straight}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{positive\_straight}}}{}{}
-Checks if the straight directionality is a positive interaction.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Returns}] \leavevmode\begin{itemize}
-\item {} 
-{[}bool{]}: \sphinxcode{\sphinxupquote{True}} if there is supporting information on the
-straight direction of the edge as activation. \sphinxcode{\sphinxupquote{False}}
-otherwise.
+Checks if the \sphinxcode{\sphinxupquote{straight}} directionality is a positive
+interaction.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{bool}) \textendash{} \sphinxcode{\sphinxupquote{True}} if there is supporting information on
+the \sphinxcode{\sphinxupquote{straight}} direction of the edge as activation.
+\sphinxcode{\sphinxupquote{False}} otherwise.
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2950,23 +2987,21 @@ Reloads the object from the module level.
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.Direction.set_dir}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_dir}}}{\emph{direction}, \emph{source}}{}
 Adds directionality information with the corresponding data
-source named. Modifies self attributes \sphinxstyleemphasis{dirs} and \sphinxstyleemphasis{sources}.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Arguments:}] \leavevmode\begin{itemize}
+source named. Modifies self attributes \sphinxcode{\sphinxupquote{dirs}} and
+\sphinxcode{\sphinxupquote{sources}}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleemphasis{direction} {[}tuple{]}: Or {[}str{]}, the directionality key for
-which the value on \sphinxstyleemphasis{dirs} has to be set \sphinxcode{\sphinxupquote{True}}.
+\sphinxstyleliteralstrong{\sphinxupquote{direction}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Or {[}str{]}, the directionality key for which the value on
+\sphinxcode{\sphinxupquote{dirs}} has to be set \sphinxcode{\sphinxupquote{True}}.
 
 \item {} 
-\sphinxstyleemphasis{source} {[}set{]}: Contains the name(s) of the source(s) from
-which such information was obtained.
+\sphinxstyleliteralstrong{\sphinxupquote{source}} (\sphinxstyleliteralemphasis{\sphinxupquote{set}}) \textendash{} Contains the name(s) of the source(s) from which such
+information was obtained.
 
 \end{itemize}
 
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2975,31 +3010,29 @@ which such information was obtained.
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.Direction.set_sign}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_sign}}}{\emph{direction}, \emph{sign}, \emph{source}}{}
 Sets sign and source information on a given direction of the
-edge. Modifies the attributes \sphinxstyleemphasis{positive} and \sphinxstyleemphasis{positive\_sources}
-or \sphinxstyleemphasis{negative} and \sphinxstyleemphasis{negative\_sources} depending on the sign.
-Direction is also updated accordingly, which also modifies the
-attributes \sphinxstyleemphasis{dirs}, \sphinxstyleemphasis{sources},
-\begin{itemize}
-\item {} \begin{description}
-\item[{Arguments:}] \leavevmode\begin{itemize}
+edge. Modifies the attributes \sphinxcode{\sphinxupquote{positive}} and
+\sphinxcode{\sphinxupquote{positive\_sources}} or \sphinxcode{\sphinxupquote{negative}} and
+\sphinxcode{\sphinxupquote{negative\_sources}} depending on the sign. Direction is
+also updated accordingly, which also modifies the attributes
+\sphinxcode{\sphinxupquote{dirs}} and \sphinxcode{\sphinxupquote{sources}}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleemphasis{direction} {[}tuple{]}: Pair of edge nodes specifying the
-direction from which the information is to be set/updated.
+\sphinxstyleliteralstrong{\sphinxupquote{direction}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Pair of edge nodes specifying the direction from which the
+information is to be set/updated.
 
 \item {} 
-\sphinxstyleemphasis{sign} {[}str{]}: Specifies the type of interaction. If
-\sphinxcode{\sphinxupquote{'positive'}}, is considered activation, otherwise, is
-assumed to be negative (inhibition).
+\sphinxstyleliteralstrong{\sphinxupquote{sign}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Specifies the type of interaction. If \sphinxcode{\sphinxupquote{'positive'}}, is
+considered activation, otherwise, is assumed to be negative
+(inhibition).
 
 \item {} 
-\sphinxstyleemphasis{source} {[}set{]}: Contains the name(s) of the source(s) from
-which the information was obtained.
+\sphinxstyleliteralstrong{\sphinxupquote{source}} (\sphinxstyleliteralemphasis{\sphinxupquote{set}}) \textendash{} Contains the name(s) of the source(s) from which the
+information was obtained.
 
 \end{itemize}
 
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -3007,19 +3040,13 @@ which the information was obtained.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.Direction.sources_reverse}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{sources\_reverse}}}{}{}
-Retrieves the list of sources for the reverse direction.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}set{]}: Contains the names of the sources supporting the
-reverse directionality of the edge.
+Retrieves the list of sources for the \sphinxcode{\sphinxupquote{reverse}} direction.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{set}) \textendash{} Contains the names of the sources supporting the
+\sphinxcode{\sphinxupquote{reverse}} directionality of the edge.
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -3027,19 +3054,14 @@ reverse directionality of the edge.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.Direction.sources_straight}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{sources\_straight}}}{}{}
-Retrieves the list of sources for the straight direction.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}set{]}: Contains the names of the sources supporting the
-straight directionality of the edge.
+Retrieves the list of sources for the \sphinxcode{\sphinxupquote{straight}}
+direction.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{set}) \textendash{} Contains the names of the sources supporting the
+\sphinxcode{\sphinxupquote{straight}} directionality of the edge.
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -3048,19 +3070,13 @@ straight directionality of the edge.
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.Direction.sources_undirected}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{sources\_undirected}}}{}{}
 Retrieves the list of sources without directed information.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}set{]}: Contains the names of the sources supporting the
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{set}) \textendash{} Contains the names of the sources supporting the
 edge presence but without specific directionality
 information.
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -3070,29 +3086,17 @@ information.
 \phantomsection\label{\detokenize{main:pypath.main.Direction.src}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{src}}}{\emph{undirected=False}}{}
 Returns the name(s) of the source node(s) for each existing
 direction on the interaction.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Arguments:}] \leavevmode\begin{itemize}
-\item {} 
-\sphinxstyleemphasis{undirected} {[}bool{]}: Optional, \sphinxcode{\sphinxupquote{False}} by default.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{undirected}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default.
 
-\end{itemize}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{list}) \textendash{} Contains the name(s) for the source node(s).
+This means if the interaction is bidirectional, the list
+will contain both identifiers on the edge. If the
+interaction is undirected, an empty list will be returned.
 
-\end{description}
-
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}list{]}: Contains the name(s) for the source node(s). This
-means if the interaction is bidirectional, the list will
-contain both identifiers of the edge. If the interaction
-is undirected, an empty list will be returned.
-
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -3102,31 +3106,19 @@ is undirected, an empty list will be returned.
 \phantomsection\label{\detokenize{main:pypath.main.Direction.src_by_source}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{src\_by\_source}}}{\emph{source}}{}
 Returns the name(s) of the source node(s) for each existing
 direction on the interaction for a specific \sphinxstyleemphasis{source}.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Arguments:}] \leavevmode\begin{itemize}
-\item {} 
-\sphinxstyleemphasis{source} {[}str{]}: Name of the source according to which the
-information is to be retrieved.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{source}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Name of the source according to which the information is to
+be retrieved.
 
-\end{itemize}
-
-\end{description}
-
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}list{]}: Contains the name(s) for the source node(s)
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{list}) \textendash{} Contains the name(s) for the source node(s)
 according to the specified \sphinxstyleemphasis{source}. This means if the
 interaction is bidirectional, the list will contain both
-identifiers of the edge. If the specified \sphinxstyleemphasis{source} is not
+identifiers on the edge. If the specified \sphinxstyleemphasis{source} is not
 found or invalid, an empty list will be returned.
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -3136,29 +3128,17 @@ found or invalid, an empty list will be returned.
 \phantomsection\label{\detokenize{main:pypath.main.Direction.tgt}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{tgt}}}{\emph{undirected=False}}{}
 Returns the name(s) of the target node(s) for each existing
 direction on the interaction.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Arguments:}] \leavevmode\begin{itemize}
-\item {} 
-\sphinxstyleemphasis{undirected} {[}bool{]}: Optional, \sphinxcode{\sphinxupquote{False}} by default.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{undirected}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default.
 
-\end{itemize}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{list}) \textendash{} Contains the name(s) for the target node(s).
+This means if the interaction is bidirectional, the list
+will contain both identifiers on the edge. If the
+interaction is undirected, an empty list will be returned.
 
-\end{description}
-
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}list{]}: Contains the name(s) for the target node(s). This
-means if the interaction is bidirectional, the list will
-contain both identifiers of the edge. If the interaction
-is undirected, an empty list will be returned.
-
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -3168,31 +3148,19 @@ is undirected, an empty list will be returned.
 \phantomsection\label{\detokenize{main:pypath.main.Direction.tgt_by_source}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{tgt\_by\_source}}}{\emph{source}}{}
 Returns the name(s) of the target node(s) for each existing
 direction on the interaction for a specific \sphinxstyleemphasis{source}.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Arguments:}] \leavevmode\begin{itemize}
-\item {} 
-\sphinxstyleemphasis{source} {[}str{]}: Name of the source according to which the
-information is to be retrieved.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{source}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Name of the source according to which the information is to
+be retrieved.
 
-\end{itemize}
-
-\end{description}
-
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}list{]}: Contains the name(s) for the target node(s)
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{list}) \textendash{} Contains the name(s) for the target node(s)
 according to the specified \sphinxstyleemphasis{source}. This means if the
 interaction is bidirectional, the list will contain both
-identifiers of the edge. If the specified \sphinxstyleemphasis{source} is not
+identifiers on the edge. If the specified \sphinxstyleemphasis{source} is not
 found or invalid, an empty list will be returned.
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -3202,29 +3170,16 @@ found or invalid, an empty list will be returned.
 \phantomsection\label{\detokenize{main:pypath.main.Direction.translate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{translate}}}{\emph{ids}}{}
 Translates the node names/identifiers according to the
 dictionary \sphinxstyleemphasis{ids}.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Arguments:}] \leavevmode\begin{itemize}
-\item {} 
-\sphinxstyleemphasis{ids} {[}dict{]}: Dictionary containing (at least) the current
-names of the nodes as keys and their translation as
-values.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{ids}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Dictionary containing (at least) the current names of the
+nodes as keys and their translation as values.
 
-\end{itemize}
-
-\end{description}
-
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}pypath.main.Direction{]}: The copy of current edge object
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{pypath.main.Direction}) \textendash{} The copy of current edge object
 with translated node names.
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -3233,27 +3188,23 @@ with translated node names.
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.Direction.unset_dir}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{unset\_dir}}}{\emph{direction}, \emph{source=None}}{}
 Removes directionality and/or source information of the
-specified \sphinxstyleemphasis{direction}. Modifies attribute \sphinxstyleemphasis{dirs} and \sphinxstyleemphasis{sources}
-(or \sphinxstyleemphasis{sources} only if \sphinxcode{\sphinxupquote{source=True}}).
-\begin{itemize}
-\item {} \begin{description}
-\item[{Arguments:}] \leavevmode\begin{itemize}
+specified \sphinxstyleemphasis{direction}. Modifies attribute \sphinxcode{\sphinxupquote{dirs}} and
+\sphinxcode{\sphinxupquote{sources}}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleemphasis{direction} {[}tuple{]}: Or {[}str{]} (if \sphinxcode{\sphinxupquote{'undirected'}}) the
-pair of nodes specifying the directionality from which the
-information is to be removed.
+\sphinxstyleliteralstrong{\sphinxupquote{direction}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Or {[}str{]} (if \sphinxcode{\sphinxupquote{'undirected'}}) the pair of nodes specifying
+the directionality from which the information is to be
+removed.
 
 \item {} 
-\sphinxstyleemphasis{source} {[}set{]}: Optional, \sphinxcode{\sphinxupquote{None}} by default. If
-specified, determines which source(s) is(are) to be
-removed from \sphinxstyleemphasis{sources} attribute in the specified
-\sphinxstyleemphasis{direction}.
+\sphinxstyleliteralstrong{\sphinxupquote{source}} (\sphinxstyleliteralemphasis{\sphinxupquote{set}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. If specified, determines
+which specific source(s) is(are) to be removed from
+\sphinxcode{\sphinxupquote{sources}} attribute in the specified \sphinxstyleemphasis{direction}.
 
 \end{itemize}
 
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -3262,32 +3213,29 @@ removed from \sphinxstyleemphasis{sources} attribute in the specified
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.Direction.unset_sign}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{unset\_sign}}}{\emph{direction}, \emph{sign}, \emph{source=None}}{}
 Removes sign and/or source information of the specified
-\sphinxstyleemphasis{direction} and \sphinxstyleemphasis{sign}. Modifies attribute \sphinxstyleemphasis{positive} and
-\sphinxstyleemphasis{positive\_sources} or \sphinxstyleemphasis{negative} and \sphinxstyleemphasis{negative\_sources} (or
-\sphinxstyleemphasis{positive\_sources}/\sphinxstyleemphasis{negative\_sources} only if \sphinxcode{\sphinxupquote{source=True}}).
-\begin{itemize}
-\item {} \begin{description}
-\item[{Arguments:}] \leavevmode\begin{itemize}
+\sphinxstyleemphasis{direction} and \sphinxstyleemphasis{sign}. Modifies attribute \sphinxcode{\sphinxupquote{positive}}
+and \sphinxcode{\sphinxupquote{positive\_sources}} or \sphinxcode{\sphinxupquote{negative}} and
+\sphinxcode{\sphinxupquote{negative\_sources}} (or
+\sphinxcode{\sphinxupquote{positive\_attributes}}/\sphinxcode{\sphinxupquote{negative\_sources}}
+only if \sphinxcode{\sphinxupquote{source=True}}).
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleemphasis{direction} {[}tuple{]}: The pair of nodes specifying the
-directionality from which the information is to be
-removed.
+\sphinxstyleliteralstrong{\sphinxupquote{direction}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} The pair of nodes specifying the directionality from which
+the information is to be removed.
 
 \item {} 
-\sphinxstyleemphasis{sign} {[}str{]}: Sign from which the information is to be
-removed. Must be either \sphinxcode{\sphinxupquote{'positive'}} or \sphinxcode{\sphinxupquote{'negative'}}.
+\sphinxstyleliteralstrong{\sphinxupquote{sign}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Sign from which the information is to be removed. Must be
+either \sphinxcode{\sphinxupquote{'positive'}} or \sphinxcode{\sphinxupquote{'negative'}}.
 
 \item {} 
-\sphinxstyleemphasis{source} {[}set{]}: Optional, \sphinxcode{\sphinxupquote{None}} by default. If
-specified, determines which source(s) is(are) to be
-removed from the sources in the specified \sphinxstyleemphasis{direction} and
-\sphinxstyleemphasis{sign}.
+\sphinxstyleliteralstrong{\sphinxupquote{source}} (\sphinxstyleliteralemphasis{\sphinxupquote{set}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. If specified, determines
+which source(s) is(are) to be removed from the sources in
+the specified \sphinxstyleemphasis{direction} and \sphinxstyleemphasis{sign}.
 
 \end{itemize}
 
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -3297,18 +3245,12 @@ removed from the sources in the specified \sphinxstyleemphasis{direction} and
 \phantomsection\label{\detokenize{main:pypath.main.Direction.which_dirs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{which\_dirs}}}{}{}
 Returns the pair(s) of nodes for which there is information
 about their directionality.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Returns:}] \leavevmode\begin{itemize}
-\item {} 
-{[}list{]}: List of tuples containing the nodes for which
-theit attribute \sphinxstyleemphasis{dirs} is \sphinxcode{\sphinxupquote{True}}.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{list}) \textendash{} List of tuples containing the nodes for which
+their attribute \sphinxcode{\sphinxupquote{dirs}} is \sphinxcode{\sphinxupquote{True}}.
 
-\end{itemize}
-
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 

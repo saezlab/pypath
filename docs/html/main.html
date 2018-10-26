@@ -93,8 +93,14 @@ information.</li>
 <li><em>chembl_mysql</em> [tuple]: Contains the MySQL parameters used by
 the <code class="docutils literal notranslate"><span class="pre">mapping</span></code> module to load the ChEMBL ID conversion
 tables.</li>
-<li><em>data</em> [dict?]:</li>
-<li><em>db_dict</em> []:</li>
+<li><em>data</em> [dict]: Stores custom loaded interaction and attribute
+table. See <code class="docutils literal notranslate"><span class="pre">PyPath.read_data_filemethod()</span></code> for more
+information.</li>
+<li><em>db_dict</em> [dict]: Dictionary of dictionaries. Outer-level keys
+are <code class="docutils literal notranslate"><span class="pre">'nodes'</span></code> and <code class="docutils literal notranslate"><span class="pre">'edges'</span></code>, corresponding values are
+[dict] whose keys are the database sources with values of type
+[set] containing the edge/node indexes for which that database
+provided some information.</li>
 <li><em>dgraph</em> [igraph.Graph]: Directed network graph object.</li>
 <li><em>disclaimer</em> [str]: Disclaimer text.</li>
 <li><em>dlabDct</em> []:</li>
@@ -154,6 +160,11 @@ files.</li>
 </dl>
 </li>
 </ul>
+<dl class="method">
+<dt id="pypath.main.PyPath.acsn_effects">
+<code class="descname">acsn_effects</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.acsn_effects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.acsn_effects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="pypath.main.PyPath.add_update_vertex">
 <code class="descname">add_update_vertex</code><span class="sig-paren">(</span><em>defAttrs</em>, <em>originalName</em>, <em>originalNameType</em>, <em>extraAttrs={}</em>, <em>add=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.add_update_vertex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.add_update_vertex" title="Permalink to this definition">¶</a></dt>
@@ -254,6 +265,16 @@ or calls <cite>num_method()</cite> if given.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.communities">
+<code class="descname">communities</code><span class="sig-paren">(</span><em>method</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.communities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.communities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.consistency">
+<code class="descname">consistency</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.consistency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.consistency" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.copy_edges">
 <code class="descname">copy_edges</code><span class="sig-paren">(</span><em>sources</em>, <em>target</em>, <em>move=False</em>, <em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.copy_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.copy_edges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copies edges of one node to another,
@@ -290,6 +311,16 @@ the source edges.</li>
 sources, and returns the sum of these values.</dd>
 </dl>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.curation_stats">
+<code class="descname">curation_stats</code><span class="sig-paren">(</span><em>by_category=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.curation_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.curation_stats" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.curation_tab">
+<code class="descname">curation_tab</code><span class="sig-paren">(</span><em>fname='curation_stats.tex', by_category=True, use_cats=['p', 'm', 'i', 'r'], header_size='normalsize', **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.curation_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.curation_tab" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.delete_by_taxon">
@@ -748,6 +779,11 @@ default directed network, otherwise <code class="docutils literal notranslate"><
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.get_pathways">
+<code class="descname">get_pathways</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_pathways"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_pathways" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.go_annotate">
 <code class="descname">go_annotate</code><span class="sig-paren">(</span><em>aspects=('C'</em>, <em>'F'</em>, <em>'P')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.go_annotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.go_annotate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Annotates protein nodes with GO terms. In the <code class="docutils literal notranslate"><span class="pre">go</span></code> vertex
@@ -783,6 +819,11 @@ the 2 proteins, otherwise <code class="docutils literal notranslate"><span class
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.guide2pharma">
+<code class="descname">guide2pharma</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.guide2pharma"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.guide2pharma" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.homology_translation">
 <code class="descname">homology_translation</code><span class="sig-paren">(</span><em>target</em>, <em>source=None</em>, <em>only_swissprot=True</em>, <em>graph=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.main.PyPath.homology_translation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Translates the current object to another organism by orthology.
@@ -799,6 +840,16 @@ E.g. 10090 for mouse.</td>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.htp_stats">
+<code class="descname">htp_stats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.htp_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.htp_stats" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.in_complex">
+<code class="descname">in_complex</code><span class="sig-paren">(</span><em>csources=['corum']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.in_complex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.in_complex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.init_edge_attr">
 <code class="descname">init_edge_attr</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.init_edge_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.init_edge_attr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fills edge attribute with its default values, creates
@@ -807,7 +858,7 @@ lists if in <cite>edgeAttrs</cite> the attribute is registered as list.</p>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.init_network">
-<code class="descname">init_network</code><span class="sig-paren">(</span><em>lst={'arn': &lt;pypath.input_formats.ReadSettings instance at 0x7fafebc24f80&gt;</em>, <em>'biogrid': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9a6128&gt;</em>, <em>'ca1': &lt;pypath.input_formats.ReadSettings instance at 0x7fafebc24e60&gt;</em>, <em>'ccmap': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997440&gt;</em>, <em>'cellphonedb': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9b2248&gt;</em>, <em>'dbptm': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997878&gt;</em>, <em>'death': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997170&gt;</em>, <em>'depod': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9976c8&gt;</em>, <em>'dip': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9974d0&gt;</em>, <em>'domino': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9977e8&gt;</em>, <em>'elm': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9977a0&gt;</em>, <em>'guide2pharma': &lt;pypath.input_formats.ReadSettings instance at 0x7fafebc24d88&gt;</em>, <em>'hpmr': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9b21b8&gt;</em>, <em>'hprd': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9a6290&gt;</em>, <em>'hprd_p': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9978c0&gt;</em>, <em>'innatedb': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997560&gt;</em>, <em>'intact': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9a60e0&gt;</em>, <em>'lmpid': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997710&gt;</em>, <em>'macrophage': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997128&gt;</em>, <em>'matrixdb': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997638&gt;</em>, <em>'mppi': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997488&gt;</em>, <em>'nrf2': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997098&gt;</em>, <em>'pdz': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9971b8&gt;</em>, <em>'phelm': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997758&gt;</em>, <em>'psite': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997680&gt;</em>, <em>'ramilowski2015': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9b22d8&gt;</em>, <em>'signalink3': &lt;pypath.input_formats.ReadSettings instance at 0x7fafebc24d40&gt;</em>, <em>'signor': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9973b0&gt;</em>, <em>'spike': &lt;pypath.input_formats.ReadSettings instance at 0x7fafebc24cf8&gt;</em>, <em>'trip': &lt;pypath.input_formats.ReadSettings instance at 0x7fafebc24c20&gt;}</em>, <em>exclude=[]</em>, <em>cache_files={}</em>, <em>pfile=False</em>, <em>save=False</em>, <em>reread=False</em>, <em>redownload=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.init_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.init_network" title="Permalink to this definition">¶</a></dt>
+<code class="descname">init_network</code><span class="sig-paren">(</span><em>lst={'arn': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbc950&gt;</em>, <em>'biogrid': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc6ab8&gt;</em>, <em>'ca1': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbc830&gt;</em>, <em>'ccmap': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbcdd0&gt;</em>, <em>'cellphonedb': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25a47bd8&gt;</em>, <em>'dbptm': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc6248&gt;</em>, <em>'death': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbcb00&gt;</em>, <em>'depod': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc6098&gt;</em>, <em>'dip': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbce60&gt;</em>, <em>'domino': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc61b8&gt;</em>, <em>'elm': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc6170&gt;</em>, <em>'guide2pharma': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbc758&gt;</em>, <em>'hpmr': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25a47b48&gt;</em>, <em>'hprd': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc6c20&gt;</em>, <em>'hprd_p': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc6290&gt;</em>, <em>'innatedb': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbcef0&gt;</em>, <em>'intact': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc6a70&gt;</em>, <em>'lmpid': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc60e0&gt;</em>, <em>'macrophage': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbcab8&gt;</em>, <em>'matrixdb': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbcfc8&gt;</em>, <em>'mppi': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbce18&gt;</em>, <em>'nrf2': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbca28&gt;</em>, <em>'pdz': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbcb48&gt;</em>, <em>'phelm': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc6128&gt;</em>, <em>'psite': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc6050&gt;</em>, <em>'ramilowski2015': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25a47c68&gt;</em>, <em>'signalink3': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbc710&gt;</em>, <em>'signor': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbcd40&gt;</em>, <em>'spike': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbc6c8&gt;</em>, <em>'trip': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbc5f0&gt;}</em>, <em>exclude=[]</em>, <em>cache_files={}</em>, <em>pfile=False</em>, <em>save=False</em>, <em>reread=False</em>, <em>redownload=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.init_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.init_network" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is a lazy way to start the module, load data
 and build the high confidence, literature curated
 part of the signaling network.</p>
@@ -827,6 +878,16 @@ lists if in <cite>vertexAttrs</cite> the attribute is registered as list.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.kegg_directions">
+<code class="descname">kegg_directions</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.kegg_directions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.kegg_directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.kegg_pathways">
+<code class="descname">kegg_pathways</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.kegg_pathways"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.kegg_pathways" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.kinases_list">
 <code class="descname">kinases_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.kinases_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.kinases_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads the list of all known kinases in the proteome from kinase.com.
@@ -840,6 +901,21 @@ This resource is human only.</p>
 the node is annotated by all or any (see <code class="docutils literal notranslate"><span class="pre">method</span></code> parameter of
 <code class="docutils literal notranslate"><span class="pre">select_by_go</span></code>) the GO terms.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.laudanna_directions">
+<code class="descname">laudanna_directions</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.laudanna_directions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.laudanna_directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.laudanna_effects">
+<code class="descname">laudanna_effects</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.laudanna_effects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.laudanna_effects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_all_pathways">
+<code class="descname">load_all_pathways</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_all_pathways"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_all_pathways" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.load_compleat">
@@ -937,7 +1013,7 @@ This resource is human only.</p>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.load_ligand_receptor_network">
-<code class="descname">load_ligand_receptor_network</code><span class="sig-paren">(</span><em>lig_rec_resources=True</em>, <em>inference_from_go=True</em>, <em>sources={'arn': &lt;pypath.input_formats.ReadSettings instance at 0x7fafebc24f80&gt;</em>, <em>'ca1': &lt;pypath.input_formats.ReadSettings instance at 0x7fafebc24e60&gt;</em>, <em>'cellphonedb': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9b2248&gt;</em>, <em>'death': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997170&gt;</em>, <em>'guide2pharma': &lt;pypath.input_formats.ReadSettings instance at 0x7fafebc24d88&gt;</em>, <em>'hpmr': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9b21b8&gt;</em>, <em>'macrophage': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997128&gt;</em>, <em>'nrf2': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997098&gt;</em>, <em>'pdz': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9971b8&gt;</em>, <em>'ramilowski2015': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9b22d8&gt;</em>, <em>'signalink3': &lt;pypath.input_formats.ReadSettings instance at 0x7fafebc24d40&gt;</em>, <em>'signor': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9973b0&gt;</em>, <em>'spike': &lt;pypath.input_formats.ReadSettings instance at 0x7fafebc24cf8&gt;</em>, <em>'trip': &lt;pypath.input_formats.ReadSettings instance at 0x7fafebc24c20&gt;}</em>, <em>keep_undirected=False</em>, <em>keep_rec_rec=False</em>, <em>keep_lig_lig=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_ligand_receptor_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_ligand_receptor_network" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load_ligand_receptor_network</code><span class="sig-paren">(</span><em>lig_rec_resources=True</em>, <em>inference_from_go=True</em>, <em>sources={'arn': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbc950&gt;</em>, <em>'ca1': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbc830&gt;</em>, <em>'cellphonedb': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25a47bd8&gt;</em>, <em>'death': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbcb00&gt;</em>, <em>'guide2pharma': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbc758&gt;</em>, <em>'hpmr': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25a47b48&gt;</em>, <em>'macrophage': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbcab8&gt;</em>, <em>'nrf2': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbca28&gt;</em>, <em>'pdz': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbcb48&gt;</em>, <em>'ramilowski2015': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25a47c68&gt;</em>, <em>'signalink3': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbc710&gt;</em>, <em>'signor': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbcd40&gt;</em>, <em>'spike': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbc6c8&gt;</em>, <em>'trip': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbc5f0&gt;}</em>, <em>keep_undirected=False</em>, <em>keep_rec_rec=False</em>, <em>keep_lig_lig=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_ligand_receptor_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_ligand_receptor_network" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes a ligand-receptor network.</p>
 </dd></dl>
 
@@ -1036,7 +1112,7 @@ Those not used by <cite>PtmProcessor</cite> are forwarded to the
 
 <dl class="method">
 <dt id="pypath.main.PyPath.load_resources">
-<code class="descname">load_resources</code><span class="sig-paren">(</span><em>lst={'arn': &lt;pypath.input_formats.ReadSettings instance at 0x7fafebc24f80&gt;</em>, <em>'biogrid': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9a6128&gt;</em>, <em>'ca1': &lt;pypath.input_formats.ReadSettings instance at 0x7fafebc24e60&gt;</em>, <em>'ccmap': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997440&gt;</em>, <em>'cellphonedb': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9b2248&gt;</em>, <em>'dbptm': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997878&gt;</em>, <em>'death': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997170&gt;</em>, <em>'depod': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9976c8&gt;</em>, <em>'dip': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9974d0&gt;</em>, <em>'domino': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9977e8&gt;</em>, <em>'elm': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9977a0&gt;</em>, <em>'guide2pharma': &lt;pypath.input_formats.ReadSettings instance at 0x7fafebc24d88&gt;</em>, <em>'hpmr': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9b21b8&gt;</em>, <em>'hprd': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9a6290&gt;</em>, <em>'hprd_p': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9978c0&gt;</em>, <em>'innatedb': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997560&gt;</em>, <em>'intact': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9a60e0&gt;</em>, <em>'lmpid': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997710&gt;</em>, <em>'macrophage': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997128&gt;</em>, <em>'matrixdb': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997638&gt;</em>, <em>'mppi': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997488&gt;</em>, <em>'nrf2': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997098&gt;</em>, <em>'pdz': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9971b8&gt;</em>, <em>'phelm': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997758&gt;</em>, <em>'psite': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb997680&gt;</em>, <em>'ramilowski2015': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9b22d8&gt;</em>, <em>'signalink3': &lt;pypath.input_formats.ReadSettings instance at 0x7fafebc24d40&gt;</em>, <em>'signor': &lt;pypath.input_formats.ReadSettings instance at 0x7fafeb9973b0&gt;</em>, <em>'spike': &lt;pypath.input_formats.ReadSettings instance at 0x7fafebc24cf8&gt;</em>, <em>'trip': &lt;pypath.input_formats.ReadSettings instance at 0x7fafebc24c20&gt;}</em>, <em>exclude=[]</em>, <em>cache_files={}</em>, <em>reread=False</em>, <em>redownload=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_resources" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load_resources</code><span class="sig-paren">(</span><em>lst={'arn': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbc950&gt;</em>, <em>'biogrid': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc6ab8&gt;</em>, <em>'ca1': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbc830&gt;</em>, <em>'ccmap': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbcdd0&gt;</em>, <em>'cellphonedb': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25a47bd8&gt;</em>, <em>'dbptm': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc6248&gt;</em>, <em>'death': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbcb00&gt;</em>, <em>'depod': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc6098&gt;</em>, <em>'dip': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbce60&gt;</em>, <em>'domino': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc61b8&gt;</em>, <em>'elm': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc6170&gt;</em>, <em>'guide2pharma': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbc758&gt;</em>, <em>'hpmr': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25a47b48&gt;</em>, <em>'hprd': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc6c20&gt;</em>, <em>'hprd_p': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc6290&gt;</em>, <em>'innatedb': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbcef0&gt;</em>, <em>'intact': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc6a70&gt;</em>, <em>'lmpid': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc60e0&gt;</em>, <em>'macrophage': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbcab8&gt;</em>, <em>'matrixdb': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbcfc8&gt;</em>, <em>'mppi': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbce18&gt;</em>, <em>'nrf2': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbca28&gt;</em>, <em>'pdz': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbcb48&gt;</em>, <em>'phelm': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc6128&gt;</em>, <em>'psite': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cc6050&gt;</em>, <em>'ramilowski2015': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25a47c68&gt;</em>, <em>'signalink3': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbc710&gt;</em>, <em>'signor': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbcd40&gt;</em>, <em>'spike': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbc6c8&gt;</em>, <em>'trip': &lt;pypath.input_formats.ReadSettings instance at 0x7fad25cbc5f0&gt;}</em>, <em>exclude=[]</em>, <em>cache_files={}</em>, <em>reread=False</em>, <em>redownload=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_resources" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads multiple resources, and cleans up after.
 Looks up ID types, and loads all ID conversion
 tables from UniProt if necessary. This is much
@@ -1118,6 +1194,11 @@ if None the lowest ID selected.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.mimp_directions">
+<code class="descname">mimp_directions</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.mimp_directions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.mimp_directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.mutated_edges">
 <code class="descname">mutated_edges</code><span class="sig-paren">(</span><em>sample</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.mutated_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.mutated_edges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compares the mutated residues and the modified residues in PTMs.
@@ -1139,6 +1220,16 @@ less hairball-like, more usable for analysis.</p>
 <dd><p>Calculates basic statistics for the whole network
 and each of sources. Writes the results in a tab file.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.numof_directed_edges">
+<code class="descname">numof_directed_edges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.numof_directed_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.numof_directed_edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.numof_undirected_edges">
+<code class="descname">numof_undirected_edges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.numof_undirected_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.numof_undirected_edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.orthology_translation">
@@ -1170,6 +1261,11 @@ default undirected network, otherwise <code class="docutils literal notranslate"
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.pathway_attributes">
+<code class="descname">pathway_attributes</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.pathway_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.pathway_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.pathway_members">
 <code class="descname">pathway_members</code><span class="sig-paren">(</span><em>pathway</em>, <em>source</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.pathway_members"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.pathway_members" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns an iterator with the members of a single pathway.
@@ -1183,6 +1279,31 @@ database too.</p>
 <dd><p>Returns the names of all pathways having at least one member
 in the current graph.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.pathways_table">
+<code class="descname">pathways_table</code><span class="sig-paren">(</span><em>filename='genes_pathways.list', pw_sources=['signalink', 'signor', 'netpath', 'kegg'], graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.pathways_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.pathways_table" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.phosphonetworks_directions">
+<code class="descname">phosphonetworks_directions</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.phosphonetworks_directions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.phosphonetworks_directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.phosphopoint_directions">
+<code class="descname">phosphopoint_directions</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.phosphopoint_directions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.phosphopoint_directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.phosphosite_directions">
+<code class="descname">phosphosite_directions</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.phosphosite_directions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.phosphosite_directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.process_directions">
+<code class="descname">process_directions</code><span class="sig-paren">(</span><em>dirs</em>, <em>name</em>, <em>directed=None</em>, <em>stimulation=None</em>, <em>inhibition=None</em>, <em>graph=None</em>, <em>id_type=None</em>, <em>dirs_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.process_directions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.process_directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.process_dmi">
@@ -1309,6 +1430,16 @@ This resource is human only.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.remove_htp">
+<code class="descname">remove_htp</code><span class="sig-paren">(</span><em>threshold=50</em>, <em>keep_directed=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.remove_htp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.remove_htp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.remove_undirected">
+<code class="descname">remove_undirected</code><span class="sig-paren">(</span><em>min_refs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.remove_undirected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.remove_undirected" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.save_session">
 <code class="descname">save_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.save_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.save_session" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save current state into pickle dump.</p>
@@ -1419,6 +1550,11 @@ the protein is a kinase, otherwise <em>False</em>.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.set_tfs">
+<code class="descname">set_tfs</code><span class="sig-paren">(</span><em>classes=['a', 'b', 'other']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.set_tfs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.set_tfs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.set_transcription_factors">
 <code class="descname">set_transcription_factors</code><span class="sig-paren">(</span><em>classes=['a', 'b', 'other']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.set_transcription_factors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.set_transcription_factors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a vertex attribute <cite>tf</cite> with value <em>True</em> if
@@ -1450,6 +1586,11 @@ keywords in short description of GO terms.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.signor_pathways">
+<code class="descname">signor_pathways</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.signor_pathways"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.signor_pathways" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.small_plot">
 <code class="descname">small_plot</code><span class="sig-paren">(</span><em>graph</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.small_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.small_plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is deprecated, do not use it.</p>
@@ -1469,6 +1610,11 @@ instead of vertex ids.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.string_effects">
+<code class="descname">string_effects</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.string_effects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.string_effects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.sum_in_complex">
 <code class="descname">sum_in_complex</code><span class="sig-paren">(</span><em>csources=['corum'], graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.sum_in_complex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.sum_in_complex" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the total number of edges in the network falling
@@ -1483,6 +1629,11 @@ to do the calculations.</p>
 <dd>The graph object to do the calculations on.</dd>
 </dl>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.table_latex">
+<code class="descname">table_latex</code><span class="sig-paren">(</span><em>fname</em>, <em>header</em>, <em>data</em>, <em>sum_row=True</em>, <em>row_order=None</em>, <em>latex_hdr=True</em>, <em>caption=''</em>, <em>font='HelveticaNeueLTStd-LtCn'</em>, <em>fontsize=8</em>, <em>sum_label='Total'</em>, <em>sum_cols=None</em>, <em>header_format='%s'</em>, <em>by_category=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.table_latex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.table_latex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.tfs_list">
@@ -1521,6 +1672,11 @@ the current instance.</li>
 </tbody>
 </table>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.translate_refsdir">
+<code class="descname">translate_refsdir</code><span class="sig-paren">(</span><em>rd</em>, <em>ids</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.translate_refsdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.translate_refsdir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.uniprot">
@@ -1584,6 +1740,11 @@ set of all categories in the current network.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.update_db_dict">
+<code class="descname">update_db_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.update_db_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.update_db_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.update_sources">
 <code class="descname">update_sources</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.update_sources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.update_sources" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes sure that the <cite>sources</cite> attribute is an up to date
@@ -1637,6 +1798,11 @@ This function converts pathway annotations from
 edge attributes to vertex attributes.</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="pypath.main.PyPath.wang_effects">
+<code class="descname">wang_effects</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.wang_effects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.wang_effects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -1645,74 +1811,62 @@ edge attributes to vertex attributes.</p>
 <dd><p>Object storing directionality information of an edge. Also includes
 information about the reverse direction, mode of regulation and
 sources of that information.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Arguments:</dt>
-<dd><ul class="first last">
-<li><em>nameA</em> [str]: Name of the source node.</li>
-<li><em>nameB</em> [str]: Name of the target node.</li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>nameA</strong> (<em>str</em>) – Name of the source node.</li>
+<li><strong>nameB</strong> (<em>str</em>) – Name of the target node.</li>
 </ul>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Attributes:</dt>
-<dd><ul class="first last">
-<li><em>dirs</em> [dict]: Dictionary containing the presence of
-directionality of the given edge. Keys are <em>straight</em>,
-<em>reverse</em> and <code class="docutils literal notranslate"><span class="pre">'undirected'</span></code> and their values denote the
-presence/absence [bool].</li>
-<li><em>negative</em> [dict]: Dictionary contianing the presence/absence
-[bool] of negative interactions for both <em>straight</em> and
-<em>reverse</em> directions.</li>
-<li><em>negative_sources</em> [dict]: Contains the resource names [str]
-supporting a negative interaction on <em>straight</em> and <em>reverse</em>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dirs</strong> (<em>dict</em>) – Dictionary containing the presence of directionality of the
+given edge. Keys are <em>straight</em>, <em>reverse</em> and <code class="docutils literal notranslate"><span class="pre">'undirected'</span></code>
+and their values denote the presence/absence [bool].</li>
+<li><strong>negative</strong> (<em>dict</em>) – Dictionary contianing the presence/absence [bool] of negative
+interactions for both <code class="xref py py-attr docutils literal notranslate"><span class="pre">straight</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">reverse</span></code>
 directions.</li>
-<li><em>nodes</em> [list]: Contains the node names [str] sorted
-alphabetically (<em>nameA</em>, <em>nameB</em>).</li>
-<li><em>positive</em> [dict]:  Dictionary contianing the presence/absence
-[bool] of positive interactions for both <em>straight</em> and
-<em>reverse</em> directions.</li>
-<li><em>positive_sources</em> [dict]: Contains the resource names [str]
-supporting a positive interaction on <em>straight</em> and <em>reverse</em>
+<li><strong>negative_sources</strong> (<em>dict</em>) – Contains the resource names [str] supporting a negative
+interaction on <code class="xref py py-attr docutils literal notranslate"><span class="pre">straight</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">reverse</span></code>
 directions.</li>
-<li><em>reverse</em> [tuple]: Contains the node names [str] in the original
-order e.g. (source, target).</li>
-<li><em>sources</em> [dict]: Contains the resource names [str] of a given
-edge for each directionality (<em>straight</em>, <em>reverse</em> and
-<code class="docutils literal notranslate"><span class="pre">'undirected'</span></code>). Values are sets containing the names of
-those resources supporting such directionality.</li>
-<li><em>straight</em> [tuple]: Contains the node names [str] in reverse
-order e.g. (target, source).</li>
+<li><strong>nodes</strong> (<em>list</em>) – Contains the node names [str] sorted alphabetically (<em>nameA</em>,
+<em>nameB</em>).</li>
+<li><strong>positive</strong> (<em>dict</em>) – Dictionary contianing the presence/absence [bool] of positive
+interactions for both <code class="xref py py-attr docutils literal notranslate"><span class="pre">straight</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">reverse</span></code>
+directions.</li>
+<li><strong>positive_sources</strong> (<em>dict</em>) – Contains the resource names [str] supporting a positive
+interaction on <code class="xref py py-attr docutils literal notranslate"><span class="pre">straight</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">reverse</span></code>
+directions.</li>
+<li><strong>reverse</strong> (<em>tuple</em>) – Contains the node names [str] in reverse order e.g. (<em>nameB</em>,
+<em>nameA</em>).</li>
+<li><strong>sources</strong> (<em>dict</em>) – Contains the resource names [str] of a given edge for each
+directionality (<code class="xref py py-attr docutils literal notranslate"><span class="pre">straight</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">reverse</span></code> and
+<code class="docutils literal notranslate"><span class="pre">'undirected'</span></code>). Values are sets containing the names of those
+resources supporting such directionality.</li>
+<li><strong>straight</strong> (<em>tuple</em>) – Contains the node names [str] in the original order e.g.
+(<em>nameA</em>, <em>nameB</em>).</li>
 </ul>
-</dd>
-</dl>
-</li>
-</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="pypath.main.Direction.check_nodes">
 <code class="descname">check_nodes</code><span class="sig-paren">(</span><em>nodes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.check_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.check_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks if <em>nodes</em> is contained in the edge.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Arguments:</dt>
-<dd><ul class="first last">
-<li><em>nodes</em> [list]: Or [tuple], contains the names of the
-edges to be checked.</li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[bool]: True if all elements in <em>nodes</em> are contained in
-the object’s node list.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>list</em>) – Or [tuple], contains the names of the nodes to be checked.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(<em>bool</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> if all elements in <em>nodes</em> are
+contained in the object <code class="xref py py-attr docutils literal notranslate"><span class="pre">nodes</span></code> list.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1721,45 +1875,38 @@ the object’s node list.</li>
 <dd><p>Checks if <em>di</em> is <code class="docutils literal notranslate"><span class="pre">'undirected'</span></code> or contains the nodes of
 the current edge. Used internally to check that <em>di</em> is a valid
 key for the object attributes declared on dictionaries.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Arguments:</dt>
-<dd><ul class="first last">
-<li><em>di</em> [tuple]: Or [str], key to be tested for validity.</li>
-</ul>
-</dd>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>di</strong> (<em>tuple</em>) – Or [str], key to be tested for validity.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>(<em>bool</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> if <em>di</em> is <code class="docutils literal notranslate"><span class="pre">'undirected'</span></code> or a tuple</dt>
+<dd>of node names contained in the edge, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</dd>
 </dl>
-</li>
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[bool]: <code class="docutils literal notranslate"><span class="pre">True</span></code> if <em>di</em> is <code class="docutils literal notranslate"><span class="pre">'undirected'</span></code> or a tuple
-of node names contained in the edge, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.Direction.consensus_edges">
 <code class="descname">consensus_edges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.consensus_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.consensus_edges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Infers the consensus edge(s) according to the number of
-supporting sources. This includes direction and sign attributes.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[list]: Contains the consensus edge(s) along with the
+supporting sources. This includes direction and sign.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>list</em>) – Contains the consensus edge(s) along with the
 consensus sign. If there is no major directionality, both
 are returned. The structure is as follows:
-<code class="docutils literal notranslate"><span class="pre">['&lt;source&gt;',</span> <span class="pre">'&lt;target&gt;',</span> <span class="pre">'&lt;(un)directed&gt;',</span> <span class="pre">'&lt;sign&gt;']</span></code></li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+<code class="docutils literal notranslate"><span class="pre">['&lt;source&gt;',</span> <span class="pre">'&lt;target&gt;',</span> <span class="pre">'&lt;(un)directed&gt;',</span> <span class="pre">'&lt;sign&gt;']</span></code></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1767,60 +1914,50 @@ are returned. The structure is as follows:
 <code class="descname">get_dir</code><span class="sig-paren">(</span><em>direction</em>, <em>sources=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.get_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.get_dir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the state (or <em>sources</em> if specified) of the given
 <em>direction</em>.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Arguments:</dt>
-<dd><ul class="first last">
-<li><em>direction</em> [tuple]: Or [str] (if <code class="docutils literal notranslate"><span class="pre">'undirected'</span></code>). Pair
-of nodes from which direction information is to be
-retrieved.</li>
-<li><em>sources</em> [bool]: Optional, <code class="docutils literal notranslate"><span class="pre">'False'</span></code> by default.
-Specifies if the <em>sources</em> information of the given
-direction is to be retrieved instead.</li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>direction</strong> (<em>tuple</em>) – Or [str] (if <code class="docutils literal notranslate"><span class="pre">'undirected'</span></code>). Pair of nodes from which
+direction information is to be retrieved.</li>
+<li><strong>sources</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">'False'</span></code> by default. Specifies if the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">sources</span></code> information of the given direction is to
+be retrieved instead.</li>
 </ul>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[bool] or [set] (if <code class="docutils literal notranslate"><span class="pre">sources=True</span></code>). Presence/absence of
-the requested direction (or the list of sources if
-specified). Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> if <em>direction</em> is not valid.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>bool</em> or <em>set</em>) – (if <code class="docutils literal notranslate"><span class="pre">sources=True</span></code>). Presence/absence
+of the requested direction (or the list of sources if
+specified). Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> if <em>direction</em> is not valid.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.Direction.get_dirs">
 <code class="descname">get_dirs</code><span class="sig-paren">(</span><em>src</em>, <em>tgt</em>, <em>sources=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.get_dirs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.get_dirs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns all directions with boolean values or list of sources.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Arguments:</dt>
-<dd><ul class="first last">
-<li><em>src</em> [str]: Source node.</li>
-<li><em>tgt</em> [str]: Target node.</li>
-<li><em>sources</em> [bool]: Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default.
-Specifies whether to return the <em>sources</em> attribute
-instead of <em>dirs</em>.</li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>src</strong> (<em>str</em>) – Source node.</li>
+<li><strong>tgt</strong> (<em>str</em>) – Target node.</li>
+<li><strong>sources</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default. Specifies whether to return
+the <code class="xref py py-attr docutils literal notranslate"><span class="pre">sources</span></code> attribute instead of <code class="xref py py-attr docutils literal notranslate"><span class="pre">dirs</span></code>.</li>
 </ul>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[list]: Contains the <em>dirs</em> (or <em>sources</em> if specified) of
-the given edge.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Contains the <code class="xref py py-attr docutils literal notranslate"><span class="pre">dirs</span></code> (or <code class="xref py py-attr docutils literal notranslate"><span class="pre">sources</span></code> if
+specified) of the given edge.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1830,36 +1967,30 @@ the given edge.</li>
 diretion. If specified in <em>sign</em>, only that sign’s information
 will be retrieved. If specified in <em>sources</em>, the sources of
 that information will be retrieved instead.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Arguments:</dt>
-<dd><ul class="first last">
-<li><em>direction</em> [tuple]: Contains the pair of nodes specifying
-the directionality of the edge from which th information
-is to be retrieved.</li>
-<li><em>sign</em> [str]: Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Denotes
-whether to retrieve the <code class="docutils literal notranslate"><span class="pre">'positive'</span></code> or <code class="docutils literal notranslate"><span class="pre">'negative'</span></code>
-specific information.</li>
-<li><em>sources</em> [bool]: Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default.
-Specifies whether to return the sources instead of sign.</li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>direction</strong> (<em>tuple</em>) – Contains the pair of nodes specifying the directionality of
+the edge from which th information is to be retrieved.</li>
+<li><strong>sign</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Denotes whether to retrieve
+the <code class="docutils literal notranslate"><span class="pre">'positive'</span></code> or <code class="docutils literal notranslate"><span class="pre">'negative'</span></code> specific information.</li>
+<li><strong>sources</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default. Specifies whether to return
+the sources instead of sign.</li>
 </ul>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[list]: If <code class="docutils literal notranslate"><span class="pre">sign=None</span></code> containing [bool] values denoting
-the presence of positive and negative sign on that
-direction, if <code class="docutils literal notranslate"><span class="pre">sources=True</span></code> the [set] of sources for
-each of them will be returned instead. If <em>sign</em> is
-specified, returns [bool] or [set] (if <code class="docutils literal notranslate"><span class="pre">sources=True</span></code>)
-of that specific direction and sign.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>list</em>) – If <code class="docutils literal notranslate"><span class="pre">sign=None</span></code> containing [bool] values
+denoting the presence of positive and negative sign on that
+direction, if <code class="docutils literal notranslate"><span class="pre">sources=True</span></code> the [set] of sources for each
+of them will be returned instead. If <em>sign</em> is specified,
+returns [bool] or [set] (if <code class="docutils literal notranslate"><span class="pre">sources=True</span></code>) of that
+specific direction and sign.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1867,45 +1998,37 @@ of that specific direction and sign.</li>
 <code class="descname">has_sign</code><span class="sig-paren">(</span><em>direction=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.has_sign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.has_sign" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks whether the edge (or for a specific <em>direction</em>) has
 any signed information (about positive/negative interactions).</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Arguments:</dt>
-<dd><ul class="first last">
-<li><em>direction</em> [tuple]: Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. If
-specified, only the information of that direction is
-checked for sign.</li>
-</ul>
-</dd>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>direction</strong> (<em>tuple</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. If specified, only the
+information of that direction is checked for sign.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>(<em>bool</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> if there exist any information on the</dt>
+<dd>sign of the interaction, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</dd>
 </dl>
-</li>
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[bool]: <code class="docutils literal notranslate"><span class="pre">True</span></code> if there exist any information on the
-sign of the interaction, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.Direction.is_directed">
 <code class="descname">is_directed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.is_directed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.is_directed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks if edge has any directionality information.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[bool]: Returns <code class="docutils literal notranslate"><span class="pre">True```if</span> <span class="pre">any</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">*dirs*</span> <span class="pre">attribute</span>
-<span class="pre">values</span> <span class="pre">is</span> <span class="pre">``True</span></code> (except <code class="docutils literal notranslate"><span class="pre">'undirected'</span></code>), <code class="docutils literal notranslate"><span class="pre">False</span></code>
-otherwise.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>bool</em>) – Returns <code class="docutils literal notranslate"><span class="pre">True```if</span> <span class="pre">any</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">:py:attr:`dirs`</span>
+<span class="pre">attribute</span> <span class="pre">values</span> <span class="pre">is</span> <span class="pre">``True</span></code> (except <code class="docutils literal notranslate"><span class="pre">'undirected'</span></code>),
+<code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1913,27 +2036,19 @@ otherwise.</li>
 <code class="descname">is_inhibition</code><span class="sig-paren">(</span><em>direction=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.is_inhibition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.is_inhibition" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks if any (or for a specific <em>direction</em>) interaction is
 inhibition (negative interaction).</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Arguments:</dt>
-<dd><ul class="first last">
-<li><em>direction</em> [tuple]: Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. If
-specified, checks the <em>negative</em> attribute of that
-specific directionality. If not specified, checks both.</li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[bool]: <code class="docutils literal notranslate"><span class="pre">True</span></code> if any interaction (or the specified
-<em>direction</em>) is inhibitory (negative).</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>direction</strong> (<em>tuple</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. If specified, checks the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">negative</span></code> attribute of that specific
+directionality. If not specified, checks both.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(<em>bool</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> if any interaction (or the specified
+<em>direction</em>) is inhibitory (negative).</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1941,27 +2056,19 @@ specific directionality. If not specified, checks both.</li>
 <code class="descname">is_stimulation</code><span class="sig-paren">(</span><em>direction=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.is_stimulation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.is_stimulation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks if any (or for a specific <em>direction</em>) interaction is
 activation (positive interaction).</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Arguments:</dt>
-<dd><ul class="first last">
-<li><em>direction</em> [tuple]: Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. If
-specified, checks the <em>positive</em> attribute of that
-specific directionality. If not specified, checks both.</li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[bool]: <code class="docutils literal notranslate"><span class="pre">True</span></code> if any interaction (or the specified
-<em>direction</em>) is activatory (positive).</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>direction</strong> (<em>tuple</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. If specified, checks the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">positive</span></code> attribute of that specific
+directionality. If not specified, checks both.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(<em>bool</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> if any interaction (or the specified
+<em>direction</em>) is activatory (positive).</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1969,20 +2076,18 @@ specific directionality. If not specified, checks both.</li>
 <code class="descname">majority_dir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.majority_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.majority_dir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Infers which is the major directionality of the edge by number
 of supporting sources.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[tuple]: Contains the pair of nodes denoting the consensus
-directionality. If the number of sources on both
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>tuple</em>) – Contains the pair of nodes denoting the
+consensus directionality. If the number of sources on both
 directions is equal, <code class="docutils literal notranslate"><span class="pre">None</span></code> is returned. If there is no
 directionality information, <code class="docutils literal notranslate"><span class="pre">'undirected'`</span></code> will be
-returned.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+returned.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1990,22 +2095,17 @@ returned.</li>
 <code class="descname">majority_sign</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.majority_sign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.majority_sign" title="Permalink to this definition">¶</a></dt>
 <dd><p>Infers which is the major sign (activation/inhibition) of the
 edge by number of supporting sources on both directions.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[dict]: Keys are the node tuples on both directions
-(straight/reverse) and values can be either <code class="docutils literal notranslate"><span class="pre">None</span></code> if
-that direction has no sign information or a list of
-two [bool] elements corresponding to majority of positive
-and majority of negative support. In case both elements of
-the list are <code class="docutils literal notranslate"><span class="pre">True</span></code>, this means the number of supporting
-sources for both signs in that direction is equal.</li>
-</ul>
-</dd>
+<dl class="docutils">
+<dt><a href="#id1"><span class="problematic" id="id2">*</span></a>return:</dt>
+<dd>(<em>dict</em>) – Keys are the node tuples on both directions
+(<code class="xref py py-attr docutils literal notranslate"><span class="pre">straight</span></code>/<code class="xref py py-attr docutils literal notranslate"><span class="pre">reverse</span></code>) and values can be
+either <code class="docutils literal notranslate"><span class="pre">None</span></code> if that direction has no sign information or
+a list of two [bool] elements corresponding to majority of
+positive and majority of negative support. In case both
+elements of the list are <code class="docutils literal notranslate"><span class="pre">True</span></code>, this means the number of
+supporting sources for both signs in that direction is
+equal.</dd>
 </dl>
-</li>
-</ul>
 </dd></dl>
 
 <dl class="method">
@@ -2013,163 +2113,153 @@ sources for both signs in that direction is equal.</li>
 <code class="descname">merge</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.merge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Merges current edge with another (if and only if they are the
 same class and contain the same nodes). Updates the attributes
-<em>dirs</em>, <em>sources</em>, <em>positive</em>, <em>negative</em>, <em>positive_sources</em>
-and <em>negative_sources</em>.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Arguments:</dt>
-<dd><ul class="first last">
-<li><em>other</em> [pypath.main.Direction]: The new edge object to be
-merged with the current one.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">dirs</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">sources</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">positive</span></code>,
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">negative</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">positive_sources</span></code> and
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">negative_sources</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>other</strong> (<a class="reference internal" href="#pypath.main.Direction" title="pypath.main.Direction"><em>pypath.main.Direction</em></a>) – The new edge object to be merged with the current one.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.Direction.negative_reverse">
 <code class="descname">negative_reverse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.negative_reverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.negative_reverse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks if the reverse directionality is a negative interaction.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Returns</dt>
-<dd><ul class="first last">
-<li>[bool]: <code class="docutils literal notranslate"><span class="pre">True</span></code> if there is supporting information on the
-reverse direction of the edge as inhibition. <code class="docutils literal notranslate"><span class="pre">False</span></code>
-otherwise.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+<dd><p>Checks if the <code class="xref py py-attr docutils literal notranslate"><span class="pre">reverse</span></code> directionality is a negative
+interaction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>bool</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> if there is supporting information on
+the <code class="xref py py-attr docutils literal notranslate"><span class="pre">reverse</span></code> direction of the edge as inhibition.
+<code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.Direction.negative_sources_reverse">
 <code class="descname">negative_sources_reverse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.negative_sources_reverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.negative_sources_reverse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves the list of sources for the reverse direction and
-negative sign.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[set]: Contains the names of the sources supporting the
-reverse directionality of the edge with a negative sign.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+<dd><p>Retrieves the list of sources for the <code class="xref py py-attr docutils literal notranslate"><span class="pre">reverse</span></code>
+direction and negative sign.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>set</em>) – Contains the names of the sources supporting the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">reverse</span></code> directionality of the edge with a
+negative sign.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.Direction.negative_sources_straight">
 <code class="descname">negative_sources_straight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.negative_sources_straight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.negative_sources_straight" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves the list of sources for the straight direction and
-negative sign.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[set]: Contains the names of the sources supporting the
-straight directionality of the edge with a negative sign.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+<dd><p>Retrieves the list of sources for the <code class="xref py py-attr docutils literal notranslate"><span class="pre">straight</span></code>
+direction and negative sign.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>set</em>) – Contains the names of the sources supporting the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">straight</span></code> directionality of the edge with a
+negative sign.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.Direction.negative_straight">
 <code class="descname">negative_straight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.negative_straight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.negative_straight" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks if the straight directionality is a negative interaction.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Returns</dt>
-<dd><ul class="first last">
-<li>[bool]: <code class="docutils literal notranslate"><span class="pre">True</span></code> if there is supporting information on the
-straight direction of the edge as inhibition. <code class="docutils literal notranslate"><span class="pre">False</span></code>
-otherwise.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+<dd><p>Checks if the <code class="xref py py-attr docutils literal notranslate"><span class="pre">straight</span></code> directionality is a negative
+interaction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>bool</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> if there is supporting information on
+the <code class="xref py py-attr docutils literal notranslate"><span class="pre">straight</span></code> direction of the edge as inhibition.
+<code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.Direction.positive_reverse">
 <code class="descname">positive_reverse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.positive_reverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.positive_reverse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks if the reverse directionality is a positive interaction.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Returns</dt>
-<dd><ul class="first last">
-<li>[bool]: <code class="docutils literal notranslate"><span class="pre">True</span></code> if there is supporting information on the
-reverse direction of the edge as activation. <code class="docutils literal notranslate"><span class="pre">False</span></code>
-otherwise.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+<dd><p>Checks if the <code class="xref py py-attr docutils literal notranslate"><span class="pre">reverse</span></code> directionality is a positive
+interaction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>bool</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> if there is supporting information on
+the <code class="xref py py-attr docutils literal notranslate"><span class="pre">reverse</span></code> direction of the edge as activation.
+<code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.Direction.positive_sources_reverse">
 <code class="descname">positive_sources_reverse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.positive_sources_reverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.positive_sources_reverse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves the list of sources for the reverse direction and
-positive sign.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[set]: Contains the names of the sources supporting the
-reverse directionality of the edge with a positive sign.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+<dd><p>Retrieves the list of sources for the <code class="xref py py-attr docutils literal notranslate"><span class="pre">reverse</span></code>
+direction and positive sign.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>set</em>) – Contains the names of the sources supporting the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">reverse</span></code> directionality of the edge with a
+positive sign.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.Direction.positive_sources_straight">
 <code class="descname">positive_sources_straight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.positive_sources_straight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.positive_sources_straight" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves the list of sources for the straight direction and
-positive sign.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[set]: Contains the names of the sources supporting the
-straight directionality of the edge with a positive sign.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+<dd><p>Retrieves the list of sources for the <code class="xref py py-attr docutils literal notranslate"><span class="pre">straight</span></code>
+direction and positive sign.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>set</em>) – Contains the names of the sources supporting the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">straight</span></code> directionality of the edge with a
+positive sign.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.Direction.positive_straight">
 <code class="descname">positive_straight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.positive_straight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.positive_straight" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks if the straight directionality is a positive interaction.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Returns</dt>
-<dd><ul class="first last">
-<li>[bool]: <code class="docutils literal notranslate"><span class="pre">True</span></code> if there is supporting information on the
-straight direction of the edge as activation. <code class="docutils literal notranslate"><span class="pre">False</span></code>
-otherwise.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+<dd><p>Checks if the <code class="xref py py-attr docutils literal notranslate"><span class="pre">straight</span></code> directionality is a positive
+interaction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>bool</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> if there is supporting information on
+the <code class="xref py py-attr docutils literal notranslate"><span class="pre">straight</span></code> direction of the edge as activation.
+<code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -2182,98 +2272,97 @@ otherwise.</li>
 <dt id="pypath.main.Direction.set_dir">
 <code class="descname">set_dir</code><span class="sig-paren">(</span><em>direction</em>, <em>source</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.set_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.set_dir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds directionality information with the corresponding data
-source named. Modifies self attributes <em>dirs</em> and <em>sources</em>.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Arguments:</dt>
-<dd><ul class="first last">
-<li><em>direction</em> [tuple]: Or [str], the directionality key for
-which the value on <em>dirs</em> has to be set <code class="docutils literal notranslate"><span class="pre">True</span></code>.</li>
-<li><em>source</em> [set]: Contains the name(s) of the source(s) from
-which such information was obtained.</li>
+source named. Modifies self attributes <code class="xref py py-attr docutils literal notranslate"><span class="pre">dirs</span></code> and
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">sources</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>direction</strong> (<em>tuple</em>) – Or [str], the directionality key for which the value on
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">dirs</span></code> has to be set <code class="docutils literal notranslate"><span class="pre">True</span></code>.</li>
+<li><strong>source</strong> (<em>set</em>) – Contains the name(s) of the source(s) from which such
+information was obtained.</li>
 </ul>
-</dd>
-</dl>
-</li>
-</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.Direction.set_sign">
 <code class="descname">set_sign</code><span class="sig-paren">(</span><em>direction</em>, <em>sign</em>, <em>source</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.set_sign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.set_sign" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets sign and source information on a given direction of the
-edge. Modifies the attributes <em>positive</em> and <em>positive_sources</em>
-or <em>negative</em> and <em>negative_sources</em> depending on the sign.
-Direction is also updated accordingly, which also modifies the
-attributes <em>dirs</em>, <em>sources</em>,</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Arguments:</dt>
-<dd><ul class="first last">
-<li><em>direction</em> [tuple]: Pair of edge nodes specifying the
-direction from which the information is to be set/updated.</li>
-<li><em>sign</em> [str]: Specifies the type of interaction. If
-<code class="docutils literal notranslate"><span class="pre">'positive'</span></code>, is considered activation, otherwise, is
-assumed to be negative (inhibition).</li>
-<li><em>source</em> [set]: Contains the name(s) of the source(s) from
-which the information was obtained.</li>
+edge. Modifies the attributes <code class="xref py py-attr docutils literal notranslate"><span class="pre">positive</span></code> and
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">positive_sources</span></code> or <code class="xref py py-attr docutils literal notranslate"><span class="pre">negative</span></code> and
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">negative_sources</span></code> depending on the sign. Direction is
+also updated accordingly, which also modifies the attributes
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">dirs</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">sources</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>direction</strong> (<em>tuple</em>) – Pair of edge nodes specifying the direction from which the
+information is to be set/updated.</li>
+<li><strong>sign</strong> (<em>str</em>) – Specifies the type of interaction. If <code class="docutils literal notranslate"><span class="pre">'positive'</span></code>, is
+considered activation, otherwise, is assumed to be negative
+(inhibition).</li>
+<li><strong>source</strong> (<em>set</em>) – Contains the name(s) of the source(s) from which the
+information was obtained.</li>
 </ul>
-</dd>
-</dl>
-</li>
-</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.Direction.sources_reverse">
 <code class="descname">sources_reverse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.sources_reverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.sources_reverse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves the list of sources for the reverse direction.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[set]: Contains the names of the sources supporting the
-reverse directionality of the edge.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+<dd><p>Retrieves the list of sources for the <code class="xref py py-attr docutils literal notranslate"><span class="pre">reverse</span></code> direction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>set</em>) – Contains the names of the sources supporting the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">reverse</span></code> directionality of the edge.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.Direction.sources_straight">
 <code class="descname">sources_straight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.sources_straight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.sources_straight" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves the list of sources for the straight direction.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[set]: Contains the names of the sources supporting the
-straight directionality of the edge.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+<dd><p>Retrieves the list of sources for the <code class="xref py py-attr docutils literal notranslate"><span class="pre">straight</span></code>
+direction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>set</em>) – Contains the names of the sources supporting the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">straight</span></code> directionality of the edge.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.Direction.sources_undirected">
 <code class="descname">sources_undirected</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.sources_undirected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.sources_undirected" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieves the list of sources without directed information.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[set]: Contains the names of the sources supporting the
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>set</em>) – Contains the names of the sources supporting the
 edge presence but without specific directionality
-information.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+information.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -2281,27 +2370,19 @@ information.</li>
 <code class="descname">src</code><span class="sig-paren">(</span><em>undirected=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.src"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.src" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the name(s) of the source node(s) for each existing
 direction on the interaction.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Arguments:</dt>
-<dd><ul class="first last">
-<li><em>undirected</em> [bool]: Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default.</li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[list]: Contains the name(s) for the source node(s). This
-means if the interaction is bidirectional, the list will
-contain both identifiers of the edge. If the interaction
-is undirected, an empty list will be returned.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>undirected</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(<em>list</em>) – Contains the name(s) for the source node(s).
+This means if the interaction is bidirectional, the list
+will contain both identifiers on the edge. If the
+interaction is undirected, an empty list will be returned.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -2309,29 +2390,21 @@ is undirected, an empty list will be returned.</li>
 <code class="descname">src_by_source</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.src_by_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.src_by_source" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the name(s) of the source node(s) for each existing
 direction on the interaction for a specific <em>source</em>.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Arguments:</dt>
-<dd><ul class="first last">
-<li><em>source</em> [str]: Name of the source according to which the
-information is to be retrieved.</li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[list]: Contains the name(s) for the source node(s)
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source</strong> (<em>str</em>) – Name of the source according to which the information is to
+be retrieved.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(<em>list</em>) – Contains the name(s) for the source node(s)
 according to the specified <em>source</em>. This means if the
 interaction is bidirectional, the list will contain both
-identifiers of the edge. If the specified <em>source</em> is not
-found or invalid, an empty list will be returned.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+identifiers on the edge. If the specified <em>source</em> is not
+found or invalid, an empty list will be returned.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -2339,27 +2412,19 @@ found or invalid, an empty list will be returned.</li>
 <code class="descname">tgt</code><span class="sig-paren">(</span><em>undirected=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.tgt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.tgt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the name(s) of the target node(s) for each existing
 direction on the interaction.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Arguments:</dt>
-<dd><ul class="first last">
-<li><em>undirected</em> [bool]: Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default.</li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[list]: Contains the name(s) for the target node(s). This
-means if the interaction is bidirectional, the list will
-contain both identifiers of the edge. If the interaction
-is undirected, an empty list will be returned.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>undirected</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(<em>list</em>) – Contains the name(s) for the target node(s).
+This means if the interaction is bidirectional, the list
+will contain both identifiers on the edge. If the
+interaction is undirected, an empty list will be returned.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -2367,29 +2432,21 @@ is undirected, an empty list will be returned.</li>
 <code class="descname">tgt_by_source</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.tgt_by_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.tgt_by_source" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the name(s) of the target node(s) for each existing
 direction on the interaction for a specific <em>source</em>.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Arguments:</dt>
-<dd><ul class="first last">
-<li><em>source</em> [str]: Name of the source according to which the
-information is to be retrieved.</li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[list]: Contains the name(s) for the target node(s)
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source</strong> (<em>str</em>) – Name of the source according to which the information is to
+be retrieved.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(<em>list</em>) – Contains the name(s) for the target node(s)
 according to the specified <em>source</em>. This means if the
 interaction is bidirectional, the list will contain both
-identifiers of the edge. If the specified <em>source</em> is not
-found or invalid, an empty list will be returned.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+identifiers on the edge. If the specified <em>source</em> is not
+found or invalid, an empty list will be returned.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -2397,78 +2454,70 @@ found or invalid, an empty list will be returned.</li>
 <code class="descname">translate</code><span class="sig-paren">(</span><em>ids</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.translate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.translate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Translates the node names/identifiers according to the
 dictionary <em>ids</em>.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Arguments:</dt>
-<dd><ul class="first last">
-<li><em>ids</em> [dict]: Dictionary containing (at least) the current
-names of the nodes as keys and their translation as
-values.</li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[pypath.main.Direction]: The copy of current edge object
-with translated node names.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ids</strong> (<em>dict</em>) – Dictionary containing (at least) the current names of the
+nodes as keys and their translation as values.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(<em>pypath.main.Direction</em>) – The copy of current edge object
+with translated node names.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.Direction.unset_dir">
 <code class="descname">unset_dir</code><span class="sig-paren">(</span><em>direction</em>, <em>source=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.unset_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.unset_dir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes directionality and/or source information of the
-specified <em>direction</em>. Modifies attribute <em>dirs</em> and <em>sources</em>
-(or <em>sources</em> only if <code class="docutils literal notranslate"><span class="pre">source=True</span></code>).</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Arguments:</dt>
-<dd><ul class="first last">
-<li><em>direction</em> [tuple]: Or [str] (if <code class="docutils literal notranslate"><span class="pre">'undirected'</span></code>) the
-pair of nodes specifying the directionality from which the
-information is to be removed.</li>
-<li><em>source</em> [set]: Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. If
-specified, determines which source(s) is(are) to be
-removed from <em>sources</em> attribute in the specified
-<em>direction</em>.</li>
+specified <em>direction</em>. Modifies attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">dirs</span></code> and
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">sources</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>direction</strong> (<em>tuple</em>) – Or [str] (if <code class="docutils literal notranslate"><span class="pre">'undirected'</span></code>) the pair of nodes specifying
+the directionality from which the information is to be
+removed.</li>
+<li><strong>source</strong> (<em>set</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. If specified, determines
+which specific source(s) is(are) to be removed from
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">sources</span></code> attribute in the specified <em>direction</em>.</li>
 </ul>
-</dd>
-</dl>
-</li>
-</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.Direction.unset_sign">
 <code class="descname">unset_sign</code><span class="sig-paren">(</span><em>direction</em>, <em>sign</em>, <em>source=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.unset_sign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.unset_sign" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes sign and/or source information of the specified
-<em>direction</em> and <em>sign</em>. Modifies attribute <em>positive</em> and
-<em>positive_sources</em> or <em>negative</em> and <em>negative_sources</em> (or
-<em>positive_sources</em>/<em>negative_sources</em> only if <code class="docutils literal notranslate"><span class="pre">source=True</span></code>).</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Arguments:</dt>
-<dd><ul class="first last">
-<li><em>direction</em> [tuple]: The pair of nodes specifying the
-directionality from which the information is to be
-removed.</li>
-<li><em>sign</em> [str]: Sign from which the information is to be
-removed. Must be either <code class="docutils literal notranslate"><span class="pre">'positive'</span></code> or <code class="docutils literal notranslate"><span class="pre">'negative'</span></code>.</li>
-<li><em>source</em> [set]: Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. If
-specified, determines which source(s) is(are) to be
-removed from the sources in the specified <em>direction</em> and
-<em>sign</em>.</li>
+<em>direction</em> and <em>sign</em>. Modifies attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">positive</span></code>
+and <code class="xref py py-attr docutils literal notranslate"><span class="pre">positive_sources</span></code> or <code class="xref py py-attr docutils literal notranslate"><span class="pre">negative</span></code> and
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">negative_sources</span></code> (or
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">positive_attributes</span></code>/<code class="xref py py-attr docutils literal notranslate"><span class="pre">negative_sources</span></code>
+only if <code class="docutils literal notranslate"><span class="pre">source=True</span></code>).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>direction</strong> (<em>tuple</em>) – The pair of nodes specifying the directionality from which
+the information is to be removed.</li>
+<li><strong>sign</strong> (<em>str</em>) – Sign from which the information is to be removed. Must be
+either <code class="docutils literal notranslate"><span class="pre">'positive'</span></code> or <code class="docutils literal notranslate"><span class="pre">'negative'</span></code>.</li>
+<li><strong>source</strong> (<em>set</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. If specified, determines
+which source(s) is(are) to be removed from the sources in
+the specified <em>direction</em> and <em>sign</em>.</li>
 </ul>
-</dd>
-</dl>
-</li>
-</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -2476,17 +2525,15 @@ removed from the sources in the specified <em>direction</em> and
 <code class="descname">which_dirs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.which_dirs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.which_dirs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the pair(s) of nodes for which there is information
 about their directionality.</p>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt>Returns:</dt>
-<dd><ul class="first last">
-<li>[list]: List of tuples containing the nodes for which
-theit attribute <em>dirs</em> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>list</em>) – List of tuples containing the nodes for which
+their attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">dirs</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
