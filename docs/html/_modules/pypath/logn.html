@@ -1,0 +1,205 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pypath.logn &#8212; pypath 0.7.98 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.98 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pypath.logn</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright</span>
+<span class="c1">#  2014-2018</span>
+<span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
+<span class="c1">#</span>
+<span class="c1">#  File author(s): Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      http://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: http://www.ebi.ac.uk/~denes</span>
+<span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">past.builtins</span> <span class="k">import</span> <span class="n">xrange</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">pypath</span> <span class="k">import</span> <span class="n">common</span>
+
+
+<div class="viewcode-block" id="logw"><a class="viewcode-back" href="../../index.html#pypath.logn.logw">[docs]</a><span class="k">class</span> <span class="nc">logw</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Session logger object.</span>
+
+<span class="sd">    :arg str session:</span>
+<span class="sd">        Session identifier (a random alphanumeric string). See</span>
+<span class="sd">        :py:func:`common.gen_session_id()`.</span>
+<span class="sd">    :arg str loglevel:</span>
+<span class="sd">        Optional, ``&#39;INFO&#39;`` by default. Specifies the level of the</span>
+<span class="sd">        logger. Possible levels are: ``&#39;DEBUG&#39;``, ``&#39;INFO&#39;``,</span>
+<span class="sd">        ``&#39;WARNING&#39;``, ``&#39;ERROR&#39;`` or ``&#39;CRITICAL&#39;``.</span>
+
+<span class="sd">    :var str logfile:</span>
+<span class="sd">        Path to the log file (e.g. &#39;log/123ab.log&#39;)</span>
+<span class="sd">    :var logging.RootLogger logger:</span>
+<span class="sd">        Python&#39;s built-in :py:class:`logger` object.</span>
+<span class="sd">    :var str loglevel:</span>
+<span class="sd">        Level of logging.</span>
+<span class="sd">    :var str session:</span>
+<span class="sd">        Session identifier (a random alphanumeric string).</span>
+<span class="sd">    :var str wd:</span>
+<span class="sd">        Path of the current working directiory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="s1">&#39;INFO&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span> <span class="o">=</span> <span class="n">loglevel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__levels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">,</span> <span class="s1">&#39;INFO&#39;</span><span class="p">,</span> <span class="s1">&#39;WARNING&#39;</span><span class="p">,</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">,</span> <span class="s1">&#39;CRITICAL&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logfile</span> <span class="o">=</span> <span class="s1">&#39;log/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">+</span> <span class="s1">&#39;.log&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_logger</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+        <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logfile</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span> <span class="c1"># Just creates the log file.</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;posix&#39;</span><span class="p">:</span>
+            <span class="n">recent</span> <span class="o">=</span> <span class="s1">&#39;log/recent.log&#39;</span>
+
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">recent</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">recent</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">recent</span><span class="p">)</span>
+
+            <span class="c1"># Creates a symbolic link to logfile (of current session) in</span>
+            <span class="c1"># log/recent.log under the current working directory</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logfile</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wd</span><span class="p">,</span> <span class="n">recent</span><span class="p">))</span>
+
+<div class="viewcode-block" id="logw.msg"><a class="viewcode-back" href="../../index.html#pypath.logn.logw.msg">[docs]</a>    <span class="k">def</span> <span class="nf">msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prints a message in the log file. If *loglevel* is ``&#39;ERROR&#39;``,</span>
+<span class="sd">        the message is also printed on the standard output.</span>
+
+<span class="sd">        :arg int indent:</span>
+<span class="sd">            Indentation level for the message (each level is three</span>
+<span class="sd">            character length).</span>
+<span class="sd">        :arg str message:</span>
+<span class="sd">            Message to be added in the log.</span>
+<span class="sd">        :arg str loglevel:</span>
+<span class="sd">            Level of the log message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">loglevel</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;INFO&#39;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">loglevel</span> <span class="ow">or</span> <span class="n">loglevel</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__levels</span>
+                    <span class="k">else</span> <span class="n">loglevel</span><span class="p">)</span>
+        <span class="c1"># time = datetime.datetime.today().strftime(&#39;%c&#39;)</span>
+        <span class="c1"># time = str(datetime.datetime.today().strftime(&#39;[%Y-%m-%d %H:%M:%S]&#39;))</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;###&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">indent</span><span class="p">))</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;###&#39;</span><span class="p">,</span> <span class="n">loglevel</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">message</span><span class="p">])</span>
+        <span class="c1"># lfile = codecs.open(self.logfile, encoding=&#39;utf-8&#39;, mode=&#39;a&#39;)</span>
+        <span class="c1"># lfile.write(msg)</span>
+        <span class="c1"># lfile.close()</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="n">l</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">loglevel</span> <span class="o">==</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">:</span>
+            <span class="n">common</span><span class="o">.</span><span class="n">console</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="logw.init_logger"><a class="viewcode-back" href="../../index.html#pypath.logn.logw.init_logger">[docs]</a>    <span class="k">def</span> <span class="nf">init_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the logger object according to the parameters set on</span>
+<span class="sd">        the instance creation. Includes first line with date, time and</span>
+<span class="sd">        log file name (session ID).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logfile</span><span class="p">,</span>
+                            <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
+                            <span class="n">datefmt</span><span class="o">=</span><span class="s1">&#39;[%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S]&#39;</span><span class="p">,</span>
+                            <span class="n">level</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">logging</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Logger initialized, logging to </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">logfile</span><span class="p">,</span> <span class="s1">&#39;INFO&#39;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;logger&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">d</span>
+
+    <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span> <span class="o">=</span> <span class="n">d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_logger</span><span class="p">()</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.98 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Dénes Türei.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

@@ -577,7 +577,7 @@ def get_args(loc_dict, remove=set([])):
 
     :arg dict loc_dict:
         Dictionary containing the local variables (e.g. a call to
-        :py:func:`locals()` in a given scope).
+        :py:func:`locals` in a given scope).
     :arg set remove:
         Optional, ``set([])`` by default. Can also be a list. Contains
         the keys of the elements in *loc_dict* that will be removed.

@@ -156,7 +156,8 @@
 <span class="k">if</span> <span class="s1">&#39;unicode&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">__builtins__</span><span class="p">:</span>
     <span class="n">unicode</span> <span class="o">=</span> <span class="nb">str</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;PyPath&#39;</span><span class="p">,</span> <span class="s1">&#39;Direction&#39;</span><span class="p">,</span> <span class="s1">&#39;__version__&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="c1"># XXX: What is this &quot;a&quot;?</span>
+<span class="c1"># XXX: Referenced but not defined: __version__, a (what?), ReferenceList</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;PyPath&#39;</span><span class="p">,</span> <span class="s1">&#39;Direction&#39;</span><span class="p">,</span> <span class="s1">&#39;__version__&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span>
            <span class="s1">&#39;AttrHelper&#39;</span><span class="p">,</span> <span class="s1">&#39;ReferenceList&#39;</span><span class="p">,</span> <span class="s1">&#39;omnipath&#39;</span><span class="p">]</span>
 
 
@@ -895,7 +896,7 @@
 <span class="sd">        Infers which is the major directionality of the edge by number</span>
 <span class="sd">        of supporting sources.</span>
 
-<span class="sd">        :returns:</span>
+<span class="sd">        :return:</span>
 <span class="sd">            (*tuple*) -- Contains the pair of nodes denoting the</span>
 <span class="sd">            consensus directionality. If the number of sources on both</span>
 <span class="sd">            directions is equal, ``None`` is returned. If there is no</span>
@@ -924,7 +925,7 @@
 <span class="sd">        Infers which is the major sign (activation/inhibition) of the</span>
 <span class="sd">        edge by number of supporting sources on both directions.</span>
 
-<span class="sd">        *return:</span>
+<span class="sd">        :return:</span>
 <span class="sd">            (*dict*) -- Keys are the node tuples on both directions</span>
 <span class="sd">            (:py:attr:`straight`/:py:attr:`reverse`) and values can be</span>
 <span class="sd">            either ``None`` if that direction has no sign information or</span>
@@ -1190,8 +1191,12 @@
 
     <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Iterator function yielding the [igraph.Vertex] instances</span>
-<span class="sd">        contained in *_vs*. It&#39;s accessed through the alias *vs*.</span>
+<span class="sd">        Iterator function yielding the :py:class:`igraph.Vertex`</span>
+<span class="sd">        instances contained in *_vs*. It&#39;s accessed through the alias</span>
+<span class="sd">        *vs*.</span>
+
+<span class="sd">        :yield:</span>
+<span class="sd">            (*igraph.Vertex*) -- The :py:class:`igraph.Vertex` object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs</span><span class="p">:</span>
@@ -1201,6 +1206,9 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Iterator function yielding the GeneSymbols contained in</span>
 <span class="sd">        *_nodLab*. It can be accessed through the alias *gs*.</span>
+
+<span class="sd">        :yield:</span>
+<span class="sd">            (*str*) -- The GeneSymbols from the node list.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs</span><span class="p">:</span>
@@ -1210,6 +1218,9 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Iterator function yielding the UniProt IDs contained in</span>
 <span class="sd">        *_nodNam*. It can be accessed through the alias *up*.</span>
+
+<span class="sd">        :yield:</span>
+<span class="sd">            (*str*) -- The UniProt IDs from the node list.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs</span><span class="p">:</span>
@@ -1218,6 +1229,9 @@
     <span class="k">def</span> <span class="nf">ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Iterator function yielding the vertex indexes.</span>
+
+<span class="sd">        :yield:</span>
+<span class="sd">            (*int*) -- The node&#39;s index.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs</span><span class="p">:</span>
@@ -1235,105 +1249,122 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main network object.</span>
 
-<span class="sd">    * Arguments:</span>
-<span class="sd">        - *ncbi_tax_id* [int]: Optional, ``9606`` (Homo sapiens) by</span>
-<span class="sd">          default. NCBI Taxonomic identifier of the organism from which</span>
-<span class="sd">          the data will be downloaded.</span>
-<span class="sd">        - *default_name_type* [dict]: Optional, ``{&#39;protein&#39;: &#39;uniprot&#39;,</span>
-<span class="sd">          &#39;mirna&#39;: &#39;mirbase&#39;, &#39;drug&#39;: &#39;chembl&#39;, &#39;lncrna&#39;:</span>
-<span class="sd">          &#39;lncrna-genesymbol&#39;}`` by default. Contains the default</span>
-<span class="sd">          identifier types to which the downloaded data will be</span>
-<span class="sd">          converted. If others are used, user may need to provide the</span>
-<span class="sd">          format definitions for the conversion tables.</span>
-<span class="sd">        - *copy* [pypath.main.PyPath]: Optional, ``None`` by default.</span>
-<span class="sd">          Other *PyPath* instance from which the data will be copied.</span>
-<span class="sd">        - *mysql* [tuple]: Optional, ``(None, &#39;mapping&#39;)`` by default.</span>
-<span class="sd">          Contains the MySQL parameters used by the ``mapping`` module</span>
-<span class="sd">          to load the ID conversion tables.</span>
-<span class="sd">        - *chembl_mysql* [tuple]: Optional, ``(None, &#39;chembl&#39;)`` by</span>
-<span class="sd">          default. Contains the MySQL parameters used by the ``mapping``</span>
-<span class="sd">          module to load the ChEMBL ID conversion tables.</span>
-<span class="sd">        - *name* [str]: Optional, ``&#39;unnamed&#39;`` by default. Session or</span>
-<span class="sd">          project name (custom).</span>
-<span class="sd">        - *outdir* [str]: Optional, ``&#39;results&#39;`` by default. Output</span>
-<span class="sd">          directory where to store all output files.</span>
-<span class="sd">        - *loglevel* [str]: Optional, ``&#39;INFO&#39;`` by default. Sets the</span>
-<span class="sd">          level of the logger. Possible levels are: ``&#39;DEBUG&#39;``,</span>
-<span class="sd">          ``&#39;INFO&#39;``, ``&#39;WARNING&#39;``, ``&#39;ERROR&#39;`` or ``&#39;CRITICAL&#39;``.</span>
-<span class="sd">        - *loops* [bool]: Optional, ``False`` by default. Determines if</span>
-<span class="sd">          self-loop edges are allowed in the graph.</span>
+<span class="sd">    :arg int ncbi_tax_id:</span>
+<span class="sd">        Optional, ``9606`` (Homo sapiens) by default. NCBI Taxonomic</span>
+<span class="sd">        identifier of the organism from which the data will be</span>
+<span class="sd">        downloaded.</span>
+<span class="sd">    :arg dict default_name_type:</span>
+<span class="sd">        Optional, ``{&#39;protein&#39;: &#39;uniprot&#39;, &#39;mirna&#39;: &#39;mirbase&#39;, &#39;drug&#39;:</span>
+<span class="sd">        &#39;chembl&#39;, &#39;lncrna&#39;: &#39;lncrna-genesymbol&#39;}`` by default. Contains</span>
+<span class="sd">        the default identifier types to which the downloaded data will</span>
+<span class="sd">        be converted. If others are used, user may need to provide the</span>
+<span class="sd">        format definitions for the conversion tables.</span>
+<span class="sd">    :arg pypath.main.PyPath copy:</span>
+<span class="sd">        Optional, ``None`` by default. Other :py:class:`PyPath` instance</span>
+<span class="sd">        from which the data will be copied.</span>
+<span class="sd">    :arg tuple mysql:</span>
+<span class="sd">        Optional, ``(None, &#39;mapping&#39;)`` by default. Contains the MySQL</span>
+<span class="sd">        parameters used by the :py:mod:`pypath.mapping` module to load</span>
+<span class="sd">        the ID conversion tables.</span>
+<span class="sd">    :arg tuple chembl_mysql:</span>
+<span class="sd">        Optional, ``(None, &#39;chembl&#39;)`` by default. Contains the MySQL</span>
+<span class="sd">        parameters used by the :py:mod:`pypath.mapping` module to load</span>
+<span class="sd">        the ChEMBL ID conversion tables.</span>
+<span class="sd">    :arg str name:</span>
+<span class="sd">        Optional, ``&#39;unnamed&#39;`` by default. Session or project name</span>
+<span class="sd">        (custom).</span>
+<span class="sd">    :arg str outdir:</span>
+<span class="sd">        Optional, ``&#39;results&#39;`` by default. Output directory where to</span>
+<span class="sd">        store all output files.</span>
+<span class="sd">    :arg str loglevel:</span>
+<span class="sd">        Optional, ``&#39;INFO&#39;`` by default. Sets the level of the logger.</span>
+<span class="sd">        Possible levels are: ``&#39;DEBUG&#39;``, ``&#39;INFO&#39;``, ``&#39;WARNING&#39;``,</span>
+<span class="sd">        ``&#39;ERROR&#39;`` or ``&#39;CRITICAL&#39;``.</span>
+<span class="sd">    :arg bool loops:</span>
+<span class="sd">        Optional, ``False`` by default. Determines if self-loop edges</span>
+<span class="sd">        are allowed in the graph.</span>
 
-<span class="sd">    * Attributes:</span>
-<span class="sd">        - *adjlist* [list]: List of [set] containing the adjacency of</span>
-<span class="sd">          each node. See ``PyPath.update_adjlist()`` method for more</span>
-<span class="sd">          information.</span>
-<span class="sd">        - *chembl* [pypath.chembl.Chembl]: Contains the ChEMBL data. See</span>
-<span class="sd">          ``pypath.chembl`` module documentation for more information.</span>
-<span class="sd">        - *chembl_mysql* [tuple]: Contains the MySQL parameters used by</span>
-<span class="sd">          the ``mapping`` module to load the ChEMBL ID conversion</span>
-<span class="sd">          tables.</span>
-<span class="sd">        - *data* [dict]: Stores custom loaded interaction and attribute</span>
-<span class="sd">          table. See ``PyPath.read_data_filemethod()`` for more</span>
-<span class="sd">          information.</span>
-<span class="sd">        - *db_dict* [dict]: Dictionary of dictionaries. Outer-level keys</span>
-<span class="sd">          are ``&#39;nodes&#39;`` and ``&#39;edges&#39;``, corresponding values are</span>
-<span class="sd">          [dict] whose keys are the database sources with values of type</span>
-<span class="sd">          [set] containing the edge/node indexes for which that database</span>
-<span class="sd">          provided some information.</span>
-<span class="sd">        - *dgraph* [igraph.Graph]: Directed network graph object.</span>
-<span class="sd">        - *disclaimer* [str]: Disclaimer text.</span>
-<span class="sd">        - *dlabDct* []:</span>
-<span class="sd">        - *dnodDct* []:</span>
-<span class="sd">        - *dnodInd* []:</span>
-<span class="sd">        - *dnodLab* []:</span>
-<span class="sd">        - *dnodNam* []:</span>
-<span class="sd">        - *edgeAttrs* []:</span>
-<span class="sd">        - *exp* []:</span>
-<span class="sd">        - *exp_prod* []:</span>
-<span class="sd">        - *exp_samples* []:</span>
-<span class="sd">        - *failed_edges* []:</span>
-<span class="sd">        - *go* []:</span>
-<span class="sd">        - *graph* [igraph.Graph]: Undirected network graph object.</span>
-<span class="sd">        - *gsea* []:</span>
-<span class="sd">        - *has_cats* []:</span>
-<span class="sd">        - *htp* []:</span>
-<span class="sd">        - *labDct* []:</span>
-<span class="sd">        - *lists* []:</span>
-<span class="sd">        - *loglevel* [str]: The level of the logger.</span>
-<span class="sd">        - *loops* [bool]: Whether if self-loop edges are allowed in the</span>
-<span class="sd">          graph.</span>
-<span class="sd">        - *mapper* []:</span>
-<span class="sd">        - *mutation_samples* []:</span>
-<span class="sd">        - *mysql_conf* [tuple]: Contains the MySQL parameters used by</span>
-<span class="sd">          the ``mapping`` module to load the ID conversion tables.</span>
-<span class="sd">        - *name* [str]: Session or project name (custom).</span>
-<span class="sd">        - *ncbi_tax_id* [int]: NCBI Taxonomic identifier of the organism</span>
-<span class="sd">          from which the data will be downloaded.</span>
-<span class="sd">        - *negatives* []:</span>
-<span class="sd">        - *nodDct* []:</span>
-<span class="sd">        - *nodInd* []:</span>
-<span class="sd">        - *nodLab* []:</span>
-<span class="sd">        - *nodNam* []:</span>
-<span class="sd">        - *outdir* [str]: Output directory where to store all output</span>
-<span class="sd">          files.</span>
-<span class="sd">        - *ownlog* []:</span>
-<span class="sd">        - *palette* []:</span>
-<span class="sd">        - *pathway_types* []:</span>
-<span class="sd">        - *pathways* []:</span>
-<span class="sd">        - *plots* []:</span>
-<span class="sd">        - *proteomicsdb* []:</span>
-<span class="sd">        - *raw_data* []:</span>
-<span class="sd">        - *reflists* []:</span>
-<span class="sd">        - *seq* []:</span>
-<span class="sd">        - *session* []:</span>
-<span class="sd">        - *session_name* []:</span>
-<span class="sd">        - *sourceNetEdges* []:</span>
-<span class="sd">        - *sourceNetNodes* []:</span>
-<span class="sd">        - *sources* []:</span>
-<span class="sd">        - *u_pfam* []:</span>
-<span class="sd">        - *uniprot_mapped* []:</span>
-<span class="sd">        - *unmapped* []:</span>
-<span class="sd">        - *vertexAttrs* []:</span>
+<span class="sd">    :var list adjlist:</span>
+<span class="sd">        List of [set] containing the adjacency of each node. See</span>
+<span class="sd">        :py:meth:`PyPath.update_adjlist` method for more information.</span>
+<span class="sd">    :var pypath.chembl.Chembl chembl:</span>
+<span class="sd">        Contains the ChEMBL data. See :py:mod:`pypath.chembl` module</span>
+<span class="sd">        documentation for more information.</span>
+<span class="sd">    :var tuple chembl_mysql:</span>
+<span class="sd">        Contains the MySQL parameters used by the</span>
+<span class="sd">        :py:mod:`pypath.mapping` module to load the ChEMBL ID conversion</span>
+<span class="sd">        tables.</span>
+<span class="sd">    :var dict data:</span>
+<span class="sd">        Stores custom loaded interaction and attribute table. See</span>
+<span class="sd">        :py:meth:`PyPath.read_data_filemethod` for more information.</span>
+<span class="sd">    :var dict db_dict:</span>
+<span class="sd">        Dictionary of dictionaries. Outer-level keys are ``&#39;nodes&#39;`` and</span>
+<span class="sd">        ``&#39;edges&#39;``, corresponding values are [dict] whose keys are the</span>
+<span class="sd">        database sources with values of type [set] containing the</span>
+<span class="sd">        edge/node indexes for which that database provided some</span>
+<span class="sd">        information.</span>
+<span class="sd">    :var igraph.Graph dgraph:</span>
+<span class="sd">        Directed network graph object.</span>
+<span class="sd">    :var str disclaimer:</span>
+<span class="sd">        Disclaimer text.</span>
+<span class="sd">    :var dlabDct:</span>
+<span class="sd">    :var dnodDct:</span>
+<span class="sd">    :var dnodInd:</span>
+<span class="sd">    :var dnodLab:</span>
+<span class="sd">    :var dnodNam:</span>
+<span class="sd">    :var edgeAttrs:</span>
+<span class="sd">    :var exp:</span>
+<span class="sd">    :var exp_prod:</span>
+<span class="sd">    :var exp_samples:</span>
+<span class="sd">    :var failed_edges:</span>
+<span class="sd">    :var go:</span>
+<span class="sd">    :var igraph.Graph graph:</span>
+<span class="sd">        Undirected network graph object.</span>
+<span class="sd">    :var gsea:</span>
+<span class="sd">    :var has_cats:</span>
+<span class="sd">    :var htp:</span>
+<span class="sd">    :var labDct:</span>
+<span class="sd">    :var lists:</span>
+<span class="sd">    :var str loglevel:</span>
+<span class="sd">        The level of the logger.</span>
+<span class="sd">    :var bool loops:</span>
+<span class="sd">        Whether if self-loop edges are allowed in the graph.</span>
+<span class="sd">    :var mapper:</span>
+<span class="sd">    :var mutation_samples:</span>
+<span class="sd">    :var tuple mysql_conf:</span>
+<span class="sd">        Contains the MySQL parameters used by the</span>
+<span class="sd">        :py:mod:`pypath.mapping` module to load the ID conversion</span>
+<span class="sd">        tables.</span>
+<span class="sd">    :var str name:</span>
+<span class="sd">        Session or project name (custom).</span>
+<span class="sd">    :var int ncbi_tax_id:</span>
+<span class="sd">        NCBI Taxonomic identifier of the organism from which the data</span>
+<span class="sd">        will be downloaded.</span>
+<span class="sd">    :var negatives:</span>
+<span class="sd">    :var nodDct:</span>
+<span class="sd">    :var nodInd:</span>
+<span class="sd">    :var nodLab:</span>
+<span class="sd">    :var nodNam:</span>
+<span class="sd">    :var str outdir:</span>
+<span class="sd">        Output directory where to store all output files.</span>
+<span class="sd">    :var ownlog:</span>
+<span class="sd">    :var palette:</span>
+<span class="sd">    :var pathway_types:</span>
+<span class="sd">    :var pathways:</span>
+<span class="sd">    :var plots:</span>
+<span class="sd">    :var proteomicsdb:</span>
+<span class="sd">    :var raw_data:</span>
+<span class="sd">    :var reflists:</span>
+<span class="sd">    :var seq:</span>
+<span class="sd">    :var session:</span>
+<span class="sd">    :var session_name:</span>
+<span class="sd">    :var sourceNetEdges:</span>
+<span class="sd">    :var sourceNetNodes:</span>
+<span class="sd">    :var sources:</span>
+<span class="sd">    :var u_pfam:</span>
+<span class="sd">    :var uniprot_mapped:</span>
+<span class="sd">    :var unmapped:</span>
+<span class="sd">    :var vertexAttrs:</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">default_name_type</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;protein&#39;</span><span class="p">:</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span>
@@ -1459,11 +1490,12 @@
 <span class="sd">        Sets the ChEMBL MySQL config according to</span>
 <span class="sd">        `title` section in `config_file` ini style config.</span>
 
-<span class="sd">            title (str): section title in ini file</span>
-<span class="sd">            config_file (str, NoneType): config file name;</span>
-<span class="sd">                if None, the `mysql_config/defaults.mysql`</span>
-<span class="sd">                will be used</span>
+<span class="sd">        title (str): section title in ini file</span>
+<span class="sd">        config_file (str, NoneType): config file name;</span>
+<span class="sd">            if None, the `mysql_config/defaults.mysql`</span>
+<span class="sd">            will be used</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">chembl_mysql</span> <span class="o">=</span> <span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
@@ -2367,7 +2399,7 @@
                 <span class="c1"># print &#39;new edge: %s&#39; % str(edge)</span>
         <span class="k">return</span> <span class="n">edgeStack</span></div>
 
-<div class="viewcode-block" id="PyPath.combine_attr"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.combine_attr">[docs]</a>    <span class="k">def</span> <span class="nf">combine_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">,</span> <span class="n">num_method</span> <span class="o">=</span> <span class="nb">max</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.combine_attr"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.combine_attr">[docs]</a>    <span class="k">def</span> <span class="nf">combine_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">,</span> <span class="n">num_method</span><span class="o">=</span><span class="nb">max</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Combines multiple attributes into one. This method attempts</span>
 <span class="sd">        to find out which is the best way to combine attributes.</span>
@@ -2384,6 +2416,7 @@
 <span class="sd">        :param list lst: List of one or two attribute values.</span>
 <span class="sd">        :param callable num_method: Method to merge numeric attributes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">def</span> <span class="nf">list_or_set</span><span class="p">(</span><span class="n">one</span><span class="p">,</span> <span class="n">two</span><span class="p">):</span>
             <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">one</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">two</span><span class="p">,</span> <span class="nb">set</span><span class="p">))</span> <span class="ow">or</span> \
                <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">two</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">one</span><span class="p">,</span> <span class="nb">set</span><span class="p">)):</span>
@@ -3459,7 +3492,7 @@
                     <span class="n">colnames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                     <span class="n">rownames</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="n">out</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="n">rn</span> <span class="o">=</span> <span class="n">tbl</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">rn</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tbl</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="k">if</span> <span class="s2">&quot;header&quot;</span> <span class="ow">in</span> <span class="n">rn</span><span class="p">:</span>
             <span class="n">cn</span> <span class="o">=</span> <span class="n">tbl</span><span class="p">[</span><span class="s2">&quot;header&quot;</span><span class="p">]</span>
             <span class="k">del</span> <span class="n">tbl</span><span class="p">[</span><span class="s2">&quot;header&quot;</span><span class="p">]</span>
@@ -3475,7 +3508,7 @@
                 <span class="n">out</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="n">cut</span><span class="p">]</span> <span class="o">+</span> <span class="n">sep</span>
             <span class="n">thisRow</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tbl</span><span class="p">[</span><span class="n">r</span><span class="p">]]</span>
             <span class="n">out</span> <span class="o">+=</span> <span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">thisRow</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span> <span class="o">+</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
@@ -3956,7 +3989,7 @@
             <span class="n">result</span><span class="p">[</span><span class="s2">&quot;header&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">header</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">sources_venn_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">sources_venn_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_data</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_sources</span><span class="p">()</span>
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
@@ -3973,7 +4006,14 @@
                 <span class="n">onlyj</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">inj</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">ini</span><span class="p">))))</span>
                 <span class="n">inter</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ini</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">inj</span><span class="p">))))</span>
                 <span class="n">result</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">onlyi</span><span class="p">,</span> <span class="n">onlyj</span><span class="p">,</span> <span class="n">inter</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;sources-venn-data.csv&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">fname</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">return_data</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="n">result</span>
 
     <span class="k">def</span> <span class="nf">sources_hist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">srcnum</span> <span class="o">=</span> <span class="p">[]</span>
@@ -5272,10 +5312,15 @@
 <span class="sd">        default undirected network, otherwise ``None``.</span>
 
 <span class="sd">        @identifier : int, str</span>
-<span class="sd">            Vertex index (int) or GeneSymbol (str) or UniProt ID (str).</span>
+<span class="sd">            Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or</span>
+<span class="sd">            ``igraph.Vertex`` object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_undirected</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Vertex</span><span class="p">):</span>
+
+            <span class="n">identifier</span> <span class="o">=</span> <span class="n">identifier</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">identifier</span><span class="p">]</span> \
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">identifier</span> <span class="o">&lt;</span> <span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span> \
@@ -5298,9 +5343,16 @@
 <span class="sd">        default directed network, otherwise ``None``.</span>
 
 <span class="sd">        @identifier : int, str</span>
-<span class="sd">            Vertex index (int) or GeneSymbol (str) or UniProt ID (str).</span>
+<span class="sd">            Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or</span>
+<span class="sd">            ``igraph.Vertex`` object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">dgraph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_directed</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Vertex</span><span class="p">):</span>
+
+            <span class="n">identifier</span> <span class="o">=</span> <span class="n">identifier</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+
         <span class="k">return</span> <span class="n">dgraph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">identifier</span><span class="p">]</span> \
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">identifier</span> <span class="o">&lt;</span> <span class="n">dgraph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span> \
             <span class="k">else</span> <span class="n">dgraph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dnodDct</span><span class="p">[</span><span class="n">identifier</span><span class="p">]]</span> \
@@ -5376,9 +5428,11 @@
 <span class="sd">        the 2 proteins, otherwise ``None``.</span>
 
 <span class="sd">        :param int,str source:</span>
-<span class="sd">            Vertex index or UniProt ID or GeneSymbol</span>
+<span class="sd">            Vertex index or UniProt ID or GeneSymbol or ``igraph.Vertex``</span>
+<span class="sd">            object.</span>
 <span class="sd">        :param int,str target:</span>
-<span class="sd">            Vertex index or UniProt ID or GeneSymbol</span>
+<span class="sd">            Vertex index or UniProt ID or GeneSymbol or ``igraph.Vertex``</span>
+<span class="sd">            object.</span>
 <span class="sd">        :param bool directed:</span>
 <span class="sd">            To be passed to igraph.Graph.get_eid()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -5387,11 +5441,19 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">is_directed</span><span class="p">()</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node_d</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
         <span class="n">v_target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">target</span><span class="p">)</span> \
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">is_directed</span><span class="p">()</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node_d</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">v_source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">v_target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
             <span class="n">eid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_eid</span><span class="p">(</span>
-                <span class="n">v_source</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">v_target</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="n">directed</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">source</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+                <span class="n">target</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+                <span class="n">directed</span><span class="o">=</span><span class="n">directed</span><span class="p">,</span>
+                <span class="n">error</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+
             <span class="k">if</span> <span class="n">eid</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">eid</span><span class="p">]</span>
+
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># synonyms</span>
@@ -5401,9 +5463,14 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a generator with all edges between source and target vertices.</span>
 
-<span class="sd">        :param iterable sources: Source vertex IDs, names or labels.</span>
-<span class="sd">        :param iterable targets: Target vertec IDs, names or labels.</span>
-<span class="sd">        :param bool directed: Passed to `igraph.get_eid()`.</span>
+<span class="sd">        :param iterable sources:</span>
+<span class="sd">            Source vertex IDs, names, labels, or any iterable yielding</span>
+<span class="sd">            ``igraph.Vertex`` objects.</span>
+<span class="sd">        :param iterable targets:</span>
+<span class="sd">            Target vertec IDs, names, labels, or any iterable yielding</span>
+<span class="sd">            ``igraph.Vertex`` objects.</span>
+<span class="sd">        :param bool directed:</span>
+<span class="sd">            Passed to ``igraph.get_eid()``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="p">(</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="p">(</span>
@@ -7552,12 +7619,20 @@
     <span class="c1"># old name as synonym</span>
     <span class="n">load_go</span> <span class="o">=</span> <span class="n">go_annotate</span>
 
-    <span class="k">def</span> <span class="nf">go_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">organism</span><span class="o">=</span><span class="mi">9606</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.go_dict"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.go_dict">[docs]</a>    <span class="k">def</span> <span class="nf">go_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">organism</span><span class="o">=</span><span class="mi">9606</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a ``pypath.go.GOAnnotation`` object for one organism in the</span>
+<span class="sd">        dict under ``go`` attribute.</span>
+
+<span class="sd">        :param int organism:</span>
+<span class="sd">            NCBI Taxonomy ID of the organism.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;go&#39;</span><span class="p">):</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">go</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">go</span><span class="p">[</span><span class="n">organism</span><span class="p">]</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">GOAnnotation</span><span class="p">(</span><span class="n">organism</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">go</span><span class="p">[</span><span class="n">organism</span><span class="p">]</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">GOAnnotation</span><span class="p">(</span><span class="n">organism</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">go_enrichment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                       <span class="n">proteins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -7565,23 +7640,39 @@
                       <span class="n">alpha</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
                       <span class="n">correction_method</span><span class="o">=</span><span class="s1">&#39;hommel&#39;</span><span class="p">,</span>
                       <span class="n">all_proteins</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;go&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">go</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">go_dict</span><span class="p">()</span>
-        <span class="n">all_proteins</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">all_proteins</span><span class="p">)</span> \
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">all_proteins</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">all_proteins</span> \
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">all_proteins</span><span class="p">,</span> <span class="nb">set</span><span class="p">)</span> <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
-        <span class="n">annotation</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">up</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
-                           <span class="k">for</span> <span class="n">up</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">go</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">],</span>
-                                                <span class="n">iteritems</span><span class="p">(</span><span class="n">aspect</span><span class="o">.</span><span class="n">lower</span><span class="p">()))</span>
-                           <span class="k">if</span> <span class="n">up</span> <span class="ow">in</span> <span class="n">all_proteins</span><span class="p">])</span>
+
+        <span class="n">all_proteins</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">set</span><span class="p">(</span><span class="n">all_proteins</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">all_proteins</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span>
+            <span class="n">all_proteins</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">all_proteins</span><span class="p">,</span> <span class="nb">set</span><span class="p">)</span> <span class="k">else</span>
+            <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+        <span class="p">)</span>
+
+        <span class="n">annotation</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">up</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">up</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span>
+                <span class="nb">getattr</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">go</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">],</span>
+                    <span class="n">aspect</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">up</span> <span class="ow">in</span> <span class="n">all_proteins</span>
+        <span class="p">)</span>
+
         <span class="n">enr</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">GOEnrichmentSet</span><span class="p">(</span>
             <span class="n">aspect</span><span class="o">=</span><span class="n">aspect</span><span class="p">,</span>
             <span class="n">organism</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span>
             <span class="n">basic_set</span><span class="o">=</span><span class="n">annotation</span><span class="p">,</span>
             <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span>
             <span class="n">correction_method</span><span class="o">=</span><span class="n">correction_method</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">proteins</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">enr</span><span class="o">.</span><span class="n">new_set</span><span class="p">(</span><span class="n">set_names</span><span class="o">=</span><span class="n">proteins</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">enr</span>
 
     <span class="k">def</span> <span class="nf">init_gsea</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
@@ -7614,10 +7705,9 @@
         <span class="n">enr</span><span class="o">.</span><span class="n">new_set</span><span class="p">(</span><span class="n">proteins</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">enr</span>
 
-    <span class="c1"># XXX: False, does not create a dict but a list</span>
 <div class="viewcode-block" id="PyPath.update_adjlist"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.update_adjlist">[docs]</a>    <span class="k">def</span> <span class="nf">update_adjlist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;ALL&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Creates an adjacency list in a dict of sets format.</span>
+<span class="sd">        Creates an adjacency list in a list of sets format.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
@@ -8169,7 +8259,7 @@
 <span class="sd">        load all resources.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        ----</span>
+<span class="sd">        -----</span>
 
 <span class="sd">        :param str source:</span>
 <span class="sd">            Name of the source, this need to match a method in the dict</span>
@@ -9665,16 +9755,17 @@
 <div class="viewcode-block" id="PyPath.export_edgelist"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.export_edgelist">[docs]</a>    <span class="k">def</span> <span class="nf">export_edgelist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
                         <span class="n">edge_attributes</span><span class="o">=</span><span class="p">[],</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Write edge list to text file with attributes</span>
+<span class="sd">        Write edge list to text file with attributes</span>
 
-<span class="sd">            @param fname: the name of the file or a stream to read from.</span>
-<span class="sd">            @param graph: the igraph object containing the network</span>
-<span class="sd">            @param names: list with the vertex attribute names to be printed</span>
-<span class="sd">                for source and target vertices</span>
-<span class="sd">            @param edge_attributes: list with the edge attribute names</span>
-<span class="sd">                to be printed</span>
-<span class="sd">            @param sep: string used to separate columns</span>
-<span class="sd">            &quot;&quot;&quot;</span>
+<span class="sd">        @param fname: the name of the file or a stream to read from.</span>
+<span class="sd">        @param graph: the igraph object containing the network</span>
+<span class="sd">        @param names: list with the vertex attribute names to be printed</span>
+<span class="sd">            for source and target vertices</span>
+<span class="sd">        @param edge_attributes: list with the edge attribute names</span>
+<span class="sd">            to be printed</span>
+<span class="sd">        @param sep: string used to separate columns</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="c1"># from Luis Tobalina</span>
         <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">graph</span>
         <span class="c1"># check that input &#39;names&#39; and &#39;edge_attributes&#39; exist</span>

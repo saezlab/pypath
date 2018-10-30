@@ -7,7 +7,7 @@
   \item all\_between() (pypath.main.PyPath method), \hyperpage{9}
   \item apply\_list() (pypath.main.PyPath method), \hyperpage{9}
   \item attach\_network() (pypath.main.PyPath method), \hyperpage{9}
-  \item AttrHelper (class in pypath.main), \hyperpage{30}
+  \item AttrHelper (class in pypath.main), \hyperpage{31}
 
   \indexspace
   \bigletter B
@@ -16,13 +16,13 @@
   \indexspace
   \bigletter C
   \item cancer\_gene\_census\_list() (pypath.main.PyPath method), \hyperpage{9}
-  \item check\_nodes() (pypath.main.Direction method), \hyperpage{25}
-  \item check\_param() (pypath.main.Direction method), \hyperpage{25}
+  \item check\_nodes() (pypath.main.Direction method), \hyperpage{26}
+  \item check\_param() (pypath.main.Direction method), \hyperpage{26}
   \item clean\_graph() (pypath.main.PyPath method), \hyperpage{9}
-  \item collapse\_by\_name() (pypath.main.PyPath method), \hyperpage{9}
+  \item collapse\_by\_name() (pypath.main.PyPath method), \hyperpage{10}
   \item combine\_attr() (pypath.main.PyPath method), \hyperpage{10}
   \item communities() (pypath.main.PyPath method), \hyperpage{10}
-  \item consensus\_edges() (pypath.main.Direction method), \hyperpage{25}
+  \item consensus\_edges() (pypath.main.Direction method), \hyperpage{26}
   \item consistency() (pypath.main.PyPath method), \hyperpage{10}
   \item copy\_edges() (pypath.main.PyPath method), \hyperpage{10}
   \item count\_sol() (pypath.main.PyPath method), \hyperpage{10}
@@ -36,7 +36,7 @@
   \item delete\_unknown() (pypath.main.PyPath method), \hyperpage{10}
   \item dgenesymbol() (pypath.main.PyPath method), \hyperpage{11}
   \item dgs() (pypath.main.PyPath method), \hyperpage{11}
-  \item Direction (class in pypath.main), \hyperpage{24}
+  \item Direction (class in pypath.main), \hyperpage{25}
   \item disease\_genes\_list() (pypath.main.PyPath method), \hyperpage{11}
   \item dp() (pypath.main.PyPath method), \hyperpage{11}
   \item druggability\_list() (pypath.main.PyPath method), \hyperpage{11}
@@ -64,25 +64,26 @@
   \bigletter G
   \item genesymbol() (pypath.main.PyPath method), \hyperpage{13}
   \item genesymbol\_labels() (pypath.main.PyPath method), \hyperpage{13}
-  \item get\_dir() (pypath.main.Direction method), \hyperpage{25}
+  \item get\_dir() (pypath.main.Direction method), \hyperpage{26}
   \item get\_directed() (pypath.main.PyPath method), \hyperpage{13}
-  \item get\_dirs() (pypath.main.Direction method), \hyperpage{25}
+  \item get\_dirs() (pypath.main.Direction method), \hyperpage{27}
   \item get\_edge() (pypath.main.PyPath method), \hyperpage{14}
   \item get\_edges() (pypath.main.PyPath method), \hyperpage{14}
   \item get\_giant() (pypath.main.PyPath method), \hyperpage{14}
   \item get\_node() (pypath.main.PyPath method), \hyperpage{14}
   \item get\_node\_d() (pypath.main.PyPath method), \hyperpage{14}
   \item get\_pathways() (pypath.main.PyPath method), \hyperpage{14}
-  \item get\_sign() (pypath.main.Direction method), \hyperpage{26}
+  \item get\_sign() (pypath.main.Direction method), \hyperpage{27}
   \item go\_annotate() (pypath.main.PyPath method), \hyperpage{14}
+  \item go\_dict() (pypath.main.PyPath method), \hyperpage{14}
   \item gs() (pypath.main.PyPath method), \hyperpage{14}
-  \item gs\_edge() (pypath.main.PyPath method), \hyperpage{14}
-  \item guide2pharma() (pypath.main.PyPath method), \hyperpage{14}
+  \item gs\_edge() (pypath.main.PyPath method), \hyperpage{15}
+  \item guide2pharma() (pypath.main.PyPath method), \hyperpage{15}
 
   \indexspace
   \bigletter H
-  \item has\_sign() (pypath.main.Direction method), \hyperpage{26}
-  \item homology\_translation() (pypath.main.PyPath method), \hyperpage{14}
+  \item has\_sign() (pypath.main.Direction method), \hyperpage{27}
+  \item homology\_translation() (pypath.main.PyPath method), \hyperpage{15}
   \item htp\_stats() (pypath.main.PyPath method), \hyperpage{15}
 
   \indexspace
@@ -90,17 +91,17 @@
   \item in\_complex() (pypath.main.PyPath method), \hyperpage{15}
   \item init\_edge\_attr() (pypath.main.PyPath method), \hyperpage{15}
   \item init\_network() (pypath.main.PyPath method), \hyperpage{15}
-  \item init\_vertex\_attr() (pypath.main.PyPath method), \hyperpage{15}
-  \item intogen\_cancer\_drivers\_list() (pypath.main.PyPath method), \hyperpage{15}
-  \item is\_directed() (pypath.main.Direction method), \hyperpage{26}
-  \item is\_inhibition() (pypath.main.Direction method), \hyperpage{26}
-  \item is\_stimulation() (pypath.main.Direction method), \hyperpage{26}
+  \item init\_vertex\_attr() (pypath.main.PyPath method), \hyperpage{16}
+  \item intogen\_cancer\_drivers\_list() (pypath.main.PyPath method), \hyperpage{16}
+  \item is\_directed() (pypath.main.Direction method), \hyperpage{27}
+  \item is\_inhibition() (pypath.main.Direction method), \hyperpage{27}
+  \item is\_stimulation() (pypath.main.Direction method), \hyperpage{27}
 
   \indexspace
   \bigletter K
-  \item kegg\_directions() (pypath.main.PyPath method), \hyperpage{15}
-  \item kegg\_pathways() (pypath.main.PyPath method), \hyperpage{15}
-  \item kinases\_list() (pypath.main.PyPath method), \hyperpage{15}
+  \item kegg\_directions() (pypath.main.PyPath method), \hyperpage{16}
+  \item kegg\_pathways() (pypath.main.PyPath method), \hyperpage{16}
+  \item kinases\_list() (pypath.main.PyPath method), \hyperpage{16}
 
   \indexspace
   \bigletter L
@@ -109,150 +110,150 @@
   \item laudanna\_effects() (pypath.main.PyPath method), \hyperpage{16}
   \item load\_all\_pathways() (pypath.main.PyPath method), \hyperpage{16}
   \item load\_compleat() (pypath.main.PyPath method), \hyperpage{16}
-  \item load\_complexportal() (pypath.main.PyPath method), \hyperpage{16}
-  \item load\_corum() (pypath.main.PyPath method), \hyperpage{16}
-  \item load\_ddi() (pypath.main.PyPath method), \hyperpage{16}
-  \item load\_disgenet() (pypath.main.PyPath method), \hyperpage{16}
-  \item load\_dmi() (pypath.main.PyPath method), \hyperpage{16}
-  \item load\_expression() (pypath.main.PyPath method), \hyperpage{16}
-  \item load\_go() (pypath.main.PyPath method), \hyperpage{16}
-  \item load\_havugimana() (pypath.main.PyPath method), \hyperpage{16}
-  \item load\_hpa() (pypath.main.PyPath method), \hyperpage{16}
-  \item load\_ligand\_receptor\_network() (pypath.main.PyPath method), \hyperpage{16}
-  \item load\_mutations() (pypath.main.PyPath method), \hyperpage{17}
-  \item load\_old\_omnipath() (pypath.main.PyPath method), \hyperpage{17}
-  \item load\_omnipath() (pypath.main.PyPath method), \hyperpage{17}
-  \item load\_pathways() (pypath.main.PyPath method), \hyperpage{17}
-  \item load\_ptms2() (pypath.main.PyPath method), \hyperpage{17}
-  \item load\_resources() (pypath.main.PyPath method), \hyperpage{18}
-  \item load\_tfregulons() (pypath.main.PyPath method), \hyperpage{19}
+  \item load\_complexportal() (pypath.main.PyPath method), \hyperpage{17}
+  \item load\_corum() (pypath.main.PyPath method), \hyperpage{17}
+  \item load\_ddi() (pypath.main.PyPath method), \hyperpage{17}
+  \item load\_disgenet() (pypath.main.PyPath method), \hyperpage{17}
+  \item load\_dmi() (pypath.main.PyPath method), \hyperpage{17}
+  \item load\_expression() (pypath.main.PyPath method), \hyperpage{17}
+  \item load\_go() (pypath.main.PyPath method), \hyperpage{17}
+  \item load\_havugimana() (pypath.main.PyPath method), \hyperpage{17}
+  \item load\_hpa() (pypath.main.PyPath method), \hyperpage{17}
+  \item load\_ligand\_receptor\_network() (pypath.main.PyPath method), \hyperpage{17}
+  \item load\_mutations() (pypath.main.PyPath method), \hyperpage{18}
+  \item load\_old\_omnipath() (pypath.main.PyPath method), \hyperpage{18}
+  \item load\_omnipath() (pypath.main.PyPath method), \hyperpage{18}
+  \item load\_pathways() (pypath.main.PyPath method), \hyperpage{18}
+  \item load\_ptms2() (pypath.main.PyPath method), \hyperpage{18}
+  \item load\_resources() (pypath.main.PyPath method), \hyperpage{19}
+  \item load\_tfregulons() (pypath.main.PyPath method), \hyperpage{20}
 
   \indexspace
   \bigletter M
-  \item majority\_dir() (pypath.main.Direction method), \hyperpage{26}
-  \item majority\_sign() (pypath.main.Direction method), \hyperpage{27}
-  \item map\_edge() (pypath.main.PyPath method), \hyperpage{19}
-  \item map\_item() (pypath.main.PyPath method), \hyperpage{19}
-  \item map\_list() (pypath.main.PyPath method), \hyperpage{19}
-  \item merge() (pypath.main.Direction method), \hyperpage{27}
-  \item merge\_lists() (pypath.main.PyPath method), \hyperpage{20}
-  \item merge\_nodes() (pypath.main.PyPath method), \hyperpage{20}
-  \item mimp\_directions() (pypath.main.PyPath method), \hyperpage{20}
-  \item mutated\_edges() (pypath.main.PyPath method), \hyperpage{20}
+  \item majority\_dir() (pypath.main.Direction method), \hyperpage{28}
+  \item majority\_sign() (pypath.main.Direction method), \hyperpage{28}
+  \item map\_edge() (pypath.main.PyPath method), \hyperpage{20}
+  \item map\_item() (pypath.main.PyPath method), \hyperpage{20}
+  \item map\_list() (pypath.main.PyPath method), \hyperpage{20}
+  \item merge() (pypath.main.Direction method), \hyperpage{28}
+  \item merge\_lists() (pypath.main.PyPath method), \hyperpage{21}
+  \item merge\_nodes() (pypath.main.PyPath method), \hyperpage{21}
+  \item mimp\_directions() (pypath.main.PyPath method), \hyperpage{21}
+  \item mutated\_edges() (pypath.main.PyPath method), \hyperpage{21}
 
   \indexspace
   \bigletter N
-  \item negative\_reverse() (pypath.main.Direction method), \hyperpage{27}
-  \item negative\_sources\_reverse() (pypath.main.Direction method), \hyperpage{27}
-  \item negative\_sources\_straight() (pypath.main.Direction method), \hyperpage{27}
-  \item negative\_straight() (pypath.main.Direction method), \hyperpage{27}
-  \item network\_filter() (pypath.main.PyPath method), \hyperpage{20}
-  \item network\_stats() (pypath.main.PyPath method), \hyperpage{20}
-  \item numof\_directed\_edges() (pypath.main.PyPath method), \hyperpage{20}
-  \item numof\_undirected\_edges() (pypath.main.PyPath method), \hyperpage{20}
+  \item negative\_reverse() (pypath.main.Direction method), \hyperpage{28}
+  \item negative\_sources\_reverse() (pypath.main.Direction method), \hyperpage{28}
+  \item negative\_sources\_straight() (pypath.main.Direction method), \hyperpage{28}
+  \item negative\_straight() (pypath.main.Direction method), \hyperpage{28}
+  \item network\_filter() (pypath.main.PyPath method), \hyperpage{21}
+  \item network\_stats() (pypath.main.PyPath method), \hyperpage{21}
+  \item numof\_directed\_edges() (pypath.main.PyPath method), \hyperpage{21}
+  \item numof\_undirected\_edges() (pypath.main.PyPath method), \hyperpage{21}
 
   \indexspace
   \bigletter O
-  \item orthology\_translation() (pypath.main.PyPath method), \hyperpage{20}
+  \item orthology\_translation() (pypath.main.PyPath method), \hyperpage{21}
 
   \indexspace
   \bigletter P
-  \item p() (pypath.main.PyPath method), \hyperpage{20}
-  \item pathway\_attributes() (pypath.main.PyPath method), \hyperpage{20}
-  \item pathway\_members() (pypath.main.PyPath method), \hyperpage{20}
-  \item pathway\_names() (pypath.main.PyPath method), \hyperpage{20}
-  \item pathways\_table() (pypath.main.PyPath method), \hyperpage{20}
-  \item phosphonetworks\_directions() (pypath.main.PyPath method), \hyperpage{20}
-  \item phosphopoint\_directions() (pypath.main.PyPath method), \hyperpage{20}
-  \item phosphosite\_directions() (pypath.main.PyPath method), \hyperpage{20}
-  \item positive\_reverse() (pypath.main.Direction method), \hyperpage{27}
-  \item positive\_sources\_reverse() (pypath.main.Direction method), \hyperpage{27}
-  \item positive\_sources\_straight() (pypath.main.Direction method), \hyperpage{27}
-  \item positive\_straight() (pypath.main.Direction method), \hyperpage{28}
-  \item process\_directions() (pypath.main.PyPath method), \hyperpage{20}
-  \item process\_dmi() (pypath.main.PyPath method), \hyperpage{21}
-  \item protein() (pypath.main.PyPath method), \hyperpage{21}
-  \item protein\_edge() (pypath.main.PyPath method), \hyperpage{21}
-  \item proteome\_list() (pypath.main.PyPath method), \hyperpage{21}
+  \item p() (pypath.main.PyPath method), \hyperpage{21}
+  \item pathway\_attributes() (pypath.main.PyPath method), \hyperpage{21}
+  \item pathway\_members() (pypath.main.PyPath method), \hyperpage{21}
+  \item pathway\_names() (pypath.main.PyPath method), \hyperpage{21}
+  \item pathways\_table() (pypath.main.PyPath method), \hyperpage{21}
+  \item phosphonetworks\_directions() (pypath.main.PyPath method), \hyperpage{21}
+  \item phosphopoint\_directions() (pypath.main.PyPath method), \hyperpage{21}
+  \item phosphosite\_directions() (pypath.main.PyPath method), \hyperpage{21}
+  \item positive\_reverse() (pypath.main.Direction method), \hyperpage{28}
+  \item positive\_sources\_reverse() (pypath.main.Direction method), \hyperpage{28}
+  \item positive\_sources\_straight() (pypath.main.Direction method), \hyperpage{29}
+  \item positive\_straight() (pypath.main.Direction method), \hyperpage{29}
+  \item process\_directions() (pypath.main.PyPath method), \hyperpage{21}
+  \item process\_dmi() (pypath.main.PyPath method), \hyperpage{22}
+  \item protein() (pypath.main.PyPath method), \hyperpage{22}
+  \item protein\_edge() (pypath.main.PyPath method), \hyperpage{22}
+  \item proteome\_list() (pypath.main.PyPath method), \hyperpage{22}
   \item PyPath (class in pypath.main), \hyperpage{7}
   \item pypath.main (module), \hyperpage{7}
 
   \indexspace
   \bigletter R
-  \item random\_walk\_with\_return() (pypath.main.PyPath method), \hyperpage{21}
-  \item random\_walk\_with\_return2() (pypath.main.PyPath method), \hyperpage{21}
-  \item read\_data\_file() (pypath.main.PyPath method), \hyperpage{21}
-  \item receptors\_list() (pypath.main.PyPath method), \hyperpage{22}
-  \item reload() (pypath.main.Direction method), \hyperpage{28}
-  \item remove\_htp() (pypath.main.PyPath method), \hyperpage{22}
-  \item remove\_undirected() (pypath.main.PyPath method), \hyperpage{22}
+  \item random\_walk\_with\_return() (pypath.main.PyPath method), \hyperpage{22}
+  \item random\_walk\_with\_return2() (pypath.main.PyPath method), \hyperpage{22}
+  \item read\_data\_file() (pypath.main.PyPath method), \hyperpage{22}
+  \item receptors\_list() (pypath.main.PyPath method), \hyperpage{23}
+  \item reload() (pypath.main.Direction method), \hyperpage{29}
+  \item remove\_htp() (pypath.main.PyPath method), \hyperpage{23}
+  \item remove\_undirected() (pypath.main.PyPath method), \hyperpage{23}
 
   \indexspace
   \bigletter S
-  \item save\_session() (pypath.main.PyPath method), \hyperpage{22}
-  \item select\_by\_go() (pypath.main.PyPath method), \hyperpage{22}
-  \item separate() (pypath.main.PyPath method), \hyperpage{22}
-  \item separate\_by\_category() (pypath.main.PyPath method), \hyperpage{22}
-  \item set\_chembl\_mysql() (pypath.main.PyPath method), \hyperpage{22}
-  \item set\_dir() (pypath.main.Direction method), \hyperpage{28}
-  \item set\_disease\_genes() (pypath.main.PyPath method), \hyperpage{22}
-  \item set\_druggability() (pypath.main.PyPath method), \hyperpage{22}
-  \item set\_drugtargets() (pypath.main.PyPath method), \hyperpage{22}
-  \item set\_kinases() (pypath.main.PyPath method), \hyperpage{22}
-  \item set\_receptors() (pypath.main.PyPath method), \hyperpage{22}
-  \item set\_sign() (pypath.main.Direction method), \hyperpage{28}
-  \item set\_signaling\_proteins() (pypath.main.PyPath method), \hyperpage{22}
-  \item set\_tfs() (pypath.main.PyPath method), \hyperpage{22}
-  \item set\_transcription\_factors() (pypath.main.PyPath method), \hyperpage{22}
-  \item shortest\_path\_dist() (pypath.main.PyPath method), \hyperpage{22}
-  \item signaling\_proteins\_list() (pypath.main.PyPath method), \hyperpage{23}
-  \item signor\_pathways() (pypath.main.PyPath method), \hyperpage{23}
-  \item small\_plot() (pypath.main.PyPath method), \hyperpage{23}
-  \item source\_network() (pypath.main.PyPath method), \hyperpage{23}
-  \item sources\_reverse() (pypath.main.Direction method), \hyperpage{28}
-  \item sources\_straight() (pypath.main.Direction method), \hyperpage{28}
-  \item sources\_undirected() (pypath.main.Direction method), \hyperpage{28}
-  \item src() (pypath.main.Direction method), \hyperpage{28}
-  \item src\_by\_source() (pypath.main.Direction method), \hyperpage{29}
-  \item straight\_between() (pypath.main.PyPath method), \hyperpage{23}
-  \item string\_effects() (pypath.main.PyPath method), \hyperpage{23}
-  \item sum\_in\_complex() (pypath.main.PyPath method), \hyperpage{23}
+  \item save\_session() (pypath.main.PyPath method), \hyperpage{23}
+  \item select\_by\_go() (pypath.main.PyPath method), \hyperpage{23}
+  \item separate() (pypath.main.PyPath method), \hyperpage{23}
+  \item separate\_by\_category() (pypath.main.PyPath method), \hyperpage{23}
+  \item set\_chembl\_mysql() (pypath.main.PyPath method), \hyperpage{23}
+  \item set\_dir() (pypath.main.Direction method), \hyperpage{29}
+  \item set\_disease\_genes() (pypath.main.PyPath method), \hyperpage{23}
+  \item set\_druggability() (pypath.main.PyPath method), \hyperpage{23}
+  \item set\_drugtargets() (pypath.main.PyPath method), \hyperpage{23}
+  \item set\_kinases() (pypath.main.PyPath method), \hyperpage{23}
+  \item set\_receptors() (pypath.main.PyPath method), \hyperpage{23}
+  \item set\_sign() (pypath.main.Direction method), \hyperpage{29}
+  \item set\_signaling\_proteins() (pypath.main.PyPath method), \hyperpage{23}
+  \item set\_tfs() (pypath.main.PyPath method), \hyperpage{23}
+  \item set\_transcription\_factors() (pypath.main.PyPath method), \hyperpage{23}
+  \item shortest\_path\_dist() (pypath.main.PyPath method), \hyperpage{24}
+  \item signaling\_proteins\_list() (pypath.main.PyPath method), \hyperpage{24}
+  \item signor\_pathways() (pypath.main.PyPath method), \hyperpage{24}
+  \item small\_plot() (pypath.main.PyPath method), \hyperpage{24}
+  \item source\_network() (pypath.main.PyPath method), \hyperpage{24}
+  \item sources\_reverse() (pypath.main.Direction method), \hyperpage{29}
+  \item sources\_straight() (pypath.main.Direction method), \hyperpage{29}
+  \item sources\_undirected() (pypath.main.Direction method), \hyperpage{29}
+  \item src() (pypath.main.Direction method), \hyperpage{30}
+  \item src\_by\_source() (pypath.main.Direction method), \hyperpage{30}
+  \item straight\_between() (pypath.main.PyPath method), \hyperpage{24}
+  \item string\_effects() (pypath.main.PyPath method), \hyperpage{24}
+  \item sum\_in\_complex() (pypath.main.PyPath method), \hyperpage{24}
 
   \indexspace
   \bigletter T
-  \item table\_latex() (pypath.main.PyPath method), \hyperpage{23}
-  \item tfs\_list() (pypath.main.PyPath method), \hyperpage{23}
-  \item tgt() (pypath.main.Direction method), \hyperpage{29}
-  \item tgt\_by\_source() (pypath.main.Direction method), \hyperpage{29}
-  \item third\_source\_directions() (pypath.main.PyPath method), \hyperpage{23}
-  \item tissue\_network() (pypath.main.PyPath method), \hyperpage{23}
-  \item translate() (pypath.main.Direction method), \hyperpage{29}
-  \item translate\_refsdir() (pypath.main.PyPath method), \hyperpage{23}
+  \item table\_latex() (pypath.main.PyPath method), \hyperpage{24}
+  \item tfs\_list() (pypath.main.PyPath method), \hyperpage{24}
+  \item tgt() (pypath.main.Direction method), \hyperpage{30}
+  \item tgt\_by\_source() (pypath.main.Direction method), \hyperpage{30}
+  \item third\_source\_directions() (pypath.main.PyPath method), \hyperpage{24}
+  \item tissue\_network() (pypath.main.PyPath method), \hyperpage{24}
+  \item translate() (pypath.main.Direction method), \hyperpage{30}
+  \item translate\_refsdir() (pypath.main.PyPath method), \hyperpage{24}
 
   \indexspace
   \bigletter U
-  \item uniprot() (pypath.main.PyPath method), \hyperpage{23}
-  \item uniprots() (pypath.main.PyPath method), \hyperpage{23}
-  \item unset\_dir() (pypath.main.Direction method), \hyperpage{29}
-  \item unset\_sign() (pypath.main.Direction method), \hyperpage{29}
-  \item up() (pypath.main.PyPath method), \hyperpage{23}
-  \item up\_edge() (pypath.main.PyPath method), \hyperpage{24}
-  \item update\_adjlist() (pypath.main.PyPath method), \hyperpage{24}
-  \item update\_cats() (pypath.main.PyPath method), \hyperpage{24}
-  \item update\_db\_dict() (pypath.main.PyPath method), \hyperpage{24}
-  \item update\_sources() (pypath.main.PyPath method), \hyperpage{24}
-  \item update\_vindex() (pypath.main.PyPath method), \hyperpage{24}
-  \item update\_vname() (pypath.main.PyPath method), \hyperpage{24}
-  \item ups() (pypath.main.PyPath method), \hyperpage{24}
+  \item uniprot() (pypath.main.PyPath method), \hyperpage{24}
+  \item uniprots() (pypath.main.PyPath method), \hyperpage{25}
+  \item unset\_dir() (pypath.main.Direction method), \hyperpage{30}
+  \item unset\_sign() (pypath.main.Direction method), \hyperpage{30}
+  \item up() (pypath.main.PyPath method), \hyperpage{25}
+  \item up\_edge() (pypath.main.PyPath method), \hyperpage{25}
+  \item update\_adjlist() (pypath.main.PyPath method), \hyperpage{25}
+  \item update\_cats() (pypath.main.PyPath method), \hyperpage{25}
+  \item update\_db\_dict() (pypath.main.PyPath method), \hyperpage{25}
+  \item update\_sources() (pypath.main.PyPath method), \hyperpage{25}
+  \item update\_vindex() (pypath.main.PyPath method), \hyperpage{25}
+  \item update\_vname() (pypath.main.PyPath method), \hyperpage{25}
+  \item ups() (pypath.main.PyPath method), \hyperpage{25}
 
   \indexspace
   \bigletter V
-  \item v() (pypath.main.PyPath method), \hyperpage{24}
-  \item vertex\_pathways() (pypath.main.PyPath method), \hyperpage{24}
+  \item v() (pypath.main.PyPath method), \hyperpage{25}
+  \item vertex\_pathways() (pypath.main.PyPath method), \hyperpage{25}
 
   \indexspace
   \bigletter W
-  \item wang\_effects() (pypath.main.PyPath method), \hyperpage{24}
-  \item which\_dirs() (pypath.main.Direction method), \hyperpage{30}
+  \item wang\_effects() (pypath.main.PyPath method), \hyperpage{25}
+  \item which\_dirs() (pypath.main.Direction method), \hyperpage{31}
 
 \end{sphinxtheindex}

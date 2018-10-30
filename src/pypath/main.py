@@ -118,7 +118,8 @@ if 'long' not in __builtins__:
 if 'unicode' not in __builtins__:
     unicode = str
 
-__all__ = ['PyPath', 'Direction', '__version__', 'a', # XXX: What is this "a"?
+# XXX: Referenced but not defined: __version__, a (what?), ReferenceList
+__all__ = ['PyPath', 'Direction', '__version__', 'a',
            'AttrHelper', 'ReferenceList', 'omnipath']
 
 
@@ -857,7 +858,7 @@ class Direction(object):
         Infers which is the major directionality of the edge by number
         of supporting sources.
 
-        :returns:
+        :return:
             (*tuple*) -- Contains the pair of nodes denoting the
             consensus directionality. If the number of sources on both
             directions is equal, ``None`` is returned. If there is no
@@ -886,7 +887,7 @@ class Direction(object):
         Infers which is the major sign (activation/inhibition) of the
         edge by number of supporting sources on both directions.
 
-        *return:
+        :return:
             (*dict*) -- Keys are the node tuples on both directions
             (:py:attr:`straight`/:py:attr:`reverse`) and values can be
             either ``None`` if that direction has no sign information or
@@ -1152,8 +1153,12 @@ class _NamedVertexSeq(object):
 
     def __iter__(self):
         """
-        Iterator function yielding the [igraph.Vertex] instances
-        contained in *_vs*. It's accessed through the alias *vs*.
+        Iterator function yielding the :py:class:`igraph.Vertex`
+        instances contained in *_vs*. It's accessed through the alias
+        *vs*.
+
+        :yield:
+            (*igraph.Vertex*) -- The :py:class:`igraph.Vertex` object.
         """
 
         for v in self._vs:
@@ -1163,6 +1168,9 @@ class _NamedVertexSeq(object):
         """
         Iterator function yielding the GeneSymbols contained in
         *_nodLab*. It can be accessed through the alias *gs*.
+
+        :yield:
+            (*str*) -- The GeneSymbols from the node list.
         """
 
         for v in self._vs:
@@ -1172,6 +1180,9 @@ class _NamedVertexSeq(object):
         """
         Iterator function yielding the UniProt IDs contained in
         *_nodNam*. It can be accessed through the alias *up*.
+
+        :yield:
+            (*str*) -- The UniProt IDs from the node list.
         """
 
         for v in self._vs:
@@ -1180,6 +1191,9 @@ class _NamedVertexSeq(object):
     def ids(self):
         """
         Iterator function yielding the vertex indexes.
+
+        :yield:
+            (*int*) -- The node's index.
         """
 
         for v in self._vs:
@@ -1197,105 +1211,122 @@ class PyPath(object):
     """
     Main network object.
 
-    * Arguments:
-        - *ncbi_tax_id* [int]: Optional, ``9606`` (Homo sapiens) by
-          default. NCBI Taxonomic identifier of the organism from which
-          the data will be downloaded.
-        - *default_name_type* [dict]: Optional, ``{'protein': 'uniprot',
-          'mirna': 'mirbase', 'drug': 'chembl', 'lncrna':
-          'lncrna-genesymbol'}`` by default. Contains the default
-          identifier types to which the downloaded data will be
-          converted. If others are used, user may need to provide the
-          format definitions for the conversion tables.
-        - *copy* [pypath.main.PyPath]: Optional, ``None`` by default.
-          Other *PyPath* instance from which the data will be copied.
-        - *mysql* [tuple]: Optional, ``(None, 'mapping')`` by default.
-          Contains the MySQL parameters used by the ``mapping`` module
-          to load the ID conversion tables.
-        - *chembl_mysql* [tuple]: Optional, ``(None, 'chembl')`` by
-          default. Contains the MySQL parameters used by the ``mapping``
-          module to load the ChEMBL ID conversion tables.
-        - *name* [str]: Optional, ``'unnamed'`` by default. Session or
-          project name (custom).
-        - *outdir* [str]: Optional, ``'results'`` by default. Output
-          directory where to store all output files.
-        - *loglevel* [str]: Optional, ``'INFO'`` by default. Sets the
-          level of the logger. Possible levels are: ``'DEBUG'``,
-          ``'INFO'``, ``'WARNING'``, ``'ERROR'`` or ``'CRITICAL'``.
-        - *loops* [bool]: Optional, ``False`` by default. Determines if
-          self-loop edges are allowed in the graph.
+    :arg int ncbi_tax_id:
+        Optional, ``9606`` (Homo sapiens) by default. NCBI Taxonomic
+        identifier of the organism from which the data will be
+        downloaded.
+    :arg dict default_name_type:
+        Optional, ``{'protein': 'uniprot', 'mirna': 'mirbase', 'drug':
+        'chembl', 'lncrna': 'lncrna-genesymbol'}`` by default. Contains
+        the default identifier types to which the downloaded data will
+        be converted. If others are used, user may need to provide the
+        format definitions for the conversion tables.
+    :arg pypath.main.PyPath copy:
+        Optional, ``None`` by default. Other :py:class:`PyPath` instance
+        from which the data will be copied.
+    :arg tuple mysql:
+        Optional, ``(None, 'mapping')`` by default. Contains the MySQL
+        parameters used by the :py:mod:`pypath.mapping` module to load
+        the ID conversion tables.
+    :arg tuple chembl_mysql:
+        Optional, ``(None, 'chembl')`` by default. Contains the MySQL
+        parameters used by the :py:mod:`pypath.mapping` module to load
+        the ChEMBL ID conversion tables.
+    :arg str name:
+        Optional, ``'unnamed'`` by default. Session or project name
+        (custom).
+    :arg str outdir:
+        Optional, ``'results'`` by default. Output directory where to
+        store all output files.
+    :arg str loglevel:
+        Optional, ``'INFO'`` by default. Sets the level of the logger.
+        Possible levels are: ``'DEBUG'``, ``'INFO'``, ``'WARNING'``,
+        ``'ERROR'`` or ``'CRITICAL'``.
+    :arg bool loops:
+        Optional, ``False`` by default. Determines if self-loop edges
+        are allowed in the graph.
 
-    * Attributes:
-        - *adjlist* [list]: List of [set] containing the adjacency of
-          each node. See ``PyPath.update_adjlist()`` method for more
-          information.
-        - *chembl* [pypath.chembl.Chembl]: Contains the ChEMBL data. See
-          ``pypath.chembl`` module documentation for more information.
-        - *chembl_mysql* [tuple]: Contains the MySQL parameters used by
-          the ``mapping`` module to load the ChEMBL ID conversion
-          tables.
-        - *data* [dict]: Stores custom loaded interaction and attribute
-          table. See ``PyPath.read_data_filemethod()`` for more
-          information.
-        - *db_dict* [dict]: Dictionary of dictionaries. Outer-level keys
-          are ``'nodes'`` and ``'edges'``, corresponding values are
-          [dict] whose keys are the database sources with values of type
-          [set] containing the edge/node indexes for which that database
-          provided some information.
-        - *dgraph* [igraph.Graph]: Directed network graph object.
-        - *disclaimer* [str]: Disclaimer text.
-        - *dlabDct* []:
-        - *dnodDct* []:
-        - *dnodInd* []:
-        - *dnodLab* []:
-        - *dnodNam* []:
-        - *edgeAttrs* []:
-        - *exp* []:
-        - *exp_prod* []:
-        - *exp_samples* []:
-        - *failed_edges* []:
-        - *go* []:
-        - *graph* [igraph.Graph]: Undirected network graph object.
-        - *gsea* []:
-        - *has_cats* []:
-        - *htp* []:
-        - *labDct* []:
-        - *lists* []:
-        - *loglevel* [str]: The level of the logger.
-        - *loops* [bool]: Whether if self-loop edges are allowed in the
-          graph.
-        - *mapper* []:
-        - *mutation_samples* []:
-        - *mysql_conf* [tuple]: Contains the MySQL parameters used by
-          the ``mapping`` module to load the ID conversion tables.
-        - *name* [str]: Session or project name (custom).
-        - *ncbi_tax_id* [int]: NCBI Taxonomic identifier of the organism
-          from which the data will be downloaded.
-        - *negatives* []:
-        - *nodDct* []:
-        - *nodInd* []:
-        - *nodLab* []:
-        - *nodNam* []:
-        - *outdir* [str]: Output directory where to store all output
-          files.
-        - *ownlog* []:
-        - *palette* []:
-        - *pathway_types* []:
-        - *pathways* []:
-        - *plots* []:
-        - *proteomicsdb* []:
-        - *raw_data* []:
-        - *reflists* []:
-        - *seq* []:
-        - *session* []:
-        - *session_name* []:
-        - *sourceNetEdges* []:
-        - *sourceNetNodes* []:
-        - *sources* []:
-        - *u_pfam* []:
-        - *uniprot_mapped* []:
-        - *unmapped* []:
-        - *vertexAttrs* []:
+    :var list adjlist:
+        List of [set] containing the adjacency of each node. See
+        :py:meth:`PyPath.update_adjlist` method for more information.
+    :var pypath.chembl.Chembl chembl:
+        Contains the ChEMBL data. See :py:mod:`pypath.chembl` module
+        documentation for more information.
+    :var tuple chembl_mysql:
+        Contains the MySQL parameters used by the
+        :py:mod:`pypath.mapping` module to load the ChEMBL ID conversion
+        tables.
+    :var dict data:
+        Stores custom loaded interaction and attribute table. See
+        :py:meth:`PyPath.read_data_filemethod` for more information.
+    :var dict db_dict:
+        Dictionary of dictionaries. Outer-level keys are ``'nodes'`` and
+        ``'edges'``, corresponding values are [dict] whose keys are the
+        database sources with values of type [set] containing the
+        edge/node indexes for which that database provided some
+        information.
+    :var igraph.Graph dgraph:
+        Directed network graph object.
+    :var str disclaimer:
+        Disclaimer text.
+    :var dlabDct:
+    :var dnodDct:
+    :var dnodInd:
+    :var dnodLab:
+    :var dnodNam:
+    :var edgeAttrs:
+    :var exp:
+    :var exp_prod:
+    :var exp_samples:
+    :var failed_edges:
+    :var go:
+    :var igraph.Graph graph:
+        Undirected network graph object.
+    :var gsea:
+    :var has_cats:
+    :var htp:
+    :var labDct:
+    :var lists:
+    :var str loglevel:
+        The level of the logger.
+    :var bool loops:
+        Whether if self-loop edges are allowed in the graph.
+    :var mapper:
+    :var mutation_samples:
+    :var tuple mysql_conf:
+        Contains the MySQL parameters used by the
+        :py:mod:`pypath.mapping` module to load the ID conversion
+        tables.
+    :var str name:
+        Session or project name (custom).
+    :var int ncbi_tax_id:
+        NCBI Taxonomic identifier of the organism from which the data
+        will be downloaded.
+    :var negatives:
+    :var nodDct:
+    :var nodInd:
+    :var nodLab:
+    :var nodNam:
+    :var str outdir:
+        Output directory where to store all output files.
+    :var ownlog:
+    :var palette:
+    :var pathway_types:
+    :var pathways:
+    :var plots:
+    :var proteomicsdb:
+    :var raw_data:
+    :var reflists:
+    :var seq:
+    :var session:
+    :var session_name:
+    :var sourceNetEdges:
+    :var sourceNetNodes:
+    :var sources:
+    :var u_pfam:
+    :var uniprot_mapped:
+    :var unmapped:
+    :var vertexAttrs:
     """
 
     default_name_type = {'protein': 'uniprot',
@@ -1421,11 +1452,12 @@ class PyPath(object):
         Sets the ChEMBL MySQL config according to
         `title` section in `config_file` ini style config.
 
-            title (str): section title in ini file
-            config_file (str, NoneType): config file name;
-                if None, the `mysql_config/defaults.mysql`
-                will be used
+        title (str): section title in ini file
+        config_file (str, NoneType): config file name;
+            if None, the `mysql_config/defaults.mysql`
+            will be used
         """
+
         self.chembl_mysql = (config_file, title)
 
     def copy(self, other):
@@ -2329,7 +2361,7 @@ class PyPath(object):
                 # print 'new edge: %s' % str(edge)
         return edgeStack
 
-    def combine_attr(self, lst, num_method = max):
+    def combine_attr(self, lst, num_method=max):
         """
         Combines multiple attributes into one. This method attempts
         to find out which is the best way to combine attributes.
@@ -2346,6 +2378,7 @@ class PyPath(object):
         :param list lst: List of one or two attribute values.
         :param callable num_method: Method to merge numeric attributes.
         """
+
         def list_or_set(one, two):
             if (isinstance(one, list) and isinstance(two, set)) or \
                (isinstance(two, list) and isinstance(one, set)):
@@ -3935,13 +3968,13 @@ class PyPath(object):
                 onlyj = str(len(list(set(inj) - set(ini))))
                 inter = str(len(list(set(ini) & set(inj))))
                 result[i + "-" + j] = [i, j, onlyi, onlyj, inter]
-                
+
         if fname:
-            
+
             self.write_table(result, fname)
-        
+
         if return_data:
-            
+
             return result
 
     def sources_hist(self):
@@ -5244,13 +5277,13 @@ class PyPath(object):
             Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or
             ``igraph.Vertex`` object.
         """
-        
+
         graph = self._get_undirected()
-        
+
         if isinstance(identifier, igraph.Vertex):
-            
+
             identifier = identifier['name']
-        
+
         return graph.vs[identifier] \
             if isinstance(identifier, int) and identifier < graph.vcount() \
             else graph.vs[self.nodDct[identifier]] \
@@ -5275,13 +5308,13 @@ class PyPath(object):
             Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or
             ``igraph.Vertex`` object.
         """
-        
+
         dgraph = self._get_directed()
-        
+
         if isinstance(identifier, igraph.Vertex):
-            
+
             identifier = identifier['name']
-        
+
         return dgraph.vs[identifier] \
             if isinstance(identifier, int) and identifier < dgraph.vcount() \
             else dgraph.vs[self.dnodDct[identifier]] \
@@ -5365,24 +5398,24 @@ class PyPath(object):
         :param bool directed:
             To be passed to igraph.Graph.get_eid()
         """
-        
+
         v_source = self.get_node(source) \
             if not self.graph.is_directed() else self.get_node_d(source)
         v_target = self.get_node(target) \
             if not self.graph.is_directed() else self.get_node_d(target)
-        
+
         if source is not None and target is not None:
-            
+
             eid = self.graph.get_eid(
                 source.index,
                 target.index,
                 directed=directed,
                 error=False
             )
-            
+
             if eid != -1:
                 return self.graph.es[eid]
-        
+
         return None
 
     # synonyms
@@ -7556,9 +7589,9 @@ class PyPath(object):
         :param int organism:
             NCBI Taxonomy ID of the organism.
         """
-        
+
         if not hasattr(self, 'go'):
-            
+
             self.go = {}
 
         self.go[organism] = go.GOAnnotation(organism)
@@ -7569,10 +7602,10 @@ class PyPath(object):
                       alpha=0.05,
                       correction_method='hommel',
                       all_proteins=None):
-        
+
         if not hasattr(self, 'go') or self.ncbi_tax_id not in self.go:
             self.go_dict()
-        
+
         all_proteins = (
             set(all_proteins)
                 if isinstance(all_proteins, list) else
@@ -7580,7 +7613,7 @@ class PyPath(object):
                 if isinstance(all_proteins, set) else
             set(self.graph.vs['name'])
         )
-        
+
         annotation = dict(
             (up, g)
             for up, g in iteritems(
@@ -7591,17 +7624,17 @@ class PyPath(object):
             )
             if up in all_proteins
         )
-        
+
         enr = go.GOEnrichmentSet(
             aspect=aspect,
             organism=self.ncbi_tax_id,
             basic_set=annotation,
             alpha=alpha,
             correction_method=correction_method)
-        
+
         if proteins is not None:
             enr.new_set(set_names=proteins)
-        
+
         return enr
 
     def init_gsea(self, user):
@@ -8188,7 +8221,7 @@ class PyPath(object):
         load all resources.
 
         Args:
-        ----
+        -----
 
         :param str source:
             Name of the source, this need to match a method in the dict
@@ -9684,16 +9717,17 @@ class PyPath(object):
     def export_edgelist(self, fname, graph=None, names=['name'],
                         edge_attributes=[], sep='\t'):
         """
-            Write edge list to text file with attributes
+        Write edge list to text file with attributes
 
-            @param fname: the name of the file or a stream to read from.
-            @param graph: the igraph object containing the network
-            @param names: list with the vertex attribute names to be printed
-                for source and target vertices
-            @param edge_attributes: list with the edge attribute names
-                to be printed
-            @param sep: string used to separate columns
-            """
+        @param fname: the name of the file or a stream to read from.
+        @param graph: the igraph object containing the network
+        @param names: list with the vertex attribute names to be printed
+            for source and target vertices
+        @param edge_attributes: list with the edge attribute names
+            to be printed
+        @param sep: string used to separate columns
+        """
+
         # from Luis Tobalina
         graph = self.graph if graph is None else graph
         # check that input 'names' and 'edge_attributes' exist

@@ -56,7 +56,7 @@
 
 
 \title{pypath Documentation}
-\date{Oct 26, 2018}
+\date{Oct 30, 2018}
 \release{0.7.98}
 \author{Dénes Türei}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -285,244 +285,234 @@ as soon as possible.
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.main.}}\sphinxbfcode{\sphinxupquote{PyPath}}}{\emph{ncbi\_tax\_id=9606}, \emph{default\_name\_type=\{'drug': 'chembl'}, \emph{'lncrna': 'lncrna-genesymbol'}, \emph{'mirna': 'mirbase'}, \emph{'protein': 'uniprot'\}}, \emph{copy=None}, \emph{mysql=(None}, \emph{'mapping')}, \emph{chembl\_mysql=(None}, \emph{'chembl')}, \emph{name='unnamed'}, \emph{outdir='results'}, \emph{loglevel='INFO'}, \emph{loops=False}}{}
 Main network object.
-\begin{itemize}
-\item {} \begin{description}
-\item[{Arguments:}] \leavevmode\begin{itemize}
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleemphasis{ncbi\_tax\_id} {[}int{]}: Optional, \sphinxcode{\sphinxupquote{9606}} (Homo sapiens) by
-default. NCBI Taxonomic identifier of the organism from which
-the data will be downloaded.
+\sphinxstyleliteralstrong{\sphinxupquote{ncbi\_tax\_id}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{9606}} (Homo sapiens) by default. NCBI Taxonomic
+identifier of the organism from which the data will be
+downloaded.
 
 \item {} 
-\sphinxstyleemphasis{default\_name\_type} {[}dict{]}: Optional, \sphinxcode{\sphinxupquote{\{'protein': 'uniprot',
-'mirna': 'mirbase', 'drug': 'chembl', 'lncrna':
-'lncrna-genesymbol'\}}} by default. Contains the default
-identifier types to which the downloaded data will be
-converted. If others are used, user may need to provide the
+\sphinxstyleliteralstrong{\sphinxupquote{default\_name\_type}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{\{'protein': 'uniprot', 'mirna': 'mirbase', 'drug':
+'chembl', 'lncrna': 'lncrna-genesymbol'\}}} by default. Contains
+the default identifier types to which the downloaded data will
+be converted. If others are used, user may need to provide the
 format definitions for the conversion tables.
 
 \item {} 
-\sphinxstyleemphasis{copy} {[}pypath.main.PyPath{]}: Optional, \sphinxcode{\sphinxupquote{None}} by default.
-Other \sphinxstyleemphasis{PyPath} instance from which the data will be copied.
+\sphinxstyleliteralstrong{\sphinxupquote{copy}} ({\hyperref[\detokenize{main:pypath.main.PyPath}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{pypath.main.PyPath}}}}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Other {\hyperref[\detokenize{main:pypath.main.PyPath}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath}}}}} instance
+from which the data will be copied.
 
 \item {} 
-\sphinxstyleemphasis{mysql} {[}tuple{]}: Optional, \sphinxcode{\sphinxupquote{(None, 'mapping')}} by default.
-Contains the MySQL parameters used by the \sphinxcode{\sphinxupquote{mapping}} module
-to load the ID conversion tables.
+\sphinxstyleliteralstrong{\sphinxupquote{mysql}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{(None, 'mapping')}} by default. Contains the MySQL
+parameters used by the \sphinxcode{\sphinxupquote{pypath.mapping}} module to load
+the ID conversion tables.
 
 \item {} 
-\sphinxstyleemphasis{chembl\_mysql} {[}tuple{]}: Optional, \sphinxcode{\sphinxupquote{(None, 'chembl')}} by
-default. Contains the MySQL parameters used by the \sphinxcode{\sphinxupquote{mapping}}
-module to load the ChEMBL ID conversion tables.
+\sphinxstyleliteralstrong{\sphinxupquote{chembl\_mysql}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{(None, 'chembl')}} by default. Contains the MySQL
+parameters used by the \sphinxcode{\sphinxupquote{pypath.mapping}} module to load
+the ChEMBL ID conversion tables.
 
 \item {} 
-\sphinxstyleemphasis{name} {[}str{]}: Optional, \sphinxcode{\sphinxupquote{'unnamed'}} by default. Session or
-project name (custom).
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{'unnamed'}} by default. Session or project name
+(custom).
 
 \item {} 
-\sphinxstyleemphasis{outdir} {[}str{]}: Optional, \sphinxcode{\sphinxupquote{'results'}} by default. Output
-directory where to store all output files.
+\sphinxstyleliteralstrong{\sphinxupquote{outdir}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{'results'}} by default. Output directory where to
+store all output files.
 
 \item {} 
-\sphinxstyleemphasis{loglevel} {[}str{]}: Optional, \sphinxcode{\sphinxupquote{'INFO'}} by default. Sets the
-level of the logger. Possible levels are: \sphinxcode{\sphinxupquote{'DEBUG'}},
-\sphinxcode{\sphinxupquote{'INFO'}}, \sphinxcode{\sphinxupquote{'WARNING'}}, \sphinxcode{\sphinxupquote{'ERROR'}} or \sphinxcode{\sphinxupquote{'CRITICAL'}}.
+\sphinxstyleliteralstrong{\sphinxupquote{loglevel}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{'INFO'}} by default. Sets the level of the logger.
+Possible levels are: \sphinxcode{\sphinxupquote{'DEBUG'}}, \sphinxcode{\sphinxupquote{'INFO'}}, \sphinxcode{\sphinxupquote{'WARNING'}},
+\sphinxcode{\sphinxupquote{'ERROR'}} or \sphinxcode{\sphinxupquote{'CRITICAL'}}.
 
 \item {} 
-\sphinxstyleemphasis{loops} {[}bool{]}: Optional, \sphinxcode{\sphinxupquote{False}} by default. Determines if
-self-loop edges are allowed in the graph.
+\sphinxstyleliteralstrong{\sphinxupquote{loops}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Determines if self-loop edges
+are allowed in the graph.
 
 \end{itemize}
 
-\end{description}
-
-\item {} \begin{description}
-\item[{Attributes:}] \leavevmode\begin{itemize}
+\item[{Variables}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleemphasis{adjlist} {[}list{]}: List of {[}set{]} containing the adjacency of
-each node. See \sphinxcode{\sphinxupquote{PyPath.update\_adjlist()}} method for more
-information.
+\sphinxstyleliteralstrong{\sphinxupquote{adjlist}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} List of {[}set{]} containing the adjacency of each node. See
+{\hyperref[\detokenize{main:pypath.main.PyPath.update_adjlist}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.update\_adjlist()}}}}} method for more information.
 
 \item {} 
-\sphinxstyleemphasis{chembl} {[}pypath.chembl.Chembl{]}: Contains the ChEMBL data. See
-\sphinxcode{\sphinxupquote{pypath.chembl}} module documentation for more information.
+\sphinxstyleliteralstrong{\sphinxupquote{chembl}} (\sphinxstyleliteralemphasis{\sphinxupquote{pypath.chembl.Chembl}}) \textendash{} Contains the ChEMBL data. See \sphinxcode{\sphinxupquote{pypath.chembl}} module
+documentation for more information.
 
 \item {} 
-\sphinxstyleemphasis{chembl\_mysql} {[}tuple{]}: Contains the MySQL parameters used by
-the \sphinxcode{\sphinxupquote{mapping}} module to load the ChEMBL ID conversion
+\sphinxstyleliteralstrong{\sphinxupquote{chembl\_mysql}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Contains the MySQL parameters used by the
+\sphinxcode{\sphinxupquote{pypath.mapping}} module to load the ChEMBL ID conversion
 tables.
 
 \item {} 
-\sphinxstyleemphasis{data} {[}dict{]}: Stores custom loaded interaction and attribute
-table. See \sphinxcode{\sphinxupquote{PyPath.read\_data\_filemethod()}} for more
+\sphinxstyleliteralstrong{\sphinxupquote{data}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Stores custom loaded interaction and attribute table. See
+\sphinxcode{\sphinxupquote{PyPath.read\_data\_filemethod()}} for more information.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{db\_dict}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Dictionary of dictionaries. Outer-level keys are \sphinxcode{\sphinxupquote{'nodes'}} and
+\sphinxcode{\sphinxupquote{'edges'}}, corresponding values are {[}dict{]} whose keys are the
+database sources with values of type {[}set{]} containing the
+edge/node indexes for which that database provided some
 information.
 
 \item {} 
-\sphinxstyleemphasis{db\_dict} {[}dict{]}: Dictionary of dictionaries. Outer-level keys
-are \sphinxcode{\sphinxupquote{'nodes'}} and \sphinxcode{\sphinxupquote{'edges'}}, corresponding values are
-{[}dict{]} whose keys are the database sources with values of type
-{[}set{]} containing the edge/node indexes for which that database
-provided some information.
+\sphinxstyleliteralstrong{\sphinxupquote{dgraph}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} Directed network graph object.
 
 \item {} 
-\sphinxstyleemphasis{dgraph} {[}igraph.Graph{]}: Directed network graph object.
+\sphinxstyleliteralstrong{\sphinxupquote{disclaimer}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Disclaimer text.
 
 \item {} 
-\sphinxstyleemphasis{disclaimer} {[}str{]}: Disclaimer text.
+\sphinxstyleliteralstrong{\sphinxupquote{dlabDct}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{dlabDct} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{dnodDct}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{dnodDct} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{dnodInd}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{dnodInd} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{dnodLab}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{dnodLab} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{dnodNam}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{dnodNam} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{edgeAttrs}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{edgeAttrs} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{exp}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{exp} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{exp\_prod}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{exp\_prod} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{exp\_samples}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{exp\_samples} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{failed\_edges}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{failed\_edges} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{go}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{go} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{graph}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} Undirected network graph object.
 
 \item {} 
-\sphinxstyleemphasis{graph} {[}igraph.Graph{]}: Undirected network graph object.
+\sphinxstyleliteralstrong{\sphinxupquote{gsea}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{gsea} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{has\_cats}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{has\_cats} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{htp}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{htp} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{labDct}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{labDct} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{lists}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{lists} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{loglevel}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The level of the logger.
 
 \item {} 
-\sphinxstyleemphasis{loglevel} {[}str{]}: The level of the logger.
+\sphinxstyleliteralstrong{\sphinxupquote{loops}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Whether if self-loop edges are allowed in the graph.
 
 \item {} 
-\sphinxstyleemphasis{loops} {[}bool{]}: Whether if self-loop edges are allowed in the
-graph.
+\sphinxstyleliteralstrong{\sphinxupquote{mapper}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{mapper} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{mutation\_samples}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{mutation\_samples} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{mysql\_conf}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Contains the MySQL parameters used by the
+\sphinxcode{\sphinxupquote{pypath.mapping}} module to load the ID conversion
+tables.
 
 \item {} 
-\sphinxstyleemphasis{mysql\_conf} {[}tuple{]}: Contains the MySQL parameters used by
-the \sphinxcode{\sphinxupquote{mapping}} module to load the ID conversion tables.
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Session or project name (custom).
 
 \item {} 
-\sphinxstyleemphasis{name} {[}str{]}: Session or project name (custom).
+\sphinxstyleliteralstrong{\sphinxupquote{ncbi\_tax\_id}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} NCBI Taxonomic identifier of the organism from which the data
+will be downloaded.
 
 \item {} 
-\sphinxstyleemphasis{ncbi\_tax\_id} {[}int{]}: NCBI Taxonomic identifier of the organism
-from which the data will be downloaded.
+\sphinxstyleliteralstrong{\sphinxupquote{negatives}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{negatives} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{nodDct}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{nodDct} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{nodInd}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{nodInd} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{nodLab}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{nodLab} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{nodNam}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{nodNam} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{outdir}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Output directory where to store all output files.
 
 \item {} 
-\sphinxstyleemphasis{outdir} {[}str{]}: Output directory where to store all output
-files.
+\sphinxstyleliteralstrong{\sphinxupquote{ownlog}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{ownlog} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{palette}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{palette} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{pathway\_types}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{pathway\_types} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{pathways}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{pathways} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{plots}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{plots} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{proteomicsdb}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{proteomicsdb} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{raw\_data}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{raw\_data} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{reflists}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{reflists} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{seq}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{seq} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{session}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{session} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{session\_name}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{session\_name} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{sourceNetEdges}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{sourceNetEdges} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{sourceNetNodes}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{sourceNetNodes} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{sources}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{sources} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{u\_pfam}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{u\_pfam} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{uniprot\_mapped}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{uniprot\_mapped} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{unmapped}} \textendash{} 
 
 \item {} 
-\sphinxstyleemphasis{unmapped} {[}{]}:
-
-\item {} 
-\sphinxstyleemphasis{vertexAttrs} {[}{]}:
+\sphinxstyleliteralstrong{\sphinxupquote{vertexAttrs}} \textendash{} 
 
 \end{itemize}
 
-\end{description}
-
-\end{itemize}
+\end{description}\end{quote}
 \index{acsn\_effects() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -814,7 +804,8 @@ or a UniProt ID or GeneSymbol which can be found in the
 default directed network, otherwise \sphinxcode{\sphinxupquote{None}}.
 \begin{description}
 \item[{@identifier}] \leavevmode{[}int, str{]}
-Vertex index (int) or GeneSymbol (str) or UniProt ID (str).
+Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or
+\sphinxcode{\sphinxupquote{igraph.Vertex}} object.
 
 \end{description}
 
@@ -894,7 +885,8 @@ or a UniProt ID or GeneSymbol which can be found in the
 default directed network, otherwise \sphinxcode{\sphinxupquote{None}}.
 \begin{description}
 \item[{@identifier}] \leavevmode{[}int, str{]}
-Vertex index (int) or GeneSymbol (str) or UniProt ID (str).
+Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or
+\sphinxcode{\sphinxupquote{igraph.Vertex}} object.
 
 \end{description}
 
@@ -1194,10 +1186,12 @@ the 2 proteins, otherwise \sphinxcode{\sphinxupquote{None}}.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{source}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}\sphinxstyleliteralemphasis{\sphinxupquote{,}}\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Vertex index or UniProt ID or GeneSymbol
+\sphinxstyleliteralstrong{\sphinxupquote{source}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}\sphinxstyleliteralemphasis{\sphinxupquote{,}}\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Vertex index or UniProt ID or GeneSymbol or \sphinxcode{\sphinxupquote{igraph.Vertex}}
+object.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{target}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}\sphinxstyleliteralemphasis{\sphinxupquote{,}}\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Vertex index or UniProt ID or GeneSymbol
+\sphinxstyleliteralstrong{\sphinxupquote{target}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}\sphinxstyleliteralemphasis{\sphinxupquote{,}}\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Vertex index or UniProt ID or GeneSymbol or \sphinxcode{\sphinxupquote{igraph.Vertex}}
+object.
 
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{directed}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} To be passed to igraph.Graph.get\_eid()
@@ -1216,13 +1210,15 @@ Returns a generator with all edges between source and target vertices.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{sources}} (\sphinxstyleliteralemphasis{\sphinxupquote{iterable}}) \textendash{} Source vertex IDs, names or labels.
+\sphinxstyleliteralstrong{\sphinxupquote{sources}} (\sphinxstyleliteralemphasis{\sphinxupquote{iterable}}) \textendash{} Source vertex IDs, names, labels, or any iterable yielding
+\sphinxcode{\sphinxupquote{igraph.Vertex}} objects.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{targets}} (\sphinxstyleliteralemphasis{\sphinxupquote{iterable}}) \textendash{} Target vertec IDs, names or labels.
+\sphinxstyleliteralstrong{\sphinxupquote{targets}} (\sphinxstyleliteralemphasis{\sphinxupquote{iterable}}) \textendash{} Target vertec IDs, names, labels, or any iterable yielding
+\sphinxcode{\sphinxupquote{igraph.Vertex}} objects.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{directed}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Passed to \sphinxtitleref{igraph.get\_eid()}.
+\sphinxstyleliteralstrong{\sphinxupquote{directed}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Passed to \sphinxcode{\sphinxupquote{igraph.get\_eid()}}.
 
 \end{itemize}
 
@@ -1250,7 +1246,8 @@ or a UniProt ID or GeneSymbol which can be found in the
 default undirected network, otherwise \sphinxcode{\sphinxupquote{None}}.
 \begin{description}
 \item[{@identifier}] \leavevmode{[}int, str{]}
-Vertex index (int) or GeneSymbol (str) or UniProt ID (str).
+Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or
+\sphinxcode{\sphinxupquote{igraph.Vertex}} object.
 
 \end{description}
 
@@ -1267,7 +1264,8 @@ or a UniProt ID or GeneSymbol which can be found in the
 default directed network, otherwise \sphinxcode{\sphinxupquote{None}}.
 \begin{description}
 \item[{@identifier}] \leavevmode{[}int, str{]}
-Vertex index (int) or GeneSymbol (str) or UniProt ID (str).
+Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or
+\sphinxcode{\sphinxupquote{igraph.Vertex}} object.
 
 \end{description}
 
@@ -1286,6 +1284,20 @@ Vertex index (int) or GeneSymbol (str) or UniProt ID (str).
 Annotates protein nodes with GO terms. In the \sphinxcode{\sphinxupquote{go}} vertex
 attribute each node is annotated by a dict of sets where keys are
 one letter codes of GO aspects and values are sets of GO accessions.
+
+\end{fulllineitems}
+
+\index{go\_dict() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.go_dict}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{go\_dict}}}{\emph{organism=9606}}{}
+Creates a \sphinxcode{\sphinxupquote{pypath.go.GOAnnotation}} object for one organism in the
+dict under \sphinxcode{\sphinxupquote{go}} attribute.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{organism}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} NCBI Taxonomy ID of the organism.
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -1369,7 +1381,7 @@ lists if in \sphinxtitleref{edgeAttrs} the attribute is registered as list.
 \index{init\_network() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.init_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{init\_network}}}{\emph{lst=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc950\textgreater{}}, \emph{'biogrid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6ab8\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc830\textgreater{}}, \emph{'ccmap': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcdd0\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25a47bd8\textgreater{}}, \emph{'dbptm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6248\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcb00\textgreater{}}, \emph{'depod': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6098\textgreater{}}, \emph{'dip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbce60\textgreater{}}, \emph{'domino': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc61b8\textgreater{}}, \emph{'elm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6170\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc758\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25a47b48\textgreater{}}, \emph{'hprd': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6c20\textgreater{}}, \emph{'hprd\_p': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6290\textgreater{}}, \emph{'innatedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcef0\textgreater{}}, \emph{'intact': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6a70\textgreater{}}, \emph{'lmpid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc60e0\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcab8\textgreater{}}, \emph{'matrixdb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcfc8\textgreater{}}, \emph{'mppi': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbce18\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbca28\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcb48\textgreater{}}, \emph{'phelm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6128\textgreater{}}, \emph{'psite': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6050\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25a47c68\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc710\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcd40\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc6c8\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc5f0\textgreater{}\}}, \emph{exclude={[}{]}}, \emph{cache\_files=\{\}}, \emph{pfile=False}, \emph{save=False}, \emph{reread=False}, \emph{redownload=False}, \emph{**kwargs}}{}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.init_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{init\_network}}}{\emph{lst=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c7e8\textgreater{}}, \emph{'biogrid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a7950\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c6c8\textgreater{}}, \emph{'ccmap': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cc68\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f127a70\textgreater{}}, \emph{'dbptm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a70e0\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c998\textgreater{}}, \emph{'depod': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cef0\textgreater{}}, \emph{'dip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39ccf8\textgreater{}}, \emph{'domino': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a7050\textgreater{}}, \emph{'elm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cfc8\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c5f0\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f1279e0\textgreater{}}, \emph{'hprd': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a7ab8\textgreater{}}, \emph{'hprd\_p': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a7128\textgreater{}}, \emph{'innatedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cd88\textgreater{}}, \emph{'intact': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a7908\textgreater{}}, \emph{'lmpid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cf38\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c950\textgreater{}}, \emph{'matrixdb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39ce60\textgreater{}}, \emph{'mppi': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39ccb0\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c8c0\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c9e0\textgreater{}}, \emph{'phelm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cf80\textgreater{}}, \emph{'psite': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cea8\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f127b00\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c5a8\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cbd8\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c560\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c488\textgreater{}\}}, \emph{exclude={[}{]}}, \emph{cache\_files=\{\}}, \emph{pfile=False}, \emph{save=False}, \emph{reread=False}, \emph{redownload=False}, \emph{**kwargs}}{}
 This is a lazy way to start the module, load data
 and build the high confidence, literature curated
 part of the signaling network.
@@ -1560,7 +1572,7 @@ Loads Human Protein Atlas data into vertex attributes.
 \index{load\_ligand\_receptor\_network() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_ligand_receptor_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_ligand\_receptor\_network}}}{\emph{lig\_rec\_resources=True}, \emph{inference\_from\_go=True}, \emph{sources=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc950\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc830\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25a47bd8\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcb00\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc758\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25a47b48\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcab8\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbca28\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcb48\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25a47c68\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc710\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcd40\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc6c8\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc5f0\textgreater{}\}}, \emph{keep\_undirected=False}, \emph{keep\_rec\_rec=False}, \emph{keep\_lig\_lig=False}}{}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_ligand_receptor_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_ligand\_receptor\_network}}}{\emph{lig\_rec\_resources=True}, \emph{inference\_from\_go=True}, \emph{sources=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c7e8\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c6c8\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f127a70\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c998\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c5f0\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f1279e0\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c950\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c8c0\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c9e0\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f127b00\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c5a8\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cbd8\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c560\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c488\textgreater{}\}}, \emph{keep\_undirected=False}, \emph{keep\_rec\_rec=False}, \emph{keep\_lig\_lig=False}}{}
 Initializes a ligand-receptor network.
 
 \end{fulllineitems}
@@ -1677,7 +1689,7 @@ Those not used by \sphinxtitleref{PtmProcessor} are forwarded to the
 \index{load\_resources() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_resources}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_resources}}}{\emph{lst=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc950\textgreater{}}, \emph{'biogrid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6ab8\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc830\textgreater{}}, \emph{'ccmap': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcdd0\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25a47bd8\textgreater{}}, \emph{'dbptm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6248\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcb00\textgreater{}}, \emph{'depod': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6098\textgreater{}}, \emph{'dip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbce60\textgreater{}}, \emph{'domino': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc61b8\textgreater{}}, \emph{'elm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6170\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc758\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25a47b48\textgreater{}}, \emph{'hprd': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6c20\textgreater{}}, \emph{'hprd\_p': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6290\textgreater{}}, \emph{'innatedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcef0\textgreater{}}, \emph{'intact': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6a70\textgreater{}}, \emph{'lmpid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc60e0\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcab8\textgreater{}}, \emph{'matrixdb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcfc8\textgreater{}}, \emph{'mppi': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbce18\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbca28\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcb48\textgreater{}}, \emph{'phelm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6128\textgreater{}}, \emph{'psite': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cc6050\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25a47c68\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc710\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbcd40\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc6c8\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7fad25cbc5f0\textgreater{}\}}, \emph{exclude={[}{]}}, \emph{cache\_files=\{\}}, \emph{reread=False}, \emph{redownload=False}}{}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_resources}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_resources}}}{\emph{lst=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c7e8\textgreater{}}, \emph{'biogrid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a7950\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c6c8\textgreater{}}, \emph{'ccmap': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cc68\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f127a70\textgreater{}}, \emph{'dbptm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a70e0\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c998\textgreater{}}, \emph{'depod': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cef0\textgreater{}}, \emph{'dip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39ccf8\textgreater{}}, \emph{'domino': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a7050\textgreater{}}, \emph{'elm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cfc8\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c5f0\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f1279e0\textgreater{}}, \emph{'hprd': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a7ab8\textgreater{}}, \emph{'hprd\_p': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a7128\textgreater{}}, \emph{'innatedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cd88\textgreater{}}, \emph{'intact': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a7908\textgreater{}}, \emph{'lmpid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cf38\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c950\textgreater{}}, \emph{'matrixdb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39ce60\textgreater{}}, \emph{'mppi': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39ccb0\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c8c0\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c9e0\textgreater{}}, \emph{'phelm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cf80\textgreater{}}, \emph{'psite': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cea8\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f127b00\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c5a8\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cbd8\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c560\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c488\textgreater{}\}}, \emph{exclude={[}{]}}, \emph{cache\_files=\{\}}, \emph{reread=False}, \emph{redownload=False}}{}
 Loads multiple resources, and cleans up after.
 Looks up ID types, and loads all ID conversion
 tables from UniProt if necessary. This is much
@@ -1845,7 +1857,8 @@ or a UniProt ID or GeneSymbol which can be found in the
 default undirected network, otherwise \sphinxcode{\sphinxupquote{None}}.
 \begin{description}
 \item[{@identifier}] \leavevmode{[}int, str{]}
-Vertex index (int) or GeneSymbol (str) or UniProt ID (str).
+Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or
+\sphinxcode{\sphinxupquote{igraph.Vertex}} object.
 
 \end{description}
 
@@ -1928,7 +1941,8 @@ or a UniProt ID or GeneSymbol which can be found in the
 default directed network, otherwise \sphinxcode{\sphinxupquote{None}}.
 \begin{description}
 \item[{@identifier}] \leavevmode{[}int, str{]}
-Vertex index (int) or GeneSymbol (str) or UniProt ID (str).
+Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or
+\sphinxcode{\sphinxupquote{igraph.Vertex}} object.
 
 \end{description}
 
@@ -1943,10 +1957,12 @@ the 2 proteins, otherwise \sphinxcode{\sphinxupquote{None}}.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{source}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}\sphinxstyleliteralemphasis{\sphinxupquote{,}}\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Vertex index or UniProt ID or GeneSymbol
+\sphinxstyleliteralstrong{\sphinxupquote{source}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}\sphinxstyleliteralemphasis{\sphinxupquote{,}}\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Vertex index or UniProt ID or GeneSymbol or \sphinxcode{\sphinxupquote{igraph.Vertex}}
+object.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{target}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}\sphinxstyleliteralemphasis{\sphinxupquote{,}}\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Vertex index or UniProt ID or GeneSymbol
+\sphinxstyleliteralstrong{\sphinxupquote{target}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}\sphinxstyleliteralemphasis{\sphinxupquote{,}}\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Vertex index or UniProt ID or GeneSymbol or \sphinxcode{\sphinxupquote{igraph.Vertex}}
+object.
 
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{directed}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} To be passed to igraph.Graph.get\_eid()
@@ -2109,7 +2125,6 @@ Returns dict of igraph objects.
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.set_chembl_mysql}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_chembl\_mysql}}}{\emph{title}, \emph{config\_file=None}}{}
 Sets the ChEMBL MySQL config according to
 \sphinxtitleref{title} section in \sphinxtitleref{config\_file} ini style config.
-\begin{quote}
 
 title (str): section title in ini file
 config\_file (str, NoneType): config file name;
@@ -2117,7 +2132,6 @@ config\_file (str, NoneType): config file name;
 
 if None, the \sphinxtitleref{mysql\_config/defaults.mysql}
 will be used
-\end{quote}
 \end{quote}
 
 \end{fulllineitems}
@@ -2405,7 +2419,7 @@ To be passed to igraph.Graph.get\_eid()
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.update_adjlist}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{update\_adjlist}}}{\emph{graph=None}, \emph{mode='ALL'}}{}
-Creates an adjacency list in a dict of sets format.
+Creates an adjacency list in a list of sets format.
 
 \end{fulllineitems}
 
@@ -2474,7 +2488,8 @@ or a UniProt ID or GeneSymbol which can be found in the
 default undirected network, otherwise \sphinxcode{\sphinxupquote{None}}.
 \begin{description}
 \item[{@identifier}] \leavevmode{[}int, str{]}
-Vertex index (int) or GeneSymbol (str) or UniProt ID (str).
+Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or
+\sphinxcode{\sphinxupquote{igraph.Vertex}} object.
 
 \end{description}
 
@@ -2814,8 +2829,8 @@ returned.
 \phantomsection\label{\detokenize{main:pypath.main.Direction.majority_sign}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{majority\_sign}}}{}{}
 Infers which is the major sign (activation/inhibition) of the
 edge by number of supporting sources on both directions.
-\begin{description}
-\item[{{\color{red}\bfseries{}*}return:}] \leavevmode
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
 (\sphinxstyleemphasis{dict}) \textendash{} Keys are the node tuples on both directions
 (\sphinxcode{\sphinxupquote{straight}}/\sphinxcode{\sphinxupquote{reverse}}) and values can be
 either \sphinxcode{\sphinxupquote{None}} if that direction has no sign information or
@@ -2825,7 +2840,7 @@ elements of the list are \sphinxcode{\sphinxupquote{True}}, this means the numbe
 supporting sources for both signs in that direction is
 equal.
 
-\end{description}
+\end{description}\end{quote}
 
 \end{fulllineitems}
 

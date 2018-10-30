@@ -1,0 +1,1210 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pypath.common &#8212; pypath 0.7.98 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.98 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pypath.common</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1">#</span>
+<span class="c1">#  This file is part of the `pypath` python module</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright</span>
+<span class="c1">#  2014-2018</span>
+<span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
+<span class="c1">#</span>
+<span class="c1">#  File author(s): Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#</span>
+<span class="c1">#  Distributed under the GPLv3 License.</span>
+<span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
+<span class="c1">#      http://www.gnu.org/licenses/gpl-3.0.html</span>
+<span class="c1">#</span>
+<span class="c1">#  Website: http://www.ebi.ac.uk/~denes</span>
+<span class="c1">#</span>
+
+<span class="kn">from</span> <span class="nn">future.utils</span> <span class="k">import</span> <span class="n">iteritems</span>
+<span class="kn">from</span> <span class="nn">past.builtins</span> <span class="k">import</span> <span class="n">xrange</span><span class="p">,</span> <span class="nb">range</span><span class="p">,</span> <span class="n">reduce</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ROOT&#39;</span><span class="p">,</span> <span class="s1">&#39;aacodes&#39;</span><span class="p">,</span> <span class="s1">&#39;aaletters&#39;</span><span class="p">,</span> <span class="s1">&#39;simpleTypes&#39;</span><span class="p">,</span> <span class="s1">&#39;numTypes&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;uniqList&#39;</span><span class="p">,</span> <span class="s1">&#39;addToList&#39;</span><span class="p">,</span> <span class="s1">&#39;addToSet&#39;</span><span class="p">,</span> <span class="s1">&#39;gen_session_id&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;sorensen_index&#39;</span><span class="p">,</span> <span class="s1">&#39;simpson_index&#39;</span><span class="p">,</span> <span class="s1">&#39;simpson_index_counts&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;jaccard_index&#39;</span><span class="p">,</span> <span class="s1">&#39;console&#39;</span><span class="p">,</span> <span class="s1">&#39;wcl&#39;</span><span class="p">,</span> <span class="s1">&#39;flatList&#39;</span><span class="p">,</span> <span class="s1">&#39;charTypes&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;delEmpty&#39;</span><span class="p">,</span> <span class="s1">&#39;get_args&#39;</span><span class="p">,</span> <span class="s1">&#39;something&#39;</span><span class="p">,</span> <span class="s1">&#39;rotate&#39;</span><span class="p">,</span> <span class="s1">&#39;cleanDict&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;igraph_graphics_attrs&#39;</span><span class="p">,</span> <span class="s1">&#39;md5&#39;</span><span class="p">,</span> <span class="s1">&#39;mod_keywords&#39;</span><span class="p">,</span> <span class="s1">&#39;Namespace&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;taxids&#39;</span><span class="p">,</span> <span class="s1">&#39;taxa&#39;</span><span class="p">,</span> <span class="s1">&#39;phosphoelm_taxids&#39;</span><span class="p">,</span> <span class="s1">&#39;dbptm_taxids&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;uniqOrdList&#39;</span><span class="p">,</span> <span class="s1">&#39;dict_diff&#39;</span><span class="p">]</span>
+
+<span class="c1"># get the location</span>
+<span class="n">ROOT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+<span class="n">DATA</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ROOT</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">basestring</span>
+
+<span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+    <span class="n">basestring</span> <span class="o">=</span> <span class="nb">str</span>
+
+<span class="n">default_name_type</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;protein&quot;</span><span class="p">:</span> <span class="s2">&quot;uniprot&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;mirna&quot;</span><span class="p">:</span> <span class="s2">&quot;mirbase&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;lncrna&quot;</span><span class="p">:</span> <span class="s2">&quot;lncrnaname&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;drug&quot;</span><span class="p">:</span> <span class="s2">&quot;pubchem&quot;</span><span class="p">}</span>
+
+<span class="n">aacodes</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="s1">&#39;ALA&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">:</span> <span class="s1">&#39;GLY&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">:</span> <span class="s1">&#39;MET&#39;</span><span class="p">,</span> <span class="s1">&#39;W&#39;</span><span class="p">:</span> <span class="s1">&#39;TRP&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="s1">&#39;TYR&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="s1">&#39;ARG&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="s1">&#39;CYS&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">:</span> <span class="s1">&#39;SER&#39;</span><span class="p">,</span> <span class="s1">&#39;V&#39;</span><span class="p">:</span> <span class="s1">&#39;VAL&#39;</span><span class="p">,</span> <span class="s1">&#39;I&#39;</span><span class="p">:</span> <span class="s1">&#39;ILE&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="s1">&#39;LEU&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">:</span> <span class="s1">&#39;PRO&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="s1">&#39;HIS&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">:</span> <span class="s1">&#39;THR&#39;</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">:</span> <span class="s1">&#39;GLU&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;Q&#39;</span><span class="p">:</span> <span class="s1">&#39;GLN&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">:</span> <span class="s1">&#39;GLX&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span> <span class="s1">&#39;ASP&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="s1">&#39;ASN&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="s1">&#39;ASX&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;K&#39;</span><span class="p">:</span> <span class="s1">&#39;LYS&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">:</span> <span class="s1">&#39;PHE&#39;</span><span class="p">,</span> <span class="s1">&#39;J&#39;</span><span class="p">:</span> <span class="s1">&#39;XLE&#39;</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="s1">&#39;XAA&#39;</span><span class="p">}</span>
+
+<span class="n">aanames</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;alanine&#39;</span><span class="p">:</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;arginine&#39;</span><span class="p">:</span> <span class="s1">&#39;R&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;asparagine&#39;</span><span class="p">:</span> <span class="s1">&#39;N&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;aspartic acid&#39;</span><span class="p">:</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;cysteine&#39;</span><span class="p">:</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;glutamine&#39;</span><span class="p">:</span> <span class="s1">&#39;Q&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;glutamic acid&#39;</span><span class="p">:</span> <span class="s1">&#39;E&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;glycine&#39;</span><span class="p">:</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;histidine&#39;</span><span class="p">:</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;isoleucine&#39;</span><span class="p">:</span> <span class="s1">&#39;I&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;leucine&#39;</span><span class="p">:</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;lysine&#39;</span><span class="p">:</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;methionine&#39;</span><span class="p">:</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;phenylalanine&#39;</span><span class="p">:</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;proline&#39;</span><span class="p">:</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;serine&#39;</span><span class="p">:</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;threonine&#39;</span><span class="p">:</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;tryptophan&#39;</span><span class="p">:</span> <span class="s1">&#39;W&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;tyrosine&#39;</span><span class="p">:</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;valine&#39;</span><span class="p">:</span> <span class="s1">&#39;V&#39;</span><span class="p">}</span>
+
+<span class="n">mod_keywords</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Reactome&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;phosphopantetheinylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;phosphopantet&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;phosphorylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;phospho&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;acetylneuraminylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;acetylneuraminyl&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;acetylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;acetyl&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;farnesylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;farnesyl&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;palmitoylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;palmito&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;methylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;methyl&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;tetradecanoylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;tetradecanoyl&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;decanoylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;decanoyl&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;palmitoleylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;palmytoleil&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;formylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;formyl&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;ubiquitination&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;ubiquitin&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;galactosylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;galactos&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;glutamylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;glutamyl&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;fucosylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;fucosyl&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;myristoylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;myristoyl&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;carboxylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;carboxyl&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;biotinylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;biotinyl&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;glycosylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;glycosyl&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;octanoylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;octanoyl&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;glycylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;glycyl&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;hydroxylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hydroxy&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;sulfhydration&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;persulfid&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;thiolation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;thio&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;amidation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;amide&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;selenation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;seleno&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;glucosylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;glucosyl&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;neddylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;neddyl&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;sumoylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;sumoyl&#39;</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="s1">&#39;prenylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;prenyl&#39;</span><span class="p">])],</span>
+                <span class="s1">&#39;ACSN&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;phosphorylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;phospho&#39;</span><span class="p">]),</span>
+                         <span class="p">(</span><span class="s1">&#39;glycylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;glycyl&#39;</span><span class="p">]),</span>
+                         <span class="p">(</span><span class="s1">&#39;ubiquitination&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;ubiquitin&#39;</span><span class="p">]),</span>
+                         <span class="p">(</span><span class="s1">&#39;acetylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;acetyl&#39;</span><span class="p">]),</span>
+                         <span class="p">(</span><span class="s1">&#39;myristoylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;myristoyl&#39;</span><span class="p">]),</span>
+                         <span class="p">(</span><span class="s1">&#39;prenylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;prenyl&#39;</span><span class="p">]),</span>
+                         <span class="p">(</span><span class="s1">&#39;hydroxylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hydroxy&#39;</span><span class="p">])],</span>
+                <span class="s1">&#39;WikiPathways&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                <span class="s1">&#39;NetPath&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;phosphorylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;phospho&#39;</span><span class="p">]),</span>
+                            <span class="p">(</span><span class="s1">&#39;glycylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;glycyl&#39;</span><span class="p">]),</span>
+                            <span class="p">(</span><span class="s1">&#39;ubiquitination&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;ubiquitin&#39;</span><span class="p">]),</span>
+                            <span class="p">(</span><span class="s1">&#39;acetylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;acetyl&#39;</span><span class="p">])],</span>
+                <span class="s1">&#39;PANTHER&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;phosphorylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;phospho&#39;</span><span class="p">]),</span>
+                            <span class="p">(</span><span class="s1">&#39;acetylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;acetyl&#39;</span><span class="p">])],</span>
+                <span class="s1">&#39;NCI-PID&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;phosphorylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;phospho&#39;</span><span class="p">]),</span>
+                            <span class="p">(</span><span class="s1">&#39;methylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;methyl&#39;</span><span class="p">]),</span>
+                            <span class="p">(</span><span class="s1">&#39;farnesylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;farnesyl&#39;</span><span class="p">]),</span>
+                            <span class="p">(</span><span class="s1">&#39;palmitoylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;palmito&#39;</span><span class="p">]),</span>
+                            <span class="p">(</span><span class="s1">&#39;myristoylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;myristoyl&#39;</span><span class="p">]),</span>
+                            <span class="p">(</span><span class="s1">&#39;glycylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;glycyl&#39;</span><span class="p">]),</span>
+                            <span class="p">(</span><span class="s1">&#39;ubiquitination&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;ubiquitin&#39;</span><span class="p">]),</span>
+                            <span class="p">(</span><span class="s1">&#39;acetylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;acetyl&#39;</span><span class="p">]),</span>
+                            <span class="p">(</span><span class="s1">&#39;glycosylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;glycosyl&#39;</span><span class="p">]),</span>
+                            <span class="p">(</span><span class="s1">&#39;geranylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;geranyl&#39;</span><span class="p">]),</span>
+                            <span class="p">(</span><span class="s1">&#39;hydroxylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hydroxy&#39;</span><span class="p">])],</span>
+                <span class="s1">&#39;KEGG&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;phosphorylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hospho&#39;</span><span class="p">]),</span>
+                         <span class="p">(</span><span class="s1">&#39;methylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;methyl&#39;</span><span class="p">]),</span>
+                         <span class="p">(</span><span class="s1">&#39;ubiquitination&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;ubiquitin&#39;</span><span class="p">]),</span>
+                         <span class="p">(</span><span class="s1">&#39;acetylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;acetyl&#39;</span><span class="p">]),</span>
+                         <span class="p">(</span><span class="s1">&#39;hydroxylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;hydroxy&#39;</span><span class="p">]),</span>
+                         <span class="p">(</span><span class="s1">&#39;carboxyethylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;carboxyethyl&#39;</span><span class="p">]),</span>
+                         <span class="p">(</span><span class="s1">&#39;ribosylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;ribosyl&#39;</span><span class="p">]),</span>
+                         <span class="p">(</span><span class="s1">&#39;nitrosylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;nitrosyl&#39;</span><span class="p">]),</span>
+                         <span class="p">(</span><span class="s1">&#39;sulfoylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;ulfo&#39;</span><span class="p">]),</span>
+                         <span class="p">(</span><span class="s1">&#39;biotinylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;biotinyl&#39;</span><span class="p">]),</span>
+                         <span class="p">(</span><span class="s1">&#39;malonylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;malonyl&#39;</span><span class="p">]),</span>
+                         <span class="p">(</span><span class="s1">&#39;glutarylation&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;lutaryl&#39;</span><span class="p">])]}</span>
+
+<span class="c1"># FIXME:</span>
+<span class="c1"># Running from file does not raise error, but if you run the lines in</span>
+<span class="c1"># the interpreter, raises TypeError: argument of type &#39;module&#39; is not iterable</span>
+<span class="c1"># TODO: __builtins__ -&gt; dir(__builtins__)</span>
+
+<span class="c1"># XXX: This is also in main.py, could be directly added in __all__?</span>
+<span class="k">if</span> <span class="s1">&#39;long&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">__builtins__</span><span class="p">:</span>
+    <span class="n">long</span> <span class="o">=</span> <span class="nb">int</span>
+
+<span class="k">if</span> <span class="s1">&#39;unicode&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">__builtins__</span><span class="p">:</span>
+    <span class="n">unicode</span> <span class="o">=</span> <span class="nb">str</span>
+
+<span class="c1"># Inverted `aacodes` dict</span>
+<span class="n">aaletters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">aacodes</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">aacodes</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+
+<span class="c1"># Type definitions</span>
+<span class="n">simpleTypes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="nb">int</span><span class="p">,</span> <span class="n">long</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">unicode</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)])</span>
+<span class="n">numTypes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="nb">int</span><span class="p">,</span> <span class="n">long</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span>
+<span class="n">charTypes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="nb">str</span><span class="p">,</span> <span class="n">unicode</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">])</span>
+
+
+<span class="c1"># From http://www.peterbe.com/plog/uniqifiers-benchmark</span>
+<div class="viewcode-block" id="uniqList"><a class="viewcode-back" href="../../index.html#pypath.common.uniqList">[docs]</a><span class="k">def</span> <span class="nf">uniqList</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Reduces a list to its unique elements.</span>
+
+<span class="sd">    Takes any iterable and returns a list of unique elements on it. If</span>
+<span class="sd">    the argument is a dictionary, returns a list of unique keys.</span>
+<span class="sd">    **NOTE:** Does not preserve the order of the elements.</span>
+
+<span class="sd">    :arg list seq:</span>
+<span class="sd">        Sequence to be processed, can be any iterable type.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        (*list*) -- List of unique elements in the sequence *seq*.</span>
+
+<span class="sd">    **Examples:**</span>
+<span class="sd">        &gt;&gt;&gt; uniqList(&#39;aba&#39;)</span>
+<span class="sd">        [&#39;a&#39;, &#39;b&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; uniqList([0, 1, 2, 1, 0])</span>
+<span class="sd">        [0, 1, 2]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="nb">list</span><span class="p">({}</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+
+<span class="k">def</span> <span class="nf">uniqList1</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span> <span class="c1"># XXX: Not used</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Not order preserving</span>
+<span class="sd">    From http://www.peterbe.com/plog/uniqifiers-benchmark</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">seq</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">uniqList2</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span> <span class="c1"># XXX: Not used</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Not order preserving</span>
+<span class="sd">    From http://www.peterbe.com/plog/uniqifiers-benchmark</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">:</span>
+        <span class="n">keys</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">keys</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="flatList"><a class="viewcode-back" href="../../index.html#pypath.common.flatList">[docs]</a><span class="k">def</span> <span class="nf">flatList</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Coerces the elements of a list of iterables into a single list.</span>
+
+<span class="sd">    :arg lsit lst:</span>
+<span class="sd">        List to be flattened. Its elements can be also lists or any</span>
+<span class="sd">        other iterable.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        (*list*) -- Flattened list of *lst*.</span>
+
+<span class="sd">    **Examples:**</span>
+<span class="sd">        &gt;&gt;&gt; flatList([(0, 1), (1, 1), (2, 1)])</span>
+<span class="sd">        [0, 1, 1, 1, 2, 1]</span>
+<span class="sd">        &gt;&gt; flatList([&#39;abc&#39;, &#39;def&#39;])</span>
+<span class="sd">        [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;, &#39;f&#39;]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">it</span> <span class="k">for</span> <span class="n">sl</span> <span class="ow">in</span> <span class="n">lst</span> <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">sl</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="delEmpty"><a class="viewcode-back" href="../../index.html#pypath.common.delEmpty">[docs]</a><span class="k">def</span> <span class="nf">delEmpty</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span> <span class="c1"># XXX: Only used in main.py line: 1278</span>
+    <span class="sd">&quot;&quot;&quot;Removes empty entries of a list.</span>
+
+<span class="sd">    It is assumed that elemenst of *lst* are iterables (e.g. str or</span>
+<span class="sd">    list).</span>
+
+<span class="sd">    :arg list lst:</span>
+<span class="sd">        List from which empty elements will be removed.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        (*list*) -- Copy of *lst* without elements whose length was</span>
+<span class="sd">        zero.</span>
+
+<span class="sd">    **Example:**</span>
+<span class="sd">        &gt;&gt;&gt; delEmpty([&#39;a&#39;, &#39;&#39;, &#39;b&#39;, &#39;c&#39;])</span>
+<span class="sd">        [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lst</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span></div>
+
+
+<span class="c1"># Order preserving</span>
+<span class="c1"># From http://www.peterbe.com/plog/uniqifiers-benchmark</span>
+<div class="viewcode-block" id="uniqOrdList"><a class="viewcode-back" href="../../index.html#pypath.common.uniqOrdList">[docs]</a><span class="k">def</span> <span class="nf">uniqOrdList</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">idfun</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> <span class="c1"># XXX: Only used in plot.py line: 510</span>
+    <span class="sd">&quot;&quot;&quot;Reduces a list to its unique elements keeping their order.</span>
+
+<span class="sd">    Returns a copy of *seq* without repeated elements. Preserves the</span>
+<span class="sd">    order. If any element is repeated, the first instance is kept.</span>
+
+<span class="sd">    :arg list seq:</span>
+<span class="sd">        Or any other iterable type. The sequence from which repeated</span>
+<span class="sd">        elements are to be removed.</span>
+<span class="sd">    :arg function idfun:</span>
+<span class="sd">        Optional, ``None`` by default. Identifier function, for each</span>
+<span class="sd">        entry of *seq*, returns a identifier of that entry from which</span>
+<span class="sd">        uniqueness is determined. Default behavior is f(x) = x. See</span>
+<span class="sd">        examples below.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        (*list*) -- Copy of *seq* without the repeated elements</span>
+<span class="sd">        (according to *idfun*).</span>
+
+<span class="sd">    **Examples:**</span>
+<span class="sd">        &gt;&gt;&gt; uniqOrdList([0, 1, 2, 1, 5])</span>
+<span class="sd">        [0, 1, 2, 5]</span>
+<span class="sd">        &gt;&gt;&gt; uniqOrdList(&#39;abracadabra&#39;)</span>
+<span class="sd">        [&#39;a&#39;, &#39;b&#39;, &#39;r&#39;, &#39;c&#39;, &#39;d&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; def f(x):</span>
+<span class="sd">        ...     if x &gt; 0:</span>
+<span class="sd">        ...             return 0</span>
+<span class="sd">        ...     else:</span>
+<span class="sd">        ...             return 1</span>
+<span class="sd">        &gt;&gt;&gt; uniqOrdList([-32, -42, 1, 15, -12], idfun=f)</span>
+<span class="sd">        [-32, 1]</span>
+<span class="sd">        &gt;&gt;&gt; def g(x): # Given a file name, return it without extension</span>
+<span class="sd">        ...    return x.split(&#39;.&#39;)[0]</span>
+<span class="sd">        &gt;&gt;&gt; uniqOrdList([&#39;a.png&#39;, &#39;a.txt&#39;, &#39;b.pdf&#39;], idfun=g)</span>
+<span class="sd">        [&#39;a.png&#39;, &#39;b.pdf&#39;]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">idfun</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">idfun</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">x</span>
+
+    <span class="n">seen</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">:</span>
+        <span class="n">marker</span> <span class="o">=</span> <span class="n">idfun</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">marker</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">seen</span><span class="p">[</span><span class="n">marker</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="addToList"><a class="viewcode-back" href="../../index.html#pypath.common.addToList">[docs]</a><span class="k">def</span> <span class="nf">addToList</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">toadd</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Adds elements to a list.</span>
+
+<span class="sd">    Appends *toadd* to *lst*. Function differs from</span>
+<span class="sd">    :py:func:`list.append` since is capable to handle different data</span>
+<span class="sd">    types. This is, if *lst* is not a list, it will be converted to one.</span>
+<span class="sd">    Similarly, if *toadd* is not a list, it will be converted and added.</span>
+<span class="sd">    If *toadd* is or contains ``None``, these will be ommited. The</span>
+<span class="sd">    returned list will only contain unique elements and does not</span>
+<span class="sd">    necessarily preserve order.</span>
+
+<span class="sd">    :arg list lst:</span>
+<span class="sd">        List or any other type (will be converted into a list). Original</span>
+<span class="sd">        sequence to which *toadd* will be appended.</span>
+<span class="sd">    :arg any toadd:</span>
+<span class="sd">        Element(s) to be added into *lst*.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        (*list*) -- Contains the unique element(s) from the union of</span>
+<span class="sd">        *lst* and *toadd*. **NOTE:** Makes use of</span>
+<span class="sd">        :py:func:`common.uniqList`, does not preserve order of elements.</span>
+
+<span class="sd">    **Examples:**</span>
+<span class="sd">        &gt;&gt;&gt; addToList(&#39;ab&#39;, &#39;cd&#39;)</span>
+<span class="sd">        [&#39;ab&#39;, &#39;cd&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; addToList(&#39;ab&#39;, [&#39;cd&#39;, None, &#39;ab&#39;, &#39;ef&#39;])</span>
+<span class="sd">        [&#39;ab&#39;, &#39;ef&#39;, &#39;cd&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; addToList((0, 1, 2), 4)</span>
+<span class="sd">        [0, 1, 2, 4]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="ow">in</span> <span class="n">simpleTypes</span><span class="p">:</span>
+            <span class="n">lst</span> <span class="o">=</span> <span class="p">[</span><span class="n">lst</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lst</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">toadd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">lst</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">toadd</span><span class="p">)</span> <span class="ow">in</span> <span class="n">simpleTypes</span><span class="p">:</span>
+        <span class="n">lst</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">toadd</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">toadd</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="n">toadd</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">toadd</span><span class="p">)</span>
+
+        <span class="n">lst</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">toadd</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+        <span class="n">lst</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">uniqList</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="addToSet"><a class="viewcode-back" href="../../index.html#pypath.common.addToSet">[docs]</a><span class="k">def</span> <span class="nf">addToSet</span><span class="p">(</span><span class="n">st</span><span class="p">,</span> <span class="n">toadd</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Adds elements to a set.</span>
+
+<span class="sd">    Appends *toadd* to *st*. Function is capable to handle different</span>
+<span class="sd">    input data types. This is, if *toadd* is a list, it will be</span>
+<span class="sd">    converted to a set and added.</span>
+
+<span class="sd">    :arg set st:</span>
+<span class="sd">        Original set to which *toadd* will be added.</span>
+<span class="sd">    :arg any toadd:</span>
+<span class="sd">        Element(s) to be added into *st*.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        (*set*) -- Contains the element(s) from the union of *st* and</span>
+<span class="sd">        *toadd*.</span>
+
+<span class="sd">    **Examples:**</span>
+<span class="sd">        &gt;&gt;&gt; st = set([0, 1, 2])</span>
+<span class="sd">        &gt;&gt;&gt; addToSet(st, 3)</span>
+<span class="sd">        set([0, 1, 2, 3])</span>
+<span class="sd">        &gt;&gt;&gt; addToSet(st, [4, 2, 5])</span>
+<span class="sd">        set([0, 1, 2, 4, 5])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">toadd</span><span class="p">)</span> <span class="ow">in</span> <span class="n">simpleTypes</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">toadd</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">toadd</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="n">toadd</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">toadd</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">toadd</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">set</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">toadd</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">st</span></div>
+
+
+<div class="viewcode-block" id="something"><a class="viewcode-back" href="../../index.html#pypath.common.something">[docs]</a><span class="k">def</span> <span class="nf">something</span><span class="p">(</span><span class="n">anything</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Checks if argument is empty.</span>
+
+<span class="sd">    Checks if *anything* is empty or ``None``.</span>
+
+<span class="sd">    :arg any anything:</span>
+<span class="sd">        Self-explanatory.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        (*bool*) -- ``False`` if *anyhting* is ``None`` or any empty</span>
+<span class="sd">        data type.</span>
+
+<span class="sd">    **Examples:**</span>
+<span class="sd">        &gt;&gt;&gt; something(None)</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; something(123)</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; something(&#39;Hello world!&#39;)</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; something(&#39;&#39;)</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; something([])</span>
+<span class="sd">        False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="n">anything</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="ow">or</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">anything</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">set</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">unicode</span><span class="p">]</span>
+                    <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">anything</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="gen_session_id"><a class="viewcode-back" href="../../index.html#pypath.common.gen_session_id">[docs]</a><span class="k">def</span> <span class="nf">gen_session_id</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generates a random alphanumeric string.</span>
+
+<span class="sd">    :arg int length:</span>
+<span class="sd">        Optional, ``5`` by default. Specifies the length of the random</span>
+<span class="sd">        string.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        (*str*) -- Random alphanumeric string of the specified length.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">abc</span> <span class="o">=</span> <span class="s1">&#39;0123456789abcdefghijklmnopqrstuvwxyz&#39;</span>
+
+    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">abc</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">length</span><span class="p">))</span></div>
+
+
+<span class="c1"># XXX: Are you sure this is the way to compute Simpson&#39;s index?</span>
+<div class="viewcode-block" id="simpson_index"><a class="viewcode-back" href="../../index.html#pypath.common.simpson_index">[docs]</a><span class="k">def</span> <span class="nf">simpson_index</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes Simpson&#39;s index.</span>
+
+<span class="sd">    Given two sets *a* and *b*, returns the Simpson index.</span>
+
+<span class="sd">    :arg set a:</span>
+<span class="sd">        Or any iterable type (will be converted to set).</span>
+<span class="sd">    :arg set b:</span>
+<span class="sd">        Or any iterable type (will be converted to set).</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        (*float*) -- The Simpson index between *a* and *b*.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">ab</span> <span class="o">=</span> <span class="n">a</span> <span class="o">&amp;</span> <span class="n">b</span>
+
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ab</span><span class="p">))</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)))</span></div>
+
+
+<span class="c1"># XXX: Related to comment above, what is this exactly?</span>
+<div class="viewcode-block" id="simpson_index_counts"><a class="viewcode-back" href="../../index.html#pypath.common.simpson_index_counts">[docs]</a><span class="k">def</span> <span class="nf">simpson_index_counts</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :arg a:</span>
+<span class="sd">    :arg b:</span>
+<span class="sd">    :arg c:</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        (*float*) --</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span> <span class="k">if</span> <span class="nb">min</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span></div>
+
+
+<div class="viewcode-block" id="sorensen_index"><a class="viewcode-back" href="../../index.html#pypath.common.sorensen_index">[docs]</a><span class="k">def</span> <span class="nf">sorensen_index</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the Sorensen index.</span>
+
+<span class="sd">    Computes the Sorensen-Dice coefficient between two sets *a* and *b*.</span>
+
+<span class="sd">    :arg set a:</span>
+<span class="sd">        Or any iterable type (will be converted to set).</span>
+<span class="sd">    :arg set b:</span>
+<span class="sd">        Or any iterable type (will be converted to set).</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        (*float*) -- The Sorensen-Dice coefficient between *a* and *b*.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">ab</span> <span class="o">=</span> <span class="n">a</span> <span class="o">&amp;</span> <span class="n">b</span>
+
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ab</span><span class="p">))</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="jaccard_index"><a class="viewcode-back" href="../../index.html#pypath.common.jaccard_index">[docs]</a><span class="k">def</span> <span class="nf">jaccard_index</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the Jaccard index.</span>
+
+<span class="sd">    Computes the Jaccard index between two sets *a* and *b*.</span>
+
+<span class="sd">    :arg set a:</span>
+<span class="sd">        Or any iterable type (will be converted to set).</span>
+<span class="sd">    :arg set b:</span>
+<span class="sd">        Or any iterable type (will be converted to set).</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        (*float*) -- The Jaccard index between *a* and *b*.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">ab</span> <span class="o">=</span> <span class="n">a</span> <span class="o">&amp;</span> <span class="n">b</span>
+
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ab</span><span class="p">))</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span> <span class="o">|</span> <span class="n">b</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="console"><a class="viewcode-back" href="../../index.html#pypath.common.console">[docs]</a><span class="k">def</span> <span class="nf">console</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Prints a message on the terminal.</span>
+
+<span class="sd">    Prints a *message* to the standard output (e.g. terminal) formatted</span>
+<span class="sd">    to 80 characters per line plus first-level indentation.</span>
+
+<span class="sd">    :arg str message:</span>
+<span class="sd">        The message to be printed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">textwrap</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">((</span><span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">message</span><span class="p">)</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">80</span><span class="p">))</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="wcl"><a class="viewcode-back" href="../../index.html#pypath.common.wcl">[docs]</a><span class="k">def</span> <span class="nf">wcl</span><span class="p">(</span><span class="n">f</span><span class="p">):</span> <span class="c1"># XXX: Not used (another function w/ same name defined in curl.py)</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">toClose</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="ow">is</span> <span class="n">file</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">f</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="ow">is</span> <span class="n">file</span> <span class="k">else</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">if</span> <span class="n">toClose</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span></div>
+
+
+<span class="c1"># XXX: Not very clear to me the purpose of this function.</span>
+<div class="viewcode-block" id="get_args"><a class="viewcode-back" href="../../index.html#pypath.common.get_args">[docs]</a><span class="k">def</span> <span class="nf">get_args</span><span class="p">(</span><span class="n">loc_dict</span><span class="p">,</span> <span class="n">remove</span><span class="o">=</span><span class="nb">set</span><span class="p">([])):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a dictionary of local variables, returns a copy of it without</span>
+<span class="sd">    ``&#39;self&#39;``, ``&#39;kwargs&#39;`` (in the scope of a :py:obj:`class`) plus</span>
+<span class="sd">    any other specified in the keyword argument *remove*.</span>
+
+<span class="sd">    :arg dict loc_dict:</span>
+<span class="sd">        Dictionary containing the local variables (e.g. a call to</span>
+<span class="sd">        :py:func:`locals()` in a given scope).</span>
+<span class="sd">    :arg set remove:</span>
+<span class="sd">        Optional, ``set([])`` by default. Can also be a list. Contains</span>
+<span class="sd">        the keys of the elements in *loc_dict* that will be removed.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        (*dict*) -- Copy of *loc_dict* without ``&#39;self&#39;``, ``&#39;kwargs&#39;``</span>
+<span class="sd">        and any other element specified in *remove*.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">remove</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">set</span><span class="p">,</span> <span class="nb">list</span><span class="p">]:</span>
+        <span class="n">remove</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">remove</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">remove</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="n">remove</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">remove</span><span class="p">)</span>
+
+    <span class="n">remove</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;self&#39;</span><span class="p">)</span>
+    <span class="n">remove</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;kwargs&#39;</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">loc_dict</span><span class="p">)</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">remove</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;kwargs&#39;</span> <span class="ow">in</span> <span class="n">loc_dict</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="o">+</span> <span class="n">loc_dict</span><span class="p">[</span><span class="s1">&#39;kwargs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="n">args</span></div>
+
+
+<span class="c1"># From http://stackoverflow.com/a/20024348/854988</span>
+<div class="viewcode-block" id="rotate"><a class="viewcode-back" href="../../index.html#pypath.common.rotate">[docs]</a><span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)):</span> <span class="c1"># XXX: Not used? Wrote the docs before checking XD</span>
+    <span class="sd">&quot;&quot;&quot;Rotates a point with respect to a center.</span>
+
+<span class="sd">    Rotates a given *point* around a *center* according to the specified</span>
+<span class="sd">    *angle* (in degrees) in a two-dimensional space. The rotation is</span>
+<span class="sd">    counter-clockwise.</span>
+
+<span class="sd">    :arg tuple point:</span>
+<span class="sd">        Or list. Contains the two coordinates of the point to be</span>
+<span class="sd">        rotated.</span>
+<span class="sd">    :arg float angle:</span>
+<span class="sd">        Angle (in degrees) from which the point will be rotated with</span>
+<span class="sd">        respect to *center* (counter-clockwise).</span>
+<span class="sd">    :arg tuple center:</span>
+<span class="sd">        Optional, ``(0.0, 0.0)`` by default. Can also be a list.</span>
+<span class="sd">        Determines the two coordinates of the center relative to which</span>
+<span class="sd">        the point has to be rotated.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        (*tuple*) -- Pair of coordinates of the rotated point.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+    <span class="n">temp_point</span> <span class="o">=</span> <span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">temp_point</span> <span class="o">=</span> <span class="p">(</span><span class="n">temp_point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+                  <span class="o">-</span> <span class="n">temp_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span>
+                  <span class="n">temp_point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+                  <span class="o">+</span> <span class="n">temp_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">))</span>
+    <span class="n">temp_point</span> <span class="o">=</span> <span class="n">temp_point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">temp_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">temp_point</span></div>
+
+
+<div class="viewcode-block" id="cleanDict"><a class="viewcode-back" href="../../index.html#pypath.common.cleanDict">[docs]</a><span class="k">def</span> <span class="nf">cleanDict</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Cleans a dictionary of ``None`` values.</span>
+
+<span class="sd">    Removes ``None`` values from  a dictionary *dct* and casts all other</span>
+<span class="sd">    values to strings.</span>
+
+<span class="sd">    :arg dict dct:</span>
+<span class="sd">        Dictionary to be cleaned from ``None`` values.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        (*dict*) -- Copy of *dct* without ``None`` value entries and all</span>
+<span class="sd">        other values formatted to strings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">toDel</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">toDel</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dct</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">toDel</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">dct</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">dct</span></div>
+
+
+<div class="viewcode-block" id="md5"><a class="viewcode-back" href="../../index.html#pypath.common.md5">[docs]</a><span class="k">def</span> <span class="nf">md5</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the sum of MD5 hash of a given string *value*.</span>
+
+<span class="sd">    :arg str value:</span>
+<span class="sd">        Or any other type (will be converted to string). Value for which</span>
+<span class="sd">        the MD5 sum will be computed. Must follow ASCII encoding.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        (*str*) -- Hash value resulting from the MD5 sum of the *value*</span>
+<span class="sd">        string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
+
+    <span class="k">except</span><span class="p">:</span> <span class="c1"># XXX: Bad practice to catch all exceptions</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span> <span class="c1"># XXX: Same as the try statement!?</span>
+
+    <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">string</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
+
+
+<span class="c1"># XXX: Shouldn&#39;t we keep all functions and variables separated</span>
+<span class="c1">#      (together among them)?</span>
+<span class="n">igraph_graphics_attrs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;vertex&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">,</span> <span class="s1">&#39; color&#39;</span><span class="p">,</span> <span class="s1">&#39;frame_color&#39;</span><span class="p">,</span>
+                                    <span class="s1">&#39;frame_width&#39;</span><span class="p">,</span> <span class="s1">&#39;shape&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">,</span>
+                                    <span class="s1">&#39;label_dist&#39;</span><span class="p">,</span> <span class="s1">&#39;label_color&#39;</span><span class="p">,</span> <span class="s1">&#39;label_size&#39;</span><span class="p">,</span>
+                                    <span class="s1">&#39;label_angle&#39;</span><span class="p">],</span>
+                         <span class="s1">&#39;edge&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;curved&#39;</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">,</span> <span class="s1">&#39;arrow_size&#39;</span><span class="p">,</span>
+                                  <span class="s1">&#39;arrow_width&#39;</span><span class="p">]}</span>
+
+
+<span class="k">def</span> <span class="nf">merge_dicts</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Merges dictionaries recursively.</span>
+
+<span class="sd">    If a key exists in both dictionaries, the values will be merged.</span>
+
+<span class="sd">    :arg dict d1:</span>
+<span class="sd">        Base dictionary where *d2* will be merged.</span>
+<span class="sd">    :arg dict d1:</span>
+<span class="sd">        Dictionary to be merged into *d1*.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        (*dict*) -- Resulting dictionary from the merging.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">k2</span><span class="p">,</span> <span class="n">v2</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">d2</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">v2</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">k2</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d1</span><span class="p">:</span>
+            <span class="n">d1</span><span class="p">[</span><span class="n">k2</span><span class="p">]</span> <span class="o">=</span> <span class="n">v2</span>
+
+        <span class="k">elif</span> <span class="n">t</span> <span class="ow">is</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="n">d1</span><span class="p">[</span><span class="n">k2</span><span class="p">]</span> <span class="o">=</span> <span class="n">merge_dicts</span><span class="p">(</span><span class="n">d1</span><span class="p">[</span><span class="n">k2</span><span class="p">],</span> <span class="n">v2</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">t</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="n">d1</span><span class="p">[</span><span class="n">k2</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">v2</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">t</span> <span class="ow">is</span> <span class="nb">set</span><span class="p">:</span>
+            <span class="n">d1</span><span class="p">[</span><span class="n">k2</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">v2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">d1</span>
+
+
+<span class="c1"># XXX: Not 100% clear, correct if I&#39;m mistaken. What do you mean by</span>
+<span class="c1">#      simple heuristic?</span>
+<span class="k">def</span> <span class="nf">dict_set_path</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a dictionary of dictionaries *d* looks up the keys according</span>
+<span class="sd">    to *path*, creates new subdicts and keys if those do not exist yet,</span>
+<span class="sd">    and sets/merges the leaf element according to simple heuristic.</span>
+
+<span class="sd">    :arg dict d:</span>
+<span class="sd">        Dictionary of dictionaries for which the path is to be set.</span>
+<span class="sd">    :arg list path:</span>
+<span class="sd">        Or tuple, contains the path of keys being the first element a</span>
+<span class="sd">        key of *d* (if doesn&#39;t exist will be created), and the</span>
+<span class="sd">        subsequent of the inner dictionaries. The last element is the</span>
+<span class="sd">        value that will be set/merged on the specified path.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        (*dict*) -- Copy of *d* including the specified *path*.</span>
+
+<span class="sd">    **Example:**</span>
+<span class="sd">        &gt;&gt;&gt; dict_set_path(dict(), [&#39;a&#39;, &#39;b&#39;, 1])</span>
+<span class="sd">        {&#39;a&#39;: {&#39;b&#39;: 1}}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">val</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">subd</span> <span class="o">=</span> <span class="n">d</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">path</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]:</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">subd</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">dict</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">subd</span><span class="p">:</span>
+                <span class="n">subd</span> <span class="o">=</span> <span class="n">subd</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">subd</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">subd</span> <span class="o">=</span> <span class="n">subd</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">d</span>
+
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">subd</span><span class="p">:</span>
+        <span class="n">subd</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">dict</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">subd</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">subd</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">subd</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="n">subd</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">subd</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">subd</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">set</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">set</span><span class="p">:</span>
+            <span class="n">subd</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">subd</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">d</span>
+
+
+<div class="viewcode-block" id="dict_diff"><a class="viewcode-back" href="../../index.html#pypath.common.dict_diff">[docs]</a><span class="k">def</span> <span class="nf">dict_diff</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compares two dictionaries.</span>
+
+<span class="sd">    Compares two given dictionaries *d1* and *d2* whose values are sets</span>
+<span class="sd">    or dictionaries (in such case the function is called recursively).</span>
+<span class="sd">    **NOTE:** The comparison is only performed on the values of the</span>
+<span class="sd">    keys that are common in *d1* and *d2* (see example below).</span>
+
+<span class="sd">    :arg dict d1:</span>
+<span class="sd">        First dictionary of the comparison.</span>
+<span class="sd">    :arg dict d2:</span>
+<span class="sd">        Second dictionary of the comparison.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        * (*dict*) -- Unique elements of *d1* when compared to *d2*.</span>
+<span class="sd">        * (*dict*) -- Unique elements of *d2* when compared to *d1*.</span>
+
+<span class="sd">    **Examples:**</span>
+<span class="sd">        &gt;&gt;&gt; d1 = {&#39;a&#39;: {1}, &#39;b&#39;: {2}, &#39;c&#39;: {3}} # &#39;c&#39; is unique to d1</span>
+<span class="sd">        &gt;&gt;&gt; d2 = {&#39;a&#39;: {1}, &#39;b&#39;: {3}}</span>
+<span class="sd">        &gt;&gt;&gt; dict_diff(d1, d2)</span>
+<span class="sd">        ({&#39;a&#39;: set([]), &#39;b&#39;: set([2])}, {&#39;a&#39;: set([2]), &#39;b&#39;: set([3])})</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ldiff</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">rdiff</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">d1</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">d2</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">d1</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">dict</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">d2</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="n">ldiff</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">rdiff</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">dict_diff</span><span class="p">(</span><span class="n">d1</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">d2</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">d1</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">set</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">d2</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">set</span><span class="p">:</span>
+            <span class="n">ldiff</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">rdiff</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">d1</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="n">d2</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">d2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="n">d1</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">ldiff</span><span class="p">,</span> <span class="n">rdiff</span></div>
+
+
+<span class="k">def</span> <span class="nf">dict_sym_diff</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">):</span> <span class="c1"># XXX: Not used</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">diff</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">d1</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">d2</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">d1</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">dict</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">d2</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="n">diff</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">dict_sym_diff</span><span class="p">(</span><span class="n">d1</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">d2</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">d1</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">set</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">d2</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">set</span><span class="p">:</span>
+            <span class="n">diff</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">d1</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">^</span> <span class="n">d2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">diff</span>
+
+
+<span class="k">def</span> <span class="nf">swap_dict</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Swaps a dictionary.</span>
+
+<span class="sd">    Interchanges the keys and values of a dictionary. If the values are</span>
+<span class="sd">    lists (or any iterable type) and/or not unique, each unique element</span>
+<span class="sd">    will be a key and values sets of the original keys of *d* (see</span>
+<span class="sd">    example below).</span>
+
+<span class="sd">    :arg dict d:</span>
+<span class="sd">        Original dictionary to be swapped.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        (*dict*) -- The swapped dictionary.</span>
+
+<span class="sd">    **Examples:**</span>
+<span class="sd">        &gt;&gt;&gt; d = {&#39;a&#39;: 1, &#39;b&#39;: 2}</span>
+<span class="sd">        &gt;&gt;&gt; swap_dict(d)</span>
+<span class="sd">        {1: &#39;a&#39;, 2: &#39;b&#39;}</span>
+<span class="sd">        &gt;&gt;&gt; d = {&#39;a&#39;: 1, &#39;b&#39;: 1, &#39;c&#39;: 2}</span>
+<span class="sd">        &gt;&gt;&gt; swap_dict(d)</span>
+<span class="sd">        {1: set([&#39;a&#39;, &#39;b&#39;]), 2: set([&#39;c&#39;])}</span>
+<span class="sd">        d = {&#39;a&#39;: [1, 2, 3], &#39;b&#39;: [2, 3]}</span>
+<span class="sd">        &gt;&gt;&gt; swap_dict(d)</span>
+<span class="sd">        {1: set([&#39;a&#39;]), 2: set([&#39;a&#39;, &#39;b&#39;]), 3: set([&#39;a&#39;, &#39;b&#39;])}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_d</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">vals</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">vals</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span> <span class="ow">in</span> <span class="n">simpleTypes</span> <span class="k">else</span> <span class="n">vals</span>
+
+        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">val</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_d</span><span class="p">:</span>
+                <span class="n">_d</span><span class="p">[</span><span class="n">val</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
+
+            <span class="n">_d</span><span class="p">[</span><span class="n">val</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_d</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+        <span class="n">_d</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">v</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">_d</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">_d</span>
+
+
+<span class="k">def</span> <span class="nf">swap_dict_simple</span><span class="p">(</span><span class="n">d</span><span class="p">):</span> <span class="c1"># XXX: Not used</span>
+    <span class="sd">&quot;&quot;&quot;Swaps a dictionary.</span>
+
+<span class="sd">    Interchanges the keys and values of a dictionary. Assumes the values</span>
+<span class="sd">    are unique and hashable, otherwise overwrites duplicates or raises</span>
+<span class="sd">    error.</span>
+
+<span class="sd">    :arg dict d:</span>
+<span class="sd">        Original dictionary to be swapped.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        (*dict*) -- The swapped dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+
+
+<span class="c1"># XXX: Not sure what this joins exactly... I tried:</span>
+<span class="c1">#      &gt;&gt;&gt; a = {&#39;a&#39;: [1], &#39;b&#39;: [2]}</span>
+<span class="c1">#      &gt;&gt;&gt; b = {&#39;a&#39;: [2], &#39;b&#39;: [4]}</span>
+<span class="c1">#      &gt;&gt;&gt; join_dicts(a, b)</span>
+<span class="c1">#      and got an empty dictionary (?)</span>
+
+<span class="k">def</span> <span class="nf">join_dicts</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">,</span> <span class="n">_from</span><span class="o">=</span><span class="s1">&#39;keys&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;values&#39;</span><span class="p">):</span> <span class="c1"># TODO</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Joins a pair of dictionaries.</span>
+
+<span class="sd">    :arg dict d1:</span>
+<span class="sd">        Dictionary to be merged with *d2*</span>
+<span class="sd">    :arg dict d2:</span>
+<span class="sd">        Dictionary to be merged with *d1*</span>
+<span class="sd">    :arg str _from:</span>
+<span class="sd">        Optional, ``&#39;keys&#39;`` by default.</span>
+<span class="sd">    :arg str to:</span>
+<span class="sd">        Optional, ``&#39;values&#39;`` by default.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        (*dict*) -- .</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="n">to</span> <span class="o">==</span> <span class="s1">&#39;keys&#39;</span><span class="p">:</span>
+        <span class="n">d2</span> <span class="o">=</span> <span class="n">swap_dict</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">key1</span><span class="p">,</span> <span class="n">val1</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">d1</span><span class="p">):</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="p">([</span><span class="n">key1</span><span class="p">]</span> <span class="k">if</span> <span class="n">_from</span> <span class="o">==</span> <span class="s1">&#39;keys&#39;</span>
+                          <span class="k">else</span> <span class="p">[</span><span class="n">val1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">val1</span><span class="p">)</span> <span class="ow">in</span> <span class="n">simpleTypes</span>
+                                      <span class="k">else</span> <span class="n">val1</span><span class="p">)</span>
+        <span class="n">meds</span> <span class="o">=</span> <span class="p">([</span><span class="n">key1</span><span class="p">]</span> <span class="k">if</span> <span class="n">_from</span> <span class="o">==</span> <span class="s1">&#39;values&#39;</span>
+                       <span class="k">else</span> <span class="p">[</span><span class="n">val1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">val1</span><span class="p">)</span> <span class="ow">in</span> <span class="n">simpleTypes</span>
+                                   <span class="k">else</span> <span class="n">val1</span><span class="p">)</span>
+        <span class="n">targets</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
+
+        <span class="k">for</span> <span class="n">med</span> <span class="ow">in</span> <span class="n">meds</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">med</span> <span class="ow">in</span> <span class="n">d2</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+                    <span class="n">targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d2</span><span class="p">[</span><span class="n">med</span><span class="p">])</span>
+
+                <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">d2</span><span class="p">[</span><span class="n">med</span><span class="p">])</span> <span class="ow">in</span> <span class="n">simpleTypes</span><span class="p">:</span>
+                    <span class="n">targets</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">d2</span><span class="p">[</span><span class="n">med</span><span class="p">])</span>
+
+                <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">d2</span><span class="p">[</span><span class="n">med</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+                    <span class="n">targets</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">d2</span><span class="p">[</span><span class="n">med</span><span class="p">]))</span>
+
+                <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">d2</span><span class="p">[</span><span class="n">med</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">set</span><span class="p">:</span>
+                    <span class="n">targets</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">d2</span><span class="p">[</span><span class="n">med</span><span class="p">])</span>
+
+                <span class="k">elif</span> <span class="n">d2</span><span class="p">[</span><span class="n">med</span><span class="p">]</span><span class="o">.</span><span class="fm">__hash__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">targets</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">d2</span><span class="p">[</span><span class="n">med</span><span class="p">])</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">targets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
+                    <span class="n">targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d2</span><span class="p">[</span><span class="n">med</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="n">source</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                    <span class="n">result</span><span class="p">[</span><span class="n">source</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+                <span class="n">result</span><span class="p">[</span><span class="n">source</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">set</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="n">source</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                    <span class="n">result</span><span class="p">[</span><span class="n">source</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
+
+                <span class="n">result</span><span class="p">[</span><span class="n">source</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">v</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">class</span> <span class="nc">Namespace</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span> <span class="c1"># XXX: WHY? + Not used anywhere</span>
+    <span class="k">pass</span>
+
+
+<div class="viewcode-block" id="fun"><a class="viewcode-back" href="../../index.html#pypath.common.fun">[docs]</a><span class="k">def</span> <span class="nf">fun</span><span class="p">():</span> <span class="c1"># XXX: Best name for a function. Not 100% sure if used anywhere...</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="vm">__name__</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">())</span>
+
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="vm">__name__</span></div>
+
+
+<span class="c1"># XXX: Shouldn&#39;t we keep all functions and variables separated</span>
+<span class="c1">#      (together among them)?</span>
+<span class="n">taxids</span> <span class="o">=</span> <span class="p">{</span><span class="mi">9606</span><span class="p">:</span> <span class="s1">&#39;human&#39;</span><span class="p">,</span>
+          <span class="mi">10090</span><span class="p">:</span> <span class="s1">&#39;mouse&#39;</span><span class="p">,</span>
+          <span class="mi">10116</span><span class="p">:</span> <span class="s1">&#39;rat&#39;</span><span class="p">,</span>
+          <span class="mi">9031</span><span class="p">:</span> <span class="s1">&#39;chicken&#39;</span><span class="p">,</span>
+          <span class="mi">9913</span><span class="p">:</span> <span class="s1">&#39;cow&#39;</span><span class="p">,</span>
+          <span class="mi">9986</span><span class="p">:</span> <span class="s1">&#39;rabbit&#39;</span><span class="p">,</span>
+          <span class="mi">9940</span><span class="p">:</span> <span class="s1">&#39;sheep&#39;</span><span class="p">,</span>
+          <span class="mi">10141</span><span class="p">:</span> <span class="s1">&#39;guinea pig&#39;</span><span class="p">,</span>
+          <span class="mi">10036</span><span class="p">:</span> <span class="s1">&#39;hamster&#39;</span><span class="p">,</span>
+          <span class="mi">7227</span><span class="p">:</span> <span class="s1">&#39;fruit fly&#39;</span><span class="p">,</span>
+          <span class="mi">9615</span><span class="p">:</span> <span class="s1">&#39;dog&#39;</span><span class="p">,</span>
+          <span class="mi">9823</span><span class="p">:</span> <span class="s1">&#39;pig&#39;</span><span class="p">,</span>
+          <span class="mi">8355</span><span class="p">:</span> <span class="s1">&#39;frog&#39;</span><span class="p">,</span>
+          <span class="mi">9091</span><span class="p">:</span> <span class="s1">&#39;quail&#39;</span><span class="p">,</span>
+          <span class="mi">9796</span><span class="p">:</span> <span class="s1">&#39;horse&#39;</span><span class="p">,</span>
+          <span class="mi">9925</span><span class="p">:</span> <span class="s1">&#39;goat&#39;</span><span class="p">,</span>
+          <span class="mi">89462</span><span class="p">:</span> <span class="s1">&#39;water buffalo&#39;</span><span class="p">,</span>
+          <span class="mi">9598</span><span class="p">:</span> <span class="s1">&#39;monkey&#39;</span><span class="p">,</span>
+          <span class="mi">9103</span><span class="p">:</span> <span class="s1">&#39;turkey&#39;</span><span class="p">,</span>
+          <span class="mi">9685</span><span class="p">:</span> <span class="s1">&#39;cat&#39;</span><span class="p">,</span>
+          <span class="mi">7604</span><span class="p">:</span> <span class="s1">&#39;starfish&#39;</span><span class="p">,</span>
+          <span class="mi">1213717</span><span class="p">:</span> <span class="s1">&#39;torpedo&#39;</span><span class="p">,</span>
+          <span class="mi">9669</span><span class="p">:</span> <span class="s1">&#39;ferret&#39;</span><span class="p">,</span>
+          <span class="mi">8839</span><span class="p">:</span> <span class="s1">&#39;duck&#39;</span><span class="p">}</span>
+
+<span class="n">taxa</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">taxids</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+
+<span class="n">phosphoelm_taxids</span> <span class="o">=</span> <span class="p">{</span><span class="mi">9606</span><span class="p">:</span> <span class="s1">&#39;Homo sapiens&#39;</span><span class="p">,</span>
+                     <span class="mi">10090</span><span class="p">:</span> <span class="s1">&#39;Mus musculus&#39;</span><span class="p">,</span>
+                     <span class="mi">9913</span><span class="p">:</span> <span class="s1">&#39;Bos taurus&#39;</span><span class="p">,</span>
+                     <span class="mi">9986</span><span class="p">:</span> <span class="s1">&#39;Oryctolagus cuniculus&#39;</span><span class="p">,</span>
+                     <span class="mi">9615</span><span class="p">:</span> <span class="s1">&#39;Canis familiaris&#39;</span><span class="p">,</span>
+                     <span class="mi">10029</span><span class="p">:</span> <span class="s1">&#39;Cricetulus griseus&#39;</span><span class="p">,</span>
+                     <span class="mi">9267</span><span class="p">:</span> <span class="s1">&#39;Didelphis virginiana&#39;</span><span class="p">,</span>
+                     <span class="mi">9031</span><span class="p">:</span> <span class="s1">&#39;Gallus gallus&#39;</span><span class="p">,</span>
+                     <span class="mi">10036</span><span class="p">:</span> <span class="s1">&#39;Mesocricetus auratus&#39;</span><span class="p">,</span>
+                     <span class="mi">9940</span><span class="p">:</span> <span class="s1">&#39;Ovis aries&#39;</span><span class="p">,</span>
+                     <span class="mi">10116</span><span class="p">:</span> <span class="s1">&#39;Rattus norvegicus&#39;</span><span class="p">,</span>
+                     <span class="mi">9823</span><span class="p">:</span> <span class="s1">&#39;Sus scrofa&#39;</span><span class="p">,</span>
+                     <span class="mi">8355</span><span class="p">:</span> <span class="s1">&#39;Xenopus laevis&#39;</span><span class="p">}</span>
+
+<span class="n">dbptm_taxids</span> <span class="o">=</span> <span class="p">{</span><span class="mi">9606</span><span class="p">:</span> <span class="s1">&#39;HUMAN&#39;</span><span class="p">,</span>
+                <span class="mi">10090</span><span class="p">:</span> <span class="s1">&#39;MOUSE&#39;</span><span class="p">,</span>
+                <span class="mi">7227</span><span class="p">:</span> <span class="s1">&#39;DROME&#39;</span><span class="p">,</span>
+                <span class="mi">10116</span><span class="p">:</span> <span class="s1">&#39;RAT&#39;</span><span class="p">,</span>
+                <span class="mi">559292</span><span class="p">:</span> <span class="s1">&#39;YEAST&#39;</span><span class="p">,</span>
+                <span class="mi">284812</span><span class="p">:</span> <span class="s1">&#39;SCHPO&#39;</span><span class="p">,</span>
+                <span class="mi">4081</span><span class="p">:</span> <span class="s1">&#39;SOLLC&#39;</span><span class="p">,</span>
+                <span class="mi">3702</span><span class="p">:</span> <span class="s1">&#39;ARATH&#39;</span><span class="p">,</span>
+                <span class="mi">9940</span><span class="p">:</span> <span class="s1">&#39;SHEEP&#39;</span><span class="p">,</span>
+                <span class="mi">9913</span><span class="p">:</span> <span class="s1">&#39;BOVIN&#39;</span><span class="p">,</span>
+                <span class="mi">9925</span><span class="p">:</span> <span class="s1">&#39;CAPHI&#39;</span><span class="p">,</span>
+                <span class="mi">44689</span><span class="p">:</span> <span class="s1">&#39;DICDI&#39;</span><span class="p">,</span>
+                <span class="mi">4577</span><span class="p">:</span> <span class="s1">&#39;MAIZE&#39;</span><span class="p">,</span>
+                <span class="mi">9823</span><span class="p">:</span> <span class="s1">&#39;PIG&#39;</span><span class="p">,</span>
+                <span class="mi">9615</span><span class="p">:</span> <span class="s1">&#39;CANLF&#39;</span><span class="p">,</span>
+                <span class="mi">6239</span><span class="p">:</span> <span class="s1">&#39;CAEEL&#39;</span><span class="p">,</span>
+                <span class="mi">8455</span><span class="p">:</span> <span class="s1">&#39;XENLA&#39;</span><span class="p">,</span>
+                <span class="mi">83333</span><span class="p">:</span> <span class="s1">&#39;ECOLI&#39;</span><span class="p">,</span>
+                <span class="mi">1891767</span><span class="p">:</span> <span class="s1">&#39;SV40&#39;</span><span class="p">}</span>
+
+<span class="n">psite_mod_types</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="s1">&#39;phosphorylation&#39;</span><span class="p">),</span>
+                   <span class="p">(</span><span class="s1">&#39;ac&#39;</span><span class="p">,</span> <span class="s1">&#39;acetylation&#39;</span><span class="p">),</span>
+                   <span class="p">(</span><span class="s1">&#39;ga&#39;</span><span class="p">,</span> <span class="s1">&#39;galactosylation&#39;</span><span class="p">),</span>
+                   <span class="p">(</span><span class="s1">&#39;gl&#39;</span><span class="p">,</span> <span class="s1">&#39;glycosylation&#39;</span><span class="p">),</span>
+                   <span class="p">(</span><span class="s1">&#39;sm&#39;</span><span class="p">,</span> <span class="s1">&#39;sumoylation&#39;</span><span class="p">),</span>
+                   <span class="p">(</span><span class="s1">&#39;ub&#39;</span><span class="p">,</span> <span class="s1">&#39;ubiquitination&#39;</span><span class="p">),</span>
+                   <span class="p">(</span><span class="s1">&#39;me&#39;</span><span class="p">,</span> <span class="s1">&#39;methylation&#39;</span><span class="p">)]</span>
+
+<span class="n">psite_mod_types2</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="s1">&#39;phosphorylation&#39;</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s1">&#39;ac&#39;</span><span class="p">,</span> <span class="s1">&#39;acetylation&#39;</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s1">&#39;ga&#39;</span><span class="p">,</span> <span class="s1">&#39;galactosylation&#39;</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s1">&#39;gl&#39;</span><span class="p">,</span> <span class="s1">&#39;glycosylation&#39;</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s1">&#39;ub&#39;</span><span class="p">,</span> <span class="s1">&#39;ubiquitination&#39;</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s1">&#39;me&#39;</span><span class="p">,</span> <span class="s1">&#39;methylation&#39;</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s1">&#39;sm&#39;</span><span class="p">,</span> <span class="s1">&#39;sumoylation&#39;</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s1">&#39;sc&#39;</span><span class="p">,</span> <span class="s1">&#39;succinylation&#39;</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s1">&#39;m1&#39;</span><span class="p">,</span> <span class="s1">&#39;mono-methylation&#39;</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s1">&#39;m2&#39;</span><span class="p">,</span> <span class="s1">&#39;di-methylation&#39;</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s1">&#39;m3&#39;</span><span class="p">,</span> <span class="s1">&#39;tri-methylation&#39;</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s1">&#39;ad&#39;</span><span class="p">,</span> <span class="s1">&#39;adenylation&#39;</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s1">&#39;pa&#39;</span><span class="p">,</span> <span class="s1">&#39;palmitoylation&#39;</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s1">&#39;ne&#39;</span><span class="p">,</span> <span class="s1">&#39;neddylation&#39;</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s1">&#39;sn&#39;</span><span class="p">,</span> <span class="s1">&#39;nitrosylation&#39;</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s1">&#39;ca&#39;</span><span class="p">,</span> <span class="s1">&#39;caspase-cleavage&#39;</span><span class="p">)]</span>
+
+<span class="n">mirbase_taxids</span> <span class="o">=</span> <span class="p">{</span><span class="mi">9606</span><span class="p">:</span> <span class="s1">&#39;hsa&#39;</span><span class="p">,</span>
+                  <span class="mi">10090</span><span class="p">:</span> <span class="s1">&#39;mmu&#39;</span><span class="p">,</span>
+                  <span class="mi">10116</span><span class="p">:</span> <span class="s1">&#39;rno&#39;</span><span class="p">,</span>
+                  <span class="mi">7227</span><span class="p">:</span> <span class="s1">&#39;dme&#39;</span><span class="p">}</span>
+
+
+<span class="k">class</span> <span class="nc">silent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span> <span class="c1"># XXX: Never used</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aux</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exception_type</span><span class="p">,</span> <span class="n">exception_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aux</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.98 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Dénes Türei.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>
