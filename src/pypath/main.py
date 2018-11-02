@@ -1278,10 +1278,14 @@ class PyPath(object):
         - *vertexAttrs* []:
     """
 
-    default_name_type = {'protein': 'uniprot',
-                         'mirna': 'mirbase',
-                         'drug': 'chembl',
-                         'lncrna': 'lncrna-genesymbol'}
+    default_name_type = {
+        'protein': 'uniprot',
+        'mirna': 'mirbase',
+        'drug': 'pubchem-cid',
+        'metabolite': 'pubchem-cid',
+        'small_molecule': 'pubchem-cid',
+        'lncrna': 'lncrna-genesymbol',
+    }
 
     def __init__(self, ncbi_tax_id=9606, default_name_type=default_name_type,
                  copy=None, mysql=(None, 'mapping'),

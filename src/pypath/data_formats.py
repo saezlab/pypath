@@ -1756,6 +1756,46 @@ ligand_receptor = {
         positiveFilters=[]),
 }
 
+small_molecule_protein = {
+        'signor': input_formats.ReadSettings(
+        name="Signor",
+        separator=None,
+        nameColA=2,
+        nameColB=6,
+        nameTypeA="pubchem-cid",
+        nameTypeB="uniprot",
+        # only direct interactions
+        positiveFilters=[(22, 'YES'), (1, 'chemical')],
+        # exclude TF-target interactions
+        negativeFilters=[(9, 'transcriptional regulation')],
+        typeA="small_molecule",
+        typeB="protein",
+        ncbiTaxId={'col': 12,
+                   'dict': {
+                       '9606;9606': 9606,
+                       '9606': 9606
+                   }},
+        isDirected=(8, [
+            'up-regulates', 'up-regulates activity',
+            'up-regulates quantity by stabilization', 'down-regulates',
+            'down-regulates activity',
+            'down-regulates quantity by destabilization'
+        ]),
+        sign=(8, [
+            'up-regulates', 'up-regulates activity',
+            'up-regulates quantity by stabilization'
+        ], [
+            'down-regulates', 'down-regulates activity',
+            'down-regulates quantity by destabilization'
+        ]),
+        inFile='signor_interactions',
+        references=(21, ";"),
+        header=True,
+        extraEdgeAttrs={"signor_mechanism": (9, ';')},
+        extraNodeAttrsA={},
+        extraNodeAttrsB={}),
+}
+
 ligand_receptor['guide2pharma'] = pathway['guide2pharma']
 pathway['hpmr'] = copy.deepcopy(ligand_receptor['hpmr'])
 pathway['hpmr'].must_have_references = True
