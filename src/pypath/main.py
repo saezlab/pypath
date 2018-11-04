@@ -5601,14 +5601,15 @@ class PyPath(object):
 
     def _neighborhood(self, vs, order=1, mode='ALL'):
         return _NamedVertexSeq(
-            map(
-                lambda vi: self.graph.vs[vi],
-                reduce(
-                    lambda a, b: a.extend(b),
-                    self.graph.neighborhood(
-                        vs, order=order, mode=mode), [])),
+            (
+                self.graph.vs[vi]
+                for vii in
+                self.graph.neighborhood(vs, order=order, mode=mode)
+                for vi in vii
+            ),
             self.nodNam,
-            self.nodLab)
+            self.nodLab
+        )
 
     def up_neighborhood(self, uniprot, order=1, mode='ALL'):
         if type(uniprots) in common.simpleTypes:
