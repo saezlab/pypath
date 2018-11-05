@@ -1222,8 +1222,9 @@ class PyPath(object):
         be converted. If others are used, user may need to provide the
         format definitions for the conversion tables.
     :arg pypath.main.PyPath copy:
-        Optional, ``None`` by default. Other :py:class:`PyPath` instance
-        from which the data will be copied.
+        Optional, ``None`` by default. Other
+        :py:class:`pypath.main.PyPath` instance from which the data will
+        be copied.
     :arg tuple mysql:
         Optional, ``(None, 'mapping')`` by default. Contains the MySQL
         parameters used by the :py:mod:`pypath.mapping` module to load
@@ -1284,8 +1285,9 @@ class PyPath(object):
         Maps the directed graph node indices [int] (keys) to their names
         [str] (values).
     :var dict edgeAttrs:
-        Stores the edge attribute names [str] (keys) and their
-        corresponding types (e.g.: set, list, str, ...).
+        Stores the edge attribute names [str] as keys and their
+        corresponding types (e.g.: ``set``, ``list``, ``str``, ...) as
+        values.
     :var pandas.DataFrame exp:
         Stores the expression data for the nodes (if loaded).
     :var pandas.DataFrame exp_prod:
@@ -1295,12 +1297,24 @@ class PyPath(object):
     :var set exp_samples:
         Contains a list of tissues as downloaded by ProteomicsDB. See
         :py:meth:`PyPath.get_proteomicsdb` for more information.
-    :var failed_edges:
-    :var go:
+    :var list failed_edges:
+        List of lists containing information about the failed edges.
+        Each failed edge sublist contains (in this order): [tuple] with
+        the node IDs, [str] names of nodes A and B, [int] IDs of nodes
+        A and B and [int] IDs of the edges in both directions.
+    :var dict go:
+        Contains the organism(s) NCBI taxonomy ID as key [int] and
+        :py:class:`pypath.go.GOAnnotation` object as value, which
+        contains the GO annotations for the nodes in the graph. See
+        :py:class:`pypath.go.GOAnnotation` for more information.
     :var igraph.Graph graph:
         Undirected network graph object.
-    :var gsea:
-    :var has_cats:
+    :var pypath.gsea.GSEA gsea:
+        Contains the loaded gene-sets from MSigDB. See
+        :py:class:`pypath.gsea.GSEA` for more information.
+    :var set has_cats:
+        Contains the categories (e.g.: resources) [str] loaded in the
+        current network.
     :var htp:
     :var labDct:
     :var lists:
