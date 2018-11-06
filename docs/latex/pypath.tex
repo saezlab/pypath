@@ -56,7 +56,7 @@
 
 
 \title{pypath Documentation}
-\date{Oct 30, 2018}
+\date{Nov 06, 2018}
 \release{0.7.98}
 \author{Dénes Türei}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -300,8 +300,9 @@ be converted. If others are used, user may need to provide the
 format definitions for the conversion tables.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{copy}} ({\hyperref[\detokenize{main:pypath.main.PyPath}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{pypath.main.PyPath}}}}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Other {\hyperref[\detokenize{main:pypath.main.PyPath}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath}}}}} instance
-from which the data will be copied.
+\sphinxstyleliteralstrong{\sphinxupquote{copy}} ({\hyperref[\detokenize{main:pypath.main.PyPath}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{pypath.main.PyPath}}}}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Other
+{\hyperref[\detokenize{main:pypath.main.PyPath}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath}}}}} instance from which the data will
+be copied.
 
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{mysql}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{(None, 'mapping')}} by default. Contains the MySQL
@@ -348,7 +349,7 @@ tables.
 
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{data}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Stores custom loaded interaction and attribute table. See
-\sphinxcode{\sphinxupquote{PyPath.read\_data\_filemethod()}} for more information.
+{\hyperref[\detokenize{main:pypath.main.PyPath.read_data_file}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.read\_data\_file()}}}}} method for more information.
 
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{db\_dict}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Dictionary of dictionaries. Outer-level keys are \sphinxcode{\sphinxupquote{'nodes'}} and
@@ -364,55 +365,87 @@ information.
 \sphinxstyleliteralstrong{\sphinxupquote{disclaimer}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Disclaimer text.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{dlabDct}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{dlabDct}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Maps the directed graph node labels {[}str{]} (keys) to their
+indices {[}int{]} (values).
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{dnodDct}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{dnodDct}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Maps the directed graph node names {[}str{]} (keys) to their indices
+{[}int{]} (values).
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{dnodInd}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{dnodInd}} (\sphinxstyleliteralemphasis{\sphinxupquote{set}}) \textendash{} Stores the directed graph node names {[}str{]}.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{dnodLab}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{dnodLab}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Maps the directed graph node indices {[}int{]} (keys) to their
+labels {[}str{]} (values).
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{dnodNam}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{dnodNam}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Maps the directed graph node indices {[}int{]} (keys) to their names
+{[}str{]} (values).
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{edgeAttrs}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{edgeAttrs}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Stores the edge attribute names {[}str{]} as keys and their
+corresponding types (e.g.: \sphinxcode{\sphinxupquote{set}}, \sphinxcode{\sphinxupquote{list}}, \sphinxcode{\sphinxupquote{str}}, …) as
+values.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{exp}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{exp}} (\sphinxstyleliteralemphasis{\sphinxupquote{pandas.DataFrame}}) \textendash{} Stores the expression data for the nodes (if loaded).
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{exp\_prod}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{exp\_prod}} (\sphinxstyleliteralemphasis{\sphinxupquote{pandas.DataFrame}}) \textendash{} Stores the edge expression data (as the product of the
+normalized expression between the pair of nodes by default). For
+more details see {\hyperref[\detokenize{main:pypath.main.PyPath.edges_expression}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.edges\_expression()}}}}}.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{exp\_samples}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{exp\_samples}} (\sphinxstyleliteralemphasis{\sphinxupquote{set}}) \textendash{} Contains a list of tissues as downloaded by ProteomicsDB. See
+{\hyperref[\detokenize{main:pypath.main.PyPath.get_proteomicsdb}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.get\_proteomicsdb()}}}}} for more information.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{failed\_edges}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{failed\_edges}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} List of lists containing information about the failed edges.
+Each failed edge sublist contains (in this order): {[}tuple{]} with
+the node IDs, {[}str{]} names of nodes A and B, {[}int{]} IDs of nodes
+A and B and {[}int{]} IDs of the edges in both directions.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{go}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{go}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Contains the organism(s) NCBI taxonomy ID as key {[}int{]} and
+\sphinxcode{\sphinxupquote{pypath.go.GOAnnotation}} object as value, which
+contains the GO annotations for the nodes in the graph. See
+\sphinxcode{\sphinxupquote{pypath.go.GOAnnotation}} for more information.
 
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{graph}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} Undirected network graph object.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{gsea}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{gsea}} (\sphinxstyleliteralemphasis{\sphinxupquote{pypath.gsea.GSEA}}) \textendash{} Contains the loaded gene-sets from MSigDB. See
+\sphinxcode{\sphinxupquote{pypath.gsea.GSEA}} for more information.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{has\_cats}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{has\_cats}} (\sphinxstyleliteralemphasis{\sphinxupquote{set}}) \textendash{} Contains the categories (e.g.: resources) {[}str{]} loaded in the
+current network.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{htp}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{htp}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Contains information about high-throughput data of the network
+for different thresholds {[}int{]} (keys). Values are {[}dict{]}
+containing the number of references (\sphinxcode{\sphinxupquote{'rnum'}}) {[}int{]}, number
+of edges (\sphinxcode{\sphinxupquote{'enum'}}) {[}int{]}, number of sources (\sphinxcode{\sphinxupquote{'snum'}})
+{[}int{]} and list of PMIDs of the most common references above the
+given threshold (\sphinxcode{\sphinxupquote{'htrefs'}}) {[}set{]}.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{labDct}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{labDct}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Maps the undirected graph node labels {[}str{]} (keys) to their
+indices {[}int{]} (values).
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{lists}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{lists}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Contains specific lists of nodes (values) for different
+categories {[}str{]} (keys). These can to be loaded from a file or
+a resource. Some methods include \sphinxcode{\sphinxupquote{PyPath.receptor\_list()}}
+(\sphinxcode{\sphinxupquote{'rec'}}), {\hyperref[\detokenize{main:pypath.main.PyPath.druggability_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.druggability\_list()}}}}} (\sphinxcode{\sphinxupquote{'dgb'}}),
+{\hyperref[\detokenize{main:pypath.main.PyPath.kinases_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.kinases\_list()}}}}} (\sphinxcode{\sphinxupquote{'kin'}}),
+{\hyperref[\detokenize{main:pypath.main.PyPath.tfs_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.tfs\_list()}}}}} (\sphinxcode{\sphinxupquote{'tf'}}),
+{\hyperref[\detokenize{main:pypath.main.PyPath.disease_genes_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.disease\_genes\_list()}}}}} (\sphinxcode{\sphinxupquote{'dis'}}),
+{\hyperref[\detokenize{main:pypath.main.PyPath.signaling_proteins_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.signaling\_proteins\_list()}}}}} (\sphinxcode{\sphinxupquote{'sig'}}),
+{\hyperref[\detokenize{main:pypath.main.PyPath.proteome_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.proteome\_list()}}}}} (\sphinxcode{\sphinxupquote{'proteome'}}) and
+\sphinxcode{\sphinxupquote{PyPath.cancer\_drivers\_list()}} (\sphinxcode{\sphinxupquote{'cdv'}}).
 
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{loglevel}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The level of the logger.
@@ -421,10 +454,11 @@ information.
 \sphinxstyleliteralstrong{\sphinxupquote{loops}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Whether if self-loop edges are allowed in the graph.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{mapper}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{mapper}} (\sphinxstyleliteralemphasis{\sphinxupquote{pypath.mapping.Mapper}}) \textendash{} \sphinxcode{\sphinxupquote{pypath.mapper.Mapper}} object for ID conversion and
+other ID-related operations across resources.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{mutation\_samples}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{mutation\_samples}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} DEPRECATED
 
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{mysql\_conf}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Contains the MySQL parameters used by the
@@ -439,25 +473,29 @@ tables.
 will be downloaded.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{negatives}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{negatives}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} 
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{nodDct}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{nodDct}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Maps the undirected graph node names {[}str{]} (keys) to their
+indices {[}int{]} (values).
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{nodInd}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{nodInd}} (\sphinxstyleliteralemphasis{\sphinxupquote{set}}) \textendash{} Stores the undirected graph node names {[}str{]}.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{nodLab}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{nodLab}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Maps the undirected graph node indices {[}int{]} (keys) to their
+labels {[}str{]} (values).
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{nodNam}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{nodNam}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Maps the directed graph node indices {[}int{]} (keys) to their names
+{[}str{]} (values).
 
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{outdir}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Output directory where to store all output files.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{ownlog}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{ownlog}} (\sphinxstyleliteralemphasis{\sphinxupquote{pypath.logn.logw}}) \textendash{} Logger class instance, see \sphinxcode{\sphinxupquote{pypath.logn.logw}} for more
+information.
 
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{palette}} \textendash{} 
@@ -519,6 +557,24 @@ will be downloaded.
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.acsn_effects}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{acsn\_effects}}}{\emph{graph=None}}{}
 \end{fulllineitems}
 
+\index{add\_genesets() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.add_genesets}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_genesets}}}{\emph{genesets}}{}
+\end{fulllineitems}
+
+\index{add\_list\_eattr() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.add_list_eattr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_list\_eattr}}}{\emph{edge}, \emph{attr}, \emph{value}}{}
+\end{fulllineitems}
+
+\index{add\_update\_edge() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.add_update_edge}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_update\_edge}}}{\emph{nameA}, \emph{nameB}, \emph{source}, \emph{isDir}, \emph{refs}, \emph{stim}, \emph{inh}, \emph{taxA}, \emph{taxB}, \emph{typ}, \emph{extraAttrs=\{\}}, \emph{add=False}}{}
+\end{fulllineitems}
+
 \index{add\_update\_vertex() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -529,6 +585,12 @@ but it is not efficient as igraph needs to reindex vertices
 after this operation, so better to create new nodes and
 edges in batch.
 
+\end{fulllineitems}
+
+\index{affects() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.affects}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{affects}}}{\emph{identifier}}{}
 \end{fulllineitems}
 
 \index{all\_between() (pypath.main.PyPath method)}
@@ -542,12 +604,24 @@ for both nameA -\textgreater{} nameB and nameB -\textgreater{} nameA edges.
 
 \end{fulllineitems}
 
+\index{all\_neighbours() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.all_neighbours}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{all\_neighbours}}}{\emph{indices=False}}{}
+\end{fulllineitems}
+
 \index{apply\_list() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.apply_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{apply\_list}}}{\emph{name}, \emph{node\_or\_edge='node'}}{}
 Creates vertex or edge attribute based on a list.
 
+\end{fulllineitems}
+
+\index{apply\_negative() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.apply_negative}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{apply\_negative}}}{\emph{settings}}{}
 \end{fulllineitems}
 
 \index{attach\_network() (pypath.main.PyPath method)}
@@ -573,6 +647,12 @@ latex stats.tex
 
 \end{description}
 
+\end{fulllineitems}
+
+\index{basic\_stats\_intergroup() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.basic_stats_intergroup}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{basic\_stats\_intergroup}}}{\emph{groupA}, \emph{groupB}, \emph{header=None}}{}
 \end{fulllineitems}
 
 \index{cancer\_gene\_census\_list() (pypath.main.PyPath method)}
@@ -653,10 +733,40 @@ Works on more than 2 attributes recursively.
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.communities}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{communities}}}{\emph{method}, \emph{**kwargs}}{}
 \end{fulllineitems}
 
+\index{complex\_comembership\_network() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.complex_comembership_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{complex\_comembership\_network}}}{\emph{graph=None}, \emph{resources=None}}{}
+\end{fulllineitems}
+
+\index{complexes() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.complexes}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{complexes}}}{\emph{methods={[}'3dcomplexes', 'havugimana', 'corum', 'complexportal', 'compleat'{]}}}{}
+\end{fulllineitems}
+
+\index{complexes\_in\_network() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.complexes_in_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{complexes\_in\_network}}}{\emph{csource='corum'}, \emph{graph=None}}{}
+\end{fulllineitems}
+
+\index{compounds\_from\_chembl() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.compounds_from_chembl}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{compounds\_from\_chembl}}}{\emph{chembl\_mysql=None, nodes=None, crit=None, andor='or', assay\_types={[}'B', 'F'{]}, relationship\_types={[}'D', 'H'{]}, multi\_query=False, **kwargs}}{}
+\end{fulllineitems}
+
 \index{consistency() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.consistency}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{consistency}}}{}{}
+\end{fulllineitems}
+
+\index{copy() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.copy}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{copy}}}{\emph{other}}{}
 \end{fulllineitems}
 
 \index{copy\_edges() (pypath.main.PyPath method)}
@@ -717,6 +827,30 @@ sources, and returns the sum of these values.
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.curation_tab}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{curation\_tab}}}{\emph{fname='curation\_stats.tex', by\_category=True, use\_cats={[}'p', 'm', 'i', 'r'{]}, header\_size='normalsize', **kwargs}}{}
 \end{fulllineitems}
 
+\index{databases\_similarity() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.databases_similarity}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{databases\_similarity}}}{\emph{index='simpson'}}{}
+\end{fulllineitems}
+
+\index{degree\_dist() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.degree_dist}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{degree\_dist}}}{\emph{prefix}, \emph{g}, \emph{group=None}}{}
+\end{fulllineitems}
+
+\index{degree\_dists() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.degree_dists}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{degree\_dists}}}{}{}
+\end{fulllineitems}
+
+\index{delete\_by\_source() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.delete_by_source}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{delete\_by\_source}}}{\emph{source}, \emph{vertexAttrsToDel=None}, \emph{edgeAttrsToDel=None}}{}
+\end{fulllineitems}
+
 \index{delete\_by\_taxon() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -754,6 +888,12 @@ For proteins it’s ‘uniprot’ by default.
 
 \end{fulllineitems}
 
+\index{delete\_unmapped() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.delete_unmapped}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{delete\_unmapped}}}{}{}
+\end{fulllineitems}
+
 \index{dgenesymbol() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -767,6 +907,12 @@ GeneSymbol.
 
 \end{description}
 
+\end{fulllineitems}
+
+\index{dgenesymbols() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.dgenesymbols}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{dgenesymbols}}}{\emph{genesymbols}}{}
 \end{fulllineitems}
 
 \index{dgs() (pypath.main.PyPath method)}
@@ -784,6 +930,12 @@ GeneSymbol.
 
 \end{fulllineitems}
 
+\index{dgss() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.dgss}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{dgss}}}{\emph{genesymbols}}{}
+\end{fulllineitems}
+
 \index{disease\_genes\_list() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -791,6 +943,12 @@ GeneSymbol.
 Loads the list of all disease related genes from DisGeNet.
 This resource is human only.
 
+\end{fulllineitems}
+
+\index{dneighbors() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.dneighbors}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{dneighbors}}}{\emph{identifier}, \emph{mode='ALL'}}{}
 \end{fulllineitems}
 
 \index{dp() (pypath.main.PyPath method)}
@@ -809,6 +967,18 @@ Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or
 
 \end{description}
 
+\end{fulllineitems}
+
+\index{dproteins() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.dproteins}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{dproteins}}}{\emph{identifiers}}{}
+\end{fulllineitems}
+
+\index{dps() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.dps}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{dps}}}{\emph{identifiers}}{}
 \end{fulllineitems}
 
 \index{druggability\_list() (pypath.main.PyPath method)}
@@ -892,6 +1062,12 @@ Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or
 
 \end{fulllineitems}
 
+\index{dvs() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.dvs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{dvs}}}{\emph{identifiers}}{}
+\end{fulllineitems}
+
 \index{edge\_exists() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -899,6 +1075,24 @@ Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or
 Returns a tuple of vertice indices if edge doesn’t exists,
 otherwise edge id. Not sensitive to direction.
 
+\end{fulllineitems}
+
+\index{edge\_loc() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.edge_loc}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{edge\_loc}}}{\emph{graph=None}, \emph{topn=2}}{}
+\end{fulllineitems}
+
+\index{edge\_names() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.edge_names}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{edge\_names}}}{\emph{e}}{}
+\end{fulllineitems}
+
+\index{edges\_3d() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.edges_3d}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{edges\_3d}}}{\emph{methods={[}'dataio.get\_instruct', 'dataio.get\_i3d'{]}}}{}
 \end{fulllineitems}
 
 \index{edges\_expression() (pypath.main.PyPath method)}
@@ -937,6 +1131,18 @@ The graph object to do the calculations on.
 
 \end{description}
 
+\end{fulllineitems}
+
+\index{edges\_ptms() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.edges_ptms}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{edges\_ptms}}}{}{}
+\end{fulllineitems}
+
+\index{edgeseq\_inverse() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.edgeseq_inverse}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{edgeseq\_inverse}}}{\emph{edges}}{}
 \end{fulllineitems}
 
 \index{export\_dot() (pypath.main.PyPath method)}
@@ -1046,6 +1252,30 @@ to be printed
 
 \end{fulllineitems}
 
+\index{export\_graphml() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.export_graphml}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{export\_graphml}}}{\emph{outfile=None}, \emph{graph=None}, \emph{name='main'}}{}
+\end{fulllineitems}
+
+\index{export\_ptms\_tab() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.export_ptms_tab}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{export\_ptms\_tab}}}{\emph{outfile=None}}{}
+\end{fulllineitems}
+
+\index{export\_sif() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.export_sif}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{export\_sif}}}{\emph{outfile=None}}{}
+\end{fulllineitems}
+
+\index{export\_struct\_tab() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.export_struct_tab}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{export\_struct\_tab}}}{\emph{outfile=None}}{}
+\end{fulllineitems}
+
 \index{export\_tab() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -1079,6 +1309,12 @@ of edge attributes.
 
 \end{fulllineitems}
 
+\index{filters() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.filters}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{filters}}}{\emph{line}, \emph{positiveFilters={[}{]}}, \emph{negativeFilters={[}{]}}}{}
+\end{fulllineitems}
+
 \index{find\_all\_paths() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -1108,6 +1344,12 @@ The graph you want to find paths in. self.graph by default.
 
 \end{fulllineitems}
 
+\index{find\_all\_paths2() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.find_all_paths2}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{find\_all\_paths2}}}{\emph{graph}, \emph{start}, \emph{end}, \emph{mode='OUT'}, \emph{maxlen=2}, \emph{psize=100}}{}
+\end{fulllineitems}
+
 \index{find\_complex() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -1117,6 +1359,18 @@ E.g. to find DNA polymerases you can use the search
 term \sphinxtitleref{DNA pol} which will be tested against complex names
 in CORUM.
 
+\end{fulllineitems}
+
+\index{first\_neighbours() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.first_neighbours}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{first\_neighbours}}}{\emph{node}, \emph{indices=False}}{}
+\end{fulllineitems}
+
+\index{geneset\_enrichment() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.geneset_enrichment}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{geneset\_enrichment}}}{\emph{proteins}, \emph{all\_proteins=None}, \emph{geneset\_ids=None}, \emph{alpha=0.05}, \emph{correction\_method='hommel'}}{}
 \end{fulllineitems}
 
 \index{genesymbol() (pypath.main.PyPath method)}
@@ -1147,6 +1401,18 @@ is \sphinxcode{\sphinxupquote{True}}.
 
 \end{fulllineitems}
 
+\index{genesymbols() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.genesymbols}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{genesymbols}}}{\emph{genesymbols}}{}
+\end{fulllineitems}
+
+\index{get\_attrs() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.get_attrs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_attrs}}}{\emph{line}, \emph{spec}, \emph{lnum}}{}
+\end{fulllineitems}
+
 \index{get\_directed() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -1175,6 +1441,12 @@ Default is \sphinxcode{\sphinxupquote{False}} (returns \sphinxcode{\sphinxupquot
 
 \end{description}
 
+\end{fulllineitems}
+
+\index{get\_dirs\_signs() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.get_dirs_signs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_dirs\_signs}}}{}{}
 \end{fulllineitems}
 
 \index{get\_edge() (pypath.main.PyPath method)}
@@ -1226,6 +1498,12 @@ Returns a generator with all edges between source and target vertices.
 
 \end{fulllineitems}
 
+\index{get\_function() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.get_function}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_function}}}{\emph{fun}}{}
+\end{fulllineitems}
+
 \index{get\_giant() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -1234,6 +1512,18 @@ Returns the giant component of the graph, or
 replaces the igraph object with only the giant
 component.
 
+\end{fulllineitems}
+
+\index{get\_max() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.get_max}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_max}}}{\emph{attrList}}{}
+\end{fulllineitems}
+
+\index{get\_network() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.get_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_network}}}{\emph{crit}, \emph{andor='or'}, \emph{graph=None}}{}
 \end{fulllineitems}
 
 \index{get\_node() (pypath.main.PyPath method)}
@@ -1271,10 +1561,46 @@ Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or
 
 \end{fulllineitems}
 
+\index{get\_node\_pair() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.get_node_pair}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_node\_pair}}}{\emph{nameA}, \emph{nameB}, \emph{directed=False}}{}
+\end{fulllineitems}
+
+\index{get\_nodes() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.get_nodes}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_nodes}}}{\emph{identifiers}}{}
+\end{fulllineitems}
+
+\index{get\_nodes\_d() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.get_nodes_d}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_nodes\_d}}}{\emph{identifiers}}{}
+\end{fulllineitems}
+
 \index{get\_pathways() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.get_pathways}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_pathways}}}{\emph{source}}{}
+\end{fulllineitems}
+
+\index{get\_proteomicsdb() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.get_proteomicsdb}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_proteomicsdb}}}{\emph{user}, \emph{passwd}, \emph{tissues=None}, \emph{pickle=None}}{}
+\end{fulllineitems}
+
+\index{get\_sub() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.get_sub}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_sub}}}{\emph{crit}, \emph{andor='or'}, \emph{graph=None}}{}
+\end{fulllineitems}
+
+\index{get\_taxon() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.get_taxon}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_taxon}}}{\emph{tax\_dict}, \emph{fields}}{}
 \end{fulllineitems}
 
 \index{go\_annotate() (pypath.main.PyPath method)}
@@ -1301,6 +1627,12 @@ dict under \sphinxcode{\sphinxupquote{go}} attribute.
 
 \end{fulllineitems}
 
+\index{go\_enrichment() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.go_enrichment}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{go\_enrichment}}}{\emph{proteins=None}, \emph{aspect='P'}, \emph{alpha=0.05}, \emph{correction\_method='hommel'}, \emph{all\_proteins=None}}{}
+\end{fulllineitems}
+
 \index{gs() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -1314,6 +1646,18 @@ GeneSymbol.
 
 \end{description}
 
+\end{fulllineitems}
+
+\index{gs\_affected\_by() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.gs_affected_by}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{gs\_affected\_by}}}{\emph{genesymbol}}{}
+\end{fulllineitems}
+
+\index{gs\_affects() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.gs_affects}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{gs\_affects}}}{\emph{genesymbol}}{}
 \end{fulllineitems}
 
 \index{gs\_edge() (pypath.main.PyPath method)}
@@ -1336,10 +1680,88 @@ To be passed to igraph.Graph.get\_eid()
 
 \end{fulllineitems}
 
+\index{gs\_in\_directed() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.gs_in_directed}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{gs\_in\_directed}}}{\emph{genesymbol}}{}
+\end{fulllineitems}
+
+\index{gs\_in\_undirected() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.gs_in_undirected}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{gs\_in\_undirected}}}{\emph{genesymbol}}{}
+\end{fulllineitems}
+
+\index{gs\_inhibited\_by() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.gs_inhibited_by}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{gs\_inhibited\_by}}}{\emph{genesymbol}}{}
+\end{fulllineitems}
+
+\index{gs\_inhibits() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.gs_inhibits}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{gs\_inhibits}}}{\emph{genesymbol}}{}
+\end{fulllineitems}
+
+\index{gs\_neighborhood() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.gs_neighborhood}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{gs\_neighborhood}}}{\emph{genesymbols}, \emph{order=1}, \emph{mode='ALL'}}{}
+\end{fulllineitems}
+
+\index{gs\_neighbors() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.gs_neighbors}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{gs\_neighbors}}}{\emph{genesymbol}, \emph{mode='ALL'}}{}
+\end{fulllineitems}
+
+\index{gs\_stimulated\_by() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.gs_stimulated_by}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{gs\_stimulated\_by}}}{\emph{genesymbol}}{}
+\end{fulllineitems}
+
+\index{gs\_stimulates() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.gs_stimulates}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{gs\_stimulates}}}{\emph{genesymbol}}{}
+\end{fulllineitems}
+
+\index{gss() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.gss}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{gss}}}{\emph{genesymbols}}{}
+\end{fulllineitems}
+
 \index{guide2pharma() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.guide2pharma}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{guide2pharma}}}{}{}
+\end{fulllineitems}
+
+\index{having\_attr() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.having_attr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{having\_attr}}}{\emph{attr}, \emph{graph=None}, \emph{index=True}, \emph{edges=True}}{}
+\end{fulllineitems}
+
+\index{having\_eattr() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.having_eattr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{having\_eattr}}}{\emph{attr}, \emph{graph=None}, \emph{index=True}}{}
+\end{fulllineitems}
+
+\index{having\_ptm() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.having_ptm}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{having\_ptm}}}{\emph{index=True}, \emph{graph=None}}{}
+\end{fulllineitems}
+
+\index{having\_vattr() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.having_vattr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{having\_vattr}}}{\emph{attr}, \emph{graph=None}, \emph{index=True}}{}
 \end{fulllineitems}
 
 \index{homology\_translation() (pypath.main.PyPath method)}
@@ -1369,6 +1791,30 @@ E.g. 10090 for mouse.
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.in_complex}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{in\_complex}}}{\emph{csources={[}'corum'{]}}}{}
 \end{fulllineitems}
 
+\index{in\_directed() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.in_directed}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{in\_directed}}}{\emph{vertex}}{}
+\end{fulllineitems}
+
+\index{in\_undirected() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.in_undirected}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{in\_undirected}}}{\emph{vertex}}{}
+\end{fulllineitems}
+
+\index{info() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.info}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{info}}}{\emph{name}}{}
+\end{fulllineitems}
+
+\index{init\_complex\_attr() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.init_complex_attr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{init\_complex\_attr}}}{\emph{graph}, \emph{name}}{}
+\end{fulllineitems}
+
 \index{init\_edge\_attr() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -1378,10 +1824,16 @@ lists if in \sphinxtitleref{edgeAttrs} the attribute is registered as list.
 
 \end{fulllineitems}
 
+\index{init\_gsea() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.init_gsea}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{init\_gsea}}}{\emph{user}}{}
+\end{fulllineitems}
+
 \index{init\_network() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.init_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{init\_network}}}{\emph{lst=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c7e8\textgreater{}}, \emph{'biogrid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a7950\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c6c8\textgreater{}}, \emph{'ccmap': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cc68\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f127a70\textgreater{}}, \emph{'dbptm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a70e0\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c998\textgreater{}}, \emph{'depod': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cef0\textgreater{}}, \emph{'dip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39ccf8\textgreater{}}, \emph{'domino': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a7050\textgreater{}}, \emph{'elm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cfc8\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c5f0\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f1279e0\textgreater{}}, \emph{'hprd': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a7ab8\textgreater{}}, \emph{'hprd\_p': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a7128\textgreater{}}, \emph{'innatedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cd88\textgreater{}}, \emph{'intact': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a7908\textgreater{}}, \emph{'lmpid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cf38\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c950\textgreater{}}, \emph{'matrixdb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39ce60\textgreater{}}, \emph{'mppi': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39ccb0\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c8c0\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c9e0\textgreater{}}, \emph{'phelm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cf80\textgreater{}}, \emph{'psite': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cea8\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f127b00\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c5a8\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cbd8\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c560\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c488\textgreater{}\}}, \emph{exclude={[}{]}}, \emph{cache\_files=\{\}}, \emph{pfile=False}, \emph{save=False}, \emph{reread=False}, \emph{redownload=False}, \emph{**kwargs}}{}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.init_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{init\_network}}}{\emph{lst=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bb48\textgreater{}}, \emph{'biogrid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233cb0\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22ba28\textgreater{}}, \emph{'ccmap': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bfc8\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015efb5dd0\textgreater{}}, \emph{'dbptm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233440\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bcf8\textgreater{}}, \emph{'depod': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233290\textgreater{}}, \emph{'dip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233098\textgreater{}}, \emph{'domino': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f2333b0\textgreater{}}, \emph{'elm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233368\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b950\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015efb5d40\textgreater{}}, \emph{'hprd': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233e18\textgreater{}}, \emph{'hprd\_p': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233488\textgreater{}}, \emph{'innatedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233128\textgreater{}}, \emph{'intact': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233c68\textgreater{}}, \emph{'lmpid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f2332d8\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bcb0\textgreater{}}, \emph{'matrixdb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233200\textgreater{}}, \emph{'mppi': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233050\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bc20\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bd40\textgreater{}}, \emph{'phelm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233320\textgreater{}}, \emph{'psite': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233248\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015efb5e60\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b908\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bf38\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b8c0\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b7e8\textgreater{}\}}, \emph{exclude={[}{]}}, \emph{cache\_files=\{\}}, \emph{pfile=False}, \emph{save=False}, \emph{reread=False}, \emph{redownload=False}, \emph{**kwargs}}{}
 This is a lazy way to start the module, load data
 and build the high confidence, literature curated
 part of the signaling network.
@@ -1397,12 +1849,30 @@ lists if in \sphinxtitleref{vertexAttrs} the attribute is registered as list.
 
 \end{fulllineitems}
 
+\index{intergroup\_shortest\_paths() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.intergroup_shortest_paths}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{intergroup\_shortest\_paths}}}{\emph{groupA}, \emph{groupB}, \emph{random=False}}{}
+\end{fulllineitems}
+
 \index{intogen\_cancer\_drivers\_list() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.intogen_cancer_drivers_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{intogen\_cancer\_drivers\_list}}}{\emph{intogen\_file}}{}
 Loads the list of cancer driver proteins from IntOGen data.
 
+\end{fulllineitems}
+
+\index{jaccard\_edges() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.jaccard_edges}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{jaccard\_edges}}}{}{}
+\end{fulllineitems}
+
+\index{jaccard\_meta() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.jaccard_meta}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{jaccard\_meta}}}{\emph{jedges}, \emph{critical}}{}
 \end{fulllineitems}
 
 \index{kegg\_directions() (pypath.main.PyPath method)}
@@ -1415,6 +1885,12 @@ Loads the list of cancer driver proteins from IntOGen data.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.kegg_pathways}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{kegg\_pathways}}}{\emph{graph=None}}{}
+\end{fulllineitems}
+
+\index{kinase\_stats() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.kinase_stats}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{kinase\_stats}}}{}{}
 \end{fulllineitems}
 
 \index{kinases\_list() (pypath.main.PyPath method)}
@@ -1448,6 +1924,42 @@ the node is annotated by all or any (see \sphinxcode{\sphinxupquote{method}} par
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.laudanna_effects}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{laudanna\_effects}}}{\emph{graph=None}}{}
 \end{fulllineitems}
 
+\index{list\_resources() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.list_resources}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{list\_resources}}}{}{}
+\end{fulllineitems}
+
+\index{load\_3dcomplexes() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_3dcomplexes}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_3dcomplexes}}}{\emph{graph=None}}{}
+\end{fulllineitems}
+
+\index{load\_3did\_ddi() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_3did_ddi}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_3did\_ddi}}}{}{}
+\end{fulllineitems}
+
+\index{load\_3did\_ddi2() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_3did_ddi2}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_3did\_ddi2}}}{\emph{ddi=True}, \emph{interfaces=False}}{}
+\end{fulllineitems}
+
+\index{load\_3did\_dmi() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_3did_dmi}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_3did\_dmi}}}{}{}
+\end{fulllineitems}
+
+\index{load\_3did\_interfaces() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_3did_interfaces}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_3did\_interfaces}}}{}{}
+\end{fulllineitems}
+
 \index{load\_all\_pathways() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -1474,6 +1986,12 @@ This resource is human only.
 
 \end{fulllineitems}
 
+\index{load\_comppi() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_comppi}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_comppi}}}{\emph{graph=None}}{}
+\end{fulllineitems}
+
 \index{load\_corum() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -1484,6 +2002,12 @@ This resource is human only.
 
 \end{fulllineitems}
 
+\index{load\_dbptm() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_dbptm}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_dbptm}}}{\emph{non\_matching=False}, \emph{trace=False}, \emph{**kwargs}}{}
+\end{fulllineitems}
+
 \index{load\_ddi() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -1491,6 +2015,18 @@ This resource is human only.
 ddi is either a list of intera.DomainDomain objects,
 or a function resulting this list
 
+\end{fulllineitems}
+
+\index{load\_ddis() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_ddis}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_ddis}}}{\emph{methods={[}'dataio.get\_3dc\_ddi', 'dataio.get\_domino\_ddi', 'self.load\_3did\_ddi2'{]}}}{}
+\end{fulllineitems}
+
+\index{load\_depod\_dmi() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_depod_dmi}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_depod\_dmi}}}{}{}
 \end{fulllineitems}
 
 \index{load\_disgenet() (pypath.main.PyPath method)}
@@ -1531,6 +2067,24 @@ or a function resulting this list
 
 \end{fulllineitems}
 
+\index{load\_dmis() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_dmis}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_dmis}}}{\emph{methods={[}'self.pfam\_regions', 'self.load\_depod\_dmi', 'self.load\_dbptm', 'self.load\_mimp\_dmi', 'self.load\_pnetworks\_dmi', 'self.load\_domino\_dmi', 'self.load\_pepcyber', 'self.load\_psite\_reg', 'self.load\_psite\_phos', 'self.load\_ielm', 'self.load\_phosphoelm', 'self.load\_elm', 'self.load\_3did\_dmi'{]}}}{}
+\end{fulllineitems}
+
+\index{load\_domino\_dmi() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_domino_dmi}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_domino\_dmi}}}{\emph{organism=None}}{}
+\end{fulllineitems}
+
+\index{load\_elm() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_elm}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_elm}}}{}{}
+\end{fulllineitems}
+
 \index{load\_expression() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -1569,12 +2123,54 @@ Loads Human Protein Atlas data into vertex attributes.
 
 \end{fulllineitems}
 
+\index{load\_hprd\_ptms() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_hprd_ptms}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_hprd\_ptms}}}{\emph{non\_matching=False}, \emph{trace=False}, \emph{**kwargs}}{}
+\end{fulllineitems}
+
+\index{load\_ielm() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_ielm}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_ielm}}}{}{}
+\end{fulllineitems}
+
+\index{load\_interfaces() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_interfaces}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_interfaces}}}{}{}
+\end{fulllineitems}
+
+\index{load\_li2012\_ptms() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_li2012_ptms}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_li2012\_ptms}}}{\emph{non\_matching=False}, \emph{trace=False}, \emph{**kwargs}}{}
+\end{fulllineitems}
+
 \index{load\_ligand\_receptor\_network() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_ligand_receptor_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_ligand\_receptor\_network}}}{\emph{lig\_rec\_resources=True}, \emph{inference\_from\_go=True}, \emph{sources=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c7e8\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c6c8\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f127a70\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c998\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c5f0\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f1279e0\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c950\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c8c0\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c9e0\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f127b00\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c5a8\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cbd8\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c560\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c488\textgreater{}\}}, \emph{keep\_undirected=False}, \emph{keep\_rec\_rec=False}, \emph{keep\_lig\_lig=False}}{}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_ligand_receptor_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_ligand\_receptor\_network}}}{\emph{lig\_rec\_resources=True}, \emph{inference\_from\_go=True}, \emph{sources=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bb48\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22ba28\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015efb5dd0\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bcf8\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b950\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015efb5d40\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bcb0\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bc20\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bd40\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015efb5e60\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b908\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bf38\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b8c0\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b7e8\textgreater{}\}}, \emph{keep\_undirected=False}, \emph{keep\_rec\_rec=False}, \emph{keep\_lig\_lig=False}}{}
 Initializes a ligand-receptor network.
 
+\end{fulllineitems}
+
+\index{load\_lmpid() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_lmpid}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_lmpid}}}{\emph{method}}{}
+\end{fulllineitems}
+
+\index{load\_mappings() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_mappings}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_mappings}}}{}{}
+\end{fulllineitems}
+
+\index{load\_mimp\_dmi() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_mimp_dmi}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_mimp\_dmi}}}{\emph{non\_matching=False}, \emph{trace=False}, \emph{**kwargs}}{}
 \end{fulllineitems}
 
 \index{load\_mutations() (pypath.main.PyPath method)}
@@ -1586,6 +2182,12 @@ offers methods to identify residues and look up in Ptm(), Motif()
 and Domain() objects, to check if those residues are
 modified, or are in some short motif or domain.
 
+\end{fulllineitems}
+
+\index{load\_negatives() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_negatives}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_negatives}}}{}{}
 \end{fulllineitems}
 
 \index{load\_old\_omnipath() (pypath.main.PyPath method)}
@@ -1629,6 +2231,78 @@ current instance.
 
 \end{description}\end{quote}
 
+\end{fulllineitems}
+
+\index{load\_pdb() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_pdb}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_pdb}}}{\emph{graph=None}}{}
+\end{fulllineitems}
+
+\index{load\_pepcyber() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_pepcyber}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_pepcyber}}}{}{}
+\end{fulllineitems}
+
+\index{load\_pfam() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_pfam}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_pfam}}}{\emph{graph=None}}{}
+\end{fulllineitems}
+
+\index{load\_pfam2() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_pfam2}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_pfam2}}}{}{}
+\end{fulllineitems}
+
+\index{load\_pfam3() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_pfam3}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_pfam3}}}{}{}
+\end{fulllineitems}
+
+\index{load\_phospho\_dmi() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_phospho_dmi}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_phospho\_dmi}}}{\emph{source}, \emph{trace=False}, \emph{return\_raw=False}, \emph{**kwargs}}{}
+\end{fulllineitems}
+
+\index{load\_phosphoelm() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_phosphoelm}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_phosphoelm}}}{\emph{trace=False}, \emph{**kwargs}}{}
+\end{fulllineitems}
+
+\index{load\_pisa() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_pisa}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_pisa}}}{\emph{graph=None}}{}
+\end{fulllineitems}
+
+\index{load\_pnetworks\_dmi() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_pnetworks_dmi}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_pnetworks\_dmi}}}{\emph{trace=False}, \emph{**kwargs}}{}
+\end{fulllineitems}
+
+\index{load\_psite\_phos() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_psite_phos}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_psite\_phos}}}{\emph{trace=False}, \emph{**kwargs}}{}
+\end{fulllineitems}
+
+\index{load\_psite\_reg() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_psite_reg}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_psite\_reg}}}{}{}
+\end{fulllineitems}
+
+\index{load\_ptms() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_ptms}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_ptms}}}{}{}
 \end{fulllineitems}
 
 \index{load\_ptms2() (pypath.main.PyPath method)}
@@ -1686,16 +2360,40 @@ Those not used by \sphinxtitleref{PtmProcessor} are forwarded to the
 
 \end{fulllineitems}
 
+\index{load\_reflist() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_reflist}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_reflist}}}{\emph{reflist}}{}
+\end{fulllineitems}
+
+\index{load\_reflists() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_reflists}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_reflists}}}{\emph{reflst=None}}{}
+\end{fulllineitems}
+
+\index{load\_resource() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_resource}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_resource}}}{\emph{settings}, \emph{clean=True}, \emph{cache\_files=\{\}}, \emph{reread=False}, \emph{redownload=False}}{}
+\end{fulllineitems}
+
 \index{load\_resources() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_resources}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_resources}}}{\emph{lst=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c7e8\textgreater{}}, \emph{'biogrid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a7950\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c6c8\textgreater{}}, \emph{'ccmap': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cc68\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f127a70\textgreater{}}, \emph{'dbptm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a70e0\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c998\textgreater{}}, \emph{'depod': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cef0\textgreater{}}, \emph{'dip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39ccf8\textgreater{}}, \emph{'domino': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a7050\textgreater{}}, \emph{'elm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cfc8\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c5f0\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f1279e0\textgreater{}}, \emph{'hprd': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a7ab8\textgreater{}}, \emph{'hprd\_p': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a7128\textgreater{}}, \emph{'innatedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cd88\textgreater{}}, \emph{'intact': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f3a7908\textgreater{}}, \emph{'lmpid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cf38\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c950\textgreater{}}, \emph{'matrixdb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39ce60\textgreater{}}, \emph{'mppi': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39ccb0\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c8c0\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c9e0\textgreater{}}, \emph{'phelm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cf80\textgreater{}}, \emph{'psite': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cea8\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f127b00\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c5a8\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39cbd8\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c560\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f3d8f39c488\textgreater{}\}}, \emph{exclude={[}{]}}, \emph{cache\_files=\{\}}, \emph{reread=False}, \emph{redownload=False}}{}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_resources}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_resources}}}{\emph{lst=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bb48\textgreater{}}, \emph{'biogrid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233cb0\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22ba28\textgreater{}}, \emph{'ccmap': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bfc8\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015efb5dd0\textgreater{}}, \emph{'dbptm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233440\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bcf8\textgreater{}}, \emph{'depod': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233290\textgreater{}}, \emph{'dip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233098\textgreater{}}, \emph{'domino': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f2333b0\textgreater{}}, \emph{'elm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233368\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b950\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015efb5d40\textgreater{}}, \emph{'hprd': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233e18\textgreater{}}, \emph{'hprd\_p': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233488\textgreater{}}, \emph{'innatedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233128\textgreater{}}, \emph{'intact': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233c68\textgreater{}}, \emph{'lmpid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f2332d8\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bcb0\textgreater{}}, \emph{'matrixdb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233200\textgreater{}}, \emph{'mppi': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233050\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bc20\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bd40\textgreater{}}, \emph{'phelm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233320\textgreater{}}, \emph{'psite': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233248\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015efb5e60\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b908\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bf38\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b8c0\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b7e8\textgreater{}\}}, \emph{exclude={[}{]}}, \emph{cache\_files=\{\}}, \emph{reread=False}, \emph{redownload=False}}{}
 Loads multiple resources, and cleans up after.
 Looks up ID types, and loads all ID conversion
 tables from UniProt if necessary. This is much
 faster than loading the ID conversion and the
 resources one by one.
 
+\end{fulllineitems}
+
+\index{load\_signor\_ptms() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_signor_ptms}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_signor\_ptms}}}{\emph{non\_matching=False}, \emph{trace=False}, \emph{**kwargs}}{}
 \end{fulllineitems}
 
 \index{load\_tfregulons() (pypath.main.PyPath method)}
@@ -1731,6 +2429,18 @@ For details see \sphinxurl{https://github.com/saezlab/DoRothEA}.
 
 \end{fulllineitems}
 
+\index{lookup\_cache() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.lookup_cache}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{lookup\_cache}}}{\emph{name}, \emph{cache\_files}, \emph{int\_cache}, \emph{edges\_cache}}{}
+\end{fulllineitems}
+
+\index{loop\_edges() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.loop_edges}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{loop\_edges}}}{\emph{index=True}, \emph{graph=None}}{}
+\end{fulllineitems}
+
 \index{map\_edge() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -1753,6 +2463,12 @@ Translates the name in item representing a molecule.
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.map_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{map\_list}}}{\emph{lst}, \emph{singleList=False}}{}
 Only a wrapper for map\_edge()
 
+\end{fulllineitems}
+
+\index{mean\_reference\_per\_interaction() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.mean_reference_per_interaction}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{mean\_reference\_per\_interaction}}}{}{}
 \end{fulllineitems}
 
 \index{merge\_lists() (pypath.main.PyPath method)}
@@ -1801,6 +2517,36 @@ underlying PTM is mutated.
 
 \end{fulllineitems}
 
+\index{names2vids() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.names2vids}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{names2vids}}}{\emph{names}}{}
+\end{fulllineitems}
+
+\index{negative\_report() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.negative_report}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{negative\_report}}}{\emph{lst=True}, \emph{outFile=None}}{}
+\end{fulllineitems}
+
+\index{neighborhood() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.neighborhood}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{neighborhood}}}{\emph{identifiers}, \emph{order=1}, \emph{mode='ALL'}}{}
+\end{fulllineitems}
+
+\index{neighbors() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.neighbors}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{neighbors}}}{\emph{identifier}, \emph{mode='ALL'}}{}
+\end{fulllineitems}
+
+\index{neighbourhood\_network() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.neighbourhood_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{neighbourhood\_network}}}{\emph{center}, \emph{second=False}}{}
+\end{fulllineitems}
+
 \index{network\_filter() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -1820,10 +2566,40 @@ and each of sources. Writes the results in a tab file.
 
 \end{fulllineitems}
 
+\index{new\_edges() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.new_edges}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{new\_edges}}}{\emph{edges}}{}
+\end{fulllineitems}
+
+\index{new\_nodes() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.new_nodes}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{new\_nodes}}}{\emph{nodes}}{}
+\end{fulllineitems}
+
+\index{node\_exists() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.node_exists}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{node\_exists}}}{\emph{name}}{}
+\end{fulllineitems}
+
 \index{numof\_directed\_edges() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.numof_directed_edges}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{numof\_directed\_edges}}}{}{}
+\end{fulllineitems}
+
+\index{numof\_reference\_interaction\_pairs() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.numof_reference_interaction_pairs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{numof\_reference\_interaction\_pairs}}}{}{}
+\end{fulllineitems}
+
+\index{numof\_references() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.numof_references}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{numof\_references}}}{}{}
 \end{fulllineitems}
 
 \index{numof\_undirected\_edges() (pypath.main.PyPath method)}
@@ -1889,10 +2665,22 @@ in the current graph.
 
 \end{fulllineitems}
 
+\index{pathway\_similarity() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.pathway_similarity}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{pathway\_similarity}}}{\emph{outfile=None}}{}
+\end{fulllineitems}
+
 \index{pathways\_table() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.pathways_table}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{pathways\_table}}}{\emph{filename='genes\_pathways.list', pw\_sources={[}'signalink', 'signor', 'netpath', 'kegg'{]}, graph=None}}{}
+\end{fulllineitems}
+
+\index{pfam\_regions() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.pfam_regions}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{pfam\_regions}}}{}{}
 \end{fulllineitems}
 
 \index{phosphonetworks\_directions() (pypath.main.PyPath method)}
@@ -1907,10 +2695,28 @@ in the current graph.
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.phosphopoint_directions}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{phosphopoint\_directions}}}{\emph{graph=None}}{}
 \end{fulllineitems}
 
+\index{phosphorylation\_directions() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.phosphorylation_directions}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{phosphorylation\_directions}}}{}{}
+\end{fulllineitems}
+
+\index{phosphorylation\_signs() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.phosphorylation_signs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{phosphorylation\_signs}}}{}{}
+\end{fulllineitems}
+
 \index{phosphosite\_directions() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.phosphosite_directions}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{phosphosite\_directions}}}{\emph{graph=None}}{}
+\end{fulllineitems}
+
+\index{prdb\_tissue\_expr() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.prdb_tissue_expr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{prdb\_tissue\_expr}}}{\emph{tissue}, \emph{prdb=None}, \emph{graph=None}, \emph{occurrence=1}, \emph{group\_function=\textless{}function \textless{}lambda\textgreater{}\textgreater{}}, \emph{na\_value=0.0}}{}
 \end{fulllineitems}
 
 \index{process\_directions() (pypath.main.PyPath method)}
@@ -1973,12 +2779,24 @@ object.
 
 \end{fulllineitems}
 
+\index{proteins() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.proteins}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{proteins}}}{\emph{identifiers}}{}
+\end{fulllineitems}
+
 \index{proteome\_list() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.proteome_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{proteome\_list}}}{\emph{swissprot=True}}{}
 Loads the whole proteome as a list.
 
+\end{fulllineitems}
+
+\index{ps() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.ps}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{ps}}}{\emph{identifiers}}{}
 \end{fulllineitems}
 
 \index{random\_walk\_with\_return() (pypath.main.PyPath method)}
@@ -2065,6 +2883,18 @@ This resource is human only.
 
 \end{fulllineitems}
 
+\index{reference\_edge\_ratio() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.reference_edge_ratio}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{reference\_edge\_ratio}}}{}{}
+\end{fulllineitems}
+
+\index{reference\_hist() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.reference_hist}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{reference\_hist}}}{\emph{filename=None}}{}
+\end{fulllineitems}
+
 \index{remove\_htp() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -2077,12 +2907,42 @@ This resource is human only.
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.remove_undirected}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{remove\_undirected}}}{\emph{min\_refs=None}}{}
 \end{fulllineitems}
 
+\index{run\_batch() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.run_batch}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{run\_batch}}}{\emph{methods}, \emph{toCall=None}}{}
+\end{fulllineitems}
+
+\index{save\_network() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.save_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{save\_network}}}{\emph{pfile=None}}{}
+\end{fulllineitems}
+
 \index{save\_session() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.save_session}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{save\_session}}}{}{}
 Save current state into pickle dump.
 
+\end{fulllineitems}
+
+\index{search\_attr\_and() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.search_attr_and}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{search\_attr\_and}}}{\emph{obj}, \emph{lst}}{}
+\end{fulllineitems}
+
+\index{search\_attr\_or() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.search_attr_or}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{search\_attr\_or}}}{\emph{obj}, \emph{lst}}{}
+\end{fulllineitems}
+
+\index{second\_neighbours() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.second_neighbours}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{second\_neighbours}}}{\emph{node}, \emph{indices=False}, \emph{with\_first=False}}{}
 \end{fulllineitems}
 
 \index{select\_by\_go() (pypath.main.PyPath method)}
@@ -2117,6 +2977,24 @@ Returns dict of igraph objects.
 Separate networks based on categories.
 Returns dict of igraph objects.
 
+\end{fulllineitems}
+
+\index{sequences() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.sequences}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{sequences}}}{\emph{isoforms=True}, \emph{update=False}}{}
+\end{fulllineitems}
+
+\index{set\_boolean\_vattr() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.set_boolean_vattr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_boolean\_vattr}}}{\emph{attr}, \emph{vids}, \emph{negate=False}}{}
+\end{fulllineitems}
+
+\index{set\_categories() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.set_categories}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_categories}}}{}{}
 \end{fulllineitems}
 
 \index{set\_chembl\_mysql() (pypath.main.PyPath method)}
@@ -2248,6 +3126,12 @@ keywords in short description of GO terms.
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.signor_pathways}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{signor\_pathways}}}{\emph{graph=None}}{}
 \end{fulllineitems}
 
+\index{similarity\_groups() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.similarity_groups}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{similarity\_groups}}}{\emph{groups}, \emph{index='simpson'}}{}
+\end{fulllineitems}
+
 \index{small\_plot() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -2256,12 +3140,54 @@ This method is deprecated, do not use it.
 
 \end{fulllineitems}
 
+\index{sorensen\_pathways() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.sorensen_pathways}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{sorensen\_pathways}}}{\emph{pwlist=None}}{}
+\end{fulllineitems}
+
+\index{source\_diagram() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.source_diagram}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{source\_diagram}}}{\emph{outf=None}, \emph{**kwargs}}{}
+\end{fulllineitems}
+
 \index{source\_network() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.source_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{source\_network}}}{\emph{font='HelveticaNeueLTStd'}}{}
 For EMBL branding, use Helvetica Neue Linotype Standard light
 
+\end{fulllineitems}
+
+\index{source\_similarity() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.source_similarity}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{source\_similarity}}}{\emph{outfile=None}}{}
+\end{fulllineitems}
+
+\index{source\_stats() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.source_stats}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{source\_stats}}}{}{}
+\end{fulllineitems}
+
+\index{sources\_hist() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.sources_hist}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{sources\_hist}}}{}{}
+\end{fulllineitems}
+
+\index{sources\_overlap() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.sources_overlap}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{sources\_overlap}}}{\emph{diagonal=False}}{}
+\end{fulllineitems}
+
+\index{sources\_venn\_data() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.sources_venn_data}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{sources\_venn\_data}}}{\emph{fname=None}, \emph{return\_data=False}}{}
 \end{fulllineitems}
 
 \index{straight\_between() (pypath.main.PyPath method)}
@@ -2348,6 +3274,12 @@ the current instance.
 
 \end{fulllineitems}
 
+\index{transcription\_factors() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.transcription_factors}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{transcription\_factors}}}{}{}
+\end{fulllineitems}
+
 \index{translate\_refsdir() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -2380,6 +3312,18 @@ undirected graph.
 
 \end{fulllineitems}
 
+\index{uniq\_ptm() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.uniq_ptm}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{uniq\_ptm}}}{\emph{ptms}}{}
+\end{fulllineitems}
+
+\index{uniq\_ptms() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.uniq_ptms}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{uniq\_ptms}}}{}{}
+\end{fulllineitems}
+
 \index{up() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -2393,6 +3337,18 @@ UniProt ID.
 
 \end{description}
 
+\end{fulllineitems}
+
+\index{up\_affected\_by() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.up_affected_by}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{up\_affected\_by}}}{\emph{uniprot}}{}
+\end{fulllineitems}
+
+\index{up\_affects() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.up_affects}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{up\_affects}}}{\emph{uniprot}}{}
 \end{fulllineitems}
 
 \index{up\_edge() (pypath.main.PyPath method)}
@@ -2415,12 +3371,66 @@ To be passed to igraph.Graph.get\_eid()
 
 \end{fulllineitems}
 
+\index{up\_in\_directed() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.up_in_directed}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{up\_in\_directed}}}{\emph{uniprot}}{}
+\end{fulllineitems}
+
+\index{up\_in\_undirected() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.up_in_undirected}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{up\_in\_undirected}}}{\emph{uniprot}}{}
+\end{fulllineitems}
+
+\index{up\_inhibited\_by() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.up_inhibited_by}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{up\_inhibited\_by}}}{\emph{uniprot}}{}
+\end{fulllineitems}
+
+\index{up\_inhibits() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.up_inhibits}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{up\_inhibits}}}{\emph{uniprot}}{}
+\end{fulllineitems}
+
+\index{up\_neighborhood() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.up_neighborhood}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{up\_neighborhood}}}{\emph{uniprot}, \emph{order=1}, \emph{mode='ALL'}}{}
+\end{fulllineitems}
+
+\index{up\_neighbors() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.up_neighbors}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{up\_neighbors}}}{\emph{uniprot}, \emph{mode='ALL'}}{}
+\end{fulllineitems}
+
+\index{up\_stimulated\_by() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.up_stimulated_by}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{up\_stimulated\_by}}}{\emph{uniprot}}{}
+\end{fulllineitems}
+
+\index{up\_stimulates() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.up_stimulates}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{up\_stimulates}}}{\emph{uniprot}}{}
+\end{fulllineitems}
+
 \index{update\_adjlist() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.update_adjlist}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{update\_adjlist}}}{\emph{graph=None}, \emph{mode='ALL'}}{}
 Creates an adjacency list in a list of sets format.
 
+\end{fulllineitems}
+
+\index{update\_attrs() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.update_attrs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{update\_attrs}}}{}{}
 \end{fulllineitems}
 
 \index{update\_cats() (pypath.main.PyPath method)}
@@ -2438,6 +3448,18 @@ set of all categories in the current network.
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.update_db_dict}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{update\_db\_dict}}}{}{}
 \end{fulllineitems}
 
+\index{update\_pathway\_types() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.update_pathway_types}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{update\_pathway\_types}}}{}{}
+\end{fulllineitems}
+
+\index{update\_pathways() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.update_pathways}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{update\_pathways}}}{}{}
+\end{fulllineitems}
+
 \index{update\_sources() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -2445,6 +3467,12 @@ set of all categories in the current network.
 Makes sure that the \sphinxtitleref{sources} attribute is an up to date
 list of all sources in the current network.
 
+\end{fulllineitems}
+
+\index{update\_vertex\_sources() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.update_vertex_sources}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{update\_vertex\_sources}}}{}{}
 \end{fulllineitems}
 
 \index{update\_vindex() (pypath.main.PyPath method)}
@@ -2506,10 +3534,34 @@ edge attributes to vertex attributes.
 
 \end{fulllineitems}
 
+\index{vs() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.vs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{vs}}}{\emph{identifiers}}{}
+\end{fulllineitems}
+
+\index{vsgs() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.vsgs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{vsgs}}}{}{}
+\end{fulllineitems}
+
+\index{vsup() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.vsup}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{vsup}}}{}{}
+\end{fulllineitems}
+
 \index{wang\_effects() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.wang_effects}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{wang\_effects}}}{\emph{graph=None}}{}
+\end{fulllineitems}
+
+\index{write\_table() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.write_table}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{write\_table}}}{\emph{tbl}, \emph{outfile}, \emph{sep='\textbackslash{}t'}, \emph{cut=None}, \emph{colnames=True}, \emph{rownames=True}}{}
 \end{fulllineitems}
 
 

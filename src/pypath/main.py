@@ -1315,15 +1315,36 @@ class PyPath(object):
     :var set has_cats:
         Contains the categories (e.g.: resources) [str] loaded in the
         current network.
-    :var htp:
-    :var labDct:
-    :var lists:
+    :var dict htp:
+        Contains information about high-throughput data of the network
+        for different thresholds [int] (keys). Values are [dict]
+        containing the number of references (``'rnum'``) [int], number
+        of edges (``'enum'``) [int], number of sources (``'snum'``)
+        [int] and list of PMIDs of the most common references above the
+        given threshold (``'htrefs'``) [set].
+    :var dict labDct:
+        Maps the undirected graph node labels [str] (keys) to their
+        indices [int] (values).
+    :var dict lists:
+        Contains specific lists of nodes (values) for different
+        categories [str] (keys). These can to be loaded from a file or
+        a resource. Some methods include :py:meth:`PyPath.receptor_list`
+        (``'rec'``), :py:meth:`PyPath.druggability_list` (``'dgb'``),
+        :py:meth:`PyPath.kinases_list` (``'kin'``),
+        :py:meth:`PyPath.tfs_list` (``'tf'``),
+        :py:meth:`PyPath.disease_genes_list` (``'dis'``),
+        :py:meth:`PyPath.signaling_proteins_list` (``'sig'``),
+        :py:meth:`PyPath.proteome_list` (``'proteome'``) and
+        :py:meth:`PyPath.cancer_drivers_list` (``'cdv'``).
     :var str loglevel:
         The level of the logger.
     :var bool loops:
         Whether if self-loop edges are allowed in the graph.
-    :var mapper:
-    :var mutation_samples:
+    :var pypath.mapping.Mapper mapper:
+        :py:class:`pypath.mapper.Mapper` object for ID conversion and
+        other ID-related operations across resources.
+    :var list mutation_samples:
+        DEPRECATED
     :var tuple mysql_conf:
         Contains the MySQL parameters used by the
         :py:mod:`pypath.mapping` module to load the ID conversion
@@ -1333,14 +1354,23 @@ class PyPath(object):
     :var int ncbi_tax_id:
         NCBI Taxonomic identifier of the organism from which the data
         will be downloaded.
-    :var negatives:
-    :var nodDct:
-    :var nodInd:
-    :var nodLab:
-    :var nodNam:
+    :var dict negatives:
+    :var dict nodDct:
+        Maps the undirected graph node names [str] (keys) to their
+        indices [int] (values).
+    :var set nodInd:
+        Stores the undirected graph node names [str].
+    :var dict nodLab:
+        Maps the undirected graph node indices [int] (keys) to their
+        labels [str] (values).
+    :var dict nodNam:
+        Maps the directed graph node indices [int] (keys) to their names
+        [str] (values).
     :var str outdir:
         Output directory where to store all output files.
-    :var ownlog:
+    :var pypath.logn.logw ownlog:
+        Logger class instance, see :py:class:`pypath.logn.logw` for more
+        information.
     :var palette:
     :var pathway_types:
     :var pathways:
@@ -6876,8 +6906,8 @@ class PyPath(object):
 
     def complexes(self, methods=['3dcomplexes', 'havugimana', 'corum',
                                  'complexportal', 'compleat']):
-         """
-         """
+        """
+        """
 
         for m in methods:
             m = 'load_' + m
@@ -7813,8 +7843,8 @@ class PyPath(object):
 
     def load_phospho_dmi(self, source, trace=False, return_raw=False,
                          **kwargs):
-         """
-         """
+        """
+        """
 
         functions = {
             'Signor': 'load_signor_ptms',
@@ -8679,7 +8709,7 @@ class PyPath(object):
     #
     # Load data from GDSC
     #
-
+    # XXX: global name 'gdsc' is not defined (nor here or the whole package)
     def load_mutations(self, attributes=None, gdsc_datadir=None,
                        mutation_file=None):
         """

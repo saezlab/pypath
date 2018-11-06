@@ -61,8 +61,9 @@ downloaded.</li>
 the default identifier types to which the downloaded data will
 be converted. If others are used, user may need to provide the
 format definitions for the conversion tables.</li>
-<li><strong>copy</strong> (<a class="reference internal" href="#pypath.main.PyPath" title="pypath.main.PyPath"><em>pypath.main.PyPath</em></a>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Other <a class="reference internal" href="#pypath.main.PyPath" title="pypath.main.PyPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyPath</span></code></a> instance
-from which the data will be copied.</li>
+<li><strong>copy</strong> (<a class="reference internal" href="#pypath.main.PyPath" title="pypath.main.PyPath"><em>pypath.main.PyPath</em></a>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Other
+<a class="reference internal" href="#pypath.main.PyPath" title="pypath.main.PyPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypath.main.PyPath</span></code></a> instance from which the data will
+be copied.</li>
 <li><strong>mysql</strong> (<em>tuple</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">(None,</span> <span class="pre">'mapping')</span></code> by default. Contains the MySQL
 parameters used by the <code class="xref py py-mod docutils literal notranslate"><span class="pre">pypath.mapping</span></code> module to load
 the ID conversion tables.</li>
@@ -90,7 +91,7 @@ documentation for more information.</li>
 <code class="xref py py-mod docutils literal notranslate"><span class="pre">pypath.mapping</span></code> module to load the ChEMBL ID conversion
 tables.</li>
 <li><strong>data</strong> (<em>dict</em>) – Stores custom loaded interaction and attribute table. See
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.read_data_filemethod()</span></code> for more information.</li>
+<a class="reference internal" href="#pypath.main.PyPath.read_data_file" title="pypath.main.PyPath.read_data_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.read_data_file()</span></code></a> method for more information.</li>
 <li><strong>db_dict</strong> (<em>dict</em>) – Dictionary of dictionaries. Outer-level keys are <code class="docutils literal notranslate"><span class="pre">'nodes'</span></code> and
 <code class="docutils literal notranslate"><span class="pre">'edges'</span></code>, corresponding values are [dict] whose keys are the
 database sources with values of type [set] containing the
@@ -98,40 +99,77 @@ edge/node indexes for which that database provided some
 information.</li>
 <li><strong>dgraph</strong> (<em>igraph.Graph</em>) – Directed network graph object.</li>
 <li><strong>disclaimer</strong> (<em>str</em>) – Disclaimer text.</li>
-<li><strong>dlabDct</strong> – </li>
-<li><strong>dnodDct</strong> – </li>
-<li><strong>dnodInd</strong> – </li>
-<li><strong>dnodLab</strong> – </li>
-<li><strong>dnodNam</strong> – </li>
-<li><strong>edgeAttrs</strong> – </li>
-<li><strong>exp</strong> – </li>
-<li><strong>exp_prod</strong> – </li>
-<li><strong>exp_samples</strong> – </li>
-<li><strong>failed_edges</strong> – </li>
-<li><strong>go</strong> – </li>
+<li><strong>dlabDct</strong> (<em>dict</em>) – Maps the directed graph node labels [str] (keys) to their
+indices [int] (values).</li>
+<li><strong>dnodDct</strong> (<em>dict</em>) – Maps the directed graph node names [str] (keys) to their indices
+[int] (values).</li>
+<li><strong>dnodInd</strong> (<em>set</em>) – Stores the directed graph node names [str].</li>
+<li><strong>dnodLab</strong> (<em>dict</em>) – Maps the directed graph node indices [int] (keys) to their
+labels [str] (values).</li>
+<li><strong>dnodNam</strong> (<em>dict</em>) – Maps the directed graph node indices [int] (keys) to their names
+[str] (values).</li>
+<li><strong>edgeAttrs</strong> (<em>dict</em>) – Stores the edge attribute names [str] as keys and their
+corresponding types (e.g.: <code class="docutils literal notranslate"><span class="pre">set</span></code>, <code class="docutils literal notranslate"><span class="pre">list</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>, …) as
+values.</li>
+<li><strong>exp</strong> (<em>pandas.DataFrame</em>) – Stores the expression data for the nodes (if loaded).</li>
+<li><strong>exp_prod</strong> (<em>pandas.DataFrame</em>) – Stores the edge expression data (as the product of the
+normalized expression between the pair of nodes by default). For
+more details see <a class="reference internal" href="#pypath.main.PyPath.edges_expression" title="pypath.main.PyPath.edges_expression"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.edges_expression()</span></code></a>.</li>
+<li><strong>exp_samples</strong> (<em>set</em>) – Contains a list of tissues as downloaded by ProteomicsDB. See
+<a class="reference internal" href="#pypath.main.PyPath.get_proteomicsdb" title="pypath.main.PyPath.get_proteomicsdb"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.get_proteomicsdb()</span></code></a> for more information.</li>
+<li><strong>failed_edges</strong> (<em>list</em>) – List of lists containing information about the failed edges.
+Each failed edge sublist contains (in this order): [tuple] with
+the node IDs, [str] names of nodes A and B, [int] IDs of nodes
+A and B and [int] IDs of the edges in both directions.</li>
+<li><strong>go</strong> (<em>dict</em>) – Contains the organism(s) NCBI taxonomy ID as key [int] and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">pypath.go.GOAnnotation</span></code> object as value, which
+contains the GO annotations for the nodes in the graph. See
+<code class="xref py py-class docutils literal notranslate"><span class="pre">pypath.go.GOAnnotation</span></code> for more information.</li>
 <li><strong>graph</strong> (<em>igraph.Graph</em>) – Undirected network graph object.</li>
-<li><strong>gsea</strong> – </li>
-<li><strong>has_cats</strong> – </li>
-<li><strong>htp</strong> – </li>
-<li><strong>labDct</strong> – </li>
-<li><strong>lists</strong> – </li>
+<li><strong>gsea</strong> (<em>pypath.gsea.GSEA</em>) – Contains the loaded gene-sets from MSigDB. See
+<code class="xref py py-class docutils literal notranslate"><span class="pre">pypath.gsea.GSEA</span></code> for more information.</li>
+<li><strong>has_cats</strong> (<em>set</em>) – Contains the categories (e.g.: resources) [str] loaded in the
+current network.</li>
+<li><strong>htp</strong> (<em>dict</em>) – Contains information about high-throughput data of the network
+for different thresholds [int] (keys). Values are [dict]
+containing the number of references (<code class="docutils literal notranslate"><span class="pre">'rnum'</span></code>) [int], number
+of edges (<code class="docutils literal notranslate"><span class="pre">'enum'</span></code>) [int], number of sources (<code class="docutils literal notranslate"><span class="pre">'snum'</span></code>)
+[int] and list of PMIDs of the most common references above the
+given threshold (<code class="docutils literal notranslate"><span class="pre">'htrefs'</span></code>) [set].</li>
+<li><strong>labDct</strong> (<em>dict</em>) – Maps the undirected graph node labels [str] (keys) to their
+indices [int] (values).</li>
+<li><strong>lists</strong> (<em>dict</em>) – Contains specific lists of nodes (values) for different
+categories [str] (keys). These can to be loaded from a file or
+a resource. Some methods include <code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.receptor_list()</span></code>
+(<code class="docutils literal notranslate"><span class="pre">'rec'</span></code>), <a class="reference internal" href="#pypath.main.PyPath.druggability_list" title="pypath.main.PyPath.druggability_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.druggability_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'dgb'</span></code>),
+<a class="reference internal" href="#pypath.main.PyPath.kinases_list" title="pypath.main.PyPath.kinases_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.kinases_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'kin'</span></code>),
+<a class="reference internal" href="#pypath.main.PyPath.tfs_list" title="pypath.main.PyPath.tfs_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.tfs_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'tf'</span></code>),
+<a class="reference internal" href="#pypath.main.PyPath.disease_genes_list" title="pypath.main.PyPath.disease_genes_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.disease_genes_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'dis'</span></code>),
+<a class="reference internal" href="#pypath.main.PyPath.signaling_proteins_list" title="pypath.main.PyPath.signaling_proteins_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.signaling_proteins_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'sig'</span></code>),
+<a class="reference internal" href="#pypath.main.PyPath.proteome_list" title="pypath.main.PyPath.proteome_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.proteome_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'proteome'</span></code>) and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.cancer_drivers_list()</span></code> (<code class="docutils literal notranslate"><span class="pre">'cdv'</span></code>).</li>
 <li><strong>loglevel</strong> (<em>str</em>) – The level of the logger.</li>
 <li><strong>loops</strong> (<em>bool</em>) – Whether if self-loop edges are allowed in the graph.</li>
-<li><strong>mapper</strong> – </li>
-<li><strong>mutation_samples</strong> – </li>
+<li><strong>mapper</strong> (<em>pypath.mapping.Mapper</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">pypath.mapper.Mapper</span></code> object for ID conversion and
+other ID-related operations across resources.</li>
+<li><strong>mutation_samples</strong> (<em>list</em>) – DEPRECATED</li>
 <li><strong>mysql_conf</strong> (<em>tuple</em>) – Contains the MySQL parameters used by the
 <code class="xref py py-mod docutils literal notranslate"><span class="pre">pypath.mapping</span></code> module to load the ID conversion
 tables.</li>
 <li><strong>name</strong> (<em>str</em>) – Session or project name (custom).</li>
 <li><strong>ncbi_tax_id</strong> (<em>int</em>) – NCBI Taxonomic identifier of the organism from which the data
 will be downloaded.</li>
-<li><strong>negatives</strong> – </li>
-<li><strong>nodDct</strong> – </li>
-<li><strong>nodInd</strong> – </li>
-<li><strong>nodLab</strong> – </li>
-<li><strong>nodNam</strong> – </li>
+<li><strong>negatives</strong> (<em>dict</em>) – </li>
+<li><strong>nodDct</strong> (<em>dict</em>) – Maps the undirected graph node names [str] (keys) to their
+indices [int] (values).</li>
+<li><strong>nodInd</strong> (<em>set</em>) – Stores the undirected graph node names [str].</li>
+<li><strong>nodLab</strong> (<em>dict</em>) – Maps the undirected graph node indices [int] (keys) to their
+labels [str] (values).</li>
+<li><strong>nodNam</strong> (<em>dict</em>) – Maps the directed graph node indices [int] (keys) to their names
+[str] (values).</li>
 <li><strong>outdir</strong> (<em>str</em>) – Output directory where to store all output files.</li>
-<li><strong>ownlog</strong> – </li>
+<li><strong>ownlog</strong> (<em>pypath.logn.logw</em>) – Logger class instance, see <code class="xref py py-class docutils literal notranslate"><span class="pre">pypath.logn.logw</span></code> for more
+information.</li>
 <li><strong>palette</strong> – </li>
 <li><strong>pathway_types</strong> – </li>
 <li><strong>pathways</strong> – </li>
@@ -160,6 +198,21 @@ will be downloaded.</li>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.add_genesets">
+<code class="descname">add_genesets</code><span class="sig-paren">(</span><em>genesets</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.add_genesets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.add_genesets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.add_list_eattr">
+<code class="descname">add_list_eattr</code><span class="sig-paren">(</span><em>edge</em>, <em>attr</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.add_list_eattr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.add_list_eattr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.add_update_edge">
+<code class="descname">add_update_edge</code><span class="sig-paren">(</span><em>nameA</em>, <em>nameB</em>, <em>source</em>, <em>isDir</em>, <em>refs</em>, <em>stim</em>, <em>inh</em>, <em>taxA</em>, <em>taxB</em>, <em>typ</em>, <em>extraAttrs={}</em>, <em>add=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.add_update_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.add_update_edge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.add_update_vertex">
 <code class="descname">add_update_vertex</code><span class="sig-paren">(</span><em>defAttrs</em>, <em>originalName</em>, <em>originalNameType</em>, <em>extraAttrs={}</em>, <em>add=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.add_update_vertex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.add_update_vertex" title="Permalink to this definition">¶</a></dt>
 <dd><p>Updates the attributes of one node in the network.
@@ -168,6 +221,11 @@ but it is not efficient as igraph needs to reindex vertices
 after this operation, so better to create new nodes and
 edges in batch.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.affects">
+<code class="descname">affects</code><span class="sig-paren">(</span><em>identifier</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.affects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.affects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.all_between">
@@ -179,10 +237,20 @@ for both nameA -&gt; nameB and nameB -&gt; nameA edges.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.all_neighbours">
+<code class="descname">all_neighbours</code><span class="sig-paren">(</span><em>indices=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.all_neighbours"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.all_neighbours" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.apply_list">
 <code class="descname">apply_list</code><span class="sig-paren">(</span><em>name</em>, <em>node_or_edge='node'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.apply_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.apply_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates vertex or edge attribute based on a list.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.apply_negative">
+<code class="descname">apply_negative</code><span class="sig-paren">(</span><em>settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.apply_negative"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.apply_negative" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.attach_network">
@@ -203,6 +271,11 @@ PDFLaTeX:
 latex stats.tex</dd>
 </dl>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.basic_stats_intergroup">
+<code class="descname">basic_stats_intergroup</code><span class="sig-paren">(</span><em>groupA</em>, <em>groupB</em>, <em>header=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.basic_stats_intergroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.basic_stats_intergroup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.cancer_gene_census_list">
@@ -264,8 +337,33 @@ or calls <cite>num_method()</cite> if given.</li>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.complex_comembership_network">
+<code class="descname">complex_comembership_network</code><span class="sig-paren">(</span><em>graph=None</em>, <em>resources=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.complex_comembership_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.complex_comembership_network" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.complexes">
+<code class="descname">complexes</code><span class="sig-paren">(</span><em>methods=['3dcomplexes', 'havugimana', 'corum', 'complexportal', 'compleat']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.complexes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.complexes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.complexes_in_network">
+<code class="descname">complexes_in_network</code><span class="sig-paren">(</span><em>csource='corum'</em>, <em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.complexes_in_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.complexes_in_network" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.compounds_from_chembl">
+<code class="descname">compounds_from_chembl</code><span class="sig-paren">(</span><em>chembl_mysql=None, nodes=None, crit=None, andor='or', assay_types=['B', 'F'], relationship_types=['D', 'H'], multi_query=False, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.compounds_from_chembl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.compounds_from_chembl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.consistency">
 <code class="descname">consistency</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.consistency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.consistency" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.copy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -317,6 +415,26 @@ sources, and returns the sum of these values.</dd>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.databases_similarity">
+<code class="descname">databases_similarity</code><span class="sig-paren">(</span><em>index='simpson'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.databases_similarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.databases_similarity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.degree_dist">
+<code class="descname">degree_dist</code><span class="sig-paren">(</span><em>prefix</em>, <em>g</em>, <em>group=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.degree_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.degree_dist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.degree_dists">
+<code class="descname">degree_dists</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.degree_dists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.degree_dists" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.delete_by_source">
+<code class="descname">delete_by_source</code><span class="sig-paren">(</span><em>source</em>, <em>vertexAttrsToDel=None</em>, <em>edgeAttrsToDel=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.delete_by_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.delete_by_source" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.delete_by_taxon">
 <code class="descname">delete_by_taxon</code><span class="sig-paren">(</span><em>tax</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.delete_by_taxon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.delete_by_taxon" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes the proteins of all organisms which are not listed.</p>
@@ -350,6 +468,11 @@ For proteins it’s ‘uniprot’ by default.</dd>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.delete_unmapped">
+<code class="descname">delete_unmapped</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.delete_unmapped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.delete_unmapped" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.dgenesymbol">
 <code class="descname">dgenesymbol</code><span class="sig-paren">(</span><em>genesymbol</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.dgenesymbol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.dgenesymbol" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns <code class="docutils literal notranslate"><span class="pre">igraph.Vertex()</span></code> object if the GeneSymbol
@@ -360,6 +483,11 @@ otherwise <code class="docutils literal notranslate"><span class="pre">None</spa
 <dd>GeneSymbol.</dd>
 </dl>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.dgenesymbols">
+<code class="descname">dgenesymbols</code><span class="sig-paren">(</span><em>genesymbols</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.dgenesymbols"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.dgenesymbols" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.dgs">
@@ -374,11 +502,21 @@ otherwise <code class="docutils literal notranslate"><span class="pre">None</spa
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.dgss">
+<code class="descname">dgss</code><span class="sig-paren">(</span><em>genesymbols</em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.main.PyPath.dgss" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.disease_genes_list">
 <code class="descname">disease_genes_list</code><span class="sig-paren">(</span><em>dataset='curated'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.disease_genes_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.disease_genes_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads the list of all disease related genes from DisGeNet.
 This resource is human only.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.dneighbors">
+<code class="descname">dneighbors</code><span class="sig-paren">(</span><em>identifier</em>, <em>mode='ALL'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.dneighbors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.dneighbors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.dp">
@@ -394,6 +532,16 @@ default directed network, otherwise <code class="docutils literal notranslate"><
 <code class="docutils literal notranslate"><span class="pre">igraph.Vertex</span></code> object.</dd>
 </dl>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.dproteins">
+<code class="descname">dproteins</code><span class="sig-paren">(</span><em>identifiers</em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.main.PyPath.dproteins" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.dps">
+<code class="descname">dps</code><span class="sig-paren">(</span><em>identifiers</em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.main.PyPath.dps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.druggability_list">
@@ -462,11 +610,31 @@ default directed network, otherwise <code class="docutils literal notranslate"><
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.dvs">
+<code class="descname">dvs</code><span class="sig-paren">(</span><em>identifiers</em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.main.PyPath.dvs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.edge_exists">
 <code class="descname">edge_exists</code><span class="sig-paren">(</span><em>nameA</em>, <em>nameB</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.edge_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.edge_exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a tuple of vertice indices if edge doesn’t exists,
 otherwise edge id. Not sensitive to direction.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.edge_loc">
+<code class="descname">edge_loc</code><span class="sig-paren">(</span><em>graph=None</em>, <em>topn=2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.edge_loc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.edge_loc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.edge_names">
+<code class="descname">edge_names</code><span class="sig-paren">(</span><em>e</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.edge_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.edge_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.edges_3d">
+<code class="descname">edges_3d</code><span class="sig-paren">(</span><em>methods=['dataio.get_instruct', 'dataio.get_i3d']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.edges_3d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.edges_3d" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.edges_expression">
@@ -498,6 +666,16 @@ source and the target vertex of the edge belong to.</p>
 <dd>The graph object to do the calculations on.</dd>
 </dl>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.edges_ptms">
+<code class="descname">edges_ptms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.edges_ptms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.edges_ptms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.edgeseq_inverse">
+<code class="descname">edgeseq_inverse</code><span class="sig-paren">(</span><em>edges</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.edgeseq_inverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.edgeseq_inverse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.export_dot">
@@ -594,6 +772,26 @@ dir_sources = [‘SignaLink3’], hide = True)</div></blockquote>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.export_graphml">
+<code class="descname">export_graphml</code><span class="sig-paren">(</span><em>outfile=None</em>, <em>graph=None</em>, <em>name='main'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.export_graphml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.export_graphml" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.export_ptms_tab">
+<code class="descname">export_ptms_tab</code><span class="sig-paren">(</span><em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.export_ptms_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.export_ptms_tab" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.export_sif">
+<code class="descname">export_sif</code><span class="sig-paren">(</span><em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.export_sif"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.export_sif" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.export_struct_tab">
+<code class="descname">export_struct_tab</code><span class="sig-paren">(</span><em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.export_struct_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.export_struct_tab" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.export_tab">
 <code class="descname">export_tab</code><span class="sig-paren">(</span><em>outfile=None</em>, <em>extra_node_attrs={}</em>, <em>extra_edge_attrs={}</em>, <em>unique_pairs=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.export_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.export_tab" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exports the network in a tabular format.</p>
@@ -623,6 +821,11 @@ of edge attributes.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.filters">
+<code class="descname">filters</code><span class="sig-paren">(</span><em>line</em>, <em>positiveFilters=[]</em>, <em>negativeFilters=[]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.filters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.filters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.find_all_paths">
 <code class="descname">find_all_paths</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>mode='OUT'</em>, <em>maxlen=2</em>, <em>graph=None</em>, <em>silent=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.find_all_paths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.find_all_paths" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds all paths up to length <cite>maxlen</cite> between groups of
@@ -645,6 +848,11 @@ the longest path may consist of 3 edges and 4 nodes.</dd>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.find_all_paths2">
+<code class="descname">find_all_paths2</code><span class="sig-paren">(</span><em>graph</em>, <em>start</em>, <em>end</em>, <em>mode='OUT'</em>, <em>maxlen=2</em>, <em>psize=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.find_all_paths2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.find_all_paths2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.find_complex">
 <code class="descname">find_complex</code><span class="sig-paren">(</span><em>search</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.find_complex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.find_complex" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds complexes by their non standard names.
@@ -652,6 +860,16 @@ E.g. to find DNA polymerases you can use the search
 term <cite>DNA pol</cite> which will be tested against complex names
 in CORUM.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.first_neighbours">
+<code class="descname">first_neighbours</code><span class="sig-paren">(</span><em>node</em>, <em>indices=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.first_neighbours"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.first_neighbours" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.geneset_enrichment">
+<code class="descname">geneset_enrichment</code><span class="sig-paren">(</span><em>proteins</em>, <em>all_proteins=None</em>, <em>geneset_ids=None</em>, <em>alpha=0.05</em>, <em>correction_method='hommel'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.geneset_enrichment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.geneset_enrichment" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.genesymbol">
@@ -677,6 +895,16 @@ is <code class="docutils literal notranslate"><span class="pre">True</span></cod
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.genesymbols">
+<code class="descname">genesymbols</code><span class="sig-paren">(</span><em>genesymbols</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.genesymbols"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.genesymbols" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.get_attrs">
+<code class="descname">get_attrs</code><span class="sig-paren">(</span><em>line</em>, <em>spec</em>, <em>lnum</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_attrs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_attrs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.get_directed">
 <code class="descname">get_directed</code><span class="sig-paren">(</span><em>graph=False</em>, <em>conv_edges=False</em>, <em>mutual=False</em>, <em>ret=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_directed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_directed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts <code class="docutils literal notranslate"><span class="pre">graph</span></code> undirected <code class="docutils literal notranslate"><span class="pre">igraph.Graph</span></code> object to a directed one.
@@ -699,6 +927,11 @@ or a pair of opposite directed edges. Default is <code class="docutils literal n
 Default is <code class="docutils literal notranslate"><span class="pre">False</span></code> (returns <code class="docutils literal notranslate"><span class="pre">None</span></code>).</dd>
 </dl>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.get_dirs_signs">
+<code class="descname">get_dirs_signs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_dirs_signs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_dirs_signs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.get_edge">
@@ -744,12 +977,27 @@ object.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.get_function">
+<code class="descname">get_function</code><span class="sig-paren">(</span><em>fun</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.get_giant">
 <code class="descname">get_giant</code><span class="sig-paren">(</span><em>replace=False</em>, <em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_giant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_giant" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the giant component of the graph, or
 replaces the igraph object with only the giant
 component.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.get_max">
+<code class="descname">get_max</code><span class="sig-paren">(</span><em>attrList</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_max"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_max" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.get_network">
+<code class="descname">get_network</code><span class="sig-paren">(</span><em>crit</em>, <em>andor='or'</em>, <em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_network" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.get_node">
@@ -781,8 +1029,38 @@ default directed network, otherwise <code class="docutils literal notranslate"><
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.get_node_pair">
+<code class="descname">get_node_pair</code><span class="sig-paren">(</span><em>nameA</em>, <em>nameB</em>, <em>directed=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_node_pair"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_node_pair" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.get_nodes">
+<code class="descname">get_nodes</code><span class="sig-paren">(</span><em>identifiers</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.get_nodes_d">
+<code class="descname">get_nodes_d</code><span class="sig-paren">(</span><em>identifiers</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_nodes_d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_nodes_d" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.get_pathways">
 <code class="descname">get_pathways</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_pathways"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_pathways" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.get_proteomicsdb">
+<code class="descname">get_proteomicsdb</code><span class="sig-paren">(</span><em>user</em>, <em>passwd</em>, <em>tissues=None</em>, <em>pickle=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_proteomicsdb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_proteomicsdb" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.get_sub">
+<code class="descname">get_sub</code><span class="sig-paren">(</span><em>crit</em>, <em>andor='or'</em>, <em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_sub"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_sub" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.get_taxon">
+<code class="descname">get_taxon</code><span class="sig-paren">(</span><em>tax_dict</em>, <em>fields</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_taxon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_taxon" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -809,6 +1087,11 @@ dict under <code class="docutils literal notranslate"><span class="pre">go</span
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.go_enrichment">
+<code class="descname">go_enrichment</code><span class="sig-paren">(</span><em>proteins=None</em>, <em>aspect='P'</em>, <em>alpha=0.05</em>, <em>correction_method='hommel'</em>, <em>all_proteins=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.go_enrichment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.go_enrichment" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.gs">
 <code class="descname">gs</code><span class="sig-paren">(</span><em>genesymbol</em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.main.PyPath.gs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns <code class="docutils literal notranslate"><span class="pre">igraph.Vertex()</span></code> object if the GeneSymbol
@@ -819,6 +1102,16 @@ otherwise <code class="docutils literal notranslate"><span class="pre">None</spa
 <dd>GeneSymbol.</dd>
 </dl>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.gs_affected_by">
+<code class="descname">gs_affected_by</code><span class="sig-paren">(</span><em>genesymbol</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.gs_affected_by"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.gs_affected_by" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.gs_affects">
+<code class="descname">gs_affects</code><span class="sig-paren">(</span><em>genesymbol</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.gs_affects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.gs_affects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.gs_edge">
@@ -836,8 +1129,73 @@ the 2 proteins, otherwise <code class="docutils literal notranslate"><span class
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.gs_in_directed">
+<code class="descname">gs_in_directed</code><span class="sig-paren">(</span><em>genesymbol</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.gs_in_directed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.gs_in_directed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.gs_in_undirected">
+<code class="descname">gs_in_undirected</code><span class="sig-paren">(</span><em>genesymbol</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.gs_in_undirected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.gs_in_undirected" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.gs_inhibited_by">
+<code class="descname">gs_inhibited_by</code><span class="sig-paren">(</span><em>genesymbol</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.gs_inhibited_by"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.gs_inhibited_by" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.gs_inhibits">
+<code class="descname">gs_inhibits</code><span class="sig-paren">(</span><em>genesymbol</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.gs_inhibits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.gs_inhibits" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.gs_neighborhood">
+<code class="descname">gs_neighborhood</code><span class="sig-paren">(</span><em>genesymbols</em>, <em>order=1</em>, <em>mode='ALL'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.gs_neighborhood"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.gs_neighborhood" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.gs_neighbors">
+<code class="descname">gs_neighbors</code><span class="sig-paren">(</span><em>genesymbol</em>, <em>mode='ALL'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.gs_neighbors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.gs_neighbors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.gs_stimulated_by">
+<code class="descname">gs_stimulated_by</code><span class="sig-paren">(</span><em>genesymbol</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.gs_stimulated_by"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.gs_stimulated_by" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.gs_stimulates">
+<code class="descname">gs_stimulates</code><span class="sig-paren">(</span><em>genesymbol</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.gs_stimulates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.gs_stimulates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.gss">
+<code class="descname">gss</code><span class="sig-paren">(</span><em>genesymbols</em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.main.PyPath.gss" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.guide2pharma">
 <code class="descname">guide2pharma</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.guide2pharma"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.guide2pharma" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.having_attr">
+<code class="descname">having_attr</code><span class="sig-paren">(</span><em>attr</em>, <em>graph=None</em>, <em>index=True</em>, <em>edges=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.having_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.having_attr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.having_eattr">
+<code class="descname">having_eattr</code><span class="sig-paren">(</span><em>attr</em>, <em>graph=None</em>, <em>index=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.having_eattr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.having_eattr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.having_ptm">
+<code class="descname">having_ptm</code><span class="sig-paren">(</span><em>index=True</em>, <em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.having_ptm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.having_ptm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.having_vattr">
+<code class="descname">having_vattr</code><span class="sig-paren">(</span><em>attr</em>, <em>graph=None</em>, <em>index=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.having_vattr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.having_vattr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -867,6 +1225,26 @@ E.g. 10090 for mouse.</td>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.in_directed">
+<code class="descname">in_directed</code><span class="sig-paren">(</span><em>vertex</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.in_directed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.in_directed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.in_undirected">
+<code class="descname">in_undirected</code><span class="sig-paren">(</span><em>vertex</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.in_undirected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.in_undirected" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.info">
+<code class="descname">info</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.init_complex_attr">
+<code class="descname">init_complex_attr</code><span class="sig-paren">(</span><em>graph</em>, <em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.init_complex_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.init_complex_attr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.init_edge_attr">
 <code class="descname">init_edge_attr</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.init_edge_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.init_edge_attr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fills edge attribute with its default values, creates
@@ -874,8 +1252,13 @@ lists if in <cite>edgeAttrs</cite> the attribute is registered as list.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.init_gsea">
+<code class="descname">init_gsea</code><span class="sig-paren">(</span><em>user</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.init_gsea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.init_gsea" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.init_network">
-<code class="descname">init_network</code><span class="sig-paren">(</span><em>lst={'arn': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c7e8&gt;</em>, <em>'biogrid': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f3a7950&gt;</em>, <em>'ca1': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c6c8&gt;</em>, <em>'ccmap': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39cc68&gt;</em>, <em>'cellphonedb': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f127a70&gt;</em>, <em>'dbptm': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f3a70e0&gt;</em>, <em>'death': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c998&gt;</em>, <em>'depod': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39cef0&gt;</em>, <em>'dip': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39ccf8&gt;</em>, <em>'domino': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f3a7050&gt;</em>, <em>'elm': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39cfc8&gt;</em>, <em>'guide2pharma': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c5f0&gt;</em>, <em>'hpmr': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f1279e0&gt;</em>, <em>'hprd': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f3a7ab8&gt;</em>, <em>'hprd_p': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f3a7128&gt;</em>, <em>'innatedb': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39cd88&gt;</em>, <em>'intact': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f3a7908&gt;</em>, <em>'lmpid': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39cf38&gt;</em>, <em>'macrophage': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c950&gt;</em>, <em>'matrixdb': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39ce60&gt;</em>, <em>'mppi': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39ccb0&gt;</em>, <em>'nrf2': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c8c0&gt;</em>, <em>'pdz': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c9e0&gt;</em>, <em>'phelm': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39cf80&gt;</em>, <em>'psite': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39cea8&gt;</em>, <em>'ramilowski2015': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f127b00&gt;</em>, <em>'signalink3': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c5a8&gt;</em>, <em>'signor': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39cbd8&gt;</em>, <em>'spike': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c560&gt;</em>, <em>'trip': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c488&gt;}</em>, <em>exclude=[]</em>, <em>cache_files={}</em>, <em>pfile=False</em>, <em>save=False</em>, <em>reread=False</em>, <em>redownload=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.init_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.init_network" title="Permalink to this definition">¶</a></dt>
+<code class="descname">init_network</code><span class="sig-paren">(</span><em>lst={'arn': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22bb48&gt;</em>, <em>'biogrid': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233cb0&gt;</em>, <em>'ca1': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22ba28&gt;</em>, <em>'ccmap': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22bfc8&gt;</em>, <em>'cellphonedb': &lt;pypath.input_formats.ReadSettings instance at 0x7f015efb5dd0&gt;</em>, <em>'dbptm': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233440&gt;</em>, <em>'death': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22bcf8&gt;</em>, <em>'depod': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233290&gt;</em>, <em>'dip': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233098&gt;</em>, <em>'domino': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f2333b0&gt;</em>, <em>'elm': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233368&gt;</em>, <em>'guide2pharma': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22b950&gt;</em>, <em>'hpmr': &lt;pypath.input_formats.ReadSettings instance at 0x7f015efb5d40&gt;</em>, <em>'hprd': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233e18&gt;</em>, <em>'hprd_p': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233488&gt;</em>, <em>'innatedb': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233128&gt;</em>, <em>'intact': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233c68&gt;</em>, <em>'lmpid': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f2332d8&gt;</em>, <em>'macrophage': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22bcb0&gt;</em>, <em>'matrixdb': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233200&gt;</em>, <em>'mppi': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233050&gt;</em>, <em>'nrf2': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22bc20&gt;</em>, <em>'pdz': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22bd40&gt;</em>, <em>'phelm': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233320&gt;</em>, <em>'psite': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233248&gt;</em>, <em>'ramilowski2015': &lt;pypath.input_formats.ReadSettings instance at 0x7f015efb5e60&gt;</em>, <em>'signalink3': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22b908&gt;</em>, <em>'signor': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22bf38&gt;</em>, <em>'spike': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22b8c0&gt;</em>, <em>'trip': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22b7e8&gt;}</em>, <em>exclude=[]</em>, <em>cache_files={}</em>, <em>pfile=False</em>, <em>save=False</em>, <em>reread=False</em>, <em>redownload=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.init_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.init_network" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is a lazy way to start the module, load data
 and build the high confidence, literature curated
 part of the signaling network.</p>
@@ -889,10 +1272,25 @@ lists if in <cite>vertexAttrs</cite> the attribute is registered as list.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.intergroup_shortest_paths">
+<code class="descname">intergroup_shortest_paths</code><span class="sig-paren">(</span><em>groupA</em>, <em>groupB</em>, <em>random=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.intergroup_shortest_paths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.intergroup_shortest_paths" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.intogen_cancer_drivers_list">
 <code class="descname">intogen_cancer_drivers_list</code><span class="sig-paren">(</span><em>intogen_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.intogen_cancer_drivers_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.intogen_cancer_drivers_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads the list of cancer driver proteins from IntOGen data.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.jaccard_edges">
+<code class="descname">jaccard_edges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.jaccard_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.jaccard_edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.jaccard_meta">
+<code class="descname">jaccard_meta</code><span class="sig-paren">(</span><em>jedges</em>, <em>critical</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.jaccard_meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.jaccard_meta" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.kegg_directions">
@@ -902,6 +1300,11 @@ lists if in <cite>vertexAttrs</cite> the attribute is registered as list.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.kegg_pathways">
 <code class="descname">kegg_pathways</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.kegg_pathways"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.kegg_pathways" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.kinase_stats">
+<code class="descname">kinase_stats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.kinase_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.kinase_stats" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -930,6 +1333,36 @@ the node is annotated by all or any (see <code class="docutils literal notransla
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.list_resources">
+<code class="descname">list_resources</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.list_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.list_resources" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_3dcomplexes">
+<code class="descname">load_3dcomplexes</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_3dcomplexes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_3dcomplexes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_3did_ddi">
+<code class="descname">load_3did_ddi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_3did_ddi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_3did_ddi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_3did_ddi2">
+<code class="descname">load_3did_ddi2</code><span class="sig-paren">(</span><em>ddi=True</em>, <em>interfaces=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_3did_ddi2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_3did_ddi2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_3did_dmi">
+<code class="descname">load_3did_dmi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_3did_dmi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_3did_dmi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_3did_interfaces">
+<code class="descname">load_3did_interfaces</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_3did_interfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_3did_interfaces" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.load_all_pathways">
 <code class="descname">load_all_pathways</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_all_pathways"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_all_pathways" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -951,6 +1384,11 @@ This resource is human only.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.load_comppi">
+<code class="descname">load_comppi</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_comppi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_comppi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.load_corum">
 <code class="descname">load_corum</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_corum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_corum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads complexes from CORUM database. Loads data into vertex attribute
@@ -959,11 +1397,26 @@ This resource is human only.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.load_dbptm">
+<code class="descname">load_dbptm</code><span class="sig-paren">(</span><em>non_matching=False</em>, <em>trace=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_dbptm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_dbptm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.load_ddi">
 <code class="descname">load_ddi</code><span class="sig-paren">(</span><em>ddi</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_ddi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_ddi" title="Permalink to this definition">¶</a></dt>
 <dd><p>ddi is either a list of intera.DomainDomain objects,
 or a function resulting this list</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_ddis">
+<code class="descname">load_ddis</code><span class="sig-paren">(</span><em>methods=['dataio.get_3dc_ddi', 'dataio.get_domino_ddi', 'self.load_3did_ddi2']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_ddis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_ddis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_depod_dmi">
+<code class="descname">load_depod_dmi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_depod_dmi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_depod_dmi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.load_disgenet">
@@ -999,6 +1452,21 @@ or a function resulting this list</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.load_dmis">
+<code class="descname">load_dmis</code><span class="sig-paren">(</span><em>methods=['self.pfam_regions', 'self.load_depod_dmi', 'self.load_dbptm', 'self.load_mimp_dmi', 'self.load_pnetworks_dmi', 'self.load_domino_dmi', 'self.load_pepcyber', 'self.load_psite_reg', 'self.load_psite_phos', 'self.load_ielm', 'self.load_phosphoelm', 'self.load_elm', 'self.load_3did_dmi']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_dmis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_dmis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_domino_dmi">
+<code class="descname">load_domino_dmi</code><span class="sig-paren">(</span><em>organism=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_domino_dmi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_domino_dmi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_elm">
+<code class="descname">load_elm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_elm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_elm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.load_expression">
 <code class="descname">load_expression</code><span class="sig-paren">(</span><em>array=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_expression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_expression" title="Permalink to this definition">¶</a></dt>
 <dd><p>Expression data can be loaded into vertex attributes,
@@ -1029,10 +1497,45 @@ This resource is human only.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.load_hprd_ptms">
+<code class="descname">load_hprd_ptms</code><span class="sig-paren">(</span><em>non_matching=False</em>, <em>trace=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_hprd_ptms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_hprd_ptms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_ielm">
+<code class="descname">load_ielm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_ielm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_ielm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_interfaces">
+<code class="descname">load_interfaces</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_interfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_interfaces" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_li2012_ptms">
+<code class="descname">load_li2012_ptms</code><span class="sig-paren">(</span><em>non_matching=False</em>, <em>trace=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_li2012_ptms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_li2012_ptms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.load_ligand_receptor_network">
-<code class="descname">load_ligand_receptor_network</code><span class="sig-paren">(</span><em>lig_rec_resources=True</em>, <em>inference_from_go=True</em>, <em>sources={'arn': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c7e8&gt;</em>, <em>'ca1': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c6c8&gt;</em>, <em>'cellphonedb': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f127a70&gt;</em>, <em>'death': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c998&gt;</em>, <em>'guide2pharma': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c5f0&gt;</em>, <em>'hpmr': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f1279e0&gt;</em>, <em>'macrophage': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c950&gt;</em>, <em>'nrf2': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c8c0&gt;</em>, <em>'pdz': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c9e0&gt;</em>, <em>'ramilowski2015': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f127b00&gt;</em>, <em>'signalink3': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c5a8&gt;</em>, <em>'signor': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39cbd8&gt;</em>, <em>'spike': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c560&gt;</em>, <em>'trip': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c488&gt;}</em>, <em>keep_undirected=False</em>, <em>keep_rec_rec=False</em>, <em>keep_lig_lig=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_ligand_receptor_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_ligand_receptor_network" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load_ligand_receptor_network</code><span class="sig-paren">(</span><em>lig_rec_resources=True</em>, <em>inference_from_go=True</em>, <em>sources={'arn': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22bb48&gt;</em>, <em>'ca1': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22ba28&gt;</em>, <em>'cellphonedb': &lt;pypath.input_formats.ReadSettings instance at 0x7f015efb5dd0&gt;</em>, <em>'death': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22bcf8&gt;</em>, <em>'guide2pharma': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22b950&gt;</em>, <em>'hpmr': &lt;pypath.input_formats.ReadSettings instance at 0x7f015efb5d40&gt;</em>, <em>'macrophage': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22bcb0&gt;</em>, <em>'nrf2': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22bc20&gt;</em>, <em>'pdz': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22bd40&gt;</em>, <em>'ramilowski2015': &lt;pypath.input_formats.ReadSettings instance at 0x7f015efb5e60&gt;</em>, <em>'signalink3': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22b908&gt;</em>, <em>'signor': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22bf38&gt;</em>, <em>'spike': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22b8c0&gt;</em>, <em>'trip': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22b7e8&gt;}</em>, <em>keep_undirected=False</em>, <em>keep_rec_rec=False</em>, <em>keep_lig_lig=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_ligand_receptor_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_ligand_receptor_network" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes a ligand-receptor network.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_lmpid">
+<code class="descname">load_lmpid</code><span class="sig-paren">(</span><em>method</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_lmpid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_lmpid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_mappings">
+<code class="descname">load_mappings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_mappings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_mappings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_mimp_dmi">
+<code class="descname">load_mimp_dmi</code><span class="sig-paren">(</span><em>non_matching=False</em>, <em>trace=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_mimp_dmi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_mimp_dmi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.load_mutations">
@@ -1042,6 +1545,11 @@ offers methods to identify residues and look up in Ptm(), Motif()
 and Domain() objects, to check if those residues are
 modified, or are in some short motif or domain.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_negatives">
+<code class="descname">load_negatives</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_negatives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_negatives" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.load_old_omnipath">
@@ -1080,6 +1588,66 @@ current instance.</li>
 </tbody>
 </table>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_pdb">
+<code class="descname">load_pdb</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_pdb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_pdb" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_pepcyber">
+<code class="descname">load_pepcyber</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_pepcyber"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_pepcyber" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_pfam">
+<code class="descname">load_pfam</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_pfam"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_pfam" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_pfam2">
+<code class="descname">load_pfam2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_pfam2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_pfam2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_pfam3">
+<code class="descname">load_pfam3</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_pfam3"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_pfam3" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_phospho_dmi">
+<code class="descname">load_phospho_dmi</code><span class="sig-paren">(</span><em>source</em>, <em>trace=False</em>, <em>return_raw=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_phospho_dmi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_phospho_dmi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_phosphoelm">
+<code class="descname">load_phosphoelm</code><span class="sig-paren">(</span><em>trace=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_phosphoelm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_phosphoelm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_pisa">
+<code class="descname">load_pisa</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_pisa"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_pisa" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_pnetworks_dmi">
+<code class="descname">load_pnetworks_dmi</code><span class="sig-paren">(</span><em>trace=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_pnetworks_dmi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_pnetworks_dmi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_psite_phos">
+<code class="descname">load_psite_phos</code><span class="sig-paren">(</span><em>trace=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_psite_phos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_psite_phos" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_psite_reg">
+<code class="descname">load_psite_reg</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_psite_reg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_psite_reg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_ptms">
+<code class="descname">load_ptms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_ptms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_ptms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.load_ptms2">
@@ -1128,14 +1696,34 @@ Those not used by <cite>PtmProcessor</cite> are forwarded to the
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.load_reflist">
+<code class="descname">load_reflist</code><span class="sig-paren">(</span><em>reflist</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_reflist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_reflist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_reflists">
+<code class="descname">load_reflists</code><span class="sig-paren">(</span><em>reflst=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_reflists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_reflists" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_resource">
+<code class="descname">load_resource</code><span class="sig-paren">(</span><em>settings</em>, <em>clean=True</em>, <em>cache_files={}</em>, <em>reread=False</em>, <em>redownload=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_resource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_resource" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.load_resources">
-<code class="descname">load_resources</code><span class="sig-paren">(</span><em>lst={'arn': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c7e8&gt;</em>, <em>'biogrid': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f3a7950&gt;</em>, <em>'ca1': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c6c8&gt;</em>, <em>'ccmap': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39cc68&gt;</em>, <em>'cellphonedb': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f127a70&gt;</em>, <em>'dbptm': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f3a70e0&gt;</em>, <em>'death': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c998&gt;</em>, <em>'depod': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39cef0&gt;</em>, <em>'dip': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39ccf8&gt;</em>, <em>'domino': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f3a7050&gt;</em>, <em>'elm': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39cfc8&gt;</em>, <em>'guide2pharma': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c5f0&gt;</em>, <em>'hpmr': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f1279e0&gt;</em>, <em>'hprd': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f3a7ab8&gt;</em>, <em>'hprd_p': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f3a7128&gt;</em>, <em>'innatedb': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39cd88&gt;</em>, <em>'intact': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f3a7908&gt;</em>, <em>'lmpid': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39cf38&gt;</em>, <em>'macrophage': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c950&gt;</em>, <em>'matrixdb': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39ce60&gt;</em>, <em>'mppi': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39ccb0&gt;</em>, <em>'nrf2': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c8c0&gt;</em>, <em>'pdz': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c9e0&gt;</em>, <em>'phelm': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39cf80&gt;</em>, <em>'psite': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39cea8&gt;</em>, <em>'ramilowski2015': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f127b00&gt;</em>, <em>'signalink3': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c5a8&gt;</em>, <em>'signor': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39cbd8&gt;</em>, <em>'spike': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c560&gt;</em>, <em>'trip': &lt;pypath.input_formats.ReadSettings instance at 0x7f3d8f39c488&gt;}</em>, <em>exclude=[]</em>, <em>cache_files={}</em>, <em>reread=False</em>, <em>redownload=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_resources" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load_resources</code><span class="sig-paren">(</span><em>lst={'arn': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22bb48&gt;</em>, <em>'biogrid': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233cb0&gt;</em>, <em>'ca1': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22ba28&gt;</em>, <em>'ccmap': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22bfc8&gt;</em>, <em>'cellphonedb': &lt;pypath.input_formats.ReadSettings instance at 0x7f015efb5dd0&gt;</em>, <em>'dbptm': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233440&gt;</em>, <em>'death': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22bcf8&gt;</em>, <em>'depod': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233290&gt;</em>, <em>'dip': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233098&gt;</em>, <em>'domino': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f2333b0&gt;</em>, <em>'elm': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233368&gt;</em>, <em>'guide2pharma': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22b950&gt;</em>, <em>'hpmr': &lt;pypath.input_formats.ReadSettings instance at 0x7f015efb5d40&gt;</em>, <em>'hprd': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233e18&gt;</em>, <em>'hprd_p': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233488&gt;</em>, <em>'innatedb': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233128&gt;</em>, <em>'intact': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233c68&gt;</em>, <em>'lmpid': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f2332d8&gt;</em>, <em>'macrophage': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22bcb0&gt;</em>, <em>'matrixdb': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233200&gt;</em>, <em>'mppi': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233050&gt;</em>, <em>'nrf2': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22bc20&gt;</em>, <em>'pdz': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22bd40&gt;</em>, <em>'phelm': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233320&gt;</em>, <em>'psite': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f233248&gt;</em>, <em>'ramilowski2015': &lt;pypath.input_formats.ReadSettings instance at 0x7f015efb5e60&gt;</em>, <em>'signalink3': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22b908&gt;</em>, <em>'signor': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22bf38&gt;</em>, <em>'spike': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22b8c0&gt;</em>, <em>'trip': &lt;pypath.input_formats.ReadSettings instance at 0x7f015f22b7e8&gt;}</em>, <em>exclude=[]</em>, <em>cache_files={}</em>, <em>reread=False</em>, <em>redownload=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_resources" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads multiple resources, and cleans up after.
 Looks up ID types, and loads all ID conversion
 tables from UniProt if necessary. This is much
 faster than loading the ID conversion and the
 resources one by one.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_signor_ptms">
+<code class="descname">load_signor_ptms</code><span class="sig-paren">(</span><em>non_matching=False</em>, <em>trace=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_signor_ptms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_signor_ptms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.load_tfregulons">
@@ -1166,6 +1754,16 @@ and prediction from GTEx expression data by ARACNe.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.lookup_cache">
+<code class="descname">lookup_cache</code><span class="sig-paren">(</span><em>name</em>, <em>cache_files</em>, <em>int_cache</em>, <em>edges_cache</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.lookup_cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.lookup_cache" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.loop_edges">
+<code class="descname">loop_edges</code><span class="sig-paren">(</span><em>index=True</em>, <em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.loop_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.loop_edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.map_edge">
 <code class="descname">map_edge</code><span class="sig-paren">(</span><em>edge</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.map_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.map_edge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Translates molecule names in dict representing an edge.</p>
@@ -1182,6 +1780,11 @@ and prediction from GTEx expression data by ARACNe.</p>
 <code class="descname">map_list</code><span class="sig-paren">(</span><em>lst</em>, <em>singleList=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.map_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.map_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Only a wrapper for map_edge()</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.mean_reference_per_interaction">
+<code class="descname">mean_reference_per_interaction</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.mean_reference_per_interaction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.mean_reference_per_interaction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.merge_lists">
@@ -1224,6 +1827,31 @@ underlying PTM is mutated.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.names2vids">
+<code class="descname">names2vids</code><span class="sig-paren">(</span><em>names</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.names2vids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.names2vids" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.negative_report">
+<code class="descname">negative_report</code><span class="sig-paren">(</span><em>lst=True</em>, <em>outFile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.negative_report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.negative_report" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.neighborhood">
+<code class="descname">neighborhood</code><span class="sig-paren">(</span><em>identifiers</em>, <em>order=1</em>, <em>mode='ALL'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.neighborhood"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.neighborhood" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.neighbors">
+<code class="descname">neighbors</code><span class="sig-paren">(</span><em>identifier</em>, <em>mode='ALL'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.neighbors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.neighbors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.neighbourhood_network">
+<code class="descname">neighbourhood_network</code><span class="sig-paren">(</span><em>center</em>, <em>second=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.neighbourhood_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.neighbourhood_network" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.network_filter">
 <code class="descname">network_filter</code><span class="sig-paren">(</span><em>p=2.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.network_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.network_filter" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function aims to cut the number of edges in the network,
@@ -1239,8 +1867,33 @@ and each of sources. Writes the results in a tab file.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.new_edges">
+<code class="descname">new_edges</code><span class="sig-paren">(</span><em>edges</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.new_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.new_edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.new_nodes">
+<code class="descname">new_nodes</code><span class="sig-paren">(</span><em>nodes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.new_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.new_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.node_exists">
+<code class="descname">node_exists</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.node_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.node_exists" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.numof_directed_edges">
 <code class="descname">numof_directed_edges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.numof_directed_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.numof_directed_edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.numof_reference_interaction_pairs">
+<code class="descname">numof_reference_interaction_pairs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.numof_reference_interaction_pairs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.numof_reference_interaction_pairs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.numof_references">
+<code class="descname">numof_references</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.numof_references"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.numof_references" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1299,8 +1952,18 @@ in the current graph.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.pathway_similarity">
+<code class="descname">pathway_similarity</code><span class="sig-paren">(</span><em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.pathway_similarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.pathway_similarity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.pathways_table">
 <code class="descname">pathways_table</code><span class="sig-paren">(</span><em>filename='genes_pathways.list', pw_sources=['signalink', 'signor', 'netpath', 'kegg'], graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.pathways_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.pathways_table" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.pfam_regions">
+<code class="descname">pfam_regions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.pfam_regions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.pfam_regions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1314,8 +1977,23 @@ in the current graph.</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.phosphorylation_directions">
+<code class="descname">phosphorylation_directions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.phosphorylation_directions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.phosphorylation_directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.phosphorylation_signs">
+<code class="descname">phosphorylation_signs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.phosphorylation_signs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.phosphorylation_signs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.phosphosite_directions">
 <code class="descname">phosphosite_directions</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.phosphosite_directions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.phosphosite_directions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.prdb_tissue_expr">
+<code class="descname">prdb_tissue_expr</code><span class="sig-paren">(</span><em>tissue</em>, <em>prdb=None</em>, <em>graph=None</em>, <em>occurrence=1</em>, <em>group_function=&lt;function &lt;lambda&gt;&gt;</em>, <em>na_value=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.prdb_tissue_expr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.prdb_tissue_expr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1370,10 +2048,20 @@ object.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.proteins">
+<code class="descname">proteins</code><span class="sig-paren">(</span><em>identifiers</em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.main.PyPath.proteins" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.proteome_list">
 <code class="descname">proteome_list</code><span class="sig-paren">(</span><em>swissprot=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.proteome_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.proteome_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads the whole proteome as a list.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.ps">
+<code class="descname">ps</code><span class="sig-paren">(</span><em>identifiers</em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.main.PyPath.ps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.random_walk_with_return">
@@ -1451,6 +2139,16 @@ This resource is human only.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.reference_edge_ratio">
+<code class="descname">reference_edge_ratio</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.reference_edge_ratio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.reference_edge_ratio" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.reference_hist">
+<code class="descname">reference_hist</code><span class="sig-paren">(</span><em>filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.reference_hist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.reference_hist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.remove_htp">
 <code class="descname">remove_htp</code><span class="sig-paren">(</span><em>threshold=50</em>, <em>keep_directed=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.remove_htp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.remove_htp" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1461,10 +2159,35 @@ This resource is human only.</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.run_batch">
+<code class="descname">run_batch</code><span class="sig-paren">(</span><em>methods</em>, <em>toCall=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.run_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.run_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.save_network">
+<code class="descname">save_network</code><span class="sig-paren">(</span><em>pfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.save_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.save_network" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.save_session">
 <code class="descname">save_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.save_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.save_session" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save current state into pickle dump.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.search_attr_and">
+<code class="descname">search_attr_and</code><span class="sig-paren">(</span><em>obj</em>, <em>lst</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.search_attr_and"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.search_attr_and" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.search_attr_or">
+<code class="descname">search_attr_or</code><span class="sig-paren">(</span><em>obj</em>, <em>lst</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.search_attr_or"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.search_attr_or" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.second_neighbours">
+<code class="descname">second_neighbours</code><span class="sig-paren">(</span><em>node</em>, <em>indices=False</em>, <em>with_first=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.second_neighbours"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.second_neighbours" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.select_by_go">
@@ -1495,6 +2218,21 @@ Returns dict of igraph objects.</p>
 <dd><p>Separate networks based on categories.
 Returns dict of igraph objects.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.sequences">
+<code class="descname">sequences</code><span class="sig-paren">(</span><em>isoforms=True</em>, <em>update=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.sequences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.sequences" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.set_boolean_vattr">
+<code class="descname">set_boolean_vattr</code><span class="sig-paren">(</span><em>attr</em>, <em>vids</em>, <em>negate=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.set_boolean_vattr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.set_boolean_vattr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.set_categories">
+<code class="descname">set_categories</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.set_categories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.set_categories" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.set_chembl_mysql">
@@ -1610,16 +2348,56 @@ keywords in short description of GO terms.</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.similarity_groups">
+<code class="descname">similarity_groups</code><span class="sig-paren">(</span><em>groups</em>, <em>index='simpson'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.similarity_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.similarity_groups" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.small_plot">
 <code class="descname">small_plot</code><span class="sig-paren">(</span><em>graph</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.small_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.small_plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>This method is deprecated, do not use it.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.sorensen_pathways">
+<code class="descname">sorensen_pathways</code><span class="sig-paren">(</span><em>pwlist=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.sorensen_pathways"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.sorensen_pathways" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.source_diagram">
+<code class="descname">source_diagram</code><span class="sig-paren">(</span><em>outf=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.source_diagram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.source_diagram" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.source_network">
 <code class="descname">source_network</code><span class="sig-paren">(</span><em>font='HelveticaNeueLTStd'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.source_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.source_network" title="Permalink to this definition">¶</a></dt>
 <dd><p>For EMBL branding, use Helvetica Neue Linotype Standard light</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.source_similarity">
+<code class="descname">source_similarity</code><span class="sig-paren">(</span><em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.source_similarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.source_similarity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.source_stats">
+<code class="descname">source_stats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.source_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.source_stats" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.sources_hist">
+<code class="descname">sources_hist</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.sources_hist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.sources_hist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.sources_overlap">
+<code class="descname">sources_overlap</code><span class="sig-paren">(</span><em>diagonal=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.sources_overlap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.sources_overlap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.sources_venn_data">
+<code class="descname">sources_venn_data</code><span class="sig-paren">(</span><em>fname=None</em>, <em>return_data=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.sources_venn_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.sources_venn_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.straight_between">
@@ -1693,6 +2471,11 @@ the current instance.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.transcription_factors">
+<code class="descname">transcription_factors</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.transcription_factors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.transcription_factors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.translate_refsdir">
 <code class="descname">translate_refsdir</code><span class="sig-paren">(</span><em>rd</em>, <em>ids</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.translate_refsdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.translate_refsdir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1719,6 +2502,16 @@ undirected graph.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.uniq_ptm">
+<code class="descname">uniq_ptm</code><span class="sig-paren">(</span><em>ptms</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.uniq_ptm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.uniq_ptm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.uniq_ptms">
+<code class="descname">uniq_ptms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.uniq_ptms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.uniq_ptms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.up">
 <code class="descname">up</code><span class="sig-paren">(</span><em>uniprot</em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.main.PyPath.up" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns <code class="docutils literal notranslate"><span class="pre">igraph.Vertex()</span></code> object if the UniProt
@@ -1729,6 +2522,16 @@ otherwise <code class="docutils literal notranslate"><span class="pre">None</spa
 <dd>UniProt ID.</dd>
 </dl>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.up_affected_by">
+<code class="descname">up_affected_by</code><span class="sig-paren">(</span><em>uniprot</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.up_affected_by"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.up_affected_by" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.up_affects">
+<code class="descname">up_affects</code><span class="sig-paren">(</span><em>uniprot</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.up_affects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.up_affects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.up_edge">
@@ -1746,10 +2549,55 @@ the 2 proteins, otherwise <code class="docutils literal notranslate"><span class
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.up_in_directed">
+<code class="descname">up_in_directed</code><span class="sig-paren">(</span><em>uniprot</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.up_in_directed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.up_in_directed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.up_in_undirected">
+<code class="descname">up_in_undirected</code><span class="sig-paren">(</span><em>uniprot</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.up_in_undirected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.up_in_undirected" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.up_inhibited_by">
+<code class="descname">up_inhibited_by</code><span class="sig-paren">(</span><em>uniprot</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.up_inhibited_by"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.up_inhibited_by" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.up_inhibits">
+<code class="descname">up_inhibits</code><span class="sig-paren">(</span><em>uniprot</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.up_inhibits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.up_inhibits" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.up_neighborhood">
+<code class="descname">up_neighborhood</code><span class="sig-paren">(</span><em>uniprot</em>, <em>order=1</em>, <em>mode='ALL'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.up_neighborhood"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.up_neighborhood" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.up_neighbors">
+<code class="descname">up_neighbors</code><span class="sig-paren">(</span><em>uniprot</em>, <em>mode='ALL'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.up_neighbors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.up_neighbors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.up_stimulated_by">
+<code class="descname">up_stimulated_by</code><span class="sig-paren">(</span><em>uniprot</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.up_stimulated_by"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.up_stimulated_by" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.up_stimulates">
+<code class="descname">up_stimulates</code><span class="sig-paren">(</span><em>uniprot</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.up_stimulates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.up_stimulates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.update_adjlist">
 <code class="descname">update_adjlist</code><span class="sig-paren">(</span><em>graph=None</em>, <em>mode='ALL'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.update_adjlist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.update_adjlist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates an adjacency list in a list of sets format.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.update_attrs">
+<code class="descname">update_attrs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.update_attrs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.update_attrs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.update_cats">
@@ -1764,11 +2612,26 @@ set of all categories in the current network.</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.update_pathway_types">
+<code class="descname">update_pathway_types</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.update_pathway_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.update_pathway_types" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.update_pathways">
+<code class="descname">update_pathways</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.update_pathways"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.update_pathways" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.update_sources">
 <code class="descname">update_sources</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.update_sources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.update_sources" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes sure that the <cite>sources</cite> attribute is an up to date
 list of all sources in the current network.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.update_vertex_sources">
+<code class="descname">update_vertex_sources</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.update_vertex_sources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.update_vertex_sources" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.update_vindex">
@@ -1819,8 +2682,28 @@ edge attributes to vertex attributes.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.vs">
+<code class="descname">vs</code><span class="sig-paren">(</span><em>identifiers</em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.main.PyPath.vs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.vsgs">
+<code class="descname">vsgs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.vsgs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.vsgs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.vsup">
+<code class="descname">vsup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.vsup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.vsup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.wang_effects">
 <code class="descname">wang_effects</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.wang_effects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.wang_effects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.write_table">
+<code class="descname">write_table</code><span class="sig-paren">(</span><em>tbl</em>, <em>outfile</em>, <em>sep='\t'</em>, <em>cut=None</em>, <em>colnames=True</em>, <em>rownames=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.write_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.write_table" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
