@@ -8142,6 +8142,7 @@ class PyPath(object):
                                     nodDct[usrc], nodDct[utgt], error=False)
                                 if eid != -1:
                                     g.es[eid][attrname].add(pw)
+        self.update_pathway_types()
 
     def signor_pathways(self, graph=None):
         self.load_pathways('signor', graph=graph)
