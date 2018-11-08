@@ -489,7 +489,7 @@ class TableServer(BaseServer):
             return (
                 'Something is not entirely good:\n%s\n\n'
                 'Please check the examples at\n'
-                'https://github.com/saezlab/omnipath\n'
+                'https://github.com/saezlab/pypath\n'
                 'and\n'
                 'https://github.com/saezlab/DoRothEA\n'
                 'If you still experiencing issues contact us at\n'
