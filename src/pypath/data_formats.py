@@ -1781,7 +1781,7 @@ omnipath['biogrid'] = interaction_htp['biogrid']
 omnipath['hprd'] = interaction_htp['hprd']
 '''
 Manually curated negative interactions, i.e. pairs of
-proteins prooved in experiments to not interact with
+proteins proved in experiments to not interact with
 each other.
 '''
 negative = {
