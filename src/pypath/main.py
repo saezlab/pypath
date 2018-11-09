@@ -9796,6 +9796,8 @@ class PyPath(object):
 
                                 if eid != -1:
                                     g.es[eid][attrname].add(pw)
+        self.update_pathway_types()
+        self.update_pathways()
 
     def signor_pathways(self, graph=None):
         """
