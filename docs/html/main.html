@@ -147,7 +147,7 @@ a resource. Some methods include <code class="xref py py-meth docutils literal n
 <a class="reference internal" href="#pypath.main.PyPath.disease_genes_list" title="pypath.main.PyPath.disease_genes_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.disease_genes_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'dis'</span></code>),
 <a class="reference internal" href="#pypath.main.PyPath.signaling_proteins_list" title="pypath.main.PyPath.signaling_proteins_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.signaling_proteins_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'sig'</span></code>),
 <a class="reference internal" href="#pypath.main.PyPath.proteome_list" title="pypath.main.PyPath.proteome_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.proteome_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'proteome'</span></code>) and
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.cancer_drivers_list()</span></code> (<code class="docutils literal notranslate"><span class="pre">'cdv'</span></code>).</li>
+<a class="reference internal" href="#pypath.main.PyPath.cancer_drivers_list" title="pypath.main.PyPath.cancer_drivers_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.cancer_drivers_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'cdv'</span></code>).</li>
 <li><strong>loglevel</strong> (<em>str</em>) – The level of the logger.</li>
 <li><strong>loops</strong> (<em>bool</em>) – Whether if self-loop edges are allowed in the graph.</li>
 <li><strong>mapper</strong> (<em>pypath.mapping.Mapper</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">pypath.mapper.Mapper</span></code> object for ID conversion and
@@ -293,6 +293,11 @@ latex stats.tex</dd>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.cancer_drivers_list">
+<code class="descname">cancer_drivers_list</code><span class="sig-paren">(</span><em>intogen_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.cancer_drivers_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.cancer_drivers_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.cancer_gene_census_list">
 <code class="descname">cancer_gene_census_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.cancer_gene_census_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.cancer_gene_census_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads the list of cancer driver proteins from the COSMIC Cancer
@@ -379,7 +384,17 @@ or calls <cite>num_method()</cite> if given.</li>
 <dl class="method">
 <dt id="pypath.main.PyPath.copy">
 <code class="descname">copy</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.copy" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Copies another <a class="reference internal" href="#pypath.main.PyPath" title="pypath.main.PyPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypath.main.PyPath</span></code></a> instance into the
+current one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>other</strong> (<a class="reference internal" href="#pypath.main.PyPath" title="pypath.main.PyPath"><em>pypath.main.PyPath</em></a>) – The instance to be copied from.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.copy_edges">
@@ -409,6 +424,11 @@ the source edges.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.coverage">
+<code class="descname">coverage</code><span class="sig-paren">(</span><em>lst</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.coverage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.coverage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.curation_effort">
 <code class="descname">curation_effort</code><span class="sig-paren">(</span><em>sum_by_source=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.curation_effort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.curation_effort" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the total number of reference-interactions pairs.</p>
@@ -427,6 +447,11 @@ sources, and returns the sum of these values.</dd>
 <dl class="method">
 <dt id="pypath.main.PyPath.curation_tab">
 <code class="descname">curation_tab</code><span class="sig-paren">(</span><em>fname='curation_stats.tex', by_category=True, use_cats=['p', 'm', 'i', 'r'], header_size='normalsize', **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.curation_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.curation_tab" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.curators_work">
+<code class="descname">curators_work</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.curators_work"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.curators_work" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -882,6 +907,11 @@ in CORUM.</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.fisher_enrichment">
+<code class="descname">fisher_enrichment</code><span class="sig-paren">(</span><em>lst</em>, <em>attr</em>, <em>ref='proteome'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.fisher_enrichment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.fisher_enrichment" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.geneset_enrichment">
 <code class="descname">geneset_enrichment</code><span class="sig-paren">(</span><em>proteins</em>, <em>all_proteins=None</em>, <em>geneset_ids=None</em>, <em>alpha=0.05</em>, <em>correction_method='hommel'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.geneset_enrichment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.geneset_enrichment" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1007,7 +1037,15 @@ component.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.get_max">
 <code class="descname">get_max</code><span class="sig-paren">(</span><em>attrList</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_max"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_max" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>attrList</strong> (<em>dict</em>) – Dictionary of attributes</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.get_network">
@@ -1273,10 +1311,47 @@ lists if in <cite>edgeAttrs</cite> the attribute is registered as list.</p>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.init_network">
-<code class="descname">init_network</code><span class="sig-paren">(</span><em>lst={'arn': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89ab8&gt;</em>, <em>'biogrid': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b93c20&gt;</em>, <em>'ca1': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89998&gt;</em>, <em>'ccmap': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89f38&gt;</em>, <em>'cellphonedb': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264914d40&gt;</em>, <em>'dbptm': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b933b0&gt;</em>, <em>'death': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89c68&gt;</em>, <em>'depod': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b93200&gt;</em>, <em>'dip': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89fc8&gt;</em>, <em>'domino': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b93320&gt;</em>, <em>'elm': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b932d8&gt;</em>, <em>'guide2pharma': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b898c0&gt;</em>, <em>'hpmr': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264914cb0&gt;</em>, <em>'hprd': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b93d88&gt;</em>, <em>'hprd_p': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b933f8&gt;</em>, <em>'innatedb': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b93098&gt;</em>, <em>'intact': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b93bd8&gt;</em>, <em>'lmpid': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b93248&gt;</em>, <em>'macrophage': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89c20&gt;</em>, <em>'matrixdb': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b93170&gt;</em>, <em>'mppi': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89f80&gt;</em>, <em>'nrf2': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89b90&gt;</em>, <em>'pdz': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89cb0&gt;</em>, <em>'phelm': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b93290&gt;</em>, <em>'psite': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b931b8&gt;</em>, <em>'ramilowski2015': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264914dd0&gt;</em>, <em>'signalink3': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89878&gt;</em>, <em>'signor': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89ea8&gt;</em>, <em>'spike': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89830&gt;</em>, <em>'trip': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89758&gt;}</em>, <em>exclude=[]</em>, <em>cache_files={}</em>, <em>pfile=False</em>, <em>save=False</em>, <em>reread=False</em>, <em>redownload=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.init_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.init_network" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is a lazy way to start the module, load data
-and build the high confidence, literature curated
-part of the signaling network.</p>
+<code class="descname">init_network</code><span class="sig-paren">(</span><em>lst=None</em>, <em>exclude=[]</em>, <em>cache_files={}</em>, <em>pfile=False</em>, <em>save=False</em>, <em>reread=False</em>, <em>redownload=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.init_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.init_network" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads the network data.</p>
+<p>This is a lazy way to start the module, load data and build the
+high confidence, literature curated part of the signaling
+network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>lst</strong> (<em>dict</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Specifies the data input
+formats for the different resources (keys) [str]. Values
+are <code class="xref py py-class docutils literal notranslate"><span class="pre">pypath.input_formats.ReadSettings</span></code> instances
+containing the information. By default uses the set of
+resources of OmniPath.</li>
+<li><strong>exclude</strong> (<em>list</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">[]</span></code> by default. List of resources [str] to
+exclude from the network.</li>
+<li><strong>cache_files</strong> (<em>dict</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">{}</span></code> by default. Contains the resource name(s)
+[str] (keys) and the corresponfing cached file name(s).
+If provided (and file exists) bypasses the download of the
+data for that resource and uses the cache file instead.</li>
+<li><strong>pfile</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default. If any, provides the file
+name or path to a previously saved network pickle file.
+If <code class="docutils literal notranslate"><span class="pre">True</span></code> is passed, takes the default path from
+<a class="reference internal" href="#pypath.main.PyPath.save_network" title="pypath.main.PyPath.save_network"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.save_network()</span></code></a>
+(<code class="docutils literal notranslate"><span class="pre">'cache/default_network.pickle'</span></code>).</li>
+<li><strong>save</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default. If set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, saves
+the loaded network to its default location
+(<code class="docutils literal notranslate"><span class="pre">'cache/default_network.pickle'</span></code>).</li>
+<li><strong>reread</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default. Specifies whether to reread
+the data files from the cache or omit them (similar to
+<em>redownload</em>).</li>
+<li><strong>redownload</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default. Specifies whether to
+re-download the data and ignore the cache.</li>
+<li><strong>**kwargs</strong> – <p>Not used.</p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1345,6 +1420,11 @@ the node is annotated by all or any (see <code class="docutils literal notransla
 <dl class="method">
 <dt id="pypath.main.PyPath.laudanna_effects">
 <code class="descname">laudanna_effects</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.laudanna_effects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.laudanna_effects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.licence">
+<code class="descname">licence</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.licence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.licence" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1533,9 +1613,14 @@ This resource is human only.</p>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.load_ligand_receptor_network">
-<code class="descname">load_ligand_receptor_network</code><span class="sig-paren">(</span><em>lig_rec_resources=True</em>, <em>inference_from_go=True</em>, <em>sources={'arn': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89ab8&gt;</em>, <em>'ca1': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89998&gt;</em>, <em>'cellphonedb': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264914d40&gt;</em>, <em>'death': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89c68&gt;</em>, <em>'guide2pharma': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b898c0&gt;</em>, <em>'hpmr': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264914cb0&gt;</em>, <em>'macrophage': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89c20&gt;</em>, <em>'nrf2': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89b90&gt;</em>, <em>'pdz': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89cb0&gt;</em>, <em>'ramilowski2015': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264914dd0&gt;</em>, <em>'signalink3': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89878&gt;</em>, <em>'signor': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89ea8&gt;</em>, <em>'spike': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89830&gt;</em>, <em>'trip': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89758&gt;}</em>, <em>keep_undirected=False</em>, <em>keep_rec_rec=False</em>, <em>keep_lig_lig=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_ligand_receptor_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_ligand_receptor_network" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load_ligand_receptor_network</code><span class="sig-paren">(</span><em>lig_rec_resources=True</em>, <em>inference_from_go=True</em>, <em>sources={'arn': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581db48&gt;</em>, <em>'ca1': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581da28&gt;</em>, <em>'cellphonedb': &lt;pypath.input_formats.ReadSettings instance at 0x7fe1055a9dd0&gt;</em>, <em>'death': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581dcf8&gt;</em>, <em>'guide2pharma': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581d950&gt;</em>, <em>'hpmr': &lt;pypath.input_formats.ReadSettings instance at 0x7fe1055a9d40&gt;</em>, <em>'macrophage': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581dcb0&gt;</em>, <em>'nrf2': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581dc20&gt;</em>, <em>'pdz': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581dd40&gt;</em>, <em>'ramilowski2015': &lt;pypath.input_formats.ReadSettings instance at 0x7fe1055a9e60&gt;</em>, <em>'signalink3': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581d908&gt;</em>, <em>'signor': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581df38&gt;</em>, <em>'spike': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581d8c0&gt;</em>, <em>'trip': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581d7e8&gt;}</em>, <em>keep_undirected=False</em>, <em>keep_rec_rec=False</em>, <em>keep_lig_lig=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_ligand_receptor_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_ligand_receptor_network" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes a ligand-receptor network.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.load_list">
+<code class="descname">load_list</code><span class="sig-paren">(</span><em>lst</em>, <em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.load_lmpid">
@@ -1727,7 +1812,7 @@ Those not used by <cite>PtmProcessor</cite> are forwarded to the
 
 <dl class="method">
 <dt id="pypath.main.PyPath.load_resources">
-<code class="descname">load_resources</code><span class="sig-paren">(</span><em>lst={'arn': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89ab8&gt;</em>, <em>'biogrid': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b93c20&gt;</em>, <em>'ca1': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89998&gt;</em>, <em>'ccmap': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89f38&gt;</em>, <em>'cellphonedb': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264914d40&gt;</em>, <em>'dbptm': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b933b0&gt;</em>, <em>'death': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89c68&gt;</em>, <em>'depod': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b93200&gt;</em>, <em>'dip': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89fc8&gt;</em>, <em>'domino': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b93320&gt;</em>, <em>'elm': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b932d8&gt;</em>, <em>'guide2pharma': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b898c0&gt;</em>, <em>'hpmr': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264914cb0&gt;</em>, <em>'hprd': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b93d88&gt;</em>, <em>'hprd_p': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b933f8&gt;</em>, <em>'innatedb': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b93098&gt;</em>, <em>'intact': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b93bd8&gt;</em>, <em>'lmpid': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b93248&gt;</em>, <em>'macrophage': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89c20&gt;</em>, <em>'matrixdb': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b93170&gt;</em>, <em>'mppi': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89f80&gt;</em>, <em>'nrf2': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89b90&gt;</em>, <em>'pdz': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89cb0&gt;</em>, <em>'phelm': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b93290&gt;</em>, <em>'psite': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b931b8&gt;</em>, <em>'ramilowski2015': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264914dd0&gt;</em>, <em>'signalink3': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89878&gt;</em>, <em>'signor': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89ea8&gt;</em>, <em>'spike': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89830&gt;</em>, <em>'trip': &lt;pypath.input_formats.ReadSettings instance at 0x7f5264b89758&gt;}</em>, <em>exclude=[]</em>, <em>cache_files={}</em>, <em>reread=False</em>, <em>redownload=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_resources" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load_resources</code><span class="sig-paren">(</span><em>lst={'arn': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581db48&gt;</em>, <em>'biogrid': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826cb0&gt;</em>, <em>'ca1': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581da28&gt;</em>, <em>'ccmap': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581dfc8&gt;</em>, <em>'cellphonedb': &lt;pypath.input_formats.ReadSettings instance at 0x7fe1055a9dd0&gt;</em>, <em>'dbptm': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826440&gt;</em>, <em>'death': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581dcf8&gt;</em>, <em>'depod': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826290&gt;</em>, <em>'dip': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826098&gt;</em>, <em>'domino': &lt;pypath.input_formats.ReadSettings instance at 0x7fe1058263b0&gt;</em>, <em>'elm': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826368&gt;</em>, <em>'guide2pharma': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581d950&gt;</em>, <em>'hpmr': &lt;pypath.input_formats.ReadSettings instance at 0x7fe1055a9d40&gt;</em>, <em>'hprd': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826e18&gt;</em>, <em>'hprd_p': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826488&gt;</em>, <em>'innatedb': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826128&gt;</em>, <em>'intact': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826c68&gt;</em>, <em>'lmpid': &lt;pypath.input_formats.ReadSettings instance at 0x7fe1058262d8&gt;</em>, <em>'macrophage': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581dcb0&gt;</em>, <em>'matrixdb': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826200&gt;</em>, <em>'mppi': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826050&gt;</em>, <em>'nrf2': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581dc20&gt;</em>, <em>'pdz': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581dd40&gt;</em>, <em>'phelm': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826320&gt;</em>, <em>'psite': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826248&gt;</em>, <em>'ramilowski2015': &lt;pypath.input_formats.ReadSettings instance at 0x7fe1055a9e60&gt;</em>, <em>'signalink3': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581d908&gt;</em>, <em>'signor': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581df38&gt;</em>, <em>'spike': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581d8c0&gt;</em>, <em>'trip': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581d7e8&gt;}</em>, <em>exclude=[]</em>, <em>cache_files={}</em>, <em>reread=False</em>, <em>redownload=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_resources" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads multiple resources, and cleans up after.
 Looks up ID types, and loads all ID conversion
 tables from UniProt if necessary. This is much
@@ -2012,6 +2097,11 @@ in the current graph.</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.process_direction">
+<code class="descname">process_direction</code><span class="sig-paren">(</span><em>line</em>, <em>dirCol</em>, <em>dirVal</em>, <em>dirSep</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.process_direction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.process_direction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.process_directions">
 <code class="descname">process_directions</code><span class="sig-paren">(</span><em>dirs</em>, <em>name</em>, <em>directed=None</em>, <em>stimulation=None</em>, <em>inhibition=None</em>, <em>graph=None</em>, <em>id_type=None</em>, <em>dirs_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.process_directions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.process_directions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -2024,6 +2114,11 @@ for loading domain-motif objects
 like load_phospho_dmi() for PTMs.
 TODO this will replace load_elm, load_ielm, etc</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.process_sign">
+<code class="descname">process_sign</code><span class="sig-paren">(</span><em>signData</em>, <em>signDef</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.process_sign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.process_sign" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.protein">
@@ -2147,6 +2242,16 @@ debugging purposes, or further use.</dd>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.read_from_cache">
+<code class="descname">read_from_cache</code><span class="sig-paren">(</span><em>cache_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.read_from_cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.read_from_cache" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.read_list_file">
+<code class="descname">read_list_file</code><span class="sig-paren">(</span><em>settings</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.read_list_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.read_list_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.receptors_list">
 <code class="descname">receptors_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.receptors_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.receptors_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads the Human Plasma Membrane Receptome as a list.
@@ -2161,6 +2266,11 @@ This resource is human only.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.reference_hist">
 <code class="descname">reference_hist</code><span class="sig-paren">(</span><em>filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.reference_hist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.reference_hist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.reload">
+<code class="descname">reload</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.reload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.reload" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -2181,7 +2291,21 @@ This resource is human only.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.save_network">
 <code class="descname">save_network</code><span class="sig-paren">(</span><em>pfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.save_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.save_network" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Saves the network object.</p>
+<p>Stores the instance into a pickle (binary) file which can be
+reloaded in the future.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pfile</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. The path/file name where to
+store the pcikle file. If not specified, saves the network
+to its default location
+(<code class="docutils literal notranslate"><span class="pre">'cache/default_network.pickle'</span></code>).</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.save_session">
@@ -2252,13 +2376,22 @@ Returns dict of igraph objects.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.set_chembl_mysql">
 <code class="descname">set_chembl_mysql</code><span class="sig-paren">(</span><em>title</em>, <em>config_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.set_chembl_mysql"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.set_chembl_mysql" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the ChEMBL MySQL config according to
-<cite>title</cite> section in <cite>config_file</cite> ini style config.</p>
-<p>title (str): section title in ini file
-config_file (str, NoneType): config file name;</p>
-<blockquote>
-<div>if None, the <cite>mysql_config/defaults.mysql</cite>
-will be used</div></blockquote>
+<dd><p>Sets the ChEMBL MySQL configuration according to the <em>title</em>
+section in <em>config_file</em> ini file configuration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>title</strong> (<em>str</em>) – Section title of the ini file.</li>
+<li><strong>config_file</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Specifies the configuration
+file name if none is passed, <code class="docutils literal notranslate"><span class="pre">mysql_config/defaults.mysql</span></code>
+will be used.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">

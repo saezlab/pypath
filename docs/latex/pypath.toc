@@ -33,5 +33,5 @@
 \contentsline {section}{\numberline {5.7}Drug compounds}{44}{section.5.7}
 \contentsline {section}{\numberline {5.8}Technical}{44}{section.5.8}
 \contentsline {chapter}{\numberline {6}OmniPath in R}{45}{chapter.6}
-\contentsline {chapter}{Python Module Index}{47}{section*.364}
-\contentsline {chapter}{Index}{49}{section*.365}
+\contentsline {chapter}{Python Module Index}{47}{section*.375}
+\contentsline {chapter}{Index}{49}{section*.376}

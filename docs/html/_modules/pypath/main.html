@@ -1246,8 +1246,7 @@
 <span class="c1">#       - Which/how many organisms are accepted/available?</span>
 <span class="c1">#       - MySQL</span>
 <div class="viewcode-block" id="PyPath"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath">[docs]</a><span class="k">class</span> <span class="nc">PyPath</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Main network object.</span>
+    <span class="sd">&quot;&quot;&quot;Main network object.</span>
 
 <span class="sd">    :arg int ncbi_tax_id:</span>
 <span class="sd">        Optional, ``9606`` (Homo sapiens) by default. NCBI Taxonomic</span>
@@ -1470,10 +1469,11 @@
                  <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mysql</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;mapping&#39;</span><span class="p">),</span>
                  <span class="n">chembl_mysql</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;chembl&#39;</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;unnamed&#39;</span><span class="p">,</span>
                  <span class="n">outdir</span><span class="o">=</span><span class="s1">&#39;results&#39;</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="s1">&#39;INFO&#39;</span><span class="p">,</span> <span class="n">loops</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initializes the network object. **NOTE:** Only the instance is</span>
-<span class="sd">        created, no data is donwloaded until the corresponding function</span>
-<span class="sd">        is called.</span>
+        <span class="sd">&quot;&quot;&quot;Initializes the network object.</span>
+
+<span class="sd">        **NOTE:** Only the instance is created, no data is donwloaded</span>
+<span class="sd">        until the corresponding function is called (e.g.:</span>
+<span class="sd">        :py:meth:`PyPath.init_network`).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__version__</span> <span class="o">=</span> <span class="n">_version</span><span class="o">.</span><span class="n">__version__</span>
@@ -1581,41 +1581,88 @@
 
 <div class="viewcode-block" id="PyPath.set_chembl_mysql"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.set_chembl_mysql">[docs]</a>    <span class="k">def</span> <span class="nf">set_chembl_mysql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Sets the ChEMBL MySQL config according to</span>
-<span class="sd">        `title` section in `config_file` ini style config.</span>
+<span class="sd">        Sets the ChEMBL MySQL configuration according to the *title*</span>
+<span class="sd">        section in *config_file* ini file configuration.</span>
 
-<span class="sd">        title (str): section title in ini file</span>
-<span class="sd">        config_file (str, NoneType): config file name;</span>
-<span class="sd">            if None, the `mysql_config/defaults.mysql`</span>
-<span class="sd">            will be used</span>
+<span class="sd">        :arg str title:</span>
+<span class="sd">            Section title of the ini file.</span>
+<span class="sd">        :arg str config_file:</span>
+<span class="sd">            Optional, ``None`` by default. Specifies the configuration</span>
+<span class="sd">            file name if none is passed, ``mysql_config/defaults.mysql``</span>
+<span class="sd">            will be used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">chembl_mysql</span> <span class="o">=</span> <span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PyPath.copy"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copies another :py:class:`pypath.main.PyPath` instance into the</span>
+<span class="sd">        current one.</span>
+
+<span class="sd">        :arg pypath.main.PyPath other:</span>
+<span class="sd">            The instance to be copied from.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="vm">__dict__</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Reinitialized&quot;</span><span class="p">,</span> <span class="s1">&#39;INFO&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PyPath.init_network"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.init_network">[docs]</a>    <span class="k">def</span> <span class="nf">init_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="o">=</span><span class="n">omnipath</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[],</span> <span class="n">cache_files</span><span class="o">=</span><span class="p">{},</span>
+<div class="viewcode-block" id="PyPath.init_network"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.init_network">[docs]</a>    <span class="k">def</span> <span class="nf">init_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[],</span> <span class="n">cache_files</span><span class="o">=</span><span class="p">{},</span>
                      <span class="n">pfile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reread</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">redownload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                     <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This is a lazy way to start the module, load data</span>
-<span class="sd">        and build the high confidence, literature curated</span>
-<span class="sd">        part of the signaling network.</span>
+                     <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="c1"># XXX: kwargs is not used anywhere</span>
+        <span class="sd">&quot;&quot;&quot;Loads the network data.</span>
+
+<span class="sd">        This is a lazy way to start the module, load data and build the</span>
+<span class="sd">        high confidence, literature curated part of the signaling</span>
+<span class="sd">        network.</span>
+
+<span class="sd">        :arg dict lst:</span>
+<span class="sd">            Optional, ``None`` by default. Specifies the data input</span>
+<span class="sd">            formats for the different resources (keys) [str]. Values</span>
+<span class="sd">            are :py:class:`pypath.input_formats.ReadSettings` instances</span>
+<span class="sd">            containing the information. By default uses the set of</span>
+<span class="sd">            resources of OmniPath.</span>
+<span class="sd">        :arg list exclude:</span>
+<span class="sd">            Optional, ``[]`` by default. List of resources [str] to</span>
+<span class="sd">            exclude from the network.</span>
+<span class="sd">        :arg dict cache_files:</span>
+<span class="sd">            Optional, ``{}`` by default. Contains the resource name(s)</span>
+<span class="sd">            [str] (keys) and the corresponfing cached file name(s).</span>
+<span class="sd">            If provided (and file exists) bypasses the download of the</span>
+<span class="sd">            data for that resource and uses the cache file instead.</span>
+<span class="sd">        :arg str pfile:</span>
+<span class="sd">            Optional, ``False`` by default. If any, provides the file</span>
+<span class="sd">            name or path to a previously saved network pickle file.</span>
+<span class="sd">            If ``True`` is passed, takes the default path from</span>
+<span class="sd">            :py:meth:`PyPath.save_network`</span>
+<span class="sd">            (``&#39;cache/default_network.pickle&#39;``).</span>
+<span class="sd">        :arg bool save:</span>
+<span class="sd">            Optional, ``False`` by default. If set to ``True``, saves</span>
+<span class="sd">            the loaded network to its default location</span>
+<span class="sd">            (``&#39;cache/default_network.pickle&#39;``).</span>
+<span class="sd">        :arg bool reread:</span>
+<span class="sd">            Optional, ``False`` by default. Specifies whether to reread</span>
+<span class="sd">            the data files from the cache or omit them (similar to</span>
+<span class="sd">            *redownload*).</span>
+<span class="sd">        :arg bool redownload:</span>
+<span class="sd">            Optional, ``False`` by default. Specifies whether to</span>
+<span class="sd">            re-download the data and ignore the cache.</span>
+<span class="sd">        :arg **kwargs:</span>
+<span class="sd">            Not used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">lst</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lst</span> <span class="o">=</span> <span class="n">omnipath</span>
 
         <span class="k">if</span> <span class="n">pfile</span><span class="p">:</span>
             <span class="n">pfile</span> <span class="o">=</span> <span class="n">pfile</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pfile</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> \
                 <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">,</span> <span class="s1">&#39;default_network.pickle&#39;</span><span class="p">)</span>
+
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">pfile</span><span class="p">):</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
                     <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">:: Loading igraph object from file `</span><span class="si">%s</span><span class="s1">`...&#39;</span> <span class="o">%</span> <span class="n">pfile</span><span class="p">)</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
                 <span class="n">graph</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">pfile</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">))</span>
+
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">igraph</span><span class="o">.</span><span class="n">Graph</span><span class="p">)</span> <span class="ow">and</span> <span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span>
                     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
@@ -1626,10 +1673,13 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">update_vname</span><span class="p">()</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">update_vindex</span><span class="p">()</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">update_sources</span><span class="p">()</span>
+
                     <span class="k">return</span> <span class="kc">None</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">load_reflists</span><span class="p">()</span> <span class="c1"># XXX: This is redundant (see line 4565 in load_resources)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_resources</span><span class="p">(</span>
             <span class="n">lst</span><span class="o">=</span><span class="n">lst</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">reread</span><span class="o">=</span><span class="n">reread</span><span class="p">,</span> <span class="n">redownload</span><span class="o">=</span><span class="n">redownload</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">:: Saving igraph object to file `</span><span class="si">%s</span><span class="s1">`...&#39;</span> <span class="o">%</span>
                              <span class="n">pfile</span><span class="p">)</span>
@@ -1641,7 +1691,16 @@
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="PyPath.save_network"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.save_network">[docs]</a>    <span class="k">def</span> <span class="nf">save_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Saves the network object.</span>
+
+<span class="sd">        Stores the instance into a pickle (binary) file which can be</span>
+<span class="sd">        reloaded in the future.</span>
+
+<span class="sd">        :arg str pfile:</span>
+<span class="sd">            Optional, ``None`` by default. The path/file name where to</span>
+<span class="sd">            store the pcikle file. If not specified, saves the network</span>
+<span class="sd">            to its default location</span>
+<span class="sd">            (``&#39;cache/default_network.pickle&#39;``).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">pfile</span> <span class="o">=</span> <span class="n">pfile</span> <span class="k">if</span> <span class="n">pfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> \
@@ -1653,14 +1712,21 @@
 
 <div class="viewcode-block" id="PyPath.get_max"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.get_max">[docs]</a>    <span class="k">def</span> <span class="nf">get_max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrList</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :arg dict attrList:</span>
+<span class="sd">            Dictionary of attributes</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">maxC</span> <span class="o">=</span> <span class="mi">0</span>
+
         <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">attrList</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+
             <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="vm">__class__</span> <span class="ow">is</span> <span class="nb">tuple</span><span class="p">:</span>
                 <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
             <span class="k">if</span> <span class="n">val</span> <span class="o">&gt;</span> <span class="n">maxC</span><span class="p">:</span>
                 <span class="n">maxC</span> <span class="o">=</span> <span class="n">val</span>
+
         <span class="k">return</span> <span class="n">maxC</span></div>
 
 <div class="viewcode-block" id="PyPath.get_attrs"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.get_attrs">[docs]</a>    <span class="k">def</span> <span class="nf">get_attrs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">spec</span><span class="p">,</span> <span class="n">lnum</span><span class="p">):</span>
@@ -1668,28 +1734,37 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">attrs</span> <span class="o">=</span> <span class="p">{}</span>
+
         <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">spec</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="c1"># extraEdgeAttrs and extraNodeAttrs are dicts</span>
             <span class="c1"># of additional parameters assigned to edges and nodes respectively;</span>
             <span class="c1"># key is the name of the parameter, value is the col number,</span>
             <span class="c1"># or a tuple of col number and the separator,</span>
             <span class="c1"># if the column contains additional subfields e.g. (5, &quot;;&quot;)</span>
+
             <span class="k">try</span><span class="p">:</span>
+
                 <span class="k">if</span> <span class="n">spec</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="vm">__class__</span> <span class="ow">is</span> <span class="nb">tuple</span><span class="p">:</span>
+
                     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;__call__&#39;</span><span class="p">):</span>
                         <span class="n">fieldVal</span> <span class="o">=</span> <span class="n">spec</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="mi">1</span><span class="p">](</span><span class="n">line</span><span class="p">[</span><span class="n">spec</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="mi">0</span><span class="p">]])</span>
+
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">fieldVal</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="n">spec</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">fieldVal</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="n">spec</span><span class="p">[</span><span class="n">col</span><span class="p">]]</span>
+
             <span class="k">except</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span>
                     <span class="sd">&quot;&quot;&quot;Wrong column index (%s) in extra attributes?</span>
 <span class="sd">                    Line #%u\n&quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">col</span><span class="p">),</span> <span class="n">lnum</span><span class="p">)),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
                 <span class="n">readError</span> <span class="o">=</span> <span class="mi">1</span>
                 <span class="k">break</span>
+
             <span class="n">fieldName</span> <span class="o">=</span> <span class="n">col</span>
             <span class="n">attrs</span><span class="p">[</span><span class="n">fieldName</span><span class="p">]</span> <span class="o">=</span> <span class="n">fieldVal</span>
+
         <span class="k">return</span> <span class="n">attrs</span></div>
 
 <div class="viewcode-block" id="PyPath.get_taxon"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.get_taxon">[docs]</a>    <span class="k">def</span> <span class="nf">get_taxon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tax_dict</span><span class="p">,</span> <span class="n">fields</span><span class="p">):</span>
@@ -1697,13 +1772,18 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="s1">&#39;A&#39;</span> <span class="ow">in</span> <span class="n">tax_dict</span> <span class="ow">and</span> <span class="s1">&#39;B&#39;</span> <span class="ow">in</span> <span class="n">tax_dict</span><span class="p">:</span>
+
             <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_taxon</span><span class="p">(</span><span class="n">tax_dict</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">],</span> <span class="n">fields</span><span class="p">),</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">get_taxon</span><span class="p">(</span><span class="n">tax_dict</span><span class="p">[</span><span class="s1">&#39;B&#39;</span><span class="p">],</span> <span class="n">fields</span><span class="p">))</span>
+
         <span class="k">else</span><span class="p">:</span>
+
             <span class="k">if</span> <span class="s1">&#39;dict&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tax_dict</span><span class="p">:</span>
                 <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="n">tax_dict</span><span class="p">[</span><span class="s1">&#39;col&#39;</span><span class="p">]])</span>
+
             <span class="k">elif</span> <span class="n">fields</span><span class="p">[</span><span class="n">tax_dict</span><span class="p">[</span><span class="s1">&#39;col&#39;</span><span class="p">]]</span> <span class="ow">in</span> <span class="n">tax_dict</span><span class="p">[</span><span class="s1">&#39;dict&#39;</span><span class="p">]:</span>
                 <span class="k">return</span> <span class="n">tax_dict</span><span class="p">[</span><span class="s1">&#39;dict&#39;</span><span class="p">][</span><span class="n">fields</span><span class="p">[</span><span class="n">tax_dict</span><span class="p">[</span><span class="s1">&#39;col&#39;</span><span class="p">]]]</span>
+
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span></div>
 
@@ -1733,7 +1813,10 @@
                               <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;references&#39;</span><span class="p">])),</span>
                      <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">)))))</span></div>
 
-    <span class="k">def</span> <span class="nf">curators_work</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.curators_work"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.curators_work">[docs]</a>    <span class="k">def</span> <span class="nf">curators_work</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">curation_effort</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">numof_reference_interaction_pairs</span><span class="p">()</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
             <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">:: Curators worked </span><span class="si">%.01f</span><span class="s1">-</span><span class="si">%.01f</span><span class="s1"> years to accomplish &#39;</span>
@@ -1741,7 +1824,7 @@
             <span class="s1">&#39;</span><span class="se">\n\n\t</span><span class="s1">Amazing, isn</span><span class="se">\&#39;</span><span class="s1">t it?</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span>
             <span class="p">(</span><span class="n">curation_effort</span> <span class="o">*</span> <span class="mi">15</span> <span class="o">/</span> <span class="mf">60.0</span> <span class="o">/</span> <span class="mf">2087.0</span><span class="p">,</span>
              <span class="n">curation_effort</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">/</span> <span class="mf">60.0</span> <span class="o">/</span> <span class="mf">2087.0</span><span class="p">))</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="PyPath.reference_edge_ratio"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.reference_edge_ratio">[docs]</a>    <span class="k">def</span> <span class="nf">reference_edge_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1755,18 +1838,23 @@
 <span class="sd">        replaces the igraph object with only the giant</span>
 <span class="sd">        component.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">g</span> <span class="o">=</span> <span class="n">graph</span> <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
         <span class="n">gg</span> <span class="o">=</span> <span class="n">g</span> <span class="k">if</span> <span class="n">replace</span> <span class="k">else</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
         <span class="n">cl</span> <span class="o">=</span> <span class="n">gg</span><span class="o">.</span><span class="n">components</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;WEAK&#39;</span><span class="p">)</span>
         <span class="n">cl_sizes</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">sizes</span><span class="p">()</span>
         <span class="n">giant_component_index</span> <span class="o">=</span> <span class="n">cl_sizes</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">cl_sizes</span><span class="p">))</span>
         <span class="n">in_giant</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="o">==</span> <span class="n">giant_component_index</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cl</span><span class="o">.</span><span class="n">membership</span><span class="p">]</span>
+
         <span class="n">common</span><span class="o">.</span><span class="n">console</span><span class="p">(</span><span class="s1">&#39;:: Nodes in giant component: </span><span class="si">%u</span><span class="s1">&#39;</span> <span class="o">%</span>
                        <span class="n">in_giant</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+
         <span class="n">toDel</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">gg</span><span class="o">.</span><span class="n">vcount</span><span class="p">())</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">in_giant</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
         <span class="n">gg</span><span class="o">.</span><span class="n">delete_vertices</span><span class="p">(</span><span class="n">toDel</span><span class="p">)</span>
+
         <span class="n">common</span><span class="o">.</span><span class="n">console</span><span class="p">(</span><span class="s1">&#39;:: Giant component size: </span><span class="si">%u</span><span class="s1"> edges, </span><span class="si">%u</span><span class="s1"> nodes&#39;</span> <span class="o">%</span>
                        <span class="p">(</span><span class="n">gg</span><span class="o">.</span><span class="n">ecount</span><span class="p">(),</span> <span class="n">gg</span><span class="o">.</span><span class="n">vcount</span><span class="p">()))</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="n">replace</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">gg</span></div>
 
@@ -1778,6 +1866,7 @@
 <span class="sd">        function is automatically called after all operations</span>
 <span class="sd">        affecting node indices.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">genesymbol_labels</span><span class="p">()</span>
         <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_undirected</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_already_has_directed</span><span class="p">()</span>
@@ -1817,6 +1906,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is deprecated.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">nodNam</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()),</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]))</span></div>
 
@@ -1827,10 +1917,14 @@
 <span class="sd">        This function converts pathway annotations from</span>
 <span class="sd">        edge attributes to vertex attributes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">for</span> <span class="n">eattr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="o">.</span><span class="n">attributes</span><span class="p">():</span>
+
             <span class="k">if</span> <span class="n">eattr</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;pathways&#39;</span><span class="p">):</span>
+
                 <span class="k">if</span> <span class="n">eattr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">attributes</span><span class="p">():</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">eattr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">]</span>
+
                 <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">][</span><span class="n">eattr</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="n">eattr</span><span class="p">]</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">target</span><span class="p">][</span><span class="n">eattr</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="n">eattr</span><span class="p">]</span></div>
@@ -1840,25 +1934,35 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">for</span> <span class="n">filtr</span> <span class="ow">in</span> <span class="n">negativeFilters</span><span class="p">:</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filtr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">sep</span> <span class="o">=</span> <span class="n">filtr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
                 <span class="n">thisVal</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="n">filtr</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">sep</span><span class="p">))</span>
+
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">thisVal</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">line</span><span class="p">[</span><span class="n">filtr</span><span class="p">[</span><span class="mi">0</span><span class="p">]]])</span>
+
             <span class="n">filtrVal</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">filtr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filtr</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">filtr</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">thisVal</span> <span class="o">&amp;</span> <span class="n">filtrVal</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">True</span>
+
         <span class="k">for</span> <span class="n">filtr</span> <span class="ow">in</span> <span class="n">positiveFilters</span><span class="p">:</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filtr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">sep</span> <span class="o">=</span> <span class="n">filtr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
                 <span class="n">thisVal</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="n">filtr</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">sep</span><span class="p">))</span>
+
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">thisVal</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">line</span><span class="p">[</span><span class="n">filtr</span><span class="p">[</span><span class="mi">0</span><span class="p">]]])</span>
+
             <span class="n">filtrVal</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">filtr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filtr</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">filtr</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">thisVal</span> <span class="o">&amp;</span> <span class="n">filtrVal</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">True</span>
+
         <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="PyPath.lookup_cache"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.lookup_cache">[docs]</a>    <span class="k">def</span> <span class="nf">lookup_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cache_files</span><span class="p">,</span> <span class="n">int_cache</span><span class="p">,</span> <span class="n">edges_cache</span><span class="p">):</span>
@@ -1868,44 +1972,65 @@
         <span class="n">infile</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">edgeListMapped</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">cache_file</span> <span class="o">=</span> <span class="n">cache_files</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">cache_files</span> <span class="k">else</span> <span class="kc">None</span>
+
         <span class="k">if</span> <span class="n">cache_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cache_file</span><span class="p">):</span>
             <span class="n">cache_type</span> <span class="o">=</span> <span class="n">cache_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+
             <span class="k">if</span> <span class="n">cache_type</span> <span class="o">==</span> <span class="s1">&#39;interactions&#39;</span><span class="p">:</span>
                 <span class="n">infile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_from_cache</span><span class="p">(</span><span class="n">int_cache</span><span class="p">)</span>
+
             <span class="k">elif</span> <span class="n">cache_type</span> <span class="o">==</span> <span class="s1">&#39;edges&#39;</span><span class="p">:</span>
                 <span class="n">edgeListMapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_from_cache</span><span class="p">(</span><span class="n">edges_cache</span><span class="p">)</span>
+
         <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">edges_cache</span><span class="p">):</span>
             <span class="n">edgeListMapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_from_cache</span><span class="p">(</span><span class="n">edges_cache</span><span class="p">)</span>
+
         <span class="k">else</span><span class="p">:</span>
+
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">int_cache</span><span class="p">):</span>
                 <span class="n">infile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_from_cache</span><span class="p">(</span><span class="n">int_cache</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">infile</span><span class="p">,</span> <span class="n">edgeListMapped</span></div>
 
-    <span class="k">def</span> <span class="nf">read_from_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_file</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.read_from_cache"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.read_from_cache">[docs]</a>    <span class="k">def</span> <span class="nf">read_from_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_file</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">:: Reading from cache: </span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">cache_file</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Data have been read from cache: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">cache_file</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">cache_file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">process_sign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signData</span><span class="p">,</span> <span class="n">signDef</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">cache_file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="PyPath.process_sign"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.process_sign">[docs]</a>    <span class="k">def</span> <span class="nf">process_sign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signData</span><span class="p">,</span> <span class="n">signDef</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">stim</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">inh</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">signSep</span> <span class="o">=</span> <span class="n">signDef</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">signDef</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="n">signData</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">signData</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">signSep</span><span class="p">))</span>
         <span class="n">pos</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">signDef</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signDef</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">signDef</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
         <span class="n">neg</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">signDef</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signDef</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">signDef</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">signData</span> <span class="o">&amp;</span> <span class="n">pos</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">stim</span> <span class="o">=</span> <span class="kc">True</span>
+
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">signData</span> <span class="o">&amp;</span> <span class="n">neg</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">inh</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="n">stim</span><span class="p">,</span> <span class="n">inh</span>
 
-    <span class="k">def</span> <span class="nf">process_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">dirCol</span><span class="p">,</span> <span class="n">dirVal</span><span class="p">,</span> <span class="n">dirSep</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">stim</span><span class="p">,</span> <span class="n">inh</span></div>
+
+<div class="viewcode-block" id="PyPath.process_direction"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.process_direction">[docs]</a>    <span class="k">def</span> <span class="nf">process_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">dirCol</span><span class="p">,</span> <span class="n">dirVal</span><span class="p">,</span> <span class="n">dirSep</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="n">dirCol</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">dirVal</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
+
         <span class="k">else</span><span class="p">:</span>
             <span class="n">thisDir</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="n">dirCol</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">dirSep</span><span class="p">))</span>
-            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">thisDir</span> <span class="o">&amp;</span> <span class="n">dirVal</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">thisDir</span> <span class="o">&amp;</span> <span class="n">dirVal</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
 
 <div class="viewcode-block" id="PyPath.read_data_file"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.read_data_file">[docs]</a>    <span class="k">def</span> <span class="nf">read_data_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">keep_raw</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cache_files</span><span class="o">=</span><span class="p">{},</span>
                        <span class="n">reread</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">redownload</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1924,6 +2049,7 @@
 <span class="sd">            To keep the raw data read by this function, in order for</span>
 <span class="sd">            debugging purposes, or further use.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">listLike</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">])</span>
         <span class="n">edgeList</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">nodeList</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1932,16 +2058,21 @@
         <span class="n">_name</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="n">int_cache</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.interactions.pickle&#39;</span> <span class="o">%</span> <span class="n">_name</span><span class="p">)</span>
         <span class="n">edges_cache</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.edges.pickle&#39;</span> <span class="o">%</span> <span class="n">_name</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="n">reread</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">redownload</span><span class="p">:</span>
             <span class="n">infile</span><span class="p">,</span> <span class="n">edgeListMapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup_cache</span><span class="p">(</span><span class="n">_name</span><span class="p">,</span> <span class="n">cache_files</span><span class="p">,</span>
                                                        <span class="n">int_cache</span><span class="p">,</span> <span class="n">edges_cache</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">edgeListMapped</span><span class="p">):</span>
+
             <span class="k">if</span> <span class="n">infile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
                 <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">!=</span> <span class="s2">&quot;ReadSettings&quot;</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span>
                         <span class="sd">&quot;&quot;&quot;No proper input file definition!\n\&#39;settings\&#39;</span>
 <span class="sd">                        should be a \&#39;ReadSettings\&#39; instance\n&quot;&quot;&quot;</span><span class="p">),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
                     <span class="k">return</span> <span class="kc">None</span>
+
                 <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">huge</span><span class="p">:</span>
                     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
                         <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">Processing </span><span class="si">%s</span><span class="s1"> requires huge memory.</span><span class="se">\n</span><span class="s1">&#39;</span>
@@ -1953,19 +2084,26 @@
                         <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">edges_cache</span><span class="p">,</span>
                          <span class="n">settings</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
                     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
                     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
                         <span class="n">answer</span> <span class="o">=</span> <span class="n">raw_input</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
                         <span class="k">if</span> <span class="n">answer</span> <span class="o">==</span> <span class="s1">&#39;n&#39;</span><span class="p">:</span>
                             <span class="k">return</span> <span class="kc">None</span>
+
                         <span class="k">elif</span> <span class="n">answer</span> <span class="o">==</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span>
                             <span class="k">break</span>
+
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
                                 <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">Please answer `y` or `n`:</span><span class="se">\n\t</span><span class="s1">&#39;</span><span class="p">)</span>
                             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
                 <span class="n">inputFunc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_function</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">)</span>
+
                 <span class="k">if</span> <span class="n">inputFunc</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dataio</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">):</span>
                     <span class="n">inputFunc</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">dataio</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">)</span>
+
                 <span class="c1"># reading from remote or local file, or executing import</span>
                 <span class="c1"># function:</span>
                 <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">)</span> <span class="ow">or</span> \
@@ -1977,31 +2115,40 @@
                         <span class="n">large</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                         <span class="n">cache</span><span class="o">=</span><span class="n">curl_use_cache</span><span class="p">)</span>
                     <span class="n">infile</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
                     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">infile</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">bytes</span><span class="p">:</span>
+
                         <span class="k">try</span><span class="p">:</span>
                             <span class="n">infile</span> <span class="o">=</span> <span class="n">infile</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+
                         <span class="k">except</span><span class="p">:</span>
+
                             <span class="k">try</span><span class="p">:</span>
                                 <span class="n">infile</span> <span class="o">=</span> <span class="n">infile</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;iso-8859-1&#39;</span><span class="p">)</span>
+
                             <span class="k">except</span><span class="p">:</span>
                                 <span class="k">pass</span>
+
                     <span class="n">infile</span> <span class="o">=</span> <span class="p">[</span>
                         <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">infile</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
                         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
                     <span class="p">]</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Retrieving data from</span><span class="si">%s</span><span class="s2"> ...&quot;</span> <span class="o">%</span>
                                     <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">)</span>
+
                 <span class="c1"># elif hasattr(dataio, settings.inFile):</span>
                 <span class="k">elif</span> <span class="n">inputFunc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Retrieving data by dataio.</span><span class="si">%s</span><span class="s2">() ...&quot;</span> <span class="o">%</span>
                                     <span class="n">inputFunc</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
                     <span class="n">_store_cache</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">CACHE</span>
                     <span class="n">curl</span><span class="o">.</span><span class="n">CACHE</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">redownload</span>
+
                     <span class="c1"># this try-except needs to be removed</span>
                     <span class="c1"># once correct exception handling will</span>
                     <span class="c1"># be implemented in every input function</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">infile</span> <span class="o">=</span> <span class="n">inputFunc</span><span class="p">(</span><span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">inputArgs</span><span class="p">)</span>
+
                     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
                             <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">:: Error in `pypath.dataio.</span><span class="si">%s</span><span class="s1">()`. &#39;</span>
@@ -2009,24 +2156,30 @@
                             <span class="n">inputFunc</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
                         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">:: </span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">))</span>
                         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
                         <span class="k">try</span><span class="p">:</span>
                             <span class="n">traceback</span><span class="o">.</span><span class="n">print_tb</span><span class="p">(</span>
                                 <span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+
                         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
                                 <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">:: Failed handling exception.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
                             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">))</span>
                             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
                     <span class="n">curl</span><span class="o">.</span><span class="n">CACHE</span> <span class="o">=</span> <span class="n">_store_cache</span>
+
                 <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">):</span>
                     <span class="n">infile</span> <span class="o">=</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span>
                         <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> opened...&quot;</span> <span class="o">%</span> <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">)</span>
+
                 <span class="k">if</span> <span class="n">infile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: No such file or &quot;</span>
                                     <span class="s2">&quot;dataio function! :(</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>
                                     <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
                     <span class="k">return</span> <span class="kc">None</span>
+
             <span class="c1"># finding the largest referred column number,</span>
             <span class="c1"># to avoid references out of range</span>
             <span class="n">isDir</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">isDirected</span>
@@ -2039,16 +2192,19 @@
             <span class="n">dirCol</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">dirVal</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">dirSep</span> <span class="o">=</span> <span class="kc">None</span>
+
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">isDir</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
                 <span class="n">dirCol</span> <span class="o">=</span> <span class="n">isDir</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">dirVal</span> <span class="o">=</span> <span class="n">isDir</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
                 <span class="n">dirSep</span> <span class="o">=</span> <span class="n">isDir</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">isDir</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="kc">None</span>
+
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sign</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
                 <span class="n">dirCol</span> <span class="o">=</span> <span class="n">sign</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">dirVal</span> <span class="o">=</span> <span class="n">sign</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
                 <span class="n">dirVal</span> <span class="o">=</span> <span class="n">dirVal</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">dirVal</span><span class="p">[</span>
                     <span class="mi">0</span><span class="p">])</span> <span class="ow">in</span> <span class="n">common</span><span class="o">.</span><span class="n">simpleTypes</span> <span class="k">else</span> <span class="n">common</span><span class="o">.</span><span class="n">flatList</span><span class="p">(</span><span class="n">dirVal</span><span class="p">)</span>
                 <span class="n">dirSep</span> <span class="o">=</span> <span class="n">sign</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sign</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="k">else</span> <span class="kc">None</span>
+
             <span class="n">dirVal</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">dirVal</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dirVal</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">dirVal</span><span class="p">])</span>
             <span class="n">maxCol</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
                 <span class="nb">filter</span><span class="p">(</span>
@@ -2072,22 +2228,29 @@
             <span class="n">rFiltered</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">tFiltered</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">readError</span> <span class="o">=</span> <span class="mi">0</span>
+
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">infile</span><span class="p">:</span>
                 <span class="n">lnum</span> <span class="o">+=</span> <span class="mi">1</span>
+
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="p">(</span><span class="n">lnum</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">settings</span><span class="o">.</span><span class="n">header</span><span class="p">):</span>
                     <span class="c1"># empty lines</span>
                     <span class="c1"># or header row</span>
                     <span class="k">continue</span>
+
                 <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">listLike</span><span class="p">:</span>
+
                     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s1">&#39;decode&#39;</span><span class="p">):</span>
                         <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+
                     <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span>\
                         <span class="n">split</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">separator</span><span class="p">)</span>
+
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">line</span> <span class="o">=</span> <span class="p">[</span>
                         <span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
                         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;replace&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">line</span>
                     <span class="p">]</span>
+
                 <span class="c1"># in case line has less fields than needed</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">maxCol</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;Line #</span><span class="si">%u</span><span class="s1"> has less than </span><span class="si">%u</span><span class="s1"> fields,&#39;</span>
@@ -2095,23 +2258,31 @@
                                     <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
                     <span class="n">readError</span> <span class="o">=</span> <span class="mi">1</span>
                     <span class="k">continue</span>
+
                 <span class="k">else</span><span class="p">:</span>
+
                     <span class="c1"># applying filters:</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">positiveFilters</span><span class="p">,</span>
                                     <span class="n">settings</span><span class="o">.</span><span class="n">negativeFilters</span><span class="p">):</span>
                         <span class="n">lFiltered</span> <span class="o">+=</span> <span class="mi">1</span>
                         <span class="k">continue</span>
+
                     <span class="c1"># reading names and attributes:</span>
                     <span class="k">if</span> <span class="n">isDir</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">isDir</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
                         <span class="n">thisEdgeDir</span> <span class="o">=</span> <span class="kc">True</span>
+
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">thisEdgeDir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_direction</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">dirCol</span><span class="p">,</span>
                                                              <span class="n">dirVal</span><span class="p">,</span> <span class="n">dirSep</span><span class="p">)</span>
+
                     <span class="n">refs</span> <span class="o">=</span> <span class="p">[]</span>
+
                     <span class="k">if</span> <span class="n">refCol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">refs</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">delEmpty</span><span class="p">(</span>
                             <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="n">refCol</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">refSep</span><span class="p">))))</span>
+
                     <span class="n">refs</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">only_pmids</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">refs</span><span class="p">])</span>
+
                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">refs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">settings</span><span class="o">.</span><span class="n">must_have_references</span><span class="p">:</span>
                         <span class="n">rFiltered</span> <span class="o">+=</span> <span class="mi">1</span>
                         <span class="k">continue</span>
@@ -2125,9 +2296,11 @@
                     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">ncbiTaxId</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
 
                         <span class="n">taxx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_taxon</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">ncbiTaxId</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+
                         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">taxx</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
                             <span class="n">taxA</span> <span class="o">=</span> <span class="n">taxx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                             <span class="n">taxB</span> <span class="o">=</span> <span class="n">taxx</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">taxA</span> <span class="o">=</span> <span class="n">taxB</span> <span class="o">=</span> <span class="n">taxx</span>
 
@@ -2154,13 +2327,17 @@
 
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">taxA</span> <span class="o">=</span> <span class="n">taxB</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span>
+
                     <span class="k">if</span> <span class="n">taxA</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">taxB</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">tFiltered</span> <span class="o">+=</span> <span class="mi">1</span>
                         <span class="k">continue</span>
+
                     <span class="n">stim</span> <span class="o">=</span> <span class="kc">False</span>
                     <span class="n">inh</span> <span class="o">=</span> <span class="kc">False</span>
+
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sign</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
                         <span class="n">stim</span><span class="p">,</span> <span class="n">inh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_sign</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="n">sign</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">sign</span><span class="p">)</span>
+
                     <span class="n">resource</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">resource</span><span class="p">]]</span>
                         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">resource</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span> <span class="k">else</span>
@@ -2206,14 +2383,18 @@
                         <span class="s2">&quot;attrsEdge&quot;</span><span class="p">:</span> <span class="n">attrsEdge</span>
                     <span class="p">}</span>
                     <span class="n">newEdge</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">nodeAttrs</span><span class="p">)</span>
+
                 <span class="k">if</span> <span class="n">readError</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span>
                         <span class="s1">&#39;Errors occured, certain lines skipped.&#39;</span>
                         <span class="s1">&#39;Trying to read the remaining.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
                     <span class="n">readError</span> <span class="o">=</span> <span class="mi">1</span>
+
                 <span class="n">edgeList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newEdge</span><span class="p">)</span>
+
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="s1">&#39;close&#39;</span><span class="p">):</span>
                 <span class="n">infile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
             <span class="c1">### !!!! ##</span>
             <span class="n">edgeListMapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_list</span><span class="p">(</span><span class="n">edgeList</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
@@ -2224,22 +2405,28 @@
                 <span class="s2">&quot;</span><span class="si">%u</span><span class="s2"> lines filtered by taxon filters.&quot;</span> <span class="o">%</span>
                 <span class="p">(</span><span class="n">lnum</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">edgeListMapped</span><span class="p">),</span> <span class="n">lFiltered</span><span class="p">,</span>
                  <span class="n">rFiltered</span><span class="p">,</span> <span class="n">tFiltered</span><span class="p">))</span>
+
             <span class="k">if</span> <span class="n">reread</span> <span class="ow">or</span> <span class="n">redownload</span><span class="p">:</span>
                 <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">edgeListMapped</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">edges_cache</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span>
                                 <span class="s1">&#39;Mapped edge list saved to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">edges_cache</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">keep_raw</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">edgeListMapped</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span> <span class="o">=</span> <span class="n">edgeListMapped</span></div>
 
-    <span class="k">def</span> <span class="nf">load_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">lst</span>
+<div class="viewcode-block" id="PyPath.load_list"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_list">[docs]</a>    <span class="k">def</span> <span class="nf">load_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">lst</span></div>
 
 <div class="viewcode-block" id="PyPath.receptors_list"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.receptors_list">[docs]</a>    <span class="k">def</span> <span class="nf">receptors_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads the Human Plasma Membrane Receptome as a list.</span>
 <span class="sd">        This resource is human only.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="s1">&#39;rec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">uniqList</span><span class="p">(</span>
             <span class="n">common</span><span class="o">.</span><span class="n">flatList</span><span class="p">([</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">)</span>
@@ -2251,6 +2438,7 @@
 <span class="sd">        Loads the list of druggable proteins from DgiDB.</span>
 <span class="sd">        This resource is human only.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="s1">&#39;dgb&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">uniqList</span><span class="p">(</span>
             <span class="n">common</span><span class="o">.</span><span class="n">flatList</span><span class="p">([</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">dgb</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="mi">9606</span><span class="p">)</span>
@@ -2262,6 +2450,7 @@
 <span class="sd">        Loads the list of all known kinases in the proteome from kinase.com.</span>
 <span class="sd">        This resource is human only.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="s1">&#39;kin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">uniqList</span><span class="p">(</span>
             <span class="n">common</span><span class="o">.</span><span class="n">flatList</span><span class="p">([</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">kin</span><span class="p">,</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="mi">9606</span><span class="p">)</span>
@@ -2273,6 +2462,7 @@
 <span class="sd">        Loads the list of all known transcription factors from TF census</span>
 <span class="sd">        (Vaquerizas 2009). This resource is human only.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">tfs</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">get_tfcensus</span><span class="p">()</span>
         <span class="n">utfs</span> <span class="o">=</span> <span class="p">[</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">tf</span><span class="p">,</span> <span class="s1">&#39;ensg&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="mi">9606</span><span class="p">)</span> \
@@ -2292,9 +2482,11 @@
 
         <span class="n">diss</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">get_disgenet</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">)</span>
         <span class="n">dis</span> <span class="o">=</span> <span class="p">[]</span>
+
         <span class="k">for</span> <span class="n">di</span> <span class="ow">in</span> <span class="n">diss</span><span class="p">:</span>
             <span class="n">dis</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span>
                 <span class="n">di</span><span class="p">[</span><span class="s1">&#39;entrez&#39;</span><span class="p">],</span> <span class="s1">&#39;entrez&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="mi">9606</span><span class="p">))</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="s1">&#39;dis&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">uniqList</span><span class="p">(</span><span class="n">dis</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PyPath.signaling_proteins_list"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.signaling_proteins_list">[docs]</a>    <span class="k">def</span> <span class="nf">signaling_proteins_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2309,6 +2501,7 @@
         <span class="n">gosig</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
 
         <span class="k">for</span> <span class="n">term</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">goq</span><span class="p">[</span><span class="s1">&#39;names&#39;</span><span class="p">]):</span>
+
             <span class="k">if</span> <span class="s1">&#39;signal&#39;</span> <span class="ow">in</span> <span class="n">name</span> <span class="ow">or</span> <span class="s1">&#39;regulat&#39;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
                 <span class="n">gosig</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">term</span><span class="p">)</span>
 
@@ -2318,10 +2511,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">proteome_list</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">up</span><span class="p">,</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">goq</span><span class="p">[</span><span class="s1">&#39;terms&#39;</span><span class="p">][</span><span class="s1">&#39;P&#39;</span><span class="p">]):</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">term</span> <span class="o">&amp;</span> <span class="n">gosig</span><span class="p">):</span>
                 <span class="n">upsig</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">up</span><span class="p">)</span>
 
         <span class="n">spsig</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
+
         <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">upsig</span><span class="p">:</span>
             <span class="n">spsig</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span>
                 <span class="n">u</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span> <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">)))</span>
@@ -2334,6 +2529,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads the whole proteome as a list.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">swissprot</span> <span class="o">=</span> <span class="s1">&#39;yes&#39;</span> <span class="k">if</span> <span class="n">swissprot</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="s1">&#39;proteome&#39;</span><span class="p">]</span> <span class="o">=</span> \
             <span class="n">dataio</span><span class="o">.</span><span class="n">all_uniprots</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span> <span class="n">swissprot</span><span class="o">=</span><span class="n">swissprot</span><span class="p">)</span></div>
@@ -2343,37 +2539,51 @@
 <span class="sd">        Loads the list of cancer driver proteins from the COSMIC Cancer</span>
 <span class="sd">        Gene Census.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">read_list_file</span><span class="p">(</span><span class="n">data_formats</span><span class="o">.</span><span class="n">cgc</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PyPath.intogen_cancer_drivers_list"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.intogen_cancer_drivers_list">[docs]</a>    <span class="k">def</span> <span class="nf">intogen_cancer_drivers_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intogen_file</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads the list of cancer driver proteins from IntOGen data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">data_formats</span><span class="o">.</span><span class="n">intogen_cancer</span><span class="o">.</span><span class="n">inFile</span> <span class="o">=</span> <span class="n">intogen_file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">read_list_file</span><span class="p">(</span><span class="n">data_formats</span><span class="o">.</span><span class="n">intogen_cancer</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">cancer_drivers_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intogen_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.cancer_drivers_list"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.cancer_drivers_list">[docs]</a>    <span class="k">def</span> <span class="nf">cancer_drivers_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intogen_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">cancer_gene_census_list</span><span class="p">()</span>
+
         <span class="k">if</span> <span class="n">intogen_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">intogen_cancer_drivers_list</span><span class="p">(</span><span class="n">intogen_file</span><span class="o">=</span><span class="n">intogen_file</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="s1">&#39;cdv&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
                 <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="s1">&#39;cgc&#39;</span><span class="p">])</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="s1">&#39;IntOGen&#39;</span><span class="p">]))</span>
+
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="s1">&#39;cdv&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="s1">&#39;cgc&#39;</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;cdv&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
             <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="s1">&#39;cdv&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">))</span></div>
 
-    <span class="k">def</span> <span class="nf">coverage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.coverage"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.coverage">[docs]</a>    <span class="k">def</span> <span class="nf">coverage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">lst</span> <span class="o">=</span> <span class="n">lst</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="nb">set</span><span class="p">)</span> \
             <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> \
             <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">lst</span><span class="p">])</span> \
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">lst</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lists</span> \
             <span class="k">else</span> <span class="nb">set</span><span class="p">([])</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="n">lst</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">fisher_enrichment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="s1">&#39;proteome&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="n">lst</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="PyPath.fisher_enrichment"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.fisher_enrichment">[docs]</a>    <span class="k">def</span> <span class="nf">fisher_enrichment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="s1">&#39;proteome&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">cont</span> <span class="o">=</span> \
             <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
                 <span class="p">[</span>
@@ -2385,33 +2595,44 @@
                     <span class="nb">len</span><span class="p">([</span><span class="mi">1</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
                 <span class="p">]</span>
             <span class="p">])</span>
-        <span class="k">return</span> <span class="n">stats</span><span class="o">.</span><span class="n">fisher_exact</span><span class="p">(</span><span class="n">cont</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">stats</span><span class="o">.</span><span class="n">fisher_exact</span><span class="p">(</span><span class="n">cont</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">read_list_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.read_list_file"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.read_list_file">[docs]</a>    <span class="k">def</span> <span class="nf">read_list_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">_input</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">!=</span> <span class="s2">&quot;ReadList&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span>
                             <span class="p">(</span><span class="s2">&quot;&quot;&quot;No proper input file definition!</span><span class="se">\n\&#39;</span><span class="s2">settings</span><span class="se">\&#39;</span><span class="s2"></span>
 <span class="s2">                should be a </span><span class="se">\&#39;</span><span class="s2">readList</span><span class="se">\&#39;</span><span class="s2"> instance</span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span><span class="p">),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
+
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dataio</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">):</span>
             <span class="n">toCall</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">dataio</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">)</span>
             <span class="n">_input</span> <span class="o">=</span> <span class="n">toCall</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
         <span class="k">elif</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: No such file! :(</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">),</span>
                             <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
+
         <span class="k">else</span><span class="p">:</span>
             <span class="n">_input</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span>
+
         <span class="n">originalNameType</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">nameType</span>
         <span class="n">defaultNameType</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_name_type</span><span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">typ</span><span class="p">]</span>
         <span class="n">mapTbl</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">originalNameType</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">defaultNameType</span><span class="p">])</span>
+
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">_input</span><span class="p">)</span> <span class="ow">in</span> <span class="n">common</span><span class="o">.</span><span class="n">charTypes</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">_input</span><span class="p">):</span>
             <span class="n">_input</span> <span class="o">=</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">_input</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">_input</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;&quot;&quot;Could not find &#39;</span><span class="se">\</span>
 <span class="s2">                &#39;file or dataio function.</span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span><span class="p">),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> opened...&quot;</span> <span class="o">%</span> <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">)</span>
         <span class="c1"># finding the largest referred column number,</span>
         <span class="c1"># to avoid references out of index</span>
@@ -2420,21 +2641,27 @@
         <span class="n">lnum</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="n">readError</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">itemList</span> <span class="o">=</span> <span class="p">[]</span>
+
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">_input</span><span class="p">:</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="p">(</span><span class="n">lnum</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">settings</span><span class="o">.</span><span class="n">header</span><span class="p">):</span>
                 <span class="c1"># empty lines</span>
                 <span class="c1"># or header row</span>
                 <span class="n">lnum</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="k">continue</span>
+
             <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="ow">in</span> <span class="n">common</span><span class="o">.</span><span class="n">charTypes</span><span class="p">:</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">separator</span><span class="p">)</span>
+
             <span class="c1"># in case line has less fields than needed</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">maxCol</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;Line #</span><span class="si">%u</span><span class="s2"> has less than </span><span class="si">%u</span><span class="s2"> fields! :(</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span>
                                     <span class="p">(</span><span class="n">lnum</span><span class="p">,</span> <span class="n">maxCol</span><span class="p">)),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
                 <span class="n">readError</span> <span class="o">=</span> <span class="mi">1</span>
                 <span class="k">break</span>
+
             <span class="k">else</span><span class="p">:</span>
+
                 <span class="c1"># reading names and attributes</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">newItem</span> <span class="o">=</span> <span class="p">{</span>
@@ -2443,6 +2670,7 @@
                         <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">typ</span><span class="p">,</span>
                         <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">name</span>
                     <span class="p">}</span>
+
                 <span class="k">except</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span>
                         <span class="sd">&quot;&quot;&quot;Wrong name column indexes (%u and %u),</span>
@@ -2450,34 +2678,45 @@
                         <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">nameCol</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">separator</span><span class="p">,</span> <span class="n">lnum</span><span class="p">)),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
                     <span class="n">readError</span> <span class="o">=</span> <span class="mi">1</span>
                     <span class="k">break</span>
+
                 <span class="c1"># getting additional attributes</span>
                 <span class="n">attrsItem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_attrs</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">extraAttrs</span><span class="p">,</span> <span class="n">lnum</span><span class="p">)</span>
                 <span class="c1"># merging dictionaries</span>
                 <span class="n">newItem</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">attrsItem</span><span class="p">)</span>
+
             <span class="k">if</span> <span class="n">readError</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">break</span>
+
             <span class="n">itemList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newItem</span><span class="p">)</span>
             <span class="n">lnum</span> <span class="o">+=</span> <span class="mi">1</span>
+
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">_input</span><span class="p">,</span> <span class="s1">&#39;close&#39;</span><span class="p">):</span>
             <span class="n">_input</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
         <span class="n">itemListMapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_list</span><span class="p">(</span><span class="n">itemList</span><span class="p">,</span> <span class="n">singleList</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">itemListMapped</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">itemListMapped</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%u</span><span class="s2"> lines have been read from </span><span class="si">%s</span><span class="s2">, </span><span class="si">%u</span><span class="s2"> &#39;</span><span class="se">\</span>
 <span class="s2">            items after mapping&quot;</span> <span class="o">%</span>
                         <span class="p">(</span><span class="n">lnum</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">itemListMapped</span><span class="p">)))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">itemListMapped</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">itemListMapped</span></div>
 
 <div class="viewcode-block" id="PyPath.map_list"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.map_list">[docs]</a>    <span class="k">def</span> <span class="nf">map_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">,</span> <span class="n">singleList</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Only a wrapper for map_edge()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">listMapped</span> <span class="o">=</span> <span class="p">[]</span>
+
         <span class="k">if</span> <span class="n">singleList</span><span class="p">:</span>
+
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
                 <span class="n">listMapped</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
         <span class="k">else</span><span class="p">:</span>
+
             <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
                 <span class="n">listMapped</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">listMapped</span></div>
 
 <div class="viewcode-block" id="PyPath.map_item"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.map_item">[docs]</a>    <span class="k">def</span> <span class="nf">map_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
@@ -2496,6 +2735,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Translates molecule names in dict representing an edge.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">edgeStack</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">defaultNameA</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span>
             <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;nameA&#39;</span><span class="p">],</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;nameTypeA&#39;</span><span class="p">],</span>
@@ -2506,12 +2746,14 @@
             <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;nameB&#39;</span><span class="p">],</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;nameTypeB&#39;</span><span class="p">],</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">default_name_type</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="s1">&#39;typeB&#39;</span><span class="p">]],</span>
             <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;taxB&#39;</span><span class="p">])</span>
+
         <span class="c1"># print &#39;mapped %s to %s&#39; % (str(edge[&#39;nameB&#39;]), str(defaultNameB))</span>
         <span class="c1"># this is needed because the possibility ambigous mapping</span>
         <span class="c1"># one name can be mapped to multiple ones</span>
         <span class="c1"># this multiplies the nodes and edges</span>
         <span class="c1"># in case of proteins this does not happen too often</span>
         <span class="k">for</span> <span class="n">dnA</span> <span class="ow">in</span> <span class="n">defaultNameA</span><span class="p">:</span>
+
             <span class="k">for</span> <span class="n">dnB</span> <span class="ow">in</span> <span class="n">defaultNameB</span><span class="p">:</span>
                 <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;defaultNameA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dnA</span>
                 <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;defaultNameTypeA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_name_type</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span>
@@ -2521,6 +2763,7 @@
                     <span class="s1">&#39;typeB&#39;</span><span class="p">]]</span>
                 <span class="n">edgeStack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
                 <span class="c1"># print &#39;new edge: %s&#39; % str(edge)</span>
+
         <span class="k">return</span> <span class="n">edgeStack</span></div>
 
 <div class="viewcode-block" id="PyPath.combine_attr"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.combine_attr">[docs]</a>    <span class="k">def</span> <span class="nf">combine_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">,</span> <span class="n">num_method</span><span class="o">=</span><span class="nb">max</span><span class="p">):</span>
@@ -9833,7 +10076,9 @@
                                     <span class="n">nodDct</span><span class="p">[</span><span class="n">usrc</span><span class="p">],</span> <span class="n">nodDct</span><span class="p">[</span><span class="n">utgt</span><span class="p">],</span> <span class="n">error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
                                 <span class="k">if</span> <span class="n">eid</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-                                    <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">eid</span><span class="p">][</span><span class="n">attrname</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pw</span><span class="p">)</span></div>
+                                    <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">eid</span><span class="p">][</span><span class="n">attrname</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_pathway_types</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_pathways</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="PyPath.signor_pathways"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.signor_pathways">[docs]</a>    <span class="k">def</span> <span class="nf">signor_pathways</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -11352,6 +11597,7 @@
 <span class="sd">        :param int target: NCBI Taxonomy ID of the target organism.</span>
 <span class="sd">            E.g. 10090 for mouse.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">return_graph</span> <span class="o">=</span> <span class="n">graph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">graph</span>
         <span class="n">source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span> <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">source</span>
@@ -11663,19 +11909,27 @@
 
         <span class="k">return</span> <span class="n">p</span></div>
 
-    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.reload"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">modname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
         <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="n">modname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span>
         <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
         <span class="n">new</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
-        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__class__&#39;</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_disclaimer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">disclaimer</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">licence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_disclaimer</span><span class="p">()</span></div>
+<div class="viewcode-block" id="PyPath.licence"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.licence">[docs]</a>    <span class="k">def</span> <span class="nf">licence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disclaimer</span><span class="p">()</span></div></div>
 </pre></div>
 
           </div>

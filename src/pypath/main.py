@@ -1208,8 +1208,7 @@ class _NamedVertexSeq(object):
 #       - Which/how many organisms are accepted/available?
 #       - MySQL
 class PyPath(object):
-    """
-    Main network object.
+    """Main network object.
 
     :arg int ncbi_tax_id:
         Optional, ``9606`` (Homo sapiens) by default. NCBI Taxonomic
@@ -1432,10 +1431,11 @@ class PyPath(object):
                  copy=None, mysql=(None, 'mapping'),
                  chembl_mysql=(None, 'chembl'), name='unnamed',
                  outdir='results', loglevel='INFO', loops=False):
-        """
-        Initializes the network object. **NOTE:** Only the instance is
-        created, no data is donwloaded until the corresponding function
-        is called.
+        """Initializes the network object.
+
+        **NOTE:** Only the instance is created, no data is donwloaded
+        until the corresponding function is called (e.g.:
+        :py:meth:`PyPath.init_network`).
         """
 
         self.__version__ = _version.__version__
@@ -1543,41 +1543,88 @@ class PyPath(object):
 
     def set_chembl_mysql(self, title, config_file=None):
         """
-        Sets the ChEMBL MySQL config according to
-        `title` section in `config_file` ini style config.
+        Sets the ChEMBL MySQL configuration according to the *title*
+        section in *config_file* ini file configuration.
 
-        title (str): section title in ini file
-        config_file (str, NoneType): config file name;
-            if None, the `mysql_config/defaults.mysql`
-            will be used
+        :arg str title:
+            Section title of the ini file.
+        :arg str config_file:
+            Optional, ``None`` by default. Specifies the configuration
+            file name if none is passed, ``mysql_config/defaults.mysql``
+            will be used.
         """
 
         self.chembl_mysql = (config_file, title)
 
     def copy(self, other):
         """
+        Copies another :py:class:`pypath.main.PyPath` instance into the
+        current one.
+
+        :arg pypath.main.PyPath other:
+            The instance to be copied from.
         """
 
         self.__dict__ = other.__dict__
         self.ownlog.msg(1, "Reinitialized", 'INFO')
 
-    def init_network(self, lst=omnipath, exclude=[], cache_files={},
+    def init_network(self, lst=None, exclude=[], cache_files={},
                      pfile=False, save=False, reread=False, redownload=False,
-                     **kwargs):
+                     **kwargs): # XXX: kwargs is not used anywhere
+        """Loads the network data.
+
+        This is a lazy way to start the module, load data and build the
+        high confidence, literature curated part of the signaling
+        network.
+
+        :arg dict lst:
+            Optional, ``None`` by default. Specifies the data input
+            formats for the different resources (keys) [str]. Values
+            are :py:class:`pypath.input_formats.ReadSettings` instances
+            containing the information. By default uses the set of
+            resources of OmniPath.
+        :arg list exclude:
+            Optional, ``[]`` by default. List of resources [str] to
+            exclude from the network.
+        :arg dict cache_files:
+            Optional, ``{}`` by default. Contains the resource name(s)
+            [str] (keys) and the corresponfing cached file name(s).
+            If provided (and file exists) bypasses the download of the
+            data for that resource and uses the cache file instead.
+        :arg str pfile:
+            Optional, ``False`` by default. If any, provides the file
+            name or path to a previously saved network pickle file.
+            If ``True`` is passed, takes the default path from
+            :py:meth:`PyPath.save_network`
+            (``'cache/default_network.pickle'``).
+        :arg bool save:
+            Optional, ``False`` by default. If set to ``True``, saves
+            the loaded network to its default location
+            (``'cache/default_network.pickle'``).
+        :arg bool reread:
+            Optional, ``False`` by default. Specifies whether to reread
+            the data files from the cache or omit them (similar to
+            *redownload*).
+        :arg bool redownload:
+            Optional, ``False`` by default. Specifies whether to
+            re-download the data and ignore the cache.
+        :arg **kwargs:
+            Not used.
         """
-        This is a lazy way to start the module, load data
-        and build the high confidence, literature curated
-        part of the signaling network.
-        """
+
+        if lst is None:
+            lst = omnipath
 
         if pfile:
             pfile = pfile if not isinstance(pfile, bool) \
                 else os.path.join('cache', 'default_network.pickle')
+
             if os.path.exists(pfile):
                 sys.stdout.write(
                     '\t:: Loading igraph object from file `%s`...' % pfile)
                 sys.stdout.flush()
                 graph = pickle.load(open(pfile, 'rb'))
+
                 if isinstance(graph, igraph.Graph) and graph.vcount() > 0:
                     self.graph = graph
                     sys.stdout.write(
@@ -1588,10 +1635,13 @@ class PyPath(object):
                     self.update_vname()
                     self.update_vindex()
                     self.update_sources()
+
                     return None
+
         self.load_reflists() # XXX: This is redundant (see line 4565 in load_resources)
         self.load_resources(
             lst=lst, exclude=exclude, reread=reread, redownload=redownload)
+
         if save:
             sys.stdout.write('\t:: Saving igraph object to file `%s`...' %
                              pfile)
@@ -1603,7 +1653,16 @@ class PyPath(object):
             sys.stdout.flush()
 
     def save_network(self, pfile=None):
-        """
+        """Saves the network object.
+
+        Stores the instance into a pickle (binary) file which can be
+        reloaded in the future.
+
+        :arg str pfile:
+            Optional, ``None`` by default. The path/file name where to
+            store the pcikle file. If not specified, saves the network
+            to its default location
+            (``'cache/default_network.pickle'``).
         """
 
         pfile = pfile if pfile is not None \
@@ -1615,14 +1674,21 @@ class PyPath(object):
 
     def get_max(self, attrList):
         """
+
+        :arg dict attrList:
+            Dictionary of attributes
         """
 
         maxC = 0
+
         for val in attrList.values():
+
             if val.__class__ is tuple:
                 val = val[0]
+
             if val > maxC:
                 maxC = val
+
         return maxC
 
     def get_attrs(self, line, spec, lnum):
@@ -1630,28 +1696,37 @@ class PyPath(object):
         """
 
         attrs = {}
+
         for col in spec.keys():
             # extraEdgeAttrs and extraNodeAttrs are dicts
             # of additional parameters assigned to edges and nodes respectively;
             # key is the name of the parameter, value is the col number,
             # or a tuple of col number and the separator,
             # if the column contains additional subfields e.g. (5, ";")
+
             try:
+
                 if spec[col].__class__ is tuple:
+
                     if hasattr(spec[col][1], '__call__'):
                         fieldVal = spec[col][1](line[spec[col][0]])
+
                     else:
                         fieldVal = line[spec[col][0]].split(spec[col][1])
+
                 else:
                     fieldVal = line[spec[col]]
+
             except:
                 self.ownlog.msg(2, (
                     """Wrong column index (%s) in extra attributes?
                     Line #%u\n""" % (str(col), lnum)), 'ERROR')
                 readError = 1
                 break
+
             fieldName = col
             attrs[fieldName] = fieldVal
+
         return attrs
 
     def get_taxon(self, tax_dict, fields):
@@ -1659,13 +1734,18 @@ class PyPath(object):
         """
 
         if 'A' in tax_dict and 'B' in tax_dict:
+
             return (self.get_taxon(tax_dict['A'], fields),
                     self.get_taxon(tax_dict['B'], fields))
+
         else:
+
             if 'dict' not in tax_dict:
                 return int(fields[tax_dict['col']])
+
             elif fields[tax_dict['col']] in tax_dict['dict']:
                 return tax_dict['dict'][fields[tax_dict['col']]]
+
             else:
                 return None
 
@@ -1696,6 +1776,9 @@ class PyPath(object):
                      self.graph.es)))))
 
     def curators_work(self):
+        """
+        """
+
         curation_effort = self.numof_reference_interaction_pairs()
         sys.stdout.write(
             '\t:: Curators worked %.01f-%.01f years to accomplish '
@@ -1717,18 +1800,23 @@ class PyPath(object):
         replaces the igraph object with only the giant
         component.
         """
+
         g = graph if graph is not None else self.graph
         gg = g if replace else copy.deepcopy(g)
         cl = gg.components(mode='WEAK')
         cl_sizes = cl.sizes()
         giant_component_index = cl_sizes.index(max(cl_sizes))
         in_giant = [x == giant_component_index for x in cl.membership]
+
         common.console(':: Nodes in giant component: %u' %
                        in_giant.count(True))
+
         toDel = [i for i in xrange(0, gg.vcount()) if not in_giant[i]]
         gg.delete_vertices(toDel)
+
         common.console(':: Giant component size: %u edges, %u nodes' %
                        (gg.ecount(), gg.vcount()))
+
         if not replace:
             return gg
 
@@ -1740,6 +1828,7 @@ class PyPath(object):
         function is automatically called after all operations
         affecting node indices.
         """
+
         self.genesymbol_labels()
         graph = self._get_undirected()
         self._already_has_directed()
@@ -1779,6 +1868,7 @@ class PyPath(object):
         """
         This is deprecated.
         """
+
         self.nodNam = dict(
             zip(range(0, self.graph.vcount()), self.graph.vs['name']))
 
@@ -1789,10 +1879,14 @@ class PyPath(object):
         This function converts pathway annotations from
         edge attributes to vertex attributes.
         """
+
         for eattr in self.graph.es.attributes():
+
             if eattr.endswith('pathways'):
+
                 if eattr not in self.graph.vs.attributes():
                     self.graph.vs[eattr] = [[] for _ in self.graph.vs]
+
                 for e in self.graph.es:
                     self.graph.vs[e.source][eattr] = e[eattr]
                     self.graph.vs[e.target][eattr] = e[eattr]
@@ -1802,25 +1896,35 @@ class PyPath(object):
         """
 
         for filtr in negativeFilters:
+
             if len(filtr) > 2:
                 sep = filtr[2]
                 thisVal = set(line[filtr[0]].split(sep))
+
             else:
                 thisVal = set([line[filtr[0]]])
+
             filtrVal = set(filtr[1]
                            if isinstance(filtr[1], list) else [filtr[1]])
+
             if len(thisVal & filtrVal) > 0:
                 return True
+
         for filtr in positiveFilters:
+
             if len(filtr) > 2:
                 sep = filtr[2]
                 thisVal = set(line[filtr[0]].split(sep))
+
             else:
                 thisVal = set([line[filtr[0]]])
+
             filtrVal = set(filtr[1]
                            if isinstance(filtr[1], list) else [filtr[1]])
+
             if len(thisVal & filtrVal) == 0:
                 return True
+
         return False
 
     def lookup_cache(self, name, cache_files, int_cache, edges_cache):
@@ -1830,41 +1934,62 @@ class PyPath(object):
         infile = None
         edgeListMapped = []
         cache_file = cache_files[name] if name in cache_files else None
+
         if cache_file is not None and os.path.exists(cache_file):
             cache_type = cache_file.split('.')[-2]
+
             if cache_type == 'interactions':
                 infile = self.read_from_cache(int_cache)
+
             elif cache_type == 'edges':
                 edgeListMapped = self.read_from_cache(edges_cache)
+
         elif os.path.exists(edges_cache):
             edgeListMapped = self.read_from_cache(edges_cache)
+
         else:
+
             if os.path.exists(int_cache):
                 infile = self.read_from_cache(int_cache)
+
         return infile, edgeListMapped
 
     def read_from_cache(self, cache_file):
+        """
+        """
+
         sys.stdout.write('\t:: Reading from cache: %s\n' % cache_file)
         sys.stdout.flush()
         self.ownlog.msg(2, 'Data have been read from cache: %s' % cache_file)
+
         return pickle.load(open(cache_file, 'rb'))
 
     def process_sign(self, signData, signDef):
+        """
+        """
+
         stim = False
         inh = False
         signSep = signDef[3] if len(signDef) > 3 else None
         signData = set(str(signData).split(signSep))
         pos = set(signDef[1] if isinstance(signDef[1], list) else [signDef[1]])
         neg = set(signDef[2] if isinstance(signDef[2], list) else [signDef[2]])
+
         if len(signData & pos) > 0:
             stim = True
+
         elif len(signData & neg) > 0:
             inh = True
+
         return stim, inh
 
     def process_direction(self, line, dirCol, dirVal, dirSep):
+        """
+        """
+
         if dirCol is None or dirVal is None:
             return False
+
         else:
             thisDir = set(line[dirCol].split(dirSep))
             return len(thisDir & dirVal) > 0
@@ -1886,6 +2011,7 @@ class PyPath(object):
             To keep the raw data read by this function, in order for
             debugging purposes, or further use.
         """
+
         listLike = set([list, tuple])
         edgeList = []
         nodeList = []
@@ -1894,16 +2020,21 @@ class PyPath(object):
         _name = settings.name.lower()
         int_cache = os.path.join('cache', '%s.interactions.pickle' % _name)
         edges_cache = os.path.join('cache', '%s.edges.pickle' % _name)
+
         if not reread and not redownload:
             infile, edgeListMapped = self.lookup_cache(_name, cache_files,
                                                        int_cache, edges_cache)
+
         if not len(edgeListMapped):
+
             if infile is None:
+
                 if settings.__class__.__name__ != "ReadSettings":
                     self.ownlog.msg(2, (
                         """No proper input file definition!\n\'settings\'
                         should be a \'ReadSettings\' instance\n"""), 'ERROR')
                     return None
+
                 if settings.huge:
                     sys.stdout.write(
                         '\n\tProcessing %s requires huge memory.\n'
@@ -1915,19 +2046,26 @@ class PyPath(object):
                         (settings.name, settings.name, edges_cache,
                          settings.name))
                     sys.stdout.flush()
+
                     while True:
                         answer = raw_input().lower()
+
                         if answer == 'n':
                             return None
+
                         elif answer == 'y':
                             break
+
                         else:
                             sys.stdout.write(
                                 '\n\tPlease answer `y` or `n`:\n\t')
                             sys.stdout.flush()
+
                 inputFunc = self.get_function(settings.inFile)
+
                 if inputFunc is None and hasattr(dataio, settings.inFile):
                     inputFunc = getattr(dataio, settings.inFile)
+
                 # reading from remote or local file, or executing import
                 # function:
                 if settings.inFile.startswith('http') or \
@@ -1939,31 +2077,40 @@ class PyPath(object):
                         large=True,
                         cache=curl_use_cache)
                     infile = c.result.read()
+
                     if type(infile) is bytes:
+
                         try:
                             infile = infile.decode('utf-8')
+
                         except:
+
                             try:
                                 infile = infile.decode('iso-8859-1')
+
                             except:
                                 pass
+
                     infile = [
                         x for x in infile.replace('\r', '').split('\n')
                         if len(x) > 0
                     ]
                     self.ownlog.msg(2, "Retrieving data from%s ..." %
                                     settings.inFile)
+
                 # elif hasattr(dataio, settings.inFile):
                 elif inputFunc is not None:
                     self.ownlog.msg(2, "Retrieving data by dataio.%s() ..." %
                                     inputFunc.__name__)
                     _store_cache = curl.CACHE
                     curl.CACHE = not redownload
+
                     # this try-except needs to be removed
                     # once correct exception handling will
                     # be implemented in every input function
                     try:
                         infile = inputFunc(**settings.inputArgs)
+
                     except Exception as e:
                         sys.stdout.write(
                             '\n\t:: Error in `pypath.dataio.%s()`. '
@@ -1971,24 +2118,30 @@ class PyPath(object):
                             inputFunc.__name__)
                         sys.stdout.write('\t:: %s\n' % str(e.args))
                         sys.stdout.flush()
+
                         try:
                             traceback.print_tb(
                                 e.__traceback__, file=sys.stdout)
+
                         except Exception as e:
                             sys.stdout.write(
                                 '\t:: Failed handling exception.\n')
                             sys.stdout.write('\t%s\n' % str(e.args))
                             sys.stdout.flush()
+
                     curl.CACHE = _store_cache
+
                 elif os.path.isfile(settings.inFile):
                     infile = codecs.open(
                         settings.inFile, encoding='utf-8', mode='r')
                     self.ownlog.msg(2, "%s opened..." % settings.inFile)
+
                 if infile is None:
                     self.ownlog.msg(2, "%s: No such file or "
                                     "dataio function! :(\n" %
                                     (settings.inFile), 'ERROR')
                     return None
+
             # finding the largest referred column number,
             # to avoid references out of range
             isDir = settings.isDirected
@@ -2001,16 +2154,19 @@ class PyPath(object):
             dirCol = None
             dirVal = None
             dirSep = None
+
             if isinstance(isDir, tuple):
                 dirCol = isDir[0]
                 dirVal = isDir[1]
                 dirSep = isDir[2] if len(isDir) > 2 else None
+
             elif isinstance(sign, tuple):
                 dirCol = sign[0]
                 dirVal = sign[1:3]
                 dirVal = dirVal if type(dirVal[
                     0]) in common.simpleTypes else common.flatList(dirVal)
                 dirSep = sign[3] if len(sign) > 3 else None
+
             dirVal = set(dirVal if isinstance(dirVal, list) else [dirVal])
             maxCol = max(
                 filter(
@@ -2034,22 +2190,29 @@ class PyPath(object):
             rFiltered = 0
             tFiltered = 0
             readError = 0
+
             for line in infile:
                 lnum += 1
+
                 if len(line) <= 1 or (lnum == 1 and settings.header):
                     # empty lines
                     # or header row
                     continue
+
                 if type(line) not in listLike:
+
                     if hasattr(line, 'decode'):
                         line = line.decode('utf-8')
+
                     line = line.replace('\n', '').replace('\r', '').\
                         split(settings.separator)
+
                 else:
                     line = [
                         x.replace('\n', '').replace('\r', '')
                         if hasattr(x, 'replace') else x for x in line
                     ]
+
                 # in case line has less fields than needed
                 if len(line) < maxCol:
                     self.ownlog.msg(2, ('Line #%u has less than %u fields,'
@@ -2057,23 +2220,31 @@ class PyPath(object):
                                     'ERROR')
                     readError = 1
                     continue
+
                 else:
+
                     # applying filters:
                     if self.filters(line, settings.positiveFilters,
                                     settings.negativeFilters):
                         lFiltered += 1
                         continue
+
                     # reading names and attributes:
                     if isDir and not isinstance(isDir, tuple):
                         thisEdgeDir = True
+
                     else:
                         thisEdgeDir = self.process_direction(line, dirCol,
                                                              dirVal, dirSep)
+
                     refs = []
+
                     if refCol is not None:
                         refs = common.delEmpty(
                             list(set(line[refCol].split(refSep))))
+
                     refs = dataio.only_pmids([r.strip() for r in refs])
+
                     if len(refs) == 0 and settings.must_have_references:
                         rFiltered += 1
                         continue
@@ -2087,9 +2258,11 @@ class PyPath(object):
                     elif isinstance(settings.ncbiTaxId, dict):
 
                         taxx = self.get_taxon(settings.ncbiTaxId, line)
+
                         if isinstance(taxx, tuple):
                             taxA = taxx[0]
                             taxB = taxx[1]
+
                         else:
                             taxA = taxB = taxx
 
@@ -2116,13 +2289,17 @@ class PyPath(object):
 
                     else:
                         taxA = taxB = self.ncbi_tax_id
+
                     if taxA is None or taxB is None:
                         tFiltered += 1
                         continue
+
                     stim = False
                     inh = False
+
                     if isinstance(sign, tuple):
                         stim, inh = self.process_sign(line[sign[0]], sign)
+
                     resource = (
                         [line[settings.resource]]
                         if type(settings.resource) is int else
@@ -2168,14 +2345,18 @@ class PyPath(object):
                         "attrsEdge": attrsEdge
                     }
                     newEdge.update(nodeAttrs)
+
                 if readError != 0:
                     self.ownlog.msg(2, (
                         'Errors occured, certain lines skipped.'
                         'Trying to read the remaining.\n'), 'ERROR')
                     readError = 1
+
                 edgeList.append(newEdge)
+
             if hasattr(infile, 'close'):
                 infile.close()
+
             ### !!!! ##
             edgeListMapped = self.map_list(edgeList)
             self.ownlog.msg(
@@ -2186,15 +2367,20 @@ class PyPath(object):
                 "%u lines filtered by taxon filters." %
                 (lnum - 1, settings.inFile, len(edgeListMapped), lFiltered,
                  rFiltered, tFiltered))
+
             if reread or redownload:
                 pickle.dump(edgeListMapped, open(edges_cache, 'wb'), -1)
                 self.ownlog.msg(2,
                                 'Mapped edge list saved to %s' % edges_cache)
         if keep_raw:
             self.data[settings.name] = edgeListMapped
+
         self.raw_data = edgeListMapped
 
     def load_list(self, lst, name):
+        """
+        """
+
         self.lists[name] = lst
 
     def receptors_list(self):
@@ -2202,6 +2388,7 @@ class PyPath(object):
         Loads the Human Plasma Membrane Receptome as a list.
         This resource is human only.
         """
+
         self.lists['rec'] = common.uniqList(
             common.flatList([
                 self.mapper.map_name(rec, 'genesymbol', 'uniprot', ncbi_tax_id = 9606)
@@ -2213,6 +2400,7 @@ class PyPath(object):
         Loads the list of druggable proteins from DgiDB.
         This resource is human only.
         """
+
         self.lists['dgb'] = common.uniqList(
             common.flatList([
                 self.mapper.map_name(dgb, 'genesymbol', 'uniprot', 9606)
@@ -2224,6 +2412,7 @@ class PyPath(object):
         Loads the list of all known kinases in the proteome from kinase.com.
         This resource is human only.
         """
+
         self.lists['kin'] = common.uniqList(
             common.flatList([
                 self.mapper.map_name(kin, 'genesymbol', 'uniprot', 9606)
@@ -2235,6 +2424,7 @@ class PyPath(object):
         Loads the list of all known transcription factors from TF census
         (Vaquerizas 2009). This resource is human only.
         """
+
         tfs = dataio.get_tfcensus()
         utfs = [
             self.mapper.map_name(tf, 'ensg', 'uniprot', 9606) \
@@ -2254,9 +2444,11 @@ class PyPath(object):
 
         diss = dataio.get_disgenet(dataset=dataset)
         dis = []
+
         for di in diss:
             dis.extend(self.mapper.map_name(
                 di['entrez'], 'entrez', 'uniprot', 9606))
+
         self.lists['dis'] = common.uniqList(dis)
 
     def signaling_proteins_list(self):
@@ -2271,6 +2463,7 @@ class PyPath(object):
         gosig = set([])
 
         for term, name in iteritems(goq['names']):
+
             if 'signal' in name or 'regulat' in name:
                 gosig.add(term)
 
@@ -2280,10 +2473,12 @@ class PyPath(object):
             self.proteome_list()
 
         for up, term in iteritems(goq['terms']['P']):
+
             if len(term & gosig):
                 upsig.add(up)
 
         spsig = set([])
+
         for u in upsig:
             spsig.update(set(self.mapper.map_name(
                 u, 'uniprot', 'uniprot', ncbi_tax_id = self.ncbi_tax_id)))
@@ -2296,6 +2491,7 @@ class PyPath(object):
         """
         Loads the whole proteome as a list.
         """
+
         swissprot = 'yes' if swissprot else None
         self.lists['proteome'] = \
             dataio.all_uniprots(self.ncbi_tax_id, swissprot=swissprot)
@@ -2305,21 +2501,28 @@ class PyPath(object):
         Loads the list of cancer driver proteins from the COSMIC Cancer
         Gene Census.
         """
+
         self.read_list_file(data_formats.cgc)
 
     def intogen_cancer_drivers_list(self, intogen_file):
         """
         Loads the list of cancer driver proteins from IntOGen data.
         """
+
         data_formats.intogen_cancer.inFile = intogen_file
         self.read_list_file(data_formats.intogen_cancer)
 
     def cancer_drivers_list(self, intogen_file=None):
+        """
+        """
+
         self.cancer_gene_census_list()
+
         if intogen_file is not None:
             self.intogen_cancer_drivers_list(intogen_file=intogen_file)
             self.lists['cdv'] = list(
                 set(self.lists['cgc']) | set(self.lists['IntOGen']))
+
         else:
             self.lists['cdv'] = self.lists['cgc']
 
@@ -2328,14 +2531,21 @@ class PyPath(object):
                 self.graph.vs))
 
     def coverage(self, lst):
+        """
+        """
+
         lst = lst if isinstance(lst, set) \
             else set(lst) if isinstance(lst, list) \
             else set(self.lists[lst]) \
             if isinstance(lst, str) and lst in self.lists \
             else set([])
+
         return len(set(self.graph.vs['name']) & lst) / float(len(lst))
 
     def fisher_enrichment(self, lst, attr, ref='proteome'):
+        """
+        """
+
         cont = \
             np.array([
                 [
@@ -2350,30 +2560,41 @@ class PyPath(object):
         return stats.fisher_exact(cont)
 
     def read_list_file(self, settings, **kwargs):
+        """
+        """
+
         _input = None
+
         if settings.__class__.__name__ != "ReadList":
             self.ownlog.msg(2,
                             ("""No proper input file definition!\n\'settings\'
                 should be a \'readList\' instance\n"""), 'ERROR')
             return None
+
         if hasattr(dataio, settings.inFile):
             toCall = getattr(dataio, settings.inFile)
             _input = toCall(**kwargs)
+
         elif not os.path.isfile(settings.inFile):
             self.ownlog.msg(2, "%s: No such file! :(\n" % (settings.inFile),
                             'ERROR')
             return None
+
         else:
             _input = settings.inFile
+
         originalNameType = settings.nameType
         defaultNameType = self.default_name_type[settings.typ]
         mapTbl = ''.join([originalNameType, "_", defaultNameType])
+
         if type(_input) in common.charTypes and os.path.isfile(_input):
             _input = codecs.open(_input, encoding='utf-8', mode='r')
+
         if _input is None:
             self.ownlog.msg(2, ("""Could not find '\
                 'file or dataio function.\n"""), 'ERROR')
             return None
+
         self.ownlog.msg(2, "%s opened..." % settings.inFile)
         # finding the largest referred column number,
         # to avoid references out of index
@@ -2382,21 +2603,27 @@ class PyPath(object):
         lnum = 1
         readError = 0
         itemList = []
+
         for line in _input:
+
             if len(line) == 0 or (lnum == 1 and settings.header):
                 # empty lines
                 # or header row
                 lnum += 1
                 continue
+
             if type(line) in common.charTypes:
                 line = line.rstrip().split(settings.separator)
+
             # in case line has less fields than needed
             if len(line) < maxCol:
                 self.ownlog.msg(2, ("Line #%u has less than %u fields! :(\n" %
                                     (lnum, maxCol)), 'ERROR')
                 readError = 1
                 break
+
             else:
+
                 # reading names and attributes
                 try:
                     newItem = {
@@ -2405,6 +2632,7 @@ class PyPath(object):
                         "type": settings.typ,
                         "source": settings.name
                     }
+
                 except:
                     self.ownlog.msg(2, (
                         """Wrong name column indexes (%u and %u),
@@ -2412,16 +2640,21 @@ class PyPath(object):
                         (settings.nameCol, settings.separator, lnum)), 'ERROR')
                     readError = 1
                     break
+
                 # getting additional attributes
                 attrsItem = self.get_attrs(line, settings.extraAttrs, lnum)
                 # merging dictionaries
                 newItem.update(attrsItem)
+
             if readError != 0:
                 break
+
             itemList.append(newItem)
             lnum += 1
+
         if hasattr(_input, 'close'):
             _input.close()
+
         itemListMapped = self.map_list(itemList, singleList=True)
         itemListMapped = list(set(itemListMapped))
         self.ownlog.msg(2, "%u lines have been read from %s, %u '\
@@ -2433,13 +2666,19 @@ class PyPath(object):
         """
         Only a wrapper for map_edge()
         """
+
         listMapped = []
+
         if singleList:
+
             for item in lst:
                 listMapped += self.map_item(item)
+
         else:
+
             for edge in lst:
                 listMapped += self.map_edge(edge)
+
         return listMapped
 
     def map_item(self, item):
@@ -2458,6 +2697,7 @@ class PyPath(object):
         """
         Translates molecule names in dict representing an edge.
         """
+
         edgeStack = []
         defaultNameA = self.mapper.map_name(
             edge['nameA'], edge['nameTypeA'],
@@ -2468,12 +2708,14 @@ class PyPath(object):
             edge['nameB'], edge['nameTypeB'],
             self.default_name_type[edge['typeB']],
             ncbi_tax_id = edge['taxB'])
+
         # print 'mapped %s to %s' % (str(edge['nameB']), str(defaultNameB))
         # this is needed because the possibility ambigous mapping
         # one name can be mapped to multiple ones
         # this multiplies the nodes and edges
         # in case of proteins this does not happen too often
         for dnA in defaultNameA:
+
             for dnB in defaultNameB:
                 edge['defaultNameA'] = dnA
                 edge['defaultNameTypeA'] = self.default_name_type[edge[
@@ -2483,6 +2725,7 @@ class PyPath(object):
                     'typeB']]
                 edgeStack.append(edge)
                 # print 'new edge: %s' % str(edge)
+
         return edgeStack
 
     def combine_attr(self, lst, num_method=max):
@@ -11316,6 +11559,7 @@ class PyPath(object):
         :param int target: NCBI Taxonomy ID of the target organism.
             E.g. 10090 for mouse.
         """
+
         return_graph = graph is not None
         graph = self.graph if graph is None else graph
         source = self.ncbi_tax_id if source is None else source
@@ -11628,6 +11872,8 @@ class PyPath(object):
         return p
 
     def reload(self):
+        """
+        """
 
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist=[modname.split('.')[0]])
@@ -11636,7 +11882,13 @@ class PyPath(object):
         setattr(self, '__class__', new)
 
     def _disclaimer(self):
+        """
+        """
+
         sys.stdout.write(self.disclaimer)
 
     def licence(self):
+        """
+        """
+
         self._disclaimer()
