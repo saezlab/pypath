@@ -1393,6 +1393,9 @@
 <span class="sd">        NCBI Taxonomic identifier of the organism from which the data</span>
 <span class="sd">        will be downloaded.</span>
 <span class="sd">    :var dict negatives:</span>
+<span class="sd">        Contains a list of negative interactions according to a given</span>
+<span class="sd">        source (e.g.: Negatome database). See</span>
+<span class="sd">        :py:meth:`PyPath.apply_negative` for more information.</span>
 <span class="sd">    :var dict nodDct:</span>
 <span class="sd">        Maps the undirected graph node names [str] (keys) to their</span>
 <span class="sd">        indices [int] (values).</span>
@@ -1409,23 +1412,53 @@
 <span class="sd">    :var pypath.logn.logw ownlog:</span>
 <span class="sd">        Logger class instance, see :py:class:`pypath.logn.logw` for more</span>
 <span class="sd">        information.</span>
-<span class="sd">    :var palette:</span>
-<span class="sd">    :var pathway_types:</span>
-<span class="sd">    :var pathways:</span>
-<span class="sd">    :var plots:</span>
-<span class="sd">    :var proteomicsdb:</span>
-<span class="sd">    :var raw_data:</span>
-<span class="sd">    :var reflists:</span>
-<span class="sd">    :var seq:</span>
-<span class="sd">    :var session:</span>
-<span class="sd">    :var session_name:</span>
-<span class="sd">    :var sourceNetEdges:</span>
-<span class="sd">    :var sourceNetNodes:</span>
-<span class="sd">    :var sources:</span>
-<span class="sd">    :var u_pfam:</span>
-<span class="sd">    :var uniprot_mapped:</span>
-<span class="sd">    :var unmapped:</span>
-<span class="sd">    :var vertexAttrs:</span>
+<span class="sd">    :var list palette:</span>
+<span class="sd">        Contains a list of hexadecimal [str] of colors. Used for</span>
+<span class="sd">        plotting purposes.</span>
+<span class="sd">    :var list pathway_types:</span>
+<span class="sd">        Contains the names of all the loaded pathway resources [str].</span>
+<span class="sd">    :var dict pathways:</span>
+<span class="sd">        Contains the list of pathways (values) for each resource (keys)</span>
+<span class="sd">        loaded in the network.</span>
+<span class="sd">    :var dict plots:</span>
+<span class="sd">        DEPRECATED (?)</span>
+<span class="sd">    :var pypath.proteomicsdb.ProteomicsDB proteomicsdb:</span>
+<span class="sd">        Contains a :py:class:`pypath.proteomicsdb.ProteomicsDB`</span>
+<span class="sd">        instance, see the class documentation for more information.</span>
+<span class="sd">    :var list raw_data:</span>
+<span class="sd">        Contains a list of loaded edges [dict] from a data file. See</span>
+<span class="sd">        :py:meth:`PyPath.read_data_file` for more information.</span>
+<span class="sd">    :var dict reflists:</span>
+<span class="sd">        Contains the reference list(s) loaded. Keys are [tuple]</span>
+<span class="sd">        containing the node name type [str] (e.g.: ``&#39;uniprot&#39;``), type</span>
+<span class="sd">        [str] (e.g.: ``&#39;protein&#39;``) and taxonomic ID [int] (e.g.:</span>
+<span class="sd">        ``&#39;9606&#39;``). Values are the corresponding</span>
+<span class="sd">        :py:class:`pypath.reflists.ReferenceList` instance (see class</span>
+<span class="sd">        documentation for more information).</span>
+<span class="sd">    :var dict seq:</span>
+<span class="sd">        (?)</span>
+<span class="sd">    :var str session:</span>
+<span class="sd">        Session ID, a five random alphanumeric characters.</span>
+<span class="sd">    :var str session_name:</span>
+<span class="sd">        Session name and ID (e.g. ``&#39;unnamed-abc12&#39;``).</span>
+<span class="sd">    :var igraph.Graph sourceNetEdges:</span>
+<span class="sd">        (?)</span>
+<span class="sd">    :var igraph.Graph sourceNetNodes:</span>
+<span class="sd">        (?)</span>
+<span class="sd">    :var list sources:</span>
+<span class="sd">        List contianing the names of the loaded resources [str].</span>
+<span class="sd">    :var dict u_pfam:</span>
+<span class="sd">        Dictionary of dictionaries, contains the mapping of UniProt IDs</span>
+<span class="sd">        to their respective protein families and other information.</span>
+<span class="sd">    :var list uniprot_mapped:</span>
+<span class="sd">        DEPRECATED (?)</span>
+<span class="sd">    :var list unmapped:</span>
+<span class="sd">        Contains the names of unmapped items [str]. See</span>
+<span class="sd">        :py:meth:`PyPath.map_item` for more information.</span>
+<span class="sd">    :var dict vertexAttrs:</span>
+<span class="sd">        Stores the node attribute names [str] as keys and their</span>
+<span class="sd">        corresponding types (e.g.: ``set``, ``list``, ``str``, ...) as</span>
+<span class="sd">        values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">default_name_type</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;protein&#39;</span><span class="p">:</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span>
@@ -1487,7 +1520,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_directed</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">failed_edges</span> <span class="o">=</span> <span class="p">[]</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">uniprot_mapped</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uniprot_mapped</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># XXX: Not used anywhere</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mysql_conf</span> <span class="o">=</span> <span class="n">mysql</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_chembl_mysql</span><span class="p">(</span><span class="n">chembl_mysql</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">chembl_mysql</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="c1"># self.mysql = mysql.MysqlRunner(self.mysql_conf)</span>
@@ -1500,7 +1533,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">negatives</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lists</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">plots</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plots</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># XXX: Not used anywhere</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">proteomicsdb</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">exp_samples</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1517,7 +1550,7 @@
 
             <span class="c1"># Session and log</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">gen_session_id</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">session_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">])</span> <span class="c1"># XXX: What about &#39;-&#39;.join([self.name, self.session])?</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span> <span class="o">=</span> <span class="n">loglevel</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span> <span class="o">=</span> <span class="n">logn</span><span class="o">.</span><span class="n">logw</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">Mapper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span>
@@ -1594,7 +1627,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">update_vindex</span><span class="p">()</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">update_sources</span><span class="p">()</span>
                     <span class="k">return</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">load_reflists</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_reflists</span><span class="p">()</span> <span class="c1"># XXX: This is redundant (see line 4565 in load_resources)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_resources</span><span class="p">(</span>
             <span class="n">lst</span><span class="o">=</span><span class="n">lst</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">reread</span><span class="o">=</span><span class="n">reread</span><span class="p">,</span> <span class="n">redownload</span><span class="o">=</span><span class="n">redownload</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
@@ -2790,23 +2823,31 @@
 <span class="sd">            For proteins it&#39;s &#39;uniprot&#39; by default.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="n">defaultNameType</span><span class="p">:</span>
             <span class="n">defaultNameType</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_name_type</span><span class="p">[</span><span class="n">typ</span><span class="p">]</span>
+
         <span class="n">toDel</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">reflists</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_vname</span><span class="p">()</span>
+
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tax</span><span class="p">:</span>
             <span class="n">idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">defaultNameType</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+
             <span class="k">if</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">reflists</span><span class="p">:</span>
                 <span class="n">reflists</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reflists</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">lst</span>
+
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="s1">&#39;Missing reference list for </span><span class="si">%s</span><span class="s1"> (default name type: </span><span class="si">%s</span><span class="s1">), in taxon </span><span class="si">%u</span><span class="s1">&#39;</span>
                 <span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">t</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">]))</span>
+
                 <span class="k">return</span> <span class="kc">False</span>
+
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; :: Comparing with reference lists...&#39;</span><span class="p">)</span>
+
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tax</span><span class="p">:</span>
             <span class="n">nt</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;nameType&#39;</span><span class="p">]</span>
             <span class="n">nt</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">nt</span><span class="p">)</span> <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="n">defaultNameType</span><span class="p">]</span>
@@ -2818,6 +2859,7 @@
             <span class="n">vn</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">vs</span><span class="p">]</span>
             <span class="n">toDelNames</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">vn</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">reflists</span><span class="p">[</span><span class="n">t</span><span class="p">]))</span>
             <span class="n">toDel</span> <span class="o">+=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">toDelNames</span><span class="p">]</span>
+
         <span class="n">g</span><span class="o">.</span><span class="n">delete_vertices</span><span class="p">(</span><span class="n">toDel</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; done.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
@@ -8661,6 +8703,8 @@
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">:: Output written to file `</span><span class="si">%s</span><span class="s1">`</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">outf</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 
+    <span class="c1"># XXX: is this used? `PlotParam` is not defined in the whole package.</span>
+    <span class="c1">#      Does not work.</span>
 <div class="viewcode-block" id="PyPath.source_network"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.source_network">[docs]</a>    <span class="k">def</span> <span class="nf">source_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="s1">&#39;HelveticaNeueLTStd&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For EMBL branding, use Helvetica Neue Linotype Standard light</span>
@@ -8717,7 +8761,7 @@
             <span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; (</span><span class="si">%u</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_dict</span><span class="p">[</span><span class="s1">&#39;edges&#39;</span><span class="p">][</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]])</span>
             <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sourceNetEdges</span><span class="o">.</span><span class="n">vs</span>
         <span class="p">]</span>
-        <span class="n">plotParamNodes</span> <span class="o">=</span> <span class="n">PlotParam</span><span class="p">(</span>
+        <span class="n">plotParamNodes</span> <span class="o">=</span> <span class="n">PlotParam</span><span class="p">(</span> <span class="c1"># XXX: global name PlotParam is not defined anywhere</span>
             <span class="n">graph</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sourceNetNodes</span><span class="p">,</span>
             <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;db_net_nodes.pdf&#39;</span><span class="p">,</span>
             <span class="n">layout</span><span class="o">=</span><span class="s1">&#39;circular&#39;</span><span class="p">,</span>
@@ -10288,7 +10332,7 @@
             <span class="n">omnipath</span> <span class="o">=</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">omnipath</span>
             <span class="n">exclude</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">load_resources</span><span class="p">(</span><span class="n">omnipath</span><span class="p">,</span> <span class="n">exclude</span> <span class="o">=</span> <span class="n">exclude</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_resources</span><span class="p">(</span><span class="n">omnipath</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">kinase_substrate_extra</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">load_resources</span><span class="p">(</span><span class="n">data_formats</span><span class="o">.</span><span class="n">ptm_misc</span><span class="p">)</span>

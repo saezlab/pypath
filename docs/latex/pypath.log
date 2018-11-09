@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.10.12)  6 NOV 2018 15:51
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.10.12)  9 NOV 2018 12:51
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1215,470 +1215,519 @@ m/n/10 '\T1/pcr/m/n/10 proteome\TS1/pcr/m/n/10 '\T1/ptm/m/n/10 ) and \T1/pcr/m/
 n/10 PyPath.
  []
 
-[8] [9] [10]
-Underfull \hbox (badness 10000) in paragraph at lines 757--757
+[8]
+Underfull \hbox (badness 10000) in paragraph at lines 517--519
+[]\T1/pcr/b/n/10 proteomicsdb \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 pypath.proteomics
+db.ProteomicsDB\T1/ptm/m/n/10 ) ^^U Con-tains a
+ []
+
+[9] [10]
+Underfull \hbox (badness 10000) in paragraph at lines 772--772
 []\T1/ptm/m/it/10 chembl_mysql=None, nodes=None, crit=None, an-dor='or',
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 757--757
+Underfull \hbox (badness 10000) in paragraph at lines 772--772
 \T1/ptm/m/it/10 as-say_types=['B', 'F'], re-la-tion-ship_types=['D', 'H'],
  []
 
-
-Underfull \hbox (badness 7814) in paragraph at lines 827--827
+[11]
+Underfull \hbox (badness 7814) in paragraph at lines 842--842
 []\T1/ptm/m/it/10 fname='curation_stats.tex', by_category=True, use_cats=['p', 
 'm', 'i', 'r'],
  []
 
-[11]
-Underfull \hbox (badness 10000) in paragraph at lines 997--1001
-\T1/ptm/m/n/10 Same as \T1/pcr/m/n/10 PyPath.uniprot(), just for directed graph
-. Returns \TS1/pcr/m/n/10 ``\T1/pcr/m/n/10 igraph.
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1024--1028
-\T1/ptm/m/n/10 Same as \T1/pcr/m/n/10 PyPath.uniprot(), just for directed graph
-. Returns \TS1/pcr/m/n/10 ``\T1/pcr/m/n/10 igraph.
- []
-
 [12]
-Underfull \hbox (badness 10000) in paragraph at lines 1151--1151
+Underfull \hbox (badness 10000) in paragraph at lines 1012--1016
+\T1/ptm/m/n/10 Same as \T1/pcr/m/n/10 PyPath.uniprot(), just for directed graph
+. Returns \TS1/pcr/m/n/10 ``\T1/pcr/m/n/10 igraph.
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1039--1043
+\T1/ptm/m/n/10 Same as \T1/pcr/m/n/10 PyPath.uniprot(), just for directed graph
+. Returns \TS1/pcr/m/n/10 ``\T1/pcr/m/n/10 igraph.
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1166--1166
 \T1/ptm/m/it/10 <lambda>>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 nodes_filter=<functio
 n <lambda>>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 edge_sources=None\T1/ptm/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1151--1151
+Underfull \hbox (badness 10000) in paragraph at lines 1166--1166
 \T1/ptm/m/it/10 dir_sources=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 graph=None\T1/
 ptm/m/n/10 , \T1/ptm/m/it/10 re-turn_object=False\T1/ptm/m/n/10 , \T1/ptm/m/it/
 10 save_dot=None\T1/ptm/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1151--1151
+Underfull \hbox (badness 10000) in paragraph at lines 1166--1166
 \T1/ptm/m/it/10 save_graphics=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 prog='neato'
 \T1/ptm/m/n/10 , \T1/ptm/m/it/10 for-mat=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 h
 ide=False\T1/ptm/m/n/10 , \T1/ptm/m/it/10 font=None\T1/ptm/m/n/10 ,
  []
 
 [13]
-Underfull \hbox (badness 10000) in paragraph at lines 1282--1282
+Underfull \hbox (badness 10000) in paragraph at lines 1297--1297
 []\T1/ptm/m/it/10 outfile=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 ex-tra_node_attr
 s={}\T1/ptm/m/n/10 , \T1/ptm/m/it/10 ex-tra_edge_attrs={}\T1/ptm/m/n/10 , \T1/p
 tm/m/it/10 unique_pairs=True\T1/ptm/m/n/10 ,
  []
 
 [14]
-Underfull \hbox (badness 6493) in paragraph at lines 1373--1373
+Underfull \hbox (badness 6493) in paragraph at lines 1388--1388
 []\T1/ptm/m/it/10 proteins\T1/ptm/m/n/10 , \T1/ptm/m/it/10 all_proteins=None\T1
 /ptm/m/n/10 , \T1/ptm/m/it/10 gene-set_ids=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10
  al-pha=0.05\T1/ptm/m/n/10 , \T1/ptm/m/it/10 cor-rec-
  []
 
 [15] [16]
-Underfull \hbox (badness 10000) in paragraph at lines 1633--1633
+Underfull \hbox (badness 10000) in paragraph at lines 1648--1648
 []\T1/ptm/m/it/10 proteins=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 as-pect='P'\T1/
 ptm/m/n/10 , \T1/ptm/m/it/10 al-pha=0.05\T1/ptm/m/n/10 , \T1/ptm/m/it/10 cor-re
 c-tion_method='hommel'\T1/ptm/m/n/10 ,
  []
 
 [17]
-Underfull \hbox (badness 10000) in paragraph at lines 1836--1836
+Underfull \hbox (badness 6708) in paragraph at lines 1851--1851
 \T1/ptm/m/it/10 'bi-ogrid': <py-path.input_formats.ReadSettings in-stance at 0x
-7f015f233cb0>\T1/ptm/m/n/10 ,
+7f5264b93c20>\T1/ptm/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1836--1836
-\T1/ptm/m/it/10 'ca1': <py-path.input_formats.ReadSettings in-stance at 0x7f015
-f22ba28>\T1/ptm/m/n/10 ,
+Underfull \hbox (badness 10000) in paragraph at lines 1851--1851
+\T1/ptm/m/it/10 'ca1': <py-path.input_formats.ReadSettings in-stance at 0x7f526
+4b89998>\T1/ptm/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 7012) in paragraph at lines 1836--1836
-\T1/ptm/m/it/10 phonedb': <py-path.input_formats.ReadSettings in-stance at 0x7f
-015efb5dd0>\T1/ptm/m/n/10 ,
+Underfull \hbox (badness 10000) in paragraph at lines 1851--1851
+\T1/ptm/m/it/10 'ccmap': <py-path.input_formats.ReadSettings in-stance at 0x7f5
+264b89f38>\T1/ptm/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1836--1836
-\T1/ptm/m/it/10 'dbptm': <py-path.input_formats.ReadSettings in-stance at 0x7f0
-15f233440>\T1/ptm/m/n/10 ,
+Underfull \hbox (badness 10000) in paragraph at lines 1851--1851
+\T1/ptm/m/it/10 'dbptm': <py-path.input_formats.ReadSettings in-stance at 0x7f5
+264b933b0>\T1/ptm/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1836--1836
-\T1/ptm/m/it/10 <py-path.input_formats.ReadSettings in-stance at 0x7f015f233098
+Underfull \hbox (badness 10000) in paragraph at lines 1851--1851
+\T1/ptm/m/it/10 <py-path.input_formats.ReadSettings in-stance at 0x7f5264b89fc8
 >\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'domino':
  []
 
 
-Underfull \hbox (badness 6493) in paragraph at lines 1836--1836
-\T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance at 0x7f015efb5d40>\T1
+Underfull \hbox (badness 5417) in paragraph at lines 1851--1851
+\T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance at 0x7f5264914cb0>\T1
 /ptm/m/n/10 , \T1/ptm/m/it/10 'hprd': <py-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1836--1836
-\T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance at 0x7f015f2332d8>\T1
+Underfull \hbox (badness 7362) in paragraph at lines 1851--1851
+\T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance at 0x7f5264b93248>\T1
 /ptm/m/n/10 , \T1/ptm/m/it/10 'macrophage':
  []
 
 
-Underfull \hbox (badness 7203) in paragraph at lines 1836--1836
-\T1/ptm/m/it/10 <py-path.input_formats.ReadSettings in-stance at 0x7f015f22bcb0
+Underfull \hbox (badness 5548) in paragraph at lines 1851--1851
+\T1/ptm/m/it/10 <py-path.input_formats.ReadSettings in-stance at 0x7f5264b89c20
 >\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'ma-trixdb':
  []
 
 
-Underfull \hbox (badness 7186) in paragraph at lines 1836--1836
-\T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance at 0x7f015f233050>\T1
-/ptm/m/n/10 , \T1/ptm/m/it/10 'nrf2': <py-
+Underfull \hbox (badness 10000) in paragraph at lines 1851--1851
+\T1/ptm/m/it/10 <py-path.input_formats.ReadSettings in-stance at 0x7f5264b93170
+>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'mppi':
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1836--1836
-\T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance at 0x7f015f22bc20>\T1
+Underfull \hbox (badness 7504) in paragraph at lines 1851--1851
+\T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance at 0x7f5264b89b90>\T1
 /ptm/m/n/10 , \T1/ptm/m/it/10 'pdz': <py-
  []
 
 
-Underfull \hbox (badness 6032) in paragraph at lines 1836--1836
-\T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance at 0x7f015f233320>\T1
-/ptm/m/n/10 , \T1/ptm/m/it/10 'psite': <py-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1836--1836
-\T1/ptm/m/it/10 <py-path.input_formats.ReadSettings in-stance at 0x7f015f22b908
+Underfull \hbox (badness 10000) in paragraph at lines 1851--1851
+\T1/ptm/m/it/10 <py-path.input_formats.ReadSettings in-stance at 0x7f5264b89878
 >\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'sig-nor':
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1836--1836
-\T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance at 0x7f015f22b8c0>\T1
-/ptm/m/n/10 , \T1/ptm/m/it/10 'trip': <py-
+Underfull \hbox (badness 10000) in paragraph at lines 1851--1851
+\T1/ptm/m/it/10 <py-path.input_formats.ReadSettings in-stance at 0x7f5264b89ea8
+>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'spike':
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1836--1836
-\T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance at 0x7f015f22b7e8>}\T
+Underfull \hbox (badness 10000) in paragraph at lines 1851--1851
+\T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance at 0x7f5264b89758>}\T
 1/ptm/m/n/10 , \T1/ptm/m/it/10 ex-clude=[]\T1/ptm/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1836--1836
+Underfull \hbox (badness 10000) in paragraph at lines 1851--1851
 \T1/ptm/m/it/10 cache_files={}\T1/ptm/m/n/10 , \T1/ptm/m/it/10 pfile=False\T1/p
 tm/m/n/10 , \T1/ptm/m/it/10 save=False\T1/ptm/m/n/10 , \T1/ptm/m/it/10 reread=F
 alse\T1/ptm/m/n/10 , \T1/ptm/m/it/10 re-down-load=False\T1/ptm/m/n/10 ,
  []
 
-[18]
-Underfull \hbox (badness 10000) in paragraph at lines 1983--1986
+[18] [19]
+Underfull \hbox (badness 10000) in paragraph at lines 1998--2001
 \T1/ptm/m/n/10 Loads com-plexes from Com-plex-Por-tal. Loads data into ver-tex 
 at-tribute
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1999--2002
+Underfull \hbox (badness 10000) in paragraph at lines 2014--2017
 \T1/ptm/m/n/10 Loads com-plexes from CO-RUM database. Loads data into ver-tex a
 t-tribute
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2073--2073
+Underfull \hbox (badness 10000) in paragraph at lines 2088--2088
 []\T1/ptm/m/it/10 methods=['self.pfam_regions', 'self.load_depod_dmi', 'self.lo
 ad_dbptm',
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2073--2073
+Underfull \hbox (badness 10000) in paragraph at lines 2088--2088
 \T1/ptm/m/it/10 'self.load_mimp_dmi', 'self.load_pnetworks_dmi', 'self.load_dom
 ino_dmi',
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2073--2073
+Underfull \hbox (badness 10000) in paragraph at lines 2088--2088
 \T1/ptm/m/it/10 'self.load_pepcyber', 'self.load_psite_reg', 'self.load_psite_p
 hos', 'self.load_ielm',
  []
 
-[19]
-Underfull \hbox (badness 10000) in paragraph at lines 2112--2115
+[20]
+Underfull \hbox (badness 10000) in paragraph at lines 2127--2130
 \T1/ptm/m/n/10 Loads com-plexes from Havugi-mana 2012. Loads data into ver-tex 
 at-tribute
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
 []\T1/ptm/m/it/10 lig_rec_resources=True\T1/ptm/m/n/10 , \T1/ptm/m/it/10 in-fer
 -ence_from_go=True\T1/ptm/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
 \T1/ptm/m/it/10 sources={'arn': <py-path.input_formats.ReadSettings
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
-\T1/ptm/m/it/10 in-stance at 0x7f015f22bb48>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'c
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
+\T1/ptm/m/it/10 in-stance at 0x7f5264b89ab8>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'c
 a1': <py-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
 \T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance at
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
-\T1/ptm/m/it/10 0x7f015f22ba28>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'cell-phonedb':
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
+\T1/ptm/m/it/10 0x7f5264b89998>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'cell-phonedb':
  <py-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
 \T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
-\T1/ptm/m/it/10 at 0x7f015efb5dd0>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'death': <py
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
+\T1/ptm/m/it/10 at 0x7f5264914d40>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'death': <py
 -
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
 \T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance at
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
-\T1/ptm/m/it/10 0x7f015f22bcf8>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'guide2pharma':
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
+\T1/ptm/m/it/10 0x7f5264b89c68>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'guide2pharma':
  <py-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
 \T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
-\T1/ptm/m/it/10 at 0x7f015f22b950>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'hpmr': <py-
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
+\T1/ptm/m/it/10 at 0x7f5264b898c0>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'hpmr': <py-
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
 \T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance at
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
-\T1/ptm/m/it/10 0x7f015efb5d40>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'macrophage': <
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
+\T1/ptm/m/it/10 0x7f5264914cb0>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'macrophage': <
 py-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
 \T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
-\T1/ptm/m/it/10 at 0x7f015f22bcb0>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'nrf2': <py-
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
+\T1/ptm/m/it/10 at 0x7f5264b89c20>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'nrf2': <py-
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
 \T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
-\T1/ptm/m/it/10 at 0x7f015f22bc20>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'pdz': <py-
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
+\T1/ptm/m/it/10 at 0x7f5264b89b90>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'pdz': <py-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
 \T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance at
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
-\T1/ptm/m/it/10 0x7f015f22bd40>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'ramilowski2015
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
+\T1/ptm/m/it/10 0x7f5264b89cb0>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'ramilowski2015
 ': <py-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
 \T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
-\T1/ptm/m/it/10 at 0x7f015efb5e60>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'sig-nalink3
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
+\T1/ptm/m/it/10 at 0x7f5264914dd0>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'sig-nalink3
 ': <py-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
 \T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
-\T1/ptm/m/it/10 at 0x7f015f22b908>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'sig-nor': <
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
+\T1/ptm/m/it/10 at 0x7f5264b89878>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'sig-nor': <
 py-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
 \T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
-\T1/ptm/m/it/10 at 0x7f015f22bf38>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'spike': <py
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
+\T1/ptm/m/it/10 at 0x7f5264b89ea8>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'spike': <py
 -
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
 \T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
-\T1/ptm/m/it/10 at 0x7f015f22b8c0>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'trip': <py-
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
+\T1/ptm/m/it/10 at 0x7f5264b89830>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'trip': <py-
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
 \T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance at
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2153--2153
-\T1/ptm/m/it/10 0x7f015f22b7e8>}\T1/ptm/m/n/10 , \T1/ptm/m/it/10 keep_undirecte
+Underfull \hbox (badness 10000) in paragraph at lines 2168--2168
+\T1/ptm/m/it/10 0x7f5264b89758>}\T1/ptm/m/n/10 , \T1/ptm/m/it/10 keep_undirecte
 d=False\T1/ptm/m/n/10 ,
  []
 
-[20]
-Underfull \hbox (badness 10000) in paragraph at lines 2196--2196
+[21]
+Underfull \hbox (badness 10000) in paragraph at lines 2211--2211
 []\T1/ptm/m/it/10 kinase_substrate_extra=False\T1/ptm/m/n/10 , \T1/ptm/m/it/10 
 re-move_htp=False\T1/ptm/m/n/10 , \T1/ptm/m/it/10 htp_threshold=1\T1/ptm/m/n/10
  ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2205--2205
+Underfull \hbox (badness 10000) in paragraph at lines 2220--2220
 []\T1/ptm/m/it/10 kinase_substrate_extra=False\T1/ptm/m/n/10 , \T1/ptm/m/it/10 
 re-move_htp=True\T1/ptm/m/n/10 , \T1/ptm/m/it/10 htp_threshold=1\T1/ptm/m/n/10 
 ,
  []
 
-[21]
-Underfull \hbox (badness 10000) in paragraph at lines 2311--2311
+
+Underfull \hbox (badness 10000) in paragraph at lines 2326--2326
 []\T1/ptm/m/it/10 input_methods=None, map_by_homology_from=[9606], ho-mol-
  []
 
 [22]
-Underfull \hbox (badness 6364) in paragraph at lines 2384--2384
-\T1/ptm/m/it/10 path.input_formats.ReadSettings in-stance at 0x7f015f22b7e8>}\T
-1/ptm/m/n/10 , \T1/ptm/m/it/10 ex-clude=[]\T1/ptm/m/n/10 ,
+Underfull \hbox (badness 10000) in paragraph at lines 2399--2399
+\T1/ptm/m/it/10 'ca1': <py-path.input_formats.ReadSettings in-stance at 0x7f526
+4b89998>\T1/ptm/m/n/10 ,
  []
 
+
+Underfull \hbox (badness 7869) in paragraph at lines 2399--2399
+\T1/ptm/m/it/10 <py-path.input_formats.ReadSettings in-stance at 0x7f5264b898c0
+>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'hpmr':
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2399--2399
+\T1/ptm/m/it/10 <py-path.input_formats.ReadSettings in-stance at 0x7f5264914cb0
+>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'hprd':
+ []
+
+
+Underfull \hbox (badness 6094) in paragraph at lines 2399--2399
+\T1/ptm/m/it/10 <py-path.input_formats.ReadSettings in-stance at 0x7f5264b93098
+>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'in-tact':
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2399--2399
+\T1/ptm/m/it/10 <py-path.input_formats.ReadSettings in-stance at 0x7f5264b93170
+>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'mppi':
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2399--2399
+\T1/ptm/m/it/10 <py-path.input_formats.ReadSettings in-stance at 0x7f5264b89f80
+>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'nrf2':
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2399--2399
+\T1/ptm/m/it/10 <py-path.input_formats.ReadSettings in-stance at 0x7f5264b89b90
+>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'pdz':
+ []
+
+
+Underfull \hbox (badness 5331) in paragraph at lines 2399--2399
+\T1/ptm/m/it/10 <py-path.input_formats.ReadSettings in-stance at 0x7f5264b89cb0
+>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'phelm':
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2399--2399
+\T1/ptm/m/it/10 <py-path.input_formats.ReadSettings in-stance at 0x7f5264b89ea8
+>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 'spike':
+ []
+
+[23]
 LaTeX Font Info:    Font shape `T1/pcr/bx/n' in size <9> not available
-(Font)              Font shape `T1/pcr/b/n' tried instead on input line 2425.
-[23] [24]
-Underfull \hbox (badness 10000) in paragraph at lines 2725--2725
+(Font)              Font shape `T1/pcr/b/n' tried instead on input line 2440.
+ [24] [25]
+Underfull \hbox (badness 10000) in paragraph at lines 2740--2740
 []\T1/ptm/m/it/10 dirs\T1/ptm/m/n/10 , \T1/ptm/m/it/10 name\T1/ptm/m/n/10 , \T1
 /ptm/m/it/10 di-rected=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 stim-u-la-tion=None
 \T1/ptm/m/n/10 , \T1/ptm/m/it/10 in-hi-bi-tion=None\T1/ptm/m/n/10 ,
  []
 
-[25] [26] [27] [28] [29] [30]
+[26] [27] [28] [29] [30] [31]
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <10> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 3664.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 3679.
 LaTeX Font Info:    Font shape `TS1/pcr/bx/n' in size <10> not available
 (Font)              Font shape `TS1/pcr/b/n' tried instead on input line 1.
- [31] [32] [33] [34] [35] [36]
-Chapter 3.
-[37
+ [32] [33] [34] [35] [36] [37] [38
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 1--4472
+Chapter 3.
+[39]
+Underfull \hbox (badness 10000) in paragraph at lines 1--4487
 [][][]$\T1/ptm/m/n/10 http : / / omnipathdb . org / interactions / ?genesymbols
  = 1 & ^^\elds = type ,[] ncbi _ tax _ id ,[] tfregulons _ level &
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--4479
+Underfull \hbox (badness 10000) in paragraph at lines 1--4494
 [][][]$\T1/ptm/m/n/10 http : / / omnipathdb . org / interactions / ?genesymbols
  = 1 & ^^\elds = sources & databases = PhosphoNetworks &
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--4485
+Underfull \hbox (badness 10000) in paragraph at lines 1--4500
 [][][]$\T1/ptm/m/n/10 http : / / omnipathdb . org / interactions / ?genesymbols
  = 1 & ^^\elds = sources ,[] references & databases = Signor ,[]
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--4499
+Underfull \hbox (badness 10000) in paragraph at lines 1--4514
 [][][]$\T1/ptm/m/n/10 http : / / omnipathdb . org / interactions / ?genesymbols
  = 1 & ^^\elds = sources ,[] references & sources = ATG3 ,[]
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--4499
+Underfull \hbox (badness 10000) in paragraph at lines 1--4514
 \T1/ptm/m/n/10 ATG7 ,[] ATG4B ,[] SQSTM1 & targets = MAP1LC3B ,[] MAP1LC3A ,[] 
 MAP1LC3C ,[] Q9H0R8 ,[] GABARAP ,[]
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--4506
+Underfull \hbox (badness 10000) in paragraph at lines 1--4521
 [][][]$\T1/ptm/m/n/10 http : / / omnipathdb . org / interactions / ?genesymbols
  = 1 & ^^\elds = sources ,[] references & datasets = mirnatarget &
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--4528
+Underfull \hbox (badness 10000) in paragraph at lines 1--4543
 [][][]$\T1/ptm/m/n/10 http : / / omnipathdb . org / ptms ? genesymbols = 1 & ^^
 \elds = sources ,[] references & types = acetylation & organisms =
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--4535
+Underfull \hbox (badness 10000) in paragraph at lines 1--4550
 [][][]$\T1/ptm/m/n/10 http : / / omnipathdb . org / ptms ? genesymbols = 1 & ^^
 \elds = sources ,[] references & organisms = 10116 & databases =
  []
 
-[38]
+[40]
 Chapter 4.
-[39
-
-] [40]
-Chapter 5.
 [41
 
 ] [42]
-Chapter 6.
+Chapter 5.
 [43
 
-] [44
+] [44]
+Chapter 6.
+[45
 
-] [45
+] [46
+
+] [47
 
 
-] (./pypath.ind [46
+] (./pypath.ind [48
 
 
 ]
@@ -1686,7 +1735,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 35--36
 []\T1/ptm/m/n/10 compounds_from_chembl() (py-path.main.PyPath
  []
 
-[47
+[49
 
 ]
 Underfull \hbox (badness 10000) in paragraph at lines 164--165
@@ -1698,7 +1747,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 165--166
 []\T1/ptm/m/n/10 intogen_cancer_drivers_list() (py-path.main.PyPath
  []
 
-[48]
+[50]
 Underfull \hbox (badness 10000) in paragraph at lines 215--216
 []\T1/ptm/m/n/10 load_ligand_receptor_network() (py-path.main.PyPath
  []
@@ -1738,7 +1787,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 296--297
 []\T1/ptm/m/n/10 phosphorylation_directions() (py-path.main.PyPath
  []
 
-[49]
+[51]
 Underfull \hbox (badness 10000) in paragraph at lines 300--301
 []\T1/ptm/m/n/10 positive_sources_reverse() (py-path.main.Direction
  []
@@ -1758,27 +1807,27 @@ Underfull \hbox (badness 10000) in paragraph at lines 317--318
 []\T1/ptm/m/n/10 random_walk_with_return2() (py-path.main.PyPath
  []
 
-[50] [51
+[52] [53
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 4761.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 4761.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 4776.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 4776.
  (./pypath.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 4761.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 4761.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 4776.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 4776.
 
 Package rerunfilecheck Info: File `pypath.out' has not changed.
 (rerunfilecheck)             Checksum: 6D9442BFA7A478832AB73064DC5A835F;820.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 4761.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 4776.
  ) 
 Here is how much of TeX's memory you used:
  14459 strings out of 494923
- 208122 string characters out of 6180741
- 310073 words of memory out of 5000000
- 17003 multiletter control sequences out of 15000+600000
- 56210 words of font info for 79 fonts, out of 8000000 for 9000
+ 208108 string characters out of 6180741
+ 311232 words of memory out of 5000000
+ 17002 multiletter control sequences out of 15000+600000
+ 54566 words of font info for 78 fonts, out of 8000000 for 9000
  15 hyphenation exceptions out of 8191
- 37i,12n,45p,3496b,637s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 37i,12n,45p,3496b,635s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/urw/courier/ucrb8a.pfb></usr/share/texlive/texmf-dist/
 fonts/type1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/u
@@ -1789,10 +1838,10 @@ texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-d
 ist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type
 1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utm
 ri8a.pfb>
-Output written on pypath.pdf (55 pages, 263649 bytes).
+Output written on pypath.pdf (57 pages, 266445 bytes).
 PDF statistics:
- 1230 PDF objects out of 1440 (max. 8388607)
- 1146 compressed objects within 12 object streams
- 453 named destinations out of 1000 (max. 500000)
+ 1243 PDF objects out of 1440 (max. 8388607)
+ 1157 compressed objects within 12 object streams
+ 455 named destinations out of 1000 (max. 500000)
  85 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -1355,6 +1355,9 @@ class PyPath(object):
         NCBI Taxonomic identifier of the organism from which the data
         will be downloaded.
     :var dict negatives:
+        Contains a list of negative interactions according to a given
+        source (e.g.: Negatome database). See
+        :py:meth:`PyPath.apply_negative` for more information.
     :var dict nodDct:
         Maps the undirected graph node names [str] (keys) to their
         indices [int] (values).
@@ -1371,23 +1374,53 @@ class PyPath(object):
     :var pypath.logn.logw ownlog:
         Logger class instance, see :py:class:`pypath.logn.logw` for more
         information.
-    :var palette:
-    :var pathway_types:
-    :var pathways:
-    :var plots:
-    :var proteomicsdb:
-    :var raw_data:
-    :var reflists:
-    :var seq:
-    :var session:
-    :var session_name:
-    :var sourceNetEdges:
-    :var sourceNetNodes:
-    :var sources:
-    :var u_pfam:
-    :var uniprot_mapped:
-    :var unmapped:
-    :var vertexAttrs:
+    :var list palette:
+        Contains a list of hexadecimal [str] of colors. Used for
+        plotting purposes.
+    :var list pathway_types:
+        Contains the names of all the loaded pathway resources [str].
+    :var dict pathways:
+        Contains the list of pathways (values) for each resource (keys)
+        loaded in the network.
+    :var dict plots:
+        DEPRECATED (?)
+    :var pypath.proteomicsdb.ProteomicsDB proteomicsdb:
+        Contains a :py:class:`pypath.proteomicsdb.ProteomicsDB`
+        instance, see the class documentation for more information.
+    :var list raw_data:
+        Contains a list of loaded edges [dict] from a data file. See
+        :py:meth:`PyPath.read_data_file` for more information.
+    :var dict reflists:
+        Contains the reference list(s) loaded. Keys are [tuple]
+        containing the node name type [str] (e.g.: ``'uniprot'``), type
+        [str] (e.g.: ``'protein'``) and taxonomic ID [int] (e.g.:
+        ``'9606'``). Values are the corresponding
+        :py:class:`pypath.reflists.ReferenceList` instance (see class
+        documentation for more information).
+    :var dict seq:
+        (?)
+    :var str session:
+        Session ID, a five random alphanumeric characters.
+    :var str session_name:
+        Session name and ID (e.g. ``'unnamed-abc12'``).
+    :var igraph.Graph sourceNetEdges:
+        (?)
+    :var igraph.Graph sourceNetNodes:
+        (?)
+    :var list sources:
+        List contianing the names of the loaded resources [str].
+    :var dict u_pfam:
+        Dictionary of dictionaries, contains the mapping of UniProt IDs
+        to their respective protein families and other information.
+    :var list uniprot_mapped:
+        DEPRECATED (?)
+    :var list unmapped:
+        Contains the names of unmapped items [str]. See
+        :py:meth:`PyPath.map_item` for more information.
+    :var dict vertexAttrs:
+        Stores the node attribute names [str] as keys and their
+        corresponding types (e.g.: ``set``, ``list``, ``str``, ...) as
+        values.
     """
 
     default_name_type = {'protein': 'uniprot',
@@ -1449,7 +1482,7 @@ class PyPath(object):
             self._directed = None
             self.failed_edges = []
 
-            self.uniprot_mapped = []
+            self.uniprot_mapped = [] # XXX: Not used anywhere
             self.mysql_conf = mysql
             self.set_chembl_mysql(chembl_mysql[1], chembl_mysql[0])
             # self.mysql = mysql.MysqlRunner(self.mysql_conf)
@@ -1462,7 +1495,7 @@ class PyPath(object):
             self.negatives = {}
             self.raw_data = None
             self.lists = {}
-            self.plots = {}
+            self.plots = {} # XXX: Not used anywhere
             self.proteomicsdb = None
             self.exp_samples = set([])
             self.sources = []
@@ -1479,7 +1512,7 @@ class PyPath(object):
 
             # Session and log
             self.session = common.gen_session_id()
-            self.session_name = ''.join([self.name, '-', self.session])
+            self.session_name = ''.join([self.name, '-', self.session]) # XXX: What about '-'.join([self.name, self.session])?
             self.loglevel = loglevel
             self.ownlog = logn.logw(self.session, self.loglevel)
             self.mapper = mapping.Mapper(self.ncbi_tax_id,
@@ -1556,7 +1589,7 @@ class PyPath(object):
                     self.update_vindex()
                     self.update_sources()
                     return None
-        self.load_reflists()
+        self.load_reflists() # XXX: This is redundant (see line 4565 in load_resources)
         self.load_resources(
             lst=lst, exclude=exclude, reread=reread, redownload=redownload)
         if save:
@@ -2752,23 +2785,31 @@ class PyPath(object):
             For proteins it's 'uniprot' by default.
         """
         g = self.graph
+
         if not defaultNameType:
             defaultNameType = self.default_name_type[typ]
+
         toDel = []
         reflists = {}
         self.update_vname()
+
         for t in tax:
             idx = (defaultNameType, typ, t)
+
             if idx in self.reflists:
                 reflists[t] = self.reflists[idx].lst
+
             else:
                 msg = (
                     'Missing reference list for %s (default name type: %s), in taxon %u'
                 ) % (idx[1], idx[0], t)
                 self.ownlog.msg(2, msg, 'ERROR')
                 sys.stdout.write(''.join(['\t', msg, '\n']))
+
                 return False
+
         sys.stdout.write(' :: Comparing with reference lists...')
+
         for t in tax:
             nt = g.vs['nameType']
             nt = [i for i, j in enumerate(nt) if j == defaultNameType]
@@ -2780,6 +2821,7 @@ class PyPath(object):
             vn = [g.vs[i]['name'] for i in vs]
             toDelNames = list(set(vn) - set(reflists[t]))
             toDel += [self.nodDct[n] for n in toDelNames]
+
         g.delete_vertices(toDel)
         sys.stdout.write(' done.\n')
 
@@ -8623,6 +8665,8 @@ class PyPath(object):
             sys.stdout.write('\t:: Output written to file `%s`\n' % outf)
             sys.stdout.flush()
 
+    # XXX: is this used? `PlotParam` is not defined in the whole package.
+    #      Does not work.
     def source_network(self, font='HelveticaNeueLTStd'):
         """
         For EMBL branding, use Helvetica Neue Linotype Standard light
@@ -8679,7 +8723,7 @@ class PyPath(object):
             v['name'] + ' (%u)' % len(self.db_dict['edges'][v['name']])
             for v in self.sourceNetEdges.vs
         ]
-        plotParamNodes = PlotParam(
+        plotParamNodes = PlotParam( # XXX: global name PlotParam is not defined anywhere
             graph=self.sourceNetNodes,
             filename='db_net_nodes.pdf',
             layout='circular',
@@ -10250,7 +10294,7 @@ class PyPath(object):
             omnipath = data_formats.omnipath
             exclude = []
 
-        self.load_resources(omnipath, exclude = exclude)
+        self.load_resources(omnipath, exclude=exclude)
 
         if kinase_substrate_extra:
             self.load_resources(data_formats.ptm_misc)

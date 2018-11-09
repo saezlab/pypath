@@ -56,7 +56,7 @@
 
 
 \title{pypath Documentation}
-\date{Nov 06, 2018}
+\date{Nov 09, 2018}
 \release{0.7.98}
 \author{Dénes Türei}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -473,7 +473,9 @@ tables.
 will be downloaded.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{negatives}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{negatives}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Contains a list of negative interactions according to a given
+source (e.g.: Negatome database). See
+{\hyperref[\detokenize{main:pypath.main.PyPath.apply_negative}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.apply\_negative()}}}}} for more information.
 
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{nodDct}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Maps the undirected graph node names {[}str{]} (keys) to their
@@ -498,55 +500,68 @@ labels {[}str{]} (values).
 information.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{palette}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{palette}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Contains a list of hexadecimal {[}str{]} of colors. Used for
+plotting purposes.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{pathway\_types}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{pathway\_types}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Contains the names of all the loaded pathway resources {[}str{]}.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{pathways}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{pathways}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Contains the list of pathways (values) for each resource (keys)
+loaded in the network.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{plots}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{plots}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} DEPRECATED (?)
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{proteomicsdb}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{proteomicsdb}} (\sphinxstyleliteralemphasis{\sphinxupquote{pypath.proteomicsdb.ProteomicsDB}}) \textendash{} Contains a \sphinxcode{\sphinxupquote{pypath.proteomicsdb.ProteomicsDB}}
+instance, see the class documentation for more information.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{raw\_data}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{raw\_data}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Contains a list of loaded edges {[}dict{]} from a data file. See
+{\hyperref[\detokenize{main:pypath.main.PyPath.read_data_file}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.read\_data\_file()}}}}} for more information.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{reflists}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{reflists}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Contains the reference list(s) loaded. Keys are {[}tuple{]}
+containing the node name type {[}str{]} (e.g.: \sphinxcode{\sphinxupquote{'uniprot'}}), type
+{[}str{]} (e.g.: \sphinxcode{\sphinxupquote{'protein'}}) and taxonomic ID {[}int{]} (e.g.:
+\sphinxcode{\sphinxupquote{'9606'}}). Values are the corresponding
+\sphinxcode{\sphinxupquote{pypath.reflists.ReferenceList}} instance (see class
+documentation for more information).
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{seq}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{seq}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} (?)
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{session}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{session}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Session ID, a five random alphanumeric characters.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{session\_name}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{session\_name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Session name and ID (e.g. \sphinxcode{\sphinxupquote{'unnamed-abc12'}}).
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{sourceNetEdges}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{sourceNetEdges}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} (?)
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{sourceNetNodes}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{sourceNetNodes}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} (?)
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{sources}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{sources}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} List contianing the names of the loaded resources {[}str{]}.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{u\_pfam}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{u\_pfam}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Dictionary of dictionaries, contains the mapping of UniProt IDs
+to their respective protein families and other information.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{uniprot\_mapped}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{uniprot\_mapped}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} DEPRECATED (?)
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{unmapped}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{unmapped}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Contains the names of unmapped items {[}str{]}. See
+{\hyperref[\detokenize{main:pypath.main.PyPath.map_item}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.map\_item()}}}}} for more information.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{vertexAttrs}} \textendash{} 
+\sphinxstyleliteralstrong{\sphinxupquote{vertexAttrs}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Stores the node attribute names {[}str{]} as keys and their
+corresponding types (e.g.: \sphinxcode{\sphinxupquote{set}}, \sphinxcode{\sphinxupquote{list}}, \sphinxcode{\sphinxupquote{str}}, …) as
+values.
 
 \end{itemize}
 
@@ -1833,7 +1848,7 @@ lists if in \sphinxtitleref{edgeAttrs} the attribute is registered as list.
 \index{init\_network() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.init_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{init\_network}}}{\emph{lst=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bb48\textgreater{}}, \emph{'biogrid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233cb0\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22ba28\textgreater{}}, \emph{'ccmap': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bfc8\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015efb5dd0\textgreater{}}, \emph{'dbptm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233440\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bcf8\textgreater{}}, \emph{'depod': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233290\textgreater{}}, \emph{'dip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233098\textgreater{}}, \emph{'domino': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f2333b0\textgreater{}}, \emph{'elm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233368\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b950\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015efb5d40\textgreater{}}, \emph{'hprd': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233e18\textgreater{}}, \emph{'hprd\_p': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233488\textgreater{}}, \emph{'innatedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233128\textgreater{}}, \emph{'intact': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233c68\textgreater{}}, \emph{'lmpid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f2332d8\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bcb0\textgreater{}}, \emph{'matrixdb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233200\textgreater{}}, \emph{'mppi': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233050\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bc20\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bd40\textgreater{}}, \emph{'phelm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233320\textgreater{}}, \emph{'psite': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233248\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015efb5e60\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b908\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bf38\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b8c0\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b7e8\textgreater{}\}}, \emph{exclude={[}{]}}, \emph{cache\_files=\{\}}, \emph{pfile=False}, \emph{save=False}, \emph{reread=False}, \emph{redownload=False}, \emph{**kwargs}}{}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.init_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{init\_network}}}{\emph{lst=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89ab8\textgreater{}}, \emph{'biogrid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b93c20\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89998\textgreater{}}, \emph{'ccmap': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89f38\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264914d40\textgreater{}}, \emph{'dbptm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b933b0\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89c68\textgreater{}}, \emph{'depod': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b93200\textgreater{}}, \emph{'dip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89fc8\textgreater{}}, \emph{'domino': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b93320\textgreater{}}, \emph{'elm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b932d8\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b898c0\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264914cb0\textgreater{}}, \emph{'hprd': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b93d88\textgreater{}}, \emph{'hprd\_p': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b933f8\textgreater{}}, \emph{'innatedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b93098\textgreater{}}, \emph{'intact': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b93bd8\textgreater{}}, \emph{'lmpid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b93248\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89c20\textgreater{}}, \emph{'matrixdb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b93170\textgreater{}}, \emph{'mppi': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89f80\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89b90\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89cb0\textgreater{}}, \emph{'phelm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b93290\textgreater{}}, \emph{'psite': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b931b8\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264914dd0\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89878\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89ea8\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89830\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89758\textgreater{}\}}, \emph{exclude={[}{]}}, \emph{cache\_files=\{\}}, \emph{pfile=False}, \emph{save=False}, \emph{reread=False}, \emph{redownload=False}, \emph{**kwargs}}{}
 This is a lazy way to start the module, load data
 and build the high confidence, literature curated
 part of the signaling network.
@@ -2150,7 +2165,7 @@ Loads Human Protein Atlas data into vertex attributes.
 \index{load\_ligand\_receptor\_network() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_ligand_receptor_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_ligand\_receptor\_network}}}{\emph{lig\_rec\_resources=True}, \emph{inference\_from\_go=True}, \emph{sources=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bb48\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22ba28\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015efb5dd0\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bcf8\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b950\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015efb5d40\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bcb0\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bc20\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bd40\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015efb5e60\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b908\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bf38\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b8c0\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b7e8\textgreater{}\}}, \emph{keep\_undirected=False}, \emph{keep\_rec\_rec=False}, \emph{keep\_lig\_lig=False}}{}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_ligand_receptor_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_ligand\_receptor\_network}}}{\emph{lig\_rec\_resources=True}, \emph{inference\_from\_go=True}, \emph{sources=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89ab8\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89998\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264914d40\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89c68\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b898c0\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264914cb0\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89c20\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89b90\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89cb0\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264914dd0\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89878\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89ea8\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89830\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89758\textgreater{}\}}, \emph{keep\_undirected=False}, \emph{keep\_rec\_rec=False}, \emph{keep\_lig\_lig=False}}{}
 Initializes a ligand-receptor network.
 
 \end{fulllineitems}
@@ -2381,7 +2396,7 @@ Those not used by \sphinxtitleref{PtmProcessor} are forwarded to the
 \index{load\_resources() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_resources}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_resources}}}{\emph{lst=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bb48\textgreater{}}, \emph{'biogrid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233cb0\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22ba28\textgreater{}}, \emph{'ccmap': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bfc8\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015efb5dd0\textgreater{}}, \emph{'dbptm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233440\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bcf8\textgreater{}}, \emph{'depod': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233290\textgreater{}}, \emph{'dip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233098\textgreater{}}, \emph{'domino': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f2333b0\textgreater{}}, \emph{'elm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233368\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b950\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015efb5d40\textgreater{}}, \emph{'hprd': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233e18\textgreater{}}, \emph{'hprd\_p': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233488\textgreater{}}, \emph{'innatedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233128\textgreater{}}, \emph{'intact': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233c68\textgreater{}}, \emph{'lmpid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f2332d8\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bcb0\textgreater{}}, \emph{'matrixdb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233200\textgreater{}}, \emph{'mppi': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233050\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bc20\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bd40\textgreater{}}, \emph{'phelm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233320\textgreater{}}, \emph{'psite': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f233248\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015efb5e60\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b908\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22bf38\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b8c0\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f015f22b7e8\textgreater{}\}}, \emph{exclude={[}{]}}, \emph{cache\_files=\{\}}, \emph{reread=False}, \emph{redownload=False}}{}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_resources}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_resources}}}{\emph{lst=\{'arn': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89ab8\textgreater{}}, \emph{'biogrid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b93c20\textgreater{}}, \emph{'ca1': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89998\textgreater{}}, \emph{'ccmap': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89f38\textgreater{}}, \emph{'cellphonedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264914d40\textgreater{}}, \emph{'dbptm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b933b0\textgreater{}}, \emph{'death': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89c68\textgreater{}}, \emph{'depod': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b93200\textgreater{}}, \emph{'dip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89fc8\textgreater{}}, \emph{'domino': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b93320\textgreater{}}, \emph{'elm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b932d8\textgreater{}}, \emph{'guide2pharma': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b898c0\textgreater{}}, \emph{'hpmr': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264914cb0\textgreater{}}, \emph{'hprd': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b93d88\textgreater{}}, \emph{'hprd\_p': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b933f8\textgreater{}}, \emph{'innatedb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b93098\textgreater{}}, \emph{'intact': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b93bd8\textgreater{}}, \emph{'lmpid': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b93248\textgreater{}}, \emph{'macrophage': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89c20\textgreater{}}, \emph{'matrixdb': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b93170\textgreater{}}, \emph{'mppi': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89f80\textgreater{}}, \emph{'nrf2': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89b90\textgreater{}}, \emph{'pdz': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89cb0\textgreater{}}, \emph{'phelm': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b93290\textgreater{}}, \emph{'psite': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b931b8\textgreater{}}, \emph{'ramilowski2015': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264914dd0\textgreater{}}, \emph{'signalink3': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89878\textgreater{}}, \emph{'signor': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89ea8\textgreater{}}, \emph{'spike': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89830\textgreater{}}, \emph{'trip': \textless{}pypath.input\_formats.ReadSettings instance at 0x7f5264b89758\textgreater{}\}}, \emph{exclude={[}{]}}, \emph{cache\_files=\{\}}, \emph{reread=False}, \emph{redownload=False}}{}
 Loads multiple resources, and cleans up after.
 Looks up ID types, and loads all ID conversion
 tables from UniProt if necessary. This is much
