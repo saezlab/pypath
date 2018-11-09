@@ -1445,7 +1445,8 @@ class PyPath(object):
                     return None
         self.load_reflists()
         self.load_resources(
-            lst=lst, exclude=exclude, reread=reread, redownload=redownload)
+            lst=lst, exclude=exclude, reread=reread, redownload=redownload,
+            cache_files=cache_files)
         if save:
             sys.stdout.write('\t:: Saving igraph object to file `%s`...' %
                              pfile)
