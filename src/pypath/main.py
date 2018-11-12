@@ -1595,7 +1595,7 @@ class PyPath(object):
         return _NamedVertexSeq(self.graph.vs, self.nodNam, self.nodLab).gs()
 
     def vsup(self):
-        return _NamedVertexSeq(self.graph.vs, self.nodNam, self.nodLab).gs()
+        return _NamedVertexSeq(self.graph.vs, self.nodNam, self.nodLab).up()
 
     def update_vindex(self):
         """
