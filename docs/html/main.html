@@ -90,7 +90,7 @@ documentation for more information.</li>
 <li><strong>chembl_mysql</strong> (<em>tuple</em>) – Contains the MySQL parameters used by the
 <code class="xref py py-mod docutils literal notranslate"><span class="pre">pypath.mapping</span></code> module to load the ChEMBL ID conversion
 tables.</li>
-<li><strong>data</strong> (<em>dict</em>) – Stores custom loaded interaction and attribute table. See
+<li><strong>data</strong> (<em>dict</em>) – Stores the loaded interaction and attribute table. See
 <a class="reference internal" href="#pypath.main.PyPath.read_data_file" title="pypath.main.PyPath.read_data_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.read_data_file()</span></code></a> method for more information.</li>
 <li><strong>db_dict</strong> (<em>dict</em>) – Dictionary of dictionaries. Outer-level keys are <code class="docutils literal notranslate"><span class="pre">'nodes'</span></code> and
 <code class="docutils literal notranslate"><span class="pre">'edges'</span></code>, corresponding values are [dict] whose keys are the
@@ -551,8 +551,8 @@ otherwise <code class="docutils literal notranslate"><span class="pre">None</spa
 <dl class="method">
 <dt id="pypath.main.PyPath.disease_genes_list">
 <code class="descname">disease_genes_list</code><span class="sig-paren">(</span><em>dataset='curated'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.disease_genes_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.disease_genes_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads the list of all disease related genes from DisGeNet.
-This resource is human only.</p>
+<dd><p>Loads the list of all disease related genes from DisGeNet. This
+resource is human only.</p>
 </dd></dl>
 
 <dl class="method">
@@ -588,8 +588,8 @@ default directed network, otherwise <code class="docutils literal notranslate"><
 <dl class="method">
 <dt id="pypath.main.PyPath.druggability_list">
 <code class="descname">druggability_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.druggability_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.druggability_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads the list of druggable proteins from DgiDB.
-This resource is human only.</p>
+<dd><p>Loads the list of druggable proteins from DgiDB. This resource
+is human only.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1417,8 +1417,8 @@ lists if in <cite>vertexAttrs</cite> the attribute is registered as list.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.kinases_list">
 <code class="descname">kinases_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.kinases_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.kinases_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads the list of all known kinases in the proteome from kinase.com.
-This resource is human only.</p>
+<dd><p>Loads the list of all known kinases in the proteome from
+kinase.com. This resource is human only.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1637,7 +1637,23 @@ This resource is human only.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.load_list">
 <code class="descname">load_list</code><span class="sig-paren">(</span><em>lst</em>, <em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_list" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Loads a custom list to the object’s node data lists. See
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.lists</span></code> attribute for more
+information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>lst</strong> (<em>list</em>) – The list containing the node names [str] from the given
+category (<em>name</em>).</li>
+<li><strong>name</strong> (<em>str</em>) – The category or identifier for the list of nodes provided.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.load_lmpid">
@@ -1892,7 +1908,7 @@ corresponding cached file name [str] (values).</li>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
 <li>(<em>file</em>) – The loaded pickle file from the cache if the
-file is contains the interactions. <code class="docutils literal notranslate"><span class="pre">None</span></code> otherwise.</li>
+file is contains the interactions. <a href="#id3"><span class="problematic" id="id4">``</span></a>None`self.graph` otherwise.</li>
 <li>(<em>list</em>) – List of mapped edges if the file contains the
 information from the edges. <code class="docutils literal notranslate"><span class="pre">[]</span></code> otherwise.</li>
 </ul>
@@ -2296,6 +2312,15 @@ object.</li>
 <dt id="pypath.main.PyPath.proteome_list">
 <code class="descname">proteome_list</code><span class="sig-paren">(</span><em>swissprot=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.proteome_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.proteome_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads the whole proteome as a list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>swissprot</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">True</span></code> by default. Determines whether to use
+also the information from SwissProt.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -2355,20 +2380,40 @@ Only for testing of the other method, to be deleted later.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.read_data_file">
 <code class="descname">read_data_file</code><span class="sig-paren">(</span><em>settings</em>, <em>keep_raw=False</em>, <em>cache_files={}</em>, <em>reread=False</em>, <em>redownload=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.read_data_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.read_data_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interaction data with node and edge attributes can be read
-from simple text based files. This function works not only
-with files, but with lists as well. Any other function can
-be written to download a preprocess data, and then give it
-to this function to finally attach to the network.</p>
-<dl class="docutils">
-<dt>&#64;settings <span class="classifier-delimiter">:</span> <span class="classifier">ReadSettings instance</span></dt>
-<dd>The detailed definition of the input format. Instead of
-the file name you can give a function name, which will
-be executed, and the returned data will be used.</dd>
-<dt>&#64;keep_raw <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span></dt>
-<dd>To keep the raw data read by this function, in order for
-debugging purposes, or further use.</dd>
-</dl>
+<dd><p>Reads interaction data file containing node and edge attributes
+that can be read from simple text based files and adds it to the
+networkdata. This function works not only with files, but with
+lists as well. Any other function can be written to download and
+preprocess data, and then give it to this function to finally
+attach to the network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>settings</strong> (<em>pypath.input_formats.ReadSettings</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">pypath.input_formats.ReadSettings</span></code> instance
+containing the detailed definition of the input format of
+the file. Instead of the file name (on the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.input_formats.ReadSettings.inFile</span></code>
+attribute) you can give a custom function name, which will
+be executed, and the returned data will be used instead.</li>
+<li><strong>keep_raw</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default. Whether to keep the raw data
+read by this function, in order for debugging purposes, or
+further use.</li>
+<li><strong>cache_files</strong> (<em>dict</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">{}</span></code> by default. Contains the resource name(s)
+[str] (keys) and the corresponding cached file name [str].
+If provided (and file exists) bypasses the download of the
+data for that resource and uses the cache file instead.</li>
+<li><strong>reread</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default. Specifies whether to reread
+the data files from the cache or omit them (similar to
+<em>redownload</em>).</li>
+<li><strong>redownload</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default. Specifies whether to
+re-download the data and ignore the cache.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -2398,8 +2443,8 @@ from a dictionary, the type will be [dict]).</td>
 <dl class="method">
 <dt id="pypath.main.PyPath.receptors_list">
 <code class="descname">receptors_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.receptors_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.receptors_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads the Human Plasma Membrane Receptome as a list.
-This resource is human only.</p>
+<dd><p>Loads the Human Plasma Membrane Receptome as a list. This
+resource is human only.</p>
 </dd></dl>
 
 <dl class="method">
@@ -2639,9 +2684,10 @@ wish to look for shortest paths within this group</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.signaling_proteins_list">
 <code class="descname">signaling_proteins_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.signaling_proteins_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.signaling_proteins_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compiles a list of signaling proteins (as opposed to other proteins
-like metabolic enzymes, matrix proteins), by looking up a few simple
-keywords in short description of GO terms.</p>
+<dd><p>Compiles a list of signaling proteins (as opposed to other
+proteins like metabolic enzymes, matrix proteins, etc), by
+looking up a few simple keywords in short description of GO
+terms.</p>
 </dd></dl>
 
 <dl class="method">

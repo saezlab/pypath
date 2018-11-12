@@ -1257,7 +1257,7 @@ class PyPath(object):
         :py:mod:`pypath.mapping` module to load the ChEMBL ID conversion
         tables.
     :var dict data:
-        Stores custom loaded interaction and attribute table. See
+        Stores the loaded interaction and attribute table. See
         :py:meth:`PyPath.read_data_file` method for more information.
     :var dict db_dict:
         Dictionary of dictionaries. Outer-level keys are ``'nodes'`` and
@@ -1997,7 +1997,7 @@ class PyPath(object):
 
         :return:
             * (*file*) -- The loaded pickle file from the cache if the
-              file is contains the interactions. ``None`` otherwise.
+              file is contains the interactions. ``None`self.graph` otherwise.
             * (*list*) -- List of mapped edges if the file contains the
               information from the edges. ``[]`` otherwise.
         """
@@ -2120,19 +2120,36 @@ class PyPath(object):
     def read_data_file(self, settings, keep_raw=False, cache_files={},
                        reread=False, redownload=False):
         """
-        Interaction data with node and edge attributes can be read
-        from simple text based files. This function works not only
-        with files, but with lists as well. Any other function can
-        be written to download a preprocess data, and then give it
-        to this function to finally attach to the network.
+        Reads interaction data file containing node and edge attributes
+        that can be read from simple text based files and adds it to the
+        networkdata. This function works not only with files, but with
+        lists as well. Any other function can be written to download and
+        preprocess data, and then give it to this function to finally
+        attach to the network.
 
-        @settings : ReadSettings instance
-            The detailed definition of the input format. Instead of
-            the file name you can give a function name, which will
-            be executed, and the returned data will be used.
-        @keep_raw : boolean
-            To keep the raw data read by this function, in order for
-            debugging purposes, or further use.
+        :arg pypath.input_formats.ReadSettings settings:
+            :py:class:`pypath.input_formats.ReadSettings` instance
+            containing the detailed definition of the input format of
+            the file. Instead of the file name (on the
+            :py:attr:`pypath.input_formats.ReadSettings.inFile`
+            attribute) you can give a custom function name, which will
+            be executed, and the returned data will be used instead.
+        :arg bool keep_raw:
+            Optional, ``False`` by default. Whether to keep the raw data
+            read by this function, in order for debugging purposes, or
+            further use.
+        :arg dict cache_files:
+            Optional, ``{}`` by default. Contains the resource name(s)
+            [str] (keys) and the corresponding cached file name [str].
+            If provided (and file exists) bypasses the download of the
+            data for that resource and uses the cache file instead.
+        :arg bool reread:
+            Optional, ``False`` by default. Specifies whether to reread
+            the data files from the cache or omit them (similar to
+            *redownload*).
+        :arg bool redownload:
+            Optional, ``False`` by default. Specifies whether to
+            re-download the data and ignore the cache.
         """
 
         listLike = set([list, tuple])
@@ -2501,47 +2518,51 @@ class PyPath(object):
 
         self.raw_data = edgeListMapped
 
-    def load_list(self, lst, name):
+    def load_list(self, lst, name): # XXX: Not used anywhere
         """
+        Loads a custom list to the object's node data lists. See
+        :py:attr:`pypath.main.PyPath.lists` attribute for more
+        information.
+
+        :arg list lst:
+            The list containing the node names [str] from the given
+            category (*name*).
+        :arg str name:
+            The category or identifier for the list of nodes provided.
         """
 
         self.lists[name] = lst
 
     def receptors_list(self):
         """
-        Loads the Human Plasma Membrane Receptome as a list.
-        This resource is human only.
+        Loads the Human Plasma Membrane Receptome as a list. This
+        resource is human only.
         """
 
-        self.lists['rec'] = common.uniqList(
-            common.flatList([
-                self.mapper.map_name(rec, 'genesymbol', 'uniprot', ncbi_tax_id = 9606)
-                for rec in dataio.get_hpmr()
-            ]))
+        self.lists['rec'] = common.uniqList(common.flatList([
+            self.mapper.map_name(rec, 'genesymbol', 'uniprot',
+                                 ncbi_tax_id = 9606)
+            for rec in dataio.get_hpmr()]))
 
     def druggability_list(self):
         """
-        Loads the list of druggable proteins from DgiDB.
-        This resource is human only.
+        Loads the list of druggable proteins from DgiDB. This resource
+        is human only.
         """
 
-        self.lists['dgb'] = common.uniqList(
-            common.flatList([
-                self.mapper.map_name(dgb, 'genesymbol', 'uniprot', 9606)
-                for dgb in dataio.get_dgidb()
-            ]))
+        self.lists['dgb'] = common.uniqList(common.flatList([
+            self.mapper.map_name(dgb, 'genesymbol', 'uniprot', 9606)
+            for dgb in dataio.get_dgidb()]))
 
     def kinases_list(self):
         """
-        Loads the list of all known kinases in the proteome from kinase.com.
-        This resource is human only.
+        Loads the list of all known kinases in the proteome from
+        kinase.com. This resource is human only.
         """
 
-        self.lists['kin'] = common.uniqList(
-            common.flatList([
-                self.mapper.map_name(kin, 'genesymbol', 'uniprot', 9606)
-                for kin in dataio.get_kinases()
-            ]))
+        self.lists['kin'] = common.uniqList(common.flatList([
+            self.mapper.map_name(kin, 'genesymbol', 'uniprot', 9606)
+            for kin in dataio.get_kinases()]))
 
     def tfs_list(self):
         """
@@ -2550,36 +2571,34 @@ class PyPath(object):
         """
 
         tfs = dataio.get_tfcensus()
-        utfs = [
-            self.mapper.map_name(tf, 'ensg', 'uniprot', 9606) \
-                for tf in tfs['ensg']
-        ]
-        utfs += [
-            self.mapper.map_name(h, 'hgnc', 'uniprot', 9606) \
-                for h in tfs['hgnc']
-        ]
+        utfs = [self.mapper.map_name(tf, 'ensg', 'uniprot', 9606)
+                for tf in tfs['ensg']]
+        utfs += [self.mapper.map_name(h, 'hgnc', 'uniprot', 9606)
+                 for h in tfs['hgnc']]
+
         self.lists['tf'] = common.uniqList(common.flatList(utfs))
 
     def disease_genes_list(self, dataset='curated'):
         """
-        Loads the list of all disease related genes from DisGeNet.
-        This resource is human only.
+        Loads the list of all disease related genes from DisGeNet. This
+        resource is human only.
         """
 
         diss = dataio.get_disgenet(dataset=dataset)
         dis = []
 
         for di in diss:
-            dis.extend(self.mapper.map_name(
-                di['entrez'], 'entrez', 'uniprot', 9606))
+            dis.extend(self.mapper.map_name(di['entrez'], 'entrez', 'uniprot',
+                                            9606))
 
         self.lists['dis'] = common.uniqList(dis)
 
     def signaling_proteins_list(self):
         """
-        Compiles a list of signaling proteins (as opposed to other proteins
-        like metabolic enzymes, matrix proteins), by looking up a few simple
-        keywords in short description of GO terms.
+        Compiles a list of signaling proteins (as opposed to other
+        proteins like metabolic enzymes, matrix proteins, etc), by
+        looking up a few simple keywords in short description of GO
+        terms.
         """
 
         goq = dataio.get_go_quick()
@@ -2614,11 +2633,15 @@ class PyPath(object):
     def proteome_list(self, swissprot=True):
         """
         Loads the whole proteome as a list.
+
+        :arg bool swissprot:
+            Optional, ``True`` by default. Determines whether to use
+            also the information from SwissProt.
         """
 
         swissprot = 'yes' if swissprot else None
-        self.lists['proteome'] = \
-            dataio.all_uniprots(self.ncbi_tax_id, swissprot=swissprot)
+        self.lists['proteome'] = dataio.all_uniprots(self.ncbi_tax_id,
+                                                     swissprot=swissprot)
 
     def cancer_gene_census_list(self):
         """
@@ -2635,6 +2658,8 @@ class PyPath(object):
 
         data_formats.intogen_cancer.inFile = intogen_file
         self.read_list_file(data_formats.intogen_cancer)
+
+############## YOU ARE HERE
 
     def cancer_drivers_list(self, intogen_file=None):
         """

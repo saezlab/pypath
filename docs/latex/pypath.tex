@@ -348,7 +348,7 @@ documentation for more information.
 tables.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{data}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Stores custom loaded interaction and attribute table. See
+\sphinxstyleliteralstrong{\sphinxupquote{data}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Stores the loaded interaction and attribute table. See
 {\hyperref[\detokenize{main:pypath.main.PyPath.read_data_file}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.read\_data\_file()}}}}} method for more information.
 
 \item {} 
@@ -984,8 +984,8 @@ GeneSymbol.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.disease_genes_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{disease\_genes\_list}}}{\emph{dataset='curated'}}{}
-Loads the list of all disease related genes from DisGeNet.
-This resource is human only.
+Loads the list of all disease related genes from DisGeNet. This
+resource is human only.
 
 \end{fulllineitems}
 
@@ -1029,8 +1029,8 @@ Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.druggability_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{druggability\_list}}}{}{}
-Loads the list of druggable proteins from DgiDB.
-This resource is human only.
+Loads the list of druggable proteins from DgiDB. This resource
+is human only.
 
 \end{fulllineitems}
 
@@ -2019,8 +2019,8 @@ Loads the list of cancer driver proteins from IntOGen data.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.kinases_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{kinases\_list}}}{}{}
-Loads the list of all known kinases in the proteome from kinase.com.
-This resource is human only.
+Loads the list of all known kinases in the proteome from
+kinase.com. This resource is human only.
 
 \end{fulllineitems}
 
@@ -2287,6 +2287,22 @@ Initializes a ligand-receptor network.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.load_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_list}}}{\emph{lst}, \emph{name}}{}
+Loads a custom list to the object’s node data lists. See
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.lists}} attribute for more
+information.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{lst}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} The list containing the node names {[}str{]} from the given
+category (\sphinxstyleemphasis{name}).
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The category or identifier for the list of nodes provided.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{load\_lmpid() (pypath.main.PyPath method)}
@@ -2592,7 +2608,7 @@ corresponding cached file name {[}str{]} (values).
 \begin{itemize}
 \item {} 
 (\sphinxstyleemphasis{file}) \textendash{} The loaded pickle file from the cache if the
-file is contains the interactions. \sphinxcode{\sphinxupquote{None}} otherwise.
+file is contains the interactions. {\color{red}\bfseries{}{}`{}`}None{}`self.graph{}` otherwise.
 
 \item {} 
 (\sphinxstyleemphasis{list}) \textendash{} List of mapped edges if the file contains the
@@ -3060,6 +3076,12 @@ object.
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.proteome_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{proteome\_list}}}{\emph{swissprot=True}}{}
 Loads the whole proteome as a list.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{swissprot}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{True}} by default. Determines whether to use
+also the information from SwissProt.
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -3125,22 +3147,45 @@ Only for testing of the other method, to be deleted later.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.read_data_file}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{read\_data\_file}}}{\emph{settings}, \emph{keep\_raw=False}, \emph{cache\_files=\{\}}, \emph{reread=False}, \emph{redownload=False}}{}
-Interaction data with node and edge attributes can be read
-from simple text based files. This function works not only
-with files, but with lists as well. Any other function can
-be written to download a preprocess data, and then give it
-to this function to finally attach to the network.
-\begin{description}
-\item[{@settings}] \leavevmode{[}ReadSettings instance{]}
-The detailed definition of the input format. Instead of
-the file name you can give a function name, which will
-be executed, and the returned data will be used.
+Reads interaction data file containing node and edge attributes
+that can be read from simple text based files and adds it to the
+networkdata. This function works not only with files, but with
+lists as well. Any other function can be written to download and
+preprocess data, and then give it to this function to finally
+attach to the network.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{settings}} (\sphinxstyleliteralemphasis{\sphinxupquote{pypath.input\_formats.ReadSettings}}) \textendash{} \sphinxcode{\sphinxupquote{pypath.input\_formats.ReadSettings}} instance
+containing the detailed definition of the input format of
+the file. Instead of the file name (on the
+\sphinxcode{\sphinxupquote{pypath.input\_formats.ReadSettings.inFile}}
+attribute) you can give a custom function name, which will
+be executed, and the returned data will be used instead.
 
-\item[{@keep\_raw}] \leavevmode{[}boolean{]}
-To keep the raw data read by this function, in order for
-debugging purposes, or further use.
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{keep\_raw}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Whether to keep the raw data
+read by this function, in order for debugging purposes, or
+further use.
 
-\end{description}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{cache\_files}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{\{\}}} by default. Contains the resource name(s)
+{[}str{]} (keys) and the corresponding cached file name {[}str{]}.
+If provided (and file exists) bypasses the download of the
+data for that resource and uses the cache file instead.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{reread}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Specifies whether to reread
+the data files from the cache or omit them (similar to
+\sphinxstyleemphasis{redownload}).
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{redownload}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Specifies whether to
+re-download the data and ignore the cache.
+
+\end{itemize}
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -3173,8 +3218,8 @@ from a dictionary, the type will be {[}dict{]}).
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.receptors_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{receptors\_list}}}{}{}
-Loads the Human Plasma Membrane Receptome as a list.
-This resource is human only.
+Loads the Human Plasma Membrane Receptome as a list. This
+resource is human only.
 
 \end{fulllineitems}
 
@@ -3441,9 +3486,10 @@ wish to look for shortest paths within this group
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.signaling_proteins_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{signaling\_proteins\_list}}}{}{}
-Compiles a list of signaling proteins (as opposed to other proteins
-like metabolic enzymes, matrix proteins), by looking up a few simple
-keywords in short description of GO terms.
+Compiles a list of signaling proteins (as opposed to other
+proteins like metabolic enzymes, matrix proteins, etc), by
+looking up a few simple keywords in short description of GO
+terms.
 
 \end{fulllineitems}
 
