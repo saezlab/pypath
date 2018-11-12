@@ -73,7 +73,7 @@ if not hasattr(urllib, 'quote'):
 try:
     import pysftp
 except:
-    sys.stdout.write('''\n\t:: Module `pyfstp` not available. 
+    sys.stdout.write('''\n\t:: Module `pysftp` not available. 
         Only downloading of a small number of resources 
         relies on this module.
         Please install by PIP if it is necessary for you.

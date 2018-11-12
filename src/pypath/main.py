@@ -1640,8 +1640,13 @@ class PyPath(object):
 
         self.load_reflists() # XXX: This is redundant (see line 4565 in load_resources)
         self.load_resources(
+<<<<<<< HEAD
             lst=lst, exclude=exclude, reread=reread, redownload=redownload)
 
+=======
+            lst=lst, exclude=exclude, reread=reread, redownload=redownload,
+            cache_files=cache_files)
+>>>>>>> 9420e90695eb7ece5f11090c334b79638e72b22d
         if save:
             sys.stdout.write('\t:: Saving igraph object to file `%s`...' %
                              pfile)
@@ -1902,6 +1907,7 @@ class PyPath(object):
         return _NamedVertexSeq(self.graph.vs, self.nodNam, self.nodLab).gs()
 
     def vsup(self):
+<<<<<<< HEAD
         """
         Returns a generator sequence of the node names as UniProt IDs
         [str] (from the undirected graph).
@@ -1910,6 +1916,9 @@ class PyPath(object):
             (*generator*) -- Sequence containing the node names as
             UniProt IDs [str].
         """
+=======
+        return _NamedVertexSeq(self.graph.vs, self.nodNam, self.nodLab).up()
+>>>>>>> 9420e90695eb7ece5f11090c334b79638e72b22d
 
         return _NamedVertexSeq(self.graph.vs, self.nodNam, self.nodLab).up()
 
