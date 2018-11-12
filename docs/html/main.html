@@ -452,7 +452,9 @@ sources, and returns the sum of these values.</dd>
 <dl class="method">
 <dt id="pypath.main.PyPath.curators_work">
 <code class="descname">curators_work</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.curators_work"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.curators_work" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Computes and prints an estimation of how many years of curation
+took to achieve the amount of information on the network.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.databases_similarity">
@@ -1029,23 +1031,38 @@ object.</li>
 <dl class="method">
 <dt id="pypath.main.PyPath.get_giant">
 <code class="descname">get_giant</code><span class="sig-paren">(</span><em>replace=False</em>, <em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_giant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_giant" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the giant component of the graph, or
-replaces the igraph object with only the giant
-component.</p>
+<dd><p>Returns the giant component of the <em>graph</em>, or replaces the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">igraph.Graph</span></code> instance with only the giant component
+if specified.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>replace</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default. Specifies whether to replace
+the <code class="xref py py-class docutils literal notranslate"><span class="pre">igraph.Graph</span></code> instance. This can be either
+the undirected network of the current
+<a class="reference internal" href="#pypath.main.PyPath" title="pypath.main.PyPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypath.main.PyPath</span></code></a> instance (default) or the one
+passed under the keyword argument <em>graph</em>.</li>
+<li><strong>graph</strong> (<em>igraph.Graph</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. The graph object from which
+the giant component is to be computed. If none is specified,
+takes the undirected network of the current
+<a class="reference internal" href="#pypath.main.PyPath" title="pypath.main.PyPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypath.main.PyPath</span></code></a> instance.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>igraph.Graph</em>) – If <code class="docutils literal notranslate"><span class="pre">replace=False</span></code>, returns a copy of
+the giant component graph.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.get_max">
 <code class="descname">get_max</code><span class="sig-paren">(</span><em>attrList</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_max"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_max" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>attrList</strong> (<em>dict</em>) – Dictionary of attributes</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.get_network">
@@ -1329,7 +1346,7 @@ resources of OmniPath.</li>
 <li><strong>exclude</strong> (<em>list</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">[]</span></code> by default. List of resources [str] to
 exclude from the network.</li>
 <li><strong>cache_files</strong> (<em>dict</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">{}</span></code> by default. Contains the resource name(s)
-[str] (keys) and the corresponfing cached file name(s).
+[str] (keys) and the corresponding cached file name [str].
 If provided (and file exists) bypasses the download of the
 data for that resource and uses the cache file instead.</li>
 <li><strong>pfile</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default. If any, provides the file
@@ -1613,7 +1630,7 @@ This resource is human only.</p>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.load_ligand_receptor_network">
-<code class="descname">load_ligand_receptor_network</code><span class="sig-paren">(</span><em>lig_rec_resources=True</em>, <em>inference_from_go=True</em>, <em>sources={'arn': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581db48&gt;</em>, <em>'ca1': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581da28&gt;</em>, <em>'cellphonedb': &lt;pypath.input_formats.ReadSettings instance at 0x7fe1055a9dd0&gt;</em>, <em>'death': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581dcf8&gt;</em>, <em>'guide2pharma': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581d950&gt;</em>, <em>'hpmr': &lt;pypath.input_formats.ReadSettings instance at 0x7fe1055a9d40&gt;</em>, <em>'macrophage': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581dcb0&gt;</em>, <em>'nrf2': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581dc20&gt;</em>, <em>'pdz': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581dd40&gt;</em>, <em>'ramilowski2015': &lt;pypath.input_formats.ReadSettings instance at 0x7fe1055a9e60&gt;</em>, <em>'signalink3': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581d908&gt;</em>, <em>'signor': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581df38&gt;</em>, <em>'spike': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581d8c0&gt;</em>, <em>'trip': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581d7e8&gt;}</em>, <em>keep_undirected=False</em>, <em>keep_rec_rec=False</em>, <em>keep_lig_lig=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_ligand_receptor_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_ligand_receptor_network" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load_ligand_receptor_network</code><span class="sig-paren">(</span><em>lig_rec_resources=True</em>, <em>inference_from_go=True</em>, <em>sources=None</em>, <em>keep_undirected=False</em>, <em>keep_rec_rec=False</em>, <em>keep_lig_lig=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_ligand_receptor_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_ligand_receptor_network" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes a ligand-receptor network.</p>
 </dd></dl>
 
@@ -1812,7 +1829,7 @@ Those not used by <cite>PtmProcessor</cite> are forwarded to the
 
 <dl class="method">
 <dt id="pypath.main.PyPath.load_resources">
-<code class="descname">load_resources</code><span class="sig-paren">(</span><em>lst={'arn': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581db48&gt;</em>, <em>'biogrid': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826cb0&gt;</em>, <em>'ca1': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581da28&gt;</em>, <em>'ccmap': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581dfc8&gt;</em>, <em>'cellphonedb': &lt;pypath.input_formats.ReadSettings instance at 0x7fe1055a9dd0&gt;</em>, <em>'dbptm': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826440&gt;</em>, <em>'death': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581dcf8&gt;</em>, <em>'depod': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826290&gt;</em>, <em>'dip': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826098&gt;</em>, <em>'domino': &lt;pypath.input_formats.ReadSettings instance at 0x7fe1058263b0&gt;</em>, <em>'elm': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826368&gt;</em>, <em>'guide2pharma': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581d950&gt;</em>, <em>'hpmr': &lt;pypath.input_formats.ReadSettings instance at 0x7fe1055a9d40&gt;</em>, <em>'hprd': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826e18&gt;</em>, <em>'hprd_p': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826488&gt;</em>, <em>'innatedb': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826128&gt;</em>, <em>'intact': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826c68&gt;</em>, <em>'lmpid': &lt;pypath.input_formats.ReadSettings instance at 0x7fe1058262d8&gt;</em>, <em>'macrophage': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581dcb0&gt;</em>, <em>'matrixdb': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826200&gt;</em>, <em>'mppi': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826050&gt;</em>, <em>'nrf2': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581dc20&gt;</em>, <em>'pdz': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581dd40&gt;</em>, <em>'phelm': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826320&gt;</em>, <em>'psite': &lt;pypath.input_formats.ReadSettings instance at 0x7fe105826248&gt;</em>, <em>'ramilowski2015': &lt;pypath.input_formats.ReadSettings instance at 0x7fe1055a9e60&gt;</em>, <em>'signalink3': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581d908&gt;</em>, <em>'signor': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581df38&gt;</em>, <em>'spike': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581d8c0&gt;</em>, <em>'trip': &lt;pypath.input_formats.ReadSettings instance at 0x7fe10581d7e8&gt;}</em>, <em>exclude=[]</em>, <em>cache_files={}</em>, <em>reread=False</em>, <em>redownload=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_resources" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load_resources</code><span class="sig-paren">(</span><em>lst=None</em>, <em>exclude=[]</em>, <em>cache_files={}</em>, <em>reread=False</em>, <em>redownload=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_resources" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads multiple resources, and cleans up after.
 Looks up ID types, and loads all ID conversion
 tables from UniProt if necessary. This is much
@@ -1856,7 +1873,35 @@ and prediction from GTEx expression data by ARACNe.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.lookup_cache">
 <code class="descname">lookup_cache</code><span class="sig-paren">(</span><em>name</em>, <em>cache_files</em>, <em>int_cache</em>, <em>edges_cache</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.lookup_cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.lookup_cache" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Checks up the cache folder for the files of a given resource.
+First checks if <em>name</em> is on the <em>cache_files</em> dictionary.
+If so, loads either the interactions or edges otherwise. If
+not, checks <em>edges_cache</em> or <em>int_cache</em> otherwise.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>str</em>) – Name of the resource (lower-case).</li>
+<li><strong>cache_files</strong> (<em>dict</em>) – Contains the resource name(s) [str] (keys) and the
+corresponding cached file name [str] (values).</li>
+<li><strong>int_cache</strong> (<em>str</em>) – Path to the interactions cache file of the resource.</li>
+<li><strong>edges_cache</strong> (<em>str</em>) – Path to the edges cache file of the resource.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li>(<em>file</em>) – The loaded pickle file from the cache if the
+file is contains the interactions. <code class="docutils literal notranslate"><span class="pre">None</span></code> otherwise.</li>
+<li>(<em>list</em>) – List of mapped edges if the file contains the
+information from the edges. <code class="docutils literal notranslate"><span class="pre">[]</span></code> otherwise.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.loop_edges">
@@ -1884,7 +1929,17 @@ and prediction from GTEx expression data by ARACNe.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.mean_reference_per_interaction">
 <code class="descname">mean_reference_per_interaction</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.mean_reference_per_interaction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.mean_reference_per_interaction" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Computes the mean number of references per interaction of the
+network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>float</em>) – Mean number of interactions per edge.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.merge_lists">
@@ -1989,12 +2044,33 @@ and each of sources. Writes the results in a tab file.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.numof_reference_interaction_pairs">
 <code class="descname">numof_reference_interaction_pairs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.numof_reference_interaction_pairs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.numof_reference_interaction_pairs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the total of unique references per interaction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>int</em>) – Total number of unique references per
+interaction.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.numof_references">
 <code class="descname">numof_references</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.numof_references"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.numof_references" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Counts the number of reference on the network.</p>
+<p>Counts the total number of unique references in the edges of the
+network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>int</em>) – Number of unique references in the network.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.numof_undirected_edges">
@@ -2099,7 +2175,31 @@ in the current graph.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.process_direction">
 <code class="descname">process_direction</code><span class="sig-paren">(</span><em>line</em>, <em>dirCol</em>, <em>dirVal</em>, <em>dirSep</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.process_direction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.process_direction" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Processes the direction information of an interaction according
+to a data file from a source.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>line</strong> (<em>list</em>) – The stripped and separated line from the resource data file
+containing the information of an interaction.</li>
+<li><strong>dirCol</strong> (<em>int</em>) – The column/position number where the information about the
+direction is to be found (on <em>line</em>).</li>
+<li><strong>dirVal</strong> (<em>list</em>) – Contains the terms [str] for which that interaction is to be
+considered directed.</li>
+<li><strong>dirSep</strong> (<em>str</em>) – Separator for the field in <em>line</em> containing the direction
+information (if any).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>bool</em>) – Determines whether the given interaction is
+directed or not.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.process_directions">
@@ -2118,7 +2218,37 @@ TODO this will replace load_elm, load_ielm, etc</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.process_sign">
 <code class="descname">process_sign</code><span class="sig-paren">(</span><em>signData</em>, <em>signDef</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.process_sign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.process_sign" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Processes the sign of an interaction, used when processing an
+input file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>signData</strong> (<em>str</em>) – Data regarding the sign to be processed.</li>
+<li><strong>signDef</strong> (<em>tuple</em>) – Contains information about how to process <em>signData</em>. This
+is defined in <code class="xref py py-mod docutils literal notranslate"><span class="pre">pypath.data_formats</span></code>. First element
+determines the position on the direction information of each
+line on the data file [int], second element is either [str]
+or [list] and defines the terms for which an interaction is
+defined as stimulation, third element is similar but for the
+inhibition and third (optional) element determines the
+separator for <em>signData</em> if contains more than one element.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li>(<em>bool</em>) – Determines whether the processed interaction
+is considered stimulation or not.</li>
+<li>(<em>bool</em>) – Determines whether the processed interaction
+is considered inhibition or not.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.protein">
@@ -2244,7 +2374,21 @@ debugging purposes, or further use.</dd>
 <dl class="method">
 <dt id="pypath.main.PyPath.read_from_cache">
 <code class="descname">read_from_cache</code><span class="sig-paren">(</span><em>cache_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.read_from_cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.read_from_cache" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Reads a pickle file from the cache and returns it. It is assumed
+that the subfolder <code class="docutils literal notranslate"><span class="pre">cache/</span></code> is on the supplied path.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cache_file</strong> (<em>str</em>) – Path to the cache file that is to be loaded.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(<em>file</em>) – The loaded pickle file from the cache. Type will
+depend on the file itself (e.g.: if the pickle was saved
+from a dictionary, the type will be [dict]).</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.read_list_file">
@@ -2261,7 +2405,17 @@ This resource is human only.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.reference_edge_ratio">
 <code class="descname">reference_edge_ratio</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.reference_edge_ratio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.reference_edge_ratio" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Computes the average number of references per edge (as in the
+undirected graph).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>float</em>) – Average number of references per edge.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.reference_hist">
@@ -2790,11 +2944,10 @@ list of all sources in the current network.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.update_vname">
 <code class="descname">update_vname</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.update_vname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.update_vname" title="Permalink to this definition">¶</a></dt>
-<dd><p>For fast lookup of node names and indexes, these are
-hold in a list and a dict as well. However, every time
-new nodes are added, these should be updated. This
-function is automatically called after all operations
-affecting node indices.</p>
+<dd><p>Fast lookup of node names and indexes, these are hold in a
+[list] and a [dict] as well. However, every time new nodes are
+added, these should be updated. This function is automatically
+called after all operations affecting node indices.</p>
 </dd></dl>
 
 <dl class="method">
@@ -2823,10 +2976,9 @@ default undirected network, otherwise <code class="docutils literal notranslate"
 <dl class="method">
 <dt id="pypath.main.PyPath.vertex_pathways">
 <code class="descname">vertex_pathways</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.vertex_pathways"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.vertex_pathways" title="Permalink to this definition">¶</a></dt>
-<dd><p>Some resources assignes interactions some others
-proteins to pathways.
-This function converts pathway annotations from
-edge attributes to vertex attributes.</p>
+<dd><p>Some resources assignes interactions some others proteins to
+pathways. This function copies pathway annotations from edge
+attributes to vertex attributes.</p>
 </dd></dl>
 
 <dl class="method">
@@ -2837,12 +2989,34 @@ edge attributes to vertex attributes.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.vsgs">
 <code class="descname">vsgs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.vsgs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.vsgs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns a generator sequence of the node names as GeneSymbols
+[str] (from the undirected graph).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>generator</em>) – Sequence containing the node names as
+GeneSymbols [str].</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.vsup">
 <code class="descname">vsup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.vsup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.vsup" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns a generator sequence of the node names as UniProt IDs
+[str] (from the undirected graph).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>generator</em>) – Sequence containing the node names as
+UniProt IDs [str].</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.wang_effects">

@@ -1626,7 +1626,7 @@
 <span class="sd">            exclude from the network.</span>
 <span class="sd">        :arg dict cache_files:</span>
 <span class="sd">            Optional, ``{}`` by default. Contains the resource name(s)</span>
-<span class="sd">            [str] (keys) and the corresponfing cached file name(s).</span>
+<span class="sd">            [str] (keys) and the corresponding cached file name [str].</span>
 <span class="sd">            If provided (and file exists) bypasses the download of the</span>
 <span class="sd">            data for that resource and uses the cache file instead.</span>
 <span class="sd">        :arg str pfile:</span>
@@ -1706,15 +1706,13 @@
         <span class="n">pfile</span> <span class="o">=</span> <span class="n">pfile</span> <span class="k">if</span> <span class="n">pfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> \
             <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">,</span> <span class="s1">&#39;default_network.pickle&#39;</span><span class="p">)</span>
         <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">pfile</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+
     <span class="c1">###</span>
     <span class="c1"># functions to read networks from text files or mysql</span>
     <span class="c1">###</span>
 
-<div class="viewcode-block" id="PyPath.get_max"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.get_max">[docs]</a>    <span class="k">def</span> <span class="nf">get_max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrList</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.get_max"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.get_max">[docs]</a>    <span class="k">def</span> <span class="nf">get_max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrList</span><span class="p">):</span> <span class="c1"># TODO</span>
         <span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">        :arg dict attrList:</span>
-<span class="sd">            Dictionary of attributes</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">maxC</span> <span class="o">=</span> <span class="mi">0</span>
@@ -1729,7 +1727,7 @@
 
         <span class="k">return</span> <span class="n">maxC</span></div>
 
-<div class="viewcode-block" id="PyPath.get_attrs"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.get_attrs">[docs]</a>    <span class="k">def</span> <span class="nf">get_attrs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">spec</span><span class="p">,</span> <span class="n">lnum</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.get_attrs"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.get_attrs">[docs]</a>    <span class="k">def</span> <span class="nf">get_attrs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">spec</span><span class="p">,</span> <span class="n">lnum</span><span class="p">):</span> <span class="c1"># TODO</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1767,7 +1765,7 @@
 
         <span class="k">return</span> <span class="n">attrs</span></div>
 
-<div class="viewcode-block" id="PyPath.get_taxon"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.get_taxon">[docs]</a>    <span class="k">def</span> <span class="nf">get_taxon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tax_dict</span><span class="p">,</span> <span class="n">fields</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.get_taxon"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.get_taxon">[docs]</a>    <span class="k">def</span> <span class="nf">get_taxon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tax_dict</span><span class="p">,</span> <span class="n">fields</span><span class="p">):</span> <span class="c1"># TODO</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1788,7 +1786,13 @@
                 <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="PyPath.numof_references"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.numof_references">[docs]</a>    <span class="k">def</span> <span class="nf">numof_references</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Counts the number of reference on the network.</span>
+
+<span class="sd">        Counts the total number of unique references in the edges of the</span>
+<span class="sd">        network.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*int*) -- Number of unique references in the network.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span>
@@ -1798,13 +1802,23 @@
 
 <div class="viewcode-block" id="PyPath.mean_reference_per_interaction"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.mean_reference_per_interaction">[docs]</a>    <span class="k">def</span> <span class="nf">mean_reference_per_interaction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the mean number of references per interaction of the</span>
+<span class="sd">        network.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*float*) -- Mean number of interactions per edge.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
             <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;references&#39;</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">)))</span></div>
 
-<div class="viewcode-block" id="PyPath.numof_reference_interaction_pairs"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.numof_reference_interaction_pairs">[docs]</a>    <span class="k">def</span> <span class="nf">numof_reference_interaction_pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.numof_reference_interaction_pairs"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.numof_reference_interaction_pairs">[docs]</a>    <span class="k">def</span> <span class="nf">numof_reference_interaction_pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c1"># XXX: Not really sure about this one</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the total of unique references per interaction.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*int*) -- Total number of unique references per</span>
+<span class="sd">            interaction.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">common</span><span class="o">.</span><span class="n">uniqList</span><span class="p">(</span><span class="n">common</span><span class="o">.</span><span class="n">flatList</span><span class="p">(</span>
@@ -1815,6 +1829,8 @@
 
 <div class="viewcode-block" id="PyPath.curators_work"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.curators_work">[docs]</a>    <span class="k">def</span> <span class="nf">curators_work</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes and prints an estimation of how many years of curation</span>
+<span class="sd">        took to achieve the amount of information on the network.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">curation_effort</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">numof_reference_interaction_pairs</span><span class="p">()</span>
@@ -1828,19 +1844,41 @@
 
 <div class="viewcode-block" id="PyPath.reference_edge_ratio"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.reference_edge_ratio">[docs]</a>    <span class="k">def</span> <span class="nf">reference_edge_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the average number of references per edge (as in the</span>
+<span class="sd">        undirected graph).</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*float*) -- Average number of references per edge.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">numof_references</span><span class="p">()</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">ecount</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="PyPath.get_giant"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.get_giant">[docs]</a>    <span class="k">def</span> <span class="nf">get_giant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the giant component of the graph, or</span>
-<span class="sd">        replaces the igraph object with only the giant</span>
-<span class="sd">        component.</span>
+<span class="sd">        Returns the giant component of the *graph*, or replaces the</span>
+<span class="sd">        :py:class:`igraph.Graph` instance with only the giant component</span>
+<span class="sd">        if specified.</span>
+
+<span class="sd">        :arg bool replace:</span>
+<span class="sd">            Optional, ``False`` by default. Specifies whether to replace</span>
+<span class="sd">            the :py:class:`igraph.Graph` instance. This can be either</span>
+<span class="sd">            the undirected network of the current</span>
+<span class="sd">            :py:class:`pypath.main.PyPath` instance (default) or the one</span>
+<span class="sd">            passed under the keyword argument *graph*.</span>
+<span class="sd">        :arg igraph.Graph graph:</span>
+<span class="sd">            Optional, ``None`` by default. The graph object from which</span>
+<span class="sd">            the giant component is to be computed. If none is specified,</span>
+<span class="sd">            takes the undirected network of the current</span>
+<span class="sd">            :py:class:`pypath.main.PyPath` instance.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*igraph.Graph*) -- If ``replace=False``, returns a copy of</span>
+<span class="sd">            the giant component graph.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="n">graph</span> <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
         <span class="n">gg</span> <span class="o">=</span> <span class="n">g</span> <span class="k">if</span> <span class="n">replace</span> <span class="k">else</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+
         <span class="n">cl</span> <span class="o">=</span> <span class="n">gg</span><span class="o">.</span><span class="n">components</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;WEAK&#39;</span><span class="p">)</span>
         <span class="n">cl_sizes</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">sizes</span><span class="p">()</span>
         <span class="n">giant_component_index</span> <span class="o">=</span> <span class="n">cl_sizes</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">cl_sizes</span><span class="p">))</span>
@@ -1860,11 +1898,10 @@
 
 <div class="viewcode-block" id="PyPath.update_vname"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.update_vname">[docs]</a>    <span class="k">def</span> <span class="nf">update_vname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        For fast lookup of node names and indexes, these are</span>
-<span class="sd">        hold in a list and a dict as well. However, every time</span>
-<span class="sd">        new nodes are added, these should be updated. This</span>
-<span class="sd">        function is automatically called after all operations</span>
-<span class="sd">        affecting node indices.</span>
+<span class="sd">        Fast lookup of node names and indexes, these are hold in a</span>
+<span class="sd">        [list] and a [dict] as well. However, every time new nodes are</span>
+<span class="sd">        added, these should be updated. This function is automatically</span>
+<span class="sd">        called after all operations affecting node indices.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">genesymbol_labels</span><span class="p">()</span>
@@ -1892,17 +1929,29 @@
 
 <div class="viewcode-block" id="PyPath.vsgs"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.vsgs">[docs]</a>    <span class="k">def</span> <span class="nf">vsgs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a generator sequence of the node names as GeneSymbols</span>
+<span class="sd">        [str] (from the undirected graph).</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*generator*) -- Sequence containing the node names as</span>
+<span class="sd">            GeneSymbols [str].</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="n">_NamedVertexSeq</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodNam</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodLab</span><span class="p">)</span><span class="o">.</span><span class="n">gs</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="PyPath.vsup"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.vsup">[docs]</a>    <span class="k">def</span> <span class="nf">vsup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a generator sequence of the node names as UniProt IDs</span>
+<span class="sd">        [str] (from the undirected graph).</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*generator*) -- Sequence containing the node names as</span>
+<span class="sd">            UniProt IDs [str].</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="n">_NamedVertexSeq</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodNam</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodLab</span><span class="p">)</span><span class="o">.</span><span class="n">gs</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="n">_NamedVertexSeq</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodNam</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodLab</span><span class="p">)</span><span class="o">.</span><span class="n">up</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="PyPath.update_vindex"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.update_vindex">[docs]</a>    <span class="k">def</span> <span class="nf">update_vindex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.update_vindex"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.update_vindex">[docs]</a>    <span class="k">def</span> <span class="nf">update_vindex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c1"># XXX: If so, shouldn&#39;t it be removed?</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is deprecated.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1912,10 +1961,9 @@
 
 <div class="viewcode-block" id="PyPath.vertex_pathways"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.vertex_pathways">[docs]</a>    <span class="k">def</span> <span class="nf">vertex_pathways</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Some resources assignes interactions some others</span>
-<span class="sd">        proteins to pathways.</span>
-<span class="sd">        This function converts pathway annotations from</span>
-<span class="sd">        edge attributes to vertex attributes.</span>
+<span class="sd">        Some resources assignes interactions some others proteins to</span>
+<span class="sd">        pathways. This function copies pathway annotations from edge</span>
+<span class="sd">        attributes to vertex attributes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">for</span> <span class="n">eattr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="o">.</span><span class="n">attributes</span><span class="p">():</span>
@@ -1929,7 +1977,10 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">][</span><span class="n">eattr</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="n">eattr</span><span class="p">]</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">target</span><span class="p">][</span><span class="n">eattr</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="n">eattr</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="PyPath.filters"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.filters">[docs]</a>    <span class="k">def</span> <span class="nf">filters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">positiveFilters</span><span class="o">=</span><span class="p">[],</span> <span class="n">negativeFilters</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="c1"># XXX: Not very clear for me what this function is actually doing...</span>
+    <span class="c1">#      I mean, returns True/False and True as soon as the first</span>
+    <span class="c1">#      len(thisVal &amp; filtrVal) &gt; 0</span>
+<div class="viewcode-block" id="PyPath.filters"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.filters">[docs]</a>    <span class="k">def</span> <span class="nf">filters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">positiveFilters</span><span class="o">=</span><span class="p">[],</span> <span class="n">negativeFilters</span><span class="o">=</span><span class="p">[]):</span> <span class="c1"># TODO</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1967,6 +2018,26 @@
 
 <div class="viewcode-block" id="PyPath.lookup_cache"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.lookup_cache">[docs]</a>    <span class="k">def</span> <span class="nf">lookup_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cache_files</span><span class="p">,</span> <span class="n">int_cache</span><span class="p">,</span> <span class="n">edges_cache</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks up the cache folder for the files of a given resource.</span>
+<span class="sd">        First checks if *name* is on the *cache_files* dictionary.</span>
+<span class="sd">        If so, loads either the interactions or edges otherwise. If</span>
+<span class="sd">        not, checks *edges_cache* or *int_cache* otherwise.</span>
+
+<span class="sd">        :arg str name:</span>
+<span class="sd">            Name of the resource (lower-case).</span>
+<span class="sd">        :arg dict cache_files:</span>
+<span class="sd">            Contains the resource name(s) [str] (keys) and the</span>
+<span class="sd">            corresponding cached file name [str] (values).</span>
+<span class="sd">        :arg str int_cache:</span>
+<span class="sd">            Path to the interactions cache file of the resource.</span>
+<span class="sd">        :arg str edges_cache:</span>
+<span class="sd">            Path to the edges cache file of the resource.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            * (*file*) -- The loaded pickle file from the cache if the</span>
+<span class="sd">              file is contains the interactions. ``None`` otherwise.</span>
+<span class="sd">            * (*list*) -- List of mapped edges if the file contains the</span>
+<span class="sd">              information from the edges. ``[]`` otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">infile</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1985,7 +2056,7 @@
         <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">edges_cache</span><span class="p">):</span>
             <span class="n">edgeListMapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_from_cache</span><span class="p">(</span><span class="n">edges_cache</span><span class="p">)</span>
 
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">else</span><span class="p">:</span> <span class="c1"># XXX: You could use another elif statement here</span>
 
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">int_cache</span><span class="p">):</span>
                 <span class="n">infile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_from_cache</span><span class="p">(</span><span class="n">int_cache</span><span class="p">)</span>
@@ -1994,6 +2065,16 @@
 
 <div class="viewcode-block" id="PyPath.read_from_cache"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.read_from_cache">[docs]</a>    <span class="k">def</span> <span class="nf">read_from_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_file</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads a pickle file from the cache and returns it. It is assumed</span>
+<span class="sd">        that the subfolder ``cache/`` is on the supplied path.</span>
+
+<span class="sd">        :arg str cache_file:</span>
+<span class="sd">            Path to the cache file that is to be loaded.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*file*) -- The loaded pickle file from the cache. Type will</span>
+<span class="sd">            depend on the file itself (e.g.: if the pickle was saved</span>
+<span class="sd">            from a dictionary, the type will be [dict]).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">:: Reading from cache: </span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">cache_file</span><span class="p">)</span>
@@ -2004,6 +2085,26 @@
 
 <div class="viewcode-block" id="PyPath.process_sign"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.process_sign">[docs]</a>    <span class="k">def</span> <span class="nf">process_sign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signData</span><span class="p">,</span> <span class="n">signDef</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processes the sign of an interaction, used when processing an</span>
+<span class="sd">        input file.</span>
+
+<span class="sd">        :arg str signData:</span>
+<span class="sd">            Data regarding the sign to be processed.</span>
+<span class="sd">        :arg tuple signDef:</span>
+<span class="sd">            Contains information about how to process *signData*. This</span>
+<span class="sd">            is defined in :py:mod:`pypath.data_formats`. First element</span>
+<span class="sd">            determines the position on the direction information of each</span>
+<span class="sd">            line on the data file [int], second element is either [str]</span>
+<span class="sd">            or [list] and defines the terms for which an interaction is</span>
+<span class="sd">            defined as stimulation, third element is similar but for the</span>
+<span class="sd">            inhibition and third (optional) element determines the</span>
+<span class="sd">            separator for *signData* if contains more than one element.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            * (*bool*) -- Determines whether the processed interaction</span>
+<span class="sd">              is considered stimulation or not.</span>
+<span class="sd">            * (*bool*) -- Determines whether the processed interaction</span>
+<span class="sd">              is considered inhibition or not.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">stim</span> <span class="o">=</span> <span class="kc">False</span>
@@ -2012,6 +2113,9 @@
         <span class="n">signData</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">signData</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">signSep</span><span class="p">))</span>
         <span class="n">pos</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">signDef</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signDef</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">signDef</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
         <span class="n">neg</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">signDef</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signDef</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">signDef</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+
+        <span class="c1"># XXX: Isn&#39;t using elif here bias the choice to stimulatory interactions</span>
+        <span class="c1">#      even though there can also be negative sources?</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">signData</span> <span class="o">&amp;</span> <span class="n">pos</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">stim</span> <span class="o">=</span> <span class="kc">True</span>
@@ -2023,6 +2127,25 @@
 
 <div class="viewcode-block" id="PyPath.process_direction"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.process_direction">[docs]</a>    <span class="k">def</span> <span class="nf">process_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">dirCol</span><span class="p">,</span> <span class="n">dirVal</span><span class="p">,</span> <span class="n">dirSep</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processes the direction information of an interaction according</span>
+<span class="sd">        to a data file from a source.</span>
+
+<span class="sd">        :arg list line:</span>
+<span class="sd">            The stripped and separated line from the resource data file</span>
+<span class="sd">            containing the information of an interaction.</span>
+<span class="sd">        :arg int dirCol:</span>
+<span class="sd">            The column/position number where the information about the</span>
+<span class="sd">            direction is to be found (on *line*).</span>
+<span class="sd">        :arg list dirVal:</span>
+<span class="sd">            Contains the terms [str] for which that interaction is to be</span>
+<span class="sd">            considered directed.</span>
+<span class="sd">        :arg str dirSep:</span>
+<span class="sd">            Separator for the field in *line* containing the direction</span>
+<span class="sd">            information (if any).</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*bool*) -- Determines whether the given interaction is</span>
+<span class="sd">            directed or not.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">dirCol</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">dirVal</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -2229,7 +2352,7 @@
             <span class="n">tFiltered</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">readError</span> <span class="o">=</span> <span class="mi">0</span>
 
-            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">infile</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">infile</span><span class="p">:</span> <span class="c1"># XXX: here could be used enumerate for lnum</span>
                 <span class="n">lnum</span> <span class="o">+=</span> <span class="mi">1</span>
 
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="p">(</span><span class="n">lnum</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">settings</span><span class="o">.</span><span class="n">header</span><span class="p">):</span>
@@ -2242,6 +2365,7 @@
                     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s1">&#39;decode&#39;</span><span class="p">):</span>
                         <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
 
+                    <span class="c1"># XXX: Maybe str.strip() instead of two str.replace()?</span>
                     <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span>\
                         <span class="n">split</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">separator</span><span class="p">)</span>
 
@@ -4867,7 +4991,7 @@
         <span class="n">outf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">outf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="PyPath.load_resources"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_resources">[docs]</a>    <span class="k">def</span> <span class="nf">load_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="o">=</span><span class="n">omnipath</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[],</span> <span class="n">cache_files</span><span class="o">=</span><span class="p">{},</span>
+<div class="viewcode-block" id="PyPath.load_resources"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_resources">[docs]</a>    <span class="k">def</span> <span class="nf">load_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[],</span> <span class="n">cache_files</span><span class="o">=</span><span class="p">{},</span>
                        <span class="n">reread</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">redownload</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads multiple resources, and cleans up after.</span>
@@ -4876,6 +5000,9 @@
 <span class="sd">        faster than loading the ID conversion and the</span>
 <span class="sd">        resources one by one.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">lst</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lst</span> <span class="o">=</span> <span class="n">omnipath</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">load_reflists</span><span class="p">()</span>
         <span class="n">huge</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
@@ -9252,13 +9379,16 @@
 
 <div class="viewcode-block" id="PyPath.load_ligand_receptor_network"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_ligand_receptor_network">[docs]</a>    <span class="k">def</span> <span class="nf">load_ligand_receptor_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lig_rec_resources</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                      <span class="n">inference_from_go</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                     <span class="n">sources</span><span class="o">=</span><span class="n">data_formats</span><span class="o">.</span><span class="n">pathway</span><span class="p">,</span>
+                                     <span class="n">sources</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                      <span class="n">keep_undirected</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                      <span class="n">keep_rec_rec</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                      <span class="n">keep_lig_lig</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes a ligand-receptor network.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">sources</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sources</span> <span class="o">=</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">pathway</span>
 
         <span class="n">CC_EXTRACELL</span>   <span class="o">=</span> <span class="s1">&#39;GO:0005576&#39;</span>
         <span class="n">CC_PLASMAMEM</span>   <span class="o">=</span> <span class="s1">&#39;GO:0005887&#39;</span>
@@ -9267,7 +9397,7 @@
 
         <span class="k">if</span> <span class="n">inference_from_go</span><span class="p">:</span>
             <span class="n">go_desc</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">go_descendants_goose</span><span class="p">(</span><span class="n">aspects</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">init_network</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">work</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="s1">&#39;go&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">attributes</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">go_annotate</span><span class="p">()</span>

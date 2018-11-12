@@ -1588,7 +1588,7 @@ class PyPath(object):
             exclude from the network.
         :arg dict cache_files:
             Optional, ``{}`` by default. Contains the resource name(s)
-            [str] (keys) and the corresponfing cached file name(s).
+            [str] (keys) and the corresponding cached file name [str].
             If provided (and file exists) bypasses the download of the
             data for that resource and uses the cache file instead.
         :arg str pfile:
@@ -1668,15 +1668,13 @@ class PyPath(object):
         pfile = pfile if pfile is not None \
             else os.path.join('cache', 'default_network.pickle')
         pickle.dump(self.graph, open(pfile, 'wb'), -1)
+
     ###
     # functions to read networks from text files or mysql
     ###
 
-    def get_max(self, attrList):
+    def get_max(self, attrList): # TODO
         """
-
-        :arg dict attrList:
-            Dictionary of attributes
         """
 
         maxC = 0
@@ -1691,7 +1689,7 @@ class PyPath(object):
 
         return maxC
 
-    def get_attrs(self, line, spec, lnum):
+    def get_attrs(self, line, spec, lnum): # TODO
         """
         """
 
@@ -1729,7 +1727,7 @@ class PyPath(object):
 
         return attrs
 
-    def get_taxon(self, tax_dict, fields):
+    def get_taxon(self, tax_dict, fields): # TODO
         """
         """
 
@@ -1750,7 +1748,13 @@ class PyPath(object):
                 return None
 
     def numof_references(self):
-        """
+        """Counts the number of reference on the network.
+
+        Counts the total number of unique references in the edges of the
+        network.
+
+        :return:
+            (*int*) -- Number of unique references in the network.
         """
 
         return len(
@@ -1760,13 +1764,23 @@ class PyPath(object):
 
     def mean_reference_per_interaction(self):
         """
+        Computes the mean number of references per interaction of the
+        network.
+
+        :return:
+            (*float*) -- Mean number of interactions per edge.
         """
 
         return np.mean(
             list(map(lambda e: len(e['references']), self.graph.es)))
 
-    def numof_reference_interaction_pairs(self):
+    def numof_reference_interaction_pairs(self): # XXX: Not really sure about this one
         """
+        Returns the total of unique references per interaction.
+
+        :return:
+            (*int*) -- Total number of unique references per
+            interaction.
         """
 
         return len(common.uniqList(common.flatList(
@@ -1777,6 +1791,8 @@ class PyPath(object):
 
     def curators_work(self):
         """
+        Computes and prints an estimation of how many years of curation
+        took to achieve the amount of information on the network.
         """
 
         curation_effort = self.numof_reference_interaction_pairs()
@@ -1790,19 +1806,41 @@ class PyPath(object):
 
     def reference_edge_ratio(self):
         """
+        Computes the average number of references per edge (as in the
+        undirected graph).
+
+        :return:
+            (*float*) -- Average number of references per edge.
         """
 
         return self.numof_references() / float(self.graph.ecount())
 
     def get_giant(self, replace=False, graph=None):
         """
-        Returns the giant component of the graph, or
-        replaces the igraph object with only the giant
-        component.
+        Returns the giant component of the *graph*, or replaces the
+        :py:class:`igraph.Graph` instance with only the giant component
+        if specified.
+
+        :arg bool replace:
+            Optional, ``False`` by default. Specifies whether to replace
+            the :py:class:`igraph.Graph` instance. This can be either
+            the undirected network of the current
+            :py:class:`pypath.main.PyPath` instance (default) or the one
+            passed under the keyword argument *graph*.
+        :arg igraph.Graph graph:
+            Optional, ``None`` by default. The graph object from which
+            the giant component is to be computed. If none is specified,
+            takes the undirected network of the current
+            :py:class:`pypath.main.PyPath` instance.
+
+        :return:
+            (*igraph.Graph*) -- If ``replace=False``, returns a copy of
+            the giant component graph.
         """
 
         g = graph if graph is not None else self.graph
         gg = g if replace else copy.deepcopy(g)
+
         cl = gg.components(mode='WEAK')
         cl_sizes = cl.sizes()
         giant_component_index = cl_sizes.index(max(cl_sizes))
@@ -1822,11 +1860,10 @@ class PyPath(object):
 
     def update_vname(self):
         """
-        For fast lookup of node names and indexes, these are
-        hold in a list and a dict as well. However, every time
-        new nodes are added, these should be updated. This
-        function is automatically called after all operations
-        affecting node indices.
+        Fast lookup of node names and indexes, these are hold in a
+        [list] and a [dict] as well. However, every time new nodes are
+        added, these should be updated. This function is automatically
+        called after all operations affecting node indices.
         """
 
         self.genesymbol_labels()
@@ -1854,17 +1891,29 @@ class PyPath(object):
 
     def vsgs(self):
         """
+        Returns a generator sequence of the node names as GeneSymbols
+        [str] (from the undirected graph).
+
+        :return:
+            (*generator*) -- Sequence containing the node names as
+            GeneSymbols [str].
         """
 
         return _NamedVertexSeq(self.graph.vs, self.nodNam, self.nodLab).gs()
 
     def vsup(self):
         """
+        Returns a generator sequence of the node names as UniProt IDs
+        [str] (from the undirected graph).
+
+        :return:
+            (*generator*) -- Sequence containing the node names as
+            UniProt IDs [str].
         """
 
-        return _NamedVertexSeq(self.graph.vs, self.nodNam, self.nodLab).gs()
+        return _NamedVertexSeq(self.graph.vs, self.nodNam, self.nodLab).up()
 
-    def update_vindex(self):
+    def update_vindex(self): # XXX: If so, shouldn't it be removed?
         """
         This is deprecated.
         """
@@ -1874,10 +1923,9 @@ class PyPath(object):
 
     def vertex_pathways(self):
         """
-        Some resources assignes interactions some others
-        proteins to pathways.
-        This function converts pathway annotations from
-        edge attributes to vertex attributes.
+        Some resources assignes interactions some others proteins to
+        pathways. This function copies pathway annotations from edge
+        attributes to vertex attributes.
         """
 
         for eattr in self.graph.es.attributes():
@@ -1891,7 +1939,10 @@ class PyPath(object):
                     self.graph.vs[e.source][eattr] = e[eattr]
                     self.graph.vs[e.target][eattr] = e[eattr]
 
-    def filters(self, line, positiveFilters=[], negativeFilters=[]):
+    # XXX: Not very clear for me what this function is actually doing...
+    #      I mean, returns True/False and True as soon as the first
+    #      len(thisVal & filtrVal) > 0
+    def filters(self, line, positiveFilters=[], negativeFilters=[]): # TODO
         """
         """
 
@@ -1929,6 +1980,26 @@ class PyPath(object):
 
     def lookup_cache(self, name, cache_files, int_cache, edges_cache):
         """
+        Checks up the cache folder for the files of a given resource.
+        First checks if *name* is on the *cache_files* dictionary.
+        If so, loads either the interactions or edges otherwise. If
+        not, checks *edges_cache* or *int_cache* otherwise.
+
+        :arg str name:
+            Name of the resource (lower-case).
+        :arg dict cache_files:
+            Contains the resource name(s) [str] (keys) and the
+            corresponding cached file name [str] (values).
+        :arg str int_cache:
+            Path to the interactions cache file of the resource.
+        :arg str edges_cache:
+            Path to the edges cache file of the resource.
+
+        :return:
+            * (*file*) -- The loaded pickle file from the cache if the
+              file is contains the interactions. ``None`` otherwise.
+            * (*list*) -- List of mapped edges if the file contains the
+              information from the edges. ``[]`` otherwise.
         """
 
         infile = None
@@ -1947,7 +2018,7 @@ class PyPath(object):
         elif os.path.exists(edges_cache):
             edgeListMapped = self.read_from_cache(edges_cache)
 
-        else:
+        else: # XXX: You could use another elif statement here
 
             if os.path.exists(int_cache):
                 infile = self.read_from_cache(int_cache)
@@ -1956,6 +2027,16 @@ class PyPath(object):
 
     def read_from_cache(self, cache_file):
         """
+        Reads a pickle file from the cache and returns it. It is assumed
+        that the subfolder ``cache/`` is on the supplied path.
+
+        :arg str cache_file:
+            Path to the cache file that is to be loaded.
+
+        :return:
+            (*file*) -- The loaded pickle file from the cache. Type will
+            depend on the file itself (e.g.: if the pickle was saved
+            from a dictionary, the type will be [dict]).
         """
 
         sys.stdout.write('\t:: Reading from cache: %s\n' % cache_file)
@@ -1966,6 +2047,26 @@ class PyPath(object):
 
     def process_sign(self, signData, signDef):
         """
+        Processes the sign of an interaction, used when processing an
+        input file.
+
+        :arg str signData:
+            Data regarding the sign to be processed.
+        :arg tuple signDef:
+            Contains information about how to process *signData*. This
+            is defined in :py:mod:`pypath.data_formats`. First element
+            determines the position on the direction information of each
+            line on the data file [int], second element is either [str]
+            or [list] and defines the terms for which an interaction is
+            defined as stimulation, third element is similar but for the
+            inhibition and third (optional) element determines the
+            separator for *signData* if contains more than one element.
+
+        :return:
+            * (*bool*) -- Determines whether the processed interaction
+              is considered stimulation or not.
+            * (*bool*) -- Determines whether the processed interaction
+              is considered inhibition or not.
         """
 
         stim = False
@@ -1974,6 +2075,9 @@ class PyPath(object):
         signData = set(str(signData).split(signSep))
         pos = set(signDef[1] if isinstance(signDef[1], list) else [signDef[1]])
         neg = set(signDef[2] if isinstance(signDef[2], list) else [signDef[2]])
+
+        # XXX: Isn't using elif here bias the choice to stimulatory interactions
+        #      even though there can also be negative sources?
 
         if len(signData & pos) > 0:
             stim = True
@@ -1985,6 +2089,25 @@ class PyPath(object):
 
     def process_direction(self, line, dirCol, dirVal, dirSep):
         """
+        Processes the direction information of an interaction according
+        to a data file from a source.
+
+        :arg list line:
+            The stripped and separated line from the resource data file
+            containing the information of an interaction.
+        :arg int dirCol:
+            The column/position number where the information about the
+            direction is to be found (on *line*).
+        :arg list dirVal:
+            Contains the terms [str] for which that interaction is to be
+            considered directed.
+        :arg str dirSep:
+            Separator for the field in *line* containing the direction
+            information (if any).
+
+        :return:
+            (*bool*) -- Determines whether the given interaction is
+            directed or not.
         """
 
         if dirCol is None or dirVal is None:
@@ -2191,7 +2314,7 @@ class PyPath(object):
             tFiltered = 0
             readError = 0
 
-            for line in infile:
+            for line in infile: # XXX: here could be used enumerate for lnum
                 lnum += 1
 
                 if len(line) <= 1 or (lnum == 1 and settings.header):
@@ -2204,6 +2327,7 @@ class PyPath(object):
                     if hasattr(line, 'decode'):
                         line = line.decode('utf-8')
 
+                    # XXX: Maybe str.strip() instead of two str.replace()?
                     line = line.replace('\n', '').replace('\r', '').\
                         split(settings.separator)
 
@@ -4829,7 +4953,7 @@ class PyPath(object):
         outf.write(out[:-1])
         outf.close()
 
-    def load_resources(self, lst=omnipath, exclude=[], cache_files={},
+    def load_resources(self, lst=None, exclude=[], cache_files={},
                        reread=False, redownload=False):
         """
         Loads multiple resources, and cleans up after.
@@ -4838,6 +4962,9 @@ class PyPath(object):
         faster than loading the ID conversion and the
         resources one by one.
         """
+
+        if lst is None:
+            lst = omnipath
 
         self.load_reflists()
         huge = dict(
@@ -9214,13 +9341,16 @@ class PyPath(object):
 
     def load_ligand_receptor_network(self, lig_rec_resources=True,
                                      inference_from_go=True,
-                                     sources=data_formats.pathway,
+                                     sources=None,
                                      keep_undirected=False,
                                      keep_rec_rec=False,
                                      keep_lig_lig=False):
         """
         Initializes a ligand-receptor network.
         """
+
+        if sources is None:
+            sources = data_formats.pathway
 
         CC_EXTRACELL   = 'GO:0005576'
         CC_PLASMAMEM   = 'GO:0005887'
@@ -9229,7 +9359,7 @@ class PyPath(object):
 
         if inference_from_go:
             go_desc = dataio.go_descendants_goose(aspects = ('C', 'F'))
-            self.init_network(sources)
+            self.work(sources)
 
             if 'go' not in self.graph.vs.attributes():
                 self.go_annotate()
