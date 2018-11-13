@@ -56,7 +56,7 @@
 
 
 \title{pypath Documentation}
-\date{Nov 12, 2018}
+\date{Nov 13, 2018}
 \release{0.7.98}
 \author{Dénes Türei}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -674,6 +674,18 @@ latex stats.tex
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.cancer_drivers_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{cancer\_drivers\_list}}}{\emph{intogen\_file=None}}{}
+Loads the list of cancer drivers. Contains information from
+COSMIC (needs user log in credentials) and IntOGen (if provided)
+and adds the attribute to the undirected network nodes.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{intogen\_file}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Path to the data file. Can
+also be {[}function{]} that provides the data. In general,
+anything accepted by
+\sphinxcode{\sphinxupquote{pypath.input\_formats.ReadSettings.inFile}}.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{cancer\_gene\_census\_list() (pypath.main.PyPath method)}
@@ -834,6 +846,16 @@ Counts nodes with zero degree.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.coverage}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{coverage}}}{\emph{lst}}{}
+Computes the coverage (range {[}0, 1{]}) of a list of nodes against
+the current (undirected) network.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{lst}} (\sphinxstyleliteralemphasis{\sphinxupquote{set}}) \textendash{} Can also be {[}list{]} (will be converted to {[}set{]}) or {[}str{]}. In
+the latter case it will retrieve the list with that name (if
+such list exists in \sphinxcode{\sphinxupquote{pypath.main.PyPath.lists}}).
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{curation\_effort() (pypath.main.PyPath method)}
@@ -1415,6 +1437,52 @@ in CORUM.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.fisher_enrichment}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{fisher\_enrichment}}}{\emph{lst}, \emph{attr}, \emph{ref='proteome'}}{}
+Computes an enrichment analysis using Fisher’s exact test. The
+contingency table is built as follows:
+First row contains the number of nodes in the \sphinxstyleemphasis{ref} list (such
+list is considered to be loaded in
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.lists}}) and the number of nodes in
+the current (undirected) network. Second row contains the number
+of nodes in \sphinxstyleemphasis{lst} list (also considered to be already loaded)
+and the number of nodes in the network with a non-empty
+attribute \sphinxstyleemphasis{attr}. Uses {\color{red}\bfseries{}:py:fun:{}`scipy.stats.fisher\_exact{}`}, see
+the documentation of the corresponding package for more
+information.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{lst}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Name of the list in \sphinxcode{\sphinxupquote{pypath.main.PyPath.lists}}
+whose number of elements will be the first element in the
+second row of the contingency table.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The node attribute name for which the number of nodes in the
+network with such attribute will be the second element of
+the second row of the contingency table.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{ref}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{'proteome'}} by default. The name of the list in
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.lists}} whose number of elements
+will be the first element of the first row of the
+contingency table.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+\begin{itemize}
+\item {} 
+(\sphinxstyleemphasis{float}) \textendash{} Prior odds ratio.
+
+\item {} 
+(\sphinxstyleemphasis{float}) \textendash{} P-value or probability of obtaining a
+distribution as extreme as the observed, assuming that the
+null hypothesis is true.
+
+\end{itemize}
+
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{geneset\_enrichment() (pypath.main.PyPath method)}
@@ -1982,6 +2050,13 @@ lists if in \sphinxtitleref{vertexAttrs} the attribute is registered as list.
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.intogen_cancer_drivers_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{intogen\_cancer\_drivers\_list}}}{\emph{intogen\_file}}{}
 Loads the list of cancer driver proteins from IntOGen data.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{intogen\_file}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Path to the data file. Can also be {[}function{]} that provides
+the data. In general, anything accepted by
+\sphinxcode{\sphinxupquote{pypath.input\_formats.ReadSettings.inFile}}.
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -3212,6 +3287,26 @@ from a dictionary, the type will be {[}dict{]}).
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.read_list_file}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{read\_list\_file}}}{\emph{settings}, \emph{**kwargs}}{}
+Reads a list from a file.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{settings}} (\sphinxstyleliteralemphasis{\sphinxupquote{pypath.input\_formats.ReadList}}) \textendash{} \sphinxcode{\sphinxupquote{python.data\_formats.ReadList}} instance specifying
+the settings of the file to be read. See the class
+documentation for more details.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{**kwargs}} \textendash{} 
+Extra arguments passed to the file reading function. Such
+function name is outlined in the
+\sphinxcode{\sphinxupquote{python.data\_formats.ReadList.inFile}} attribute and
+defined in \sphinxcode{\sphinxupquote{pypath.dataio}}.
+
+
+\end{itemize}
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{receptors\_list() (pypath.main.PyPath method)}

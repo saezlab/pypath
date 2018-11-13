@@ -295,7 +295,21 @@ latex stats.tex</dd>
 <dl class="method">
 <dt id="pypath.main.PyPath.cancer_drivers_list">
 <code class="descname">cancer_drivers_list</code><span class="sig-paren">(</span><em>intogen_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.cancer_drivers_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.cancer_drivers_list" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Loads the list of cancer drivers. Contains information from
+COSMIC (needs user log in credentials) and IntOGen (if provided)
+and adds the attribute to the undirected network nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>intogen_file</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Path to the data file. Can
+also be [function] that provides the data. In general,
+anything accepted by
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.input_formats.ReadSettings.inFile</span></code>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.cancer_gene_census_list">
@@ -426,7 +440,19 @@ the source edges.</li>
 <dl class="method">
 <dt id="pypath.main.PyPath.coverage">
 <code class="descname">coverage</code><span class="sig-paren">(</span><em>lst</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.coverage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.coverage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Computes the coverage (range [0, 1]) of a list of nodes against
+the current (undirected) network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>lst</strong> (<em>set</em>) – Can also be [list] (will be converted to [set]) or [str]. In
+the latter case it will retrieve the list with that name (if
+such list exists in <code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.lists</span></code>).</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.curation_effort">
@@ -911,7 +937,47 @@ in CORUM.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.fisher_enrichment">
 <code class="descname">fisher_enrichment</code><span class="sig-paren">(</span><em>lst</em>, <em>attr</em>, <em>ref='proteome'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.fisher_enrichment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.fisher_enrichment" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Computes an enrichment analysis using Fisher’s exact test. The
+contingency table is built as follows:
+First row contains the number of nodes in the <em>ref</em> list (such
+list is considered to be loaded in
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.lists</span></code>) and the number of nodes in
+the current (undirected) network. Second row contains the number
+of nodes in <em>lst</em> list (also considered to be already loaded)
+and the number of nodes in the network with a non-empty
+attribute <em>attr</em>. Uses <a href="#id1"><span class="problematic" id="id2">:py:fun:`scipy.stats.fisher_exact`</span></a>, see
+the documentation of the corresponding package for more
+information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>lst</strong> (<em>str</em>) – Name of the list in <code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.lists</span></code>
+whose number of elements will be the first element in the
+second row of the contingency table.</li>
+<li><strong>attr</strong> (<em>str</em>) – The node attribute name for which the number of nodes in the
+network with such attribute will be the second element of
+the second row of the contingency table.</li>
+<li><strong>ref</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">'proteome'</span></code> by default. The name of the list in
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.lists</span></code> whose number of elements
+will be the first element of the first row of the
+contingency table.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li>(<em>float</em>) – Prior odds ratio.</li>
+<li>(<em>float</em>) – P-value or probability of obtaining a
+distribution as extreme as the observed, assuming that the
+null hypothesis is true.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.geneset_enrichment">
@@ -1387,6 +1453,16 @@ lists if in <cite>vertexAttrs</cite> the attribute is registered as list.</p>
 <dt id="pypath.main.PyPath.intogen_cancer_drivers_list">
 <code class="descname">intogen_cancer_drivers_list</code><span class="sig-paren">(</span><em>intogen_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.intogen_cancer_drivers_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.intogen_cancer_drivers_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads the list of cancer driver proteins from IntOGen data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>intogen_file</strong> (<em>str</em>) – Path to the data file. Can also be [function] that provides
+the data. In general, anything accepted by
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.input_formats.ReadSettings.inFile</span></code>.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1908,7 +1984,7 @@ corresponding cached file name [str] (values).</li>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
 <li>(<em>file</em>) – The loaded pickle file from the cache if the
-file is contains the interactions. <a href="#id3"><span class="problematic" id="id4">``</span></a>None`self.graph` otherwise.</li>
+file is contains the interactions. <a href="#id5"><span class="problematic" id="id6">``</span></a>None`self.graph` otherwise.</li>
 <li>(<em>list</em>) – List of mapped edges if the file contains the
 information from the edges. <code class="docutils literal notranslate"><span class="pre">[]</span></code> otherwise.</li>
 </ul>
@@ -2438,7 +2514,26 @@ from a dictionary, the type will be [dict]).</td>
 <dl class="method">
 <dt id="pypath.main.PyPath.read_list_file">
 <code class="descname">read_list_file</code><span class="sig-paren">(</span><em>settings</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.read_list_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.read_list_file" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Reads a list from a file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>settings</strong> (<em>pypath.input_formats.ReadList</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">python.data_formats.ReadList</span></code> instance specifying
+the settings of the file to be read. See the class
+documentation for more details.</li>
+<li><strong>**kwargs</strong> – <p>Extra arguments passed to the file reading function. Such
+function name is outlined in the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">python.data_formats.ReadList.inFile</span></code> attribute and
+defined in <code class="xref py py-mod docutils literal notranslate"><span class="pre">pypath.dataio</span></code>.</p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.receptors_list">

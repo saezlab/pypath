@@ -2692,15 +2692,27 @@
 <div class="viewcode-block" id="PyPath.intogen_cancer_drivers_list"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.intogen_cancer_drivers_list">[docs]</a>    <span class="k">def</span> <span class="nf">intogen_cancer_drivers_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intogen_file</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads the list of cancer driver proteins from IntOGen data.</span>
+
+<span class="sd">        :arg str intogen_file:</span>
+<span class="sd">            Path to the data file. Can also be [function] that provides</span>
+<span class="sd">            the data. In general, anything accepted by</span>
+<span class="sd">            :py:attr:`pypath.input_formats.ReadSettings.inFile`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">data_formats</span><span class="o">.</span><span class="n">intogen_cancer</span><span class="o">.</span><span class="n">inFile</span> <span class="o">=</span> <span class="n">intogen_file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">read_list_file</span><span class="p">(</span><span class="n">data_formats</span><span class="o">.</span><span class="n">intogen_cancer</span><span class="p">)</span></div>
 
-<span class="c1">############## YOU ARE HERE</span>
-
 <div class="viewcode-block" id="PyPath.cancer_drivers_list"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.cancer_drivers_list">[docs]</a>    <span class="k">def</span> <span class="nf">cancer_drivers_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intogen_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads the list of cancer drivers. Contains information from</span>
+<span class="sd">        COSMIC (needs user log in credentials) and IntOGen (if provided)</span>
+<span class="sd">        and adds the attribute to the undirected network nodes.</span>
+
+<span class="sd">        :arg str intogen_file:</span>
+<span class="sd">            Optional, ``None`` by default. Path to the data file. Can</span>
+<span class="sd">            also be [function] that provides the data. In general,</span>
+<span class="sd">            anything accepted by</span>
+<span class="sd">            :py:attr:`pypath.input_formats.ReadSettings.inFile`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">cancer_gene_census_list</span><span class="p">()</span>
@@ -2719,6 +2731,13 @@
 
 <div class="viewcode-block" id="PyPath.coverage"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.coverage">[docs]</a>    <span class="k">def</span> <span class="nf">coverage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the coverage (range [0, 1]) of a list of nodes against</span>
+<span class="sd">        the current (undirected) network.</span>
+
+<span class="sd">        :arg set lst:</span>
+<span class="sd">            Can also be [list] (will be converted to [set]) or [str]. In</span>
+<span class="sd">            the latter case it will retrieve the list with that name (if</span>
+<span class="sd">            such list exists in :py:attr:`pypath.main.PyPath.lists`).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">lst</span> <span class="o">=</span> <span class="n">lst</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="nb">set</span><span class="p">)</span> \
@@ -2731,23 +2750,58 @@
 
 <div class="viewcode-block" id="PyPath.fisher_enrichment"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.fisher_enrichment">[docs]</a>    <span class="k">def</span> <span class="nf">fisher_enrichment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="s1">&#39;proteome&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes an enrichment analysis using Fisher&#39;s exact test. The</span>
+<span class="sd">        contingency table is built as follows:</span>
+<span class="sd">        First row contains the number of nodes in the *ref* list (such</span>
+<span class="sd">        list is considered to be loaded in</span>
+<span class="sd">        :py:attr:`pypath.main.PyPath.lists`) and the number of nodes in</span>
+<span class="sd">        the current (undirected) network. Second row contains the number</span>
+<span class="sd">        of nodes in *lst* list (also considered to be already loaded)</span>
+<span class="sd">        and the number of nodes in the network with a non-empty</span>
+<span class="sd">        attribute *attr*. Uses :py:fun:`scipy.stats.fisher_exact`, see</span>
+<span class="sd">        the documentation of the corresponding package for more</span>
+<span class="sd">        information.</span>
+
+<span class="sd">        :arg str lst:</span>
+<span class="sd">            Name of the list in :py:attr:`pypath.main.PyPath.lists`</span>
+<span class="sd">            whose number of elements will be the first element in the</span>
+<span class="sd">            second row of the contingency table.</span>
+<span class="sd">        :arg str attr:</span>
+<span class="sd">            The node attribute name for which the number of nodes in the</span>
+<span class="sd">            network with such attribute will be the second element of</span>
+<span class="sd">            the second row of the contingency table.</span>
+<span class="sd">        :arg str ref:</span>
+<span class="sd">            Optional, ``&#39;proteome&#39;`` by default. The name of the list in</span>
+<span class="sd">            :py:attr:`pypath.main.PyPath.lists` whose number of elements</span>
+<span class="sd">            will be the first element of the first row of the</span>
+<span class="sd">            contingency table.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            * (*float*) -- Prior odds ratio.</span>
+<span class="sd">            * (*float*) -- P-value or probability of obtaining a</span>
+<span class="sd">              distribution as extreme as the observed, assuming that the</span>
+<span class="sd">              null hypothesis is true.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">cont</span> <span class="o">=</span> \
-            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
-                <span class="p">[</span>
-                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">ref</span><span class="p">]),</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span>
-                <span class="p">],</span>
-                <span class="p">[</span>
-                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">lst</span><span class="p">]),</span>
-                    <span class="nb">len</span><span class="p">([</span><span class="mi">1</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
-                <span class="p">]</span>
-            <span class="p">])</span>
+        <span class="n">cont</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">ref</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()],</span>
+                         <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">lst</span><span class="p">]),</span>
+                          <span class="nb">len</span><span class="p">([</span><span class="mi">1</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])]])</span>
+
         <span class="k">return</span> <span class="n">stats</span><span class="o">.</span><span class="n">fisher_exact</span><span class="p">(</span><span class="n">cont</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PyPath.read_list_file"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.read_list_file">[docs]</a>    <span class="k">def</span> <span class="nf">read_list_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads a list from a file.</span>
+
+<span class="sd">        :arg pypath.input_formats.ReadList settings:</span>
+<span class="sd">            :py:class:`python.data_formats.ReadList` instance specifying</span>
+<span class="sd">            the settings of the file to be read. See the class</span>
+<span class="sd">            documentation for more details.</span>
+<span class="sd">        :arg **kwargs:</span>
+<span class="sd">            Extra arguments passed to the file reading function. Such</span>
+<span class="sd">            function name is outlined in the</span>
+<span class="sd">            :py:attr:`python.data_formats.ReadList.inFile` attribute and</span>
+<span class="sd">            defined in :py:mod:`pypath.dataio`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">_input</span> <span class="o">=</span> <span class="kc">None</span>
@@ -10720,6 +10774,8 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads the OmniPath network.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># XXX: According to the alias above omnipath = data_formats.omnipath already</span>
 
         <span class="k">if</span> <span class="n">old_omnipath_resources</span><span class="p">:</span>
             <span class="n">omnipath</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">data_formats</span><span class="o">.</span><span class="n">omnipath</span><span class="p">)</span>

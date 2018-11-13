@@ -2654,15 +2654,27 @@ class PyPath(object):
     def intogen_cancer_drivers_list(self, intogen_file):
         """
         Loads the list of cancer driver proteins from IntOGen data.
+
+        :arg str intogen_file:
+            Path to the data file. Can also be [function] that provides
+            the data. In general, anything accepted by
+            :py:attr:`pypath.input_formats.ReadSettings.inFile`.
         """
 
         data_formats.intogen_cancer.inFile = intogen_file
         self.read_list_file(data_formats.intogen_cancer)
 
-############## YOU ARE HERE
-
     def cancer_drivers_list(self, intogen_file=None):
         """
+        Loads the list of cancer drivers. Contains information from
+        COSMIC (needs user log in credentials) and IntOGen (if provided)
+        and adds the attribute to the undirected network nodes.
+
+        :arg str intogen_file:
+            Optional, ``None`` by default. Path to the data file. Can
+            also be [function] that provides the data. In general,
+            anything accepted by
+            :py:attr:`pypath.input_formats.ReadSettings.inFile`.
         """
 
         self.cancer_gene_census_list()
@@ -2681,6 +2693,13 @@ class PyPath(object):
 
     def coverage(self, lst):
         """
+        Computes the coverage (range [0, 1]) of a list of nodes against
+        the current (undirected) network.
+
+        :arg set lst:
+            Can also be [list] (will be converted to [set]) or [str]. In
+            the latter case it will retrieve the list with that name (if
+            such list exists in :py:attr:`pypath.main.PyPath.lists`).
         """
 
         lst = lst if isinstance(lst, set) \
@@ -2693,23 +2712,58 @@ class PyPath(object):
 
     def fisher_enrichment(self, lst, attr, ref='proteome'):
         """
+        Computes an enrichment analysis using Fisher's exact test. The
+        contingency table is built as follows:
+        First row contains the number of nodes in the *ref* list (such
+        list is considered to be loaded in
+        :py:attr:`pypath.main.PyPath.lists`) and the number of nodes in
+        the current (undirected) network. Second row contains the number
+        of nodes in *lst* list (also considered to be already loaded)
+        and the number of nodes in the network with a non-empty
+        attribute *attr*. Uses :py:fun:`scipy.stats.fisher_exact`, see
+        the documentation of the corresponding package for more
+        information.
+
+        :arg str lst:
+            Name of the list in :py:attr:`pypath.main.PyPath.lists`
+            whose number of elements will be the first element in the
+            second row of the contingency table.
+        :arg str attr:
+            The node attribute name for which the number of nodes in the
+            network with such attribute will be the second element of
+            the second row of the contingency table.
+        :arg str ref:
+            Optional, ``'proteome'`` by default. The name of the list in
+            :py:attr:`pypath.main.PyPath.lists` whose number of elements
+            will be the first element of the first row of the
+            contingency table.
+
+        :return:
+            * (*float*) -- Prior odds ratio.
+            * (*float*) -- P-value or probability of obtaining a
+              distribution as extreme as the observed, assuming that the
+              null hypothesis is true.
         """
 
-        cont = \
-            np.array([
-                [
-                    len(self.lists[ref]),
-                    self.graph.vcount()
-                ],
-                [
-                    len(self.lists[lst]),
-                    len([1 for v in self.graph.vs if len(v[attr]) > 0])
-                ]
-            ])
+        cont = np.array([[len(self.lists[ref]), self.graph.vcount()],
+                         [len(self.lists[lst]),
+                          len([1 for v in self.graph.vs if len(v[attr]) > 0])]])
+
         return stats.fisher_exact(cont)
 
     def read_list_file(self, settings, **kwargs):
         """
+        Reads a list from a file.
+
+        :arg pypath.input_formats.ReadList settings:
+            :py:class:`python.data_formats.ReadList` instance specifying
+            the settings of the file to be read. See the class
+            documentation for more details.
+        :arg **kwargs:
+            Extra arguments passed to the file reading function. Such
+            function name is outlined in the
+            :py:attr:`python.data_formats.ReadList.inFile` attribute and
+            defined in :py:mod:`pypath.dataio`.
         """
 
         _input = None
@@ -10682,6 +10736,8 @@ class PyPath(object):
         """
         Loads the OmniPath network.
         """
+
+        # XXX: According to the alias above omnipath = data_formats.omnipath already
 
         if old_omnipath_resources:
             omnipath = copy.deepcopy(data_formats.omnipath)
