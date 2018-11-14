@@ -7637,10 +7637,10 @@ def mir2disease_interactions():
     url = urls.urls['mir2dis']['url']
     c = curl.Curl(url, silent = True, large = True)
     
-    for _ in xrange(4):
-        c.result.readline()
-    
-    return [l.decode('iso-8859-1').strip().split('\t') for l in c.result]
+    return [
+        l.decode('iso-8859-1').strip().split('\t')
+        for l in itertools.islice(c.result, 3, None)
+    ]
 
 def mirdeathdb_interactions():
     
