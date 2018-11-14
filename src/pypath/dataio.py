@@ -4754,7 +4754,7 @@ def get_li2012():
     '''
     url = urls.urls['li2012']['url']
     c = curl.Curl(url, silent=False, large=True)
-    xls = c.result
+    xls = c.fileobj
     xlsfile = xls.name
     xls.close()
     tbl = read_xls(xlsfile, sheet='File S1')
@@ -7647,7 +7647,7 @@ def mirdeathdb_interactions():
     url = urls.urls['mirdeathdb']['url']
     c = curl.Curl(url, silent = False, large = True)
     
-    _ = c.result.readline()
+    _ = next(c.result)
     
     for l in c.result:
         
@@ -7745,7 +7745,7 @@ def transmir_interactions():
     c = curl.Curl(url, silent = False, large = True,
                   encoding = 'utf-8')
     
-    _ = c.result.readline()
+    _ = next(c.result)
     
     taxids = common.join_dicts(
         common.taxids,
