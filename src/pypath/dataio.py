@@ -7946,7 +7946,7 @@ def get_proteinatlas(normal = True, pathology = True,
     
     return result
 
-def get_tfregulons(
+def get_tfregulons_old(
         levels = {'A', 'B'},
         only_curated = False
     ):
@@ -7996,3 +7996,68 @@ def get_tfregulons(
             not only_curated or ll[4] == 'TRUE'
         )
     )
+
+def get_tfregulons(
+        levels = {'A', 'B'},
+        only_curated = False
+    ):
+    """
+    Retrieves TF-target interactions from TF regulons.
+    
+    :param set levels:
+        Confidence levels to be used.
+    :param bool only_curated:
+            Retrieve only literature curated interactions.
+    
+    Details
+    -------
+    TF regulons is a comprehensive resource of TF-target interactions
+    combining multiple lines of evidences: literature curated databases,
+    ChIP-Seq data, PWM based prediction using HOCOMOCO and JASPAR matrices
+    and prediction from GTEx expression data by ARACNe.
+    
+    For details see https://github.com/saezlab/DoRothEA.
+    """
+    
+    url = urls.urls['tfregulons_git']['url']
+    
+    c = curl.Curl(
+        url,
+        silent = False,
+        large = True,
+        files_needed = ['database.csv'],
+    )
+    
+    _ = c.result['database.csv'].readline()
+    
+    for l in c.result['database.csv']:
+        
+        l = l.decode('utf-8')
+        
+        l = csv_sep_change(l, ',', '%&%&%&')
+        
+        l = l.replace('"', '').strip('\n\r').split('%&%&%&')
+        
+        # process only the ones of the requested levels or if curated
+        if l[3] not in levels and not (only_curated and ll[4] == 'TRUE'):
+            
+            continue
+        
+        l = tuple(f if f not in  {'-', 'none'} else '' for f in l)
+        
+        yield list(itertools.chain(
+            # TF, target, effect, score
+            l[:4],
+            # boolean values for curated, chipseq, motif pred. and coexp
+            (s == 'TRUE' for s in l[4:8]),
+            # databases & datasets
+            l[-6:-2],
+            # all data sources (or only the curated ones)
+            (
+                ','.join(s for s in l[-6:-2] if s)
+                    if not only_curated else
+                l[-3],
+            ),
+            # PubMed and KEGG pw
+            l[-2:],
+        ))

@@ -821,6 +821,11 @@ urls = {
         'url': 'http://saezlab.org/tfregulons/tfregulons_database_v01_'\
             '20180216__%s.tsv'
     },
+    'tfregulons_git': {
+        'label': 'TF Regulons TF-taget database from its git repo',
+        'url': 'https://github.com/saezlab/DoRothEA/raw/master/data/'
+            'TFregulons/table/database_20180915.csv.zip'
+    },
     'hpmri': {
         'label': 'Human Plasma Membrane Receptome "browse" view',
         'browse': 'http://www.receptome.org/Families/FamNav/'\

@@ -1490,7 +1490,8 @@ class PyPath(object):
                     if hasattr(spec[col][1], '__call__'):
                         fieldVal = spec[col][1](line[spec[col][0]])
                     else:
-                        fieldVal = line[spec[col][0]].split(spec[col][1])
+                        val = line[spec[col][0]]
+                        fieldVal = val.split(spec[col][1]) if val else []
                 else:
                     fieldVal = line[spec[col]]
             except:

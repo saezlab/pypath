@@ -1436,7 +1436,7 @@ transcription = {
         inFile='get_tfregulons',
         interactionType='TF',
         resource=(12, ','),
-        references=None,
+        references=(13, ','),
         header=False,
         extraEdgeAttrs={
             'tfregulons_curated': 4,
@@ -1444,6 +1444,7 @@ transcription = {
             'tfregulons_tfbs':    6,
             'tfregulons_coexp':   7,
             'tfregulons_level':   3,
+            'tfregulons_kegg_pathways': (14, '|'),
         },
         extraNodeAttrsA={},
         extraNodeAttrsB={})
