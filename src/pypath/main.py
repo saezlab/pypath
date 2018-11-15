@@ -33,7 +33,7 @@ from functools import reduce
 try:
     import cairo
 
-except: # XXX: Catching any exception like this is bad practice
+except ImportError: # XXX: Catching any exception like this is bad practice
     sys.stdout.write(
         '\t:: Module `cairo` not available.\n'
         '\t   Some plotting functionalities won\'t be accessible.\n'
@@ -2698,10 +2698,10 @@ class PyPath(object):
                 return False
             n = g.vcount()
             g.add_vertices(1)
-            g.vs[n][key].originalNames = {originalName: originalNameType}
-            thisNode = g.vs.find(name=defAttrs["name"])
+            g.vs[n]['originalNames'] = {originalName: originalNameType}
+            thisNode = g.vs.find(name = defAttrs["name"])
         else:
-            thisNode = g.vs.find(name=defAttrs["name"])
+            thisNode = g.vs.find(name = defAttrs["name"])
             if thisNode["originalNames"] is None:
                 thisNode["originalNames"] = {}
             thisNode["originalNames"][originalName] = originalNameType
