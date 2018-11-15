@@ -101,6 +101,7 @@ import pypath.common as common
 import pypath.intera as intera
 # from pypath import reaction
 import pypath.residues as residues
+import pypath.settings as settings
 
 if 'long' not in __builtins__:
     long = int
@@ -4192,7 +4193,10 @@ def hpmr_interactions():
     Human Plasma Membrane Receptome database.
     """
     
-    cachefile = os.path.join('cache', 'hpmr_interactions')
+    cachefile = os.path.join(
+        settings.get('cachedir'),
+        'hpmr_interactions',
+    )
     
     if os.path.exists(cachefile):
         
