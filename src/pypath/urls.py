@@ -20,6 +20,7 @@
 import os
 
 import pypath.common as common
+import pypath.settings as settings
 
 urls = {
     'uniprot_pdb': {
@@ -855,8 +856,14 @@ files = {
         'data': os.path.join(common.ROOT, 'data', 'phosphopoint.csv')
     },
     'phosphosite': {
-        'curated': os.path.join('cache', 'phosphosite_curated.pickle'),
-        'noref': os.path.join('cache', 'phosphosite_noref.pickle')
+        'curated': os.path.join(
+            settings.get('cachedir'),
+            'phosphosite_curated.pickle',
+        ),
+        'noref': os.path.join(
+            settings.get('cachedir'),
+            'phosphosite_noref.pickle',
+        )
     },
     'dbptm': {
         'old_dbptm': os.path.join(common.ROOT, 'data', 'old_dbptm.tab'),
