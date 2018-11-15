@@ -2791,7 +2791,8 @@
 
 <div class="viewcode-block" id="PyPath.read_list_file"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.read_list_file">[docs]</a>    <span class="k">def</span> <span class="nf">read_list_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Reads a list from a file.</span>
+<span class="sd">        Reads a list from a file and adds it to</span>
+<span class="sd">        :py:attr:`pypath.main.PyPath.lists`.</span>
 
 <span class="sd">        :arg pypath.input_formats.ReadList settings:</span>
 <span class="sd">            :py:class:`python.data_formats.ReadList` instance specifying</span>
@@ -2809,7 +2810,7 @@
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">!=</span> <span class="s2">&quot;ReadList&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span>
                             <span class="p">(</span><span class="s2">&quot;&quot;&quot;No proper input file definition!</span><span class="se">\n\&#39;</span><span class="s2">settings</span><span class="se">\&#39;</span><span class="s2"></span>
-<span class="s2">                should be a </span><span class="se">\&#39;</span><span class="s2">readList</span><span class="se">\&#39;</span><span class="s2"> instance</span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span><span class="p">),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
+<span class="s2">                             should be a </span><span class="se">\&#39;</span><span class="s2">readList</span><span class="se">\&#39;</span><span class="s2"> instance</span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span><span class="p">),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dataio</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">):</span>
@@ -2833,7 +2834,7 @@
 
         <span class="k">if</span> <span class="n">_input</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;&quot;&quot;Could not find &#39;</span><span class="se">\</span>
-<span class="s2">                &#39;file or dataio function.</span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span><span class="p">),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
+<span class="s2">                                &#39;file or dataio function.</span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span><span class="p">),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> opened...&quot;</span> <span class="o">%</span> <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">)</span>
@@ -2845,7 +2846,7 @@
         <span class="n">readError</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">itemList</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">_input</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">_input</span><span class="p">:</span> <span class="c1"># XXX: Could use enumerate(_input) instead of lnum</span>
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="p">(</span><span class="n">lnum</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">settings</span><span class="o">.</span><span class="n">header</span><span class="p">):</span>
                 <span class="c1"># empty lines</span>
@@ -2867,18 +2868,17 @@
 
                 <span class="c1"># reading names and attributes</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">newItem</span> <span class="o">=</span> <span class="p">{</span>
-                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">line</span><span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">nameCol</span><span class="p">],</span>
-                        <span class="s2">&quot;nameType&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">nameType</span><span class="p">,</span>
-                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">typ</span><span class="p">,</span>
-                        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">name</span>
-                    <span class="p">}</span>
+                    <span class="n">newItem</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">line</span><span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">nameCol</span><span class="p">],</span>
+                               <span class="s2">&quot;nameType&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">nameType</span><span class="p">,</span>
+                               <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">typ</span><span class="p">,</span>
+                               <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
 
                 <span class="k">except</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span>
-                        <span class="sd">&quot;&quot;&quot;Wrong name column indexes (%u and %u),</span>
-<span class="sd">                        or wrong separator (%s)? Line #%u\n&quot;&quot;&quot;</span> <span class="o">%</span>
-                        <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">nameCol</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">separator</span><span class="p">,</span> <span class="n">lnum</span><span class="p">)),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span>
+                                    <span class="p">(</span><span class="s2">&quot;&quot;&quot;Wrong name column indexes (</span><span class="si">%u</span><span class="s2"> and </span><span class="si">%u</span><span class="s2">),</span>
+<span class="s2">                                     or wrong separator (</span><span class="si">%s</span><span class="s2">)? Line #</span><span class="si">%u</span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span> <span class="o">%</span>
+                                     <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">nameCol</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">separator</span><span class="p">,</span>
+                                      <span class="n">lnum</span><span class="p">)),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
                     <span class="n">readError</span> <span class="o">=</span> <span class="mi">1</span>
                     <span class="k">break</span>
 
@@ -2899,13 +2899,26 @@
         <span class="n">itemListMapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_list</span><span class="p">(</span><span class="n">itemList</span><span class="p">,</span> <span class="n">singleList</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">itemListMapped</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">itemListMapped</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%u</span><span class="s2"> lines have been read from </span><span class="si">%s</span><span class="s2">, </span><span class="si">%u</span><span class="s2"> &#39;</span><span class="se">\</span>
-<span class="s2">            items after mapping&quot;</span> <span class="o">%</span>
+<span class="s2">                        items after mapping&quot;</span> <span class="o">%</span>
                         <span class="p">(</span><span class="n">lnum</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">itemListMapped</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">itemListMapped</span></div>
 
 <div class="viewcode-block" id="PyPath.map_list"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.map_list">[docs]</a>    <span class="k">def</span> <span class="nf">map_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">,</span> <span class="n">singleList</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Only a wrapper for map_edge()</span>
+<span class="sd">        Maps the names from a list of edges or items (molecules).</span>
+
+<span class="sd">        :arg list lst:</span>
+<span class="sd">            List of items or edge dictionaries whose names have to be</span>
+<span class="sd">            mapped.</span>
+<span class="sd">        :arg bool singleList:</span>
+<span class="sd">            Optional, ``False`` by default. Determines whether the</span>
+<span class="sd">            provided elements are items or edges. This is, either calls</span>
+<span class="sd">            :py:meth:`pypath.main.PyPath.map_edge` or</span>
+<span class="sd">            :py:meth:`pypath.main.PyPath.map_item` to map the item</span>
+<span class="sd">            names.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*list*) -- Copy of *lst* with their elements&#39; names mapped.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">listMapped</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2924,48 +2937,74 @@
 
 <div class="viewcode-block" id="PyPath.map_item"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.map_item">[docs]</a>    <span class="k">def</span> <span class="nf">map_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Translates the name in item representing a molecule.</span>
+<span class="sd">        Translates the name in *item* representing a molecule. Default</span>
+<span class="sd">        name types are defined in</span>
+<span class="sd">        :py:attr:`pypath.main.PyPath.default_name_type` If the mapping</span>
+<span class="sd">        is unsuccessful, the item will be added to</span>
+<span class="sd">        :py:attr:`pypath.main.PyPath.unmapped` list.</span>
+
+<span class="sd">        :arg dict item:</span>
+<span class="sd">            Item whose name is to be mapped to a default name type.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*list*) -- The default mapped name(s) [str] of *item*.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="c1"># TODO: include</span>
         <span class="n">defaultNames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span>
             <span class="n">item</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">item</span><span class="p">[</span><span class="s1">&#39;nameType&#39;</span><span class="p">],</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">default_name_type</span><span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]])</span>
+
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">defaultNames</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">unmapped</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+
         <span class="k">return</span> <span class="n">defaultNames</span></div>
 
 <div class="viewcode-block" id="PyPath.map_edge"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.map_edge">[docs]</a>    <span class="k">def</span> <span class="nf">map_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Translates molecule names in dict representing an edge.</span>
+<span class="sd">        Translates the name in *edge* representing an edge. Default</span>
+<span class="sd">        name types are defined in</span>
+<span class="sd">        :py:attr:`pypath.main.PyPath.default_name_type` If the mapping</span>
+<span class="sd">        is unsuccessful, the item will be added to</span>
+<span class="sd">        :py:attr:`pypath.main.PyPath.unmapped` list.</span>
+
+<span class="sd">        :arg dict edge:</span>
+<span class="sd">            Item whose name is to be mapped to a default name type.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*list*) -- Contains the edge(s) [dict] with default mapped</span>
+<span class="sd">            names.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">edgeStack</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">defaultNameA</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span>
-            <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;nameA&#39;</span><span class="p">],</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;nameTypeA&#39;</span><span class="p">],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">default_name_type</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="s1">&#39;typeA&#39;</span><span class="p">]],</span>
-            <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;taxA&#39;</span><span class="p">])</span>
-        <span class="c1"># print &#39;mapped %s to %s&#39; % (str(edge[&#39;nameA&#39;]), str(defaultNameA))</span>
-        <span class="n">defaultNameB</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span>
-            <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;nameB&#39;</span><span class="p">],</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;nameTypeB&#39;</span><span class="p">],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">default_name_type</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="s1">&#39;typeB&#39;</span><span class="p">]],</span>
-            <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;taxB&#39;</span><span class="p">])</span>
 
+        <span class="n">defNameA</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="s1">&#39;nameA&#39;</span><span class="p">],</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;nameTypeA&#39;</span><span class="p">],</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">default_name_type</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="s1">&#39;typeA&#39;</span><span class="p">]],</span>
+                                        <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;taxA&#39;</span><span class="p">])</span>
+        <span class="c1"># print &#39;mapped %s to %s&#39; % (str(edge[&#39;nameA&#39;]), str(defaultNameA))</span>
+
+        <span class="n">defNameB</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="s1">&#39;nameB&#39;</span><span class="p">],</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;nameTypeB&#39;</span><span class="p">],</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">default_name_type</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="s1">&#39;typeB&#39;</span><span class="p">]],</span>
+                                        <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;taxB&#39;</span><span class="p">])</span>
         <span class="c1"># print &#39;mapped %s to %s&#39; % (str(edge[&#39;nameB&#39;]), str(defaultNameB))</span>
+
         <span class="c1"># this is needed because the possibility ambigous mapping</span>
         <span class="c1"># one name can be mapped to multiple ones</span>
         <span class="c1"># this multiplies the nodes and edges</span>
         <span class="c1"># in case of proteins this does not happen too often</span>
-        <span class="k">for</span> <span class="n">dnA</span> <span class="ow">in</span> <span class="n">defaultNameA</span><span class="p">:</span>
 
-            <span class="k">for</span> <span class="n">dnB</span> <span class="ow">in</span> <span class="n">defaultNameB</span><span class="p">:</span>
-                <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;defaultNameA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dnA</span>
-                <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;defaultNameTypeA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_name_type</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span>
-                    <span class="s1">&#39;typeA&#39;</span><span class="p">]]</span>
-                <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;defaultNameB&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dnB</span>
-                <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;defaultNameTypeB&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_name_type</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span>
-                    <span class="s1">&#39;typeB&#39;</span><span class="p">]]</span>
-                <span class="n">edgeStack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
-                <span class="c1"># print &#39;new edge: %s&#39; % str(edge)</span>
+        <span class="c1"># XXX: I refactored this into a single for loop (using itertools.product):</span>
+
+        <span class="c1">#for dnA in defNameA:</span>
+            <span class="c1">#for dnB in defNameB:</span>
+        <span class="k">for</span> <span class="n">dnA</span><span class="p">,</span> <span class="n">dnB</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">defNameA</span><span class="p">,</span> <span class="n">defNameB</span><span class="p">):</span>
+            <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;defaultNameA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dnA</span>
+            <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;defaultNameTypeA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_name_type</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="s1">&#39;typeA&#39;</span><span class="p">]]</span>
+
+            <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;defaultNameB&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dnB</span>
+            <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;defaultNameTypeB&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_name_type</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="s1">&#39;typeB&#39;</span><span class="p">]]</span>
+            <span class="n">edgeStack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+            <span class="c1"># print &#39;new edge: %s&#39; % str(edge)</span>
 
         <span class="k">return</span> <span class="n">edgeStack</span></div>
 
@@ -2973,44 +3012,55 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Combines multiple attributes into one. This method attempts</span>
 <span class="sd">        to find out which is the best way to combine attributes.</span>
-<span class="sd">            * if there is only one value or one of them is None, then returns</span>
-<span class="sd">              the one available</span>
-<span class="sd">            * lists: concatenates unique values of lists</span>
-<span class="sd">            * numbers: returns the greater by default</span>
-<span class="sd">              or calls `num_method()` if given.</span>
-<span class="sd">            * sets: returns the union</span>
-<span class="sd">            * dicts: calls `common.merge_dicts()`</span>
-<span class="sd">            * Direction: calls their special `merge()` method</span>
+<span class="sd">            * If there is only one value or one of them is None, then</span>
+<span class="sd">              returns the one available.</span>
+<span class="sd">            * Lists: concatenates unique values of lists.</span>
+<span class="sd">            * Numbers: returns the greater by default or calls</span>
+<span class="sd">              *num_method* if given.</span>
+<span class="sd">            * Sets: returns the union.</span>
+<span class="sd">            * Dictionaries: calls :py:func:`pypath.common.merge_dicts`.</span>
+<span class="sd">            * Direction: calls their special</span>
+<span class="sd">              :py:meth:`pypath.main.Direction.merge` method.</span>
 <span class="sd">        Works on more than 2 attributes recursively.</span>
 
-<span class="sd">        :param list lst: List of one or two attribute values.</span>
-<span class="sd">        :param callable num_method: Method to merge numeric attributes.</span>
+<span class="sd">        :arg list lst:</span>
+<span class="sd">            List of one or two attribute values.</span>
+<span class="sd">        :arg function num_method:</span>
+<span class="sd">            Optional, ``max`` by default. Method to merge numeric</span>
+<span class="sd">            attributes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="nf">list_or_set</span><span class="p">(</span><span class="n">one</span><span class="p">,</span> <span class="n">two</span><span class="p">):</span>
-            <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">one</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">two</span><span class="p">,</span> <span class="nb">set</span><span class="p">))</span> <span class="ow">or</span> \
-               <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">two</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">one</span><span class="p">,</span> <span class="nb">set</span><span class="p">)):</span>
+
+            <span class="k">if</span> <span class="p">((</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">one</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">two</span><span class="p">,</span> <span class="nb">set</span><span class="p">))</span>
+                <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">two</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">one</span><span class="p">,</span> <span class="nb">set</span><span class="p">))):</span>
+
                 <span class="k">try</span><span class="p">:</span>
                     <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">one</span><span class="p">),</span> <span class="nb">set</span><span class="p">(</span><span class="n">two</span><span class="p">)</span>
+
                 <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
                     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">one</span><span class="p">),</span> <span class="nb">list</span><span class="p">(</span><span class="n">two</span><span class="p">)</span>
+
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">one</span><span class="p">,</span> <span class="n">two</span>
 
         <span class="c1"># recursion:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">lst</span> <span class="o">=</span> <span class="p">[</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                   <span class="bp">self</span><span class="o">.</span><span class="n">combine_attr</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">num_method</span> <span class="o">=</span> <span class="n">num_method</span><span class="p">)]</span>
+            <span class="n">lst</span> <span class="o">=</span> <span class="p">[</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">combine_attr</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">num_method</span><span class="o">=</span><span class="n">num_method</span><span class="p">)]</span>
 
         <span class="c1"># quick and simple cases:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
+
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
         <span class="k">if</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
             <span class="k">return</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
         <span class="k">if</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
         <span class="k">if</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -3023,9 +3073,11 @@
 
         <span class="c1"># merge lists:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+
             <span class="k">try</span><span class="p">:</span>
                 <span class="c1"># lists of hashable elements only:</span>
                 <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+
             <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
                 <span class="c1"># if contain non-hashable elements:</span>
                 <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
@@ -3033,6 +3085,7 @@
         <span class="c1"># merge sets:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">set</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">common</span><span class="o">.</span><span class="n">addToSet</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">set</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">common</span><span class="o">.</span><span class="n">addToSet</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
@@ -3041,29 +3094,38 @@
             <span class="k">return</span> <span class="n">common</span><span class="o">.</span><span class="n">merge_dicts</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
         <span class="c1"># 2 different strings: return a set with both of them</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">unicode</span><span class="p">))</span> <span class="ow">and</span> \
-                <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">unicode</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="p">((</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">unicode</span><span class="p">))</span>
+            <span class="ow">and</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">unicode</span><span class="p">))):</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
             <span class="k">return</span> <span class="nb">set</span><span class="p">([</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
 
         <span class="c1"># one attr is list, the other is simple value:</span>
         <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">in</span> <span class="n">common</span><span class="o">.</span><span class="n">simpleTypes</span><span class="p">):</span>
+
             <span class="k">if</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">common</span><span class="o">.</span><span class="n">numTypes</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">common</span><span class="o">.</span><span class="n">addToList</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
         <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">in</span> <span class="n">common</span><span class="o">.</span><span class="n">simpleTypes</span><span class="p">):</span>
+
             <span class="k">if</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">common</span><span class="o">.</span><span class="n">numTypes</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">common</span><span class="o">.</span><span class="n">addToList</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="c1"># special: merging directions</span>
-        <span class="k">if</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;Direction&#39;</span> <span class="ow">and</span> \
-                <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;Direction&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;Direction&#39;</span>
+            <span class="ow">and</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;Direction&#39;</span><span class="p">):</span>
+
             <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
             <span class="k">return</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -3071,41 +3133,68 @@
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;__add__&#39;</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
 
-    <span class="k">def</span> <span class="nf">uniq_node_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.uniq_node_list"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.uniq_node_list">[docs]</a>    <span class="k">def</span> <span class="nf">uniq_node_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a given list of nodes containing only the unique</span>
+<span class="sd">        elements.</span>
+
+<span class="sd">        :arg list lst:</span>
+<span class="sd">            List of nodes.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*list*) -- Copy of *lst* containing only unique nodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">uniqLst</span> <span class="o">=</span> <span class="p">{}</span>
+
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+
             <span class="k">if</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">uniqLst</span><span class="p">:</span>
                 <span class="n">uniqLst</span><span class="p">[</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">uniqLst</span><span class="p">[</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merge_attrs</span><span class="p">(</span><span class="n">uniqLst</span><span class="p">[</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">uniqLst</span>
 
-<div class="viewcode-block" id="PyPath.collapse_by_name"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.collapse_by_name">[docs]</a>    <span class="k">def</span> <span class="nf">collapse_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">uniqLst</span></div>
+
+<div class="viewcode-block" id="PyPath.collapse_by_name"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.collapse_by_name">[docs]</a>    <span class="k">def</span> <span class="nf">collapse_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Collapses nodes with the same name with copying and merging</span>
-<span class="sd">        all edges and attributes.</span>
+<span class="sd">        Collapses nodes with the same name by copying and merging</span>
+<span class="sd">        all edges and attributes. Operates directly on the provided</span>
+<span class="sd">        network object.</span>
+
+<span class="sd">        :arg igraph.Graph graph:</span>
+<span class="sd">            Optional, ``None`` by default. The network for which the</span>
+<span class="sd">            nodes are to be collapsed. If none is provided, takes</span>
+<span class="sd">            :py:attr:`pypath.main.PyPath.graph` (undirected network) by</span>
+<span class="sd">            default.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">graph</span>
 
         <span class="n">dupli</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
 
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">dupli</span><span class="p">):</span>
+
             <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">nodes</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">)</span>
+
                 <span class="c1"># the number of nodes might have changed</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">merge_nodes</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PyPath.merge_nodes"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.merge_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">merge_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">primary</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">graph</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.merge_nodes"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.merge_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">merge_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">primary</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Merges all attributes and all edges of selected nodes</span>
-<span class="sd">        and assigns them to the primary node</span>
-<span class="sd">        (by default the one with lowest ID).</span>
+<span class="sd">        Merges all attributes and all edges of selected nodes and</span>
+<span class="sd">        assigns them to the primary node (by default the one with</span>
+<span class="sd">        lowest ID).</span>
 
-<span class="sd">        :param list nodes: List of edge IDs.</span>
-<span class="sd">        :param int primary: ID of the primary edge;</span>
-<span class="sd">                            if None the lowest ID selected.</span>
+<span class="sd">        :param list nodes:</span>
+<span class="sd">            List of edge IDs.</span>
+<span class="sd">        :param int primary:</span>
+<span class="sd">            ID of the primary edge; if None the lowest ID selected.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">graph</span>
         <span class="n">nodes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span>
                             <span class="n">n</span><span class="o">.</span><span class="n">index</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">int</span> <span class="k">else</span> <span class="n">n</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)))</span>

@@ -56,7 +56,7 @@
 
 
 \title{pypath Documentation}
-\date{Nov 13, 2018}
+\date{Nov 15, 2018}
 \release{0.7.98}
 \author{Dénes Türei}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -711,8 +711,17 @@ Loops will be deleted unless the \sphinxtitleref{loops} attribute set to \sphinx
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.collapse_by_name}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{collapse\_by\_name}}}{\emph{graph=None}}{}
-Collapses nodes with the same name with copying and merging
-all edges and attributes.
+Collapses nodes with the same name by copying and merging
+all edges and attributes. Operates directly on the provided
+network object.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{graph}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The network for which the
+nodes are to be collapsed. If none is provided, takes
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.graph}} (undirected network) by
+default.
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -724,24 +733,25 @@ Combines multiple attributes into one. This method attempts
 to find out which is the best way to combine attributes.
 \begin{itemize}
 \item {} 
-if there is only one value or one of them is None, then returns
-the one available
+If there is only one value or one of them is None, then
+returns the one available.
 
 \item {} 
-lists: concatenates unique values of lists
+Lists: concatenates unique values of lists.
 
 \item {} 
-numbers: returns the greater by default
-or calls \sphinxtitleref{num\_method()} if given.
+Numbers: returns the greater by default or calls
+\sphinxstyleemphasis{num\_method} if given.
 
 \item {} 
-sets: returns the union
+Sets: returns the union.
 
 \item {} 
-dicts: calls \sphinxtitleref{common.merge\_dicts()}
+Dictionaries: calls \sphinxcode{\sphinxupquote{pypath.common.merge\_dicts()}}.
 
 \item {} 
-Direction: calls their special \sphinxtitleref{merge()} method
+Direction: calls their special
+{\hyperref[\detokenize{main:pypath.main.Direction.merge}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.Direction.merge()}}}}} method.
 
 \end{itemize}
 
@@ -752,7 +762,8 @@ Works on more than 2 attributes recursively.
 \sphinxstyleliteralstrong{\sphinxupquote{lst}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} List of one or two attribute values.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{num\_method}} (\sphinxstyleliteralemphasis{\sphinxupquote{callable}}) \textendash{} Method to merge numeric attributes.
+\sphinxstyleliteralstrong{\sphinxupquote{num\_method}} (\sphinxstyleliteralemphasis{\sphinxupquote{function}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{max}} by default. Method to merge numeric
+attributes.
 
 \end{itemize}
 
@@ -2706,7 +2717,20 @@ information from the edges. \sphinxcode{\sphinxupquote{{[}{]}}} otherwise.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.map_edge}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{map\_edge}}}{\emph{edge}}{}
-Translates molecule names in dict representing an edge.
+Translates the name in \sphinxstyleemphasis{edge} representing an edge. Default
+name types are defined in
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.default\_name\_type}} If the mapping
+is unsuccessful, the item will be added to
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.unmapped}} list.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{edge}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Item whose name is to be mapped to a default name type.
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{list}) \textendash{} Contains the edge(s) {[}dict{]} with default mapped
+names.
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2714,7 +2738,19 @@ Translates molecule names in dict representing an edge.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.map_item}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{map\_item}}}{\emph{item}}{}
-Translates the name in item representing a molecule.
+Translates the name in \sphinxstyleemphasis{item} representing a molecule. Default
+name types are defined in
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.default\_name\_type}} If the mapping
+is unsuccessful, the item will be added to
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.unmapped}} list.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{item}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Item whose name is to be mapped to a default name type.
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{list}) \textendash{} The default mapped name(s) {[}str{]} of \sphinxstyleemphasis{item}.
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2722,7 +2758,26 @@ Translates the name in item representing a molecule.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.map_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{map\_list}}}{\emph{lst}, \emph{singleList=False}}{}
-Only a wrapper for map\_edge()
+Maps the names from a list of edges or items (molecules).
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{lst}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} List of items or edge dictionaries whose names have to be
+mapped.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{singleList}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Determines whether the
+provided elements are items or edges. This is, either calls
+{\hyperref[\detokenize{main:pypath.main.PyPath.map_edge}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.map\_edge()}}}}} or
+{\hyperref[\detokenize{main:pypath.main.PyPath.map_item}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.map\_item()}}}}} to map the item
+names.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{list}) \textendash{} Copy of \sphinxstyleemphasis{lst} with their elements’ names mapped.
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2752,17 +2807,16 @@ Merges two lists in \sphinxtitleref{lists}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.merge_nodes}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{merge\_nodes}}}{\emph{nodes}, \emph{primary=None}, \emph{graph=None}}{}
-Merges all attributes and all edges of selected nodes
-and assigns them to the primary node
-(by default the one with lowest ID).
+Merges all attributes and all edges of selected nodes and
+assigns them to the primary node (by default the one with
+lowest ID).
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{nodes}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} List of edge IDs.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{primary}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} ID of the primary edge;
-if None the lowest ID selected.
+\sphinxstyleliteralstrong{\sphinxupquote{primary}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} ID of the primary edge; if None the lowest ID selected.
 
 \end{itemize}
 
@@ -3287,7 +3341,8 @@ from a dictionary, the type will be {[}dict{]}).
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.read_list_file}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{read\_list\_file}}}{\emph{settings}, \emph{**kwargs}}{}
-Reads a list from a file.
+Reads a list from a file and adds it to
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.lists}}.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
@@ -3777,6 +3832,23 @@ Returns list of \sphinxcode{\sphinxupquote{igraph.Vertex()}} object
 for a list of UniProt IDs omitting those
 could not be found in the default
 undirected graph.
+
+\end{fulllineitems}
+
+\index{uniq\_node\_list() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.uniq_node_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{uniq\_node\_list}}}{\emph{lst}}{}
+Returns a given list of nodes containing only the unique
+elements.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{lst}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} List of nodes.
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{list}) \textendash{} Copy of \sphinxstyleemphasis{lst} containing only unique nodes.
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 

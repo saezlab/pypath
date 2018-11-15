@@ -329,8 +329,20 @@ Loops will be deleted unless the <cite>loops</cite> attribute set to <cite>True<
 <dl class="method">
 <dt id="pypath.main.PyPath.collapse_by_name">
 <code class="descname">collapse_by_name</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.collapse_by_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.collapse_by_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Collapses nodes with the same name with copying and merging
-all edges and attributes.</p>
+<dd><p>Collapses nodes with the same name by copying and merging
+all edges and attributes. Operates directly on the provided
+network object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>graph</strong> (<em>igraph.Graph</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. The network for which the
+nodes are to be collapsed. If none is provided, takes
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.graph</span></code> (undirected network) by
+default.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -340,14 +352,15 @@ all edges and attributes.</p>
 to find out which is the best way to combine attributes.</p>
 <blockquote>
 <div><ul class="simple">
-<li>if there is only one value or one of them is None, then returns
-the one available</li>
-<li>lists: concatenates unique values of lists</li>
-<li>numbers: returns the greater by default
-or calls <cite>num_method()</cite> if given.</li>
-<li>sets: returns the union</li>
-<li>dicts: calls <cite>common.merge_dicts()</cite></li>
-<li>Direction: calls their special <cite>merge()</cite> method</li>
+<li>If there is only one value or one of them is None, then
+returns the one available.</li>
+<li>Lists: concatenates unique values of lists.</li>
+<li>Numbers: returns the greater by default or calls
+<em>num_method</em> if given.</li>
+<li>Sets: returns the union.</li>
+<li>Dictionaries: calls <code class="xref py py-func docutils literal notranslate"><span class="pre">pypath.common.merge_dicts()</span></code>.</li>
+<li>Direction: calls their special
+<a class="reference internal" href="#pypath.main.Direction.merge" title="pypath.main.Direction.merge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.Direction.merge()</span></code></a> method.</li>
 </ul>
 </div></blockquote>
 <p>Works on more than 2 attributes recursively.</p>
@@ -357,7 +370,8 @@ or calls <cite>num_method()</cite> if given.</li>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>lst</strong> (<em>list</em>) – List of one or two attribute values.</li>
-<li><strong>num_method</strong> (<em>callable</em>) – Method to merge numeric attributes.</li>
+<li><strong>num_method</strong> (<em>function</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">max</span></code> by default. Method to merge numeric
+attributes.</li>
 </ul>
 </td>
 </tr>
@@ -2003,19 +2017,68 @@ information from the edges. <code class="docutils literal notranslate"><span cla
 <dl class="method">
 <dt id="pypath.main.PyPath.map_edge">
 <code class="descname">map_edge</code><span class="sig-paren">(</span><em>edge</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.map_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.map_edge" title="Permalink to this definition">¶</a></dt>
-<dd><p>Translates molecule names in dict representing an edge.</p>
+<dd><p>Translates the name in <em>edge</em> representing an edge. Default
+name types are defined in
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.default_name_type</span></code> If the mapping
+is unsuccessful, the item will be added to
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.unmapped</span></code> list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>edge</strong> (<em>dict</em>) – Item whose name is to be mapped to a default name type.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(<em>list</em>) – Contains the edge(s) [dict] with default mapped
+names.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.map_item">
 <code class="descname">map_item</code><span class="sig-paren">(</span><em>item</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.map_item"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.map_item" title="Permalink to this definition">¶</a></dt>
-<dd><p>Translates the name in item representing a molecule.</p>
+<dd><p>Translates the name in <em>item</em> representing a molecule. Default
+name types are defined in
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.default_name_type</span></code> If the mapping
+is unsuccessful, the item will be added to
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.unmapped</span></code> list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>item</strong> (<em>dict</em>) – Item whose name is to be mapped to a default name type.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(<em>list</em>) – The default mapped name(s) [str] of <em>item</em>.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.map_list">
 <code class="descname">map_list</code><span class="sig-paren">(</span><em>lst</em>, <em>singleList=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.map_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.map_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Only a wrapper for map_edge()</p>
+<dd><p>Maps the names from a list of edges or items (molecules).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>lst</strong> (<em>list</em>) – List of items or edge dictionaries whose names have to be
+mapped.</li>
+<li><strong>singleList</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default. Determines whether the
+provided elements are items or edges. This is, either calls
+<a class="reference internal" href="#pypath.main.PyPath.map_edge" title="pypath.main.PyPath.map_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.map_edge()</span></code></a> or
+<a class="reference internal" href="#pypath.main.PyPath.map_item" title="pypath.main.PyPath.map_item"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.map_item()</span></code></a> to map the item
+names.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>list</em>) – Copy of <em>lst</em> with their elements’ names mapped.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -2042,17 +2105,16 @@ network.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.merge_nodes">
 <code class="descname">merge_nodes</code><span class="sig-paren">(</span><em>nodes</em>, <em>primary=None</em>, <em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.merge_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.merge_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Merges all attributes and all edges of selected nodes
-and assigns them to the primary node
-(by default the one with lowest ID).</p>
+<dd><p>Merges all attributes and all edges of selected nodes and
+assigns them to the primary node (by default the one with
+lowest ID).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>nodes</strong> (<em>list</em>) – List of edge IDs.</li>
-<li><strong>primary</strong> (<em>int</em>) – ID of the primary edge;
-if None the lowest ID selected.</li>
+<li><strong>primary</strong> (<em>int</em>) – ID of the primary edge; if None the lowest ID selected.</li>
 </ul>
 </td>
 </tr>
@@ -2514,7 +2576,8 @@ from a dictionary, the type will be [dict]).</td>
 <dl class="method">
 <dt id="pypath.main.PyPath.read_list_file">
 <code class="descname">read_list_file</code><span class="sig-paren">(</span><em>settings</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.read_list_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.read_list_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reads a list from a file.</p>
+<dd><p>Reads a list from a file and adds it to
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.lists</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2942,6 +3005,23 @@ otherwise <code class="docutils literal notranslate"><span class="pre">None</spa
 for a list of UniProt IDs omitting those
 could not be found in the default
 undirected graph.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.uniq_node_list">
+<code class="descname">uniq_node_list</code><span class="sig-paren">(</span><em>lst</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.uniq_node_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.uniq_node_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a given list of nodes containing only the unique
+elements.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>lst</strong> (<em>list</em>) – List of nodes.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(<em>list</em>) – Copy of <em>lst</em> containing only unique nodes.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">

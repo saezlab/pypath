@@ -2753,7 +2753,8 @@ class PyPath(object):
 
     def read_list_file(self, settings, **kwargs):
         """
-        Reads a list from a file.
+        Reads a list from a file and adds it to
+        :py:attr:`pypath.main.PyPath.lists`.
 
         :arg pypath.input_formats.ReadList settings:
             :py:class:`python.data_formats.ReadList` instance specifying
@@ -2771,7 +2772,7 @@ class PyPath(object):
         if settings.__class__.__name__ != "ReadList":
             self.ownlog.msg(2,
                             ("""No proper input file definition!\n\'settings\'
-                should be a \'readList\' instance\n"""), 'ERROR')
+                             should be a \'readList\' instance\n"""), 'ERROR')
             return None
 
         if hasattr(dataio, settings.inFile):
@@ -2795,7 +2796,7 @@ class PyPath(object):
 
         if _input is None:
             self.ownlog.msg(2, ("""Could not find '\
-                'file or dataio function.\n"""), 'ERROR')
+                                'file or dataio function.\n"""), 'ERROR')
             return None
 
         self.ownlog.msg(2, "%s opened..." % settings.inFile)
@@ -2807,7 +2808,7 @@ class PyPath(object):
         readError = 0
         itemList = []
 
-        for line in _input:
+        for line in _input: # XXX: Could use enumerate(_input) instead of lnum
 
             if len(line) == 0 or (lnum == 1 and settings.header):
                 # empty lines
@@ -2829,18 +2830,17 @@ class PyPath(object):
 
                 # reading names and attributes
                 try:
-                    newItem = {
-                        "name": line[settings.nameCol],
-                        "nameType": settings.nameType,
-                        "type": settings.typ,
-                        "source": settings.name
-                    }
+                    newItem = {"name": line[settings.nameCol],
+                               "nameType": settings.nameType,
+                               "type": settings.typ,
+                               "source": settings.name}
 
                 except:
-                    self.ownlog.msg(2, (
-                        """Wrong name column indexes (%u and %u),
-                        or wrong separator (%s)? Line #%u\n""" %
-                        (settings.nameCol, settings.separator, lnum)), 'ERROR')
+                    self.ownlog.msg(2,
+                                    ("""Wrong name column indexes (%u and %u),
+                                     or wrong separator (%s)? Line #%u\n""" %
+                                     (settings.nameCol, settings.separator,
+                                      lnum)), 'ERROR')
                     readError = 1
                     break
 
@@ -2861,13 +2861,26 @@ class PyPath(object):
         itemListMapped = self.map_list(itemList, singleList=True)
         itemListMapped = list(set(itemListMapped))
         self.ownlog.msg(2, "%u lines have been read from %s, %u '\
-            items after mapping" %
+                        items after mapping" %
                         (lnum, settings.inFile, len(itemListMapped)))
         self.lists[settings.name] = itemListMapped
 
     def map_list(self, lst, singleList=False):
         """
-        Only a wrapper for map_edge()
+        Maps the names from a list of edges or items (molecules).
+
+        :arg list lst:
+            List of items or edge dictionaries whose names have to be
+            mapped.
+        :arg bool singleList:
+            Optional, ``False`` by default. Determines whether the
+            provided elements are items or edges. This is, either calls
+            :py:meth:`pypath.main.PyPath.map_edge` or
+            :py:meth:`pypath.main.PyPath.map_item` to map the item
+            names.
+
+        :return:
+            (*list*) -- Copy of *lst* with their elements' names mapped.
         """
 
         listMapped = []
@@ -2886,48 +2899,74 @@ class PyPath(object):
 
     def map_item(self, item):
         """
-        Translates the name in item representing a molecule.
+        Translates the name in *item* representing a molecule. Default
+        name types are defined in
+        :py:attr:`pypath.main.PyPath.default_name_type` If the mapping
+        is unsuccessful, the item will be added to
+        :py:attr:`pypath.main.PyPath.unmapped` list.
+
+        :arg dict item:
+            Item whose name is to be mapped to a default name type.
+
+        :return:
+            (*list*) -- The default mapped name(s) [str] of *item*.
         """
+
         # TODO: include
         defaultNames = self.mapper.map_name(
             item['name'], item['nameType'],
             self.default_name_type[item['type']])
+
         if len(defaultNames) == 0:
             self.unmapped.append(item['name'])
+
         return defaultNames
 
     def map_edge(self, edge):
         """
-        Translates molecule names in dict representing an edge.
+        Translates the name in *edge* representing an edge. Default
+        name types are defined in
+        :py:attr:`pypath.main.PyPath.default_name_type` If the mapping
+        is unsuccessful, the item will be added to
+        :py:attr:`pypath.main.PyPath.unmapped` list.
+
+        :arg dict edge:
+            Item whose name is to be mapped to a default name type.
+
+        :return:
+            (*list*) -- Contains the edge(s) [dict] with default mapped
+            names.
         """
 
         edgeStack = []
-        defaultNameA = self.mapper.map_name(
-            edge['nameA'], edge['nameTypeA'],
-            self.default_name_type[edge['typeA']],
-            ncbi_tax_id = edge['taxA'])
-        # print 'mapped %s to %s' % (str(edge['nameA']), str(defaultNameA))
-        defaultNameB = self.mapper.map_name(
-            edge['nameB'], edge['nameTypeB'],
-            self.default_name_type[edge['typeB']],
-            ncbi_tax_id = edge['taxB'])
 
+        defNameA = self.mapper.map_name(edge['nameA'], edge['nameTypeA'],
+                                        self.default_name_type[edge['typeA']],
+                                        ncbi_tax_id = edge['taxA'])
+        # print 'mapped %s to %s' % (str(edge['nameA']), str(defaultNameA))
+
+        defNameB = self.mapper.map_name(edge['nameB'], edge['nameTypeB'],
+                                        self.default_name_type[edge['typeB']],
+                                        ncbi_tax_id = edge['taxB'])
         # print 'mapped %s to %s' % (str(edge['nameB']), str(defaultNameB))
+
         # this is needed because the possibility ambigous mapping
         # one name can be mapped to multiple ones
         # this multiplies the nodes and edges
         # in case of proteins this does not happen too often
-        for dnA in defaultNameA:
 
-            for dnB in defaultNameB:
-                edge['defaultNameA'] = dnA
-                edge['defaultNameTypeA'] = self.default_name_type[edge[
-                    'typeA']]
-                edge['defaultNameB'] = dnB
-                edge['defaultNameTypeB'] = self.default_name_type[edge[
-                    'typeB']]
-                edgeStack.append(edge)
-                # print 'new edge: %s' % str(edge)
+        # XXX: I refactored this into a single for loop (using itertools.product):
+
+        #for dnA in defNameA:
+            #for dnB in defNameB:
+        for dnA, dnB in itertools.product(defNameA, defNameB):
+            edge['defaultNameA'] = dnA
+            edge['defaultNameTypeA'] = self.default_name_type[edge['typeA']]
+
+            edge['defaultNameB'] = dnB
+            edge['defaultNameTypeB'] = self.default_name_type[edge['typeB']]
+            edgeStack.append(edge)
+            # print 'new edge: %s' % str(edge)
 
         return edgeStack
 
@@ -2935,44 +2974,55 @@ class PyPath(object):
         """
         Combines multiple attributes into one. This method attempts
         to find out which is the best way to combine attributes.
-            * if there is only one value or one of them is None, then returns
-              the one available
-            * lists: concatenates unique values of lists
-            * numbers: returns the greater by default
-              or calls `num_method()` if given.
-            * sets: returns the union
-            * dicts: calls `common.merge_dicts()`
-            * Direction: calls their special `merge()` method
+            * If there is only one value or one of them is None, then
+              returns the one available.
+            * Lists: concatenates unique values of lists.
+            * Numbers: returns the greater by default or calls
+              *num_method* if given.
+            * Sets: returns the union.
+            * Dictionaries: calls :py:func:`pypath.common.merge_dicts`.
+            * Direction: calls their special
+              :py:meth:`pypath.main.Direction.merge` method.
         Works on more than 2 attributes recursively.
 
-        :param list lst: List of one or two attribute values.
-        :param callable num_method: Method to merge numeric attributes.
+        :arg list lst:
+            List of one or two attribute values.
+        :arg function num_method:
+            Optional, ``max`` by default. Method to merge numeric
+            attributes.
         """
 
         def list_or_set(one, two):
-            if (isinstance(one, list) and isinstance(two, set)) or \
-               (isinstance(two, list) and isinstance(one, set)):
+
+            if ((isinstance(one, list) and isinstance(two, set))
+                or (isinstance(two, list) and isinstance(one, set))):
+
                 try:
                     return set(one), set(two)
+
                 except TypeError:
                     return list(one), list(two)
+
             else:
                 return one, two
 
         # recursion:
         if len(lst) > 2:
-            lst = [lst[0],
-                   self.combine_attr(lst[1:], num_method = num_method)]
+            lst = [lst[0], self.combine_attr(lst[1:], num_method=num_method)]
 
         # quick and simple cases:
         if len(lst) == 0:
             return None
+
         if len(lst) == 1:
             return lst[0]
+
         if lst[0] == lst[1]:
             return lst[0]
+
         if lst[0] is None:
             return lst[1]
+
         if lst[1] is None:
             return lst[0]
 
@@ -2985,9 +3035,11 @@ class PyPath(object):
 
         # merge lists:
         if isinstance(lst[0], list) and isinstance(lst[1], list):
+
             try:
                 # lists of hashable elements only:
                 return list(set(itertools.chain(lst[0], lst[1])))
+
             except TypeError:
                 # if contain non-hashable elements:
                 return list(itertools.chain(lst[0], lst[1]))
@@ -2995,6 +3047,7 @@ class PyPath(object):
         # merge sets:
         if isinstance(lst[0], set):
             return common.addToSet(lst[0], lst[1])
+
         if isinstance(lst[1], set):
             return common.addToSet(lst[1], lst[0])
 
@@ -3003,29 +3056,38 @@ class PyPath(object):
             return common.merge_dicts(lst[0], lst[1])
 
         # 2 different strings: return a set with both of them
-        if (isinstance(lst[0], str) or isinstance(lst[0], unicode)) and \
-                (isinstance(lst[1], str) or isinstance(lst[1], unicode)):
+        if ((isinstance(lst[0], str) or isinstance(lst[0], unicode))
+            and (isinstance(lst[1], str) or isinstance(lst[1], unicode))):
+
             if len(lst[0]) == 0:
                 return lst[1]
+
             if len(lst[1]) == 0:
                 return lst[0]
+
             return set([lst[0], lst[1]])
 
         # one attr is list, the other is simple value:
         if (isinstance(lst[0], list) and type(lst[1]) in common.simpleTypes):
+
             if lst[1] in common.numTypes or len(lst[1]) > 0:
                 return common.addToList(lst[0], lst[1])
+
             else:
                 return lst[0]
+
         if (isinstance(lst[1], list) and type(lst[0]) in common.simpleTypes):
+
             if lst[0] in common.numTypes or len(lst[0]) > 0:
                 return common.addToList(lst[1], lst[0])
+
             else:
                 return lst[1]
 
         # special: merging directions
-        if lst[0].__class__.__name__ == 'Direction' and \
-                lst[1].__class__.__name__ == 'Direction':
+        if (lst[0].__class__.__name__ == 'Direction'
+            and lst[1].__class__.__name__ == 'Direction'):
+
             lst[0].merge(lst[1])
             return lst[0]
 
@@ -3034,40 +3096,67 @@ class PyPath(object):
             return lst[0] + lst[1]
 
     def uniq_node_list(self, lst):
+        """
+        Returns a given list of nodes containing only the unique
+        elements.
+
+        :arg list lst:
+            List of nodes.
+
+        :return:
+            (*list*) -- Copy of *lst* containing only unique nodes.
+        """
+
         uniqLst = {}
+
         for n in lst:
+
             if n[0] not in uniqLst:
                 uniqLst[n[0]] = n[1]
+
             else:
                 uniqLst[n[0]] = self.merge_attrs(uniqLst[n[0]], n[1])
+
         return uniqLst
 
-    def collapse_by_name(self, graph = None):
+    def collapse_by_name(self, graph=None):
         """
-        Collapses nodes with the same name with copying and merging
-        all edges and attributes.
+        Collapses nodes with the same name by copying and merging
+        all edges and attributes. Operates directly on the provided
+        network object.
+
+        :arg igraph.Graph graph:
+            Optional, ``None`` by default. The network for which the
+            nodes are to be collapsed. If none is provided, takes
+            :py:attr:`pypath.main.PyPath.graph` (undirected network) by
+            default.
         """
+
         graph = self.graph if graph is None else graph
 
         dupli = Counter(graph.vs['name'])
 
         for name, count in iteritems(dupli):
+
             if count > 1:
                 nodes = graph.vs.select(name = name)
+
                 # the number of nodes might have changed
                 if len(nodes) > 1:
                     self.merge_nodes(nodes)
 
-    def merge_nodes(self, nodes, primary = None, graph = None):
+    def merge_nodes(self, nodes, primary=None, graph=None):
         """
-        Merges all attributes and all edges of selected nodes
-        and assigns them to the primary node
-        (by default the one with lowest ID).
+        Merges all attributes and all edges of selected nodes and
+        assigns them to the primary node (by default the one with
+        lowest ID).
 
-        :param list nodes: List of edge IDs.
-        :param int primary: ID of the primary edge;
-                            if None the lowest ID selected.
+        :param list nodes:
+            List of edge IDs.
+        :param int primary:
+            ID of the primary edge; if None the lowest ID selected.
         """
+
         graph = self.graph if graph is None else graph
         nodes = sorted(list(map(lambda n:
                             n.index if type(n) is not int else n, nodes)))
