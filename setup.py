@@ -37,7 +37,6 @@ with open('HISTORY.rst') as f:
 
 
 setup(
-    cmdclass = {'install': __install},
     name = 'pypath',
     version = __version__,
     maintainer = 'Dénes Türei, Nicolas Palacio',
