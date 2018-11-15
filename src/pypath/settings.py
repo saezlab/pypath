@@ -51,6 +51,7 @@ _defaults = {
     'old_dbptm': 'old_dbptm.tab',
     'slk3_edges': 'signalink3_edges.tsv',
     'slk01human': 'slk01human.csv',
+    'cachedir': None,
 }
 
 in_datadir = {
@@ -85,6 +86,14 @@ def reset_all():
             val = os.path.join(common.ROOT, 'data', val)
         
         setattr(settings, k, val)
+    
+    if settings.cachedir is None:
+        
+        settings.cachedir = os.path.join(
+            os.path.expanduser('~'),
+            '.pypath',
+            'cache',
+        )
     
     globals()['settings'] = settings
 

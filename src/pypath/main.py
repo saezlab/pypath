@@ -108,6 +108,7 @@ import pypath.common as common
 import pypath._version as _version
 from pypath.gr_plot import *
 from pypath.progress import *
+import pypath.settings as settings
 
 omnipath = data_formats.omnipath
 
@@ -1203,6 +1204,9 @@ class PyPath(object):
           module to load the ChEMBL ID conversion tables.
         - *name* [str]: Optional, ``'unnamed'`` by default. Session or
           project name (custom).
+        - *cache_dir* [str]: Optional, ``'~/.pypath/cache'`` by default.
+          Stores all downloaded data so repetitive downloads across sessions
+          can be avoided.
         - *outdir* [str]: Optional, ``'results'`` by default. Output
           directory where to store all output files.
         - *loglevel* [str]: Optional, ``'INFO'`` by default. Sets the
@@ -1290,6 +1294,7 @@ class PyPath(object):
     def __init__(self, ncbi_tax_id=9606, default_name_type=default_name_type,
                  copy=None, mysql=(None, 'mapping'),
                  chembl_mysql=(None, 'chembl'), name='unnamed',
+                 cache_dir = None,
                  outdir='results', loglevel='INFO', loops=False):
         """
         Initializes the network object. **NOTE:** Only the instance is
@@ -1300,10 +1305,16 @@ class PyPath(object):
         self.__version__ = _version.__version__
 
         # Setting up the working directory
-        for d in ['results', 'log', 'cache']:
+        for d in ['results', 'log']:
 
             if not os.path.exists(d):
                 os.makedirs(d)
+        
+        self.cache_dir = cache_dir or settings.get('cachedir')
+        
+        if not os.path.exists(self.cache_dir):
+            
+            os.makedirs(self.cache_dir)
 
         if copy is None:
             # Setting up graph object
@@ -1430,7 +1441,7 @@ class PyPath(object):
         """
         if pfile:
             pfile = pfile if not isinstance(pfile, bool) \
-                else os.path.join('cache', 'default_network.pickle')
+                else os.path.join(self.cache_dir, 'default_network.pickle')
             if os.path.exists(pfile):
                 sys.stdout.write(
                     '\t:: Loading igraph object from file `%s`...' % pfile)
@@ -1463,7 +1474,7 @@ class PyPath(object):
 
     def save_network(self, pfile=None):
         pfile = pfile if pfile is not None \
-            else os.path.join('cache', 'default_network.pickle')
+            else os.path.join(self.cache_dir, 'default_network.pickle')
         pickle.dump(self.graph, open(pfile, 'wb'), -1)
     ###
     # functions to read networks from text files or mysql
@@ -1718,8 +1729,14 @@ class PyPath(object):
         edgeListMapped = []
         infile = None
         _name = settings.name.lower()
-        int_cache = os.path.join('cache', '%s.interactions.pickle' % _name)
-        edges_cache = os.path.join('cache', '%s.edges.pickle' % _name)
+        int_cache = os.path.join(
+            self.cache_dir,
+            '%s.interactions.pickle' % _name
+        )
+        edges_cache = os.path.join(
+            self.cache_dir,
+            '%s.edges.pickle' % _name
+        )
         if not reread and not redownload:
             infile, edgeListMapped = self.lookup_cache(_name, cache_files,
                                                        int_cache, edges_cache)
