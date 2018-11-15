@@ -1449,7 +1449,8 @@ class PyPath(object):
                     return None
         self.load_reflists()
         self.load_resources(
-            lst=lst, exclude=exclude, reread=reread, redownload=redownload)
+            lst=lst, exclude=exclude, reread=reread, redownload=redownload,
+            cache_files=cache_files)
         if save:
             sys.stdout.write('\t:: Saving igraph object to file `%s`...' %
                              pfile)
@@ -1600,7 +1601,7 @@ class PyPath(object):
         return _NamedVertexSeq(self.graph.vs, self.nodNam, self.nodLab).gs()
 
     def vsup(self):
-        return _NamedVertexSeq(self.graph.vs, self.nodNam, self.nodLab).gs()
+        return _NamedVertexSeq(self.graph.vs, self.nodNam, self.nodLab).up()
 
     def update_vindex(self):
         """
@@ -8148,6 +8149,8 @@ class PyPath(object):
                                     nodDct[usrc], nodDct[utgt], error=False)
                                 if eid != -1:
                                     g.es[eid][attrname].add(pw)
+        self.update_pathway_types()
+        self.update_pathways()
 
     def signor_pathways(self, graph=None):
         self.load_pathways('signor', graph=graph)
