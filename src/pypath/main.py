@@ -3160,7 +3160,7 @@ class PyPath(object):
         graph = self.graph if graph is None else graph
         nodes = sorted(list(map(lambda n:
                             n.index if type(n) is not int else n, nodes)))
-        nodes = sorted(nodes)
+        nodes = sorted(nodes) # XXX: Isn't it already sorted just above?
         primary = nodes[0] if primary is None else primary
         primary = primary.index if type(primary) is not int else primary
         nonprimary = list(filter(lambda n: n != primary, nodes))
@@ -3168,30 +3168,26 @@ class PyPath(object):
 
         # combining vertex attributes:
         vprim = graph.vs[primary]
+
         for attr in vprim.attributes():
+
             if attr != 'name':
-                vprim[attr] = self.combine_attr(
-                    list(
-                        map(
-                            lambda vid:
-                                graph.vs[vid][attr],
-                            # combining from all nodes
-                            nodes
-                        )
-                    )
-                )
+                vprim[attr] = self.combine_attr(list(map(
+                                lambda vid: graph.vs[vid][attr],
+                                # combining from all nodes
+                                nodes)))
 
         # moving edges of non primary vertices to the primary one
         self.copy_edges(nonprimary, primary, move = True, graph = graph)
 
         # deleting non primary vertices:
-        toDel = list(map(lambda i: graph.vs.select(id_merge = i)[0].index,
+        toDel = list(map(lambda i: graph.vs.select(id_merge=i)[0].index,
                          nonprimary))
 
         graph.delete_vertices(toDel)
         del graph.vs['id_merge']
 
-    def copy_edges(self, sources, target, move = False, graph = None):
+    def copy_edges(self, sources, target, move=False, graph=None):
         """
         Copies edges of one node to another,
         keeping attributes and directions.
@@ -3201,6 +3197,7 @@ class PyPath(object):
         :param bool move: Whether perform copy or move, i.e. remove or keep
                           the source edges.
         """
+
         toDel = set([])
         graph = self.graph if graph is None else graph
         graph.vs['id_old'] = list(range(graph.vcount()))
@@ -3210,25 +3207,20 @@ class PyPath(object):
         ovidt = graph.vs[target]['id_old']
 
         # collecting the edges of all source vertices into dict
-        ses = \
-            dict(
-                map(
-                    lambda s:
-                        (
-                            # id_old of source vertices:
-                            s,
-                            # edges of current source node:
-                            set(map(lambda e: e.index,
-                                itertools.chain(graph.es.select(_source = s),
-                                                graph.es.select(_target = s))))
-                        ),
-                    sources
-                )
-            )
+        ses = dict(map(lambda s: (
+                        # id_old of source vertices:
+                        s,
+                        # edges of current source node:
+                        set(map(lambda e: e.index,
+                                itertools.chain(graph.es.select(_source=s),
+                                                graph.es.select(_target=s))))),
+                       sources))
 
         # collecting edges to be newly created
         toAdd = set([])
+
         for s, es in iteritems(ses):
+
             for eid in es:
                 # the source edge:
                 e = graph.es[eid]
@@ -3236,6 +3228,7 @@ class PyPath(object):
                 vid1 = target if e.source == s else e.source
                 vid2 = target if e.target == s else e.target
                 te = graph.get_eid(vid1, vid2, error = False)
+
                 if te == -1:
                     # target edge not found, needs to be added:
                     toAdd.add((vid1, vid2))
@@ -3245,6 +3238,7 @@ class PyPath(object):
 
         # copying attributes:
         for ovids, es in iteritems(ses):
+
             for oeid in es:
                 # this is the index of the current source node:
                 s = graph.vs.select(id_old = ovids)[0].index
@@ -3262,19 +3256,21 @@ class PyPath(object):
                 d = e['dirs']
                 # dict from old names to new ones
                 # the peer does no change, only s->t
-                ids = {
-                    graph.vs[s]['name']: graph.vs[t]['name'],
-                    graph.vs[vid_peer]['name']: graph.vs[vid_peer]['name']
-                }
+                ids = {graph.vs[s]['name']: graph.vs[t]['name'],
+                       graph.vs[vid_peer]['name']: graph.vs[vid_peer]['name']}
 
                 # copying directions and signs:
-                te['dirs'] = d.translate(ids).merge(te['dirs']) \
-                    if isinstance(te['dirs'], Direction) else d.translate(ids)
+                te['dirs'] = (d.translate(ids).merge(te['dirs'])
+                              if isinstance(te['dirs'], Direction)
+                              else d.translate(ids))
+
                 # copying `refs_by_dir`
-                te['refs_by_dir'] = \
-                    self.translate_refsdir(e['refs_by_dir'], ids)
+                te['refs_by_dir'] = self.translate_refsdir(e['refs_by_dir'],
+                                                           ids)
+
                 # copying further attributes:
                 for eattr in e.attributes():
+
                     if eattr != 'dirs' and eattr != 'refs_by_dir':
                         te[eattr] = self.combine_attr([te[eattr], e[eattr]])
 

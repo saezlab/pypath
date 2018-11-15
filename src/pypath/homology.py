@@ -500,7 +500,7 @@ class PtmHomology(ProteinHomology,SequenceContainer):
             data = c.result
             
             for _ in xrange(4):
-                null = data.readline()
+                null = next(data)
             
             for r in data:
                 

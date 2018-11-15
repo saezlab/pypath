@@ -785,7 +785,7 @@ class Curl(FileOpener):
                 
                 f = getattr(self, fattr)
                 
-                if hasattr(f, 'close'):
+                if hasattr(f, 'close') and sys.getrefcount(f) <= 1:
                     
                     f.close()
     
