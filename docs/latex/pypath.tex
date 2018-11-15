@@ -57,7 +57,7 @@
 
 \title{pypath Documentation}
 \date{Nov 15, 2018}
-\release{0.7.98}
+\release{0.7.101}
 \author{Dénes Türei}
 \newcommand{\sphinxlogo}{\vbox{}}
 \renewcommand{\releasename}{Release}
@@ -578,27 +578,119 @@ values.
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.add_genesets}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_genesets}}}{\emph{genesets}}{}
 \end{fulllineitems}
 
+\index{add\_grouped\_eattr() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.add_grouped_eattr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_grouped\_eattr}}}{\emph{edge}, \emph{attr}, \emph{group}, \emph{value}}{}
+\end{fulllineitems}
+
+\index{add\_grouped\_set\_eattr() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.add_grouped_set_eattr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_grouped\_set\_eattr}}}{\emph{edge}, \emph{attr}, \emph{group}, \emph{value}}{}
+\end{fulllineitems}
+
 \index{add\_list\_eattr() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.add_list_eattr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_list\_eattr}}}{\emph{edge}, \emph{attr}, \emph{value}}{}
 \end{fulllineitems}
 
+\index{add\_set\_eattr() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.add_set_eattr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_set\_eattr}}}{\emph{edge}, \emph{attr}, \emph{value}}{}
+\end{fulllineitems}
+
 \index{add\_update\_edge() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.add_update_edge}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_update\_edge}}}{\emph{nameA}, \emph{nameB}, \emph{source}, \emph{isDir}, \emph{refs}, \emph{stim}, \emph{inh}, \emph{taxA}, \emph{taxB}, \emph{typ}, \emph{extraAttrs=\{\}}, \emph{add=False}}{}
+Updates the attributes of one edge in the (undirected) network.
+Optionally it creates a new edge and sets the attributes, but it
+is not efficient as \sphinxcode{\sphinxupquote{igraph}} needs to reindex edges
+after this operation, so better to create new edges in batches.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{nameA}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Name of the source node of the edge to be added/updated.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{nameB}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Name of the source node of the edge to be added/updated.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{source}} (\sphinxstyleliteralemphasis{\sphinxupquote{set}}) \textendash{} Or {[}list{]}, contains the names {[}str{]} of the resources
+supporting that edge.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{isDir}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Whether if the edge is directed or not.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{refs}} (\sphinxstyleliteralemphasis{\sphinxupquote{set}}) \textendash{} Or {[}list{]}, contains the instances of the references
+\sphinxcode{\sphinxupquote{pypath.refs.Reference}} for that edge.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{stim}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Whether the edge is stimulatory or not.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{inh}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Whether the edge is inhibitory or note
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{taxA}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} NCBI Taxonomic identifier of the source molecule.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{taxB}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} NCBI Taxonomic identifier of the target molecule.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{typ}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The type of interaction (e.g.: \sphinxcode{\sphinxupquote{'PPI'}})
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{extraAttrs}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{\{\}}} by default. Contains any extra attributes
+for the edge to be updated.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{add}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. If set to \sphinxcode{\sphinxupquote{True}} and the
+edge is not in the network, it will be created. Otherwise,
+in such case it will raise an error message.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{add\_update\_vertex() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.add_update_vertex}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_update\_vertex}}}{\emph{defAttrs}, \emph{originalName}, \emph{originalNameType}, \emph{extraAttrs=\{\}}, \emph{add=False}}{}
-Updates the attributes of one node in the network.
-Optionally it creates a new node and sets the attributes,
-but it is not efficient as igraph needs to reindex vertices
-after this operation, so better to create new nodes and
-edges in batch.
+Updates the attributes of one node in the (undirected) network.
+Optionally it creates a new node and sets the attributes, but it
+is not efficient as \sphinxcode{\sphinxupquote{igraph}} needs to reindex vertices
+after this operation, so better to create new nodes in batches.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{defAttrs}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} The attribute dictionary of the node to be updated/created.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{originalName}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Original node name (e.g.: UniProt ID).
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{originalNameType}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The original node name type (e.g.: for the previous example,
+this would be \sphinxcode{\sphinxupquote{'uniprot'}}).
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{extraAttrs}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{\{\}}} by default. Contains any extra attributes
+for the node to be updated.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{add}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. If set to \sphinxcode{\sphinxupquote{True}} and the
+node is not in the network, it will be created. Otherwise,
+in such case it will raise an error message.
+
+\end{itemize}
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -701,9 +793,11 @@ Gene Census.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.clean_graph}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{clean\_graph}}}{}{}
-Removes multiple edges, unknown molecules and those from wrong taxon.
-Multiple edges will be combined by \sphinxtitleref{combine\_attr()} method.
-Loops will be deleted unless the \sphinxtitleref{loops} attribute set to \sphinxtitleref{True}.
+Removes multiple edges, unknown molecules and those from wrong
+taxon. Multiple edges will be combined by
+{\hyperref[\detokenize{main:pypath.main.PyPath.combine_attr}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.combine\_attr()}}}}} method.
+Loops will be deleted unless the attribute
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.loops}} is set to \sphinxcode{\sphinxupquote{True}}.
 
 \end{fulllineitems}
 
@@ -825,19 +919,25 @@ current one.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.copy_edges}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{copy\_edges}}}{\emph{sources}, \emph{target}, \emph{move=False}, \emph{graph=None}}{}
-Copies edges of one node to another,
+Copies edges from \sphinxstyleemphasis{sources} node(s) to another one (\sphinxstyleemphasis{target}),
 keeping attributes and directions.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{sources}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Vertex IDs to copy from.
+\sphinxstyleliteralstrong{\sphinxupquote{sources}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Contains the vertex index(es) {[}int{]} of the node(s) to be
+copied or moved.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{target}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} Vertex ID to copy for.
+\sphinxstyleliteralstrong{\sphinxupquote{target}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} Vertex index where edges and attributes are to be copied to.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{move}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Whether perform copy or move, i.e. remove or keep
-the source edges.
+\sphinxstyleliteralstrong{\sphinxupquote{move}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Whether to perform copy or
+move (remove or keep the source edges).
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{graph}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The network graph object from
+which the nodes are to be merged. If none is passed, takes
+the undirected network graph.
 
 \end{itemize}
 
@@ -849,7 +949,12 @@ the source edges.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.count_sol}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{count\_sol}}}{}{}
-Counts nodes with zero degree.
+Counts the number of nodes with zero degree.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{int}) \textendash{} The number of nodes with zero degree.
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -932,11 +1037,12 @@ took to achieve the amount of information on the network.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.delete_by_taxon}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{delete\_by\_taxon}}}{\emph{tax}}{}
-Removes the proteins of all organisms which are not listed.
+Removes the proteins of all organisms which are not given in
+\sphinxstyleemphasis{tax}.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{tax}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} List of NCBI Taxonomy IDs of the organisms.
-E.g. {[}7227, 9606{]}
+\sphinxstyleliteralstrong{\sphinxupquote{tax}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} List of NCBI Taxonomy IDs {[}int{]} of the organism(s) that are
+to be kept.
 
 \end{description}\end{quote}
 
@@ -946,22 +1052,30 @@ E.g. {[}7227, 9606{]}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.delete_unknown}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{delete\_unknown}}}{\emph{tax}, \emph{typ='protein'}, \emph{defaultNameType=None}}{}
-Removes those proteins which are not in the list of all default
+Removes those items which are not in the list of all default
 IDs of the organisms. By default, it means to remove all protein
-nodes not having a human SwissProt ID.
-\begin{description}
-\item[{@tax}] \leavevmode{[}list{]}
-List of NCBI Taxonomy IDs of the organisms of interest.
-E.g. {[}7227, 9606{]}
+nodes not having a human UniProt ID.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{tax}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} List of NCBI Taxonomy IDs {[}int{]} of the organism(s) of
+interest.
 
-\item[{@typ}] \leavevmode{[}str{]}
-Molecule type. E.g. ‘protein’ or ‘mirna’
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{typ}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{'protein'}} by default. Determines the molecule
+type. These can be \sphinxcode{\sphinxupquote{'protein'}}, \sphinxcode{\sphinxupquote{'drug'}}, \sphinxcode{\sphinxupquote{'lncrna'}},
+\sphinxcode{\sphinxupquote{'mirna'}} or any other type defined in
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.default\_name\_type}}.
 
-\item[{@defaultNameType}] \leavevmode{[}str{]}
-The default name type of the given molecular species.
-For proteins it’s ‘uniprot’ by default.
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{defaultNameType}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The default name type for the
+given molecular species. If none is specified takes it from
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.default\_name\_type}} (e.g.: for
+\sphinxcode{\sphinxupquote{'protein'}}, default is \sphinxcode{\sphinxupquote{'uniprot'}}).
 
-\end{description}
+\end{itemize}
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2807,16 +2921,22 @@ Merges two lists in \sphinxtitleref{lists}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.merge_nodes}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{merge\_nodes}}}{\emph{nodes}, \emph{primary=None}, \emph{graph=None}}{}
-Merges all attributes and all edges of selected nodes and
-assigns them to the primary node (by default the one with
-lowest ID).
+Merges all attributes and edges of selected nodes and assigns
+them to the primary node (by default the one with lowest index).
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{nodes}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} List of edge IDs.
+\sphinxstyleliteralstrong{\sphinxupquote{nodes}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} List of node indexes {[}int{]} that are to be collapsed.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{primary}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} ID of the primary edge; if None the lowest ID selected.
+\sphinxstyleliteralstrong{\sphinxupquote{primary}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. ID of the primary edge, if
+none is passed, the node with lowest index on \sphinxstyleemphasis{nodes} is
+selected.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{graph}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The network graph object from
+which the nodes are to be merged. If none is passed, takes
+the undirected network graph.
 
 \end{itemize}
 

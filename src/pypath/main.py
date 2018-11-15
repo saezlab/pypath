@@ -3147,14 +3147,19 @@ class PyPath(object):
 
     def merge_nodes(self, nodes, primary=None, graph=None):
         """
-        Merges all attributes and all edges of selected nodes and
-        assigns them to the primary node (by default the one with
-        lowest ID).
+        Merges all attributes and edges of selected nodes and assigns
+        them to the primary node (by default the one with lowest index).
 
-        :param list nodes:
-            List of edge IDs.
-        :param int primary:
-            ID of the primary edge; if None the lowest ID selected.
+        :arg list nodes:
+            List of node indexes [int] that are to be collapsed.
+        :arg int primary:
+            Optional, ``None`` by default. ID of the primary edge, if
+            none is passed, the node with lowest index on *nodes* is
+            selected.
+        :arg igraph.Graph graph:
+            Optional, ``None`` by default. The network graph object from
+            which the nodes are to be merged. If none is passed, takes
+            the undirected network graph.
         """
 
         graph = self.graph if graph is None else graph
@@ -3189,13 +3194,21 @@ class PyPath(object):
 
     def copy_edges(self, sources, target, move=False, graph=None):
         """
-        Copies edges of one node to another,
+        Copies edges from *sources* node(s) to another one (*target*),
         keeping attributes and directions.
 
-        :param list sources: Vertex IDs to copy from.
-        :param int target: Vertex ID to copy for.
-        :param bool move: Whether perform copy or move, i.e. remove or keep
-                          the source edges.
+        :arg list sources:
+            Contains the vertex index(es) [int] of the node(s) to be
+            copied or moved.
+        :arg int target:
+            Vertex index where edges and attributes are to be copied to.
+        :arg bool move:
+            Optional, ``False`` by default. Whether to perform copy or
+            move (remove or keep the source edges).
+        :arg igraph.Graph graph:
+            Optional, ``None`` by default. The network graph object from
+            which the nodes are to be merged. If none is passed, takes
+            the undirected network graph.
         """
 
         toDel = set([])
@@ -3286,35 +3299,46 @@ class PyPath(object):
 
     def delete_by_taxon(self, tax):
         """
-        Removes the proteins of all organisms which are not listed.
+        Removes the proteins of all organisms which are not given in
+        *tax*.
 
-        :param list tax: List of NCBI Taxonomy IDs of the organisms.
-                         E.g. [7227, 9606]
+        :arg list tax:
+            List of NCBI Taxonomy IDs [int] of the organism(s) that are
+            to be kept.
         """
         g = self.graph
         toDel = []
+
         for v in g.vs:
+
             if v['ncbi_tax_id'] not in tax:
                 toDel.append(v.index)
+
         g.delete_vertices(toDel)
         self.update_vname()
         self.update_db_dict()
 
     def delete_unknown(self, tax, typ='protein', defaultNameType=None):
         """
-        Removes those proteins which are not in the list of all default
+        Removes those items which are not in the list of all default
         IDs of the organisms. By default, it means to remove all protein
-        nodes not having a human SwissProt ID.
+        nodes not having a human UniProt ID.
 
-        @tax : list
-            List of NCBI Taxonomy IDs of the organisms of interest.
-            E.g. [7227, 9606]
-        @typ : str
-            Molecule type. E.g. 'protein' or 'mirna'
-        @defaultNameType : str
-            The default name type of the given molecular species.
-            For proteins it's 'uniprot' by default.
+        :arg list tax:
+            List of NCBI Taxonomy IDs [int] of the organism(s) of
+            interest.
+        :arg str typ:
+            Optional, ``'protein'`` by default. Determines the molecule
+            type. These can be ``'protein'``, ``'drug'``, ``'lncrna'``,
+            ``'mirna'`` or any other type defined in
+            :py:attr:`pypath.main.PyPath.default_name_type`.
+        :arg str defaultNameType:
+            Optional, ``None`` by default. The default name type for the
+            given molecular species. If none is specified takes it from
+            :py:attr:`pypath.main.PyPath.default_name_type` (e.g.: for
+            ``'protein'``, default is ``'uniprot'``).
         """
+
         g = self.graph
 
         if not defaultNameType:
@@ -3358,22 +3382,27 @@ class PyPath(object):
 
     def clean_graph(self):
         """
-        Removes multiple edges, unknown molecules and those from wrong taxon.
-        Multiple edges will be combined by `combine_attr()` method.
-        Loops will be deleted unless the `loops` attribute set to `True`.
+        Removes multiple edges, unknown molecules and those from wrong
+        taxon. Multiple edges will be combined by
+        :py:meth:`pypath.main.PyPath.combine_attr` method.
+        Loops will be deleted unless the attribute
+        :py:attr:`pypath.main.PyPath.loops` is set to ``True``.
         """
+
         self.ownlog.msg(1, "Removing duplicate edges...", 'INFO')
         g = self.graph
+
         if not g.is_simple():
-            g.simplify(
-                loops=not self.loops,
-                multiple=True,
-                combine_edges=self.combine_attr)
+            g.simplify(loops=not self.loops, multiple=True,
+                       combine_edges=self.combine_attr)
+
         self.delete_unmapped()
+
         ## TODO: multiple taxons ##
         if len(self.reflists) != 0:
             self.delete_by_taxon([self.ncbi_tax_id])
             self.delete_unknown([self.ncbi_tax_id])
+
         x = g.vs.degree()
         zeroDeg = [i for i, j in enumerate(x) if j == 0]
         g.delete_vertices(zeroDeg)
@@ -3383,54 +3412,122 @@ class PyPath(object):
     # functions to integrate new data into the main igraph network object
     ###
 
-    def count_sol(self):
+    def count_sol(self): # XXX: Not used anywhere
         """
-        Counts nodes with zero degree.
+        Counts the number of nodes with zero degree.
+
+        :return:
+            (*int*) -- The number of nodes with zero degree.
         """
+
+        # XXX: Refactor option 1:
+        #          return len([1 for i in self.graph.vs.degree() if i == 0])
+        #      Refactor option 2:
+        #          return Counter(self.graph.vs.degree()[0])
+
         s = 0
+
         for i in self.graph.vs.degree():
+
             if i == 0:
                 s += 1
+
         return s
 
-    def add_update_vertex(self,
-                          defAttrs,
-                          originalName,
-                          originalNameType,
-                          extraAttrs={},
-                          add=False):
+    def add_update_vertex(self, defAttrs, originalName, originalNameType,
+                          extraAttrs={}, add=False):
         """
-        Updates the attributes of one node in the network.
-        Optionally it creates a new node and sets the attributes,
-        but it is not efficient as igraph needs to reindex vertices
-        after this operation, so better to create new nodes and
-        edges in batch.
+        Updates the attributes of one node in the (undirected) network.
+        Optionally it creates a new node and sets the attributes, but it
+        is not efficient as :py:mod:`igraph` needs to reindex vertices
+        after this operation, so better to create new nodes in batches.
+
+        :arg dict defAttrs:
+            The attribute dictionary of the node to be updated/created.
+        :arg str originalName:
+            Original node name (e.g.: UniProt ID).
+        :arg str originalNameType:
+            The original node name type (e.g.: for the previous example,
+            this would be ``'uniprot'``).
+        :arg dict extraAttrs:
+            Optional, ``{}`` by default. Contains any extra attributes
+            for the node to be updated.
+        :arg bool add:
+            Optional, ``False`` by default. If set to ``True`` and the
+            node is not in the network, it will be created. Otherwise,
+            in such case it will raise an error message.
         """
+
         g = self.graph
+
         if not defAttrs["name"] in g.vs["name"]:
+
             if not add:
                 self.ownlog.msg(2, 'Failed to add some vertices', 'ERROR')
                 return False
+
             n = g.vcount()
             g.add_vertices(1)
+            # XXX: `key` is not defined in this scope yet
             g.vs[n][key].originalNames = {originalName: originalNameType}
             thisNode = g.vs.find(name=defAttrs["name"])
+
         else:
             thisNode = g.vs.find(name=defAttrs["name"])
+
             if thisNode["originalNames"] is None:
                 thisNode["originalNames"] = {}
+
             thisNode["originalNames"][originalName] = originalNameType
+
         for key, value in iteritems(defAttrs):
             thisNode[key] = value
+
         for key, value in iteritems(extraAttrs):
+
             if key not in g.vs.attributes():
-                g.vs[key] = [[] for _ in xrange(self.graph.vcount())] \
-                    if isinstance(value, list) else [None]
+                g.vs[key] = ([[] for _ in xrange(self.graph.vcount())]
+                             if isinstance(value, list) else [None])
+
             thisNode[key] = self.combine_attr([thisNode[key], value])
 
     def add_update_edge(self, nameA, nameB, source, isDir, refs, stim, inh,
                         taxA, taxB, typ, extraAttrs={}, add=False):
         """
+        Updates the attributes of one edge in the (undirected) network.
+        Optionally it creates a new edge and sets the attributes, but it
+        is not efficient as :py:mod:`igraph` needs to reindex edges
+        after this operation, so better to create new edges in batches.
+
+        :arg str nameA:
+            Name of the source node of the edge to be added/updated.
+        :arg str nameB:
+            Name of the source node of the edge to be added/updated.
+        :arg set source:
+            Or [list], contains the names [str] of the resources
+            supporting that edge.
+        :arg bool isDir:
+            Whether if the edge is directed or not.
+        :arg set refs:
+            Or [list], contains the instances of the references
+            :py:class:`pypath.refs.Reference` for that edge.
+        :arg bool stim:
+            Whether the edge is stimulatory or not.
+        :arg bool inh:
+            Whether the edge is inhibitory or note
+        :arg int taxA:
+            NCBI Taxonomic identifier of the source molecule.
+        :arg int taxB:
+            NCBI Taxonomic identifier of the target molecule.
+        :arg str typ:
+            The type of interaction (e.g.: ``'PPI'``)
+        :arg dict extraAttrs:
+            Optional, ``{}`` by default. Contains any extra attributes
+            for the edge to be updated.
+        :arg bool add:
+            Optional, ``False`` by default. If set to ``True`` and the
+            edge is not in the network, it will be created. Otherwise,
+            in such case it will raise an error message.
         """
 
         g = self.graph
@@ -3500,73 +3597,96 @@ class PyPath(object):
         for key, value in iteritems(extraAttrs):
 
             if key not in g.es.attributes():
-                g.es[key] = [[] for _ in xrange(self.graph.ecount())] \
-                    if isinstance(value, list) else [None]
+                g.es[key] = ([[] for _ in xrange(self.graph.ecount())]
+                             if isinstance(value, list) else [None])
 
             g.es[edge][key] = self.combine_attr([g.es[edge][key], value])
-
+###############################################################################
     def add_list_eattr(self, edge, attr, value):
         """
+
         """
 
         value = value if isinstance(value, list) else [value]
         e = self.graph.es[edge]
+
         if attr not in self.graph.es.attributes():
             self.graph.es[attr] = [[] for _ in xrange(0, self.graph.ecount())]
+
         if e[attr] is None:
             e[attr] = []
+
         elif not isinstance(e[attr], list):
             e[attr] = [e[attr]]
+
         e[attr] = common.uniqList(e[attr] + value)
 
     def add_set_eattr(self, edge, attr, value):
-        value = value if isinstance(value, set) \
-            else set(value) if isinstance(value, list) \
-            else set([value])
+        """
+
+        """
+
+        value = (value if isinstance(value, set) else set(value)
+                 if isinstance(value, list) else set([value]))
         e = self.graph.es[edge]
+
         if attr not in self.graph.es.attributes():
-            self.graph.es[attr] = [
-                set([]) for _ in xrange(0, self.graph.ecount())
-            ]
+            self.graph.es[attr] = [set([]) for _ in
+                                   xrange(0, self.graph.ecount())]
         if e[attr] is None:
             e[attr] = set([])
+
         elif not isinstance(e[attr], set):
             e[attr] = set(e[attr]) if isinstance(e[attr],
                                                  list) else set([e[attr]])
+
         e[attr].update(value)
 
-    def add_grouped_eattr(
-            self,
-            edge,
-            attr,
-            group,
-            value):
+    def add_grouped_eattr(self, edge, attr, group, value):
+        """
+
+        """
+
         value = value if isinstance(value, list) else [value]
         e = self.graph.es[edge]
+
         if attr not in self.graph.es.attributes():
             self.graph.es[attr] = [{} for _ in xrange(0, self.graph.ecount())]
+
         if not isinstance(e[attr], dict):
             e[attr] = {}
+
         if group not in e[attr] or isinstance(e[attr][group], type(None)):
             e[attr][group] = []
+
         elif not isinstance(e[attr][group], list):
             e[attr][group] = [e[attr][group]]
+
         e[attr][group] = common.uniqList(e[attr][group] + value)
 
     def add_grouped_set_eattr(self, edge, attr, group, value):
-        value = value if isinstance(value, set) \
-            else set(value) if isinstance(value, list) \
-            else set([value])
+        """
+
+        """
+
+        value = (value if isinstance(value, set) else set(value)
+                 if isinstance(value, list) else set([value]))
         e = self.graph.es[edge]
+
         if attr not in self.graph.es.attributes():
             self.graph.es[attr] = [{} for _ in xrange(0, self.graph.ecount())]
+
         if not isinstance(e[attr], dict):
             e[attr] = {}
+
         if group not in e[attr] or isinstance(e[attr][group], type(None)):
             e[attr][group] = set([])
+
         elif not isinstance(e[attr][group], set):
-            e[attr][group] = set(e[attr][group]) \
-                if isinstance(e[attr][group], list) else set([e[attr][group]])
+            e[attr][group] = (set(e[attr][group])
+                              if isinstance(e[attr][group], list)
+                              else set([e[attr][group]]))
+
         e[attr][group].update(value)
 
     def get_directed(self, graph=False, conv_edges=False, mutual=False,
