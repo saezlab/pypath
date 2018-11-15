@@ -4,15 +4,18 @@
 #
 #  This file is part of the `pypath` python module
 #
-#  Copyright (c) 2014-2018 - EMBL
+#  Copyright
+#  2014-2018
+#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
+#                  Nicolas Palacio
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
 #      http://www.gnu.org/licenses/gpl-3.0.html
 #
-#  Website: http://www.ebi.ac.uk/~denes
+#  Website: http://pypath.omnipathdb.org/
 #
 
 __revision__ = "$Id$"
