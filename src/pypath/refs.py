@@ -36,7 +36,7 @@ import pypath.dataio as dataio
 
 class Reference(object):
     
-    #__slots__ = ['pmid']
+    __slots__ = ['pmid']
     
     def __init__(self, pmid):
         self.pmid = str(pmid).strip()

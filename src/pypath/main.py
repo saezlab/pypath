@@ -172,8 +172,8 @@ class Direction(object):
         (*nameA*, *nameB*).
     """
 
-    #__slots__ = ['nodes', 'straight', 'reverse', 'dirs', 'sources', 'positive',
-    #             'negative', 'positive_sources', 'negative_sources']
+    __slots__ = ['nodes', 'straight', 'reverse', 'dirs', 'sources', 'positive',
+                 'negative', 'positive_sources', 'negative_sources']
 
     def __init__(self, nameA, nameB):
         """Initializes the edge object between the given nodes."""
