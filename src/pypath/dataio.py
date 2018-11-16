@@ -8078,3 +8078,32 @@ def get_tfregulons(
             # PubMed and KEGG pw
             l[-2:],
         ))
+
+def stitch_interactions(threshold = None):
+    
+    url = urls.urls['stitch']['actions']
+    
+    c = curl.Curl(url, silent = False, large = True)
+    
+    _ = next(c.result)
+    
+    sep = re.compile(r'[m\.]')
+    
+    for l in c.result:
+        
+        l = l.decode('utf-8').strip().split('\t')
+        
+        score = int(l[5])
+        
+        if threshold is not None and score < threshold:
+            
+            continue
+        
+        a = sep.split(l[0])[1]
+        b = sep.split(l[1])[1]
+        
+        if l[4] == 'f':
+            
+            a, b = b, a
+        
+        
