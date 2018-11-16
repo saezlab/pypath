@@ -96,7 +96,7 @@
 \indexentry{get\_node\_d() (pypath.main.PyPath method)|hyperpage}{18}
 \indexentry{get\_node\_pair() (pypath.main.PyPath method)|hyperpage}{18}
 \indexentry{get\_nodes() (pypath.main.PyPath method)|hyperpage}{18}
-\indexentry{get\_nodes\_d() (pypath.main.PyPath method)|hyperpage}{18}
+\indexentry{get\_nodes\_d() (pypath.main.PyPath method)|hyperpage}{19}
 \indexentry{get\_pathways() (pypath.main.PyPath method)|hyperpage}{19}
 \indexentry{get\_proteomicsdb() (pypath.main.PyPath method)|hyperpage}{19}
 \indexentry{get\_sub() (pypath.main.PyPath method)|hyperpage}{19}
@@ -122,7 +122,7 @@
 \indexentry{having\_eattr() (pypath.main.PyPath method)|hyperpage}{19}
 \indexentry{having\_ptm() (pypath.main.PyPath method)|hyperpage}{19}
 \indexentry{having\_vattr() (pypath.main.PyPath method)|hyperpage}{19}
-\indexentry{homology\_translation() (pypath.main.PyPath method)|hyperpage}{19}
+\indexentry{homology\_translation() (pypath.main.PyPath method)|hyperpage}{20}
 \indexentry{htp\_stats() (pypath.main.PyPath method)|hyperpage}{20}
 \indexentry{in\_complex() (pypath.main.PyPath method)|hyperpage}{20}
 \indexentry{in\_directed() (pypath.main.PyPath method)|hyperpage}{20}

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>pypath.main &#8212; pypath 0.7.101 documentation</title>
+    <title>pypath.main &#8212; pypath 0.7.107 documentation</title>
     <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -25,7 +25,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.101 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.107 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -47,12 +47,13 @@
 <span class="c1">#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University</span>
 <span class="c1">#</span>
 <span class="c1">#  File author(s): Dénes Türei (turei.denes@gmail.com)</span>
+<span class="c1">#                  Nicolàs Palacio</span>
 <span class="c1">#</span>
 <span class="c1">#  Distributed under the GPLv3 License.</span>
 <span class="c1">#  See accompanying file LICENSE.txt or copy at</span>
 <span class="c1">#      http://www.gnu.org/licenses/gpl-3.0.html</span>
 <span class="c1">#</span>
-<span class="c1">#  Website: http://www.ebi.ac.uk/~denes</span>
+<span class="c1">#  Website: http://pypath.omnipathdb.org/</span>
 <span class="c1">#</span>
 
 <span class="kn">import</span> <span class="nn">__main__</span> <span class="c1"># XXX: Bad practice</span>
@@ -71,7 +72,7 @@
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">cairo</span>
 
-<span class="k">except</span><span class="p">:</span> <span class="c1"># XXX: Catching any exception like this is bad practice</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span> <span class="c1"># XXX: Catching any exception like this is bad practice</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
         <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">:: Module `cairo` not available.</span><span class="se">\n</span><span class="s1">&#39;</span>
         <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">   Some plotting functionalities won</span><span class="se">\&#39;</span><span class="s1">t be accessible.</span><span class="se">\n</span><span class="s1">&#39;</span>
@@ -146,6 +147,7 @@
 <span class="kn">import</span> <span class="nn">pypath._version</span> <span class="k">as</span> <span class="nn">_version</span>
 <span class="kn">from</span> <span class="nn">pypath.gr_plot</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">pypath.progress</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">pypath.settings</span> <span class="k">as</span> <span class="nn">settings</span>
 
 <span class="n">omnipath</span> <span class="o">=</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">omnipath</span>
 
@@ -1468,6 +1470,7 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncbi_tax_id</span><span class="o">=</span><span class="mi">9606</span><span class="p">,</span> <span class="n">default_name_type</span><span class="o">=</span><span class="n">default_name_type</span><span class="p">,</span>
                  <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mysql</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;mapping&#39;</span><span class="p">),</span>
                  <span class="n">chembl_mysql</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;chembl&#39;</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;unnamed&#39;</span><span class="p">,</span>
+                 <span class="n">cache_dir</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">outdir</span><span class="o">=</span><span class="s1">&#39;results&#39;</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="s1">&#39;INFO&#39;</span><span class="p">,</span> <span class="n">loops</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initializes the network object.</span>
 
@@ -1479,10 +1482,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__version__</span> <span class="o">=</span> <span class="n">_version</span><span class="o">.</span><span class="n">__version__</span>
 
         <span class="c1"># Setting up the working directory</span>
-        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="s1">&#39;cache&#39;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">]:</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span> <span class="o">=</span> <span class="n">cache_dir</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cachedir&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">):</span>
+
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">copy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># Setting up graph object</span>
@@ -1646,7 +1655,7 @@
 <span class="sd">        :arg bool redownload:</span>
 <span class="sd">            Optional, ``False`` by default. Specifies whether to</span>
 <span class="sd">            re-download the data and ignore the cache.</span>
-<span class="sd">        :arg **kwargs:</span>
+<span class="sd">        :arg \*\*kwargs:</span>
 <span class="sd">            Not used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1655,7 +1664,7 @@
 
         <span class="k">if</span> <span class="n">pfile</span><span class="p">:</span>
             <span class="n">pfile</span> <span class="o">=</span> <span class="n">pfile</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pfile</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> \
-                <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">,</span> <span class="s1">&#39;default_network.pickle&#39;</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s1">&#39;default_network.pickle&#39;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">pfile</span><span class="p">):</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
@@ -1704,7 +1713,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">pfile</span> <span class="o">=</span> <span class="n">pfile</span> <span class="k">if</span> <span class="n">pfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> \
-            <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">,</span> <span class="s1">&#39;default_network.pickle&#39;</span><span class="p">)</span>
+            <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s1">&#39;default_network.pickle&#39;</span><span class="p">)</span>
         <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">pfile</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
 
     <span class="c1">###</span>
@@ -2035,7 +2044,7 @@
 
 <span class="sd">        :return:</span>
 <span class="sd">            * (*file*) -- The loaded pickle file from the cache if the</span>
-<span class="sd">              file is contains the interactions. ``None`self.graph` otherwise.</span>
+<span class="sd">              file is contains the interactions. ``None`` otherwise.</span>
 <span class="sd">            * (*list*) -- List of mapped edges if the file contains the</span>
 <span class="sd">              information from the edges. ``[]`` otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2196,9 +2205,14 @@
         <span class="n">edgeListMapped</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">infile</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">_name</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="n">int_cache</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.interactions.pickle&#39;</span> <span class="o">%</span> <span class="n">_name</span><span class="p">)</span>
-        <span class="n">edges_cache</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.edges.pickle&#39;</span> <span class="o">%</span> <span class="n">_name</span><span class="p">)</span>
-
+        <span class="n">int_cache</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.interactions.pickle&#39;</span> <span class="o">%</span> <span class="n">_name</span>
+        <span class="p">)</span>
+        <span class="n">edges_cache</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.edges.pickle&#39;</span> <span class="o">%</span> <span class="n">_name</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">reread</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">redownload</span><span class="p">:</span>
             <span class="n">infile</span><span class="p">,</span> <span class="n">edgeListMapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup_cache</span><span class="p">(</span><span class="n">_name</span><span class="p">,</span> <span class="n">cache_files</span><span class="p">,</span>
                                                        <span class="n">int_cache</span><span class="p">,</span> <span class="n">edges_cache</span><span class="p">)</span>
@@ -2758,7 +2772,7 @@
 <span class="sd">        the current (undirected) network. Second row contains the number</span>
 <span class="sd">        of nodes in *lst* list (also considered to be already loaded)</span>
 <span class="sd">        and the number of nodes in the network with a non-empty</span>
-<span class="sd">        attribute *attr*. Uses :py:fun:`scipy.stats.fisher_exact`, see</span>
+<span class="sd">        attribute *attr*. Uses :py:func:`scipy.stats.fisher_exact`, see</span>
 <span class="sd">        the documentation of the corresponding package for more</span>
 <span class="sd">        information.</span>
 
@@ -2798,7 +2812,7 @@
 <span class="sd">            :py:class:`python.data_formats.ReadList` instance specifying</span>
 <span class="sd">            the settings of the file to be read. See the class</span>
 <span class="sd">            documentation for more details.</span>
-<span class="sd">        :arg **kwargs:</span>
+<span class="sd">        :arg \*\*kwargs:</span>
 <span class="sd">            Extra arguments passed to the file reading function. Such</span>
 <span class="sd">            function name is outlined in the</span>
 <span class="sd">            :py:attr:`python.data_formats.ReadList.inFile` attribute and</span>
@@ -3012,6 +3026,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Combines multiple attributes into one. This method attempts</span>
 <span class="sd">        to find out which is the best way to combine attributes.</span>
+
 <span class="sd">            * If there is only one value or one of them is None, then</span>
 <span class="sd">              returns the one available.</span>
 <span class="sd">            * Lists: concatenates unique values of lists.</span>
@@ -3021,6 +3036,7 @@
 <span class="sd">            * Dictionaries: calls :py:func:`pypath.common.merge_dicts`.</span>
 <span class="sd">            * Direction: calls their special</span>
 <span class="sd">              :py:meth:`pypath.main.Direction.merge` method.</span>
+
 <span class="sd">        Works on more than 2 attributes recursively.</span>
 
 <span class="sd">        :arg list lst:</span>
@@ -3506,12 +3522,11 @@
 
             <span class="n">n</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span>
             <span class="n">g</span><span class="o">.</span><span class="n">add_vertices</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-            <span class="c1"># XXX: `key` is not defined in this scope yet</span>
-            <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">originalNames</span> <span class="o">=</span> <span class="p">{</span><span class="n">originalName</span><span class="p">:</span> <span class="n">originalNameType</span><span class="p">}</span>
-            <span class="n">thisNode</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">defAttrs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s1">&#39;originalNames&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">originalName</span><span class="p">:</span> <span class="n">originalNameType</span><span class="p">}</span>
+            <span class="n">thisNode</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="n">defAttrs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">thisNode</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">defAttrs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+            <span class="n">thisNode</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="n">defAttrs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
 
             <span class="k">if</span> <span class="n">thisNode</span><span class="p">[</span><span class="s2">&quot;originalNames&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">thisNode</span><span class="p">[</span><span class="s2">&quot;originalNames&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -11942,13 +11957,18 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Write edge list to text file with attributes</span>
 
-<span class="sd">        @param fname: the name of the file or a stream to read from.</span>
-<span class="sd">        @param graph: the igraph object containing the network</span>
-<span class="sd">        @param names: list with the vertex attribute names to be printed</span>
+<span class="sd">        :param fname:</span>
+<span class="sd">            the name of the file or a stream to read from.</span>
+<span class="sd">        :param graph:</span>
+<span class="sd">            the igraph object containing the network</span>
+<span class="sd">        :param names:</span>
+<span class="sd">            list with the vertex attribute names to be printed</span>
 <span class="sd">            for source and target vertices</span>
-<span class="sd">        @param edge_attributes: list with the edge attribute names</span>
+<span class="sd">        :param edge_attributes:</span>
+<span class="sd">            list with the edge attribute names</span>
 <span class="sd">            to be printed</span>
-<span class="sd">        @param sep: string used to separate columns</span>
+<span class="sd">        :param sep:</span>
+<span class="sd">            string used to separate columns</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># from Luis Tobalina</span>
@@ -12378,7 +12398,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.101 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.107 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>

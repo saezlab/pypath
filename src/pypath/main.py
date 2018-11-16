@@ -1617,7 +1617,7 @@ class PyPath(object):
         :arg bool redownload:
             Optional, ``False`` by default. Specifies whether to
             re-download the data and ignore the cache.
-        :arg **kwargs:
+        :arg \*\*kwargs:
             Not used.
         """
 
@@ -2006,7 +2006,7 @@ class PyPath(object):
 
         :return:
             * (*file*) -- The loaded pickle file from the cache if the
-              file is contains the interactions. ``None`self.graph` otherwise.
+              file is contains the interactions. ``None`` otherwise.
             * (*list*) -- List of mapped edges if the file contains the
               information from the edges. ``[]`` otherwise.
         """
@@ -2734,7 +2734,7 @@ class PyPath(object):
         the current (undirected) network. Second row contains the number
         of nodes in *lst* list (also considered to be already loaded)
         and the number of nodes in the network with a non-empty
-        attribute *attr*. Uses :py:fun:`scipy.stats.fisher_exact`, see
+        attribute *attr*. Uses :py:func:`scipy.stats.fisher_exact`, see
         the documentation of the corresponding package for more
         information.
 
@@ -2774,7 +2774,7 @@ class PyPath(object):
             :py:class:`python.data_formats.ReadList` instance specifying
             the settings of the file to be read. See the class
             documentation for more details.
-        :arg **kwargs:
+        :arg \*\*kwargs:
             Extra arguments passed to the file reading function. Such
             function name is outlined in the
             :py:attr:`python.data_formats.ReadList.inFile` attribute and
@@ -2988,6 +2988,7 @@ class PyPath(object):
         """
         Combines multiple attributes into one. This method attempts
         to find out which is the best way to combine attributes.
+
             * If there is only one value or one of them is None, then
               returns the one available.
             * Lists: concatenates unique values of lists.
@@ -2997,6 +2998,7 @@ class PyPath(object):
             * Dictionaries: calls :py:func:`pypath.common.merge_dicts`.
             * Direction: calls their special
               :py:meth:`pypath.main.Direction.merge` method.
+
         Works on more than 2 attributes recursively.
 
         :arg list lst:
@@ -11917,13 +11919,18 @@ class PyPath(object):
         """
         Write edge list to text file with attributes
 
-        @param fname: the name of the file or a stream to read from.
-        @param graph: the igraph object containing the network
-        @param names: list with the vertex attribute names to be printed
+        :param fname:
+            the name of the file or a stream to read from.
+        :param graph:
+            the igraph object containing the network
+        :param names:
+            list with the vertex attribute names to be printed
             for source and target vertices
-        @param edge_attributes: list with the edge attribute names
+        :param edge_attributes:
+            list with the edge attribute names
             to be printed
-        @param sep: string used to separate columns
+        :param sep:
+            string used to separate columns
         """
 
         # from Luis Tobalina

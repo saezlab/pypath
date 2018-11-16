@@ -123,7 +123,7 @@
   \item get\_node\_d() (pypath.main.PyPath method), \hyperpage{18}
   \item get\_node\_pair() (pypath.main.PyPath method), \hyperpage{18}
   \item get\_nodes() (pypath.main.PyPath method), \hyperpage{18}
-  \item get\_nodes\_d() (pypath.main.PyPath method), \hyperpage{18}
+  \item get\_nodes\_d() (pypath.main.PyPath method), \hyperpage{19}
   \item get\_pathways() (pypath.main.PyPath method), \hyperpage{19}
   \item get\_proteomicsdb() (pypath.main.PyPath method), \hyperpage{19}
   \item get\_sign() (pypath.main.Direction method), \hyperpage{35}
@@ -154,7 +154,7 @@
   \item having\_eattr() (pypath.main.PyPath method), \hyperpage{19}
   \item having\_ptm() (pypath.main.PyPath method), \hyperpage{19}
   \item having\_vattr() (pypath.main.PyPath method), \hyperpage{19}
-  \item homology\_translation() (pypath.main.PyPath method), \hyperpage{19}
+  \item homology\_translation() (pypath.main.PyPath method), \hyperpage{20}
   \item htp\_stats() (pypath.main.PyPath method), \hyperpage{20}
 
   \indexspace
