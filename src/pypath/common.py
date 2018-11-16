@@ -34,7 +34,8 @@ __all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes',
            'jaccard_index', 'console', 'wcl', 'flatList', 'charTypes',
            'delEmpty', 'get_args', 'something', 'rotate', 'cleanDict',
            'igraph_graphics_attrs', 'md5', 'mod_keywords', 'Namespace', 'fun',
-           'taxids', 'taxa', 'phosphoelm_taxids', 'dbptm_taxids',]
+           'taxids', 'taxa', 'phosphoelm_taxids', 'dbptm_taxids',
+           'uniqOrdList', 'dict_diff']
 
 # get the location
 ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -185,18 +186,19 @@ charTypes = set([str, unicode, bytes])
 
 # From http://www.peterbe.com/plog/uniqifiers-benchmark
 def uniqList(seq):
-    """
+    """Reduces a list to its unique elements.
+
     Takes any iterable and returns a list of unique elements on it. If
     the argument is a dictionary, returns a list of unique keys.
     **NOTE:** Does not preserve the order of the elements.
 
-    * Arguments:
-        - *seq*: Sequence to be processed, can be any iterable type.
+    :arg list seq:
+        Sequence to be processed, can be any iterable type.
 
-    * Returns:
-        - [list]: List of unique elements in the sequence *seq*.
+    :return:
+        (*list*) -- List of unique elements in the sequence *seq*.
 
-    * Examples:
+    **Examples:**
         >>> uniqList('aba')
         ['a', 'b']
         >>> uniqList([0, 1, 2, 1, 0])
@@ -230,17 +232,16 @@ def uniqList2(seq): # XXX: Not used
 
 
 def flatList(lst):
-    """
-    Coerces the elements of a list of iterables into a single list.
+    """Coerces the elements of a list of iterables into a single list.
 
-    * Arguments:
-        - *lst* [list]: List to be flattened. Its elements can be also
-          lists or any other iterable.
+    :arg lsit lst:
+        List to be flattened. Its elements can be also lists or any
+        other iterable.
 
-    * Returns:
-        - [list]: Flattened list of *lst*.
+    :return:
+        (*list*) -- Flattened list of *lst*.
 
-    * Examples:
+    **Examples:**
         >>> flatList([(0, 1), (1, 1), (2, 1)])
         [0, 1, 1, 1, 2, 1]
         >> flatList(['abc', 'def'])
@@ -251,16 +252,19 @@ def flatList(lst):
 
 
 def delEmpty(lst): # XXX: Only used in main.py line: 1278
-    """
-    Removes empty entries of a list.
+    """Removes empty entries of a list.
 
-    * Arguments:
-        - *lst* [list]: List from which empty elements will be removed.
+    It is assumed that elemenst of *lst* are iterables (e.g. [str] or
+    [list]).
 
-    * Returns:
-        - [list]: Copy of *lst* without elements whose length was zero.
+    :arg list lst:
+        List from which empty elements will be removed.
 
-    * Examples:
+    :return:
+        (*list*) -- Copy of *lst* without elements whose length was
+        zero.
+
+    **Example:**
         >>> delEmpty(['a', '', 'b', 'c'])
         ['a', 'b', 'c']
     """
@@ -271,24 +275,25 @@ def delEmpty(lst): # XXX: Only used in main.py line: 1278
 # Order preserving
 # From http://www.peterbe.com/plog/uniqifiers-benchmark
 def uniqOrdList(seq, idfun=None): # XXX: Only used in plot.py line: 510
-    """
+    """Reduces a list to its unique elements keeping their order.
+
     Returns a copy of *seq* without repeated elements. Preserves the
-    order.
+    order. If any element is repeated, the first instance is kept.
 
-    * Arguments:
-        - *seq* [list]: Or any other iterable type. The sequence from
-          which repeated elements are to be removed.
-        - *idfun* [function]: Optional, ``None`` by default. Identifier
-          function, for each entry of *seq*, returns a identifier of
-          that entry from which uniqueness is determined. Default
-          behavior is f(x) = x. See examples below.
+    :arg list seq:
+        Or any other iterable type. The sequence from which repeated
+        elements are to be removed.
+    :arg function idfun:
+        Optional, ``None`` by default. Identifier function, for each
+        entry of *seq*, returns a identifier of that entry from which
+        uniqueness is determined. Default behavior is f(x) = x. See
+        examples below.
 
-    * Returns:
-        - [list]: Copy of *seq* without the repeated elements (according
-          to *idfun*). If any element is repeated, the first instance is
-          kept.
+    :return:
+        (*list*) -- Copy of *seq* without the repeated elements
+        (according to *idfun*).
 
-    * Examples:
+    **Examples:**
         >>> uniqOrdList([0, 1, 2, 1, 5])
         [0, 1, 2, 5]
         >>> uniqOrdList('abracadabra')
@@ -327,25 +332,28 @@ def uniqOrdList(seq, idfun=None): # XXX: Only used in plot.py line: 510
 
 
 def addToList(lst, toadd):
-    """
-    Appends *toadd* to *lst*. Function differs from ``lst.append`` since
-    is capable to handle different data types. This is, if *lst* is not
-    a list, it will be converted to one. Similarly, if *toadd* is not a
-    list, it will be converted and added. If *toadd* is or contains
-    ``None``, these will be ommited. The returned list will only contain
-    unique elements and does not necessarily preserve order.
+    """ Adds elements to a list.
 
-    * Arguments:
-        - *lst*: List or any other type (will be converted into a list).
-          Original sequence to which *toadd* will be appended.
-        - *toadd*: Element(s) to be added into *lst*.
+    Appends *toadd* to *lst*. Function differs from
+    :py:func:`list.append` since is capable to handle different data
+    types. This is, if *lst* is not a list, it will be converted to one.
+    Similarly, if *toadd* is not a list, it will be converted and added.
+    If *toadd* is or contains ``None``, these will be ommited. The
+    returned list will only contain unique elements and does not
+    necessarily preserve order.
 
-    * Returns:
-        - [list]: Contains the unique element(s) from the union of *lst*
-          and *toadd*. **NOTE:** Makes use of ``common.uniqList``, does
-          not preserve order of elements.
+    :arg list lst:
+        List or any other type (will be converted into a list). Original
+        sequence to which *toadd* will be appended.
+    :arg any toadd:
+        Element(s) to be added into *lst*.
 
-    * Examples:
+    :return:
+        (*list*) -- Contains the unique element(s) from the union of
+        *lst* and *toadd*. **NOTE:** Makes use of
+        :py:func:`common.uniqList`, does not preserve order of elements.
+
+    **Examples:**
         >>> addToList('ab', 'cd')
         ['ab', 'cd']
         >>> addToList('ab', ['cd', None, 'ab', 'ef'])
@@ -382,20 +390,22 @@ def addToList(lst, toadd):
 
 
 def addToSet(st, toadd):
-    """
+    """Adds elements to a set.
+
     Appends *toadd* to *st*. Function is capable to handle different
     input data types. This is, if *toadd* is a list, it will be
     converted to a set and added.
 
-    * Arguments:
-        - *st* [set]: Original set to which *toadd* will be added.
-        - *toadd*: Element(s) to be added into *st*.
+    :arg set st:
+        Original set to which *toadd* will be added.
+    :arg any toadd:
+        Element(s) to be added into *st*.
 
-    * Returns:
-        - [set]: Contains the element(s) from the union of *st* and
-          *toadd*.
+    :return:
+        (*set*) -- Contains the element(s) from the union of *st* and
+        *toadd*.
 
-    * Examples:
+    **Examples:**
         >>> st = set([0, 1, 2])
         >>> addToSet(st, 3)
         set([0, 1, 2, 3])
@@ -416,17 +426,18 @@ def addToSet(st, toadd):
 
 
 def something(anything):
-    """
-    Checks if *anything* is ``None`` or empty.
+    """Checks if argument is empty.
 
-    * Arguments:
-        - *anything*: Self-explanatory.
+    Checks if *anything* is empty or ``None``.
 
-    * Returns:
-        - [bool]: ``False`` if *anyhting* is ``None`` or any empty data
-          type.
+    :arg any anything:
+        Self-explanatory.
 
-    * Examples:
+    :return:
+        (*bool*) -- ``False`` if *anyhting* is ``None`` or any empty
+        data type.
+
+    **Examples:**
         >>> something(None)
         False
         >>> something(123)
@@ -445,15 +456,14 @@ def something(anything):
 
 
 def gen_session_id(length=5):
-    """
-    Generates a random alphanumeric string.
+    """Generates a random alphanumeric string.
 
-    * Arguments:
-        - *length* [int]: Optional, ``5`` by default. Specifies the
-          length of the random string.
+    :arg int length:
+        Optional, ``5`` by default. Specifies the length of the random
+        string.
 
-    * Returns:
-        - [str]: Random alphanumeric string of the specified length.
+    :return:
+        (*str*) -- Random alphanumeric string of the specified length.
     """
 
     abc = '0123456789abcdefghijklmnopqrstuvwxyz'
@@ -463,15 +473,17 @@ def gen_session_id(length=5):
 
 # XXX: Are you sure this is the way to compute Simpson's index?
 def simpson_index(a, b):
-    """
+    """Computes Simpson's index.
+
     Given two sets *a* and *b*, returns the Simpson index.
 
-    * Arguments:
-        - *a* [set]: Or any iterable type (will be converted to set).
-        - *b* [set]: Or any iterable type (will be converted to set).
+    :arg set a:
+        Or any iterable type (will be converted to set).
+    :arg set b:
+        Or any iterable type (will be converted to set).
 
-    * Returns:
-        - [float]: The Simpson index between *a* and *b*.
+    :return:
+        (*float*) -- The Simpson index between *a* and *b*.
     """
 
     a = set(a)
@@ -484,28 +496,29 @@ def simpson_index(a, b):
 # XXX: Related to comment above, what is this exactly?
 def simpson_index_counts(a, b, c):
     """
-    * Arguments:
-        - *a* []: .
-        - *b* []: .
-        - *c* []: .
+    :arg a:
+    :arg b:
+    :arg c:
 
-    * Returns:
-        - [float]: .
+    :return:
+        (*float*) --
     """
 
     return float(c) / float(min(a, b)) if min(a, b) > 0 else 0.0
 
 
 def sorensen_index(a, b):
-    """
+    """Computes the Sorensen index.
+
     Computes the Sorensen-Dice coefficient between two sets *a* and *b*.
 
-    * Arguments:
-        - *a* [set]: Or any iterable type (will be converted to set).
-        - *b* [set]: Or any iterable type (will be converted to set).
+    :arg set a:
+        Or any iterable type (will be converted to set).
+    :arg set b:
+        Or any iterable type (will be converted to set).
 
-    * Returns:
-        - [float]: The Sorensen-Dice coefficient between *a* and *b*.
+    :return:
+        (*float*) -- The Sorensen-Dice coefficient between *a* and *b*.
     """
 
     a = set(a)
@@ -516,15 +529,17 @@ def sorensen_index(a, b):
 
 
 def jaccard_index(a, b):
-    """
+    """Computes the Jaccard index.
+
     Computes the Jaccard index between two sets *a* and *b*.
 
-    * Arguments:
-        - *a* [set]: Or any iterable type (will be converted to set).
-        - *b* [set]: Or any iterable type (will be converted to set).
+    :arg set a:
+        Or any iterable type (will be converted to set).
+    :arg set b:
+        Or any iterable type (will be converted to set).
 
-    * Returns:
-        - [float]: The Jaccard index between *a* and *b*.
+    :return:
+        (*float*) -- The Jaccard index between *a* and *b*.
     """
 
     a = set(a)
@@ -535,12 +550,13 @@ def jaccard_index(a, b):
 
 
 def console(message):
-    """
+    """Prints a message on the terminal.
+
     Prints a *message* to the standard output (e.g. terminal) formatted
     to 80 characters per line plus first-level indentation.
 
-    * Arguments:
-        - *message* [str]: The message to be printed.
+    :arg str message:
+        The message to be printed.
     """
 
     message = '\n\t'.join(textwrap.wrap(message, 80))
@@ -573,19 +589,19 @@ def wcl(f): # XXX: Not used (another function w/ same name defined in curl.py)
 def get_args(loc_dict, remove=set([])):
     """
     Given a dictionary of local variables, returns a copy of it without
-    ``self``, ``kwargs`` (in the scope of a ``class``) plus any other
-    specified in the keyword argument *remove*.
+    ``'self'``, ``'kwargs'`` (in the scope of a :py:obj:`class`) plus
+    any other specified in the keyword argument *remove*.
 
-    * Arguments:
-        - *loc_dict* [dict]: Dictionary containing the local variables
-          (e.g. a call to ``locals()`` in a given scope).
-        - *remove* [set]: Optional, ``set([])`` by default. Can also be
-          a list. Contains the keys of the elements in *loc_dict* that
-          will be removed.
+    :arg dict loc_dict:
+        Dictionary containing the local variables (e.g. a call to
+        :py:func:`locals` in a given scope).
+    :arg set remove:
+        Optional, ``set([])`` by default. Can also be a list. Contains
+        the keys of the elements in *loc_dict* that will be removed.
 
-    * Returns:
-        - [dict]: Copy of *loc_dict* without ``self``, ``kwargs`` and
-          any other element specified in *remove*.
+    :return:
+        (*dict*) -- Copy of *loc_dict* without ``'self'``, ``'kwargs'``
+        and any other element specified in *remove*.
     """
 
     if type(remove) not in [set, list]:
@@ -606,22 +622,25 @@ def get_args(loc_dict, remove=set([])):
 
 # From http://stackoverflow.com/a/20024348/854988
 def rotate(point, angle, center=(0.0, 0.0)): # XXX: Not used? Wrote the docs before checking XD
-    """
+    """Rotates a point with respect to a center.
+
     Rotates a given *point* around a *center* according to the specified
     *angle* (in degrees) in a two-dimensional space. The rotation is
     counter-clockwise.
 
-    * Arguments:
-        - *point* [tuple]: Or list. Contains the two coordinates of the
-          point to be rotated.
-        - *angle* [float]: Angle (in degrees) from which the point
-          will be rotated with respect to *center* (counter-clockwise).
-        - *center* [tuple]: Optional, ``(0.0, 0.0)`` by default. Can
-          also be a list. Determines the two coordinates of the center
-          relative to which the point has to be rotated.
+    :arg tuple point:
+        Or list. Contains the two coordinates of the point to be
+        rotated.
+    :arg float angle:
+        Angle (in degrees) from which the point will be rotated with
+        respect to *center* (counter-clockwise).
+    :arg tuple center:
+        Optional, ``(0.0, 0.0)`` by default. Can also be a list.
+        Determines the two coordinates of the center relative to which
+        the point has to be rotated.
 
-    * Returns:
-        - [tuple]: Pair of coordinates of the rotated point.
+    :return:
+        (*tuple*) -- Pair of coordinates of the rotated point.
     """
 
     angle = math.radians(angle)
@@ -636,16 +655,17 @@ def rotate(point, angle, center=(0.0, 0.0)): # XXX: Not used? Wrote the docs bef
 
 
 def cleanDict(dct):
-    """
+    """Cleans a dictionary of ``None`` values.
+
     Removes ``None`` values from  a dictionary *dct* and casts all other
     values to strings.
 
-    * Arguments:
-        - *dct* [dict]: Dictionary to be cleaned from ``None`` values.
+    :arg dict dct:
+        Dictionary to be cleaned from ``None`` values.
 
-    * Returns:
-        - [dict]: Copy of *dct* without ``None`` value entries and all
-          other values formatted to strings.
+    :return:
+        (*dict*) -- Copy of *dct* without ``None`` value entries and all
+        other values formatted to strings.
     """
 
     toDel = []
@@ -668,13 +688,13 @@ def md5(value):
     """
     Computes the sum of MD5 hash of a given string *value*.
 
-    * Arguments:
-        - *value* [str]: Or any other type (will be converted to
-          string). Value for which the MD5 sum will be computed. Must
-          follow ASCII encoding.
+    :arg str value:
+        Or any other type (will be converted to string). Value for which
+        the MD5 sum will be computed. Must follow ASCII encoding.
 
-    * Return:
-        - [str]: Hash resulting from the MD5 sum of the *value* string.
+    :return:
+        (*str*) -- Hash value resulting from the MD5 sum of the *value*
+        string.
     """
 
     try:
@@ -697,16 +717,17 @@ igraph_graphics_attrs = {'vertex': ['size', ' color', 'frame_color',
 
 
 def merge_dicts(d1, d2):
-    """
-    Merges dictionaries recursively. If a key exists in both
-    dictionaries, the values will be merged.
+    """Merges dictionaries recursively.
 
-    * Arguments:
-        - *d1* [dict]: Base dictionary where *d2* will be merged.
-        - *d2* [dict]: Dictionary to be merged.
+    If a key exists in both dictionaries, the values will be merged.
 
-    * Returns:
-        - [dict]: Resulting dictionary from the merging.
+    :arg dict d1:
+        Base dictionary where *d2* will be merged.
+    :arg dict d1:
+        Dictionary to be merged into *d1*.
+
+    :return:
+        (*dict*) -- Resulting dictionary from the merging.
     """
 
     for k2, v2 in iteritems(d2):
@@ -735,18 +756,18 @@ def dict_set_path(d, path):
     to *path*, creates new subdicts and keys if those do not exist yet,
     and sets/merges the leaf element according to simple heuristic.
 
-    * Arguments:
-        - *d* [dict]: Dictionary of dictionaries for which the path is
-          to be set.
-        - *path* [list]: Or tuple, contains the path of keys being the
-          first element a key of *d* (if doesn't exist will be created),
-          and the subsequent of the inner dictionaries. The last element
-          is the value that will be set/merged on the specified path.
+    :arg dict d:
+        Dictionary of dictionaries for which the path is to be set.
+    :arg list path:
+        Or tuple, contains the path of keys being the first element a
+        key of *d* (if doesn't exist will be created), and the
+        subsequent of the inner dictionaries. The last element is the
+        value that will be set/merged on the specified path.
 
-    * Returns:
-        - [dict]: Copy of *d* including the specified *path*.
+    :return:
+        (*dict*) -- Copy of *d* including the specified *path*.
 
-    * Examples:
+    **Example:**
         >>> dict_set_path(dict(), ['a', 'b', 1])
         {'a': {'b': 1}}
     """
@@ -795,21 +816,23 @@ def dict_set_path(d, path):
 
 
 def dict_diff(d1, d2):
-    """
+    """Compares two dictionaries.
+
     Compares two given dictionaries *d1* and *d2* whose values are sets
     or dictionaries (in such case the function is called recursively).
     **NOTE:** The comparison is only performed on the values of the
     keys that are common in *d1* and *d2* (see example below).
 
-    * Arguments:
-        - *d1* [dict]: First dictionary of the comparison.
-        - *d2* [dict]: Second dictionary of the comparison.
+    :arg dict d1:
+        First dictionary of the comparison.
+    :arg dict d2:
+        Second dictionary of the comparison.
 
-    * Returns:
-        - [dict]: Unique elements of *d1* when compared to *d2*.
-        - [dict]: Unique elements of *d2* when compared to *d1*.
+    :return:
+        * (*dict*) -- Unique elements of *d1* when compared to *d2*.
+        * (*dict*) -- Unique elements of *d2* when compared to *d1*.
 
-    * Examples:
+    **Examples:**
         >>> d1 = {'a': {1}, 'b': {2}, 'c': {3}} # 'c' is unique to d1
         >>> d2 = {'a': {1}, 'b': {3}}
         >>> dict_diff(d1, d2)
@@ -851,19 +874,20 @@ def dict_sym_diff(d1, d2): # XXX: Not used
 
 
 def swap_dict(d):
-    """
+    """Swaps a dictionary.
+
     Interchanges the keys and values of a dictionary. If the values are
     lists (or any iterable type) and/or not unique, each unique element
     will be a key and values sets of the original keys of *d* (see
     example below).
 
-    * Arguments:
-        - *d* [dict]: Original dictionary to be swapped.
+    :arg dict d:
+        Original dictionary to be swapped.
 
-    * Returns:
-        - [dict]: The swapped dictionary.
+    :return:
+        (*dict*) -- The swapped dictionary.
 
-    * Example:
+    **Examples:**
         >>> d = {'a': 1, 'b': 2}
         >>> swap_dict(d)
         {1: 'a', 2: 'b'}
@@ -894,16 +918,17 @@ def swap_dict(d):
 
 
 def swap_dict_simple(d): # XXX: Not used
-    """
+    """Swaps a dictionary.
+
     Interchanges the keys and values of a dictionary. Assumes the values
     are unique and hashable, otherwise overwrites duplicates or raises
     error.
 
-    * Arguments:
-        - *d* [dict]: Original dictionary to be swapped.
+    :arg dict d:
+        Original dictionary to be swapped.
 
-    * Returns:
-        - [dict]: The swapped dictionary.
+    :return:
+        (*dict*) -- The swapped dictionary.
     """
 
     return dict((v, k) for k, v in iteritems(d))
@@ -915,18 +940,21 @@ def swap_dict_simple(d): # XXX: Not used
 #      >>> join_dicts(a, b)
 #      and got an empty dictionary (?)
 
-def join_dicts(d1, d2, _from='keys', to='values'):
+def join_dicts(d1, d2, _from='keys', to='values'): # TODO
     """
     Joins a pair of dictionaries.
 
-    * Arguments:
-        - *d1* [dict]: Dictionary to be merged with *d2*
-        - *d2* [dict]: Dictionary to be merged with *d1*
-        - *_from* [str]: Optional, ``'keys'`` by default.
-        - *to* [str]: Optional, ``'values'`` by default.
+    :arg dict d1:
+        Dictionary to be merged with *d2*
+    :arg dict d2:
+        Dictionary to be merged with *d1*
+    :arg str _from:
+        Optional, ``'keys'`` by default.
+    :arg str to:
+        Optional, ``'values'`` by default.
 
-    * Returns:
-        - [dict]
+    :return:
+        (*dict*) -- .
     """
 
     result = {}

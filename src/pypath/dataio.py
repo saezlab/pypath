@@ -151,12 +151,12 @@ def read_table(cols,
     fileObject : file-like
         Any file like object: file opened for read, or StringIO buffer
     cols : dict
-        Dictionary of columns to read. Keys identifying fields are returned 
+        Dictionary of columns to read. Keys identifying fields are returned
         in the result. Values are column numbers.
     sepLevel1 : str
         Field separator of the file.
     sepLevel2 : dict
-        Subfield separators and prefixes. 
+        Subfield separators and prefixes.
         E.g. {2: ',', 3: '|'}
     hdr : int
         Number of header lines. If None, no headers assumed.
@@ -323,7 +323,7 @@ def get_pfam_regions(uniprots=[], pfams=[], keepfile=False, dicts='both'):
         f.seek(-4, 2)
         gzsize = struct.unpack('<I', f.read())[0]
         prg = progress.Progress(gzsize, 'Processing Pfam domains', 11)
-    with gzip.open(cachefile, 'r') as f:
+    with gzip.open(cachefile, 'r') as f: # FIXME: Something went wrong here
         for l in f:
             prg.step(len(l))
             l = l.strip().split()
@@ -414,25 +414,25 @@ def get_pfam_pdb():
 
 
 def get_corum():
-    
+
     complexes = {}
     members = {}
     c = curl.Curl(urls.urls['corum']['url'], silent=False)
     data = c.result
-    
+
     if data is None:
         return None, None
-    
+
     data = data.split('\n')[1:]
     prg = progress.Progress(len(data), 'Processing data', 9)
-    
+
     for l in data:
-        
+
         l = l.replace('\n', '').replace('\r', '').split('\t')
-        
+
         if len(l) < 10:
             continue
-        
+
         uniprots = l[5].split(';')
         name = l[1]
         shortName = l[1].split('(')[0].replace('complex', '').strip()
@@ -441,14 +441,14 @@ def get_corum():
         func = l[11].replace('"', '')
         dise = l[16].replace('"', '')
         complexes[name] = (uniprots, shortName, pubmeds, spec, func, dise)
-        
+
         for u in uniprots:
             if u not in members:
                 members[u] = []
             members[u].append((name, shortName, pubmeds, spec, func, dise))
-        
+
         prg.step()
-    
+
     prg.terminate()
     return complexes, members
 
@@ -599,15 +599,15 @@ def get_compleat():
 
 
 def get_pdb_chains():
-    
+
     def to_int(i):
-        
+
         if i == 'None':
-            
+
             return None
-        
+
         return int(non_digit.sub('', i))
-    
+
     c = curl.Curl(urls.urls['pdb_chains']['url'], silent=False)
     chains = c.result
     if chains is None:
@@ -618,7 +618,7 @@ def get_pdb_chains():
     pdb_u = {}
     u_pdb = {}
     non_digit = re.compile(r'[^\d.-]+')
-    
+
     for l in chains:
         l = l.split('\t')
         if len(l) > 8:
@@ -641,17 +641,17 @@ def get_pdb_chains():
                 pdb_u[l[0]][l[1]]['pdb_end'] - pdb_u[l[0]][l[1]]['pdb_beg'] == \
                     pdb_u[l[0]][l[1]]['uniprot_end'] - pdb_u[l[0]][l[1]]['uniprot_beg']
             ):
-                
+
                 pdb_u[l[0]][l[1]]['offset'] = (pdb_u[l[0]][l[1]]['uniprot_beg']
                                                - pdb_u[l[0]][l[1]]['pdb_beg'])
-                
+
             else:
                 pdb_u[l[0]][l[1]]['offset'] = None
-            
+
             if l[2] not in u_pdb:
-                
+
                 u_pdb[l[2]] = []
-            
+
             u_pdb[l[2]].append({
                 'pdb': l[0],
                 'chain': l[1],
@@ -663,18 +663,18 @@ def get_pdb_chains():
                 'uniprot_end': to_int(l[8]),
                 'offset': pdb_u[l[0]][l[1]]['offset']
             })
-    
+
     return u_pdb, pdb_u
 
 
 def get_3dcomplexes():
-    
+
     c = curl.Curl(urls.urls['3dcomplexes_contact']['url'], silent=False)
     contact = c.result
     c = curl.Curl(urls.urls['3dcomplexes_correspondancy']['url'], silent=False)
     corresp = c.result
     u_pdb, pdb_u = get_pdb_chains()
-    
+
     del u_pdb
     if contact is None or corresp is None or pdb_u is None:
         return None
@@ -682,7 +682,7 @@ def get_3dcomplexes():
     corresp = corresp.split('\n')
     del contact[0]
     corr_dict = {}
-    
+
     for l in corresp:
         l = l.replace('\r', '').split('\t')
         if len(l) > 2:
@@ -690,9 +690,9 @@ def get_3dcomplexes():
             if pdb not in corr_dict:
                 corr_dict[pdb] = {}
             corr_dict[pdb][l[1]] = l[2]
-    
+
     compl_dict = {}
-    
+
     for l in contact:
         l = l.replace('\r', '').split('\t')
         if len(l) > 11 and int(l[11]) == 0 and int(l[10]) == 0:
@@ -714,7 +714,7 @@ def get_3dcomplexes():
                             if uniprots not in compl_dict[compl]:
                                 compl_dict[compl][uniprots] = []
                             compl_dict[compl][uniprots].append(float(l[3]))
-    
+
     return compl_dict
 
 
@@ -744,7 +744,7 @@ def get_domino_ptms():
     'domains-A', 'domains-B', 'ptm-residue-A', 'ptm-residue-B', #15
     'ptm-type-mi-A', 'ptm-type-mi-B', 'ptm-type-A', 'ptm-type-B', #19
     'ptm-res-name-A', 'ptm-res-name-B', 'mutations-A', 'mutations-B', #23
-    'mutation-effects-A', 'mutation-effects-B', 'domains-interpro-A', #26 
+    'mutation-effects-A', 'mutation-effects-B', 'domains-interpro-A', #26
     'domains-interpro-B', 'negative'] #28
     '''
     domino = get_domino()
@@ -1494,7 +1494,7 @@ def get_instruct():
     '''
     Instruct contains residue numbers in UniProt sequences, it means
     no further calculations of offsets in chains of PDB structures needed.
-    Chains are not given, only a set of PDB structures supporting the 
+    Chains are not given, only a set of PDB structures supporting the
     domain-domain // protein-protein interaction.
     '''
     non_digit = re.compile(r'[^\d.-]+')
@@ -1566,8 +1566,8 @@ def get_instruct_offsets():
 
 def get_i3d():
     '''
-    Interaction3D contains residue numbers in given chains in 
-    given PDB stuctures, so we need to add an offset to get the residue 
+    Interaction3D contains residue numbers in given chains in
+    given PDB stuctures, so we need to add an offset to get the residue
     numbers valid for UniProt sequences. Offsets can be obtained from
     Instruct, or from the Pfam PDB-chain-UniProt mapping table.
     '''
@@ -1715,7 +1715,7 @@ def get_csa(uniprots=None):
     This data tells which residues are involved in the catalytic
     activity of one protein.
     """
-    
+
     url = urls.urls['catalytic_sites']['url']
     c = curl.Curl(url, silent=False)
     data = c.result
@@ -1804,9 +1804,9 @@ def residue_pdb(pdb, chain, residue):
 
 class ResidueMapper(object):
     """
-    This class stores and serves the PDB --> UniProt 
-    residue level mapping. Attempts to download the 
-    mapping, and stores it for further use. Converts 
+    This class stores and serves the PDB --> UniProt
+    residue level mapping. Attempts to download the
+    mapping, and stores it for further use. Converts
     PDB residue numbers to the corresponding UniProt ones.
     """
 
@@ -1875,7 +1875,7 @@ def get_comppi():
     This data provides scores for occurrence of protein-protein interactions
     in various compartments.
     """
-    
+
     url = urls.urls['comppi']['url']
     post = {
         'fDlSet': 'comp',
@@ -1902,7 +1902,7 @@ def get_psite_phos(raw=True, organism='human', strict=True, mapper=None):
     """
     Downloads and preprocesses phosphorylation site data from PhosphoSitePlus.
     """
-    
+
     url = urls.urls['psite_kin']['url']
     c = curl.Curl(
         url, silent=False, compr='gz', encoding='iso-8859-1', large=True)
@@ -1921,28 +1921,28 @@ def get_psite_phos(raw=True, organism='human', strict=True, mapper=None):
     non_digit = re.compile(r'[^\d.-]+')
     motre = re.compile(r'(_*)([A-Za-z]+)(_*)')
     for r in data:
-        
+
         if organism is None or \
             ((r['kinase_org'] == organism or not strict) and \
             r['substrate_org'] == organism):
-            
+
             if r['kinase_org'] != organism:
                 korg = r['kinase_org']
                 # attempting to map by orthology:
                 if korg in common.taxa and organism in common.taxa:
-                    
+
                     mapper = mapping.Mapper() if mapper is None else mapper
                     ktaxid = common.taxa[korg]
                     taxid = common.taxa[organism]
-                    
+
                     if korg not in orto:
                         orto[korg] = homologene_dict(ktaxid, taxid, 'refseqp')
-                    
+
                     korg_refseq = mapper.map_name(r['kinase'],
                                                     'uniprot',
                                                     'refseqp',
                                                     ktaxid)
-                    
+
                     kin_uniprot = \
                         list(
                             itertools.chain(
@@ -1968,23 +1968,23 @@ def get_psite_phos(raw=True, organism='human', strict=True, mapper=None):
                         )
             else:
                 kin_uniprot = [r['kinase']]
-            
+
             for kinase in kin_uniprot:
-            
+
                 r['resaa'] = r['residue'][0]
                 r['resnum'] = int(non_digit.sub('', r['residue'][1:]))
                 mot = motre.match(r['motif'])
-                
+
                 r['substrate'] = r['substrate'].split('_')[0] # excluding e.g. Q12809_VAR_014388
                 sisoform = 1 if '-' not in r['substrate'] else \
                     int(r['substrate'].split('-')[1])
                 r['substrate'] = r['substrate'].split('-')[0]
-                
+
                 kisoform = 1 if '-' not in kinase else int(kinase.split('-')[1])
                 kinase = kinase.split('-')[0]
-                
+
                 r['substrate'] = r['substrate'].split('-')[0]
-                
+
                 if mot:
                     r['start'] = r['resnum'] - 7 + len(mot.groups()[0])
                     r['end'] = r['resnum'] + 7 - len(mot.groups()[2])
@@ -1993,7 +1993,7 @@ def get_psite_phos(raw=True, organism='human', strict=True, mapper=None):
                     r['start'] = None
                     r['end'] = None
                     r['instance'] = None
-                
+
                 if raw:
                     r['kinase'] = kinase
                     result.append(r)
@@ -2001,28 +2001,28 @@ def get_psite_phos(raw=True, organism='human', strict=True, mapper=None):
                     res = intera.Residue(r['resnum'], r['resaa'],
                                          r['substrate'],
                                          isoform=sisoform)
-                    
+
                     mot = intera.Motif(
                         r['substrate'],
                         r['start'],
                         r['end'],
                         instance=r['instance'],
                         isoform=sisoform)
-                    
+
                     ptm = intera.Ptm(protein=r['substrate'],
                                     residue=res,
                                     motif=mot,
                                     typ='phosphorylation',
                                     source='PhosphoSite',
                                     isoform=sisoform)
-                    
+
                     dom = intera.Domain(protein=kinase, isoform=kisoform)
-                    
+
                     dommot = intera.DomainMotif(
                         domain=dom, ptm=ptm, sources=['PhosphoSite'])
-                    
+
                     result.append(dommot)
-    
+
     return result
 
 def ptm_orthology():
@@ -2032,37 +2032,37 @@ def ptm_orthology():
     In the result all PTMs represented by a tuple of the following
     6 elements: UniProt ID, isoform (int), residue one letter code,
     residue number (int), NCBI Taxonomy ID (int), modification type.
-    
+
     :param int source: Source taxon (NCBI Taxonomy).
     :param int target: Target taxon (NCBI Taxonomy).
     """
     result = {}
-    
+
     nondigit = re.compile(r'[^\d]+')
-    
+
     unknown_taxa = set([])
-    
+
     for typ in common.psite_mod_types:
-        
+
         groups = {}
-        
+
         url = urls.urls['psite_%s' % typ[0]]['url']
         c = curl.Curl(url, silent=False, large=True)
-        
+
         data = c.result
-        
+
         for _ in xrange(4):
             null = data.readline()
-        
+
         for r in data:
-            
-            
+
+
             r = r.decode('utf-8').split('\t')
-            
+
             if len(r) < 10:
-                
+
                 continue
-            
+
             uniprot = r[2]
             isoform = 1 if '-' not in uniprot else int(uniprot.split('-')[1])
             uniprot = uniprot.split('-')[0]
@@ -2071,41 +2071,41 @@ def ptm_orthology():
             if r[6] not in common.taxa:
                 unknown_taxa.add(r[6])
                 continue
-            
+
             tax = common.taxa[r[6]]
             group = int(r[5])
-            
+
             this_site = (uniprot, isoform, aa, num, tax, typ[1])
-            
+
             if group not in groups:
                 groups[group] = set([])
-            
+
             groups[group].add(this_site)
-        
+
         for group, sites in iteritems(groups):
-            
+
             for site1 in sites:
-                
+
                 for site2 in sites:
-                    
+
                     if site1[4] == site2[4]:
-                        
+
                         continue
-                    
+
                     if site1 not in result:
-                        
+
                         result[site1] = {}
-                    
+
                     if site2[4] not in result[site1]:
-                        
+
                         result[site1][site2[4]] = set([])
-                    
+
                     result[site1][site2[4]].add(site2)
-    
+
     if len(unknown_taxa):
         sys.stdout.write('\t:: Unknown taxa encountered:\n\t   %s\n' %
                          ', '.join(sorted(unknown_taxa)))
-    
+
     return result
 
 def get_psite_p(organism='human'):
@@ -2116,19 +2116,19 @@ def get_psite_p(organism='human'):
     url = urls.urls['psite_p']['url']
     nondigit = re.compile(r'[^\d]+')
     remot = re.compile(r'(_*)([A-Za-z]+)(_*)')
-    
+
     c = curl.Curl(url, silent=False, large=True)
     data = c.result
-    
+
     for _ in xrange(4):
         null = c.result.readline()
-    
+
     for r in data:
-        
+
         r = r.split('\t')
-        
+
         if len(r) > 9 and (organism is None or r[6] == organism):
-            
+
             uniprot = r[2]
             isoform = 1 if '-' not in uniprot else int(uniprot.split('-')[1])
             uniprot = uniprot.split('-')[0]
@@ -2146,7 +2146,7 @@ def get_psite_p(organism='human'):
                 start = None
                 end = None
                 instance = None
-            
+
             res = intera.Residue(num, aa, uniprot, isoform=isoform)
             mot = intera.Motif(
                 uniprot, start, end, instance=instance, isoform=isoform)
@@ -2157,7 +2157,7 @@ def get_psite_p(organism='human'):
                              source='PhosphoSite',
                              isoform=isoform)
             result.append(ptm)
-    
+
     return result
 
 def get_psite_reg():
@@ -2175,7 +2175,7 @@ def get_psite_reg():
         'receptor internalization, inhibited',
         'receptor recycling, induced'
     }
-    
+
     kwds_neg = {
         'enzymatic activity, inhibited',
         'activity, inhibited',
@@ -2185,7 +2185,7 @@ def get_psite_reg():
         'receptor internalization, induced',
         'receptor recycling, inhibited'
     }
-    
+
     url = urls.urls['psite_reg']['url']
     c = curl.Curl(url, silent=False, compr='gz',
                   encoding='iso-8859-1', large=True)
@@ -2200,12 +2200,12 @@ def get_psite_reg():
         'pmids': 15,
         'comments': 19
     }
-    
+
     data = read_table(cols=cols, fileObject=data, sep='\t', hdr=4)
     regsites = {}
-    
+
     for r in data:
-        
+
         interact = [[y.replace(')', '').strip() for y in x.split('(')]
                     for x in r['on_interact'].strip().split(';') if len(x) > 0]
         induces = [x[0] for x in interact if x[1] == 'INDUCES']
@@ -2222,13 +2222,13 @@ def get_psite_reg():
             else 1
         )
         uniprot = r['uniprot'].split('-')[0]
-        
+
         if uniprot not in regsites:
             regsites[uniprot] = []
-        
+
         function = set(map(lambda f: f.strip(),
                            r['on_function'].split(';')))
-        
+
         regsites[uniprot].append({
             'aa':       aa,
             'res':      res,
@@ -2246,7 +2246,7 @@ def get_psite_reg():
             'positive': bool(kwds_pos & function),
             'negative': bool(kwds_neg & function)
         })
-    
+
     return regsites
 
 def regsites_one_organism(organism = 9606, mapper = None):
@@ -2256,7 +2256,7 @@ def regsites_one_organism(organism = 9606, mapper = None):
     where necessary, while gene symbols will be translated to
     UniProt IDs of the given organism.
     This works with human, mouse or rat.
-    
+
     :param int organism:
         NCBI Taxonomy ID of the target organism. In this
         method possible values are human, mouse or rat, as these species
@@ -2268,7 +2268,7 @@ def regsites_one_organism(organism = 9606, mapper = None):
         need to be loaded repeatedly, saving some memory space this way.
         If None provided a new instance will be initiated.
     """
-    
+
     def genesymbols2uniprots(genesymbols, tax):
         return (
             set(
@@ -2281,7 +2281,7 @@ def regsites_one_organism(organism = 9606, mapper = None):
                 )
             )
         )
-    
+
     def translate_uniprots(uniprots, homo):
         return (
             set(
@@ -2294,19 +2294,19 @@ def regsites_one_organism(organism = 9606, mapper = None):
                 )
             )
         )
-    
+
     result = {}
-    
+
     organisms = set([9606, 10090, 10116])
-    
+
     mod_types = dict(common.psite_mod_types2)
-    
+
     mapper = mapping.Mapper() if mapper is None else mapper
-    
+
     regsites = get_psite_reg()
-    
+
     other_organisms = organisms - set([organism])
-    
+
     homology = (
         dict(
             map(
@@ -2319,71 +2319,71 @@ def regsites_one_organism(organism = 9606, mapper = None):
             )
         )
     )
-    
+
     ptm_homology = ptm_orthology()
-    
+
     proteome = uniprot_input.all_uniprots(organism = organism, swissprot = 'YES')
-    
+
     for substrate, regs in iteritems(regsites):
-        
+
         subs = []
-        
+
         if substrate in proteome:
             subs = [substrate]
         else:
             for other, homo in iteritems(homology):
                 if substrate in homo:
                     subs = homo[substrate]
-        
+
         for sub in subs:
-            
+
             if sub not in result:
                 result[sub] = {}
-            
+
             for reg in regs:
-                
+
                 reg_organism = common.taxa[reg['organism']]
-                
+
                 if reg_organism not in organisms:
                     continue
-                
+
                 mod_type = mod_types[reg['modt']]
                 resnum = int(reg['res'])
-                
+
                 psite_key = (substrate, reg['isoform'], reg['aa'], resnum, reg_organism, mod_type)
-                
+
                 if reg_organism != organism:
-                    
+
                     regs_target = []
                     disrupts    = []
                     induces     = []
-                    
+
                     if psite_key in ptm_homology:
-                        
+
                         if organism in ptm_homology[psite_key]:
-                            
+
                             regs_target = ptm_homology[psite_key][organism]
-                    
+
                     if len(regs_target):
-                        
+
                         disrupts = genesymbols2uniprots(reg['disrupts'], reg_organism)
                         disrupts = translate_uniprots(disrupts, homology[reg_organism])
                         induces  = genesymbols2uniprots(reg['induces'], reg_organism)
                         induces  = translate_uniprots(induces, homology[reg_organism])
-                    
+
                 else:
-                    
+
                     regs_target = [psite_key]
-                    
+
                     disrupts = genesymbols2uniprots(reg['disrupts'], organism)
                     induces  = genesymbols2uniprots(reg['induces'], organism)
-                
+
                 for regt in regs_target:
-                    
+
                     modkey = (regt[2], regt[3], regt[5])
-                    
+
                     if modkey not in result[sub]:
-                        
+
                         result[sub][modkey] = {
                             'induces':  set([]),
                             'disrupts': set([]),
@@ -2395,7 +2395,7 @@ def regsites_one_organism(organism = 9606, mapper = None):
                             'negative': False,
                             'comments': []
                         }
-                    
+
                     result[sub][modkey]['induces'].update(induces)
                     result[sub][modkey]['disrupts'].update(disrupts)
                     result[sub][modkey]['process'].update(reg['process'])
@@ -2408,8 +2408,8 @@ def regsites_one_organism(organism = 9606, mapper = None):
                         result[sub][modkey]['negative'] or reg['negative']
                     if len(reg['comments']):
                         result[sub][modkey]['comments'].append(reg['comments'])
-                    
-    
+
+
     return result
 
 def regsites_tab(regsites, mapper, outfile=None):
@@ -2468,7 +2468,7 @@ def get_ielm_huge(ppi,
     reasonable sized chunks and performs multiple requests to iELM,
     and also retries in case of failure, with reducing the request
     size. Provides feedback on the console.
-    
+
     :param str id_type:
         The type of the IDs in the supplied interaction list.
         Default is 'UniProtKB_AC'.
@@ -2486,7 +2486,7 @@ def get_ielm_huge(ppi,
     :param list headers:
         Additional HTTP headers to send to iELM with each request.
     """
-    
+
     ranges = range(0, len(ppi), part_size)
     result = []
     done = False
@@ -2532,7 +2532,7 @@ def get_ielm(ppi,
     """
     Performs one query to iELM. Parameters are the same as at get_ielm_huge().
     """
-    
+
     url = urls.urls['proteomic_ielm']['url']
     network = ''
     from_pickle = []
@@ -2658,7 +2658,7 @@ def get_pepcyber(cache=None):
     Downloads phosphoprotein binding protein interactions
     from the PEPCyber database.
     """
-    
+
     def get_cells(row):
         cells = row.find_all('td')
         if len(cells) == 10:
@@ -2745,7 +2745,7 @@ def get_pdzbase():
     """
     Downloads data from PDZbase. Parses data from the HTML tables.
     """
-    
+
     url = urls.urls['pdzbase']['url']
     c = curl.Curl(url, silent=False)
     data = c.result
@@ -2891,13 +2891,13 @@ def get_phosphoelm(organism=9606, ltp_only=True):
     """
     Downloads kinase-substrate interactions from phosphoELM.
     Returns list of dicts.
-    
+
     :param int organism: NCBI Taxonomy ID.
     :param bool ltp_only: Include only low-throughput interactions.
     """
     result = []
     non_digit = re.compile(r'[^\d.-]+')
-    
+
     if organism is None:
         _organism = None
     elif organism in common.phosphoelm_taxids:
@@ -2905,7 +2905,7 @@ def get_phosphoelm(organism=9606, ltp_only=True):
     else:
         sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
         return []
-    
+
     url = urls.urls['p_elm']['url']
     c = curl.Curl(url, silent=False)
     data = c.result
@@ -2917,19 +2917,19 @@ def get_phosphoelm(organism=9606, ltp_only=True):
     data = [l.split('\t') for l in data.split('\n')]
     kinases = get_phelm_kinases()
     del data[0]
-    
+
     for l in data:
-        
+
         if len(l) == 9 and (l[7] == _organism or _organism is None) \
             and (not ltp_only or l[6] == 'LTP'):
-            
+
             l[1] = 1 if '-' not in l[0] else int(l[0].split('-')[1])
             l[0] = l[0].split('-')[0]
             del l[-1]
-            
+
             if len(l[5]) > 0 and l[5] in kinases:
                 kinase = kinases[l[5]]
-                
+
                 result.append({
                     'instance': None,
                     'isoform': l[1],
@@ -2943,7 +2943,7 @@ def get_phosphoelm(organism=9606, ltp_only=True):
                     'experiment': l[6],
                     'organism': l[7]
                 })
-    
+
     return result
 
 
@@ -3048,7 +3048,7 @@ def pfam_uniprot(uniprots, infile=None):
 
 
 def get_dbptm(organism = 9606):
-    
+
     if organism is None:
         _organism = None
     elif organism in common.dbptm_taxids:
@@ -3056,18 +3056,18 @@ def get_dbptm(organism = 9606):
     else:
         sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
         return []
-    
+
     fname = urls.files['dbptm']['old_dbptm']
     data = []
-    
+
     with open(fname, 'r') as fp:
-        
+
         hdr = fp.readline().strip().split('\t')
-        
+
         for l in fp:
-            
+
             l = l.strip().split('\t')
-            
+
             data.append(dict(
                 (
                     key,
@@ -3083,7 +3083,7 @@ def get_dbptm(organism = 9606):
                 )
                 for key, val in zip(hdr, l)
             ))
-    
+
     return data
 
 
@@ -3099,32 +3099,32 @@ def get_dbptm_old(organism=9606):
     else:
         sys.stdout.write('\t:: Unknown organism: `%u`.\n' % organism)
         return []
-    
+
     result = []
     byre = re.compile(r'.*by\s([A-Za-z0-9\s]+)\.*')
     andre = re.compile(r',|and')
     non_digit = re.compile(r'[^\d.-]+')
-    
+
     for url in urls.urls['dbptm']['urls']:
-        
+
         c = curl.Curl(url, silent=False)
         extra = c.result
-        
+
         for k, data in iteritems(extra):
-            
+
             data = [x.split('\t') for x in data.split('\n')]
-            
+
             for l in data:
-                
+
                 if len(l) > 8:
-                    
+
                     if _organism:
                         mnemonic = l[0].split('_')[1].strip()
                         if mnemonic != _organism:
                             continue
-                    
+
                     resnum = int(non_digit.sub('', l[2]))
-                    
+
                     ptm = ({
                         'substrate': l[1],
                         'typ': l[7].lower(),
@@ -3141,28 +3141,28 @@ def get_dbptm_old(organism=9606):
                         'start': resnum - 6,
                         'end': resnum + 6
                     })
-                    
+
                     if ptm['kinase'] is not None:
-                        
+
                         if 'autocatalysis' in ptm['kinase']:
-                            
+
                             ptm['kinase'].append(ptm['substrate'])
                             ptm['kinase'].remove('autocatalysis')
-                        
+
                         ptm['kinase'] = [
                             k.replace('host', '').strip()
                             for k in ptm['kinase']
                         ]
-                        
+
                         ptm['kinase'] = [
                             k for k in ptm['kinase'] if len(k) > 0
                         ]
-                        
+
                         if len(ptm['kinase']) == 0:
                             ptm['kinase'] = None
-                        
+
                     result.append(ptm)
-    
+
     return result
 
 
@@ -3382,7 +3382,7 @@ def get_acsn():
 
 
 def get_abs():
-    
+
     result = []
     url = urls.urls['abs']['url']
     c = curl.Curl(url, silent=False)
@@ -3396,7 +3396,7 @@ def get_abs():
 
 
 def get_pazar():
-    
+
     url = urls.urls['pazar']['url']
     c = curl.Curl(url, silent=False)
     data = c.result
@@ -3407,13 +3407,13 @@ def get_pazar():
 
 
 def get_htri():
-    
+
     c = curl.Curl(
         urls.urls['htri']['url'],
         init_url=urls.urls['htri']['init_url'],
         silent=False)
     data = c.result
-    
+
     return [
         list(map(x.split(';').__getitem__, (1, 3, 6)))
         for x in data.split('\n')
@@ -3422,12 +3422,12 @@ def get_htri():
 
 
 def get_oreganno_old(organism=9606):
-    
+
     taxids = common.swap_dict(common.taxids)
-    
+
     if organism in taxids:
         organism = taxids[organism]
-    
+
     nsep = re.compile(r'([-A-Za-z0-9]{3,})[\s/\(]*.*')
     nrem = re.compile(r'[-/]')
     result = []
@@ -3451,36 +3451,36 @@ def get_oreganno_old(organism=9606):
     return result
 
 def get_oreganno(organism=9606):
-    
+
     taxids = common.phosphoelm_taxids
-    
+
     if organism in taxids:
         organism = taxids[organism]
-    
+
     nsep = re.compile(r'([-A-Za-z0-9]{3,})[\s/\(]*.*')
     nrem = re.compile(r'[-/]')
     result = []
-    
+
     url = urls.urls['oreganno']['url']
     c = curl.Curl(url, silent=False, large=True)
     data = c.result
     null = data.readline()
     del null
-    
+
     for l in data:
-        
+
         l = l.decode('utf-8')
-        
+
         if len(l):
-            
+
             l = [x.strip() for x in l.split('\t')]
-            
+
             if (l[1] == organism and
                 l[3] == 'TRANSCRIPTION FACTOR BINDING SITE' and
                 l[2] == 'POSITIVE OUTCOME' and
                 l[4] != 'N/A' and
                 l[7] != 'N/A'):
-                
+
                 yield (
                     l[7]
                     if len(l[7]) < 3 else nrem.sub('',
@@ -3609,17 +3609,17 @@ def get_go_goa(organism='human'):
     """
     Downloads GO annotation from UniProt GOA.
     """
-    
+
     def add_annot(a, result):
         if a[1] not in result[a[8]]:
             result[a[8]][a[1]] = []
         result[a[8]][a[1]].append(a[4])
-    
+
     result = {'P': {}, 'C': {}, 'F': {}}
-    
+
     url = urls.urls['goa']['url'] % (organism.upper(), organism)
     c = curl.Curl(url, silent=False, large = True)
-    
+
     _ = \
         list(
             map(
@@ -3636,152 +3636,152 @@ def get_go_goa(organism='human'):
                 )
             )
         )
-    
+
     return result
 
 def go_ancestors_goose(aspects=('C','F','P')):
     """
     Queries the ancestors of GO terms by AmiGO goose.
-    
+
     Returns dict of sets where keys are GO accessions and values are sets
     of their ancestors.
-    
+
     :param tuple aspects:
         GO aspects: `C`, `F` and `P` for cellular_component,
         molecular_function and biological_process, respectively.
     """
-    
+
     aspects_part = ''
     respaces = re.compile(r'[\s\n]+')
-    
+
     ontologies = {
         'C': 'cellular_component',
         'F': 'molecular_function',
         'P': 'biological_process',
     }
-    
+
     if set(aspects) != {'C', 'F', 'P'}:
-        
+
         aspects_part = 'WHERE (%s)' % (
             ' OR '.join(
                 'term.term_type = "%s"' % ontologies[asp]
                 for asp in aspects
             )
         )
-    
+
     sql_path = os.path.join(common.DATA, 'goose_ancestors.sql')
-    
+
     with open(sql_path, 'r') as fp:
-        
+
         query = fp.read()
-    
+
     query = query % aspects_part
     query = respaces.sub(r' ', query).strip()
-    
+
     url = urls.urls['goose']['url'] % query
-    
+
     c = curl.Curl(url, silent = False, large = True)
-    
+
     ancestors = collections.defaultdict(set)
-    
+
     for l in c.result:
-        
+
         l = l.decode('utf-8').strip().split('\t')
-        
+
         ancestors[l[0]].add(l[1])
-    
+
     return ancestors
 
 def go_descendants_goose(aspects=('C','F','P')):
     """
     Queries descendants of GO terms by AmiGO goose.
-    
+
     Returns dict of sets where keys are GO accessions and values are sets
     of their descendants.
-    
+
     :param tuple aspects:
         GO aspects: `C`, `F` and `P` for cellular_component,
         molecular_function and biological_process, respectively.
     """
-    
+
     desc = collections.defaultdict(set)
-    
+
     anc = go_ancestors_goose(aspects = aspects)
-    
+
     for term, ancs in iteritems(anc):
-        
+
         for terma in ancs:
-            
+
             desc[terma].add(term)
-    
+
     return desc
 
 def go_terms_goose(aspects=('C','F','P')):
     """
     Queries GO terms by AmiGO goose.
-    
+
     Return dict of dicts where upper level keys are one letter codes of the
     aspects `C`, `F` and `P` for cellular_component, molecular_function and
     biological_process, respectively. Lower level keys are GO accessions
     and values are names of the terms.
-    
+
     :param tuple aspects:
         GO aspects: `C`, `F` and `P` for cellular_component,
         molecular_function and biological_process, respectively.
     """
-    
+
     aspects_part = ''
     respaces = re.compile(r'[\s\n]+')
-    
+
     ontologies = {
         'C': 'cellular_component',
         'F': 'molecular_function',
         'P': 'biological_process',
     }
     ontol_short = dict(reversed(i) for i in ontologies.items())
-    
+
     if set(aspects) != {'C', 'F', 'P'}:
-        
+
         aspects_part = 'WHERE (%s)' % (
             ' OR '.join(
                 'term.term_type = "%s"' % ontologies[asp]
                 for asp in aspects
             )
         )
-    
+
     sql_path = os.path.join(common.DATA, 'goose_terms.sql')
-    
+
     with open(sql_path, 'r') as fp:
-        
+
         query = fp.read()
-    
+
     query = query % aspects_part
     query = respaces.sub(r' ', query).strip()
-    
+
     url = urls.urls['goose']['url'] % query
-    
+
     c = curl.Curl(url, silent = False, large = True)
-    
+
     terms = {'P': {}, 'C': {}, 'F': {}}
-    
+
     for l in c.result:
-        
+
         l = l.decode('utf-8').strip().split('\t')
-        
+
         if l[1] not in ontol_short:
-            
+
             continue
-        
+
         aspect = ontol_short[l[1]]
-        
+
         terms[aspect][l[2]] = l[0]
-    
+
     return terms
 
 def go_annotations_goose(organism=9606, aspects=('C','F','P'), uniprots=None):
     """
     Queries GO annotations by AmiGO goose.
-    
+
     Before other methods have been provided to access GO.
     Now this is the preferred method to get terms and annotations.
     Returns terms in dict of dicts and annotations in dict of dicts of sets.
@@ -3789,7 +3789,7 @@ def go_annotations_goose(organism=9606, aspects=('C','F','P'), uniprots=None):
     In the term dicts keys are GO accessions and values are their names.
     In the annotation dicts keys are UniProt IDs and values are sets
     of GO accessions.
-    
+
     :param int organism:
         NCBI Taxonomy ID of one organism. Default is human (9606).
     :param tuple aspects:
@@ -3799,82 +3799,82 @@ def go_annotations_goose(organism=9606, aspects=('C','F','P'), uniprots=None):
         Optionally a list of UniProt IDs. If `None`, results for all proteins
         returned.
     """
-    
+
     aspects_part = ''
     uniprot_part = ''
     respaces = re.compile(r'[\s\n]+')
-    
+
     ontologies = {
         'C': 'cellular_component',
         'F': 'molecular_function',
         'P': 'biological_process',
     }
     ontol_short = dict(reversed(i) for i in ontologies.items())
-    
+
     if set(aspects) != {'C', 'F', 'P'}:
-        
+
         aspects_part = '(%s) AND' % (
             ' OR '.join(
                 'term.term_type = "%s"' % ontologies[asp]
                 for asp in aspects
             )
         )
-    
+
     if uniprots is not None:
-        
+
         uniprot_part = 'dbxref.xref_key IN (%s) AND' % (
             ','.join('"%s"' % uniprot for uniprot in uniprots)
         )
-    
+
     sql_path = os.path.join(common.DATA, 'goose_annotations.sql')
-    
+
     with open(sql_path, 'r') as fp:
-        
+
         query = fp.read()
-    
+
     query = query % (organism, aspects_part, uniprot_part)
     query = respaces.sub(r' ', query).strip()
-    
+
     url = urls.urls['goose']['url'] % query
-    
+
     c = curl.Curl(url, silent = False, large = True)
-    
+
     terms = {'P': {}, 'C': {}, 'F': {}}
     annot = {
         'C': collections.defaultdict(set),
         'F': collections.defaultdict(set),
         'P': collections.defaultdict(set),
     }
-    
+
     for l in c.result:
-        
+
         l = l.decode('utf-8').strip().split('\t')
-        
+
         aspect = ontol_short[l[1]]
-        
+
         terms[aspect][l[2]] = l[0]
         annot[aspect][l[5]].add(l[2])
-    
+
     return terms, annot
 
 def get_go_desc(go_ids, organism=9606):
-    
+
     go_ids = (
         ','.join(sorted(go_ids))
         if type(go_ids) in {list, tuple, set} else
         go_ids
     )
-    
+
     url = urls.urls['quickgo_desc']['url'] % (organism, go_ids)
     print(url)
-    
+
     c = curl.Curl(url, silent=False, large=True, req_headers = {'Accept': 'text/tsv'})
     _ = c.result.readline()
-    
+
     for l in c.result:
-        
+
         print(l.decode('utf-8').split('\t'))
-    
+
     return set(l.decode('utf-8').split('\t')[1] for l in c.result)
 
 def get_go_quick(organism=9606, slim=False, names_only=False, aspects = ('C', 'F', 'P')):
@@ -3883,13 +3883,13 @@ def get_go_quick(organism=9606, slim=False, names_only=False, aspects = ('C', 'F
     Returns 2 dicts: `names` are GO terms by their IDs,
     `terms` are proteins GO IDs by UniProt IDs.
     """
-    
+
     ontologies = {
         'C': 'cellular_component',
         'F': 'molecular_function',
         'P': 'biological_process',
     }
-    
+
     terms = {
         'C': collections.defaultdict(set),
         'F': collections.defaultdict(set),
@@ -3902,19 +3902,19 @@ def get_go_quick(organism=9606, slim=False, names_only=False, aspects = ('C', 'F
         aspects_param,
         '&goUsage=slim' if slim else '',
     )
-    
+
     print(url)
     c = curl.Curl(url, silent=False, large=True)
     _ = c.result.readline()
-    
+
     for l in result:
-        
+
         l = l.split('\t')
-        
+
         if not names_only:
-            
+
             terms[l[5]][l[1]].add(l[4])
-    
+
     return {'terms': terms, 'names': names}
 
 def get_goslim(url=None):
@@ -4079,12 +4079,12 @@ def ramilowski_interactions(putative = False):
     Downloads and processes ligand-receptor interactions from
     Supplementary Table 2 of Ramilowski 2015.
     """
-    
+
     c = curl.Curl(urls.urls['rami']['url'], silent = False, large = True)
     xlsname = c.fname
     del(c)
     raw = read_xls(xlsname, 'All.Pairs')[1:]
-    
+
     return [
         [
             r[1],
@@ -4097,75 +4097,75 @@ def ramilowski_interactions(putative = False):
             putative or r[15] != 'putative'
         )
     ]
-    
+
     return raw
 
 def kirouac2010_interactions():
-    
+
     rename = re.compile(r'[A-Z]{2}[A-Z0-9][-A-Z0-9]*')
     rerange = re.compile(r'([0-9])-([0-9])')
     reslash = re.compile(r'.*?([A-Z0-9]{1,3}/[/A-Z0-9]+)')
-    
+
     def get_names(s):
-        
+
         names = set([])
         prev = None
-        
+
         for n in s.split():
-            
+
             m = rename.findall(n)
-            
+
             if m:
-                
+
                 prev = m
-                
+
                 m = reslash.match(n)
-                
+
                 if m:
-                    
+
                     for post in m.groups()[0].split('/'):
-                        
+
                         for pre in prev:
-                            
+
                             names.add('%s%s' % (pre, post))
-                
+
                 else:
-                    
+
                     m = rerange.match(n)
-                    
+
                     if m:
-                        
+
                         intv = m.groups()
-                        
+
                         for post in range(int(intv[0]), int(intv[1]) + 1):
-                            
+
                             for pre in prev:
-                                
+
                                 names.add('%s%u' % (pre, post))
-                        
+
                     else:
-                        
+
                         names.update(prev)
-            
+
             prev = None
-        
+
         return names
-    
+
     url = urls.urls['kirouac2010']['url']
     c = curl.Curl(url, silent = False, large = True)
     xlsname = c.fname
     del(c)
     tbl = read_xls(xlsname, sheet='S12')
-    
+
     result = []
-    
+
     for r in tbl[2:]:
-        
+
         namesA = get_names(r[0])
         namesB = get_names(r[1])
-        
+
         result.extend(list(itertools.product(namesA, namesB)))
-    
+
     return result
 
 
@@ -4175,7 +4175,7 @@ def get_hpmr():
     human receptor census (HPMR -- Human Plasma Membrane Receptome).
     Returns list of GeneSymbols.
     """
-    
+
     c = curl.Curl(urls.urls['hpmr']['url'], silent=False)
     html = c.result
     soup = bs4.BeautifulSoup(html, 'html.parser')
@@ -4193,101 +4193,101 @@ def hpmr_interactions():
     Downloads ligand-receptor and receptor-receptor interactions from the
     Human Plasma Membrane Receptome database.
     """
-    
+
     cachefile = os.path.join(
         settings.get('cachedir'),
         'hpmr_interactions',
     )
-    
+
     if os.path.exists(cachefile):
-        
+
         with open(cachefile, 'r') as fp:
-            
+
             result = [r.split('\t') for r in fp.read().split('\n')[1:]]
-        
+
         return result
-    
+
     rerecname = re.compile(r'Receptor ([A-z0-9]+) interacts with:')
     reint = re.compile(r'(Receptor|Ligand) ([A-z0-9]+) -')
     rerefid = re.compile(r'list_uids=([- \.:,0-9A-z]+)')
-    
+
     result = []
     recpages = []
-    
+
     c = curl.Curl(urls.urls['hpmri']['browse'])
     soup = bs4.BeautifulSoup(c.result, 'html.parser')
-    
+
     for rec in soup.find_all('a', {'title': 'Open Receptor Page'}):
-        
+
         recpages.append(rec.attrs['href'])
-    
+
     prg = progress.Progress(len(recpages), 'Downloading HPMR data', 1)
-    
+
     for url in recpages:
-        
+
         prg.step()
-        
+
         c = curl.Curl(url)
-        
+
         if c.result is None:
-            
+
             #print('No receptor page: %s' % url)
             continue
-        
+
         soup = bs4.BeautifulSoup(c.result, 'html.parser')
         ints = soup.find('div', {'id': 'GeneInts'})
-        
+
         if not ints:
-            
+
             #print('No interactions: %s' % url)
             continue
-        
+
         recname = rerecname.search(
             ints.find_previous_sibling('span').text
         )
         recname = recname.groups()[0] if recname else 'Unknown'
-        
+
         if recname == 'Unknown':
-            
+
             # print('Could not find receptor name: %s' % url)
             continue
-        
+
         for td in ints.find_all('td'):
-            
+
             interactors = []
-            
+
             for span in td.find_all('span', {'class': 'IntRow'}):
-                
+
                 ints = reint.search(span.text)
-                
+
                 if ints:
-                    
+
                     interactors.append(ints.groups())
-            
+
             references = []
-            
+
             for ref in td.find_all(
                 'a', {'title': 'click to open reference in new window'}):
-                
+
                 references.append(
                     rerefid.search(ref.attrs['href']).groups()[0]
                 )
-            
+
             result.extend([
                 [recname, i[0], i[1], ';'.join(references)]
                 for i in interactors
             ])
-    
+
     prg.terminate()
-    
+
     with open(cachefile, 'w') as fp:
-        
+
         fp.write('%s\n' % '\t'.join([
             'receptor', 'partner', 'partner_type', 'references'
         ]))
-        
+
         fp.write('\n'.join('\t'.join(r) for r in result))
-    
+
     return result
 
 
@@ -4379,56 +4379,56 @@ def cellphonedb_interactions(
         receptor_receptor = True,
         ligand_ligand = True,
     ):
-    
+
     repmid = re.compile(r'PMID: ([0-9]+)')
-    
+
     receptors = set()
     ligands   = set()
-    
+
     url = urls.urls['cellphonedb']['proteins']
-    
+
     c = curl.Curl(url, large = True)
-    
+
     _ = next(c.result)
-    
+
     for l in c.result:
-        
+
         l = l.decode('utf-8').strip().split(',')
-        
+
         if l[2] == 'True' or l[4] == 'True':
-            
+
             receptors.add(l[0])
-        
+
         if l[3] == 'True':
-            
+
             ligands.add(l[0])
-    
+
     url = urls.urls['cellphonedb']['interactions']
-    
+
     c = curl.Curl(url, silent = False, large = True)
-    
+
     _ = next(c.result)
-    
+
     for l in c.result:
-        
+
         l = l.decode('utf-8').strip().split(',')
-        
+
         if l[2][:6] != 'simple' or l[3][:6] != 'simple':
-            
+
             continue
-        
+
         uniprot1 = l[2].split(':')[1]
         uniprot2 = l[3].split(':')[1]
-        
+
         sources = (
             'CellPhoneDB'
                 if l[1] == 'curated' else
             '%s;CellPhoneDB' % l[1]
         )
         refs   = ';'.join(repmid.findall(l[8]))
-        
+
         if uniprot1 in ligands and uniprot2 in receptors:
-            
+
             yield (
                 uniprot1,
                 uniprot2,
@@ -4438,9 +4438,9 @@ def cellphonedb_interactions(
                 'ligand',
                 'receptor',
             )
-        
+
         if uniprot2 in ligands and uniprot1 in receptors:
-            
+
             yield (
                 uniprot2,
                 uniprot1,
@@ -4450,26 +4450,26 @@ def cellphonedb_interactions(
                 'ligand',
                 'receptor',
             )
-    
+
     if not ligand_ligand and not receptor_receptor:
-        
+
         return
-    
+
     url = urls.urls['cellphonedb']['heterodimers']
-    
+
     c = curl.Curl(url, silent = False, large = True)
-    
+
     _ = next(c.result)
-    
+
     for l in c.result:
-        
+
         l = l.decode('utf-8').strip().split(',')
-        
+
         uniprot1 = l[11]
         uniprot2 = l[16]
-        
+
         if receptor_receptor and (l[1] == 'True' or l[3] == 'True'):
-            
+
             yield (
                 uniprot1,
                 uniprot2,
@@ -4479,9 +4479,9 @@ def cellphonedb_interactions(
                 'receptor',
                 'receptor',
             )
-        
+
         if ligand_ligand and l[2] == 'True':
-            
+
             yield (
                 uniprot1,
                 uniprot2,
@@ -4537,7 +4537,7 @@ def only_pmids(idList, strict=True):
 
 def get_pmid(idList):
     '''
-    For a list of doi or PMC IDs 
+    For a list of doi or PMC IDs
     fetches the corresponding PMIDs.
     '''
     if type(idList) in common.simpleTypes:
@@ -4654,7 +4654,7 @@ def get_disgenet(dataset='curated'):
         url,
         silent=False
     )
-    
+
     cols = {
         'entrez': 0,
         'genesymbol': 1,
@@ -4665,16 +4665,16 @@ def get_disgenet(dataset='curated'):
         'nof_snps':  6,
         'source': 7
     }
-    
+
     data = read_table(cols=cols, data=c.result, hdr=1, sep='\t')
-    
+
     for i, d in enumerate(data):
-        
+
         data[i]['score']  = float(data[i]['score'])
         data[i]['nof_pmids'] = int(data[i]['nof_pmids'])
         data[i]['nof_snps']  = int(data[i]['nof_snps'])
         data[i]['source'] = [x.strip() for x in data[i]['source'].split(';')]
-    
+
     return data
 
 
@@ -4723,7 +4723,7 @@ def lmpid_interactions(fname='LMPID_DATA_pubmed_ref.xml', organism=9606):
 def lmpid_dmi(fname='LMPID_DATA_pubmed_ref.xml', organism=9606):
     '''
     Converts list of domain-motif interactions supplied by
-    `pypath.dataio.load_lmpid()` to list of 
+    `pypath.dataio.load_lmpid()` to list of
     `pypath.intera.DomainMotif() objects.
     '''
     data = load_lmpid(fname=fname, organism=organism)
@@ -4815,7 +4815,7 @@ def li2012_dmi(mapper=None):
     Translates GeneSymbols to UniProt IDs.
 
     @mapper : pypath.mapping.Mapper()
-        If not provided, a new `Mapper()` instance will be 
+        If not provided, a new `Mapper()` instance will be
         initialized, reserving more memory.
     '''
     result = {}
@@ -5005,7 +5005,7 @@ def trip_process(exclude_methods=['Inference', 'Speculation'],
     @species : str
         Organism name, e.g. `Human`.
     @strict : bool
-        Whether include interactions with species not 
+        Whether include interactions with species not
         used as a bait or not specified.
     '''
     nd = 'Not determined'
@@ -5080,7 +5080,7 @@ def trip_interactions(exclude_methods=['Inference', 'Speculation'],
                       strict=False):
     '''
     Obtains processed TRIP interactions by calling `pypath.dataio.trip_process()`
-    and returns list of interactions. All arguments are passed to 
+    and returns list of interactions. All arguments are passed to
     `trip_process()`, see their definition there.
     '''
     data = trip_process(exclude_methods, predictions, species, strict)
@@ -5113,13 +5113,13 @@ def load_signor_ptms(organism=9606):
     result = []
     aalet = dict((k.lower().capitalize(), v)
                  for k, v in iteritems(common.aaletters))
-    
+
     data = signor_interactions(organism=organism)
-    
+
     for d in data:
-        
+
         resm = reres.match(d[10])
-        
+
         if resm is not None:
             aa = aalet[resm.groups()[0].capitalize()]
             aanum = int(resm.groups()[1])
@@ -5136,7 +5136,7 @@ def load_signor_ptms(organism=9606):
                 'resaa': aa,
                 'motif': inst
             })
-    
+
     return result
 
 
@@ -5163,21 +5163,21 @@ def get_kegg(mapper=None):
     mapper = mapper if mapper is not None else mapping.Mapper()
     hsa_list = []
     interactions = []
-    
+
     c = curl.Curl(urls.urls['kegg_pws']['list_url'], silent=True)
     htmllst = c.result
     lstsoup = bs4.BeautifulSoup(htmllst, 'html.parser')
-    
+
     for a in lstsoup.find_all('a', href=True):
         m = rehsa.match(a['href'])
         if m:
             hsa_list.append((m.groups(0)[0], a.text))
-    
+
     prg = progress.Progress(
         len(hsa_list), 'Processing KEGG Pathways', 1, percent=False)
-    
+
     for hsa, pw in hsa_list:
-        
+
         prg.step()
         c = curl.Curl(urls.urls['kegg_pws']['kgml_url'] % hsa,
                       silent=True,
@@ -5185,7 +5185,7 @@ def get_kegg(mapper=None):
         kgml = c.result
         kgmlsoup = bs4.BeautifulSoup(kgml, 'html.parser')
         entries = {}
-        
+
         for ent in kgmlsoup.find_all('entry'):
             gr = ent.find('graphics')
             if gr and 'name' in gr.attrs:
@@ -5193,13 +5193,13 @@ def get_kegg(mapper=None):
                     n.strip()
                     for n in gr.attrs['name'].replace('...', '').split(',')
                 ]
-        
+
         uentries = dict([(eid, common.uniqList(
             common.flatList([
                 mapper.map_name(
                     gn, 'genesymbol', 'uniprot', strict=True) for gn in gns
             ]))) for eid, gns in iteritems(entries)])
-        
+
         for rel in kgmlsoup.find_all('relation'):
             st = rel.find('subtype')
             if rel.attrs['entry1'] in uentries and rel.attrs['entry2'] in uentries and \
@@ -5212,7 +5212,7 @@ def get_kegg(mapper=None):
 
 
 def kegg_pathways(mapper=None):
-    
+
     data = get_kegg(mapper=mapper)
     pws = common.uniqList(map(lambda i: i[3], data))
     proteins_pws = dict(map(lambda pw: (pw, set([])), pws))
@@ -5228,56 +5228,56 @@ def signor_pathways(**kwargs):
     '''
     Obtains pathway annotations from Signor.
     '''
-    
+
     url = urls.urls['signor']['list_url']
     baseurl = urls.urls['signor']['all_url_new']
-    
+
     proteins_pathways = {}
     interactions_pathways = {}
-    
+
     c = curl.Curl(url, silent=True)
-    
+
     soup = bs4.BeautifulSoup(c.result, 'html.parser')
-    
+
     prg = progress.Progress(
         len(soup.find('select', {'name': 'pathway_list'}).findAll('option')),
         'Downloading data from Signor',
         1,
         percent=False
     )
-    
+
     for short, full in [
         (opt['value'], opt.text)
         for opt in soup.find(
             'select', {'name': 'pathway_list'}
         ).findAll('option')
     ]:
-        
+
         prg.step()
-        
+
         if not short:
-            
+
             continue
-        
+
         binary_data = [
             (b'pathway_list', short.encode('ascii')),
             (b'submit', b'Download')
         ]
-        
+
         c_pw = curl.Curl(
             baseurl,
             silent = True,
             binary_data = binary_data,
             encoding = 'utf-8',
         )
-        
+
         sep = '@#@#@'
         lines = csv_sep_change(
             c_pw.result,
             '\t',
             sep
         ).split('\n')[1:]
-        
+
         data = list(
             filter(
                 lambda l:
@@ -5289,9 +5289,9 @@ def signor_pathways(**kwargs):
                 )
             )
         )
-        
+
         proteins_pathways[full] = set([])
-        
+
         proteins_pathways[full] = (
             proteins_pathways[full] | set(
                 map(
@@ -5305,7 +5305,7 @@ def signor_pathways(**kwargs):
                 )
             )
         )
-        
+
         proteins_pathways[full] = (
             proteins_pathways[full] | set(
                 map(
@@ -5319,7 +5319,7 @@ def signor_pathways(**kwargs):
                 )
             )
         )
-        
+
         interactions_pathways[full] = set(
             map(
                 lambda l:
@@ -5332,9 +5332,9 @@ def signor_pathways(**kwargs):
                 )
             )
         )
-    
+
     prg.terminate()
-    
+
     return proteins_pathways, interactions_pathways
 
 
@@ -5380,14 +5380,14 @@ def signor_interactions(organism=9606):
             return []
     else:
         _organism = organism
-    
+
     if _organism not in {'human', 'rat', 'mouse'}:
         return []
-    
+
     url = urls.urls['signor']['all_url_new']
     binary_data = [(b'organism', _organism.encode('utf-8')),
                    (b'format', b'csv'), (b'submit', b'Download')]
-    
+
     c = curl.Curl(
         url,
         silent=False,
@@ -5396,7 +5396,7 @@ def signor_interactions(organism=9606):
         timeout=30,
         binary_data=binary_data,
         return_headers=True)
-    
+
     _ = next(c.result)
     sep = '@#@#@'
     lines = ''.join(l.decode('utf-8') for l in c.result)
@@ -6056,7 +6056,7 @@ def reactome_interactions(cacheFile=None, **kwargs):
         settings.get('cachedir'),
         'reactome.interactions.pickle'
     ) if cacheFile is None else cacheFile
-    
+
     if os.path.exists(cacheFile):
         interactions = pickle.load(open(cacheFile, 'rb'))
     else:
@@ -7358,7 +7358,7 @@ def macrophage_interactions():
                                         pm
                                     ])
         lnum += 1
-    
+
     return lst
 
 
@@ -7541,7 +7541,7 @@ def homologene_dict(source, target, id_type):
     """
     Returns orthology translation table as dict, obtained
     from NCBI HomoloGene data.
-    
+
     :param int source: NCBI Taxonomy ID of the source species (keys).
     :param int target: NCBI Taxonomy ID of the target species (values).
     :param str id_type: ID type to be used in the dict. Possible values:
@@ -7554,40 +7554,40 @@ def homologene_dict(source, target, id_type):
         'gi': 4,
         'entrez': 2
     }
-    
+
     try:
         id_col = ids[id_type.lower()]
     except KeyError:
         sys.stdout.write('\tUnknown ID type: `%s`. Please use RefSeq, '\
             'Entrez, GI or GeneSymbol.\n' % id_type)
         raise
-    
+
     hg = get_homologene()
     hgroup = None
     result = {}
-    
+
     for l in hg:
-        
+
         l = l.decode('ascii').strip().split('\t')
         this_hgroup = l[0].strip()
-        
+
         if this_hgroup != hgroup:
             this_source = None
             this_target = None
             hgroup = this_hgroup
-        
+
         this_taxon = int(l[1].strip())
         if this_taxon == source:
             this_source = l[id_col]
         elif this_taxon == target:
             this_target = l[id_col]
-        
+
         if this_source is not None and this_target is not None \
             and len(this_source) and len(this_target):
             if this_source not in result:
                 result[this_source] = set([])
             result[this_source].add(this_target)
-    
+
     return result
 
 def homologene_uniprot_dict(source, target, only_swissprot = True, mapper = None):
@@ -7595,47 +7595,47 @@ def homologene_uniprot_dict(source, target, only_swissprot = True, mapper = None
     Returns orthology translation table as dict from UniProt to Uniprot,
     obtained from NCBI HomoloGene data. Uses RefSeq and Entrez IDs for
     translation.
-    
+
     :param int source: NCBI Taxonomy ID of the source species (keys).
     :param int target: NCBI Taxonomy ID of the target species (values).
     :param bool only_swissprot: Translate only SwissProt IDs.
     :param pypath.mapping.Mapper mapper: A Mapper object.
     """
     result = {}
-    
+
     hge = homologene_dict(source, target, 'entrez')
     hgr = homologene_dict(source, target, 'refseq')
-    
+
     all_source = set(all_uniprots(organism = source, swissprot = 'YES'))
-    
+
     if not only_swissprot:
         all_source_trembl = all_uniprots(organism = source, swissprot = 'NO')
         all_source.update(set(all_source_trembl))
-    
+
     m = mapping.Mapper() if mapper is None else mapper
-    
+
     for u in all_source:
-        
+
         source_e = m.map_name(u, 'uniprot', 'entrez', source)
         source_r = m.map_name(u, 'uniprot', 'refseqp', source)
         target_u = set([])
         target_r = set([])
         target_e = set([])
-        
+
         for e in source_e:
             if e in hge:
                 target_e.update(hge[e])
-        
+
         for r in source_r:
             if r in hgr:
                 target_r.update(hgr[r])
-        
+
         for e in target_e:
             target_u.update(set(m.map_name(e, 'entrez', 'uniprot', target)))
-        
+
         for r in target_r:
             target_u.update(set(m.map_name(e, 'refseqp', 'uniprot', target)))
-        
+
         target_u = \
             itertools.chain(
                 *map(
@@ -7644,54 +7644,54 @@ def homologene_uniprot_dict(source, target, only_swissprot = True, mapper = None
                     target_u
                 )
             )
-        
+
         result[u] = sorted(list(target_u))
-    
+
     return result
 
 def mir2disease_interactions():
-    
+
     url = urls.urls['mir2dis']['url']
     c = curl.Curl(url, silent = True, large = True)
-    
+
     return [
         l.decode('iso-8859-1').strip().split('\t')
         for l in itertools.islice(c.result, 3, None)
     ]
 
 def mirdeathdb_interactions():
-    
+
     url = urls.urls['mirdeathdb']['url']
     c = curl.Curl(url, silent = False, large = True)
-    
+
     _ = next(c.result)
-    
+
     for l in c.result:
-        
+
         l = l.decode('utf-8').strip().split('\t')
-        
+
         if len(l) < 11:
             continue
-        
+
         mirnas = l[2].replace('"', '').split(',')
         organism = int(l[9])
         pubmed = l[8]
         geneid = l[10]
         function = '%s_%s' % (l[4], l[5])
-        
+
         for mirna in mirnas:
-            
+
             yield (mirna, geneid, organism, pubmed, function)
 
 def mirecords_interactions():
-    
+
     url = urls.urls['mirecords']['url']
     c = curl.Curl(url, silent = False, large = True)
-    
+
     tbl = read_xls(c.fileobj.name)
-    
+
     c.close()
-    
+
     return (
         (l[6], l[3], l[2], l[1], l[5], l[0].split('.')[0])
         for l in
@@ -7699,29 +7699,29 @@ def mirecords_interactions():
     )
 
 def mirtarbase_interactions():
-    
+
     url = urls.urls['mirtarbase']['strong']
     c = curl.Curl(url, silent = False, large = True)
-    
+
     tbl = read_xls(c.fileobj.name)
-    
+
     c.close()
-    
+
     for i in xrange(len(tbl)):
         tbl[i][4] = tbl[i][4].split('.')[0]
         tbl[i][8] = tbl[i][8].split('.')[0]
-    
+
     return tbl[1:]
 
 def lncdisease_interactions():
-    
+
     url = urls.urls['lncdisease']['url']
     c = curl.Curl(url, silent = False, large = True)
-    
+
     for l in c.result:
-        
+
         l = l.decode('utf-8').strip().split('\t')
-        
+
         yield (l[1],
                l[2],
                l[3].split('-')[0],
@@ -7731,83 +7731,83 @@ def lncdisease_interactions():
                l[9])
 
 def lncrnadb_interactions():
-    
+
     renondigit = re.compile(r'[^\d]+')
-    
+
     url = urls.urls['lncrnadb']['url']
     c = curl.Curl(url, silent = False, large = True,
                   encoding = 'utf-8')
-    
+
     b = bs4.BeautifulSoup(c.result, 'lxml')
-    
+
     for res in b.findAll('results'):
-        
+
         lncrna = res.find('nomenclature').find('name').text
-        
+
         for sp in res.find('species').findAll('entry'):
-        
+
             spec = sp.attrs['species'].split('(')[0].strip()
-            
+
             for assoc in res.find('association').findAll('association'):
-                
+
                 partner  = assoc.find('componentid').text
                 typ      = assoc.find('componenttype').text.lower()
                 pmid     = renondigit.sub('', assoc.find('pubmedid').text)
-                
+
                 yield (lncrna, partner, typ, spec, pmid)
 
 def transmir_interactions():
-    
+
     url = urls.urls['transmir']['url']
     c = curl.Curl(url, silent = False, large = True,
                   encoding = 'utf-8')
-    
+
     _ = next(c.result)
-    
+
     taxids = common.join_dicts(
         common.taxids,
         common.mirbase_taxids,
         _from = 'values')
-    
+
     for l in c.result:
-        
+
         l = l.decode('iso-8859-1').strip().split('\t')
-        
+
         if len(l) < 9:
             print(l)
             continue
-        
+
         l[3] = '%s%s' % (
             '%s-' % taxids[l[9]] if len(l) >= 10 and l[9] in taxids else '',
             l[3])
-        
+
         yield (l[0], l[1], l[3], l[6], l[7],
                l[8].lower(),
                l[9] if len(l) >= 10 else '')
 
 def encode_tf_mirna_interactions():
-    
+
     url = urls.urls['encode']['tf-mirna']
     c = curl.Curl(url, silent = False, large = True,
                   encoding = 'ascii')
-    
+
     for l in c.result:
-        
+
         l = l.decode('ascii').strip().split()
-        
+
         if l[1] == '(TF-miRNA)':
-            
+
             yield (l[0], l[2])
 
 def _get_imweb():
-    
+
     def init_fun(resp_hdr):
         return ['Cookie: access-token=%s' % resp_hdr['token']]
-    
+
     t = int(time.time() * 1000) - 3600000
-    
+
     loginurl = urls.urls['imweb']['login'] % t
-    
+
     hdrs = [
         'Host: www.intomics.com',
         'X-Requested-With: XMLHttpRequest',
@@ -7818,34 +7818,34 @@ def _get_imweb():
         'Referer: https://www.intomics.com/inbio/map/',
         'Accept: */*'
     ]
-    
+
     c0 = curl.Curl(loginurl, silent = False, large = False,
                    cache = False, req_headers = hdrs)
-    
+
     hdrs = hdrs[:-2]
-    
+
     hdrs.extend([
         'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Upgrade-Insecure-Requests: 1',
         'Accept-Encoding: gzip'
     ])
-    
+
     # 'Host: www.intomics.com' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' --compressed -H 'Cookie: access_token='"$token" -H 'DNT: 1' -H 'Connection: keep-alive' -H 'Upgrade-Insecure-Requests: 1'
-    
+
     hdrs.append('Cookie: access-token=%s' % json.loads(c0.result)['token'])
-    
+
     url = urls.urls['imweb']['url']
-    
+
     time.sleep(1)
-    
+
     c2 = curl.Curl(url, silent = False, large = True,
                    req_headers = hdrs, cache = False,
                    compressed = True)
-    
+
     return c0, c2
 
 def get_imweb(verbose = 0):
-    
+
     import pycurl
     import time
     import json
@@ -7882,85 +7882,85 @@ def get_imweb(verbose = 0):
     c1.setopt(pycurl.DEBUGFUNCTION, print)
 
     c1.perform()
-    
+
     fp_imweb.close()
 
 def get_imweb_req():
-    
+
     import requests
     import time
     import json
-    
+
     t = int(time.time() * 1000) - 3600000
 
     url   = 'https://www.intomics.com/inbio/map/api/'\
             'get_data?file=InBio_Map_core_2016_09_12.tar.gz'
     login = 'https://www.intomics.com/inbio/api/login_guest?ref=&_=%u' % t
-    
+
     r0 = requests.get(login)
     token = json.loads(r0.text)['token']
     hdrs = {'Cookie': 'access-token=%s' % token}
-    
+
     with open('imweb.tmp.tar.gz', 'wb') as fp:
-        
+
         r1 = requests.get(url, headers = hdrs, stream = True)
-        
+
         for block in r1.iter_content(4096):
-            
+
             fp.write(block)
 
 def get_proteinatlas(normal = True, pathology = True,
                      cancer = True, mapper = None):
-    
+
     mapper = mapper or mapping.Mapper()
     result = {
         'normal':    collections.defaultdict(lambda: {}),
         'pathology': collections.defaultdict(lambda: {})
     }
-    
+
     def line(l):
-        
+
         return l.decode('utf-8').split('\t')
-    
+
     if normal:
-        
+
         c = curl.Curl(urls.urls['proteinatlas']['normal'],
                     silent = False, large = True)
         fp = list(c.result.values())[0]
         hdr = line(fp.readline().strip())
-        
+
         for l in fp:
-            
+
             l = line(l)
-            
+
             uniprots = mapper.map_name(l[0], 'ensembl', 'uniprot')
             tissue = '%s:%s' % (l[2], l[3])
-            
+
             for u in uniprots:
                 result['normal'][tissue][u] = (l[4], l[5].strip())
-    
+
     if cancer or pathology:
-        
+
         c = curl.Curl(urls.urls['proteinatlas']['pathology'],
                     silent = False, large = True)
         fp = list(c.result.values())[0]
         hdr = line(fp.readline())
-        
+
         for l in fp:
-            
+
             l = line(l)
             uniprots = mapper.map_name(l[0], 'ensembl', 'uniprot')
             tissue   = l[2]
-            
+
             values = dict(
                 (h, float(l[i + 3]) if '.' in l[i + 3] else int(l[i + 3]))
                 for i, h in enumerate(hdr[3:])
                 if len(l) and len(l[i + 3].strip())
             )
-            
+
             for u in uniprots:
                 result['pathology'][tissue][u] = values
-    
+
     return result
 
 def get_tfregulons_old(
@@ -7969,22 +7969,22 @@ def get_tfregulons_old(
     ):
     """
     Retrieves TF-target interactions from TF regulons.
-    
+
     :param set levels:
         Confidence levels to be used.
     :param bool only_curated:
             Retrieve only literature curated interactions.
-    
+
     Details
     -------
     TF regulons is a comprehensive resource of TF-target interactions
     combining multiple lines of evidences: literature curated databases,
     ChIP-Seq data, PWM based prediction using HOCOMOCO and JASPAR matrices
     and prediction from GTEx expression data by ARACNe.
-    
+
     For details see https://github.com/saezlab/DoRothEA.
     """
-    
+
     url = urls.urls['tfregulons']['url'] % (
         'all' if 'E' in levels else
         'ABCD' if 'D' in levels else
@@ -7992,10 +7992,10 @@ def get_tfregulons_old(
         'AB' if 'B' in levels else
         'A'
     )
-    
+
     c = curl.Curl(url, silent = False, large = True)
     _ = c.result.readline()
-    
+
     return (
         list(
             itertools.chain(
@@ -8020,48 +8020,48 @@ def get_tfregulons(
     ):
     """
     Retrieves TF-target interactions from TF regulons.
-    
+
     :param set levels:
         Confidence levels to be used.
     :param bool only_curated:
             Retrieve only literature curated interactions.
-    
+
     Details
     -------
     TF regulons is a comprehensive resource of TF-target interactions
     combining multiple lines of evidences: literature curated databases,
     ChIP-Seq data, PWM based prediction using HOCOMOCO and JASPAR matrices
     and prediction from GTEx expression data by ARACNe.
-    
+
     For details see https://github.com/saezlab/DoRothEA.
     """
-    
+
     url = urls.urls['tfregulons_git']['url']
-    
+
     c = curl.Curl(
         url,
         silent = False,
         large = True,
         files_needed = ['database.csv'],
     )
-    
+
     _ = c.result['database.csv'].readline()
-    
+
     for l in c.result['database.csv']:
-        
+
         l = l.decode('utf-8')
-        
+
         l = csv_sep_change(l, ',', '%&%&%&')
-        
+
         l = l.replace('"', '').strip('\n\r').split('%&%&%&')
-        
+
         # process only the ones of the requested levels or if curated
         if l[3] not in levels and not (only_curated and ll[4] == 'TRUE'):
-            
+
             continue
-        
+
         l = tuple(f if f not in  {'-', 'none'} else '' for f in l)
-        
+
         yield list(itertools.chain(
             # TF, target, effect, score
             l[:4],

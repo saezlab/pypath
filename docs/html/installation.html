@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Installation &#8212; pypath 0.7.98 documentation</title>
+    <title>Installation &#8212; pypath 0.7.107 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="index.html" title="PyPath: A Python module for molecular interaction networks"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">pypath 0.7.98 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">pypath 0.7.107 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -94,9 +94,8 @@ consuming and troubleshooting requires expertise.</p>
 <div class="section" id="troubleshooting">
 <h3>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">no</span> <span class="pre">module</span> <span class="pre">named</span> <span class="pre">...</span></code> when you try to load a module in Python. Did</li>
-</ul>
-<p>theinstallation of the module run without error? Try to run again the specific
+<li><code class="docutils literal notranslate"><span class="pre">no</span> <span class="pre">module</span> <span class="pre">named</span> <span class="pre">...</span></code> when you try to load a module in Python. Did
+theinstallation of the module run without error? Try to run again the specific
 part from the mac install shell script to see if any error comes up. Is the
 path where the module has been installed in your <code class="docutils literal notranslate"><span class="pre">$PYTHONPATH</span></code>? Try <code class="docutils literal notranslate"><span class="pre">echo</span>
 <span class="pre">$PYTHONPATH</span></code> to see the current paths. Add your local install directories if
@@ -104,39 +103,30 @@ those are not there, e.g.
 <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">PYTHONPATH=&quot;/Users/me/local/python2.7/site-packages:$PYTHONPATH&quot;</span></code>.
 If it works afterwards, don’t forget to append these export path statements to
 your <code class="docutils literal notranslate"><span class="pre">~/.bash_profile</span></code>, so these will be set every time you launch a new
-shell.</p>
-<ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">pkgconfig</span></code> not found. Check if the <code class="docutils literal notranslate"><span class="pre">$PKG_CONFIG_PATH</span></code> variable is</li>
-</ul>
-<p>set correctly, and pointing on a directory where pkgconfig really can be
-found.</p>
-<ul class="simple">
-<li>Error while trying to install py(2)cairo by pip. py(2)cairo could not be</li>
-</ul>
-<p>installed by pip, but only by waf. Please set the <code class="docutils literal notranslate"><span class="pre">$PKG_CONFIG_PATH</span></code> before.
-See <strong>mac-install-source.sh</strong> on how to install with waf.</p>
-<ul class="simple">
-<li>Error at pygraphviz build: <code class="docutils literal notranslate"><span class="pre">graphviz/cgraph.h</span> <span class="pre">file</span> <span class="pre">not</span> <span class="pre">found</span></code>. This is</li>
-</ul>
-<p>because the directory of graphviz detected wrong by pkgconfig. See
+shell.</li>
+<li><code class="docutils literal notranslate"><span class="pre">pkgconfig</span></code> not found. Check if the <code class="docutils literal notranslate"><span class="pre">$PKG_CONFIG_PATH</span></code> variable is
+set correctly, and pointing on a directory where pkgconfig really can be
+found.</li>
+<li>Error while trying to install py(2)cairo by pip. py(2)cairo could not be
+installed by pip, but only by waf. Please set the <code class="docutils literal notranslate"><span class="pre">$PKG_CONFIG_PATH</span></code> before.
+See <strong>mac-install-source.sh</strong> on how to install with waf.</li>
+<li>Error at pygraphviz build: <code class="docutils literal notranslate"><span class="pre">graphviz/cgraph.h</span> <span class="pre">file</span> <span class="pre">not</span> <span class="pre">found</span></code>. This is
+because the directory of graphviz detected wrong by pkgconfig. See
 <strong>mac-install-source.sh</strong> how to set include dirs and library dirs by
-<code class="docutils literal notranslate"><span class="pre">--global-option</span></code> parameters.</p>
-<ul class="simple">
-<li>Can not install bioservices, because installation of jurko-suds fails. Ok,</li>
-</ul>
-<p>this fails because pip is not able to install the recent version of
+<code class="docutils literal notranslate"><span class="pre">--global-option</span></code> parameters.</li>
+<li>Can not install bioservices, because installation of jurko-suds fails. Ok,
+this fails because pip is not able to install the recent version of
 setuptools, because a very old version present in the system path. The
 development version of jurko-suds does not require setuptools, so you can
-install it directly from git as it is done in <strong>mac-install-source.sh</strong>.</p>
-<ul class="simple">
-<li>In <strong>Anaconda</strong>, <em>pypath</em> can be imported, but the modules and classes are</li>
-</ul>
-<p>missing. Apparently Anaconda has some built-in stuff called <em>pypath</em>. This
+install it directly from git as it is done in <strong>mac-install-source.sh</strong>.</li>
+<li>In <strong>Anaconda</strong>, <em>pypath</em> can be imported, but the modules and classes are
+missing. Apparently Anaconda has some built-in stuff called <em>pypath</em>. This
 has nothing to do with this module. Please be aware that Anaconda installs a
 completely separated Python distribution, and does not detect modules in the
 main Python installation. You need to install all modules within Anaconda’s
 directory. <strong>mac-install-conda.sh</strong> does exactly this. If you still
-experience issues, please contact us.</p>
+experience issues, please contact us.</li>
+</ul>
 </div>
 </div>
 <div class="section" id="microsoft-windows">
@@ -263,7 +253,7 @@ as soon as possible.</p>
         <li class="right" >
           <a href="index.html" title="PyPath: A Python module for molecular interaction networks"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">pypath 0.7.98 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">pypath 0.7.107 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
