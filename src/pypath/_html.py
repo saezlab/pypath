@@ -1674,7 +1674,10 @@ _header = u'''<!DOCTYPE html>
 
 _footer = u'''
         <br>
-        <p> <a href="http://pypath.omnipathdb.org/">Dénes Türei, 2017.</a> 
+        <p> <a href="http://www.ebi.ac.uk/~denes">Dénes Türei</a>,
+            <a href="http://saezlab.org/person/nicolas-palacio/">
+                Nicolàs Palacio</a>,
+            <a href="http://saezlab.org/">Saez Lab</a> 2016-2018. 
             Feedback: omnipath@googlegroups.com </p>
         <p>
             <a href="https://validator.w3.org/check/referer">
@@ -1757,7 +1760,7 @@ def main_page():
 
     return default_template(
         doc,
-        'OmniPath: literature curated human signaling pathways',
-        'literature curated human signaling pathways',
+        'OmniPath: literature curated<br>mammalian signaling pathways',
+        'literature curated mammalian signaling pathways',
         logos_bottom=True,
         above_title=above_title)
