@@ -841,7 +841,12 @@ urls = {
             'heterodimers.csv',
         'proteins': 'https://www.cellphonedb.org/downloads/'\
             'protein_complex_cellphonedb.csv',
-    }
+    },
+    'stitch': {
+        'label': 'The STITCH small molecule-protein interaction database',
+        'actions': 'http://stitch.embl.de/download/actions.v5.0/'\
+            '9606.actions.v5.0.tsv.gz'
+    },
 }
 
 files = {
