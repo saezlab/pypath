@@ -18,16 +18,17 @@
 import os
 
 def _get_version():
-    """
+    """Returns the version number.
+
     Reads file named ``__version__`` and returns it as a tuple of
     integers.
 
-    * Returns:
-        - [tuple]: Three element tuple containing the major, minor and
-          micro version numbers.
+    :return:
+        (*tuple*) -- Three element tuple containing the major, minor and
+        micro version numbers.
 
-    * Example:
-        # If ``__version__`` contains ``1.11.0``:
+    **Example:**
+        >>> # If ``__version__`` contains ``1.11.0``:
         >>> _get_version()
         (1, 11, 0)
     """
