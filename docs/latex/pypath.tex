@@ -56,8 +56,8 @@
 
 
 \title{pypath Documentation}
-\date{Nov 15, 2018}
-\release{0.7.101}
+\date{Nov 16, 2018}
+\release{0.7.107}
 \author{Dénes Türei}
 \newcommand{\sphinxlogo}{\vbox{}}
 \renewcommand{\releasename}{Release}
@@ -160,9 +160,6 @@ consuming and troubleshooting requires expertise.
 \label{\detokenize{installation:troubleshooting}}\begin{itemize}
 \item {} 
 \sphinxcode{\sphinxupquote{no module named ...}} when you try to load a module in Python. Did
-
-\end{itemize}
-
 theinstallation of the module run without error? Try to run again the specific
 part from the mac install shell script to see if any error comes up. Is the
 path where the module has been installed in your \sphinxcode{\sphinxupquote{\$PYTHONPATH}}? Try \sphinxcode{\sphinxupquote{echo
@@ -172,53 +169,40 @@ those are not there, e.g.
 If it works afterwards, don’t forget to append these export path statements to
 your \sphinxcode{\sphinxupquote{\textasciitilde{}/.bash\_profile}}, so these will be set every time you launch a new
 shell.
-\begin{itemize}
+
 \item {} 
 \sphinxcode{\sphinxupquote{pkgconfig}} not found. Check if the \sphinxcode{\sphinxupquote{\$PKG\_CONFIG\_PATH}} variable is
-
-\end{itemize}
-
 set correctly, and pointing on a directory where pkgconfig really can be
 found.
-\begin{itemize}
+
 \item {} 
 Error while trying to install py(2)cairo by pip. py(2)cairo could not be
-
-\end{itemize}
-
 installed by pip, but only by waf. Please set the \sphinxcode{\sphinxupquote{\$PKG\_CONFIG\_PATH}} before.
 See \sphinxstylestrong{mac-install-source.sh} on how to install with waf.
-\begin{itemize}
+
 \item {} 
 Error at pygraphviz build: \sphinxcode{\sphinxupquote{graphviz/cgraph.h file not found}}. This is
-
-\end{itemize}
-
 because the directory of graphviz detected wrong by pkgconfig. See
 \sphinxstylestrong{mac-install-source.sh} how to set include dirs and library dirs by
 \sphinxcode{\sphinxupquote{-{-}global-option}} parameters.
-\begin{itemize}
+
 \item {} 
 Can not install bioservices, because installation of jurko-suds fails. Ok,
-
-\end{itemize}
-
 this fails because pip is not able to install the recent version of
 setuptools, because a very old version present in the system path. The
 development version of jurko-suds does not require setuptools, so you can
 install it directly from git as it is done in \sphinxstylestrong{mac-install-source.sh}.
-\begin{itemize}
+
 \item {} 
 In \sphinxstylestrong{Anaconda}, \sphinxstyleemphasis{pypath} can be imported, but the modules and classes are
-
-\end{itemize}
-
 missing. Apparently Anaconda has some built-in stuff called \sphinxstyleemphasis{pypath}. This
 has nothing to do with this module. Please be aware that Anaconda installs a
 completely separated Python distribution, and does not detect modules in the
 main Python installation. You need to install all modules within Anaconda’s
 directory. \sphinxstylestrong{mac-install-conda.sh} does exactly this. If you still
 experience issues, please contact us.
+
+\end{itemize}
 
 
 \section{Microsoft Windows}
@@ -283,7 +267,7 @@ as soon as possible.
 \label{\detokenize{main:module-pypath.main}}\label{\detokenize{main:reference}}\label{\detokenize{main::doc}}\index{pypath.main (module)}\index{PyPath (class in pypath.main)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.main.}}\sphinxbfcode{\sphinxupquote{PyPath}}}{\emph{ncbi\_tax\_id=9606}, \emph{default\_name\_type=\{'drug': 'chembl'}, \emph{'lncrna': 'lncrna-genesymbol'}, \emph{'mirna': 'mirbase'}, \emph{'protein': 'uniprot'\}}, \emph{copy=None}, \emph{mysql=(None}, \emph{'mapping')}, \emph{chembl\_mysql=(None}, \emph{'chembl')}, \emph{name='unnamed'}, \emph{outdir='results'}, \emph{loglevel='INFO'}, \emph{loops=False}}{}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{pypath.main.}}\sphinxbfcode{\sphinxupquote{PyPath}}}{\emph{ncbi\_tax\_id=9606}, \emph{default\_name\_type=\{'drug': 'chembl'}, \emph{'lncrna': 'lncrna-genesymbol'}, \emph{'mirna': 'mirbase'}, \emph{'protein': 'uniprot'\}}, \emph{copy=None}, \emph{mysql=(None}, \emph{'mapping')}, \emph{chembl\_mysql=(None}, \emph{'chembl')}, \emph{name='unnamed'}, \emph{cache\_dir=None}, \emph{outdir='results'}, \emph{loglevel='INFO'}, \emph{loops=False}}{}
 Main network object.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{itemize}
@@ -1425,21 +1409,28 @@ dir\_sources = {[}‘SignaLink3’{]}, hide = True)
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.export_edgelist}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{export\_edgelist}}}{\emph{fname, graph=None, names={[}'name'{]}, edge\_attributes={[}{]}, sep='\textbackslash{}t'}}{}
 Write edge list to text file with attributes
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{fname}} \textendash{} the name of the file or a stream to read from.
 
-@param fname: the name of the file or a stream to read from.
-@param graph: the igraph object containing the network
-@param names: list with the vertex attribute names to be printed
-\begin{quote}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{graph}} \textendash{} the igraph object containing the network
 
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{names}} \textendash{} list with the vertex attribute names to be printed
 for source and target vertices
-\end{quote}
-\begin{description}
-\item[{@param edge\_attributes: list with the edge attribute names}] \leavevmode
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{edge\_attributes}} \textendash{} list with the edge attribute names
 to be printed
 
-\end{description}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{sep}} \textendash{} string used to separate columns
 
-@param sep: string used to separate columns
+\end{itemize}
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -1570,7 +1561,7 @@ list is considered to be loaded in
 the current (undirected) network. Second row contains the number
 of nodes in \sphinxstyleemphasis{lst} list (also considered to be already loaded)
 and the number of nodes in the network with a non-empty
-attribute \sphinxstyleemphasis{attr}. Uses {\color{red}\bfseries{}:py:fun:{}`scipy.stats.fisher\_exact{}`}, see
+attribute \sphinxstyleemphasis{attr}. Uses \sphinxcode{\sphinxupquote{scipy.stats.fisher\_exact()}}, see
 the documentation of the corresponding package for more
 information.
 \begin{quote}\begin{description}
@@ -2145,9 +2136,7 @@ the data files from the cache or omit them (similar to
 re-download the data and ignore the cache.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{**kwargs}} \textendash{} 
-Not used.
-
+\sphinxstyleliteralstrong{\sphinxupquote{**kwargs}} \textendash{} Not used.
 
 \end{itemize}
 
@@ -2808,7 +2797,7 @@ corresponding cached file name {[}str{]} (values).
 \begin{itemize}
 \item {} 
 (\sphinxstyleemphasis{file}) \textendash{} The loaded pickle file from the cache if the
-file is contains the interactions. {\color{red}\bfseries{}{}`{}`}None{}`self.graph{}` otherwise.
+file is contains the interactions. \sphinxcode{\sphinxupquote{None}} otherwise.
 
 \item {} 
 (\sphinxstyleemphasis{list}) \textendash{} List of mapped edges if the file contains the
@@ -3471,12 +3460,10 @@ the settings of the file to be read. See the class
 documentation for more details.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{**kwargs}} \textendash{} 
-Extra arguments passed to the file reading function. Such
+\sphinxstyleliteralstrong{\sphinxupquote{**kwargs}} \textendash{} Extra arguments passed to the file reading function. Such
 function name is outlined in the
 \sphinxcode{\sphinxupquote{python.data\_formats.ReadList.inFile}} attribute and
 defined in \sphinxcode{\sphinxupquote{pypath.dataio}}.
-
 
 \end{itemize}
 
@@ -5273,31 +5260,39 @@ All figures and tables in the manuscript can be generated automatically
 
 \item {} 
 This is supported by a new module, \sphinxstylestrong{analysis}, which implements a generic
+workflow in its \sphinxstylestrong{Workflow} class.
 
 \end{itemize}
-
-workflow in its \sphinxstylestrong{Workflow} class.
 
 
 \section{0.7.74}
 \label{\detokenize{changelog:id6}}\begin{itemize}
 \item {} 
 \sphinxstylestrong{homology} module: finds the homologs of proteins using the NCBI
-
-\end{itemize}
-
 Homologene database and the homologs of PTM sites using UniProt sequences
 and PhosphoSitePlus homology table
-* \sphinxstylestrong{ptm} module: fully integrated way of processing enzyme-substrate
+
+\item {} 
+\sphinxstylestrong{ptm} module: fully integrated way of processing enzyme-substrate
 interactions from many databases and their translation by homology to other
 species
-* \sphinxstylestrong{export} module: creates \sphinxcode{\sphinxupquote{pandas.DataFrame}} or exports the network into
+
+\item {} 
+\sphinxstylestrong{export} module: creates \sphinxcode{\sphinxupquote{pandas.DataFrame}} or exports the network into
 tabular file
-* New webservice
-* TF Regulons database included and provides much more comprehensive
+
+\item {} 
+New webservice
+
+\item {} 
+TF Regulons database included and provides much more comprehensive
 transcriptional regulation resources, including literature curated, in silico
 predicted, ChIP-Seq and expression pattern based approaches
-* Many network resources added, including miRNA-mRNA and TF-miRNA interactions
+
+\item {} 
+Many network resources added, including miRNA-mRNA and TF-miRNA interactions
+
+\end{itemize}
 
 
 \section{Upcoming}
@@ -5307,15 +5302,20 @@ New, more flexible network reader class
 
 \item {} 
 Full support for multi-species molecular interaction networks
+(e.g. pathogene-host)
+
+\item {} 
+Better support for not protein only molecular interaction networks
+(metabolites, drug compounds, RNA)
+
+\item {} 
+ChEMBL webservice interface, interface for PubChem and eventually
+forDrugBank
+
+\item {} 
+Silent mode: a way to suppress messages and progress bars
 
 \end{itemize}
-
-(e.g. pathogene-host)
-* Better support for not protein only molecular interaction networks
-(metabolites, drug compounds, RNA)
-* ChEMBL webservice interface, interface for PubChem and eventually
-forDrugBank
-* Silent mode: a way to suppress messages and progress bars
 
 
 \chapter{Features}
