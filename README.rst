@@ -5,12 +5,12 @@
 
 :note: ``pypath`` supports both Python 2.7 and Python 3.6+. In the beginning,
     pypath has been developed only for Python 2.7. Then the code have been
-    adjusted to Py3 however we can not guarantee no incompatibilities 
+    adjusted to Py3 however we can not guarantee no incompatibilities
     remained. If you find any method does not work please submit an issue on
     github. For few years I develop and test ``pypath`` in Python 3. Therefore
     this is the better supported Python variant.
 
-:documentation: http://pypath.omnipathdb.org/
+:documentation: http://saezlab.github.io/pypath
 :issues: https://github.com/saezlab/pypath/issues
 
 **pypath** is a Python package built around igraph to work with molecular
@@ -160,7 +160,7 @@ Directly from git
 -----------------
 
 .. code:: bash
-   
+
     pip install git+https://github.com/saezlab/pypath.git
 
 With pip
@@ -169,7 +169,7 @@ With pip
 Download the package from /dist, and install with pip:
 
 .. code:: bash
-   
+
     pip install pypath-x.y.z.tar.gz
 
 Build source distribution
@@ -178,7 +178,7 @@ Build source distribution
 Clone the git repo, and run setup.py:
 
 .. code:: bash
-   
+
     python setup.py sdist
 
 Mac OS X
@@ -254,7 +254,7 @@ no package for Windows, or for your Python version, you just need to find an
 other one. For this, do a search:
 
 .. code:: bash
-   
+
     anaconda search -t conda <package name>
 
 For example, if you search for *pycairo*, you will find out that *vgauther*
