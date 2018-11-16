@@ -18,18 +18,11 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-# XXX: Missing module docstring
 
-# try:
-#import __main__ as ext
-from __future__ import print_function
+import pytest
 
-import pypath.main as main
-import pypath._version as _version
-#import descriptions
-#import pypath.common as common
 
-__version__ = _version.__version__
-__author__ = _version.__author__
-
-PyPath = main.PyPath # This is an alias
+@pytest.fixture(scope = "session")
+def cachedir(tmpdir_factory):
+    
+    return tmpdir_factory.mktemp("cache")

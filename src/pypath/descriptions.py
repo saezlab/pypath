@@ -9,12 +9,13 @@
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
+#                  Nicolàs Palacio
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
 #      http://www.gnu.org/licenses/gpl-3.0.html
 #
-#  Website: http://www.ebi.ac.uk/~denes
+#  Website: http://pypath.omnipathdb.org/
 #
 
 # http://www.ijbs.com/v06p0051.htm
@@ -2722,7 +2723,7 @@ def licenses_emails(outfile='licenses_emails.txt'):
     postdoc @ EMBL-EBI
     +447442970610
     denes@ebi.ac.uk
-    http://www.ebi.ac.uk/~denes
+    http://pypath.omnipathdb.org/
     public key: http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x5706A4B609DD65A6
     '''
     no_license = 'Unfortunately, we could not find licensing information for %s. According to todays copyright laws, we are not allowed to redistribute data without the explicit permission of the copyright holder (http://www.gnu.org/licenses/license-list.html#NoLicense). We would like to ask you for permission to redistribute %s data in the way outlined above.'

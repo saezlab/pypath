@@ -9,12 +9,13 @@
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
+#                  Nicolàs Palacio
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
 #      http://www.gnu.org/licenses/gpl-3.0.html
 #
-#  Website: http://www.ebi.ac.uk/~denes
+#  Website: http://pypath.omnipathdb.org/
 #
 
 #
@@ -101,6 +102,7 @@ import pypath.common as common
 import pypath.intera as intera
 # from pypath import reaction
 import pypath.residues as residues
+import pypath.settings as settings
 
 if 'long' not in __builtins__:
     long = int
@@ -300,9 +302,9 @@ def get_pfam_regions(uniprots=[], pfams=[], keepfile=False, dicts='both'):
     url = urls.urls['pfam_up']['url']
     outf = url.split('/')[-1]
     urlmd5 = common.md5(url)
-    if not os.path.exists(os.path.join(os.getcwd(), 'cache')):
-        os.mkdir(os.path.join(os.getcwd(), 'cache'))
-    cachefile = os.path.join(os.getcwd(), 'cache', urlmd5 + '-' + outf)
+    if not os.path.exists(settings.get('cachedir')):
+        os.makedirs(settings.get('cachedir'))
+    cachefile = os.path.join(settings.get('cachedir'), urlmd5 + '-' + outf)
     u_pfam = {}
     pfam_u = {}
     uniprots = set(uniprots)
@@ -1035,7 +1037,7 @@ def get_pisa(pdblist):
         'ssbonds': 'ss-bonds'
     }
     interfaces = {}
-    cachefile = os.path.join('cache', 'pisa.pickle')
+    cachefile = os.path.join(settings.get('cachedir'), 'pisa.pickle')
     u_pdb, pdb_u = get_pdb_chains()
     if os.path.exists(cachefile):
         try:
@@ -1240,7 +1242,7 @@ def get_3did_ddi(residues=False, ddi_flat=None, organism=9606):
 
 
 def get_3did(ddi_flat=None, res=True, organism=9606, pickl=True):
-    resultfile = os.path.join('cache', '3did_ddi.pickle')
+    resultfile = os.path.join(settings.get('cachedir'), '3did_ddi.pickle')
     if pickl and os.path.exists(resultfile):
         result = pickle.load(open(resultfile, 'rb'))
         if len(result) == 1:
@@ -1356,7 +1358,7 @@ def get_3did(ddi_flat=None, res=True, organism=9606, pickl=True):
 
 
 def get_3did_dmi(dmi_flat=None):
-    resultfile = os.path.join('cache', '3did_dmi.pickle')
+    resultfile = os.path.join(settings.get('cachedir'), '3did_dmi.pickle')
     if os.path.exists(resultfile):
         return pickle.load(open(resultfile, 'rb'))
     if dmi_flat is None:
@@ -1381,7 +1383,7 @@ def get_3did_dmi(dmi_flat=None):
     rmap = residues.ResidueMapper()
     with open(tmpfile, 'r') as f:
         prg = progress.Progress(lnum,
-                                'Processing 3DID domain-motif interactions', 1)
+            'Processing 3DID domain-motif interactions', 1)
         for l in f:
             prg.step()
             l = l.strip().split()
@@ -2537,7 +2539,7 @@ def get_ielm(ppi,
     ppi_pickle = []
     ppi_query = []
     result = []
-    pcache = os.path.join('cache', 'ielm.pickle')
+    pcache = os.path.join(settings.get('cachedir'), 'ielm.pickle')
     if not part and os.path.exists(pcache):
         from_pickle = pickle.load(open(pcache, 'rb'))
         ppi_pickle = from_pickle['ppi']
@@ -2554,7 +2556,7 @@ def get_ielm(ppi,
         network += '%s %s\r\n' % (pp[0], pp[1])
     post = {'network': network, 'databases': id_type, 'mydomains': mydomains}
     net_md5 = common.md5(network)
-    cachefile = os.path.join(os.getcwd(), 'cache', net_md5 + '.ielm')
+    cachefile = os.path.join(settings.get('cachedir'), net_md5 + '.ielm')
     if os.path.exists(cachefile) and cache:
         with open(cachefile, 'r') as f:
             data = f.read()
@@ -2674,7 +2676,7 @@ def get_pepcyber(cache=None):
     result = []
     uniprots = {}
     if cache is None:
-        cache = os.path.join('cache', 'pepcyber-uniprots')
+        cache = os.path.join(settings.get('cachedir'), 'pepcyber-uniprots')
     if os.path.exists(cache):
         with open(cache, 'r') as f:
             for l in f:
@@ -3020,7 +3022,7 @@ def pfam_uniprot(uniprots, infile=None):
     result = {}
     url = urls.urls['pfam_up']['url']
     infile = infile if infile is not None \
-        else os.path.join('cache', 'pfam-regions.tab.gz')
+        else os.path.join(settings.get('cachedir'), 'pfam-regions.tab.gz')
     if not os.path.exists(infile):
         sys.stdout.write('\t:: Downloading data...\n')
         sys.stdout.flush()
@@ -4192,7 +4194,10 @@ def hpmr_interactions():
     Human Plasma Membrane Receptome database.
     """
 
-    cachefile = os.path.join('cache', 'hpmr_interactions')
+    cachefile = os.path.join(
+        settings.get('cachedir'),
+        'hpmr_interactions',
+    )
 
     if os.path.exists(cachefile):
 
@@ -4871,7 +4876,8 @@ def take_a_trip(cachefile='trip.pickle'):
         To download again, remove file from `./cache`.
     '''
     if cachefile is not None:
-        cachefile = os.path.join('cache', 'trip.pickle')
+        cachedir = settings.get('cachedir')
+        cachefile = os.path.join(cachedir, cachefile)
         if os.path.exists(cachefile):
             result = pickle.load(open(cachefile, 'rb'))
             return result
@@ -5520,7 +5526,10 @@ def reactome_biopax(organism=9606, cache=True):
     Returns File object.
     '''
     organisms = {9606: 'Homo_sapiens'}
-    unzipped = 'cache/reactome_biopax_%s.owl' % organisms[organism]
+    unzipped = os.path.join(
+        settings.get('cachedir'),
+        'reactome_biopax_%s.owl' % organisms[organism]
+    )
     if not os.path.exists(unzipped) or not cache:
         url = urls.urls['reactome']['biopax_l3']
         c = curl.Curl(
@@ -5586,8 +5595,10 @@ def reactions_biopax(biopax_file,
     '''
     Processes a BioPAX file and extracts binary interactions.
     '''
-    cachefile = os.path.join('cache', '%s.processed.pickle' %
-                             os.path.split(biopax_file.name)[1])
+    cachefile = os.path.join(
+        settings.get('cachedir'), '%s.processed.pickle' %
+            os.path.split(biopax_file.name)[1]
+        )
     if os.path.exists(cachefile):
         sys.stdout.write('\t:: Loading already processed data\n')
         sys.stdout.flush()
@@ -6041,8 +6052,11 @@ def reactome_interactions(cacheFile=None, **kwargs):
     The applied criteria are very stringent, yields very few interactions.
     Requires large free memory, approx. 2G.
     '''
-    cacheFile = os.path.join('cache', 'reactome.interactions.pickle') \
-        if cacheFile is None else cacheFile
+    cacheFile = os.path.join(
+        settings.get('cachedir'),
+        'reactome.interactions.pickle'
+    ) if cacheFile is None else cacheFile
+
     if os.path.exists(cacheFile):
         interactions = pickle.load(open(cacheFile, 'rb'))
     else:
@@ -7061,7 +7075,7 @@ def dip_login(user, passwd):
     bdr = '---------------------------8945224391427558067125853467'
     useragent = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:43.0) '\
         'Gecko/20110304 Firefox/43.0'
-    loginfname = os.path.join('cache', 'dip.logindata.tmp')
+    loginfname = os.path.join(settings.get('cachedir'), 'dip.logindata.tmp')
     url = urls.urls['dip']['login']
     req_hdrs = ['User-Agent: %s' % useragent]
     c = curl.Curl(
@@ -7493,7 +7507,10 @@ def get_reactions(types=None, sources=None):
         types = set(types)
     if type(sources) is list:
         sources = set(sources)
-    cachefile = os.path.join('cache', 'reaction_interactions_by_source.pickle')
+    cachefile = os.path.join(
+        settings.get('cachedir'),
+        'reaction_interactions_by_source.pickle'
+    )
     if os.path.exists(cachefile):
         interactions = pickle.load(open(cachefile, 'rb'))
     else:

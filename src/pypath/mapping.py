@@ -9,12 +9,13 @@
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
+#                  Nicolàs Palacio
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
 #      http://www.gnu.org/licenses/gpl-3.0.html
 #
-#  Website: http://www.ebi.ac.uk/~denes
+#  Website: http://pypath.omnipathdb.org/
 #
 
 from future.utils import iteritems
@@ -51,6 +52,7 @@ import pypath.curl as curl
 import pypath.mapping_input as mapping_input
 import pypath.uniprot_input as uniprot_input
 import pypath.input_formats as input_formats
+import pypath.settings as settings
 
 __all__ = ['MappingTable', 'Mapper']
 
@@ -71,7 +73,7 @@ class MappingTable(object):
                  mysql=None,
                  log=None,
                  cache=False,
-                 cachedir='cache',
+                 cachedir=None,
                  uniprots = None):
 
         '''
@@ -89,7 +91,13 @@ class MappingTable(object):
         self.maxlTwo = None
         self.mysql = mysql
         self.cache = cache
-        self.cachedir = cachedir
+        
+        self.cachedir = cachedir or settings.get('cachedir')
+        
+        if not os.path.exists(self.cachedir):
+            
+            os.makedirs(self.cachedir)
+        
         self.mapping = {"to": {}, "from": {}}
 
         if log.__class__.__name__ != 'logw':
@@ -449,15 +457,15 @@ class Mapper(object):
                  mysql_conf=(None, 'mapping'),
                  log=None,
                  cache=True,
-                 cachedir='cache'):
+                 cachedir=None):
 
         self.reup = re.compile(
             r'[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}'
         )
         self.cache = cache
-        self.cachedir = cachedir
+        self.cachedir = cachedir or settings.get('cachedir')
         if self.cache and not os.path.exists(self.cachedir):
-            os.mkdir(self.cachedir)
+            os.makedirs(self.cachedir)
         self.unmapped = []
         self.ownlog = log
         self.default_ncbi_tax_id = ncbi_tax_id
@@ -954,7 +962,7 @@ class Mapper(object):
         i = 0
         for ac_typ in ac_types:
             md5ac = common.md5((ac_typ, 'uniprot', bi, ncbi_tax_id))
-            cachefile = os.path.join('cache', md5ac)
+            cachefile = os.path.join(self.cachedir, md5ac)
             if self.cache and os.path.isfile(cachefile):
                 tables[(ac_typ, 'uniprot')].mapping = \
                     pickle.load(open(cachefile, 'rb'))
@@ -991,7 +999,7 @@ class Mapper(object):
             if self.cache:
                 for ac_typ in ac_types:
                     md5ac = common.md5((ac_typ, bi))
-                    cachefile = os.path.join('cache', md5ac)
+                    cachefile = os.path.join(self.cachedir, md5ac)
                     pickle.dump(tables[(ac_typ, 'uniprot')].mapping,
                                 open(cachefile, 'wb'))
 

@@ -9,12 +9,13 @@
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
+#                  Nicolàs Palacio
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
 #      http://www.gnu.org/licenses/gpl-3.0.html
 #
-#  Website: http://www.ebi.ac.uk/~denes
+#  Website: http://pypath.omnipathdb.org/
 #
 
 from future.utils import iteritems
@@ -45,6 +46,22 @@ try:
 
 except NameError:
     basestring = str
+
+
+class _const:
+    
+    class ConstError(TypeError):
+        
+        pass
+
+    def __setattr__(self, name, value):
+        
+        if name in self.__dict__:
+            
+            raise(self.ConstError, "Can't rebind const(%s)" % name)
+        
+        self.__dict__[name] = value
+
 
 default_name_type = {"protein": "uniprot",
                      "mirna": "mirbase",

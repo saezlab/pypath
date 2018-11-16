@@ -9,12 +9,13 @@
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
+#                  Nicolàs Palacio
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
 #      http://www.gnu.org/licenses/gpl-3.0.html
 #
-#  Website: http://www.ebi.ac.uk/~denes
+#  Website: http://pypath.omnipathdb.org/
 #
 
 #
@@ -1673,7 +1674,7 @@ _header = u'''<!DOCTYPE html>
 
 _footer = u'''
         <br>
-        <p> <a href="http://www.ebi.ac.uk/~denes">Dénes Türei, 2017.</a> 
+        <p> <a href="http://pypath.omnipathdb.org/">Dénes Türei, 2017.</a> 
             Feedback: omnipath@googlegroups.com </p>
         <p>
             <a href="https://validator.w3.org/check/referer">

@@ -9,12 +9,13 @@
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
+#                  Nicolàs Palacio
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
 #      http://www.gnu.org/licenses/gpl-3.0.html
 #
-#  Website: http://www.ebi.ac.uk/~denes
+#  Website: http://pypath.omnipathdb.org/
 #
 
 import __main__ # XXX: Bad practice
@@ -33,7 +34,7 @@ from functools import reduce
 try:
     import cairo
 
-except: # XXX: Catching any exception like this is bad practice
+except ImportError: # XXX: Catching any exception like this is bad practice
     sys.stdout.write(
         '\t:: Module `cairo` not available.\n'
         '\t   Some plotting functionalities won\'t be accessible.\n'
@@ -108,6 +109,7 @@ import pypath.common as common
 import pypath._version as _version
 from pypath.gr_plot import *
 from pypath.progress import *
+import pypath.settings as settings
 
 omnipath = data_formats.omnipath
 
@@ -1430,6 +1432,7 @@ class PyPath(object):
     def __init__(self, ncbi_tax_id=9606, default_name_type=default_name_type,
                  copy=None, mysql=(None, 'mapping'),
                  chembl_mysql=(None, 'chembl'), name='unnamed',
+                 cache_dir = None,
                  outdir='results', loglevel='INFO', loops=False):
         """Initializes the network object.
 
@@ -1441,10 +1444,16 @@ class PyPath(object):
         self.__version__ = _version.__version__
 
         # Setting up the working directory
-        for d in ['results', 'log', 'cache']:
+        for d in ['results', 'log']:
 
             if not os.path.exists(d):
                 os.makedirs(d)
+
+        self.cache_dir = cache_dir or settings.get('cachedir')
+
+        if not os.path.exists(self.cache_dir):
+
+            os.makedirs(self.cache_dir)
 
         if copy is None:
             # Setting up graph object
@@ -1617,7 +1626,7 @@ class PyPath(object):
 
         if pfile:
             pfile = pfile if not isinstance(pfile, bool) \
-                else os.path.join('cache', 'default_network.pickle')
+                else os.path.join(self.cache_dir, 'default_network.pickle')
 
             if os.path.exists(pfile):
                 sys.stdout.write(
@@ -1666,7 +1675,7 @@ class PyPath(object):
         """
 
         pfile = pfile if pfile is not None \
-            else os.path.join('cache', 'default_network.pickle')
+            else os.path.join(self.cache_dir, 'default_network.pickle')
         pickle.dump(self.graph, open(pfile, 'wb'), -1)
 
     ###
@@ -2158,9 +2167,14 @@ class PyPath(object):
         edgeListMapped = []
         infile = None
         _name = settings.name.lower()
-        int_cache = os.path.join('cache', '%s.interactions.pickle' % _name)
-        edges_cache = os.path.join('cache', '%s.edges.pickle' % _name)
-
+        int_cache = os.path.join(
+            self.cache_dir,
+            '%s.interactions.pickle' % _name
+        )
+        edges_cache = os.path.join(
+            self.cache_dir,
+            '%s.edges.pickle' % _name
+        )
         if not reread and not redownload:
             infile, edgeListMapped = self.lookup_cache(_name, cache_files,
                                                        int_cache, edges_cache)
@@ -3468,12 +3482,11 @@ class PyPath(object):
 
             n = g.vcount()
             g.add_vertices(1)
-            # XXX: `key` is not defined in this scope yet
-            g.vs[n][key].originalNames = {originalName: originalNameType}
-            thisNode = g.vs.find(name=defAttrs["name"])
+            g.vs[n]['originalNames'] = {originalName: originalNameType}
+            thisNode = g.vs.find(name = defAttrs["name"])
 
         else:
-            thisNode = g.vs.find(name=defAttrs["name"])
+            thisNode = g.vs.find(name = defAttrs["name"])
 
             if thisNode["originalNames"] is None:
                 thisNode["originalNames"] = {}

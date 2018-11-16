@@ -9,12 +9,13 @@
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
+#                  Nicolàs Palacio
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
 #      http://www.gnu.org/licenses/gpl-3.0.html
 #
-#  Website: http://www.ebi.ac.uk/~denes
+#  Website: http://pypath.omnipathdb.org/
 #
 
 #
@@ -95,6 +96,7 @@ from contextlib import closing
 
 import pypath.progress as progress
 import pypath.common as common
+import pypath.settings as settings
 
 try:
     basestring
@@ -694,7 +696,7 @@ class Curl(FileOpener):
                  call=True,
                  process=True,
                  retries=3,
-                 cache_dir='cache'):
+                 cache_dir=None):
 
         self.result = None
         self.download_failed = False
@@ -1138,8 +1140,14 @@ class Curl(FileOpener):
                 (self.url, self.post_str, bindata))).hexdigest()
 
     def cache_dir_exists(self):
-        if not os.path.exists(os.path.join(os.getcwd(), self.cache_dir)):
-            os.mkdir(os.path.join(os.getcwd(), self.cache_dir))
+        
+        if self.cache_dir is None:
+            
+            self.cache_dir = settings.get('cachedir')
+        
+        if not os.path.exists(self.cache_dir):
+            
+            os.makedirs(self.cache_dir)
 
     def get_cache_file_name(self):
         self.cache_file_name = os.path.join(os.getcwd(), self.cache_dir,

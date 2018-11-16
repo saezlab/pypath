@@ -9,17 +9,19 @@
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
+#                  Nicolàs Palacio
 #
 #  Distributed under the GPLv3 License.
 #  See accompanying file LICENSE.txt or copy at
 #      http://www.gnu.org/licenses/gpl-3.0.html
 #
-#  Website: http://www.ebi.ac.uk/~denes
+#  Website: http://pypath.omnipathdb.org/
 #
 
 import os
 
 import pypath.common as common
+import pypath.settings as settings
 
 urls = {
     'uniprot_pdb': {
@@ -855,8 +857,14 @@ files = {
         'data': os.path.join(common.ROOT, 'data', 'phosphopoint.csv')
     },
     'phosphosite': {
-        'curated': os.path.join('cache', 'phosphosite_curated.pickle'),
-        'noref': os.path.join('cache', 'phosphosite_noref.pickle')
+        'curated': os.path.join(
+            settings.get('cachedir'),
+            'phosphosite_curated.pickle',
+        ),
+        'noref': os.path.join(
+            settings.get('cachedir'),
+            'phosphosite_noref.pickle',
+        )
     },
     'dbptm': {
         'old_dbptm': os.path.join(common.ROOT, 'data', 'old_dbptm.tab'),
