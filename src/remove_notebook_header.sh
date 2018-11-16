@@ -16,9 +16,9 @@ fi
 sed -iE ':a;s/<!--.*-->//g;/<!--/{N;ba};'\
 's/@font-face {.*}//g;'\
 's/<html/<html style="height:100%;"/;'\
-'s/<body/<body style="height:100%;"/;'\
-'s/\(<div id="header"\)/<!-- \1/;'\
-'s/\(<div id="site" style=".*">\)/\1 -->/;'\
-'s/\(id="notebook_panel"\) style="overflow:auto!important;"/\1/g;'\
-'s/\(id="notebook_panel"\)/\1 style="overflow:auto!important;"/g;'\
+'s/<body/<body style="height:100%;overflow-y:auto!important;"/;'\
+'s/\(<div id="\?header"\?\)/<!-- \1/;'\
+'s/\(<div id="\?site"\? style="\?.*"\?>\)/\1 -->/;'\
+'s/\(id="?notebook_panel"?\) style="overflow:auto!important;"/\1/g;'\
+'s/\(id="?notebook_panel"?\)/\1 style="overflow:auto!important;"/g;'\
  "$1"

@@ -1735,6 +1735,7 @@ def main_page():
         ('pypath_mapping.html', 'ID conversion'),
         ('pathway_extraction.html', 'Pathway annotations'),
         ('node_neighbourhood.html', 'Extracting signaling networks'),
+        ('pypath_dorothea_demo.html', 'DoRothEA in pypath'),
         ('TF_location.html', 'Finding transcription factors')
     ]
 
