@@ -3616,10 +3616,21 @@ class PyPath(object):
                              if isinstance(value, list) else [None])
 
             g.es[edge][key] = self.combine_attr([g.es[edge][key], value])
-###############################################################################
+
     def add_list_eattr(self, edge, attr, value):
         """
+        Merges (or creates) a given edge attribute as [list].
 
+        :arg int edge:
+            Edge index where the given attribute value is to be merged
+            or created.
+        :arg str attr:
+            The name of the attribute. If such attribute does not exist
+            in the network edges, it will be created on all edges (as an
+            empty [list], *value* will only be assigned to the given
+            *edge*).
+        :arg list value:
+            The value of the attribute to be assigned/merged.
         """
 
         value = value if isinstance(value, list) else [value]
