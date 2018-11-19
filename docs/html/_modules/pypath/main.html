@@ -4848,6 +4848,31 @@
 
 <div class="viewcode-block" id="PyPath.get_sub"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.get_sub">[docs]</a>    <span class="k">def</span> <span class="nf">get_sub</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crit</span><span class="p">,</span> <span class="n">andor</span><span class="o">=</span><span class="s2">&quot;or&quot;</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Selects the nodes from *graph* (and edges to be removed)</span>
+<span class="sd">        according to a set of user-defined attributes.</span>
+
+<span class="sd">        :arg dict crit:</span>
+<span class="sd">            Defines the critical attributes to generate the subnetwork.</span>
+<span class="sd">            Keys are ``&#39;edge&#39;`` and ``&#39;node&#39;`` and values are [dict]</span>
+<span class="sd">            containing the critical attribute names [str] and values</span>
+<span class="sd">            are [set] containing those attributes of the nodes/edges</span>
+<span class="sd">            that are to be kept.</span>
+<span class="sd">        :arg str andor:</span>
+<span class="sd">            Optional, ``&#39;or&#39;`` by default. Determines the search mode.</span>
+<span class="sd">            See :py:meth:`pypath.main.PyPath.search_attr_or` and</span>
+<span class="sd">            :py:meth:`pypath.main.PyPath.search_attr_and` for more</span>
+<span class="sd">            details.</span>
+<span class="sd">        :arg igraph.Graph graph:</span>
+<span class="sd">            Optional, ``None`` by default. The graph object where to</span>
+<span class="sd">            extract the subnetwork. If none is passed, takes the current</span>
+<span class="sd">            network (undirected) graph</span>
+<span class="sd">            (:py:attr:`pypath.main.PyPath.graph`).</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*dict*) -- Keys are ``&#39;nodes&#39;`` and ``&#39;edges&#39;`` whose</span>
+<span class="sd">            values are [lst] of elements (as indexes [int]). Nodes are</span>
+<span class="sd">            those to be kept and edges to be removed on the extracted</span>
+<span class="sd">            subnetwork.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">graph</span>
@@ -4903,10 +4928,24 @@
 
 <div class="viewcode-block" id="PyPath.edgeseq_inverse"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.edgeseq_inverse">[docs]</a>    <span class="k">def</span> <span class="nf">edgeseq_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the sequence of all edge indexes that are not in</span>
+<span class="sd">        the argument *edges*.</span>
+
+<span class="sd">        :arg set edges:</span>
+<span class="sd">            Sequence of edge indices [int] that will not be returned.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*list*) -- Contains all edge indices [int] of the</span>
+<span class="sd">            undirected network except the ones on *edges* argument.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
         <span class="n">inv</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># XXX: This could be refactored with a list comprehension:</span>
+        <span class="c1"># return [e.index for e in g.es if e.index not in set(edges)]</span>
+        <span class="c1"># also, assuming edges index is always == range(g.ecount()):</span>
+        <span class="c1"># return set(range(g.ecount())) - set(edges)</span>
 
         <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">:</span>
 
@@ -4917,6 +4956,30 @@
 
 <div class="viewcode-block" id="PyPath.get_network"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.get_network">[docs]</a>    <span class="k">def</span> <span class="nf">get_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crit</span><span class="p">,</span> <span class="n">andor</span><span class="o">=</span><span class="s2">&quot;or&quot;</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves a subnetwork according to a set of user-defined</span>
+<span class="sd">        attributes. Basically applies</span>
+<span class="sd">        :py:meth:`pypath.main.PyPath.get_sub` on a given *graph*.</span>
+
+<span class="sd">        :arg dict crit:</span>
+<span class="sd">            Defines the critical attributes to generate the subnetwork.</span>
+<span class="sd">            Keys are ``&#39;edge&#39;`` and ``&#39;node&#39;`` and values are [dict]</span>
+<span class="sd">            containing the critical attribute names [str] and values</span>
+<span class="sd">            are [set] containing those attributes of the nodes/edges</span>
+<span class="sd">            that are to be kept.</span>
+<span class="sd">        :arg str andor:</span>
+<span class="sd">            Optional, ``&#39;or&#39;`` by default. Determines the search mode.</span>
+<span class="sd">            See :py:meth:`pypath.main.PyPath.search_attr_or` and</span>
+<span class="sd">            :py:meth:`pypath.main.PyPath.search_attr_and` for more</span>
+<span class="sd">            details.</span>
+<span class="sd">        :arg igraph.Graph graph:</span>
+<span class="sd">            Optional, ``None`` by default. The graph object where to</span>
+<span class="sd">            extract the subnetwork. If none is passed, takes the current</span>
+<span class="sd">            network (undirected) graph</span>
+<span class="sd">            (:py:attr:`pypath.main.PyPath.graph`).</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*igraph.Graph*) -- The subgraph obtained from filtering</span>
+<span class="sd">            according to the attributes defined in *crit*.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">graph</span>
@@ -4928,60 +4991,55 @@
 
 <div class="viewcode-block" id="PyPath.separate"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.separate">[docs]</a>    <span class="k">def</span> <span class="nf">separate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Separates networks from different sources.</span>
-<span class="sd">        Returns dict of igraph objects.</span>
+<span class="sd">        Separates the undirected network according to the different</span>
+<span class="sd">        sources. Basically applies</span>
+<span class="sd">        :py:meth:`pypath.main.PyPath.get_network` for each resource.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*dict*) -- Keys are resource names [str] whose values are</span>
+<span class="sd">            the subnetwork [igraph.Graph] containing the elements of</span>
+<span class="sd">            that source.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_network</span><span class="p">({</span>
-            <span class="s1">&#39;edge&#39;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s1">&#39;sources&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">s</span><span class="p">]</span>
-            <span class="p">},</span>
-            <span class="s1">&#39;node&#39;</span><span class="p">:</span> <span class="p">{}</span>
-        <span class="p">}))</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">])</span></div>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_network</span><span class="p">({</span><span class="s1">&#39;edge&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;sources&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">s</span><span class="p">]},</span>
+                                           <span class="s1">&#39;node&#39;</span><span class="p">:</span> <span class="p">{}}))</span>
+                     <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="PyPath.separate_by_category"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.separate_by_category">[docs]</a>    <span class="k">def</span> <span class="nf">separate_by_category</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Separate networks based on categories.</span>
-<span class="sd">        Returns dict of igraph objects.</span>
+<span class="sd">        Separates the undirected network according to resource</span>
+<span class="sd">        categories. Possible categories are:</span>
+
+<span class="sd">            * ``&#39;m&#39;``: PTM/enzyme-substrate resources.</span>
+<span class="sd">            * ``&#39;p&#39;``: Pathway/activity flow resources.</span>
+<span class="sd">            * ``&#39;i&#39;``: Undirected/PPI resources.</span>
+<span class="sd">            * ``&#39;r&#39;``: Process description/reaction resources.</span>
+<span class="sd">            * ``&#39;t&#39;``: Transcription resources.</span>
+
+<span class="sd">        Works in the same way as :py:meth:`pypath.main.PyPath.separate`.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*dict*) -- Keys are category names [str] whose values are</span>
+<span class="sd">            the subnetwork [igraph.Graph] containing the elements of</span>
+<span class="sd">            those resources corresponding to that category.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">cats</span> <span class="o">=</span> \
-            <span class="nb">dict</span><span class="p">(</span>
-                <span class="nb">list</span><span class="p">(</span>
-                    <span class="nb">map</span><span class="p">(</span>
-                        <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span>
-                            <span class="p">(</span>
-                                <span class="n">c</span><span class="p">,</span>
-                                <span class="nb">list</span><span class="p">(</span>
-                                    <span class="nb">filter</span><span class="p">(</span>
-                                        <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span>
-                                            <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">,</span>
-                                        <span class="nb">map</span><span class="p">(</span>
-                                            <span class="k">lambda</span> <span class="n">cs</span><span class="p">:</span>
-                                                <span class="n">cs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                                            <span class="nb">filter</span><span class="p">(</span>
-                                                <span class="k">lambda</span> <span class="n">cs</span><span class="p">:</span>
-                                                    <span class="n">cs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">c</span><span class="p">,</span>
-                                                <span class="n">iteritems</span><span class="p">(</span>
-                                                    <span class="n">data_formats</span><span class="o">.</span><span class="n">categories</span><span class="p">)</span>
-                                                    <span class="p">)</span>
-                                        <span class="p">)</span>
-                                    <span class="p">)</span>
-                                <span class="p">)</span>
-                            <span class="p">),</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">has_cats</span>
-                    <span class="p">)</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_network</span><span class="p">({</span>
-            <span class="s1">&#39;edge&#39;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s1">&#39;sources&#39;</span><span class="p">:</span> <span class="n">s</span>
-            <span class="p">},</span>
-            <span class="s1">&#39;node&#39;</span><span class="p">:</span> <span class="p">{}</span>
-        <span class="p">}))</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">cats</span><span class="p">)])</span></div>
+        <span class="n">cats</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span>
+                <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">,</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">cs</span><span class="p">:</span>
+                    <span class="n">cs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">cs</span><span class="p">:</span>
+                        <span class="n">cs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">c</span><span class="p">,</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">data_formats</span><span class="o">.</span><span class="n">categories</span><span class="p">)))))),</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">has_cats</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_network</span><span class="p">({</span><span class="s1">&#39;edge&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;sources&#39;</span><span class="p">:</span> <span class="n">s</span><span class="p">},</span>
+                                           <span class="s1">&#39;node&#39;</span><span class="p">:</span> <span class="p">{}}))</span>
+                     <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">cats</span><span class="p">)])</span></div>
 
 <div class="viewcode-block" id="PyPath.update_pathway_types"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.update_pathway_types">[docs]</a>    <span class="k">def</span> <span class="nf">update_pathway_types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the pathway types attribute</span>
+<span class="sd">        (:py:attr:`pypath.main.PyPath.pathway_types`) according to the</span>
+<span class="sd">        loaded resources of the undirected network.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>

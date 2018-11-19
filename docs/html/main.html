@@ -1026,7 +1026,20 @@ source and the target vertex of the edge belong to.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.edgeseq_inverse">
 <code class="descname">edgeseq_inverse</code><span class="sig-paren">(</span><em>edges</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.edgeseq_inverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.edgeseq_inverse" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the sequence of all edge indexes that are not in
+the argument <em>edges</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>edges</strong> (<em>set</em>) – Sequence of edge indices [int] that will not be returned.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(<em>list</em>) – Contains all edge indices [int] of the
+undirected network except the ones on <em>edges</em> argument.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.export_dot">
@@ -1440,7 +1453,37 @@ the giant component graph.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.get_network">
 <code class="descname">get_network</code><span class="sig-paren">(</span><em>crit</em>, <em>andor='or'</em>, <em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_network" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves a subnetwork according to a set of user-defined
+attributes. Basically applies
+<a class="reference internal" href="#pypath.main.PyPath.get_sub" title="pypath.main.PyPath.get_sub"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.get_sub()</span></code></a> on a given <em>graph</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>crit</strong> (<em>dict</em>) – Defines the critical attributes to generate the subnetwork.
+Keys are <code class="docutils literal notranslate"><span class="pre">'edge'</span></code> and <code class="docutils literal notranslate"><span class="pre">'node'</span></code> and values are [dict]
+containing the critical attribute names [str] and values
+are [set] containing those attributes of the nodes/edges
+that are to be kept.</li>
+<li><strong>andor</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">'or'</span></code> by default. Determines the search mode.
+See <a class="reference internal" href="#pypath.main.PyPath.search_attr_or" title="pypath.main.PyPath.search_attr_or"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.search_attr_or()</span></code></a> and
+<a class="reference internal" href="#pypath.main.PyPath.search_attr_and" title="pypath.main.PyPath.search_attr_and"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.search_attr_and()</span></code></a> for more
+details.</li>
+<li><strong>graph</strong> (<em>igraph.Graph</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. The graph object where to
+extract the subnetwork. If none is passed, takes the current
+network (undirected) graph
+(<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.graph</span></code>).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>igraph.Graph</em>) – The subgraph obtained from filtering
+according to the attributes defined in <em>crit</em>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.get_node">
@@ -1518,7 +1561,38 @@ If not found, returns <code class="docutils literal notranslate"><span class="pr
 <dl class="method">
 <dt id="pypath.main.PyPath.get_sub">
 <code class="descname">get_sub</code><span class="sig-paren">(</span><em>crit</em>, <em>andor='or'</em>, <em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_sub"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_sub" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Selects the nodes from <em>graph</em> (and edges to be removed)
+according to a set of user-defined attributes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>crit</strong> (<em>dict</em>) – Defines the critical attributes to generate the subnetwork.
+Keys are <code class="docutils literal notranslate"><span class="pre">'edge'</span></code> and <code class="docutils literal notranslate"><span class="pre">'node'</span></code> and values are [dict]
+containing the critical attribute names [str] and values
+are [set] containing those attributes of the nodes/edges
+that are to be kept.</li>
+<li><strong>andor</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">'or'</span></code> by default. Determines the search mode.
+See <a class="reference internal" href="#pypath.main.PyPath.search_attr_or" title="pypath.main.PyPath.search_attr_or"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.search_attr_or()</span></code></a> and
+<a class="reference internal" href="#pypath.main.PyPath.search_attr_and" title="pypath.main.PyPath.search_attr_and"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.search_attr_and()</span></code></a> for more
+details.</li>
+<li><strong>graph</strong> (<em>igraph.Graph</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. The graph object where to
+extract the subnetwork. If none is passed, takes the current
+network (undirected) graph
+(<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.graph</span></code>).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>dict</em>) – Keys are <code class="docutils literal notranslate"><span class="pre">'nodes'</span></code> and <code class="docutils literal notranslate"><span class="pre">'edges'</span></code> whose
+values are [lst] of elements (as indexes [int]). Nodes are
+those to be kept and edges to be removed on the extracted
+subnetwork.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.get_taxon">
@@ -3149,15 +3223,46 @@ If <cite>ALL</cite> nodes annotated with all the terms returned.</td>
 <dl class="method">
 <dt id="pypath.main.PyPath.separate">
 <code class="descname">separate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.separate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.separate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Separates networks from different sources.
-Returns dict of igraph objects.</p>
+<dd><p>Separates the undirected network according to the different
+sources. Basically applies
+<a class="reference internal" href="#pypath.main.PyPath.get_network" title="pypath.main.PyPath.get_network"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.get_network()</span></code></a> for each resource.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>dict</em>) – Keys are resource names [str] whose values are
+the subnetwork [igraph.Graph] containing the elements of
+that source.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.separate_by_category">
 <code class="descname">separate_by_category</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.separate_by_category"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.separate_by_category" title="Permalink to this definition">¶</a></dt>
-<dd><p>Separate networks based on categories.
-Returns dict of igraph objects.</p>
+<dd><p>Separates the undirected network according to resource
+categories. Possible categories are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">'m'</span></code>: PTM/enzyme-substrate resources.</li>
+<li><code class="docutils literal notranslate"><span class="pre">'p'</span></code>: Pathway/activity flow resources.</li>
+<li><code class="docutils literal notranslate"><span class="pre">'i'</span></code>: Undirected/PPI resources.</li>
+<li><code class="docutils literal notranslate"><span class="pre">'r'</span></code>: Process description/reaction resources.</li>
+<li><code class="docutils literal notranslate"><span class="pre">'t'</span></code>: Transcription resources.</li>
+</ul>
+</div></blockquote>
+<p>Works in the same way as <a class="reference internal" href="#pypath.main.PyPath.separate" title="pypath.main.PyPath.separate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.separate()</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(<em>dict</em>) – Keys are category names [str] whose values are
+the subnetwork [igraph.Graph] containing the elements of
+those resources corresponding to that category.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -3642,7 +3747,10 @@ set of all categories in the current network.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.update_pathway_types">
 <code class="descname">update_pathway_types</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.update_pathway_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.update_pathway_types" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Updates the pathway types attribute
+(<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.pathway_types</span></code>) according to the
+loaded resources of the undirected network.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.update_pathways">

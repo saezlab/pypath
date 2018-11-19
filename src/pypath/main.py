@@ -4810,6 +4810,31 @@ class PyPath(object):
 
     def get_sub(self, crit, andor="or", graph=None):
         """
+        Selects the nodes from *graph* (and edges to be removed)
+        according to a set of user-defined attributes.
+
+        :arg dict crit:
+            Defines the critical attributes to generate the subnetwork.
+            Keys are ``'edge'`` and ``'node'`` and values are [dict]
+            containing the critical attribute names [str] and values
+            are [set] containing those attributes of the nodes/edges
+            that are to be kept.
+        :arg str andor:
+            Optional, ``'or'`` by default. Determines the search mode.
+            See :py:meth:`pypath.main.PyPath.search_attr_or` and
+            :py:meth:`pypath.main.PyPath.search_attr_and` for more
+            details.
+        :arg igraph.Graph graph:
+            Optional, ``None`` by default. The graph object where to
+            extract the subnetwork. If none is passed, takes the current
+            network (undirected) graph
+            (:py:attr:`pypath.main.PyPath.graph`).
+
+        :return:
+            (*dict*) -- Keys are ``'nodes'`` and ``'edges'`` whose
+            values are [lst] of elements (as indexes [int]). Nodes are
+            those to be kept and edges to be removed on the extracted
+            subnetwork.
         """
 
         g = self.graph if graph is None else graph
@@ -4865,10 +4890,24 @@ class PyPath(object):
 
     def edgeseq_inverse(self, edges):
         """
+        Returns the sequence of all edge indexes that are not in
+        the argument *edges*.
+
+        :arg set edges:
+            Sequence of edge indices [int] that will not be returned.
+
+        :return:
+            (*list*) -- Contains all edge indices [int] of the
+            undirected network except the ones on *edges* argument.
         """
 
         g = self.graph
         inv = []
+
+        # XXX: This could be refactored with a list comprehension:
+        # return [e.index for e in g.es if e.index not in set(edges)]
+        # also, assuming edges index is always == range(g.ecount()):
+        # return set(range(g.ecount())) - set(edges)
 
         for e in g.es:
 
@@ -4879,6 +4918,30 @@ class PyPath(object):
 
     def get_network(self, crit, andor="or", graph=None):
         """
+        Retrieves a subnetwork according to a set of user-defined
+        attributes. Basically applies
+        :py:meth:`pypath.main.PyPath.get_sub` on a given *graph*.
+
+        :arg dict crit:
+            Defines the critical attributes to generate the subnetwork.
+            Keys are ``'edge'`` and ``'node'`` and values are [dict]
+            containing the critical attribute names [str] and values
+            are [set] containing those attributes of the nodes/edges
+            that are to be kept.
+        :arg str andor:
+            Optional, ``'or'`` by default. Determines the search mode.
+            See :py:meth:`pypath.main.PyPath.search_attr_or` and
+            :py:meth:`pypath.main.PyPath.search_attr_and` for more
+            details.
+        :arg igraph.Graph graph:
+            Optional, ``None`` by default. The graph object where to
+            extract the subnetwork. If none is passed, takes the current
+            network (undirected) graph
+            (:py:attr:`pypath.main.PyPath.graph`).
+
+        :return:
+            (*igraph.Graph*) -- The subgraph obtained from filtering
+            according to the attributes defined in *crit*.
         """
 
         g = self.graph if graph is None else graph
@@ -4890,60 +4953,55 @@ class PyPath(object):
 
     def separate(self):
         """
-        Separates networks from different sources.
-        Returns dict of igraph objects.
+        Separates the undirected network according to the different
+        sources. Basically applies
+        :py:meth:`pypath.main.PyPath.get_network` for each resource.
+
+        :return:
+            (*dict*) -- Keys are resource names [str] whose values are
+            the subnetwork [igraph.Graph] containing the elements of
+            that source.
         """
 
-        return dict([(s, self.get_network({
-            'edge': {
-                'sources': [s]
-            },
-            'node': {}
-        })) for s in self.sources])
+        return dict([(s, self.get_network({'edge': {'sources': [s]},
+                                           'node': {}}))
+                     for s in self.sources])
 
     def separate_by_category(self):
         """
-        Separate networks based on categories.
-        Returns dict of igraph objects.
+        Separates the undirected network according to resource
+        categories. Possible categories are:
+
+            * ``'m'``: PTM/enzyme-substrate resources.
+            * ``'p'``: Pathway/activity flow resources.
+            * ``'i'``: Undirected/PPI resources.
+            * ``'r'``: Process description/reaction resources.
+            * ``'t'``: Transcription resources.
+
+        Works in the same way as :py:meth:`pypath.main.PyPath.separate`.
+
+        :return:
+            (*dict*) -- Keys are category names [str] whose values are
+            the subnetwork [igraph.Graph] containing the elements of
+            those resources corresponding to that category.
         """
 
-        cats = \
-            dict(
-                list(
-                    map(
-                        lambda c:
-                            (
-                                c,
-                                list(
-                                    filter(
-                                        lambda s:
-                                            s in self.sources,
-                                        map(
-                                            lambda cs:
-                                                cs[0],
-                                            filter(
-                                                lambda cs:
-                                                    cs[1] == c,
-                                                iteritems(
-                                                    data_formats.categories)
-                                                    )
-                                        )
-                                    )
-                                )
-                            ),
-                        self.has_cats
-                    )
-                )
-            )
-        return dict([(c, self.get_network({
-            'edge': {
-                'sources': s
-            },
-            'node': {}
-        })) for c, s in iteritems(cats)])
+        cats = dict(list(map(lambda c:
+            (c, list(filter(lambda s:
+                s in self.sources, map(lambda cs:
+                    cs[0], filter(lambda cs:
+                        cs[1] == c, iteritems(data_formats.categories)))))),
+                             self.has_cats)))
+
+        return dict([(c, self.get_network({'edge': {'sources': s},
+                                           'node': {}}))
+                     for c, s in iteritems(cats)])
 
     def update_pathway_types(self):
         """
+        Updates the pathway types attribute
+        (:py:attr:`pypath.main.PyPath.pathway_types`) according to the
+        loaded resources of the undirected network.
         """
 
         g = self.graph

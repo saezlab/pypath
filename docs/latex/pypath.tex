@@ -1501,6 +1501,18 @@ The graph object to do the calculations on.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.edgeseq_inverse}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{edgeseq\_inverse}}}{\emph{edges}}{}
+Returns the sequence of all edge indexes that are not in
+the argument \sphinxstyleemphasis{edges}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{edges}} (\sphinxstyleliteralemphasis{\sphinxupquote{set}}) \textendash{} Sequence of edge indices {[}int{]} that will not be returned.
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{list}) \textendash{} Contains all edge indices {[}int{]} of the
+undirected network except the ones on \sphinxstyleemphasis{edges} argument.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{export\_dot() (pypath.main.PyPath method)}
@@ -1979,6 +1991,38 @@ the giant component graph.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.get_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_network}}}{\emph{crit}, \emph{andor='or'}, \emph{graph=None}}{}
+Retrieves a subnetwork according to a set of user-defined
+attributes. Basically applies
+{\hyperref[\detokenize{main:pypath.main.PyPath.get_sub}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.get\_sub()}}}}} on a given \sphinxstyleemphasis{graph}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{crit}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Defines the critical attributes to generate the subnetwork.
+Keys are \sphinxcode{\sphinxupquote{'edge'}} and \sphinxcode{\sphinxupquote{'node'}} and values are {[}dict{]}
+containing the critical attribute names {[}str{]} and values
+are {[}set{]} containing those attributes of the nodes/edges
+that are to be kept.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{andor}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{'or'}} by default. Determines the search mode.
+See {\hyperref[\detokenize{main:pypath.main.PyPath.search_attr_or}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.search\_attr\_or()}}}}} and
+{\hyperref[\detokenize{main:pypath.main.PyPath.search_attr_and}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.search\_attr\_and()}}}}} for more
+details.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{graph}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The graph object where to
+extract the subnetwork. If none is passed, takes the current
+network (undirected) graph
+(\sphinxcode{\sphinxupquote{pypath.main.PyPath.graph}}).
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{igraph.Graph}) \textendash{} The subgraph obtained from filtering
+according to the attributes defined in \sphinxstyleemphasis{crit}.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{get\_node() (pypath.main.PyPath method)}
@@ -2071,6 +2115,39 @@ If not found, returns \sphinxcode{\sphinxupquote{False}}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.get_sub}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_sub}}}{\emph{crit}, \emph{andor='or'}, \emph{graph=None}}{}
+Selects the nodes from \sphinxstyleemphasis{graph} (and edges to be removed)
+according to a set of user-defined attributes.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{crit}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Defines the critical attributes to generate the subnetwork.
+Keys are \sphinxcode{\sphinxupquote{'edge'}} and \sphinxcode{\sphinxupquote{'node'}} and values are {[}dict{]}
+containing the critical attribute names {[}str{]} and values
+are {[}set{]} containing those attributes of the nodes/edges
+that are to be kept.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{andor}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{'or'}} by default. Determines the search mode.
+See {\hyperref[\detokenize{main:pypath.main.PyPath.search_attr_or}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.search\_attr\_or()}}}}} and
+{\hyperref[\detokenize{main:pypath.main.PyPath.search_attr_and}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.search\_attr\_and()}}}}} for more
+details.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{graph}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The graph object where to
+extract the subnetwork. If none is passed, takes the current
+network (undirected) graph
+(\sphinxcode{\sphinxupquote{pypath.main.PyPath.graph}}).
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{dict}) \textendash{} Keys are \sphinxcode{\sphinxupquote{'nodes'}} and \sphinxcode{\sphinxupquote{'edges'}} whose
+values are {[}lst{]} of elements (as indexes {[}int{]}). Nodes are
+those to be kept and edges to be removed on the extracted
+subnetwork.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{get\_taxon() (pypath.main.PyPath method)}
@@ -3935,8 +4012,16 @@ If \sphinxtitleref{ALL} nodes annotated with all the terms returned.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.separate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{separate}}}{}{}
-Separates networks from different sources.
-Returns dict of igraph objects.
+Separates the undirected network according to the different
+sources. Basically applies
+{\hyperref[\detokenize{main:pypath.main.PyPath.get_network}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.get\_network()}}}}} for each resource.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{dict}) \textendash{} Keys are resource names {[}str{]} whose values are
+the subnetwork {[}igraph.Graph{]} containing the elements of
+that source.
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -3944,8 +4029,34 @@ Returns dict of igraph objects.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.separate_by_category}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{separate\_by\_category}}}{}{}
-Separate networks based on categories.
-Returns dict of igraph objects.
+Separates the undirected network according to resource
+categories. Possible categories are:
+\begin{itemize}
+\item {} 
+\sphinxcode{\sphinxupquote{'m'}}: PTM/enzyme-substrate resources.
+
+\item {} 
+\sphinxcode{\sphinxupquote{'p'}}: Pathway/activity flow resources.
+
+\item {} 
+\sphinxcode{\sphinxupquote{'i'}}: Undirected/PPI resources.
+
+\item {} 
+\sphinxcode{\sphinxupquote{'r'}}: Process description/reaction resources.
+
+\item {} 
+\sphinxcode{\sphinxupquote{'t'}}: Transcription resources.
+
+\end{itemize}
+
+Works in the same way as {\hyperref[\detokenize{main:pypath.main.PyPath.separate}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.separate()}}}}}.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{dict}) \textendash{} Keys are category names {[}str{]} whose values are
+the subnetwork {[}igraph.Graph{]} containing the elements of
+those resources corresponding to that category.
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -4504,6 +4615,10 @@ set of all categories in the current network.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.update_pathway_types}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{update\_pathway\_types}}}{}{}
+Updates the pathway types attribute
+(\sphinxcode{\sphinxupquote{pypath.main.PyPath.pathway\_types}}) according to the
+loaded resources of the undirected network.
+
 \end{fulllineitems}
 
 \index{update\_pathways() (pypath.main.PyPath method)}
