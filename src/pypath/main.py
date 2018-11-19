@@ -4540,12 +4540,12 @@ class PyPath(object):
                     keepA = self.search_attr_or(g.vs[e.source], crit["node"])
 
                     if keepA:
-                        keep += [e.source]
+                        keepV += [e.source]
 
                     keepB = self.search_attr_or(g.vs[e.target], crit["node"])
 
                     if keepB:
-                        keep += [e.target]
+                        keepV += [e.target]
 
         return {"nodes": list(set(keepV)), "edges": list(set(delE))}
 
