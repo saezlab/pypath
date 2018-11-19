@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Reference &#8212; pypath 0.7.107 documentation</title>
+    <title>Reference &#8212; pypath 0.7.111 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="installation.html" title="Installation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">pypath 0.7.107 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">pypath 0.7.111 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -220,22 +220,100 @@ values.</li>
 <dl class="method">
 <dt id="pypath.main.PyPath.add_grouped_eattr">
 <code class="descname">add_grouped_eattr</code><span class="sig-paren">(</span><em>edge</em>, <em>attr</em>, <em>group</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.add_grouped_eattr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.add_grouped_eattr" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Merges (or creates) a given edge attribute as [dict] of [list]
+values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>edge</strong> (<em>int</em>) – Edge index where the given attribute value is to be merged
+or created.</li>
+<li><strong>attr</strong> (<em>str</em>) – The name of the attribute. If such attribute does not exist
+in the network edges, it will be created on all edges (as an
+empty [dict], <em>value</em> will only be assigned to the given
+<em>edge</em> and <em>group</em>).</li>
+<li><strong>group</strong> (<em>str</em>) – The key of the attribute dictionary where <em>value</em> is to be
+assigned.</li>
+<li><strong>value</strong> (<em>list</em>) – The value of the attribute to be assigned/merged.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.add_grouped_set_eattr">
 <code class="descname">add_grouped_set_eattr</code><span class="sig-paren">(</span><em>edge</em>, <em>attr</em>, <em>group</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.add_grouped_set_eattr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.add_grouped_set_eattr" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Merges (or creates) a given edge attribute as [dict] of [set]
+values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>edge</strong> (<em>int</em>) – Edge index where the given attribute value is to be merged
+or created.</li>
+<li><strong>attr</strong> (<em>str</em>) – The name of the attribute. If such attribute does not exist
+in the network edges, it will be created on all edges (as an
+empty [dict], <em>value</em> will only be assigned to the given
+<em>edge</em> and <em>group</em>).</li>
+<li><strong>group</strong> (<em>str</em>) – The key of the attribute dictionary where <em>value</em> is to be
+assigned.</li>
+<li><strong>value</strong> (<em>set</em>) – The value of the attribute to be assigned/merged.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.add_list_eattr">
 <code class="descname">add_list_eattr</code><span class="sig-paren">(</span><em>edge</em>, <em>attr</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.add_list_eattr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.add_list_eattr" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Merges (or creates) a given edge attribute as [list].</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>edge</strong> (<em>int</em>) – Edge index where the given attribute value is to be merged
+or created.</li>
+<li><strong>attr</strong> (<em>str</em>) – The name of the attribute. If such attribute does not exist
+in the network edges, it will be created on all edges (as an
+empty [list], <em>value</em> will only be assigned to the given
+<em>edge</em>).</li>
+<li><strong>value</strong> (<em>list</em>) – The value of the attribute to be assigned/merged.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.add_set_eattr">
 <code class="descname">add_set_eattr</code><span class="sig-paren">(</span><em>edge</em>, <em>attr</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.add_set_eattr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.add_set_eattr" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Merges (or creates) a given edge attribute as [set].</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>edge</strong> (<em>int</em>) – Edge index where the given attribute value is to be merged
+or created.</li>
+<li><strong>attr</strong> (<em>str</em>) – The name of the attribute. If such attribute does not exist
+in the network edges, it will be created on all edges (as an
+empty [set], <em>value</em> will only be assigned to the given
+<em>edge</em>).</li>
+<li><strong>value</strong> (<em>set</em>) – The value of the attribute to be assigned/merged.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.add_update_edge">
@@ -309,10 +387,29 @@ in such case it will raise an error message.</li>
 <dl class="method">
 <dt id="pypath.main.PyPath.all_between">
 <code class="descname">all_between</code><span class="sig-paren">(</span><em>nameA</em>, <em>nameB</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.all_between"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.all_between" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns all edges between two given vertex names. Similar to
-straight_between(), but checks both directions, and returns
-list of edge ids in [undirected, straight, reversed] format,
-for both nameA -&gt; nameB and nameB -&gt; nameA edges.</p>
+<dd><p>Checks for any edges (in any direction) between the provided
+nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>nameA</strong> (<em>str</em>) – The name of the source node.</li>
+<li><strong>nameB</strong> (<em>str</em>) – The name of the target node.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>dict</em>) – Contains information on the directionality of
+the requested edge. Keys are <code class="docutils literal notranslate"><span class="pre">'ab'</span></code> and <code class="docutils literal notranslate"><span class="pre">'ba'</span></code>, denoting
+the straight/reverse directionalities respectively. Values
+are [list] whose elements are the edge ID or <code class="docutils literal notranslate"><span class="pre">None</span></code>
+according to the existance of that edge in the following
+categories: undirected, straight and reverse (in that
+order).</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -324,6 +421,23 @@ for both nameA -&gt; nameB and nameB -&gt; nameA edges.</p>
 <dt id="pypath.main.PyPath.apply_list">
 <code class="descname">apply_list</code><span class="sig-paren">(</span><em>name</em>, <em>node_or_edge='node'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.apply_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.apply_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates vertex or edge attribute based on a list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<em>str</em>) – The name of the list to be added as attribute. Must have
+been previously loaded with
+<a class="reference internal" href="#pypath.main.PyPath.load_list" title="pypath.main.PyPath.load_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.load_list()</span></code></a> or other methods.
+See description of <code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.lists</span></code>
+attribute for more information.</li>
+<li><strong>node_or_edge</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">'node'</span></code> by default. Whether the attribute list
+is to be added to the nodes or to the edges.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -334,8 +448,27 @@ for both nameA -&gt; nameB and nameB -&gt; nameA edges.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.attach_network">
 <code class="descname">attach_network</code><span class="sig-paren">(</span><em>edgeList=False</em>, <em>regulator=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.attach_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.attach_network" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds edges to the network from edgeList obtained from file or
-other input method.</p>
+<dd><p>Adds edges to the network from <em>edgeList</em> obtained from file or
+other input method. If none is passed, checks for such data in
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.raw_data</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>edgeList</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default. The source name of the list
+of edges to be added. This must have been loaded previously
+(e.g.: with <a class="reference internal" href="#pypath.main.PyPath.read_data_file" title="pypath.main.PyPath.read_data_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.read_data_file()</span></code></a>).
+If none is passed, loads the data directly from
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.raw_data</span></code>.</li>
+<li><strong>regulator</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default. If set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, non
+previously existing nodes, will not be added (and hence, the
+edges involved).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -577,7 +710,26 @@ took to achieve the amount of information on the network.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.databases_similarity">
 <code class="descname">databases_similarity</code><span class="sig-paren">(</span><em>index='simpson'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.databases_similarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.databases_similarity" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Computes the similarity across databases according to a given
+index metric. Computes the similarity across the loaded
+resources (listed in <code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.sources</span></code> in
+terms of nodes and edges separately.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>index</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">'simpson'</span></code> by default. The type of index metric
+to use to compute the similarity. Options are <code class="docutils literal notranslate"><span class="pre">'simpson'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'sorensen'</span></code> and <code class="docutils literal notranslate"><span class="pre">'jaccard'</span></code>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(<em>dict</em>) – Nested dictionaries (three levels). First-level
+keys are <code class="docutils literal notranslate"><span class="pre">'nodes'</span></code> and <code class="docutils literal notranslate"><span class="pre">'edges'</span></code>, then second and third
+levels correspond to sources names which map to the
+similarity index between those sources [float].</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.degree_dist">
@@ -788,8 +940,24 @@ default directed network, otherwise <code class="docutils literal notranslate"><
 <dl class="method">
 <dt id="pypath.main.PyPath.edge_exists">
 <code class="descname">edge_exists</code><span class="sig-paren">(</span><em>nameA</em>, <em>nameB</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.edge_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.edge_exists" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a tuple of vertice indices if edge doesn’t exists,
-otherwise edge id. Not sensitive to direction.</p>
+<dd><p>Returns a tuple of vertex indices if edge doesn’t exist,
+otherwise, the edge ID. Not sensitive to direction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>nameA</strong> (<em>str</em>) – Name of the source node.</li>
+<li><strong>nameB</strong> (<em>str</em>) – Name of the target node.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>int</em>) – The edge index, if exists such edge. Otherwise,
+[tuple] of [int] corresponding to the node IDs.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -800,7 +968,19 @@ otherwise edge id. Not sensitive to direction.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.edge_names">
 <code class="descname">edge_names</code><span class="sig-paren">(</span><em>e</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.edge_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.edge_names" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the node names of a given edge.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>e</strong> (<em>int</em>) – The edge index.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(<em>tuple</em>) – Contains the source and target node names of
+the edge [str].</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.edges_3d">
@@ -1130,25 +1310,42 @@ is <code class="docutils literal notranslate"><span class="pre">True</span></cod
 <dl class="method">
 <dt id="pypath.main.PyPath.get_directed">
 <code class="descname">get_directed</code><span class="sig-paren">(</span><em>graph=False</em>, <em>conv_edges=False</em>, <em>mutual=False</em>, <em>ret=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_directed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_directed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Converts <code class="docutils literal notranslate"><span class="pre">graph</span></code> undirected <code class="docutils literal notranslate"><span class="pre">igraph.Graph</span></code> object to a directed one.
-By default it converts the graph in <code class="docutils literal notranslate"><span class="pre">PyPath.graph</span></code> and places the directed
-instance in <code class="docutils literal notranslate"><span class="pre">PyPath.dgraph</span></code>.</p>
-<dl class="docutils">
-<dt>&#64;graph <span class="classifier-delimiter">:</span> <span class="classifier">igraph.Graph</span></dt>
-<dd>Undirected graph object.</dd>
-<dt>&#64;conv_edges <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
-<dd>Whether to convert undirected edges (those without explicit
-direction information) to an arbitrary direction edge or
-a pair of opposite edges.
-Otherwise those will be deleted. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</dd>
-<dt>&#64;mutual <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
-<dd>If <code class="docutils literal notranslate"><span class="pre">conv_edges</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, whether to convert the
-undirected edges to a single, arbitrary directed edge,
-or a pair of opposite directed edges. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</dd>
-<dt>&#64;ret <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
-<dd>Return the directed graph instance, or return <code class="docutils literal notranslate"><span class="pre">None</span></code>.
-Default is <code class="docutils literal notranslate"><span class="pre">False</span></code> (returns <code class="docutils literal notranslate"><span class="pre">None</span></code>).</dd>
-</dl>
+<dd><p>Converts a copy of <em>graph</em> undirected <em>igraph.Graph</em> object to a
+directed one. By default it converts the current network
+instance in <code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.graph</span></code> and places the
+copy of the directed instance in
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.dgraph</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>graph</strong> (<em>igraph.Graph</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Undirected graph object. If
+none is passed, takes the current undirected network
+instance and saves the directed network under the attribute
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.dgraph</span></code>. Otherwise, the
+directed graph will be returned instead.</li>
+<li><strong>conv_edges</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default. Whether to convert
+undirected edges (those without explicit direction
+information) to an arbitrary direction edge or
+a pair of opposite edges. Otherwise those will be deleted.</li>
+<li><strong>mutual</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default. If <em>conv_edges</em> is <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+whether to convert the undirected edges to a single,
+arbitrary directed edge, or a pair of opposite directed
+edges.</li>
+<li><strong>ret</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default. Whether to return the
+directed graph instance, or not. If a <em>graph</em> is provided,
+its directed version will be returned anyway.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>igraph.Graph</em>) – If <em>graph</em> is passed or <em>ret</em> is
+<code class="docutils literal notranslate"><span class="pre">True</span></code>, returns the copy of the directed graph. otherwise
+returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1277,7 +1474,26 @@ default directed network, otherwise <code class="docutils literal notranslate"><
 <dl class="method">
 <dt id="pypath.main.PyPath.get_node_pair">
 <code class="descname">get_node_pair</code><span class="sig-paren">(</span><em>nameA</em>, <em>nameB</em>, <em>directed=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_node_pair"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_node_pair" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves the node IDs from a pair of node names.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>nameA</strong> (<em>str</em>) – Name of the source node.</li>
+<li><strong>nameB</strong> (<em>str</em>) – Name of the target node.</li>
+<li><strong>directed</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default. Whether to return the node
+indices from the directed or undirected graph.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>tuple</em>) – The pair of node IDs of the selected graph.
+If not found, returns <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.get_nodes">
@@ -1493,8 +1709,18 @@ E.g. 10090 for mouse.</td>
 <dl class="method">
 <dt id="pypath.main.PyPath.init_edge_attr">
 <code class="descname">init_edge_attr</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.init_edge_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.init_edge_attr" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fills edge attribute with its default values, creates
-lists if in <cite>edgeAttrs</cite> the attribute is registered as list.</p>
+<dd><p>Fills all edges attribute <em>attr</em> with its default type (if
+such attribute value is <code class="docutils literal notranslate"><span class="pre">None</span></code>), creates [list] if in
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.edgeAttrs</span></code> such attribute is
+registered as [list].</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>attr</strong> (<em>str</em>) – The attribute name to be initialized on the network edges.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1549,8 +1775,19 @@ re-download the data and ignore the cache.</li>
 <dl class="method">
 <dt id="pypath.main.PyPath.init_vertex_attr">
 <code class="descname">init_vertex_attr</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.init_vertex_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.init_vertex_attr" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fills vertex attribute with its default values, creates
-lists if in <cite>vertexAttrs</cite> the attribute is registered as list.</p>
+<dd><p>Fills all vertices attribute <em>attr</em> with its default type (if
+such attribute value is <code class="docutils literal notranslate"><span class="pre">None</span></code>), creates [list] if in
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.vertexAttrs</span></code> such attribute is
+registered as [list].</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>attr</strong> (<em>str</em>) – The attribute name to be initialized on the network
+vertices.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -2194,7 +2431,28 @@ network.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.merge_lists">
 <code class="descname">merge_lists</code><span class="sig-paren">(</span><em>nameA</em>, <em>nameB</em>, <em>name=None</em>, <em>and_or='and'</em>, <em>delete=False</em>, <em>func='max'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.merge_lists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.merge_lists" title="Permalink to this definition">¶</a></dt>
-<dd><p>Merges two lists in <cite>lists</cite>.</p>
+<dd><p>Merges two lists from <code class="xref py py-attr docutils literal notranslate"><span class="pre">pypat.main.PyPath.lists</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nameA</strong> (<em>str</em>) – Name of the first list to be merged.</li>
+<li><strong>nameB</strong> (<em>str</em>) – Name of the second list to be merged.</li>
+<li><strong>name</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Specifies a new name for the
+merged list. If none is passed, name will be set to
+<em>nameA*_*nameB</em>.</li>
+<li><strong>and_or</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">'and'</span></code> by default. The logic operation perfomed
+in the merging: <code class="docutils literal notranslate"><span class="pre">'and'</span></code> performs an union, <code class="docutils literal notranslate"><span class="pre">'or'</span></code> for
+the intersection.</li>
+<li><strong>delete</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default. Whether to delete the
+former lists or not.</li>
+<li><strong>func</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">'max'</span></code> by default. Not used.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -2237,7 +2495,19 @@ underlying PTM is mutated.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.names2vids">
 <code class="descname">names2vids</code><span class="sig-paren">(</span><em>names</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.names2vids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.names2vids" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>From a list of node names, returns their corresponding indices.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>names</strong> (<em>list</em>) – Contains the node names [str] for which the IDs are to be
+searched.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(<em>list</em>) – The queried node IDs [int].</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.negative_report">
@@ -2277,17 +2547,48 @@ and each of sources. Writes the results in a tab file.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.new_edges">
 <code class="descname">new_edges</code><span class="sig-paren">(</span><em>edges</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.new_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.new_edges" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Adds new edges from any iterable of edges to the undirected
+graph. Basically, calls <code class="xref py py-meth docutils literal notranslate"><span class="pre">igraph.Graph.add_edges()</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>edges</strong> (<em>list</em>) – Contains the edges that are to be added to the network.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.new_nodes">
 <code class="descname">new_nodes</code><span class="sig-paren">(</span><em>nodes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.new_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.new_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Adds new nodes from any iterable of nodes to the undirected
+graph. Basically, calls <code class="xref py py-meth docutils literal notranslate"><span class="pre">igraph.Graph.add_vertices()</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>list</em>) – Contains the nodes that are to be added to the network.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.node_exists">
 <code class="descname">node_exists</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.node_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.node_exists" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Checks if a node exists in the (undirected) network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em>) – The name of the node to be searched.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(<em>bool</em>) – Whether the node exists in the network or not.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.numof_directed_edges">
@@ -2765,18 +3066,64 @@ to its default location
 <dl class="method">
 <dt id="pypath.main.PyPath.save_session">
 <code class="descname">save_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.save_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.save_session" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save current state into pickle dump.</p>
+<dd><p>Save the current session state into pickle dump. The file will
+be saved in the current working directory as
+<code class="docutils literal notranslate"><span class="pre">pypath-&lt;session-id&gt;.pickle</span></code>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.search_attr_and">
 <code class="descname">search_attr_and</code><span class="sig-paren">(</span><em>obj</em>, <em>lst</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.search_attr_and"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.search_attr_and" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Searches a given collection of attributes in a given object.
+Only returns <code class="docutils literal notranslate"><span class="pre">True</span></code>, if all elements of <em>lst</em> can be found in
+<em>obj</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>obj</strong> (<em>dict</em>) – Object (dictionary-like) where to search for elements of
+<em>lst</em>.</li>
+<li><strong>lst</strong> (<em>dict</em>) – Keys are the attribute names [str] and values the collection
+of elements to be searched in such attribute [set].</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>bool</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> only if <em>lst</em> is empty or all of its
+elements are found in <em>obj</em>. Returns <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise (as
+soon as one element of <em>lst</em> is not found).</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.search_attr_or">
 <code class="descname">search_attr_or</code><span class="sig-paren">(</span><em>obj</em>, <em>lst</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.search_attr_or"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.search_attr_or" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Searches a given collection of attributes in a given object. As
+soon as one item is found, returns <code class="docutils literal notranslate"><span class="pre">True</span></code>, if none could be
+found then returns <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>obj</strong> (<em>dict</em>) – Object (dictionary-like) where to search for elements of
+<em>lst</em>.</li>
+<li><strong>lst</strong> (<em>dict</em>) – Keys are the attribute names [str] and values the collection
+of elements to be searched in such attribute [set].</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>bool</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> if <em>lst</em> is empty or any of its
+elements is found in <em>obj</em>. Returns only <code class="docutils literal notranslate"><span class="pre">False</span></code> if cannot
+find anything.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.second_neighbours">
@@ -2954,7 +3301,29 @@ terms.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.similarity_groups">
 <code class="descname">similarity_groups</code><span class="sig-paren">(</span><em>groups</em>, <em>index='simpson'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.similarity_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.similarity_groups" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Computes the similarity index across the given <em>groups</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>groups</strong> (<em>dict</em>) – Contains the different group names [str] as keys and their
+corresponding elements [set].</li>
+<li><strong>index</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">'simpson'</span></code> by default. The type of index metric
+to use to compute the similarity. Options are <code class="docutils literal notranslate"><span class="pre">'simpson'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'sorensen'</span></code> and <code class="docutils literal notranslate"><span class="pre">'jaccard'</span></code>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>dict</em>) – Dictionary of dictionaries containing the groups
+names [str] as keys (for both inner and outer dictionaries)
+and the index metric as inner value [float] between those
+groups.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.small_plot">
@@ -2965,7 +3334,24 @@ terms.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.sorensen_pathways">
 <code class="descname">sorensen_pathways</code><span class="sig-paren">(</span><em>pwlist=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.sorensen_pathways"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.sorensen_pathways" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Computes the Sorensen’s similarity index across nodes and edges
+for the given list of pathway sources (all loaded pathway
+sources by default).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pwlist</strong> (<em>list</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. The list of pathway sources
+to be compared.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(<em>dict</em>) – Nested dictionaries (three levels). First-level
+keys are <code class="docutils literal notranslate"><span class="pre">'nodes'</span></code> and <code class="docutils literal notranslate"><span class="pre">'edges'</span></code>, then second and third
+levels correspond to <code class="docutils literal notranslate"><span class="pre">&lt;source&gt;__&lt;patwhay&gt;</span></code> names which map
+to the similarity index between those pathways [float].</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.source_diagram">
@@ -3006,8 +3392,23 @@ terms.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.straight_between">
 <code class="descname">straight_between</code><span class="sig-paren">(</span><em>nameA</em>, <em>nameB</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.straight_between"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.straight_between" title="Permalink to this definition">¶</a></dt>
-<dd><p>This does actually the same as get_edge(), but by names
-instead of vertex ids.</p>
+<dd><p>Finds an edge between the provided node names.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>nameA</strong> (<em>str</em>) – The name of the source node.</li>
+<li><strong>nameB</strong> (<em>str</em>) – The name of the target node.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>int</em>) – The edge ID. If the edge doesn’t exist, returns
+[list] with the node indices [int].</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -3218,7 +3619,13 @@ the 2 proteins, otherwise <code class="docutils literal notranslate"><span class
 <dl class="method">
 <dt id="pypath.main.PyPath.update_attrs">
 <code class="descname">update_attrs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.update_attrs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.update_attrs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Updates the node and edge attributes. Note that no data is
+donwloaded, mainly updates the dictionaries of attributes
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.edgeAttrs</span></code> and
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.vertexAttrs</span></code> containing the
+attributes names and their correspoding types and initializes
+such attributes in the network nodes/edges if they weren’t.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.update_cats">
@@ -3345,7 +3752,32 @@ UniProt IDs [str].</td>
 <dl class="method">
 <dt id="pypath.main.PyPath.write_table">
 <code class="descname">write_table</code><span class="sig-paren">(</span><em>tbl</em>, <em>outfile</em>, <em>sep='\t'</em>, <em>cut=None</em>, <em>colnames=True</em>, <em>rownames=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.write_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.write_table" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Writes a given table to a file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>tbl</strong> (<em>dict</em>) – Contains the data of the table. It is assumed that keys are
+the row names [str] and the values, well, values. Column
+names (if any) are defined with the key <code class="docutils literal notranslate"><span class="pre">'header'</span></code>.</li>
+<li><strong>outfile</strong> (<em>str</em>) – File name where to save the table. The file will be saved
+under the object’s <code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.outdir</span></code>
+(<code class="docutils literal notranslate"><span class="pre">'results'</span></code> by default).</li>
+<li><strong>sep</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">'</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">'</span></code> (tab) by default. Specifies the separator
+for the file.</li>
+<li><strong>cut</strong> (<em>int</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Specifies the maximum number
+of characters for the row names.</li>
+<li><strong>colnames</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">True</span></code> by default. Specifies whether to write
+the column names in the file or not.</li>
+<li><strong>rownames</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">True</span></code> by default. Specifies whether to write
+the row names in the file or not.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
@@ -4187,7 +4619,7 @@ their attribute <code class="xref py py-attr docutils literal notranslate"><span
         <li class="right" >
           <a href="installation.html" title="Installation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">pypath 0.7.107 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">pypath 0.7.111 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

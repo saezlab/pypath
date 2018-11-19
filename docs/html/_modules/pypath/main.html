@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>pypath.main &#8212; pypath 0.7.107 documentation</title>
+    <title>pypath.main &#8212; pypath 0.7.111 documentation</title>
     <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -25,7 +25,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.107 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.111 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -1689,6 +1689,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">load_resources</span><span class="p">(</span>
             <span class="n">lst</span><span class="o">=</span><span class="n">lst</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">reread</span><span class="o">=</span><span class="n">reread</span><span class="p">,</span> <span class="n">redownload</span><span class="o">=</span><span class="n">redownload</span><span class="p">,</span>
             <span class="n">cache_files</span><span class="o">=</span><span class="n">cache_files</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">:: Saving igraph object to file `</span><span class="si">%s</span><span class="s1">`...&#39;</span> <span class="o">%</span>
                              <span class="n">pfile</span><span class="p">)</span>
@@ -3654,10 +3655,21 @@
                              <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="kc">None</span><span class="p">])</span>
 
             <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">edge</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combine_attr</span><span class="p">([</span><span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">edge</span><span class="p">][</span><span class="n">key</span><span class="p">],</span> <span class="n">value</span><span class="p">])</span></div>
-<span class="c1">###############################################################################</span>
+
 <div class="viewcode-block" id="PyPath.add_list_eattr"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.add_list_eattr">[docs]</a>    <span class="k">def</span> <span class="nf">add_list_eattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Merges (or creates) a given edge attribute as [list].</span>
 
+<span class="sd">        :arg int edge:</span>
+<span class="sd">            Edge index where the given attribute value is to be merged</span>
+<span class="sd">            or created.</span>
+<span class="sd">        :arg str attr:</span>
+<span class="sd">            The name of the attribute. If such attribute does not exist</span>
+<span class="sd">            in the network edges, it will be created on all edges (as an</span>
+<span class="sd">            empty [list], *value* will only be assigned to the given</span>
+<span class="sd">            *edge*).</span>
+<span class="sd">        :arg list value:</span>
+<span class="sd">            The value of the attribute to be assigned/merged.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">value</span> <span class="o">=</span> <span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
@@ -3676,7 +3688,18 @@
 
 <div class="viewcode-block" id="PyPath.add_set_eattr"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.add_set_eattr">[docs]</a>    <span class="k">def</span> <span class="nf">add_set_eattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Merges (or creates) a given edge attribute as [set].</span>
 
+<span class="sd">        :arg int edge:</span>
+<span class="sd">            Edge index where the given attribute value is to be merged</span>
+<span class="sd">            or created.</span>
+<span class="sd">        :arg str attr:</span>
+<span class="sd">            The name of the attribute. If such attribute does not exist</span>
+<span class="sd">            in the network edges, it will be created on all edges (as an</span>
+<span class="sd">            empty [set], *value* will only be assigned to the given</span>
+<span class="sd">            *edge*).</span>
+<span class="sd">        :arg set value:</span>
+<span class="sd">            The value of the attribute to be assigned/merged.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">set</span><span class="p">)</span> <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -3697,7 +3720,22 @@
 
 <div class="viewcode-block" id="PyPath.add_grouped_eattr"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.add_grouped_eattr">[docs]</a>    <span class="k">def</span> <span class="nf">add_grouped_eattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Merges (or creates) a given edge attribute as [dict] of [list]</span>
+<span class="sd">        values.</span>
 
+<span class="sd">        :arg int edge:</span>
+<span class="sd">            Edge index where the given attribute value is to be merged</span>
+<span class="sd">            or created.</span>
+<span class="sd">        :arg str attr:</span>
+<span class="sd">            The name of the attribute. If such attribute does not exist</span>
+<span class="sd">            in the network edges, it will be created on all edges (as an</span>
+<span class="sd">            empty [dict], *value* will only be assigned to the given</span>
+<span class="sd">            *edge* and *group*).</span>
+<span class="sd">        :arg str group:</span>
+<span class="sd">            The key of the attribute dictionary where *value* is to be</span>
+<span class="sd">            assigned.</span>
+<span class="sd">        :arg list value:</span>
+<span class="sd">            The value of the attribute to be assigned/merged.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">value</span> <span class="o">=</span> <span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
@@ -3719,7 +3757,22 @@
 
 <div class="viewcode-block" id="PyPath.add_grouped_set_eattr"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.add_grouped_set_eattr">[docs]</a>    <span class="k">def</span> <span class="nf">add_grouped_set_eattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Merges (or creates) a given edge attribute as [dict] of [set]</span>
+<span class="sd">        values.</span>
 
+<span class="sd">        :arg int edge:</span>
+<span class="sd">            Edge index where the given attribute value is to be merged</span>
+<span class="sd">            or created.</span>
+<span class="sd">        :arg str attr:</span>
+<span class="sd">            The name of the attribute. If such attribute does not exist</span>
+<span class="sd">            in the network edges, it will be created on all edges (as an</span>
+<span class="sd">            empty [dict], *value* will only be assigned to the given</span>
+<span class="sd">            *edge* and *group*).</span>
+<span class="sd">        :arg str group:</span>
+<span class="sd">            The key of the attribute dictionary where *value* is to be</span>
+<span class="sd">            assigned.</span>
+<span class="sd">        :arg set value:</span>
+<span class="sd">            The value of the attribute to be assigned/merged.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">set</span><span class="p">)</span> <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -3745,27 +3798,37 @@
 <div class="viewcode-block" id="PyPath.get_directed"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.get_directed">[docs]</a>    <span class="k">def</span> <span class="nf">get_directed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">conv_edges</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mutual</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                      <span class="n">ret</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Converts ``graph`` undirected ``igraph.Graph`` object to a directed one.</span>
-<span class="sd">        By default it converts the graph in ``PyPath.graph`` and places the directed</span>
-<span class="sd">        instance in ``PyPath.dgraph``.</span>
+<span class="sd">        Converts a copy of *graph* undirected *igraph.Graph* object to a</span>
+<span class="sd">        directed one. By default it converts the current network</span>
+<span class="sd">        instance in :py:attr:`pypath.main.PyPath.graph` and places the</span>
+<span class="sd">        copy of the directed instance in</span>
+<span class="sd">        :py:attr:`pypath.main.PyPath.dgraph`.</span>
 
-<span class="sd">        @graph : igraph.Graph</span>
-<span class="sd">            Undirected graph object.</span>
+<span class="sd">        :arg igraph.Graph graph:</span>
+<span class="sd">            Optional, ``None`` by default. Undirected graph object. If</span>
+<span class="sd">            none is passed, takes the current undirected network</span>
+<span class="sd">            instance and saves the directed network under the attribute</span>
+<span class="sd">            :py:attr:`pypath.main.PyPath.dgraph`. Otherwise, the</span>
+<span class="sd">            directed graph will be returned instead.</span>
+<span class="sd">        :arg bool conv_edges:</span>
+<span class="sd">            Optional, ``False`` by default. Whether to convert</span>
+<span class="sd">            undirected edges (those without explicit direction</span>
+<span class="sd">            information) to an arbitrary direction edge or</span>
+<span class="sd">            a pair of opposite edges. Otherwise those will be deleted.</span>
+<span class="sd">        :arg bool mutual:</span>
+<span class="sd">            Optional, ``False`` by default. If *conv_edges* is ``True``,</span>
+<span class="sd">            whether to convert the undirected edges to a single,</span>
+<span class="sd">            arbitrary directed edge, or a pair of opposite directed</span>
+<span class="sd">            edges.</span>
+<span class="sd">        :arg bool ret:</span>
+<span class="sd">            Optional, ``False`` by default. Whether to return the</span>
+<span class="sd">            directed graph instance, or not. If a *graph* is provided,</span>
+<span class="sd">            its directed version will be returned anyway.</span>
 
-<span class="sd">        @conv_edges : bool</span>
-<span class="sd">            Whether to convert undirected edges (those without explicit</span>
-<span class="sd">            direction information) to an arbitrary direction edge or</span>
-<span class="sd">            a pair of opposite edges.</span>
-<span class="sd">            Otherwise those will be deleted. Default is ``False``.</span>
-
-<span class="sd">        @mutual : bool</span>
-<span class="sd">            If ``conv_edges`` is ``True``, whether to convert the</span>
-<span class="sd">            undirected edges to a single, arbitrary directed edge,</span>
-<span class="sd">            or a pair of opposite directed edges. Default is ``False``.</span>
-
-<span class="sd">        @ret : bool</span>
-<span class="sd">            Return the directed graph instance, or return ``None``.</span>
-<span class="sd">            Default is ``False`` (returns ``None``).</span>
+<span class="sd">        :return:</span>
+<span class="sd">            (*igraph.Graph*) -- If *graph* is passed or *ret* is</span>
+<span class="sd">            ``True``, returns the copy of the directed graph. otherwise</span>
+<span class="sd">            returns ``None``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">toDel</span> <span class="o">=</span> <span class="p">[]</span>
@@ -3864,20 +3927,39 @@
 
 <div class="viewcode-block" id="PyPath.new_edges"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.new_edges">[docs]</a>    <span class="k">def</span> <span class="nf">new_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds new edges from any iterable of edges to the undirected</span>
+<span class="sd">        graph. Basically, calls :py:meth:`igraph.Graph.add_edges`.</span>
+
+<span class="sd">        :arg list edges:</span>
+<span class="sd">            Contains the edges that are to be added to the network.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">edges</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="PyPath.new_nodes"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.new_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">new_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds new nodes from any iterable of nodes to the undirected</span>
+<span class="sd">        graph. Basically, calls :py:meth:`igraph.Graph.add_vertices`.</span>
+
+<span class="sd">        :arg list nodes:</span>
+<span class="sd">            Contains the nodes that are to be added to the network.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add_vertices</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">nodes</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="PyPath.edge_exists"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.edge_exists">[docs]</a>    <span class="k">def</span> <span class="nf">edge_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nameA</span><span class="p">,</span> <span class="n">nameB</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns a tuple of vertice indices if edge doesn&#39;t exists,</span>
-<span class="sd">        otherwise edge id. Not sensitive to direction.</span>
+<span class="sd">        Returns a tuple of vertex indices if edge doesn&#39;t exist,</span>
+<span class="sd">        otherwise, the edge ID. Not sensitive to direction.</span>
+
+<span class="sd">        :arg str nameA:</span>
+<span class="sd">            Name of the source node.</span>
+<span class="sd">        :arg str nameB:</span>
+<span class="sd">            Name of the target node.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*int*) -- The edge index, if exists such edge. Otherwise,</span>
+<span class="sd">            [tuple] of [int] corresponding to the node IDs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;nodDct&#39;</span><span class="p">):</span>
@@ -3895,6 +3977,14 @@
 
 <div class="viewcode-block" id="PyPath.edge_names"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.edge_names">[docs]</a>    <span class="k">def</span> <span class="nf">edge_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the node names of a given edge.</span>
+
+<span class="sd">        :arg int e:</span>
+<span class="sd">            The edge index.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*tuple*) -- Contains the source and target node names of</span>
+<span class="sd">            the edge [str].</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -3905,6 +3995,13 @@
 
 <div class="viewcode-block" id="PyPath.node_exists"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.node_exists">[docs]</a>    <span class="k">def</span> <span class="nf">node_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if a node exists in the (undirected) network.</span>
+
+<span class="sd">        :arg str name:</span>
+<span class="sd">            The name of the node to be searched.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*bool*) -- Whether the node exists in the network or not.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;nodInd&#39;</span><span class="p">):</span>
@@ -3914,6 +4011,14 @@
 
 <div class="viewcode-block" id="PyPath.names2vids"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.names2vids">[docs]</a>    <span class="k">def</span> <span class="nf">names2vids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        From a list of node names, returns their corresponding indices.</span>
+
+<span class="sd">        :arg list names:</span>
+<span class="sd">            Contains the node names [str] for which the IDs are to be</span>
+<span class="sd">            searched.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*list*) -- The queried node IDs [int].</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">vids</span> <span class="o">=</span> <span class="p">[]</span>
@@ -3928,12 +4033,23 @@
 
         <span class="k">return</span> <span class="n">vids</span></div>
 
+    <span class="c1"># XXX: this function name may lead to some confusion with get_edge() method</span>
+    <span class="c1">#      also, leading underscore makes the method private (is this intended?)</span>
     <span class="k">def</span> <span class="nf">_get_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the edge id only if there is an edge from nodes[0] to nodes[1],</span>
-<span class="sd">        returns False if edge exists in opposite direction, or no edge exists</span>
-<span class="sd">        between the two vertices, or any of the vertice ids doesn&#39;t exist.</span>
-<span class="sd">        To find edges without regarding their direction, see edge_exists().</span>
+<span class="sd">        Returns the edge index only if there is such an edge from</span>
+<span class="sd">        *nodes*[0] to *nodes*[1], returns ``False```otherwise (e.g.: if</span>
+<span class="sd">        edge exists in the opposite direction, no such edge exists or</span>
+<span class="sd">        any of the vertex ids doesn&#39;t exist). To find edges regardless</span>
+<span class="sd">        of their direction, see</span>
+<span class="sd">        :py:meth:`pypath.main.PyPath.edge_exists`.</span>
+
+<span class="sd">        :arg tuple nodes:</span>
+<span class="sd">            Or [list], contains the node IDs [int] where the first</span>
+<span class="sd">            element is the source and the second one the target.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*int*) -- The edge ID if it exists, ``False`` otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
@@ -3947,15 +4063,21 @@
 
 <div class="viewcode-block" id="PyPath.straight_between"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.straight_between">[docs]</a>    <span class="k">def</span> <span class="nf">straight_between</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nameA</span><span class="p">,</span> <span class="n">nameB</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This does actually the same as get_edge(), but by names</span>
-<span class="sd">        instead of vertex ids.</span>
+<span class="sd">        Finds an edge between the provided node names.</span>
+
+<span class="sd">        :arg str nameA:</span>
+<span class="sd">            The name of the source node.</span>
+<span class="sd">        :arg str nameB:</span>
+<span class="sd">            The name of the target node.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*int*) -- The edge ID. If the edge doesn&#39;t exist, returns</span>
+<span class="sd">            [list] with the node indices [int].</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">nodNm</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">nameA</span><span class="p">,</span> <span class="n">nameB</span><span class="p">])</span>
-        <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">nodNm</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">nodNm</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-        <span class="p">]</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">nodNm</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                 <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">nodNm</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
         <span class="n">edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edge</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -3964,12 +4086,34 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">nodes</span></div>
 
+    <span class="c1"># XXX: Not sure if the intended behavior, according to old description:</span>
+    <span class="c1"># &quot;&quot;&quot;</span>
+    <span class="c1"># Returns all edges between two given vertex names. Similar to</span>
+    <span class="c1"># straight_between(), but checks both directions, and returns</span>
+    <span class="c1"># list of edge ids in [undirected, straight, reversed] format,</span>
+    <span class="c1"># for both nameA -&gt; nameB and nameB -&gt; nameA edges.</span>
+    <span class="c1"># &quot;&quot;&quot;</span>
+    <span class="c1"># Just returns A SINGLE edge ID assigned according to the &#39;dirs&#39; attribute</span>
+    <span class="c1"># on a position of the dict and list</span>
+
 <div class="viewcode-block" id="PyPath.all_between"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.all_between">[docs]</a>    <span class="k">def</span> <span class="nf">all_between</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nameA</span><span class="p">,</span> <span class="n">nameB</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns all edges between two given vertex names. Similar to</span>
-<span class="sd">        straight_between(), but checks both directions, and returns</span>
-<span class="sd">        list of edge ids in [undirected, straight, reversed] format,</span>
-<span class="sd">        for both nameA -&gt; nameB and nameB -&gt; nameA edges.</span>
+<span class="sd">        Checks for any edges (in any direction) between the provided</span>
+<span class="sd">        nodes.</span>
+
+<span class="sd">        :arg str nameA:</span>
+<span class="sd">            The name of the source node.</span>
+<span class="sd">        :arg str nameB:</span>
+<span class="sd">            The name of the target node.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*dict*) -- Contains information on the directionality of</span>
+<span class="sd">            the requested edge. Keys are ``&#39;ab&#39;`` and ``&#39;ba&#39;``, denoting</span>
+<span class="sd">            the straight/reverse directionalities respectively. Values</span>
+<span class="sd">            are [list] whose elements are the edge ID or ``None``</span>
+<span class="sd">            according to the existance of that edge in the following</span>
+<span class="sd">            categories: undirected, straight and reverse (in that</span>
+<span class="sd">            order).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
@@ -3992,8 +4136,21 @@
 
         <span class="k">return</span> <span class="n">edges</span></div>
 
-<div class="viewcode-block" id="PyPath.get_node_pair"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.get_node_pair">[docs]</a>    <span class="k">def</span> <span class="nf">get_node_pair</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nameA</span><span class="p">,</span> <span class="n">nameB</span><span class="p">,</span> <span class="n">directed</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.get_node_pair"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.get_node_pair">[docs]</a>    <span class="k">def</span> <span class="nf">get_node_pair</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nameA</span><span class="p">,</span> <span class="n">nameB</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the node IDs from a pair of node names.</span>
+
+<span class="sd">        :arg str nameA:</span>
+<span class="sd">            Name of the source node.</span>
+<span class="sd">        :arg str nameB:</span>
+<span class="sd">            Name of the target node.</span>
+<span class="sd">        :arg bool directed:</span>
+<span class="sd">            Optional, ``False`` by default. Whether to return the node</span>
+<span class="sd">            indices from the directed or undirected graph.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*tuple*) -- The pair of node IDs of the selected graph.</span>
+<span class="sd">            If not found, returns ``False``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;nodDct&#39;</span><span class="p">):</span>
@@ -4013,6 +4170,12 @@
 
 <div class="viewcode-block" id="PyPath.update_attrs"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.update_attrs">[docs]</a>    <span class="k">def</span> <span class="nf">update_attrs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the node and edge attributes. Note that no data is</span>
+<span class="sd">        donwloaded, mainly updates the dictionaries of attributes</span>
+<span class="sd">        :py:attr:`pypath.main.PyPath.edgeAttrs` and</span>
+<span class="sd">        :py:attr:`pypath.main.PyPath.vertexAttrs` containing the</span>
+<span class="sd">        attributes names and their correspoding types and initializes</span>
+<span class="sd">        such attributes in the network nodes/edges if they weren&#39;t.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">attributes</span><span class="p">():</span>
@@ -4067,10 +4230,17 @@
 
 <div class="viewcode-block" id="PyPath.init_vertex_attr"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.init_vertex_attr">[docs]</a>    <span class="k">def</span> <span class="nf">init_vertex_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Fills vertex attribute with its default values, creates</span>
-<span class="sd">        lists if in `vertexAttrs` the attribute is registered as list.</span>
+<span class="sd">        Fills all vertices attribute *attr* with its default type (if</span>
+<span class="sd">        such attribute value is ``None``), creates [list] if in</span>
+<span class="sd">        :py:attr:`pypath.main.PyPath.vertexAttrs` such attribute is</span>
+<span class="sd">        registered as [list].</span>
+
+<span class="sd">        :arg str attr:</span>
+<span class="sd">            The attribute name to be initialized on the network</span>
+<span class="sd">            vertices.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="c1"># XXX: Doesn&#39;t handle potential KeyError</span>
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">:</span>
 
             <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -4082,10 +4252,16 @@
 
 <div class="viewcode-block" id="PyPath.init_edge_attr"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.init_edge_attr">[docs]</a>    <span class="k">def</span> <span class="nf">init_edge_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Fills edge attribute with its default values, creates</span>
-<span class="sd">        lists if in `edgeAttrs` the attribute is registered as list.</span>
+<span class="sd">        Fills all edges attribute *attr* with its default type (if</span>
+<span class="sd">        such attribute value is ``None``), creates [list] if in</span>
+<span class="sd">        :py:attr:`pypath.main.PyPath.edgeAttrs` such attribute is</span>
+<span class="sd">        registered as [list].</span>
+
+<span class="sd">        :arg str attr:</span>
+<span class="sd">            The attribute name to be initialized on the network edges.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="c1"># XXX: Doesn&#39;t handle potential KeyError</span>
         <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">:</span>
 
             <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -4105,8 +4281,20 @@
 
 <div class="viewcode-block" id="PyPath.attach_network"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.attach_network">[docs]</a>    <span class="k">def</span> <span class="nf">attach_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edgeList</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">regulator</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Adds edges to the network from edgeList obtained from file or</span>
-<span class="sd">        other input method.</span>
+<span class="sd">        Adds edges to the network from *edgeList* obtained from file or</span>
+<span class="sd">        other input method. If none is passed, checks for such data in</span>
+<span class="sd">        :py:attr:`pypath.main.PyPath.raw_data`.</span>
+
+<span class="sd">        :arg str edgeList:</span>
+<span class="sd">            Optional, ``False`` by default. The source name of the list</span>
+<span class="sd">            of edges to be added. This must have been loaded previously</span>
+<span class="sd">            (e.g.: with :py:meth:`pypath.main.PyPath.read_data_file`).</span>
+<span class="sd">            If none is passed, loads the data directly from</span>
+<span class="sd">            :py:attr:`pypath.main.PyPath.raw_data`.</span>
+<span class="sd">        :arg bool regulator:</span>
+<span class="sd">            Optional, ``False`` by default. If set to ``True``, non</span>
+<span class="sd">            previously existing nodes, will not be added (and hence, the</span>
+<span class="sd">            edges involved).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
@@ -4174,7 +4362,7 @@
         <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">new_edges</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">edges</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;New edges have been created&quot;</span><span class="p">,</span> <span class="s1">&#39;INFO&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;&quot;&quot;Introducing new node and edge attributes...&quot;&quot;&quot;</span><span class="p">),</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;Introducing new node and edge attributes...&quot;</span><span class="p">),</span>
                         <span class="s1">&#39;INFO&#39;</span><span class="p">)</span>
         <span class="n">prg</span> <span class="o">=</span> <span class="n">Progress</span><span class="p">(</span>
             <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">edgeList</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Processing attributes&quot;</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
@@ -4219,13 +4407,23 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_attrs</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="PyPath.apply_list"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.apply_list">[docs]</a>    <span class="k">def</span> <span class="nf">apply_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">node_or_edge</span><span class="o">=</span><span class="s2">&quot;node&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.apply_list"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.apply_list">[docs]</a>    <span class="k">def</span> <span class="nf">apply_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">node_or_edge</span><span class="o">=</span><span class="s1">&#39;node&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates vertex or edge attribute based on a list.</span>
+
+<span class="sd">        :arg str name:</span>
+<span class="sd">            The name of the list to be added as attribute. Must have</span>
+<span class="sd">            been previously loaded with</span>
+<span class="sd">            :py:meth:`pypath.main.PyPath.load_list` or other methods.</span>
+<span class="sd">            See description of :py:attr:`pypath.main.PyPath.lists`</span>
+<span class="sd">            attribute for more information.</span>
+<span class="sd">        :arg str node_or_edge:</span>
+<span class="sd">            Optional, ``&#39;node&#39;`` by default. Whether the attribute list</span>
+<span class="sd">            is to be added to the nodes or to the edges.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;&quot;&quot;No such list: </span><span class="si">%s</span><span class="s2">&quot;&quot;&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;No such list: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
@@ -4282,18 +4480,36 @@
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">v</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="PyPath.merge_lists"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.merge_lists">[docs]</a>    <span class="k">def</span> <span class="nf">merge_lists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nameA</span><span class="p">,</span> <span class="n">nameB</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">and_or</span><span class="o">=</span><span class="s2">&quot;and&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                    <span class="n">func</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.merge_lists"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.merge_lists">[docs]</a>    <span class="k">def</span> <span class="nf">merge_lists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nameA</span><span class="p">,</span> <span class="n">nameB</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">and_or</span><span class="o">=</span><span class="s1">&#39;and&#39;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">func</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">):</span> <span class="c1"># XXX: kwarg func not used</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Merges two lists in `lists`.</span>
+<span class="sd">        Merges two lists from :py:attr:`pypat.main.PyPath.lists`.</span>
+
+<span class="sd">        :arg str nameA:</span>
+<span class="sd">            Name of the first list to be merged.</span>
+<span class="sd">        :arg str nameB:</span>
+<span class="sd">            Name of the second list to be merged.</span>
+<span class="sd">        :arg str name:</span>
+<span class="sd">            Optional, ``None`` by default. Specifies a new name for the</span>
+<span class="sd">            merged list. If none is passed, name will be set to</span>
+<span class="sd">            *nameA*_*nameB*.</span>
+<span class="sd">        :arg str and_or:</span>
+<span class="sd">            Optional, ``&#39;and&#39;`` by default. The logic operation perfomed</span>
+<span class="sd">            in the merging: ``&#39;and&#39;`` performs an union, ``&#39;or&#39;`` for</span>
+<span class="sd">            the intersection.</span>
+<span class="sd">        :arg bool delete:</span>
+<span class="sd">            Optional, ``False`` by default. Whether to delete the</span>
+<span class="sd">            former lists or not.</span>
+<span class="sd">        :arg str func:</span>
+<span class="sd">            Optional, ``&#39;max&#39;`` by default. Not used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">nameA</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;&quot;&quot;No such list: </span><span class="si">%s</span><span class="s2">&quot;&quot;&quot;</span> <span class="o">%</span> <span class="n">nameA</span><span class="p">),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;No such list: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">nameA</span><span class="p">),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="n">nameB</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;&quot;&quot;No such list: </span><span class="si">%s</span><span class="s2">&quot;&quot;&quot;</span> <span class="o">%</span> <span class="n">nameB</span><span class="p">),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;No such list: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">nameB</span><span class="p">),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">nameA</span><span class="p">,</span> <span class="n">nameB</span><span class="p">])</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">name</span>
@@ -4345,11 +4561,13 @@
 
 <div class="viewcode-block" id="PyPath.save_session"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.save_session">[docs]</a>    <span class="k">def</span> <span class="nf">save_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Save current state into pickle dump.</span>
+<span class="sd">        Save the current session state into pickle dump. The file will</span>
+<span class="sd">        be saved in the current working directory as</span>
+<span class="sd">        ``pypath-&lt;session-id&gt;.pickle``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">pickleFile</span> <span class="o">=</span> <span class="s2">&quot;pypath-&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">+</span> <span class="s2">&quot;.pickle&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;&quot;&quot;Saving session to </span><span class="si">%s</span><span class="s2">... &quot;&quot;&quot;</span> <span class="o">%</span> <span class="n">pickleFile</span><span class="p">),</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;Saving session to </span><span class="si">%s</span><span class="s2">... &quot;</span> <span class="o">%</span> <span class="n">pickleFile</span><span class="p">),</span>
                         <span class="s1">&#39;INFO&#39;</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pickleFile</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -4365,6 +4583,21 @@
 
 <div class="viewcode-block" id="PyPath.databases_similarity"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.databases_similarity">[docs]</a>    <span class="k">def</span> <span class="nf">databases_similarity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s1">&#39;simpson&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the similarity across databases according to a given</span>
+<span class="sd">        index metric. Computes the similarity across the loaded</span>
+<span class="sd">        resources (listed in :py:attr:`pypath.main.PyPath.sources` in</span>
+<span class="sd">        terms of nodes and edges separately.</span>
+
+<span class="sd">        :arg str index:</span>
+<span class="sd">            Optional, ``&#39;simpson&#39;`` by default. The type of index metric</span>
+<span class="sd">            to use to compute the similarity. Options are ``&#39;simpson&#39;``,</span>
+<span class="sd">            ``&#39;sorensen&#39;`` and ``&#39;jaccard&#39;``.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*dict*) -- Nested dictionaries (three levels). First-level</span>
+<span class="sd">            keys are ``&#39;nodes&#39;`` and ``&#39;edges&#39;``, then second and third</span>
+<span class="sd">            levels correspond to sources names which map to the</span>
+<span class="sd">            similarity index between those sources [float].</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
@@ -4377,10 +4610,26 @@
                       <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">])</span>
         <span class="n">sNodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">similarity_groups</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
         <span class="n">sEdges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">similarity_groups</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;nodes&#39;</span><span class="p">:</span> <span class="n">sNodes</span><span class="p">,</span> <span class="s1">&#39;edges&#39;</span><span class="p">:</span> <span class="n">sEdges</span><span class="p">}</span></div>
 
 <div class="viewcode-block" id="PyPath.similarity_groups"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.similarity_groups">[docs]</a>    <span class="k">def</span> <span class="nf">similarity_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s1">&#39;simpson&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the similarity index across the given *groups*.</span>
+
+<span class="sd">        :arg dict groups:</span>
+<span class="sd">            Contains the different group names [str] as keys and their</span>
+<span class="sd">            corresponding elements [set].</span>
+<span class="sd">        :arg str index:</span>
+<span class="sd">            Optional, ``&#39;simpson&#39;`` by default. The type of index metric</span>
+<span class="sd">            to use to compute the similarity. Options are ``&#39;simpson&#39;``,</span>
+<span class="sd">            ``&#39;sorensen&#39;`` and ``&#39;jaccard&#39;``.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*dict*) -- Dictionary of dictionaries containing the groups</span>
+<span class="sd">            names [str] as keys (for both inner and outer dictionaries)</span>
+<span class="sd">            and the index metric as inner value [float] between those</span>
+<span class="sd">            groups.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">index_func</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_index&#39;</span> <span class="o">%</span> <span class="n">index</span>
@@ -4408,6 +4657,19 @@
 
 <div class="viewcode-block" id="PyPath.sorensen_pathways"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.sorensen_pathways">[docs]</a>    <span class="k">def</span> <span class="nf">sorensen_pathways</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pwlist</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the Sorensen&#39;s similarity index across nodes and edges</span>
+<span class="sd">        for the given list of pathway sources (all loaded pathway</span>
+<span class="sd">        sources by default).</span>
+
+<span class="sd">        :arg list pwlist:</span>
+<span class="sd">            Optional, ``None`` by default. The list of pathway sources</span>
+<span class="sd">            to be compared.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*dict*) -- Nested dictionaries (three levels). First-level</span>
+<span class="sd">            keys are ``&#39;nodes&#39;`` and ``&#39;edges&#39;``, then second and third</span>
+<span class="sd">            levels correspond to ``&lt;source&gt;__&lt;patwhay&gt;`` names which map</span>
+<span class="sd">            to the similarity index between those pathways [float].</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
@@ -4421,8 +4683,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;No such vertex attribute: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">p</span><span class="p">),</span>
                                 <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
 
-        <span class="n">edges</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">nodes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># Keys = &lt;source&gt;__&lt;pathway&gt;, values = lsit of edge IDs</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># Keys = &lt;source&gt;__&lt;pathway&gt;, values = lsit of node IDs</span>
 
         <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">:</span>
             <span class="n">indA</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">source</span>
@@ -4430,10 +4692,10 @@
             <span class="n">pwsA</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">pwsB</span> <span class="o">=</span> <span class="p">[]</span>
 
-            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pwlist</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pwlist</span><span class="p">:</span> <span class="c1"># p is &#39;&lt;source&gt;_pathways&#39;</span>
 
                 <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">indA</span><span class="p">][</span><span class="n">p</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-
+                    <span class="c1"># pw is &#39;&lt;patwhay&gt;&#39; from in node[p]</span>
                     <span class="k">for</span> <span class="n">pw</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">indA</span><span class="p">][</span><span class="n">p</span><span class="p">]:</span>
                         <span class="n">thisPw</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_pathways&quot;</span><span class="p">,</span> <span class="s2">&quot;__&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">pw</span>
 
@@ -4471,6 +4733,28 @@
 <div class="viewcode-block" id="PyPath.write_table"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.write_table">[docs]</a>    <span class="k">def</span> <span class="nf">write_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tbl</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">cut</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                     <span class="n">rownames</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes a given table to a file.</span>
+
+<span class="sd">        :arg dict tbl:</span>
+<span class="sd">            Contains the data of the table. It is assumed that keys are</span>
+<span class="sd">            the row names [str] and the values, well, values. Column</span>
+<span class="sd">            names (if any) are defined with the key ``&#39;header&#39;``.</span>
+<span class="sd">        :arg str outfile:</span>
+<span class="sd">            File name where to save the table. The file will be saved</span>
+<span class="sd">            under the object&#39;s :py:attr:`pypath.main.PyPath.outdir`</span>
+<span class="sd">            (``&#39;results&#39;`` by default).</span>
+<span class="sd">        :arg str sep:</span>
+<span class="sd">            Optional, ``&#39;\t&#39;`` (tab) by default. Specifies the separator</span>
+<span class="sd">            for the file.</span>
+<span class="sd">        :arg int cut:</span>
+<span class="sd">            Optional, ``None`` by default. Specifies the maximum number</span>
+<span class="sd">            of characters for the row names.</span>
+<span class="sd">        :arg bool colnames:</span>
+<span class="sd">            Optional, ``True`` by default. Specifies whether to write</span>
+<span class="sd">            the column names in the file or not.</span>
+<span class="sd">        :arg bool rownames:</span>
+<span class="sd">            Optional, ``True`` by default. Specifies whether to write</span>
+<span class="sd">            the row names in the file or not.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">out</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
@@ -4505,12 +4789,27 @@
 
 <div class="viewcode-block" id="PyPath.search_attr_or"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.search_attr_or">[docs]</a>    <span class="k">def</span> <span class="nf">search_attr_or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">lst</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Searches a given collection of attributes in a given object. As</span>
+<span class="sd">        soon as one item is found, returns ``True``, if none could be</span>
+<span class="sd">        found then returns ``False``.</span>
+
+<span class="sd">        :arg dict obj:</span>
+<span class="sd">            Object (dictionary-like) where to search for elements of</span>
+<span class="sd">            *lst*.</span>
+<span class="sd">        :arg dict lst:</span>
+<span class="sd">            Keys are the attribute names [str] and values the collection</span>
+<span class="sd">            of elements to be searched in such attribute [set].</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*bool*) -- ``True`` if *lst* is empty or any of its</span>
+<span class="sd">            elements is found in *obj*. Returns only ``False`` if cannot</span>
+<span class="sd">            find anything.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
 
-        <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span> <span class="c1"># XXX: Why call it lst if it&#39;s dict?</span>
 
             <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span>
                     <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">a</span><span class="p">])</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
@@ -4521,9 +4820,24 @@
 
 <div class="viewcode-block" id="PyPath.search_attr_and"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.search_attr_and">[docs]</a>    <span class="k">def</span> <span class="nf">search_attr_and</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">lst</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Searches a given collection of attributes in a given object.</span>
+<span class="sd">        Only returns ``True``, if all elements of *lst* can be found in</span>
+<span class="sd">        *obj*.</span>
+
+<span class="sd">        :arg dict obj:</span>
+<span class="sd">            Object (dictionary-like) where to search for elements of</span>
+<span class="sd">            *lst*.</span>
+<span class="sd">        :arg dict lst:</span>
+<span class="sd">            Keys are the attribute names [str] and values the collection</span>
+<span class="sd">            of elements to be searched in such attribute [set].</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*bool*) -- ``True`` only if *lst* is empty or all of its</span>
+<span class="sd">            elements are found in *obj*. Returns ``False`` otherwise (as</span>
+<span class="sd">            soon as one element of *lst* is not found).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span> <span class="c1"># XXX: Why call it lst if it&#39;s dict?</span>
 
             <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span>
                     <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">a</span><span class="p">])</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
@@ -10506,6 +10820,7 @@
 
                                 <span class="k">if</span> <span class="n">eid</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
                                     <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">eid</span><span class="p">][</span><span class="n">attrname</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pw</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">update_pathway_types</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_pathways</span><span class="p">()</span></div>
 
@@ -12398,7 +12713,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.107 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.111 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>

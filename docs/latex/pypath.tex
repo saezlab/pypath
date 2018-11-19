@@ -56,8 +56,8 @@
 
 
 \title{pypath Documentation}
-\date{Nov 16, 2018}
-\release{0.7.107}
+\date{Nov 19, 2018}
+\release{0.7.111}
 \author{Dénes Türei}
 \newcommand{\sphinxlogo}{\vbox{}}
 \renewcommand{\releasename}{Release}
@@ -566,24 +566,114 @@ values.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.add_grouped_eattr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_grouped\_eattr}}}{\emph{edge}, \emph{attr}, \emph{group}, \emph{value}}{}
+Merges (or creates) a given edge attribute as {[}dict{]} of {[}list{]}
+values.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{edge}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} Edge index where the given attribute value is to be merged
+or created.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The name of the attribute. If such attribute does not exist
+in the network edges, it will be created on all edges (as an
+empty {[}dict{]}, \sphinxstyleemphasis{value} will only be assigned to the given
+\sphinxstyleemphasis{edge} and \sphinxstyleemphasis{group}).
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{group}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The key of the attribute dictionary where \sphinxstyleemphasis{value} is to be
+assigned.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{value}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} The value of the attribute to be assigned/merged.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{add\_grouped\_set\_eattr() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.add_grouped_set_eattr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_grouped\_set\_eattr}}}{\emph{edge}, \emph{attr}, \emph{group}, \emph{value}}{}
+Merges (or creates) a given edge attribute as {[}dict{]} of {[}set{]}
+values.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{edge}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} Edge index where the given attribute value is to be merged
+or created.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The name of the attribute. If such attribute does not exist
+in the network edges, it will be created on all edges (as an
+empty {[}dict{]}, \sphinxstyleemphasis{value} will only be assigned to the given
+\sphinxstyleemphasis{edge} and \sphinxstyleemphasis{group}).
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{group}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The key of the attribute dictionary where \sphinxstyleemphasis{value} is to be
+assigned.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{value}} (\sphinxstyleliteralemphasis{\sphinxupquote{set}}) \textendash{} The value of the attribute to be assigned/merged.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{add\_list\_eattr() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.add_list_eattr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_list\_eattr}}}{\emph{edge}, \emph{attr}, \emph{value}}{}
+Merges (or creates) a given edge attribute as {[}list{]}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{edge}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} Edge index where the given attribute value is to be merged
+or created.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The name of the attribute. If such attribute does not exist
+in the network edges, it will be created on all edges (as an
+empty {[}list{]}, \sphinxstyleemphasis{value} will only be assigned to the given
+\sphinxstyleemphasis{edge}).
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{value}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} The value of the attribute to be assigned/merged.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{add\_set\_eattr() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.add_set_eattr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{add\_set\_eattr}}}{\emph{edge}, \emph{attr}, \emph{value}}{}
+Merges (or creates) a given edge attribute as {[}set{]}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{edge}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} Edge index where the given attribute value is to be merged
+or created.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The name of the attribute. If such attribute does not exist
+in the network edges, it will be created on all edges (as an
+empty {[}set{]}, \sphinxstyleemphasis{value} will only be assigned to the given
+\sphinxstyleemphasis{edge}).
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{value}} (\sphinxstyleliteralemphasis{\sphinxupquote{set}}) \textendash{} The value of the attribute to be assigned/merged.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{add\_update\_edge() (pypath.main.PyPath method)}
@@ -688,10 +778,28 @@ in such case it will raise an error message.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.all_between}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{all\_between}}}{\emph{nameA}, \emph{nameB}}{}
-Returns all edges between two given vertex names. Similar to
-straight\_between(), but checks both directions, and returns
-list of edge ids in {[}undirected, straight, reversed{]} format,
-for both nameA -\textgreater{} nameB and nameB -\textgreater{} nameA edges.
+Checks for any edges (in any direction) between the provided
+nodes.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{nameA}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The name of the source node.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{nameB}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The name of the target node.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{dict}) \textendash{} Contains information on the directionality of
+the requested edge. Keys are \sphinxcode{\sphinxupquote{'ab'}} and \sphinxcode{\sphinxupquote{'ba'}}, denoting
+the straight/reverse directionalities respectively. Values
+are {[}list{]} whose elements are the edge ID or \sphinxcode{\sphinxupquote{None}}
+according to the existance of that edge in the following
+categories: undirected, straight and reverse (in that
+order).
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -706,6 +814,22 @@ for both nameA -\textgreater{} nameB and nameB -\textgreater{} nameA edges.
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.apply_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{apply\_list}}}{\emph{name}, \emph{node\_or\_edge='node'}}{}
 Creates vertex or edge attribute based on a list.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The name of the list to be added as attribute. Must have
+been previously loaded with
+{\hyperref[\detokenize{main:pypath.main.PyPath.load_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.load\_list()}}}}} or other methods.
+See description of \sphinxcode{\sphinxupquote{pypath.main.PyPath.lists}}
+attribute for more information.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{node\_or\_edge}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{'node'}} by default. Whether the attribute list
+is to be added to the nodes or to the edges.
+
+\end{itemize}
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -719,8 +843,26 @@ Creates vertex or edge attribute based on a list.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.attach_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{attach\_network}}}{\emph{edgeList=False}, \emph{regulator=False}}{}
-Adds edges to the network from edgeList obtained from file or
-other input method.
+Adds edges to the network from \sphinxstyleemphasis{edgeList} obtained from file or
+other input method. If none is passed, checks for such data in
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.raw\_data}}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{edgeList}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. The source name of the list
+of edges to be added. This must have been loaded previously
+(e.g.: with {\hyperref[\detokenize{main:pypath.main.PyPath.read_data_file}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.read\_data\_file()}}}}}).
+If none is passed, loads the data directly from
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.raw\_data}}.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{regulator}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. If set to \sphinxcode{\sphinxupquote{True}}, non
+previously existing nodes, will not be added (and hence, the
+edges involved).
+
+\end{itemize}
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -997,6 +1139,24 @@ took to achieve the amount of information on the network.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.databases_similarity}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{databases\_similarity}}}{\emph{index='simpson'}}{}
+Computes the similarity across databases according to a given
+index metric. Computes the similarity across the loaded
+resources (listed in \sphinxcode{\sphinxupquote{pypath.main.PyPath.sources}} in
+terms of nodes and edges separately.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{index}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{'simpson'}} by default. The type of index metric
+to use to compute the similarity. Options are \sphinxcode{\sphinxupquote{'simpson'}},
+\sphinxcode{\sphinxupquote{'sorensen'}} and \sphinxcode{\sphinxupquote{'jaccard'}}.
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{dict}) \textendash{} Nested dictionaries (three levels). First-level
+keys are \sphinxcode{\sphinxupquote{'nodes'}} and \sphinxcode{\sphinxupquote{'edges'}}, then second and third
+levels correspond to sources names which map to the
+similarity index between those sources {[}float{]}.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{degree\_dist() (pypath.main.PyPath method)}
@@ -1247,8 +1407,23 @@ Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.edge_exists}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{edge\_exists}}}{\emph{nameA}, \emph{nameB}}{}
-Returns a tuple of vertice indices if edge doesn’t exists,
-otherwise edge id. Not sensitive to direction.
+Returns a tuple of vertex indices if edge doesn’t exist,
+otherwise, the edge ID. Not sensitive to direction.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{nameA}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Name of the source node.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{nameB}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Name of the target node.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{int}) \textendash{} The edge index, if exists such edge. Otherwise,
+{[}tuple{]} of {[}int{]} corresponding to the node IDs.
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -1262,6 +1437,17 @@ otherwise edge id. Not sensitive to direction.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.edge_names}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{edge\_names}}}{\emph{e}}{}
+Returns the node names of a given edge.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{e}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} The edge index.
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{tuple}) \textendash{} Contains the source and target node names of
+the edge {[}str{]}.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{edges\_3d() (pypath.main.PyPath method)}
@@ -1651,29 +1837,45 @@ is \sphinxcode{\sphinxupquote{True}}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.get_directed}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_directed}}}{\emph{graph=False}, \emph{conv\_edges=False}, \emph{mutual=False}, \emph{ret=False}}{}
-Converts \sphinxcode{\sphinxupquote{graph}} undirected \sphinxcode{\sphinxupquote{igraph.Graph}} object to a directed one.
-By default it converts the graph in \sphinxcode{\sphinxupquote{PyPath.graph}} and places the directed
-instance in \sphinxcode{\sphinxupquote{PyPath.dgraph}}.
-\begin{description}
-\item[{@graph}] \leavevmode{[}igraph.Graph{]}
-Undirected graph object.
+Converts a copy of \sphinxstyleemphasis{graph} undirected \sphinxstyleemphasis{igraph.Graph} object to a
+directed one. By default it converts the current network
+instance in \sphinxcode{\sphinxupquote{pypath.main.PyPath.graph}} and places the
+copy of the directed instance in
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.dgraph}}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{graph}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Undirected graph object. If
+none is passed, takes the current undirected network
+instance and saves the directed network under the attribute
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.dgraph}}. Otherwise, the
+directed graph will be returned instead.
 
-\item[{@conv\_edges}] \leavevmode{[}bool{]}
-Whether to convert undirected edges (those without explicit
-direction information) to an arbitrary direction edge or
-a pair of opposite edges.
-Otherwise those will be deleted. Default is \sphinxcode{\sphinxupquote{False}}.
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{conv\_edges}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Whether to convert
+undirected edges (those without explicit direction
+information) to an arbitrary direction edge or
+a pair of opposite edges. Otherwise those will be deleted.
 
-\item[{@mutual}] \leavevmode{[}bool{]}
-If \sphinxcode{\sphinxupquote{conv\_edges}} is \sphinxcode{\sphinxupquote{True}}, whether to convert the
-undirected edges to a single, arbitrary directed edge,
-or a pair of opposite directed edges. Default is \sphinxcode{\sphinxupquote{False}}.
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{mutual}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. If \sphinxstyleemphasis{conv\_edges} is \sphinxcode{\sphinxupquote{True}},
+whether to convert the undirected edges to a single,
+arbitrary directed edge, or a pair of opposite directed
+edges.
 
-\item[{@ret}] \leavevmode{[}bool{]}
-Return the directed graph instance, or return \sphinxcode{\sphinxupquote{None}}.
-Default is \sphinxcode{\sphinxupquote{False}} (returns \sphinxcode{\sphinxupquote{None}}).
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{ret}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Whether to return the
+directed graph instance, or not. If a \sphinxstyleemphasis{graph} is provided,
+its directed version will be returned anyway.
 
-\end{description}
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{igraph.Graph}) \textendash{} If \sphinxstyleemphasis{graph} is passed or \sphinxstyleemphasis{ret} is
+\sphinxcode{\sphinxupquote{True}}, returns the copy of the directed graph. otherwise
+returns \sphinxcode{\sphinxupquote{None}}.
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -1821,6 +2023,27 @@ Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.get_node_pair}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_node\_pair}}}{\emph{nameA}, \emph{nameB}, \emph{directed=False}}{}
+Retrieves the node IDs from a pair of node names.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{nameA}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Name of the source node.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{nameB}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Name of the target node.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{directed}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Whether to return the node
+indices from the directed or undirected graph.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{tuple}) \textendash{} The pair of node IDs of the selected graph.
+If not found, returns \sphinxcode{\sphinxupquote{False}}.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{get\_nodes() (pypath.main.PyPath method)}
@@ -2075,8 +2298,15 @@ E.g. 10090 for mouse.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.init_edge_attr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{init\_edge\_attr}}}{\emph{attr}}{}
-Fills edge attribute with its default values, creates
-lists if in \sphinxtitleref{edgeAttrs} the attribute is registered as list.
+Fills all edges attribute \sphinxstyleemphasis{attr} with its default type (if
+such attribute value is \sphinxcode{\sphinxupquote{None}}), creates {[}list{]} if in
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.edgeAttrs}} such attribute is
+registered as {[}list{]}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The attribute name to be initialized on the network edges.
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2148,8 +2378,16 @@ re-download the data and ignore the cache.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.init_vertex_attr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{init\_vertex\_attr}}}{\emph{attr}}{}
-Fills vertex attribute with its default values, creates
-lists if in \sphinxtitleref{vertexAttrs} the attribute is registered as list.
+Fills all vertices attribute \sphinxstyleemphasis{attr} with its default type (if
+such attribute value is \sphinxcode{\sphinxupquote{None}}), creates {[}list{]} if in
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.vertexAttrs}} such attribute is
+registered as {[}list{]}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The attribute name to be initialized on the network
+vertices.
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2902,7 +3140,35 @@ network.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.merge_lists}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{merge\_lists}}}{\emph{nameA}, \emph{nameB}, \emph{name=None}, \emph{and\_or='and'}, \emph{delete=False}, \emph{func='max'}}{}
-Merges two lists in \sphinxtitleref{lists}.
+Merges two lists from \sphinxcode{\sphinxupquote{pypat.main.PyPath.lists}}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{nameA}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Name of the first list to be merged.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{nameB}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Name of the second list to be merged.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Specifies a new name for the
+merged list. If none is passed, name will be set to
+\sphinxstyleemphasis{nameA*\_*nameB}.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{and\_or}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{'and'}} by default. The logic operation perfomed
+in the merging: \sphinxcode{\sphinxupquote{'and'}} performs an union, \sphinxcode{\sphinxupquote{'or'}} for
+the intersection.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{delete}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Whether to delete the
+former lists or not.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{func}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{'max'}} by default. Not used.
+
+\end{itemize}
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2953,6 +3219,17 @@ underlying PTM is mutated.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.names2vids}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{names2vids}}}{\emph{names}}{}
+From a list of node names, returns their corresponding indices.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{names}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Contains the node names {[}str{]} for which the IDs are to be
+searched.
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{list}) \textendash{} The queried node IDs {[}int{]}.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{negative\_report() (pypath.main.PyPath method)}
@@ -3002,18 +3279,44 @@ and each of sources. Writes the results in a tab file.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.new_edges}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{new\_edges}}}{\emph{edges}}{}
+Adds new edges from any iterable of edges to the undirected
+graph. Basically, calls \sphinxcode{\sphinxupquote{igraph.Graph.add\_edges()}}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{edges}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Contains the edges that are to be added to the network.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{new\_nodes() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.new_nodes}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{new\_nodes}}}{\emph{nodes}}{}
+Adds new nodes from any iterable of nodes to the undirected
+graph. Basically, calls \sphinxcode{\sphinxupquote{igraph.Graph.add\_vertices()}}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{nodes}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Contains the nodes that are to be added to the network.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{node\_exists() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.node_exists}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{node\_exists}}}{\emph{name}}{}
+Checks if a node exists in the (undirected) network.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The name of the node to be searched.
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{bool}) \textendash{} Whether the node exists in the network or not.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{numof\_directed\_edges() (pypath.main.PyPath method)}
@@ -3547,7 +3850,9 @@ to its default location
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.save_session}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{save\_session}}}{}{}
-Save current state into pickle dump.
+Save the current session state into pickle dump. The file will
+be saved in the current working directory as
+\sphinxcode{\sphinxupquote{pypath-\textless{}session-id\textgreater{}.pickle}}.
 
 \end{fulllineitems}
 
@@ -3555,12 +3860,56 @@ Save current state into pickle dump.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.search_attr_and}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{search\_attr\_and}}}{\emph{obj}, \emph{lst}}{}
+Searches a given collection of attributes in a given object.
+Only returns \sphinxcode{\sphinxupquote{True}}, if all elements of \sphinxstyleemphasis{lst} can be found in
+\sphinxstyleemphasis{obj}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{obj}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Object (dictionary-like) where to search for elements of
+\sphinxstyleemphasis{lst}.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{lst}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Keys are the attribute names {[}str{]} and values the collection
+of elements to be searched in such attribute {[}set{]}.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{bool}) \textendash{} \sphinxcode{\sphinxupquote{True}} only if \sphinxstyleemphasis{lst} is empty or all of its
+elements are found in \sphinxstyleemphasis{obj}. Returns \sphinxcode{\sphinxupquote{False}} otherwise (as
+soon as one element of \sphinxstyleemphasis{lst} is not found).
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{search\_attr\_or() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.search_attr_or}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{search\_attr\_or}}}{\emph{obj}, \emph{lst}}{}
+Searches a given collection of attributes in a given object. As
+soon as one item is found, returns \sphinxcode{\sphinxupquote{True}}, if none could be
+found then returns \sphinxcode{\sphinxupquote{False}}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{obj}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Object (dictionary-like) where to search for elements of
+\sphinxstyleemphasis{lst}.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{lst}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Keys are the attribute names {[}str{]} and values the collection
+of elements to be searched in such attribute {[}set{]}.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{bool}) \textendash{} \sphinxcode{\sphinxupquote{True}} if \sphinxstyleemphasis{lst} is empty or any of its
+elements is found in \sphinxstyleemphasis{obj}. Returns only \sphinxcode{\sphinxupquote{False}} if cannot
+find anything.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{second\_neighbours() (pypath.main.PyPath method)}
@@ -3760,6 +4109,28 @@ terms.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.similarity_groups}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{similarity\_groups}}}{\emph{groups}, \emph{index='simpson'}}{}
+Computes the similarity index across the given \sphinxstyleemphasis{groups}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{groups}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Contains the different group names {[}str{]} as keys and their
+corresponding elements {[}set{]}.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{index}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{'simpson'}} by default. The type of index metric
+to use to compute the similarity. Options are \sphinxcode{\sphinxupquote{'simpson'}},
+\sphinxcode{\sphinxupquote{'sorensen'}} and \sphinxcode{\sphinxupquote{'jaccard'}}.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{dict}) \textendash{} Dictionary of dictionaries containing the groups
+names {[}str{]} as keys (for both inner and outer dictionaries)
+and the index metric as inner value {[}float{]} between those
+groups.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{small\_plot() (pypath.main.PyPath method)}
@@ -3774,6 +4145,22 @@ This method is deprecated, do not use it.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.sorensen_pathways}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{sorensen\_pathways}}}{\emph{pwlist=None}}{}
+Computes the Sorensen’s similarity index across nodes and edges
+for the given list of pathway sources (all loaded pathway
+sources by default).
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{pwlist}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The list of pathway sources
+to be compared.
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{dict}) \textendash{} Nested dictionaries (three levels). First-level
+keys are \sphinxcode{\sphinxupquote{'nodes'}} and \sphinxcode{\sphinxupquote{'edges'}}, then second and third
+levels correspond to \sphinxcode{\sphinxupquote{\textless{}source\textgreater{}\_\_\textless{}patwhay\textgreater{}}} names which map
+to the similarity index between those pathways {[}float{]}.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{source\_diagram() (pypath.main.PyPath method)}
@@ -3824,8 +4211,22 @@ For EMBL branding, use Helvetica Neue Linotype Standard light
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.straight_between}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{straight\_between}}}{\emph{nameA}, \emph{nameB}}{}
-This does actually the same as get\_edge(), but by names
-instead of vertex ids.
+Finds an edge between the provided node names.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{nameA}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The name of the source node.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{nameB}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The name of the target node.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{int}) \textendash{} The edge ID. If the edge doesn’t exist, returns
+{[}list{]} with the node indices {[}int{]}.
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -4078,6 +4479,13 @@ Creates an adjacency list in a list of sets format.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.update_attrs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{update\_attrs}}}{}{}
+Updates the node and edge attributes. Note that no data is
+donwloaded, mainly updates the dictionaries of attributes
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.edgeAttrs}} and
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.vertexAttrs}} containing the
+attributes names and their correspoding types and initializes
+such attributes in the network nodes/edges if they weren’t.
+
 \end{fulllineitems}
 
 \index{update\_cats() (pypath.main.PyPath method)}
@@ -4225,6 +4633,39 @@ UniProt IDs {[}str{]}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.write_table}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{write\_table}}}{\emph{tbl}, \emph{outfile}, \emph{sep='\textbackslash{}t'}, \emph{cut=None}, \emph{colnames=True}, \emph{rownames=True}}{}
+Writes a given table to a file.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{tbl}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Contains the data of the table. It is assumed that keys are
+the row names {[}str{]} and the values, well, values. Column
+names (if any) are defined with the key \sphinxcode{\sphinxupquote{'header'}}.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{outfile}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} File name where to save the table. The file will be saved
+under the object’s \sphinxcode{\sphinxupquote{pypath.main.PyPath.outdir}}
+(\sphinxcode{\sphinxupquote{'results'}} by default).
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{sep}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{'       '}} (tab) by default. Specifies the separator
+for the file.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{cut}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Specifies the maximum number
+of characters for the row names.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{colnames}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{True}} by default. Specifies whether to write
+the column names in the file or not.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{rownames}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{True}} by default. Specifies whether to write
+the row names in the file or not.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 

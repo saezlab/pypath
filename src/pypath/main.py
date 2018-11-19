@@ -1651,6 +1651,7 @@ class PyPath(object):
         self.load_resources(
             lst=lst, exclude=exclude, reread=reread, redownload=redownload,
             cache_files=cache_files)
+
         if save:
             sys.stdout.write('\t:: Saving igraph object to file `%s`...' %
                              pfile)
@@ -3649,7 +3650,18 @@ class PyPath(object):
 
     def add_set_eattr(self, edge, attr, value):
         """
+        Merges (or creates) a given edge attribute as [set].
 
+        :arg int edge:
+            Edge index where the given attribute value is to be merged
+            or created.
+        :arg str attr:
+            The name of the attribute. If such attribute does not exist
+            in the network edges, it will be created on all edges (as an
+            empty [set], *value* will only be assigned to the given
+            *edge*).
+        :arg set value:
+            The value of the attribute to be assigned/merged.
         """
 
         value = (value if isinstance(value, set) else set(value)
@@ -3670,7 +3682,22 @@ class PyPath(object):
 
     def add_grouped_eattr(self, edge, attr, group, value):
         """
+        Merges (or creates) a given edge attribute as [dict] of [list]
+        values.
 
+        :arg int edge:
+            Edge index where the given attribute value is to be merged
+            or created.
+        :arg str attr:
+            The name of the attribute. If such attribute does not exist
+            in the network edges, it will be created on all edges (as an
+            empty [dict], *value* will only be assigned to the given
+            *edge* and *group*).
+        :arg str group:
+            The key of the attribute dictionary where *value* is to be
+            assigned.
+        :arg list value:
+            The value of the attribute to be assigned/merged.
         """
 
         value = value if isinstance(value, list) else [value]
@@ -3692,7 +3719,22 @@ class PyPath(object):
 
     def add_grouped_set_eattr(self, edge, attr, group, value):
         """
+        Merges (or creates) a given edge attribute as [dict] of [set]
+        values.
 
+        :arg int edge:
+            Edge index where the given attribute value is to be merged
+            or created.
+        :arg str attr:
+            The name of the attribute. If such attribute does not exist
+            in the network edges, it will be created on all edges (as an
+            empty [dict], *value* will only be assigned to the given
+            *edge* and *group*).
+        :arg str group:
+            The key of the attribute dictionary where *value* is to be
+            assigned.
+        :arg set value:
+            The value of the attribute to be assigned/merged.
         """
 
         value = (value if isinstance(value, set) else set(value)
@@ -3718,27 +3760,37 @@ class PyPath(object):
     def get_directed(self, graph=False, conv_edges=False, mutual=False,
                      ret=False):
         """
-        Converts ``graph`` undirected ``igraph.Graph`` object to a directed one.
-        By default it converts the graph in ``PyPath.graph`` and places the directed
-        instance in ``PyPath.dgraph``.
+        Converts a copy of *graph* undirected *igraph.Graph* object to a
+        directed one. By default it converts the current network
+        instance in :py:attr:`pypath.main.PyPath.graph` and places the
+        copy of the directed instance in
+        :py:attr:`pypath.main.PyPath.dgraph`.
 
-        @graph : igraph.Graph
-            Undirected graph object.
+        :arg igraph.Graph graph:
+            Optional, ``None`` by default. Undirected graph object. If
+            none is passed, takes the current undirected network
+            instance and saves the directed network under the attribute
+            :py:attr:`pypath.main.PyPath.dgraph`. Otherwise, the
+            directed graph will be returned instead.
+        :arg bool conv_edges:
+            Optional, ``False`` by default. Whether to convert
+            undirected edges (those without explicit direction
+            information) to an arbitrary direction edge or
+            a pair of opposite edges. Otherwise those will be deleted.
+        :arg bool mutual:
+            Optional, ``False`` by default. If *conv_edges* is ``True``,
+            whether to convert the undirected edges to a single,
+            arbitrary directed edge, or a pair of opposite directed
+            edges.
+        :arg bool ret:
+            Optional, ``False`` by default. Whether to return the
+            directed graph instance, or not. If a *graph* is provided,
+            its directed version will be returned anyway.
 
-        @conv_edges : bool
-            Whether to convert undirected edges (those without explicit
-            direction information) to an arbitrary direction edge or
-            a pair of opposite edges.
-            Otherwise those will be deleted. Default is ``False``.
-
-        @mutual : bool
-            If ``conv_edges`` is ``True``, whether to convert the
-            undirected edges to a single, arbitrary directed edge,
-            or a pair of opposite directed edges. Default is ``False``.
-
-        @ret : bool
-            Return the directed graph instance, or return ``None``.
-            Default is ``False`` (returns ``None``).
+        :return:
+            (*igraph.Graph*) -- If *graph* is passed or *ret* is
+            ``True``, returns the copy of the directed graph. otherwise
+            returns ``None``.
         """
 
         toDel = []
@@ -3837,20 +3889,39 @@ class PyPath(object):
 
     def new_edges(self, edges):
         """
+        Adds new edges from any iterable of edges to the undirected
+        graph. Basically, calls :py:meth:`igraph.Graph.add_edges`.
+
+        :arg list edges:
+            Contains the edges that are to be added to the network.
         """
 
         self.graph.add_edges(list(edges))
 
     def new_nodes(self, nodes):
         """
+        Adds new nodes from any iterable of nodes to the undirected
+        graph. Basically, calls :py:meth:`igraph.Graph.add_vertices`.
+
+        :arg list nodes:
+            Contains the nodes that are to be added to the network.
         """
 
         self.graph.add_vertices(list(nodes))
 
     def edge_exists(self, nameA, nameB):
         """
-        Returns a tuple of vertice indices if edge doesn't exists,
-        otherwise edge id. Not sensitive to direction.
+        Returns a tuple of vertex indices if edge doesn't exist,
+        otherwise, the edge ID. Not sensitive to direction.
+
+        :arg str nameA:
+            Name of the source node.
+        :arg str nameB:
+            Name of the target node.
+
+        :return:
+            (*int*) -- The edge index, if exists such edge. Otherwise,
+            [tuple] of [int] corresponding to the node IDs.
         """
 
         if not hasattr(self, 'nodDct'):
@@ -3868,6 +3939,14 @@ class PyPath(object):
 
     def edge_names(self, e):
         """
+        Returns the node names of a given edge.
+
+        :arg int e:
+            The edge index.
+
+        :return:
+            (*tuple*) -- Contains the source and target node names of
+            the edge [str].
         """
 
         if isinstance(e, int):
@@ -3878,6 +3957,13 @@ class PyPath(object):
 
     def node_exists(self, name):
         """
+        Checks if a node exists in the (undirected) network.
+
+        :arg str name:
+            The name of the node to be searched.
+
+        :return:
+            (*bool*) -- Whether the node exists in the network or not.
         """
 
         if not hasattr(self, 'nodInd'):
@@ -3887,6 +3973,14 @@ class PyPath(object):
 
     def names2vids(self, names):
         """
+        From a list of node names, returns their corresponding indices.
+
+        :arg list names:
+            Contains the node names [str] for which the IDs are to be
+            searched.
+
+        :return:
+            (*list*) -- The queried node IDs [int].
         """
 
         vids = []
@@ -3901,12 +3995,23 @@ class PyPath(object):
 
         return vids
 
+    # XXX: this function name may lead to some confusion with get_edge() method
+    #      also, leading underscore makes the method private (is this intended?)
     def _get_edge(self, nodes):
         """
-        Returns the edge id only if there is an edge from nodes[0] to nodes[1],
-        returns False if edge exists in opposite direction, or no edge exists
-        between the two vertices, or any of the vertice ids doesn't exist.
-        To find edges without regarding their direction, see edge_exists().
+        Returns the edge index only if there is such an edge from
+        *nodes*[0] to *nodes*[1], returns ``False```otherwise (e.g.: if
+        edge exists in the opposite direction, no such edge exists or
+        any of the vertex ids doesn't exist). To find edges regardless
+        of their direction, see
+        :py:meth:`pypath.main.PyPath.edge_exists`.
+
+        :arg tuple nodes:
+            Or [list], contains the node IDs [int] where the first
+            element is the source and the second one the target.
+
+        :return:
+            (*int*) -- The edge ID if it exists, ``False`` otherwise.
         """
 
         g = self.graph
@@ -3920,15 +4025,21 @@ class PyPath(object):
 
     def straight_between(self, nameA, nameB):
         """
-        This does actually the same as get_edge(), but by names
-        instead of vertex ids.
+        Finds an edge between the provided node names.
+
+        :arg str nameA:
+            The name of the source node.
+        :arg str nameB:
+            The name of the target node.
+
+        :return:
+            (*int*) -- The edge ID. If the edge doesn't exist, returns
+            [list] with the node indices [int].
         """
 
         nodNm = sorted([nameA, nameB])
-        nodes = [
-            self.graph.vs['name'].index(nodNm[0]),
-            self.graph.vs['name'].index(nodNm[1])
-        ]
+        nodes = [self.graph.vs['name'].index(nodNm[0]),
+                 self.graph.vs['name'].index(nodNm[1])]
         edge = self._get_edge(nodes)
 
         if isinstance(edge, int):
@@ -3937,12 +4048,34 @@ class PyPath(object):
         else:
             return nodes
 
+    # XXX: Not sure if the intended behavior, according to old description:
+    # """
+    # Returns all edges between two given vertex names. Similar to
+    # straight_between(), but checks both directions, and returns
+    # list of edge ids in [undirected, straight, reversed] format,
+    # for both nameA -> nameB and nameB -> nameA edges.
+    # """
+    # Just returns A SINGLE edge ID assigned according to the 'dirs' attribute
+    # on a position of the dict and list
+
     def all_between(self, nameA, nameB):
         """
-        Returns all edges between two given vertex names. Similar to
-        straight_between(), but checks both directions, and returns
-        list of edge ids in [undirected, straight, reversed] format,
-        for both nameA -> nameB and nameB -> nameA edges.
+        Checks for any edges (in any direction) between the provided
+        nodes.
+
+        :arg str nameA:
+            The name of the source node.
+        :arg str nameB:
+            The name of the target node.
+
+        :return:
+            (*dict*) -- Contains information on the directionality of
+            the requested edge. Keys are ``'ab'`` and ``'ba'``, denoting
+            the straight/reverse directionalities respectively. Values
+            are [list] whose elements are the edge ID or ``None``
+            according to the existance of that edge in the following
+            categories: undirected, straight and reverse (in that
+            order).
         """
 
         g = self.graph
@@ -3965,8 +4098,21 @@ class PyPath(object):
 
         return edges
 
-    def get_node_pair(self, nameA, nameB, directed = False):
+    def get_node_pair(self, nameA, nameB, directed=False):
         """
+        Retrieves the node IDs from a pair of node names.
+
+        :arg str nameA:
+            Name of the source node.
+        :arg str nameB:
+            Name of the target node.
+        :arg bool directed:
+            Optional, ``False`` by default. Whether to return the node
+            indices from the directed or undirected graph.
+
+        :return:
+            (*tuple*) -- The pair of node IDs of the selected graph.
+            If not found, returns ``False``.
         """
 
         if not hasattr(self, 'nodDct'):
@@ -3986,6 +4132,12 @@ class PyPath(object):
 
     def update_attrs(self):
         """
+        Updates the node and edge attributes. Note that no data is
+        donwloaded, mainly updates the dictionaries of attributes
+        :py:attr:`pypath.main.PyPath.edgeAttrs` and
+        :py:attr:`pypath.main.PyPath.vertexAttrs` containing the
+        attributes names and their correspoding types and initializes
+        such attributes in the network nodes/edges if they weren't.
         """
 
         for attr in self.graph.vs.attributes():
@@ -4040,10 +4192,17 @@ class PyPath(object):
 
     def init_vertex_attr(self, attr):
         """
-        Fills vertex attribute with its default values, creates
-        lists if in `vertexAttrs` the attribute is registered as list.
+        Fills all vertices attribute *attr* with its default type (if
+        such attribute value is ``None``), creates [list] if in
+        :py:attr:`pypath.main.PyPath.vertexAttrs` such attribute is
+        registered as [list].
+
+        :arg str attr:
+            The attribute name to be initialized on the network
+            vertices.
         """
 
+        # XXX: Doesn't handle potential KeyError
         for v in self.graph.vs:
 
             if v[attr] is None:
@@ -4055,10 +4214,16 @@ class PyPath(object):
 
     def init_edge_attr(self, attr):
         """
-        Fills edge attribute with its default values, creates
-        lists if in `edgeAttrs` the attribute is registered as list.
+        Fills all edges attribute *attr* with its default type (if
+        such attribute value is ``None``), creates [list] if in
+        :py:attr:`pypath.main.PyPath.edgeAttrs` such attribute is
+        registered as [list].
+
+        :arg str attr:
+            The attribute name to be initialized on the network edges.
         """
 
+        # XXX: Doesn't handle potential KeyError
         for e in self.graph.es:
 
             if e[attr] is None:
@@ -4078,8 +4243,20 @@ class PyPath(object):
 
     def attach_network(self, edgeList=False, regulator=False):
         """
-        Adds edges to the network from edgeList obtained from file or
-        other input method.
+        Adds edges to the network from *edgeList* obtained from file or
+        other input method. If none is passed, checks for such data in
+        :py:attr:`pypath.main.PyPath.raw_data`.
+
+        :arg str edgeList:
+            Optional, ``False`` by default. The source name of the list
+            of edges to be added. This must have been loaded previously
+            (e.g.: with :py:meth:`pypath.main.PyPath.read_data_file`).
+            If none is passed, loads the data directly from
+            :py:attr:`pypath.main.PyPath.raw_data`.
+        :arg bool regulator:
+            Optional, ``False`` by default. If set to ``True``, non
+            previously existing nodes, will not be added (and hence, the
+            edges involved).
         """
 
         g = self.graph
@@ -4147,7 +4324,7 @@ class PyPath(object):
         prg.terminate()
         self.new_edges(set(edges))
         self.ownlog.msg(2, "New edges have been created", 'INFO')
-        self.ownlog.msg(2, ("""Introducing new node and edge attributes..."""),
+        self.ownlog.msg(2, ("Introducing new node and edge attributes..."),
                         'INFO')
         prg = Progress(
             total=len(edgeList), name="Processing attributes", interval=30)
@@ -4192,13 +4369,23 @@ class PyPath(object):
         self.raw_data = None
         self.update_attrs()
 
-    def apply_list(self, name, node_or_edge="node"):
+    def apply_list(self, name, node_or_edge='node'):
         """
         Creates vertex or edge attribute based on a list.
+
+        :arg str name:
+            The name of the list to be added as attribute. Must have
+            been previously loaded with
+            :py:meth:`pypath.main.PyPath.load_list` or other methods.
+            See description of :py:attr:`pypath.main.PyPath.lists`
+            attribute for more information.
+        :arg str node_or_edge:
+            Optional, ``'node'`` by default. Whether the attribute list
+            is to be added to the nodes or to the edges.
         """
 
         if name not in self.lists:
-            self.ownlog.msg(1, ("""No such list: %s""" % name), 'ERROR')
+            self.ownlog.msg(1, ("No such list: %s" % name), 'ERROR')
             return None
 
         g = self.graph
@@ -4255,18 +4442,36 @@ class PyPath(object):
                     else:
                         v[name] = False
 
-    def merge_lists(self, nameA, nameB, name=None, and_or="and", delete=False,
-                    func="max"):
+    def merge_lists(self, nameA, nameB, name=None, and_or='and', delete=False,
+                    func="max"): # XXX: kwarg func not used
         """
-        Merges two lists in `lists`.
+        Merges two lists from :py:attr:`pypat.main.PyPath.lists`.
+
+        :arg str nameA:
+            Name of the first list to be merged.
+        :arg str nameB:
+            Name of the second list to be merged.
+        :arg str name:
+            Optional, ``None`` by default. Specifies a new name for the
+            merged list. If none is passed, name will be set to
+            *nameA*_*nameB*.
+        :arg str and_or:
+            Optional, ``'and'`` by default. The logic operation perfomed
+            in the merging: ``'and'`` performs an union, ``'or'`` for
+            the intersection.
+        :arg bool delete:
+            Optional, ``False`` by default. Whether to delete the
+            former lists or not.
+        :arg str func:
+            Optional, ``'max'`` by default. Not used.
         """
 
         if nameA not in self.lists:
-            self.ownlog.msg(1, ("""No such list: %s""" % nameA), 'ERROR')
+            self.ownlog.msg(1, ("No such list: %s" % nameA), 'ERROR')
             return None
 
         if nameB not in self.lists:
-            self.ownlog.msg(1, ("""No such list: %s""" % nameB), 'ERROR')
+            self.ownlog.msg(1, ("No such list: %s" % nameB), 'ERROR')
             return None
 
         name = '_'.join([nameA, nameB]) if name is None else name
@@ -4318,11 +4523,13 @@ class PyPath(object):
 
     def save_session(self):
         """
-        Save current state into pickle dump.
+        Save the current session state into pickle dump. The file will
+        be saved in the current working directory as
+        ``pypath-<session-id>.pickle``.
         """
 
         pickleFile = "pypath-" + self.session + ".pickle"
-        self.ownlog.msg(1, ("""Saving session to %s... """ % pickleFile),
+        self.ownlog.msg(1, ("Saving session to %s... " % pickleFile),
                         'INFO')
 
         with open(pickleFile, "wb") as f:
@@ -4338,6 +4545,21 @@ class PyPath(object):
 
     def databases_similarity(self, index='simpson'):
         """
+        Computes the similarity across databases according to a given
+        index metric. Computes the similarity across the loaded
+        resources (listed in :py:attr:`pypath.main.PyPath.sources` in
+        terms of nodes and edges separately.
+
+        :arg str index:
+            Optional, ``'simpson'`` by default. The type of index metric
+            to use to compute the similarity. Options are ``'simpson'``,
+            ``'sorensen'`` and ``'jaccard'``.
+
+        :return:
+            (*dict*) -- Nested dictionaries (three levels). First-level
+            keys are ``'nodes'`` and ``'edges'``, then second and third
+            levels correspond to sources names which map to the
+            similarity index between those sources [float].
         """
 
         g = self.graph
@@ -4350,10 +4572,26 @@ class PyPath(object):
                       for s in self.sources])
         sNodes = self.similarity_groups(nodes, index=index)
         sEdges = self.similarity_groups(edges, index=index)
+
         return {'nodes': sNodes, 'edges': sEdges}
 
     def similarity_groups(self, groups, index='simpson'):
         """
+        Computes the similarity index across the given *groups*.
+
+        :arg dict groups:
+            Contains the different group names [str] as keys and their
+            corresponding elements [set].
+        :arg str index:
+            Optional, ``'simpson'`` by default. The type of index metric
+            to use to compute the similarity. Options are ``'simpson'``,
+            ``'sorensen'`` and ``'jaccard'``.
+
+        :return:
+            (*dict*) -- Dictionary of dictionaries containing the groups
+            names [str] as keys (for both inner and outer dictionaries)
+            and the index metric as inner value [float] between those
+            groups.
         """
 
         index_func = '%s_index' % index
@@ -4381,6 +4619,19 @@ class PyPath(object):
 
     def sorensen_pathways(self, pwlist=None):
         """
+        Computes the Sorensen's similarity index across nodes and edges
+        for the given list of pathway sources (all loaded pathway
+        sources by default).
+
+        :arg list pwlist:
+            Optional, ``None`` by default. The list of pathway sources
+            to be compared.
+
+        :return:
+            (*dict*) -- Nested dictionaries (three levels). First-level
+            keys are ``'nodes'`` and ``'edges'``, then second and third
+            levels correspond to ``<source>__<patwhay>`` names which map
+            to the similarity index between those pathways [float].
         """
 
         g = self.graph
@@ -4394,8 +4645,8 @@ class PyPath(object):
                 self.ownlog.msg(2, ("No such vertex attribute: %s" % p),
                                 'ERROR')
 
-        edges = {}
-        nodes = {}
+        edges = {} # Keys = <source>__<pathway>, values = lsit of edge IDs
+        nodes = {} # Keys = <source>__<pathway>, values = lsit of node IDs
 
         for e in g.es:
             indA = e.source
@@ -4403,10 +4654,10 @@ class PyPath(object):
             pwsA = []
             pwsB = []
 
-            for p in pwlist:
+            for p in pwlist: # p is '<source>_pathways'
 
                 if g.vs[indA][p] is not None:
-
+                    # pw is '<patwhay>' from in node[p]
                     for pw in g.vs[indA][p]:
                         thisPw = p.replace("_pathways", "__") + pw
 
@@ -4444,6 +4695,28 @@ class PyPath(object):
     def write_table(self, tbl, outfile, sep="\t", cut=None, colnames=True,
                     rownames=True):
         """
+        Writes a given table to a file.
+
+        :arg dict tbl:
+            Contains the data of the table. It is assumed that keys are
+            the row names [str] and the values, well, values. Column
+            names (if any) are defined with the key ``'header'``.
+        :arg str outfile:
+            File name where to save the table. The file will be saved
+            under the object's :py:attr:`pypath.main.PyPath.outdir`
+            (``'results'`` by default).
+        :arg str sep:
+            Optional, ``'\t'`` (tab) by default. Specifies the separator
+            for the file.
+        :arg int cut:
+            Optional, ``None`` by default. Specifies the maximum number
+            of characters for the row names.
+        :arg bool colnames:
+            Optional, ``True`` by default. Specifies whether to write
+            the column names in the file or not.
+        :arg bool rownames:
+            Optional, ``True`` by default. Specifies whether to write
+            the row names in the file or not.
         """
 
         out = ''
@@ -4478,12 +4751,27 @@ class PyPath(object):
 
     def search_attr_or(self, obj, lst):
         """
+        Searches a given collection of attributes in a given object. As
+        soon as one item is found, returns ``True``, if none could be
+        found then returns ``False``.
+
+        :arg dict obj:
+            Object (dictionary-like) where to search for elements of
+            *lst*.
+        :arg dict lst:
+            Keys are the attribute names [str] and values the collection
+            of elements to be searched in such attribute [set].
+
+        :return:
+            (*bool*) -- ``True`` if *lst* is empty or any of its
+            elements is found in *obj*. Returns only ``False`` if cannot
+            find anything.
         """
 
         if len(lst) == 0:
             return True
 
-        for a, v in iteritems(lst):
+        for a, v in iteritems(lst): # XXX: Why call it lst if it's dict?
 
             if (isinstance(v, list) and
                     len(set(obj[a]).intersection(v)) > 0) or (
@@ -4494,9 +4782,24 @@ class PyPath(object):
 
     def search_attr_and(self, obj, lst):
         """
+        Searches a given collection of attributes in a given object.
+        Only returns ``True``, if all elements of *lst* can be found in
+        *obj*.
+
+        :arg dict obj:
+            Object (dictionary-like) where to search for elements of
+            *lst*.
+        :arg dict lst:
+            Keys are the attribute names [str] and values the collection
+            of elements to be searched in such attribute [set].
+
+        :return:
+            (*bool*) -- ``True`` only if *lst* is empty or all of its
+            elements are found in *obj*. Returns ``False`` otherwise (as
+            soon as one element of *lst* is not found).
         """
 
-        for a, v in iteritems(lst):
+        for a, v in iteritems(lst): # XXX: Why call it lst if it's dict?
 
             if (isinstance(v, list) and
                     len(set(obj[a]).intersection(v)) == 0) or (
@@ -10479,6 +10782,7 @@ class PyPath(object):
 
                                 if eid != -1:
                                     g.es[eid][attrname].add(pw)
+
         self.update_pathway_types()
         self.update_pathways()
 
