@@ -4425,8 +4425,8 @@ class PyPath(object):
 
                 edges[pw].append(e.index)
 
-        sNodes = self.sorensen_groups(nodes)
-        sEdges = self.sorensen_groups(edges)
+        sNodes = self.similarity_groups(nodes, index='sorensen')
+        sEdges = self.similarity_groups(edges, index='sorensen')
 
         return {"nodes": sNodes, "edges": sEdges}
 
