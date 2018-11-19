@@ -26,6 +26,7 @@ import pypath.dataio as dataio
 import pypath.data_formats as data_formats
 import pypath.settings as settings
 
+
 exclude = {
     'reactome_interactions'
 }
@@ -36,7 +37,6 @@ for var in data_formats.__dir__():
     var = getattr(data_formats, var)
     
     if isinstance(var, dict):
-        
         
         for k, v in var.items():
             

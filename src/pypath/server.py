@@ -1031,8 +1031,11 @@ class PypathServer(BaseServer):
         ]
         
         if b'fields' in req.args:
+            
             hdr += [
-                f.decode('utf-8') for f in fields if f in req.args[b'fields']
+                f.decode('utf-8')
+                for f in fields
+                if f in b','.join(req.args[b'fields']).split(b',')
             ]
         
         if (
@@ -1165,9 +1168,13 @@ class PypathServer(BaseServer):
             genesymbols = False
         
         if b'fields' in req.args:
+            
             hdr += [
-                f.decode('utf-8') for f in fields if f in req.args[b'fields']
+                f.decode('utf-8')
+                for f in fields
+                if f in b','.join(req.args[b'fields']).split(b',')
             ]
+        
         if 'ptm' in self.g.es.attributes():
             for eid in elist:
                 e = self.g.es[eid]
@@ -1279,6 +1286,6 @@ class Rest(object):
         """
         
         self.port = port
-        self.site = server.Site(serverclass(kwargs))
+        self.site = server.Site(serverclass(**kwargs))
         reactor.listenTCP(self.port, self.site)
         reactor.run()
