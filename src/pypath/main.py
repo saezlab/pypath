@@ -4755,7 +4755,7 @@ class PyPath(object):
         soon as one item is found, returns ``True``, if none could be
         found then returns ``False``.
 
-        :arg dict obj:
+        :arg object obj:
             Object (dictionary-like) where to search for elements of
             *lst*.
         :arg dict lst:
@@ -4786,7 +4786,7 @@ class PyPath(object):
         Only returns ``True``, if all elements of *lst* can be found in
         *obj*.
 
-        :arg dict obj:
+        :arg object obj:
             Object (dictionary-like) where to search for elements of
             *lst*.
         :arg dict lst:

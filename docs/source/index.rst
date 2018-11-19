@@ -19,8 +19,7 @@ networks.
     github. For few years I develop and test ``pypath`` in Python 3. Therefore
     this is the better supported Python variant.
 
-:contributions: turei.denes@gmail.com
-:documentation: http://pypath.omnipathdb.org/
+:documentation: http://saezlab.github.io/pypath
 :issues: https://github.com/saezlab/pypath/issues
 
 .. toctree::
