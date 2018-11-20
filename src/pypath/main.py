@@ -5016,6 +5016,18 @@ class PyPath(object):
 
     def source_similarity(self, outfile=None):
         """
+        Computes the Sorensen's similarity index across nodes and edges
+        for all the sources available (already loaded in the network)
+        and saves them into table files. Files are stored in
+        :py:attr:`pypath.main.PyPath.outdir` (``'results'`` by default).
+        See :py:meth:`pypath.main.PyPath.databases_similarity` for more
+        information.
+
+        :arg str outfile:
+            Optional, ``None`` by default. Specifies the file name
+            prefix (suffixes will be ``'-nodes'`` and ``'-edges'``). If
+            none is specified, this will be
+            ``'pwnet-<session>-sim-src'``.
         """
 
         if outfile is None:
@@ -5027,6 +5039,18 @@ class PyPath(object):
 
     def pathway_similarity(self, outfile=None):
         """
+        Computes the Sorensen's similarity index across nodes and edges
+        for all the available pathway sources (already loaded in the
+        network) and saves them into table files. Files are stored in
+        :py:attr:`pypath.main.PyPath.outdir` (``'results'`` by default).
+        See :py:meth:`pypath.main.PyPath.sorensen_pathways` for more
+        information..
+
+        :arg str outfile:
+            Optional, ``None`` by default. Specifies the file name
+            prefix (suffixes will be ``'-nodes'`` and ``'-edges'``). If
+            none is specified, this will be
+            ``'pwnet-<session>-sim-pw'``.
         """
 
         if outfile is None:
@@ -5039,8 +5063,9 @@ class PyPath(object):
 
     def update_sources(self):
         """
-        Makes sure that the `sources` attribute is an up to date
-        list of all sources in the current network.
+        Makes sure that the :py:attr:`pypath.main.PyPath.sources`
+        attribute is an up to date [list] of all sources in the current
+        network.
         """
 
         g = self.graph
@@ -5054,18 +5079,20 @@ class PyPath(object):
 
     def update_cats(self):
         """
-        Makes sure that the `has_cats` attribute is an up to date
-        set of all categories in the current network.
+        Makes sure that the :py:attr:`pypath.main.PyPath.has_cats`
+        attribute is an up to date [set] of all categories in the
+        current network.
         """
 
-        self.has_cats = set(
-            list(
-                map(lambda s: data_formats.categories[s],
-                    filter(lambda s: s in data_formats.categories,
-                           self.sources))))
+        self.has_cats = set(list(map(lambda s:
+            data_formats.categories[s], filter(lambda s:
+                s in data_formats.categories, self.sources))))
 
     def update_pathways(self):
         """
+        Makes sure that the :py:attr:`pypath.main.PyPath.pathways`
+        attribute is an up to date [dict] of all pathways and their
+        sources in the current network.
         """
 
         g = self.graph
@@ -5091,41 +5118,55 @@ class PyPath(object):
 
     def delete_unmapped(self):
         """
+        Checks the network for any existing unmapped node and removes
+        it.
         """
 
-        if "unmapped" in self.graph.vs["name"]:
-            self.graph.delete_vertices(
-                self.graph.vs.find(name="unmapped").index)
+        g = self.graph
+
+        if "unmapped" in g.vs["name"]:
+            g.delete_vertices(g.vs.find(name="unmapped").index)
             self.update_db_dict()
             self.update_vname()
 
     def genesymbol_labels(self, graph=None, remap_all=False):
         """
-        Creats vertex attribute ``label`` and fills up with Gene Symbols
-        of all proteins where the Gene Symbol can be looked up based on
-        the default name of the protein vertex.
-        If the attribute ``label`` had been already initialized,
-        updates this attribute or recreates if ``remap_all``
-        is ``True``.
+        Creats vertex attribute ``'label'`` and fills up with the
+        corresponding GeneSymbols of all proteins where the GeneSymbol
+        can be looked up based on the default name of the protein
+        vertex (UniProt ID by default). If the attribute ``'label'`` has
+        been already initialized, updates this attribute or recreates if
+        *remap_all* is set to ``True``.
+
+        :arg igraph.Graph graph:
+            Optional, ``None`` by default. The network graph object
+            where the GeneSymbol labels are to be set/updated. If none
+            is passed, takes the current network undirected graph by
+            default (:py:attr:`pypath.main.PyPath.graph`).
+        :arg bool remap_all:
+            Optional, ``False`` by default. Whether to map anew the
+            GeneSymbol labels if those were already initialized.
         """
 
+        # XXX: What's the purpose of this? I mean attribute _directed is not
+        #      accessed in this function (?)
         self._already_has_directed()
+
+        dnt = self.default_name_type
 
         if graph is None and self.dgraph is not None:
             self.genesymbol_labels(graph=self.dgraph, remap_all=remap_all)
 
         g = self.graph if graph is None else graph
-        defaultNameType = self.default_name_type["protein"]
+        defaultNameType = dnt["protein"]
         labelNameTypes = {'protein': 'genesymbol',
                           'mirna': 'mir-mat-name'}
 
         if 'label' not in g.vs.attributes():
             remap_all = True
 
-        labels = [
-            None if remap_all or v['label'] == v['name'] else v['label']
-            for v in g.vs
-        ]
+        labels = [None if remap_all or v['label'] == v['name'] else v['label']
+                  for v in g.vs]
 
         for v, l, i in zip(g.vs, labels, xrange(g.vcount())):
 
@@ -5133,10 +5174,9 @@ class PyPath(object):
                 label = []
 
                 if v['type'] in labelNameTypes:
-                    label = self.mapper.map_name(v['name'],
-                                                self.default_name_type[v['type']],
+                    label = self.mapper.map_name(v['name'], dnt[v['type']],
                                                 labelNameTypes[v['type']],
-                                                ncbi_tax_id = v['ncbi_tax_id'])
+                                                ncbi_tax_id=v['ncbi_tax_id'])
 
                 if not len(label):
                     labels[i] = v['name']
@@ -5148,33 +5188,35 @@ class PyPath(object):
 
     def network_stats(self, outfile=None):
         """
-        Calculates basic statistics for the whole network
-        and each of sources. Writes the results in a tab file.
+        Calculates basic statistics for the whole network and each of
+        sources (node and edge counts, average node degree, graph
+        diameter, transitivity, adhesion and cohesion). Writes the
+        results in a tab file. File is stored in
+        :py:attr:`pypath.main.PyPath.outdir` (``'results'`` by default).
+
+        :arg str outfile:
+            Optional, ``None`` by default. Specifies the file name. If
+            none is specified, this will be ``'pwnet-<session>-stats'``.
         """
 
         if outfile is None:
             outfile = '-'.join(["pwnet", self.session, "stats"])
 
         stats = {}
-        stats['header'] = [
-            "vnum", "enum", "deg_avg", "diam", "trans", "adh", "coh"
-        ]
+        stats['header'] = ["vnum", "enum", "deg_avg", "diam", "trans", "adh",
+                           "coh"]
 
         for k in xrange(0, len(self.sources) + 1):
             s = "All" if k == len(self.sources) else self.sources[k]
-            g = self.graph if k == len(self.sources) else self.get_network({
-                "edge": {
-                    "sources": [s]
-                },
-                "node": {}
-            })
+            g = (self.graph if k == len(self.sources)
+                 else self.get_network({"edge": {"sources": [s]}, "node": {}}))
 
             if g.vcount() > 0:
-                stats[s] = [
-                    g.vcount(), g.ecount(),
-                    sum(g.vs.degree()) / float(len(g.vs)), g.diameter(),
-                    g.transitivity_undirected(), g.adhesion(), g.cohesion()
-                ]
+                stats[s] = [g.vcount(), g.ecount(),
+                            sum(g.vs.degree()) / float(len(g.vs)),
+                            g.diameter(), g.transitivity_undirected(),
+                            g.adhesion(), g.cohesion()]
+
         self.write_table(stats, outfile)
 
     def degree_dists(self):

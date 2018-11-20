@@ -56,7 +56,7 @@
 
 
 \title{pypath Documentation}
-\date{Nov 19, 2018}
+\date{Nov 20, 2018}
 \release{0.7.111}
 \author{Dénes Türei}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -1224,6 +1224,9 @@ given molecular species. If none is specified takes it from
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.delete_unmapped}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{delete\_unmapped}}}{}{}
+Checks the network for any existing unmapped node and removes
+it.
+
 \end{fulllineitems}
 
 \index{dgenesymbol() (pypath.main.PyPath method)}
@@ -1821,12 +1824,27 @@ GeneSymbol.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.genesymbol_labels}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{genesymbol\_labels}}}{\emph{graph=None}, \emph{remap\_all=False}}{}
-Creats vertex attribute \sphinxcode{\sphinxupquote{label}} and fills up with Gene Symbols
-of all proteins where the Gene Symbol can be looked up based on
-the default name of the protein vertex.
-If the attribute \sphinxcode{\sphinxupquote{label}} had been already initialized,
-updates this attribute or recreates if \sphinxcode{\sphinxupquote{remap\_all}}
-is \sphinxcode{\sphinxupquote{True}}.
+Creats vertex attribute \sphinxcode{\sphinxupquote{'label'}} and fills up with the
+corresponding GeneSymbols of all proteins where the GeneSymbol
+can be looked up based on the default name of the protein
+vertex (UniProt ID by default). If the attribute \sphinxcode{\sphinxupquote{'label'}} has
+been already initialized, updates this attribute or recreates if
+\sphinxstyleemphasis{remap\_all} is set to \sphinxcode{\sphinxupquote{True}}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{graph}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The network graph object
+where the GeneSymbol labels are to be set/updated. If none
+is passed, takes the current network undirected graph by
+default (\sphinxcode{\sphinxupquote{pypath.main.PyPath.graph}}).
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{remap\_all}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Whether to map anew the
+GeneSymbol labels if those were already initialized.
+
+\end{itemize}
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -3344,8 +3362,17 @@ less hairball-like, more usable for analysis.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.network_stats}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{network\_stats}}}{\emph{outfile=None}}{}
-Calculates basic statistics for the whole network
-and each of sources. Writes the results in a tab file.
+Calculates basic statistics for the whole network and each of
+sources (node and edge counts, average node degree, graph
+diameter, transitivity, adhesion and cohesion). Writes the
+results in a tab file. File is stored in
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.outdir}} (\sphinxcode{\sphinxupquote{'results'}} by default).
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{outfile}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Specifies the file name. If
+none is specified, this will be \sphinxcode{\sphinxupquote{'pwnet-\textless{}session\textgreater{}-stats'}}.
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -3496,6 +3523,21 @@ in the current graph.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.pathway_similarity}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{pathway\_similarity}}}{\emph{outfile=None}}{}
+Computes the Sorensen’s similarity index across nodes and edges
+for all the available pathway sources (already loaded in the
+network) and saves them into table files. Files are stored in
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.outdir}} (\sphinxcode{\sphinxupquote{'results'}} by default).
+See {\hyperref[\detokenize{main:pypath.main.PyPath.sorensen_pathways}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.sorensen\_pathways()}}}}} for more
+information..
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{outfile}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Specifies the file name
+prefix (suffixes will be \sphinxcode{\sphinxupquote{'-nodes'}} and \sphinxcode{\sphinxupquote{'-edges'}}). If
+none is specified, this will be
+\sphinxcode{\sphinxupquote{'pwnet-\textless{}session\textgreater{}-sim-pw'}}.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{pathways\_table() (pypath.main.PyPath method)}
@@ -4289,6 +4331,21 @@ For EMBL branding, use Helvetica Neue Linotype Standard light
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.source_similarity}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{source\_similarity}}}{\emph{outfile=None}}{}
+Computes the Sorensen’s similarity index across nodes and edges
+for all the sources available (already loaded in the network)
+and saves them into table files. Files are stored in
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.outdir}} (\sphinxcode{\sphinxupquote{'results'}} by default).
+See {\hyperref[\detokenize{main:pypath.main.PyPath.databases_similarity}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.databases\_similarity()}}}}} for more
+information.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{outfile}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Specifies the file name
+prefix (suffixes will be \sphinxcode{\sphinxupquote{'-nodes'}} and \sphinxcode{\sphinxupquote{'-edges'}}). If
+none is specified, this will be
+\sphinxcode{\sphinxupquote{'pwnet-\textless{}session\textgreater{}-sim-src'}}.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{source\_stats() (pypath.main.PyPath method)}
@@ -4600,8 +4657,9 @@ such attributes in the network nodes/edges if they weren’t.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.update_cats}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{update\_cats}}}{}{}
-Makes sure that the \sphinxtitleref{has\_cats} attribute is an up to date
-set of all categories in the current network.
+Makes sure that the \sphinxcode{\sphinxupquote{pypath.main.PyPath.has\_cats}}
+attribute is an up to date {[}set{]} of all categories in the
+current network.
 
 \end{fulllineitems}
 
@@ -4625,14 +4683,19 @@ loaded resources of the undirected network.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.update_pathways}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{update\_pathways}}}{}{}
+Makes sure that the \sphinxcode{\sphinxupquote{pypath.main.PyPath.pathways}}
+attribute is an up to date {[}dict{]} of all pathways and their
+sources in the current network.
+
 \end{fulllineitems}
 
 \index{update\_sources() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.update_sources}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{update\_sources}}}{}{}
-Makes sure that the \sphinxtitleref{sources} attribute is an up to date
-list of all sources in the current network.
+Makes sure that the \sphinxcode{\sphinxupquote{pypath.main.PyPath.sources}}
+attribute is an up to date {[}list{]} of all sources in the current
+network.
 
 \end{fulllineitems}
 

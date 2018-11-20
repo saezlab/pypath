@@ -5054,6 +5054,18 @@
 
 <div class="viewcode-block" id="PyPath.source_similarity"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.source_similarity">[docs]</a>    <span class="k">def</span> <span class="nf">source_similarity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the Sorensen&#39;s similarity index across nodes and edges</span>
+<span class="sd">        for all the sources available (already loaded in the network)</span>
+<span class="sd">        and saves them into table files. Files are stored in</span>
+<span class="sd">        :py:attr:`pypath.main.PyPath.outdir` (``&#39;results&#39;`` by default).</span>
+<span class="sd">        See :py:meth:`pypath.main.PyPath.databases_similarity` for more</span>
+<span class="sd">        information.</span>
+
+<span class="sd">        :arg str outfile:</span>
+<span class="sd">            Optional, ``None`` by default. Specifies the file name</span>
+<span class="sd">            prefix (suffixes will be ``&#39;-nodes&#39;`` and ``&#39;-edges&#39;``). If</span>
+<span class="sd">            none is specified, this will be</span>
+<span class="sd">            ``&#39;pwnet-&lt;session&gt;-sim-src&#39;``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -5065,6 +5077,18 @@
 
 <div class="viewcode-block" id="PyPath.pathway_similarity"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.pathway_similarity">[docs]</a>    <span class="k">def</span> <span class="nf">pathway_similarity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the Sorensen&#39;s similarity index across nodes and edges</span>
+<span class="sd">        for all the available pathway sources (already loaded in the</span>
+<span class="sd">        network) and saves them into table files. Files are stored in</span>
+<span class="sd">        :py:attr:`pypath.main.PyPath.outdir` (``&#39;results&#39;`` by default).</span>
+<span class="sd">        See :py:meth:`pypath.main.PyPath.sorensen_pathways` for more</span>
+<span class="sd">        information..</span>
+
+<span class="sd">        :arg str outfile:</span>
+<span class="sd">            Optional, ``None`` by default. Specifies the file name</span>
+<span class="sd">            prefix (suffixes will be ``&#39;-nodes&#39;`` and ``&#39;-edges&#39;``). If</span>
+<span class="sd">            none is specified, this will be</span>
+<span class="sd">            ``&#39;pwnet-&lt;session&gt;-sim-pw&#39;``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -5077,8 +5101,9 @@
 
 <div class="viewcode-block" id="PyPath.update_sources"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.update_sources">[docs]</a>    <span class="k">def</span> <span class="nf">update_sources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Makes sure that the `sources` attribute is an up to date</span>
-<span class="sd">        list of all sources in the current network.</span>
+<span class="sd">        Makes sure that the :py:attr:`pypath.main.PyPath.sources`</span>
+<span class="sd">        attribute is an up to date [list] of all sources in the current</span>
+<span class="sd">        network.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
@@ -5092,18 +5117,20 @@
 
 <div class="viewcode-block" id="PyPath.update_cats"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.update_cats">[docs]</a>    <span class="k">def</span> <span class="nf">update_cats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Makes sure that the `has_cats` attribute is an up to date</span>
-<span class="sd">        set of all categories in the current network.</span>
+<span class="sd">        Makes sure that the :py:attr:`pypath.main.PyPath.has_cats`</span>
+<span class="sd">        attribute is an up to date [set] of all categories in the</span>
+<span class="sd">        current network.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">has_cats</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
-            <span class="nb">list</span><span class="p">(</span>
-                <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="n">s</span><span class="p">],</span>
-                    <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span>
-                           <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">))))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_cats</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span>
+            <span class="n">data_formats</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="n">s</span><span class="p">],</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span>
+                <span class="n">s</span> <span class="ow">in</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">))))</span></div>
 
 <div class="viewcode-block" id="PyPath.update_pathways"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.update_pathways">[docs]</a>    <span class="k">def</span> <span class="nf">update_pathways</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Makes sure that the :py:attr:`pypath.main.PyPath.pathways`</span>
+<span class="sd">        attribute is an up to date [dict] of all pathways and their</span>
+<span class="sd">        sources in the current network.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
@@ -5129,41 +5156,55 @@
 
 <div class="viewcode-block" id="PyPath.delete_unmapped"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.delete_unmapped">[docs]</a>    <span class="k">def</span> <span class="nf">delete_unmapped</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks the network for any existing unmapped node and removes</span>
+<span class="sd">        it.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="s2">&quot;unmapped&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">delete_vertices</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;unmapped&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
+
+        <span class="k">if</span> <span class="s2">&quot;unmapped&quot;</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">delete_vertices</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;unmapped&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_db_dict</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_vname</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="PyPath.genesymbol_labels"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.genesymbol_labels">[docs]</a>    <span class="k">def</span> <span class="nf">genesymbol_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">remap_all</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Creats vertex attribute ``label`` and fills up with Gene Symbols</span>
-<span class="sd">        of all proteins where the Gene Symbol can be looked up based on</span>
-<span class="sd">        the default name of the protein vertex.</span>
-<span class="sd">        If the attribute ``label`` had been already initialized,</span>
-<span class="sd">        updates this attribute or recreates if ``remap_all``</span>
-<span class="sd">        is ``True``.</span>
+<span class="sd">        Creats vertex attribute ``&#39;label&#39;`` and fills up with the</span>
+<span class="sd">        corresponding GeneSymbols of all proteins where the GeneSymbol</span>
+<span class="sd">        can be looked up based on the default name of the protein</span>
+<span class="sd">        vertex (UniProt ID by default). If the attribute ``&#39;label&#39;`` has</span>
+<span class="sd">        been already initialized, updates this attribute or recreates if</span>
+<span class="sd">        *remap_all* is set to ``True``.</span>
+
+<span class="sd">        :arg igraph.Graph graph:</span>
+<span class="sd">            Optional, ``None`` by default. The network graph object</span>
+<span class="sd">            where the GeneSymbol labels are to be set/updated. If none</span>
+<span class="sd">            is passed, takes the current network undirected graph by</span>
+<span class="sd">            default (:py:attr:`pypath.main.PyPath.graph`).</span>
+<span class="sd">        :arg bool remap_all:</span>
+<span class="sd">            Optional, ``False`` by default. Whether to map anew the</span>
+<span class="sd">            GeneSymbol labels if those were already initialized.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="c1"># XXX: What&#39;s the purpose of this? I mean attribute _directed is not</span>
+        <span class="c1">#      accessed in this function (?)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_already_has_directed</span><span class="p">()</span>
+
+        <span class="n">dnt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_name_type</span>
 
         <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">dgraph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">genesymbol_labels</span><span class="p">(</span><span class="n">graph</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dgraph</span><span class="p">,</span> <span class="n">remap_all</span><span class="o">=</span><span class="n">remap_all</span><span class="p">)</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">graph</span>
-        <span class="n">defaultNameType</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_name_type</span><span class="p">[</span><span class="s2">&quot;protein&quot;</span><span class="p">]</span>
+        <span class="n">defaultNameType</span> <span class="o">=</span> <span class="n">dnt</span><span class="p">[</span><span class="s2">&quot;protein&quot;</span><span class="p">]</span>
         <span class="n">labelNameTypes</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;protein&#39;</span><span class="p">:</span> <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span>
                           <span class="s1">&#39;mirna&#39;</span><span class="p">:</span> <span class="s1">&#39;mir-mat-name&#39;</span><span class="p">}</span>
 
         <span class="k">if</span> <span class="s1">&#39;label&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">attributes</span><span class="p">():</span>
             <span class="n">remap_all</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="kc">None</span> <span class="k">if</span> <span class="n">remap_all</span> <span class="ow">or</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span>
-        <span class="p">]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span> <span class="k">if</span> <span class="n">remap_all</span> <span class="ow">or</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
+                  <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">]</span>
 
         <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">xrange</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">())):</span>
 
@@ -5171,10 +5212,9 @@
                 <span class="n">label</span> <span class="o">=</span> <span class="p">[]</span>
 
                 <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">labelNameTypes</span><span class="p">:</span>
-                    <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
-                                                <span class="bp">self</span><span class="o">.</span><span class="n">default_name_type</span><span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]],</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">dnt</span><span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]],</span>
                                                 <span class="n">labelNameTypes</span><span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]],</span>
-                                                <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;ncbi_tax_id&#39;</span><span class="p">])</span>
+                                                <span class="n">ncbi_tax_id</span><span class="o">=</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;ncbi_tax_id&#39;</span><span class="p">])</span>
 
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
                     <span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
@@ -5186,33 +5226,35 @@
 
 <div class="viewcode-block" id="PyPath.network_stats"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.network_stats">[docs]</a>    <span class="k">def</span> <span class="nf">network_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calculates basic statistics for the whole network</span>
-<span class="sd">        and each of sources. Writes the results in a tab file.</span>
+<span class="sd">        Calculates basic statistics for the whole network and each of</span>
+<span class="sd">        sources (node and edge counts, average node degree, graph</span>
+<span class="sd">        diameter, transitivity, adhesion and cohesion). Writes the</span>
+<span class="sd">        results in a tab file. File is stored in</span>
+<span class="sd">        :py:attr:`pypath.main.PyPath.outdir` (``&#39;results&#39;`` by default).</span>
+
+<span class="sd">        :arg str outfile:</span>
+<span class="sd">            Optional, ``None`` by default. Specifies the file name. If</span>
+<span class="sd">            none is specified, this will be ``&#39;pwnet-&lt;session&gt;-stats&#39;``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">outfile</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;pwnet&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="s2">&quot;stats&quot;</span><span class="p">])</span>
 
         <span class="n">stats</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">stats</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;vnum&quot;</span><span class="p">,</span> <span class="s2">&quot;enum&quot;</span><span class="p">,</span> <span class="s2">&quot;deg_avg&quot;</span><span class="p">,</span> <span class="s2">&quot;diam&quot;</span><span class="p">,</span> <span class="s2">&quot;trans&quot;</span><span class="p">,</span> <span class="s2">&quot;adh&quot;</span><span class="p">,</span> <span class="s2">&quot;coh&quot;</span>
-        <span class="p">]</span>
+        <span class="n">stats</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;vnum&quot;</span><span class="p">,</span> <span class="s2">&quot;enum&quot;</span><span class="p">,</span> <span class="s2">&quot;deg_avg&quot;</span><span class="p">,</span> <span class="s2">&quot;diam&quot;</span><span class="p">,</span> <span class="s2">&quot;trans&quot;</span><span class="p">,</span> <span class="s2">&quot;adh&quot;</span><span class="p">,</span>
+                           <span class="s2">&quot;coh&quot;</span><span class="p">]</span>
 
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
             <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;All&quot;</span> <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-            <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_network</span><span class="p">({</span>
-                <span class="s2">&quot;edge&quot;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s2">&quot;sources&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">s</span><span class="p">]</span>
-                <span class="p">},</span>
-                <span class="s2">&quot;node&quot;</span><span class="p">:</span> <span class="p">{}</span>
-            <span class="p">})</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
+                 <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_network</span><span class="p">({</span><span class="s2">&quot;edge&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;sources&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">s</span><span class="p">]},</span> <span class="s2">&quot;node&quot;</span><span class="p">:</span> <span class="p">{}}))</span>
 
             <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">stats</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">(),</span> <span class="n">g</span><span class="o">.</span><span class="n">ecount</span><span class="p">(),</span>
-                    <span class="nb">sum</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">degree</span><span class="p">())</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">)),</span> <span class="n">g</span><span class="o">.</span><span class="n">diameter</span><span class="p">(),</span>
-                    <span class="n">g</span><span class="o">.</span><span class="n">transitivity_undirected</span><span class="p">(),</span> <span class="n">g</span><span class="o">.</span><span class="n">adhesion</span><span class="p">(),</span> <span class="n">g</span><span class="o">.</span><span class="n">cohesion</span><span class="p">()</span>
-                <span class="p">]</span>
+                <span class="n">stats</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">(),</span> <span class="n">g</span><span class="o">.</span><span class="n">ecount</span><span class="p">(),</span>
+                            <span class="nb">sum</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">degree</span><span class="p">())</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">)),</span>
+                            <span class="n">g</span><span class="o">.</span><span class="n">diameter</span><span class="p">(),</span> <span class="n">g</span><span class="o">.</span><span class="n">transitivity_undirected</span><span class="p">(),</span>
+                            <span class="n">g</span><span class="o">.</span><span class="n">adhesion</span><span class="p">(),</span> <span class="n">g</span><span class="o">.</span><span class="n">cohesion</span><span class="p">()]</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span><span class="n">stats</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PyPath.degree_dists"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.degree_dists">[docs]</a>    <span class="k">def</span> <span class="nf">degree_dists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

@@ -793,7 +793,9 @@ given molecular species. If none is specified takes it from
 <dl class="method">
 <dt id="pypath.main.PyPath.delete_unmapped">
 <code class="descname">delete_unmapped</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.delete_unmapped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.delete_unmapped" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Checks the network for any existing unmapped node and removes
+it.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.dgenesymbol">
@@ -1302,12 +1304,28 @@ otherwise <code class="docutils literal notranslate"><span class="pre">None</spa
 <dl class="method">
 <dt id="pypath.main.PyPath.genesymbol_labels">
 <code class="descname">genesymbol_labels</code><span class="sig-paren">(</span><em>graph=None</em>, <em>remap_all=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.genesymbol_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.genesymbol_labels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creats vertex attribute <code class="docutils literal notranslate"><span class="pre">label</span></code> and fills up with Gene Symbols
-of all proteins where the Gene Symbol can be looked up based on
-the default name of the protein vertex.
-If the attribute <code class="docutils literal notranslate"><span class="pre">label</span></code> had been already initialized,
-updates this attribute or recreates if <code class="docutils literal notranslate"><span class="pre">remap_all</span></code>
-is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<dd><p>Creats vertex attribute <code class="docutils literal notranslate"><span class="pre">'label'</span></code> and fills up with the
+corresponding GeneSymbols of all proteins where the GeneSymbol
+can be looked up based on the default name of the protein
+vertex (UniProt ID by default). If the attribute <code class="docutils literal notranslate"><span class="pre">'label'</span></code> has
+been already initialized, updates this attribute or recreates if
+<em>remap_all</em> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>graph</strong> (<em>igraph.Graph</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. The network graph object
+where the GeneSymbol labels are to be set/updated. If none
+is passed, takes the current network undirected graph by
+default (<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.graph</span></code>).</li>
+<li><strong>remap_all</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default. Whether to map anew the
+GeneSymbol labels if those were already initialized.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -2614,8 +2632,20 @@ less hairball-like, more usable for analysis.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.network_stats">
 <code class="descname">network_stats</code><span class="sig-paren">(</span><em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.network_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.network_stats" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates basic statistics for the whole network
-and each of sources. Writes the results in a tab file.</p>
+<dd><p>Calculates basic statistics for the whole network and each of
+sources (node and edge counts, average node degree, graph
+diameter, transitivity, adhesion and cohesion). Writes the
+results in a tab file. File is stored in
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.outdir</span></code> (<code class="docutils literal notranslate"><span class="pre">'results'</span></code> by default).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outfile</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Specifies the file name. If
+none is specified, this will be <code class="docutils literal notranslate"><span class="pre">'pwnet-&lt;session&gt;-stats'</span></code>.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -2758,7 +2788,24 @@ in the current graph.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.pathway_similarity">
 <code class="descname">pathway_similarity</code><span class="sig-paren">(</span><em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.pathway_similarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.pathway_similarity" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Computes the Sorensen’s similarity index across nodes and edges
+for all the available pathway sources (already loaded in the
+network) and saves them into table files. Files are stored in
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.outdir</span></code> (<code class="docutils literal notranslate"><span class="pre">'results'</span></code> by default).
+See <a class="reference internal" href="#pypath.main.PyPath.sorensen_pathways" title="pypath.main.PyPath.sorensen_pathways"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.sorensen_pathways()</span></code></a> for more
+information..</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outfile</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Specifies the file name
+prefix (suffixes will be <code class="docutils literal notranslate"><span class="pre">'-nodes'</span></code> and <code class="docutils literal notranslate"><span class="pre">'-edges'</span></code>). If
+none is specified, this will be
+<code class="docutils literal notranslate"><span class="pre">'pwnet-&lt;session&gt;-sim-pw'</span></code>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.pathways_table">
@@ -3472,7 +3519,24 @@ to the similarity index between those pathways [float].</td>
 <dl class="method">
 <dt id="pypath.main.PyPath.source_similarity">
 <code class="descname">source_similarity</code><span class="sig-paren">(</span><em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.source_similarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.source_similarity" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Computes the Sorensen’s similarity index across nodes and edges
+for all the sources available (already loaded in the network)
+and saves them into table files. Files are stored in
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.outdir</span></code> (<code class="docutils literal notranslate"><span class="pre">'results'</span></code> by default).
+See <a class="reference internal" href="#pypath.main.PyPath.databases_similarity" title="pypath.main.PyPath.databases_similarity"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.databases_similarity()</span></code></a> for more
+information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outfile</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Specifies the file name
+prefix (suffixes will be <code class="docutils literal notranslate"><span class="pre">'-nodes'</span></code> and <code class="docutils literal notranslate"><span class="pre">'-edges'</span></code>). If
+none is specified, this will be
+<code class="docutils literal notranslate"><span class="pre">'pwnet-&lt;session&gt;-sim-src'</span></code>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.source_stats">
@@ -3735,8 +3799,9 @@ such attributes in the network nodes/edges if they weren’t.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.update_cats">
 <code class="descname">update_cats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.update_cats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.update_cats" title="Permalink to this definition">¶</a></dt>
-<dd><p>Makes sure that the <cite>has_cats</cite> attribute is an up to date
-set of all categories in the current network.</p>
+<dd><p>Makes sure that the <code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.has_cats</span></code>
+attribute is an up to date [set] of all categories in the
+current network.</p>
 </dd></dl>
 
 <dl class="method">
@@ -3755,13 +3820,17 @@ loaded resources of the undirected network.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.update_pathways">
 <code class="descname">update_pathways</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.update_pathways"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.update_pathways" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Makes sure that the <code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.pathways</span></code>
+attribute is an up to date [dict] of all pathways and their
+sources in the current network.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.update_sources">
 <code class="descname">update_sources</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.update_sources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.update_sources" title="Permalink to this definition">¶</a></dt>
-<dd><p>Makes sure that the <cite>sources</cite> attribute is an up to date
-list of all sources in the current network.</p>
+<dd><p>Makes sure that the <code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.sources</span></code>
+attribute is an up to date [list] of all sources in the current
+network.</p>
 </dd></dl>
 
 <dl class="method">
