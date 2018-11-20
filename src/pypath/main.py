@@ -4649,7 +4649,7 @@ class PyPath(object):
         if outfile is None:
             outfile = ''.join(["pwnet-", self.session, "-sim-src"])
 
-        res = self.sorensen_databases()
+        res = self.sorensen_pathways()
         self.write_table(res["nodes"], outfile + "-nodes")
         self.write_table(res["edges"], outfile + "-edges")
 
