@@ -2222,8 +2222,13 @@ class PyPath(object):
 
                 # reading from remote or local file, or executing import
                 # function:
-                if settings.inFile.startswith('http') or \
-                        settings.inFile.startswith('ftp'):
+                if (
+                    isinstance(settings.inFile, common.basestring) and (
+                        settings.inFile.startswith('http') or
+                        settings.inFile.startswith('ftp')
+                    )
+                ):
+                    
                     curl_use_cache = not redownload
                     c = curl.Curl(
                         settings.inFile,
