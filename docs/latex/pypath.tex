@@ -56,7 +56,7 @@
 
 
 \title{pypath Documentation}
-\date{Nov 20, 2018}
+\date{Nov 21, 2018}
 \release{0.7.111}
 \author{Dénes Türei}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -401,8 +401,12 @@ contains the GO annotations for the nodes in the graph. See
 \sphinxcode{\sphinxupquote{pypath.gsea.GSEA}} for more information.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{has\_cats}} (\sphinxstyleliteralemphasis{\sphinxupquote{set}}) \textendash{} Contains the categories (e.g.: resources) {[}str{]} loaded in the
-current network.
+\sphinxstyleliteralstrong{\sphinxupquote{has\_cats}} (\sphinxstyleliteralemphasis{\sphinxupquote{set}}) \textendash{} Contains the categories (e.g.: resource types) {[}str{]} loaded in
+the current network. Possible categories are: \sphinxcode{\sphinxupquote{'m'}} for
+PTM/enzyme-substrate resources, \sphinxcode{\sphinxupquote{'p'}} for pathway/activity
+flow resources, \sphinxcode{\sphinxupquote{'i'}} for undirected/PPI resources, \sphinxcode{\sphinxupquote{'r'}}
+for process description/reaction resources and \sphinxcode{\sphinxupquote{'t'}} for
+transcription resources.
 
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{htp}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Contains information about high-throughput data of the network
@@ -1166,6 +1170,14 @@ similarity index between those sources {[}float{]}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.degree_dists}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{degree\_dists}}}{}{}
+Computes the degree distribution for all the different network
+sources. This is, for each source, the subnetwork comprising all
+interactions coming from it is extracted and the degree
+distribution information is computed and saved into a file.
+A file is created for each resource under the name
+\sphinxcode{\sphinxupquote{pwnet-\textless{}session\textgreater{}-degdist-\textless{}resource\textgreater{}}}. Files are stored in
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.outdir}} (\sphinxcode{\sphinxupquote{'results'}} by default).
+
 \end{fulllineitems}
 
 \index{delete\_by\_source() (pypath.main.PyPath method)}
@@ -4118,6 +4130,28 @@ those resources corresponding to that category.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.set_categories}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_categories}}}{}{}
+Sets the category attribute on the network nodes and edges
+(\sphinxcode{\sphinxupquote{'cat'}}) as well the edge attribute coercing the references
+by category (\sphinxcode{\sphinxupquote{'refs\_by\_cat'}}). The possible categories are
+as follows:
+\begin{itemize}
+\item {} 
+\sphinxcode{\sphinxupquote{'m'}}: PTM/enzyme-substrate resources.
+
+\item {} 
+\sphinxcode{\sphinxupquote{'p'}}: Pathway/activity flow resources.
+
+\item {} 
+\sphinxcode{\sphinxupquote{'i'}}: Undirected/PPI resources.
+
+\item {} 
+\sphinxcode{\sphinxupquote{'r'}}: Process description/reaction resources.
+
+\item {} 
+\sphinxcode{\sphinxupquote{'t'}}: Transcription resources.
+
+\end{itemize}
+
 \end{fulllineitems}
 
 \index{set\_chembl\_mysql() (pypath.main.PyPath method)}
@@ -4703,6 +4737,10 @@ network.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.update_vertex_sources}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{update\_vertex\_sources}}}{}{}
+Updates the all the vertex attributes \sphinxcode{\sphinxupquote{'sources'}} and
+\sphinxcode{\sphinxupquote{'references'}} according to their related edges (on the
+undirected graph).
+
 \end{fulllineitems}
 
 \index{update\_vindex() (pypath.main.PyPath method)}

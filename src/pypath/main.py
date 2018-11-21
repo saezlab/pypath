@@ -1314,8 +1314,12 @@ class PyPath(object):
         Contains the loaded gene-sets from MSigDB. See
         :py:class:`pypath.gsea.GSEA` for more information.
     :var set has_cats:
-        Contains the categories (e.g.: resources) [str] loaded in the
-        current network.
+        Contains the categories (e.g.: resource types) [str] loaded in
+        the current network. Possible categories are: ``'m'`` for
+        PTM/enzyme-substrate resources, ``'p'`` for pathway/activity
+        flow resources, ``'i'`` for undirected/PPI resources, ``'r'``
+        for process description/reaction resources and ``'t'`` for
+        transcription resources.
     :var dict htp:
         Contains information about high-throughput data of the network
         for different thresholds [int] (keys). Values are [dict]
@@ -5213,7 +5217,7 @@ class PyPath(object):
 
             if g.vcount() > 0:
                 stats[s] = [g.vcount(), g.ecount(),
-                            sum(g.vs.degree()) / float(len(g.vs)),
+                            sum(g.vs.degree()) / float(len(g.vs)), # XXX: g.vcount()?
                             g.diameter(), g.transitivity_undirected(),
                             g.adhesion(), g.cohesion()]
 
@@ -5221,6 +5225,13 @@ class PyPath(object):
 
     def degree_dists(self):
         """
+        Computes the degree distribution for all the different network
+        sources. This is, for each source, the subnetwork comprising all
+        interactions coming from it is extracted and the degree
+        distribution information is computed and saved into a file.
+        A file is created for each resource under the name
+        ``pwnet-<session>-degdist-<resource>``. Files are stored in
+        :py:attr:`pypath.main.PyPath.outdir` (``'results'`` by default).
         """
 
         dds = {}
@@ -5232,8 +5243,8 @@ class PyPath(object):
                 dds[s] = g.degree_distribution()
 
         for k, v in iteritems(dds):
-            filename = ''.join(
-                [self.outdir, "pwnet-", self.session, "-degdist-", k])
+            filename = ''.join([self.outdir, "pwnet-", self.session,
+                                "-degdist-", k])
             bins = []
             vals = []
 
@@ -5241,17 +5252,15 @@ class PyPath(object):
                 bins.append(int(i[0]))
                 vals.append(int(i[2]))
 
-            out = ''.join([
-                ';'.join(str(x)
-                         for x in bins), "\n", ';'.join(str(x)
-                                                        for x in vals), "\n"
-            ])
+            out = ''.join([";".join(str(x) for x in bins),
+                           "\n", ";".join(str(x) for x in vals), "\n"])
             f = codecs.open(filename, encoding='utf-8', mode='w')
             f.write(out)
             f.close()
 
-    def intergroup_shortest_paths(self, groupA, groupB, random=False):
+    def intergroup_shortest_paths(self, groupA, groupB, random=False): # TODO
         """
+
         """
 
         self.update_sources()
@@ -5272,12 +5281,8 @@ class PyPath(object):
         for k in xrange(0, len(self.sources) + 1):
             s = "All" if k == len(self.sources) else self.sources[k]
             outfile = '-'.join([s, groupA, groupB, "paths"])
-            f = self.graph if k == len(self.sources) else self.get_network({
-                "edge": {
-                    "sources": [s]
-                },
-                "node": {}
-            })
+            f = (self.graph if k == len(self.sources)
+                 else self.get_network({"edge": {"sources": [s]}, "node": {}}))
             paths = []
             grA = []
             grB = []
@@ -5304,20 +5309,13 @@ class PyPath(object):
                     if (v.index in grA):
                         paths.append(0)
 
-            self.write_table(
-                {
-                    "paths": paths
-                },
-                outfile,
-                sep=";",
-                colnames=False,
-                rownames=False)
+            self.write_table({"paths": paths}, outfile, sep=";",
+                             colnames=False, rownames=False)
             deg = f.vs.degree()
             mean_pathlen = sum(paths) / float(len(paths))
             deg_pathlen[s] = [mean_pathlen, sum(deg) / float(len(deg))]
-            rat_pathlen[s] = [
-                mean_pathlen, f.vcount() / float(len(list(set(grA + grB))))
-            ]
+            rat_pathlen[s] = [mean_pathlen,
+                              f.vcount() / float(len(list(set(grA + grB))))]
             diam_pathlen[s] = [mean_pathlen, f.diameter()]
 
             if random:
@@ -5345,8 +5343,8 @@ class PyPath(object):
                     for v in f.vs:
 
                         if v[groupB_random]:
-                            pt = f.get_shortest_paths(
-                                v.index, grA, output="epath")
+                            pt = f.get_shortest_paths(v.index, grA,
+                                                      output="epath")
 
                             for p in pt:
                                 l = len(p)
@@ -5361,10 +5359,9 @@ class PyPath(object):
                         random_pathlen.append(sum(paths) / float(len(paths)))
 
                 if len(random_pathlen) > 0:
-                    rand_pathlen[s] = [
-                        mean_pathlen,
-                        sum(random_pathlen) / float(len(random_pathlen))
-                    ]
+                    rand_pathlen[s] = [mean_pathlen,
+                                       sum(random_pathlen)
+                                       / float(len(random_pathlen))]
 
                 else:
                     rand_pathlen[s] = [mean_pathlen, 0.0]
@@ -5382,6 +5379,9 @@ class PyPath(object):
 
     def update_vertex_sources(self):
         """
+        Updates the all the vertex attributes ``'sources'`` and
+        ``'references'`` according to their related edges (on the
+        undirected graph).
         """
 
         g = self.graph
@@ -5395,6 +5395,15 @@ class PyPath(object):
 
     def set_categories(self):
         """
+        Sets the category attribute on the network nodes and edges
+        (``'cat'``) as well the edge attribute coercing the references
+        by category (``'refs_by_cat'``). The possible categories are
+        as follows:
+            * ``'m'``: PTM/enzyme-substrate resources.
+            * ``'p'``: Pathway/activity flow resources.
+            * ``'i'``: Undirected/PPI resources.
+            * ``'r'``: Process description/reaction resources.
+            * ``'t'``: Transcription resources.
         """
 
         self.graph.vs['cat'] = [set([]) for _ in self.graph.vs]
@@ -5424,19 +5433,17 @@ class PyPath(object):
 
     def basic_stats_intergroup(self, groupA, groupB, header=None):
         """
-        """
 
+        """
+###############################################################################
         result = {}
         g = self.graph
 
         for k in xrange(0, len(self.sources) + 1):
             s = "All" if k == len(self.sources) else self.sources[k]
-            f = self.graph if k == len(self.sources) else self.get_network({
-                "edge": {
-                    "sources": set([s])
-                },
-                "node": {}
-            })
+            f = (self.graph if k == len(self.sources)
+                 else self.get_network({"edge": {"sources": set([s])},
+                                        "node": {}}))
             deg = f.vs.degree()
             bw = f.vs.betweenness()
             vnum = f.vcount()
@@ -5492,11 +5499,11 @@ class PyPath(object):
             snum = sum(src) / float(len(src))
             csnum = sum(csrc) / float(len(csrc))
             dsnum = sum(dsrc) / float(len(dsrc))
-            result[s] = [
-                s, str(vnum), str(enum), str(cancerg), str(drugt), str(cpct),
-                str(dpct), str(tdgr), str(cdgr), str(ddgr), str(tbwn),
-                str(cbwn), str(dbwn), str(snum), str(csnum), str(dsnum)
-            ]
+            result[s] = [s, str(vnum), str(enum), str(cancerg), str(drugt),
+                         str(cpct), str(dpct), str(tdgr), str(cdgr), str(ddgr),
+                         str(tbwn), str(cbwn), str(dbwn), str(snum),
+                         str(csnum), str(dsnum)]
+
         outfile = '-'.join([groupA, groupB, "stats"])
 
         if header is None:
@@ -5506,7 +5513,7 @@ class PyPath(object):
             result["header"] = header
             self.write_table(result, outfile, colnames=True)
 
-    def sources_venn_data(self, fname = None, return_data = False):
+    def sources_venn_data(self, fname=None, return_data=False):
         """
         """
 
@@ -5548,28 +5555,16 @@ class PyPath(object):
         for e in self.graph.es:
             srcnum.append(len(e["sources"]))
 
-        self.write_table(
-            {
-                "srcnum": srcnum
-            },
-            "source_num",
-            sep=";",
-            rownames=False,
-            colnames=False)
+        self.write_table({"srcnum": srcnum}, "source_num", sep=";",
+                         rownames=False, colnames=False)
 
     def degree_dist(self, prefix, g, group=None):
         """
         """
 
         deg = g.vs.degree()
-        self.write_table(
-            {
-                "deg": deg
-            },
-            prefix + "-whole-degdist",
-            sep=";",
-            rownames=False,
-            colnames=False)
+        self.write_table({"deg": deg}, prefix + "-whole-degdist", sep=";",
+                         rownames=False, colnames=False)
 
         if group is not None:
 
@@ -5591,14 +5586,8 @@ class PyPath(object):
 
                     i += 1
 
-                self.write_table(
-                    {
-                        "deg": dgr
-                    },
-                    prefix + "-" + gr + "-degdist",
-                    sep=";",
-                    rownames=False,
-                    colnames=False)
+                self.write_table({"deg": dgr}, prefix + "-" + gr + "-degdist",
+                                 sep=";", rownames=False, colnames=False)
 
     def delete_by_source(self, source, vertexAttrsToDel=None,
                          edgeAttrsToDel=None):
@@ -5680,22 +5669,17 @@ class PyPath(object):
             lst = omnipath
 
         self.load_reflists()
-        huge = dict(
-            (k, v) for k, v in iteritems(lst)
-            if v.huge and k not in exclude and v.name not in cache_files)
-        nothuge = dict(
-            (k, v) for k, v in iteritems(lst)
-            if (not v.huge or v.name in cache_files) and k not in exclude)
+        huge = dict((k, v) for k, v in iteritems(lst) if v.huge
+                    and k not in exclude and v.name not in cache_files)
+        nothuge = dict((k, v) for k, v in iteritems(lst)
+                       if (not v.huge or v.name in cache_files)
+                       and k not in exclude)
 
         for lst in [huge, nothuge]:
 
             for k, v in iteritems(lst):
-                self.load_resource(
-                    v,
-                    clean=False,
-                    cache_files=cache_files,
-                    reread=reread,
-                    redownload=redownload)
+                self.load_resource(v, clean=False, cache_files=cache_files,
+                                   reread=reread, redownload=redownload)
 
                 # try:
                 #    self.load_resource(v, clean = False,
@@ -5716,11 +5700,11 @@ class PyPath(object):
         self.clean_graph()
         self.update_sources()
         self.update_vertex_sources()
-        sys.stdout.write(
-            """\n > %u interactions between %u nodes\n from %u"""
-            """ resources have been loaded,\n for details see the log: ./%s\n"""
-            % (self.graph.ecount(), self.graph.vcount(), len(self.sources),
-               self.ownlog.logfile))
+        sys.stdout.write("\n > %u interactions between %u nodes"
+                         "\n from %u resources have been loaded,"
+                         "\n for details see the log: ./%s\n"
+                         % (self.graph.ecount(), self.graph.vcount(),
+                            len(self.sources), self.ownlog.logfile))
 
     def load_mappings(self):
         """
@@ -5734,11 +5718,8 @@ class PyPath(object):
         """
 
         sys.stdout.write(' > ' + settings.name + '\n')
-        self.read_data_file(
-            settings,
-            cache_files=cache_files,
-            reread=reread,
-            redownload=redownload)
+        self.read_data_file(settings, cache_files=cache_files, reread=reread,
+                            redownload=redownload)
         self.attach_network()
 
         if clean:
@@ -5773,7 +5754,7 @@ class PyPath(object):
             sys.stdout.write(' > ' + v.name + '\n')
             self.apply_negative(v)
 
-    def load_tfregulons(self, levels = {'A', 'B'}, only_curated = False):
+    def load_tfregulons(self, levels={'A', 'B'}, only_curated=False):
         """
         Adds TF-target interactions from TF regulons to the network.
 
@@ -5799,10 +5780,7 @@ class PyPath(object):
         """
 
         settings = copy.deepcopy(data_formats.transcription['tfregulons'])
-        settings.inputArgs = {
-            'levels': levels,
-            'only_curated': only_curated
-        }
+        settings.inputArgs = {'levels': levels, 'only_curated': only_curated}
 
         self.load_resources({'tfregulons': settings})
 

@@ -1352,8 +1352,12 @@
 <span class="sd">        Contains the loaded gene-sets from MSigDB. See</span>
 <span class="sd">        :py:class:`pypath.gsea.GSEA` for more information.</span>
 <span class="sd">    :var set has_cats:</span>
-<span class="sd">        Contains the categories (e.g.: resources) [str] loaded in the</span>
-<span class="sd">        current network.</span>
+<span class="sd">        Contains the categories (e.g.: resource types) [str] loaded in</span>
+<span class="sd">        the current network. Possible categories are: ``&#39;m&#39;`` for</span>
+<span class="sd">        PTM/enzyme-substrate resources, ``&#39;p&#39;`` for pathway/activity</span>
+<span class="sd">        flow resources, ``&#39;i&#39;`` for undirected/PPI resources, ``&#39;r&#39;``</span>
+<span class="sd">        for process description/reaction resources and ``&#39;t&#39;`` for</span>
+<span class="sd">        transcription resources.</span>
 <span class="sd">    :var dict htp:</span>
 <span class="sd">        Contains information about high-throughput data of the network</span>
 <span class="sd">        for different thresholds [int] (keys). Values are [dict]</span>
@@ -5251,7 +5255,7 @@
 
             <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">stats</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">(),</span> <span class="n">g</span><span class="o">.</span><span class="n">ecount</span><span class="p">(),</span>
-                            <span class="nb">sum</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">degree</span><span class="p">())</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">)),</span>
+                            <span class="nb">sum</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">degree</span><span class="p">())</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">)),</span> <span class="c1"># XXX: g.vcount()?</span>
                             <span class="n">g</span><span class="o">.</span><span class="n">diameter</span><span class="p">(),</span> <span class="n">g</span><span class="o">.</span><span class="n">transitivity_undirected</span><span class="p">(),</span>
                             <span class="n">g</span><span class="o">.</span><span class="n">adhesion</span><span class="p">(),</span> <span class="n">g</span><span class="o">.</span><span class="n">cohesion</span><span class="p">()]</span>
 
@@ -5259,6 +5263,13 @@
 
 <div class="viewcode-block" id="PyPath.degree_dists"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.degree_dists">[docs]</a>    <span class="k">def</span> <span class="nf">degree_dists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the degree distribution for all the different network</span>
+<span class="sd">        sources. This is, for each source, the subnetwork comprising all</span>
+<span class="sd">        interactions coming from it is extracted and the degree</span>
+<span class="sd">        distribution information is computed and saved into a file.</span>
+<span class="sd">        A file is created for each resource under the name</span>
+<span class="sd">        ``pwnet-&lt;session&gt;-degdist-&lt;resource&gt;``. Files are stored in</span>
+<span class="sd">        :py:attr:`pypath.main.PyPath.outdir` (``&#39;results&#39;`` by default).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">dds</span> <span class="o">=</span> <span class="p">{}</span>
@@ -5270,8 +5281,8 @@
                 <span class="n">dds</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">degree_distribution</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">dds</span><span class="p">):</span>
-            <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span> <span class="s2">&quot;pwnet-&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="s2">&quot;-degdist-&quot;</span><span class="p">,</span> <span class="n">k</span><span class="p">])</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span> <span class="s2">&quot;pwnet-&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span>
+                                <span class="s2">&quot;-degdist-&quot;</span><span class="p">,</span> <span class="n">k</span><span class="p">])</span>
             <span class="n">bins</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">vals</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -5279,17 +5290,15 @@
                 <span class="n">bins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
                 <span class="n">vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
 
-            <span class="n">out</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
-                <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-                         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">bins</span><span class="p">),</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-                                                        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">),</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="p">])</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">bins</span><span class="p">),</span>
+                           <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">),</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">])</span>
             <span class="n">f</span> <span class="o">=</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
             <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="PyPath.intergroup_shortest_paths"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.intergroup_shortest_paths">[docs]</a>    <span class="k">def</span> <span class="nf">intergroup_shortest_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groupA</span><span class="p">,</span> <span class="n">groupB</span><span class="p">,</span> <span class="n">random</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.intergroup_shortest_paths"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.intergroup_shortest_paths">[docs]</a>    <span class="k">def</span> <span class="nf">intergroup_shortest_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groupA</span><span class="p">,</span> <span class="n">groupB</span><span class="p">,</span> <span class="n">random</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span> <span class="c1"># TODO</span>
         <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">update_sources</span><span class="p">()</span>
@@ -5310,12 +5319,8 @@
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
             <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;All&quot;</span> <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
             <span class="n">outfile</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">s</span><span class="p">,</span> <span class="n">groupA</span><span class="p">,</span> <span class="n">groupB</span><span class="p">,</span> <span class="s2">&quot;paths&quot;</span><span class="p">])</span>
-            <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_network</span><span class="p">({</span>
-                <span class="s2">&quot;edge&quot;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s2">&quot;sources&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">s</span><span class="p">]</span>
-                <span class="p">},</span>
-                <span class="s2">&quot;node&quot;</span><span class="p">:</span> <span class="p">{}</span>
-            <span class="p">})</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
+                 <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_network</span><span class="p">({</span><span class="s2">&quot;edge&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;sources&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">s</span><span class="p">]},</span> <span class="s2">&quot;node&quot;</span><span class="p">:</span> <span class="p">{}}))</span>
             <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">grA</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">grB</span> <span class="o">=</span> <span class="p">[]</span>
@@ -5342,20 +5347,13 @@
                     <span class="k">if</span> <span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">index</span> <span class="ow">in</span> <span class="n">grA</span><span class="p">):</span>
                         <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span>
-                <span class="p">{</span>
-                    <span class="s2">&quot;paths&quot;</span><span class="p">:</span> <span class="n">paths</span>
-                <span class="p">},</span>
-                <span class="n">outfile</span><span class="p">,</span>
-                <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span>
-                <span class="n">colnames</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="n">rownames</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">({</span><span class="s2">&quot;paths&quot;</span><span class="p">:</span> <span class="n">paths</span><span class="p">},</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span>
+                             <span class="n">colnames</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rownames</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="n">deg</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
             <span class="n">mean_pathlen</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">paths</span><span class="p">))</span>
             <span class="n">deg_pathlen</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">mean_pathlen</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">deg</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">deg</span><span class="p">))]</span>
-            <span class="n">rat_pathlen</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">mean_pathlen</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">grA</span> <span class="o">+</span> <span class="n">grB</span><span class="p">))))</span>
-            <span class="p">]</span>
+            <span class="n">rat_pathlen</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">mean_pathlen</span><span class="p">,</span>
+                              <span class="n">f</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">grA</span> <span class="o">+</span> <span class="n">grB</span><span class="p">))))]</span>
             <span class="n">diam_pathlen</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">mean_pathlen</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">diameter</span><span class="p">()]</span>
 
             <span class="k">if</span> <span class="n">random</span><span class="p">:</span>
@@ -5383,8 +5381,8 @@
                     <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">vs</span><span class="p">:</span>
 
                         <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="n">groupB_random</span><span class="p">]:</span>
-                            <span class="n">pt</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">get_shortest_paths</span><span class="p">(</span>
-                                <span class="n">v</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">grA</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;epath&quot;</span><span class="p">)</span>
+                            <span class="n">pt</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">get_shortest_paths</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">grA</span><span class="p">,</span>
+                                                      <span class="n">output</span><span class="o">=</span><span class="s2">&quot;epath&quot;</span><span class="p">)</span>
 
                             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pt</span><span class="p">:</span>
                                 <span class="n">l</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
@@ -5399,10 +5397,9 @@
                         <span class="n">random_pathlen</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">paths</span><span class="p">)))</span>
 
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">random_pathlen</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">rand_pathlen</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                        <span class="n">mean_pathlen</span><span class="p">,</span>
-                        <span class="nb">sum</span><span class="p">(</span><span class="n">random_pathlen</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">random_pathlen</span><span class="p">))</span>
-                    <span class="p">]</span>
+                    <span class="n">rand_pathlen</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">mean_pathlen</span><span class="p">,</span>
+                                       <span class="nb">sum</span><span class="p">(</span><span class="n">random_pathlen</span><span class="p">)</span>
+                                       <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">random_pathlen</span><span class="p">))]</span>
 
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">rand_pathlen</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">mean_pathlen</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
@@ -5420,6 +5417,9 @@
 
 <div class="viewcode-block" id="PyPath.update_vertex_sources"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.update_vertex_sources">[docs]</a>    <span class="k">def</span> <span class="nf">update_vertex_sources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the all the vertex attributes ``&#39;sources&#39;`` and</span>
+<span class="sd">        ``&#39;references&#39;`` according to their related edges (on the</span>
+<span class="sd">        undirected graph).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
@@ -5433,6 +5433,15 @@
 
 <div class="viewcode-block" id="PyPath.set_categories"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.set_categories">[docs]</a>    <span class="k">def</span> <span class="nf">set_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the category attribute on the network nodes and edges</span>
+<span class="sd">        (``&#39;cat&#39;``) as well the edge attribute coercing the references</span>
+<span class="sd">        by category (``&#39;refs_by_cat&#39;``). The possible categories are</span>
+<span class="sd">        as follows:</span>
+<span class="sd">            * ``&#39;m&#39;``: PTM/enzyme-substrate resources.</span>
+<span class="sd">            * ``&#39;p&#39;``: Pathway/activity flow resources.</span>
+<span class="sd">            * ``&#39;i&#39;``: Undirected/PPI resources.</span>
+<span class="sd">            * ``&#39;r&#39;``: Process description/reaction resources.</span>
+<span class="sd">            * ``&#39;t&#39;``: Transcription resources.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;cat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">set</span><span class="p">([])</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">]</span>
@@ -5462,19 +5471,17 @@
 
 <div class="viewcode-block" id="PyPath.basic_stats_intergroup"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.basic_stats_intergroup">[docs]</a>    <span class="k">def</span> <span class="nf">basic_stats_intergroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groupA</span><span class="p">,</span> <span class="n">groupB</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        &quot;&quot;&quot;</span>
 
+<span class="sd">        &quot;&quot;&quot;</span>
+<span class="c1">###############################################################################</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
 
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
             <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;All&quot;</span> <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-            <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_network</span><span class="p">({</span>
-                <span class="s2">&quot;edge&quot;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s2">&quot;sources&quot;</span><span class="p">:</span> <span class="nb">set</span><span class="p">([</span><span class="n">s</span><span class="p">])</span>
-                <span class="p">},</span>
-                <span class="s2">&quot;node&quot;</span><span class="p">:</span> <span class="p">{}</span>
-            <span class="p">})</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">)</span>
+                 <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_network</span><span class="p">({</span><span class="s2">&quot;edge&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;sources&quot;</span><span class="p">:</span> <span class="nb">set</span><span class="p">([</span><span class="n">s</span><span class="p">])},</span>
+                                        <span class="s2">&quot;node&quot;</span><span class="p">:</span> <span class="p">{}}))</span>
             <span class="n">deg</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
             <span class="n">bw</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">betweenness</span><span class="p">()</span>
             <span class="n">vnum</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span>
@@ -5530,11 +5537,11 @@
             <span class="n">snum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">src</span><span class="p">))</span>
             <span class="n">csnum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">csrc</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">csrc</span><span class="p">))</span>
             <span class="n">dsnum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">dsrc</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dsrc</span><span class="p">))</span>
-            <span class="n">result</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">vnum</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">enum</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">cancerg</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">drugt</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">cpct</span><span class="p">),</span>
-                <span class="nb">str</span><span class="p">(</span><span class="n">dpct</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">tdgr</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">cdgr</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">ddgr</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">tbwn</span><span class="p">),</span>
-                <span class="nb">str</span><span class="p">(</span><span class="n">cbwn</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dbwn</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">snum</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">csnum</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dsnum</span><span class="p">)</span>
-            <span class="p">]</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">vnum</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">enum</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">cancerg</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">drugt</span><span class="p">),</span>
+                         <span class="nb">str</span><span class="p">(</span><span class="n">cpct</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dpct</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">tdgr</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">cdgr</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">ddgr</span><span class="p">),</span>
+                         <span class="nb">str</span><span class="p">(</span><span class="n">tbwn</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">cbwn</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dbwn</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">snum</span><span class="p">),</span>
+                         <span class="nb">str</span><span class="p">(</span><span class="n">csnum</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dsnum</span><span class="p">)]</span>
+
         <span class="n">outfile</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">groupA</span><span class="p">,</span> <span class="n">groupB</span><span class="p">,</span> <span class="s2">&quot;stats&quot;</span><span class="p">])</span>
 
         <span class="k">if</span> <span class="n">header</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -5544,7 +5551,7 @@
             <span class="n">result</span><span class="p">[</span><span class="s2">&quot;header&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">header</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PyPath.sources_venn_data"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.sources_venn_data">[docs]</a>    <span class="k">def</span> <span class="nf">sources_venn_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_data</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.sources_venn_data"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.sources_venn_data">[docs]</a>    <span class="k">def</span> <span class="nf">sources_venn_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_data</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -5586,28 +5593,16 @@
         <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">:</span>
             <span class="n">srcnum</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">]))</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span>
-            <span class="p">{</span>
-                <span class="s2">&quot;srcnum&quot;</span><span class="p">:</span> <span class="n">srcnum</span>
-            <span class="p">},</span>
-            <span class="s2">&quot;source_num&quot;</span><span class="p">,</span>
-            <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span>
-            <span class="n">rownames</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">colnames</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">({</span><span class="s2">&quot;srcnum&quot;</span><span class="p">:</span> <span class="n">srcnum</span><span class="p">},</span> <span class="s2">&quot;source_num&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span>
+                         <span class="n">rownames</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PyPath.degree_dist"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.degree_dist">[docs]</a>    <span class="k">def</span> <span class="nf">degree_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">deg</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span>
-            <span class="p">{</span>
-                <span class="s2">&quot;deg&quot;</span><span class="p">:</span> <span class="n">deg</span>
-            <span class="p">},</span>
-            <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;-whole-degdist&quot;</span><span class="p">,</span>
-            <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span>
-            <span class="n">rownames</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">colnames</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">({</span><span class="s2">&quot;deg&quot;</span><span class="p">:</span> <span class="n">deg</span><span class="p">},</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;-whole-degdist&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span>
+                         <span class="n">rownames</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">group</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 
@@ -5629,14 +5624,8 @@
 
                     <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
 
-                <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span>
-                    <span class="p">{</span>
-                        <span class="s2">&quot;deg&quot;</span><span class="p">:</span> <span class="n">dgr</span>
-                    <span class="p">},</span>
-                    <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">gr</span> <span class="o">+</span> <span class="s2">&quot;-degdist&quot;</span><span class="p">,</span>
-                    <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span>
-                    <span class="n">rownames</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                    <span class="n">colnames</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">({</span><span class="s2">&quot;deg&quot;</span><span class="p">:</span> <span class="n">dgr</span><span class="p">},</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">gr</span> <span class="o">+</span> <span class="s2">&quot;-degdist&quot;</span><span class="p">,</span>
+                                 <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="n">rownames</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PyPath.delete_by_source"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.delete_by_source">[docs]</a>    <span class="k">def</span> <span class="nf">delete_by_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">vertexAttrsToDel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                          <span class="n">edgeAttrsToDel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -5718,22 +5707,17 @@
             <span class="n">lst</span> <span class="o">=</span> <span class="n">omnipath</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">load_reflists</span><span class="p">()</span>
-        <span class="n">huge</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">huge</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cache_files</span><span class="p">)</span>
-        <span class="n">nothuge</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>
-            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">v</span><span class="o">.</span><span class="n">huge</span> <span class="ow">or</span> <span class="n">v</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">cache_files</span><span class="p">)</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">)</span>
+        <span class="n">huge</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">huge</span>
+                    <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cache_files</span><span class="p">)</span>
+        <span class="n">nothuge</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>
+                       <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">v</span><span class="o">.</span><span class="n">huge</span> <span class="ow">or</span> <span class="n">v</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">cache_files</span><span class="p">)</span>
+                       <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">lst</span> <span class="ow">in</span> <span class="p">[</span><span class="n">huge</span><span class="p">,</span> <span class="n">nothuge</span><span class="p">]:</span>
 
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">load_resource</span><span class="p">(</span>
-                    <span class="n">v</span><span class="p">,</span>
-                    <span class="n">clean</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                    <span class="n">cache_files</span><span class="o">=</span><span class="n">cache_files</span><span class="p">,</span>
-                    <span class="n">reread</span><span class="o">=</span><span class="n">reread</span><span class="p">,</span>
-                    <span class="n">redownload</span><span class="o">=</span><span class="n">redownload</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">load_resource</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">clean</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cache_files</span><span class="o">=</span><span class="n">cache_files</span><span class="p">,</span>
+                                   <span class="n">reread</span><span class="o">=</span><span class="n">reread</span><span class="p">,</span> <span class="n">redownload</span><span class="o">=</span><span class="n">redownload</span><span class="p">)</span>
 
                 <span class="c1"># try:</span>
                 <span class="c1">#    self.load_resource(v, clean = False,</span>
@@ -5754,11 +5738,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">clean_graph</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_sources</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_vertex_sources</span><span class="p">()</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-            <span class="sd">&quot;&quot;&quot;\n &gt; %u interactions between %u nodes\n from %u&quot;&quot;&quot;</span>
-            <span class="sd">&quot;&quot;&quot; resources have been loaded,\n for details see the log: ./%s\n&quot;&quot;&quot;</span>
-            <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">ecount</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">(),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">),</span>
-               <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">logfile</span><span class="p">))</span></div>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &gt; </span><span class="si">%u</span><span class="s2"> interactions between </span><span class="si">%u</span><span class="s2"> nodes&quot;</span>
+                         <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> from </span><span class="si">%u</span><span class="s2"> resources have been loaded,&quot;</span>
+                         <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> for details see the log: ./</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span>
+                         <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">ecount</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">(),</span>
+                            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">logfile</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="PyPath.load_mappings"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_mappings">[docs]</a>    <span class="k">def</span> <span class="nf">load_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -5772,11 +5756,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; &gt; &#39;</span> <span class="o">+</span> <span class="n">settings</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">read_data_file</span><span class="p">(</span>
-            <span class="n">settings</span><span class="p">,</span>
-            <span class="n">cache_files</span><span class="o">=</span><span class="n">cache_files</span><span class="p">,</span>
-            <span class="n">reread</span><span class="o">=</span><span class="n">reread</span><span class="p">,</span>
-            <span class="n">redownload</span><span class="o">=</span><span class="n">redownload</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_data_file</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">cache_files</span><span class="o">=</span><span class="n">cache_files</span><span class="p">,</span> <span class="n">reread</span><span class="o">=</span><span class="n">reread</span><span class="p">,</span>
+                            <span class="n">redownload</span><span class="o">=</span><span class="n">redownload</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attach_network</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">clean</span><span class="p">:</span>
@@ -5811,7 +5792,7 @@
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; &gt; &#39;</span> <span class="o">+</span> <span class="n">v</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">apply_negative</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PyPath.load_tfregulons"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_tfregulons">[docs]</a>    <span class="k">def</span> <span class="nf">load_tfregulons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">levels</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">},</span> <span class="n">only_curated</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.load_tfregulons"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_tfregulons">[docs]</a>    <span class="k">def</span> <span class="nf">load_tfregulons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">},</span> <span class="n">only_curated</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds TF-target interactions from TF regulons to the network.</span>
 
@@ -5837,10 +5818,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">settings</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">data_formats</span><span class="o">.</span><span class="n">transcription</span><span class="p">[</span><span class="s1">&#39;tfregulons&#39;</span><span class="p">])</span>
-        <span class="n">settings</span><span class="o">.</span><span class="n">inputArgs</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;levels&#39;</span><span class="p">:</span> <span class="n">levels</span><span class="p">,</span>
-            <span class="s1">&#39;only_curated&#39;</span><span class="p">:</span> <span class="n">only_curated</span>
-        <span class="p">}</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">inputArgs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;levels&#39;</span><span class="p">:</span> <span class="n">levels</span><span class="p">,</span> <span class="s1">&#39;only_curated&#39;</span><span class="p">:</span> <span class="n">only_curated</span><span class="p">}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">load_resources</span><span class="p">({</span><span class="s1">&#39;tfregulons&#39;</span><span class="p">:</span> <span class="n">settings</span><span class="p">})</span></div>
 

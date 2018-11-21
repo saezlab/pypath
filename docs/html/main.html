@@ -128,8 +128,12 @@ contains the GO annotations for the nodes in the graph. See
 <li><strong>graph</strong> (<em>igraph.Graph</em>) – Undirected network graph object.</li>
 <li><strong>gsea</strong> (<em>pypath.gsea.GSEA</em>) – Contains the loaded gene-sets from MSigDB. See
 <code class="xref py py-class docutils literal notranslate"><span class="pre">pypath.gsea.GSEA</span></code> for more information.</li>
-<li><strong>has_cats</strong> (<em>set</em>) – Contains the categories (e.g.: resources) [str] loaded in the
-current network.</li>
+<li><strong>has_cats</strong> (<em>set</em>) – Contains the categories (e.g.: resource types) [str] loaded in
+the current network. Possible categories are: <code class="docutils literal notranslate"><span class="pre">'m'</span></code> for
+PTM/enzyme-substrate resources, <code class="docutils literal notranslate"><span class="pre">'p'</span></code> for pathway/activity
+flow resources, <code class="docutils literal notranslate"><span class="pre">'i'</span></code> for undirected/PPI resources, <code class="docutils literal notranslate"><span class="pre">'r'</span></code>
+for process description/reaction resources and <code class="docutils literal notranslate"><span class="pre">'t'</span></code> for
+transcription resources.</li>
 <li><strong>htp</strong> (<em>dict</em>) – Contains information about high-throughput data of the network
 for different thresholds [int] (keys). Values are [dict]
 containing the number of references (<code class="docutils literal notranslate"><span class="pre">'rnum'</span></code>) [int], number
@@ -739,7 +743,14 @@ similarity index between those sources [float].</td>
 <dl class="method">
 <dt id="pypath.main.PyPath.degree_dists">
 <code class="descname">degree_dists</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.degree_dists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.degree_dists" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Computes the degree distribution for all the different network
+sources. This is, for each source, the subnetwork comprising all
+interactions coming from it is extracted and the degree
+distribution information is computed and saved into a file.
+A file is created for each resource under the name
+<code class="docutils literal notranslate"><span class="pre">pwnet-&lt;session&gt;-degdist-&lt;resource&gt;</span></code>. Files are stored in
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.outdir</span></code> (<code class="docutils literal notranslate"><span class="pre">'results'</span></code> by default).</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.delete_by_source">
@@ -3325,7 +3336,20 @@ those resources corresponding to that category.</td>
 <dl class="method">
 <dt id="pypath.main.PyPath.set_categories">
 <code class="descname">set_categories</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.set_categories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.set_categories" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sets the category attribute on the network nodes and edges
+(<code class="docutils literal notranslate"><span class="pre">'cat'</span></code>) as well the edge attribute coercing the references
+by category (<code class="docutils literal notranslate"><span class="pre">'refs_by_cat'</span></code>). The possible categories are
+as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">'m'</span></code>: PTM/enzyme-substrate resources.</li>
+<li><code class="docutils literal notranslate"><span class="pre">'p'</span></code>: Pathway/activity flow resources.</li>
+<li><code class="docutils literal notranslate"><span class="pre">'i'</span></code>: Undirected/PPI resources.</li>
+<li><code class="docutils literal notranslate"><span class="pre">'r'</span></code>: Process description/reaction resources.</li>
+<li><code class="docutils literal notranslate"><span class="pre">'t'</span></code>: Transcription resources.</li>
+</ul>
+</div></blockquote>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.set_chembl_mysql">
@@ -3836,7 +3860,10 @@ network.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.update_vertex_sources">
 <code class="descname">update_vertex_sources</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.update_vertex_sources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.update_vertex_sources" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Updates the all the vertex attributes <code class="docutils literal notranslate"><span class="pre">'sources'</span></code> and
+<code class="docutils literal notranslate"><span class="pre">'references'</span></code> according to their related edges (on the
+undirected graph).</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.update_vindex">
