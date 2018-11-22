@@ -17,7 +17,7 @@
 #
 #  Website: http://pypath.omnipathdb.org/
 #
-Fdegre
+
 import __main__ # XXX: Bad practice
 
 from future.utils import iteritems
