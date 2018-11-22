@@ -17,7 +17,7 @@
 #
 #  Website: http://pypath.omnipathdb.org/
 #
-
+Fdegre
 import __main__ # XXX: Bad practice
 
 from future.utils import iteritems
@@ -4818,8 +4818,7 @@ class PyPath(object):
                 dds[s] = g.degree_distribution()
 
         for k, v in iteritems(dds):
-            filename = ''.join(
-                [self.outdir, "pwnet-", self.session, "-degdist-", k])
+            filename = os.path.join(self.outdir, ''.join(["pwnet-", self.session, "-degdist-", k]))
             bins = []
             vals = []
 
