@@ -71,6 +71,10 @@ class Export(object):
         self.graph = pa._get_undirected()
         self.only_sources = only_sources
         
+        if isinstance(self.only_sources, list):
+            
+            self.only_sources = set(self.only_sources)
+        
         self.default_vertex_attr_processor = (
             default_vertex_attr_processor or
             self.default_vertex_attr_processor
