@@ -9660,6 +9660,9 @@ class PyPath(object):
 
             receptors = vids_plasmamem & vids_recactivity
             ligands   = vids_extracell & vids_recbinding
+            
+            ureceptors = set(self.nodNam[i] for i in receptors)
+            uligands = set(self.nodNam[i] for i in ligands)
 
             lig_with_interactions = set()
             rec_with_interactions = set()
@@ -9668,16 +9671,17 @@ class PyPath(object):
             rec_rec_edges = set()
 
             for e in self.graph.es:
+                
+                di = e['dirs']
+                
                 srcs = set(
                     self.up(u).index
-                    for u in e['dirs'].src(keep_undirected)
+                    for u in di.src(keep_undirected)
                 )
                 tgts = set(
                     self.up(u).index
-                    for u in e['dirs'].tgt(keep_undirected)
+                    for u in di.tgt(keep_undirected)
                 )
-                
-                di = e['dirs']
 
                 if srcs & ligands and tgts & receptors:
                     lig_rec_edges.add(e.index)
@@ -9686,15 +9690,15 @@ class PyPath(object):
                     e['sources'].add('GO_lig_rec')
                     
                     if (
-                        di.straight[0] in ligands and
-                        di.straight[1] in receptors
+                        di.straight[0] in uligands and
+                        di.straight[1] in ureceptors
                     ):
                         
                         di.sources[di.straight].add('GO_lig_rec')
                     
                     if (
-                        di.reverse[0] in ligands and
-                        di.reverse[1] in receptors
+                        di.reverse[0] in uligands and
+                        di.reverse[1] in ureceptors
                     ):
                         
                         di.sources[di.reverse].add('GO_lig_rec')
