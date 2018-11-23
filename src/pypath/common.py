@@ -35,7 +35,7 @@ __all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes',
            'delEmpty', 'get_args', 'something', 'rotate', 'cleanDict',
            'igraph_graphics_attrs', 'md5', 'mod_keywords', 'Namespace', 'fun',
            'taxids', 'taxa', 'phosphoelm_taxids', 'dbptm_taxids',
-           'uniqOrdList', 'dict_diff']
+           'uniqOrdList', 'dict_diff', 'basestring']
 
 # get the location
 ROOT = os.path.abspath(os.path.dirname(__file__))

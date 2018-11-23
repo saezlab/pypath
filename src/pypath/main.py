@@ -2222,8 +2222,13 @@ class PyPath(object):
 
                 # reading from remote or local file, or executing import
                 # function:
-                if settings.inFile.startswith('http') or \
-                        settings.inFile.startswith('ftp'):
+                if (
+                    isinstance(settings.inFile, common.basestring) and (
+                        settings.inFile.startswith('http') or
+                        settings.inFile.startswith('ftp')
+                    )
+                ):
+                    
                     curl_use_cache = not redownload
                     c = curl.Curl(
                         settings.inFile,
@@ -9643,7 +9648,7 @@ class PyPath(object):
 
         if inference_from_go:
             go_desc = dataio.go_descendants_goose(aspects = ('C', 'F'))
-            self.work(sources)
+            self.init_network(sources)
 
             if 'go' not in self.graph.vs.attributes():
                 self.go_annotate()
@@ -9671,17 +9676,48 @@ class PyPath(object):
                     self.up(u).index
                     for u in e['dirs'].tgt(keep_undirected)
                 )
+                
+                di = e['dirs']
 
                 if srcs & ligands and tgts & receptors:
                     lig_rec_edges.add(e.index)
                     lig_with_interactions.update(srcs)
                     rec_with_interactions.update(tgts)
+                    e['sources'].add('GO_lig_rec')
+                    
+                    if (
+                        di.straight[0] in ligands and
+                        di.straight[1] in receptors
+                    ):
+                        
+                        di.sources[di.straight].add('GO_lig_rec')
+                    
+                    if (
+                        di.reverse[0] in ligands and
+                        di.reverse[1] in receptors
+                    ):
+                        
+                        di.sources[di.reverse].add('GO_lig_rec')
 
                 elif keep_lig_lig and srcs & ligands and tgts & ligands:
                     lig_lig_edges.add(e.index)
+                    e['sources'].add('GO_lig_lig')
+                    
+                    for d in di.sources.values():
+                        
+                        if d:
+                            
+                            d.add('GO_lig_lig')
 
                 elif keep_rec_rec and srcs & receptors and tgts & receptors:
                     rec_rec_edges.add(e.index)
+                    e['sources'].add('GO_rec_rec')
+                    
+                    for d in di.sources.values():
+                        
+                        if d:
+                            
+                            d.add('GO_rec_rec')
 
             self.set_boolean_vattr('ligand_go',   lig_with_interactions)
             self.set_boolean_vattr('receptor_go', rec_with_interactions)
@@ -9698,9 +9734,6 @@ class PyPath(object):
             self.graph.delete_vertices(
                 [i for i, d in enumerate(self.graph.degree()) if not d]
             )
-
-            for e in self.graph.es:
-                e['sources'].add('GO_lig_rec')
 
         self.update_vname()
         self.update_sources()

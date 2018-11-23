@@ -56,15 +56,15 @@ class Export(object):
     def __init__(
             self,
             pa,
-            extra_node_attrs = {},
-            extra_edge_attrs = {},
+            extra_node_attrs = None,
+            extra_edge_attrs = None,
             outfile = None,
             default_vertex_attr_processor = None,
-            default_edge_attr_processor   = None
+            default_edge_attr_processor   = None,
         ):
         
-        self.extra_node_attrs = extra_node_attrs
-        self.extra_edge_attrs = extra_edge_attrs
+        self.extra_node_attrs = extra_node_attrs or {}
+        self.extra_edge_attrs = extra_edge_attrs or {}
         self.outfile = outfile
         self.pa    = pa
         self.graph = pa._get_undirected()
@@ -89,8 +89,8 @@ class Export(object):
     def make_df(
             self,
             unique_pairs = True,
-            extra_node_attrs={},
-            extra_edge_attrs={},
+            extra_node_attrs = None,
+            extra_edge_attrs = None,
         ):
         """
         Creates a data frame from the network.
@@ -140,9 +140,15 @@ class Export(object):
             if unique_pairs else
             self.default_header_bydirs
         )
-        header += extra_edge_attrs.keys()
-        header += ['%s_%s' % (x, suffix_a) for x in extra_node_attrs.keys()]
-        header += ['%s_%s' % (x, suffix_b) for x in extra_node_attrs.keys()]
+        header += self.extra_edge_attrs.keys()
+        header += [
+            '%s_%s' % (x, suffix_a)
+            for x in self.extra_node_attrs.keys()
+        ]
+        header += [
+            '%s_%s' % (x, suffix_b)
+            for x in self.extra_node_attrs.keys()
+        ]
         
         prg = progress.Progress(
             total = self.graph.ecount(),
@@ -395,7 +401,13 @@ class Export(object):
             Forwarded to `make_df()`.
         """
         
-        self.make_df(**kwargs)
+        if not hasattr(self, 'df'):
+            
+            self.make_df(**kwargs)
+        
+        self.write(outfile = outfile)
+    
+    def write(self, outfile = None):
         
         outfile = outfile or self.outfile or os.path.join(
             self.pa.outdir, 'network-%s.tab' % self.pa.session
@@ -467,3 +479,56 @@ class Export(object):
                 'type': lambda e: e['type'][0]
             }
         )
+    
+    @classmethod
+    def sources_table(
+            cls,
+            pa,
+            only_sources = None,
+            unique_pairs = True,
+            extra_edge_attrs = None,
+            extra_node_attrs = None,
+            outfile = None,
+            default_vertex_attr_processor = None,
+            default_edge_attr_processor   = None,
+        ):
+        """
+        Creates a data frame which contains a column for each source database
+        with binary values showing presence-absence of interactions across
+        resources.
+        """
+        
+        new = cls(
+            pa = pa,
+            extra_edge_attrs = extra_edge_attrs or {},
+            extra_node_attrs = extra_node_attrs or {},
+            outfile = outfile,
+            default_vertex_attr_processor = default_vertex_attr_processor,
+            default_edge_attr_processor   = default_edge_attr_processor,
+        )
+        
+        new.make_df(unique_pairs = unique_pairs)
+        
+        src_attr = 'Databases' if unique_pairs else 'sources'
+        
+        src_all = sorted(only_sources or pa.sources)
+        
+        src_cols = dict((src, []) for src in src_all)
+        
+        for i, row in new.df.iterrows():
+            
+            this_row_src = set(row[src_attr].split(';'))
+            
+            for src in src_all:
+                
+                src_cols[src].append(int(src in this_row_src))
+        
+        for src in src_all:
+            
+            new.df.insert(
+                loc = new.df.columns.get_loc(src_attr),
+                column = src,
+                value = src_cols[src]
+            )
+        
+        return new
