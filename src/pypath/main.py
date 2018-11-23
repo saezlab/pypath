@@ -5129,14 +5129,8 @@ class PyPath(object):
         """
 
         deg = g.vs.degree()
-        self.write_table(
-            {
-                "deg": deg
-            },
-            prefix + "-whole-degdist",
-            sep=";",
-            rownames=False,
-            colnames=False)
+        self.write_table({"deg": deg}, prefix + "-whole-degdist", sep=";",
+                         rownames=False, colnames=False)
 
         if group is not None:
 
@@ -5148,24 +5142,10 @@ class PyPath(object):
                 group = [group]
 
             for gr in group:
-                dgr = []
-                i = 0
+                dgr = [deg[i] for i, v in enumerate(g.vs) if v[gr]]
 
-                for v in g.vs:
-
-                    if v[gr]:
-                        dgr.append(deg[i])
-
-                    i += 1
-
-                self.write_table(
-                    {
-                        "deg": dgr
-                    },
-                    prefix + "-" + gr + "-degdist",
-                    sep=";",
-                    rownames=False,
-                    colnames=False)
+                self.write_table({"deg": dgr}, prefix + "-" + gr + "-degdist",
+                                 sep=";", rownames=False, colnames=False)
 
     def delete_by_source(self, source, vertexAttrsToDel=None,
                          edgeAttrsToDel=None):
