@@ -5298,9 +5298,13 @@ class PyPath(object):
                 #    sys.stdout.flush()
 
         sys.stdout.write('\n')
+
         self.clean_graph()
         self.update_sources()
         self.update_vertex_sources()
+        self.update_pathways()
+        self.update_pathway_types()
+
         sys.stdout.write(
             """\n > %u interactions between %u nodes\n from %u"""
             """ resources have been loaded,\n for details see the log: ./%s\n"""
