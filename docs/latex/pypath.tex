@@ -56,7 +56,7 @@
 
 
 \title{pypath Documentation}
-\date{Nov 21, 2018}
+\date{Nov 23, 2018}
 \release{0.7.111}
 \author{Dénes Türei}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -4392,6 +4392,11 @@ none is specified, this will be
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.sources_hist}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{sources\_hist}}}{}{}
+Counts the number of sources per interaction in the graph and
+saves them into a file named \sphinxcode{\sphinxupquote{source\_num}}. File is stored in
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.outdir}} (\sphinxcode{\sphinxupquote{'results'}} by
+default).
+
 \end{fulllineitems}
 
 \index{sources\_overlap() (pypath.main.PyPath method)}
@@ -4404,6 +4409,31 @@ none is specified, this will be
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.sources_venn_data}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{sources\_venn\_data}}}{\emph{fname=None}, \emph{return\_data=False}}{}
+Computes the overlap in number of interactions for all pairs of
+sources.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{fname}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. If provided, saves the
+results into a table file. File is stored in
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.outdir}} (\sphinxcode{\sphinxupquote{'results'}} by
+default).
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{return\_data}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Whether to return the
+results as a {[}list{]}.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{list}) \textendash{} Only if \sphinxstyleemphasis{return\_data} is set to \sphinxcode{\sphinxupquote{True}}. List
+of lists containing the counts for each pair of resources.
+This is, for instance, number of interactions only in
+resource A, number of interactions only in resource B and
+number of common interactions between A and B.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{straight\_between() (pypath.main.PyPath method)}

@@ -5469,11 +5469,11 @@
                     <span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;refs_by_source&#39;</span><span class="p">]:</span>
                         <span class="n">e</span><span class="p">[</span><span class="s1">&#39;refs_by_cat&#39;</span><span class="p">][</span><span class="n">cat</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;refs_by_source&#39;</span><span class="p">][</span><span class="n">s</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="PyPath.basic_stats_intergroup"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.basic_stats_intergroup">[docs]</a>    <span class="k">def</span> <span class="nf">basic_stats_intergroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groupA</span><span class="p">,</span> <span class="n">groupB</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.basic_stats_intergroup"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.basic_stats_intergroup">[docs]</a>    <span class="k">def</span> <span class="nf">basic_stats_intergroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groupA</span><span class="p">,</span> <span class="n">groupB</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> <span class="c1"># TODO</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-<span class="c1">###############################################################################</span>
+
         <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
 
@@ -5525,6 +5525,10 @@
             <span class="n">csrc</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">dsrc</span> <span class="o">=</span> <span class="p">[]</span>
 
+        <span class="c1"># FIXME: Here raises AttributeError. From above, I understood that</span>
+        <span class="c1">#        arguments groupA and groupB were names for self.lists but</span>
+        <span class="c1">#        here seems they are vertex attributes??</span>
+
             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">es</span><span class="p">:</span>
                 <span class="n">src</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">]))</span>
 
@@ -5553,6 +5557,24 @@
 
 <div class="viewcode-block" id="PyPath.sources_venn_data"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.sources_venn_data">[docs]</a>    <span class="k">def</span> <span class="nf">sources_venn_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_data</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the overlap in number of interactions for all pairs of</span>
+<span class="sd">        sources.</span>
+
+<span class="sd">        :arg str fname:</span>
+<span class="sd">            Optional, ``None`` by default. If provided, saves the</span>
+<span class="sd">            results into a table file. File is stored in</span>
+<span class="sd">            :py:attr:`pypath.main.PyPath.outdir` (``&#39;results&#39;`` by</span>
+<span class="sd">            default).</span>
+<span class="sd">        :arg bool return_data:</span>
+<span class="sd">            Optional, ``False`` by default. Whether to return the</span>
+<span class="sd">            results as a [list].</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*list*) -- Only if *return_data* is set to ``True``. List</span>
+<span class="sd">            of lists containing the counts for each pair of resources.</span>
+<span class="sd">            This is, for instance, number of interactions only in</span>
+<span class="sd">            resource A, number of interactions only in resource B and</span>
+<span class="sd">            number of common interactions between A and B.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
@@ -5586,6 +5608,10 @@
 
 <div class="viewcode-block" id="PyPath.sources_hist"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.sources_hist">[docs]</a>    <span class="k">def</span> <span class="nf">sources_hist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Counts the number of sources per interaction in the graph and</span>
+<span class="sd">        saves them into a file named ``source_num``. File is stored in</span>
+<span class="sd">        :py:attr:`pypath.main.PyPath.outdir` (``&#39;results&#39;`` by</span>
+<span class="sd">        default).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">srcnum</span> <span class="o">=</span> <span class="p">[]</span>

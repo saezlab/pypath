@@ -5431,11 +5431,11 @@ class PyPath(object):
                     if s in e['refs_by_source']:
                         e['refs_by_cat'][cat].update(e['refs_by_source'][s])
 
-    def basic_stats_intergroup(self, groupA, groupB, header=None):
+    def basic_stats_intergroup(self, groupA, groupB, header=None): # TODO
         """
 
         """
-###############################################################################
+
         result = {}
         g = self.graph
 
@@ -5487,6 +5487,10 @@ class PyPath(object):
             csrc = []
             dsrc = []
 
+        # FIXME: Here raises AttributeError. From above, I understood that
+        #        arguments groupA and groupB were names for self.lists but
+        #        here seems they are vertex attributes??
+
             for e in f.es:
                 src.append(len(e["sources"]))
 
@@ -5515,6 +5519,24 @@ class PyPath(object):
 
     def sources_venn_data(self, fname=None, return_data=False):
         """
+        Computes the overlap in number of interactions for all pairs of
+        sources.
+
+        :arg str fname:
+            Optional, ``None`` by default. If provided, saves the
+            results into a table file. File is stored in
+            :py:attr:`pypath.main.PyPath.outdir` (``'results'`` by
+            default).
+        :arg bool return_data:
+            Optional, ``False`` by default. Whether to return the
+            results as a [list].
+
+        :return:
+            (*list*) -- Only if *return_data* is set to ``True``. List
+            of lists containing the counts for each pair of resources.
+            This is, for instance, number of interactions only in
+            resource A, number of interactions only in resource B and
+            number of common interactions between A and B.
         """
 
         result = {}
@@ -5548,6 +5570,10 @@ class PyPath(object):
 
     def sources_hist(self):
         """
+        Counts the number of sources per interaction in the graph and
+        saves them into a file named ``source_num``. File is stored in
+        :py:attr:`pypath.main.PyPath.outdir` (``'results'`` by
+        default).
         """
 
         srcnum = []
