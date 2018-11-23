@@ -9642,11 +9642,13 @@ class PyPath(object):
             sources = data_formats.pathway
 
         CC_EXTRACELL   = 'GO:0005576'
+        CC_EXOSOME     = 'GO:0070062'
         CC_PLASMAMEM   = 'GO:0005887'
         MF_RECBINDING  = 'GO:0005102'
         MF_RECACTIVITY = 'GO:0038023'
 
         if inference_from_go:
+            
             go_desc = dataio.go_descendants_goose(aspects = ('C', 'F'))
             self.init_network(sources)
 
@@ -9654,6 +9656,8 @@ class PyPath(object):
                 self.go_annotate()
 
             vids_extracell   = self.select_by_go(CC_EXTRACELL,   go_desc)
+            vids_exosome     = self.select_by_go(CC_EXOSOME,     go_desc)
+            vids_extracell   = vids_extracell - vids_exosome
             vids_plasmamem   = self.select_by_go(CC_PLASMAMEM,   go_desc)
             vids_recbinding  = self.select_by_go(MF_RECBINDING,  go_desc)
             vids_recactivity = self.select_by_go(MF_RECACTIVITY, go_desc)
