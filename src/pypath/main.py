@@ -4375,6 +4375,7 @@ class PyPath(object):
         g = self.graph
 
         if pwlist is None:
+            self.update_pathway_types()
             pwlist = self.pathway_types
 
         for p in pwlist:
@@ -4649,7 +4650,7 @@ class PyPath(object):
         if outfile is None:
             outfile = ''.join(["pwnet-", self.session, "-sim-src"])
 
-        res = self.sorensen_databases()
+        res = self.database_similarity(index='sorensen')
         self.write_table(res["nodes"], outfile + "-nodes")
         self.write_table(res["edges"], outfile + "-edges")
 
@@ -4660,7 +4661,6 @@ class PyPath(object):
         if outfile is None:
             outfile = ''.join(["pwnet-", self.session, "-sim-pw"])
 
-        self.update_pathway_types()
         res = self.sorensen_pathways()
         self.write_table(res["nodes"], outfile + "-nodes", cut=20)
         self.write_table(res["edges"], outfile + "-edges", cut=20)
