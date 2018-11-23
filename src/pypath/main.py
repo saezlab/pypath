@@ -5129,48 +5129,31 @@ class PyPath(object):
         self.write_table({"srcnum": srcnum}, "source_num", sep=";",
                          rownames=False, colnames=False)
 
-    def degree_dist(self, prefix, g, group=None):
+    def degree_dist(self, prefix, g=None, group=None):
         """
         """
+
+        if g is None:
+            g = self.graph
 
         deg = g.vs.degree()
-        self.write_table(
-            {
-                "deg": deg
-            },
-            prefix + "-whole-degdist",
-            sep=";",
-            rownames=False,
-            colnames=False)
+        self.write_table({"deg": deg}, prefix + "-whole-degdist", sep=";",
+                         rownames=False, colnames=False)
 
         if group is not None:
+
+            if not isinstance(group, list):
+                group = [group]
 
             if len(set(group) - set(self.graph.vs.attributes())) > 0:
                 self.ownlog.msg(2, ("Missing vertex attribute!"), 'ERROR')
                 return False
 
-            if not isinstance(group, list):
-                group = [group]
-
             for gr in group:
-                dgr = []
-                i = 0
+                dgr = [deg[i] for i, v in enumerate(g.vs) if v[gr]]
 
-                for v in g.vs:
-
-                    if v[gr]:
-                        dgr.append(deg[i])
-
-                    i += 1
-
-                self.write_table(
-                    {
-                        "deg": dgr
-                    },
-                    prefix + "-" + gr + "-degdist",
-                    sep=";",
-                    rownames=False,
-                    colnames=False)
+                self.write_table({"deg": dgr}, prefix + "-" + gr + "-degdist",
+                                 sep=";", rownames=False, colnames=False)
 
     def delete_by_source(self, source, vertexAttrsToDel=None,
                          edgeAttrsToDel=None):
