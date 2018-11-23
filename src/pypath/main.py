@@ -6949,10 +6949,10 @@ class PyPath(object):
         v_target = self.get_node(target) \
             if not self.graph.is_directed() else self.get_node_d(target)
 
-        if source is not None and target is not None:
+        if v_source is not None and v_target is not None:
             eid = self.graph.get_eid(
-                source.index,
-                target.index,
+                v_source.index,
+                v_target.index,
                 directed=directed,
                 error=False
             )
