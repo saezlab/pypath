@@ -9663,7 +9663,7 @@ class PyPath(object):
 
         if inference_from_go:
             go_desc = dataio.go_descendants_goose(aspects = ('C', 'F'))
-            self.work(sources)
+            self.init_network(sources)
 
             if 'go' not in self.graph.vs.attributes():
                 self.go_annotate()
@@ -9721,6 +9721,16 @@ class PyPath(object):
 
             for e in self.graph.es:
                 e['sources'].add('GO_lig_rec')
+                
+                di = e['dirs']
+                
+                if di.straight[0] in ligands and di.straight[1] in receptors:
+                    
+                    di.sources[di.straight].add('GO_lig_rec')
+                
+                if di.reverse[0] in ligands and di.reverse[1] in receptors:
+                    
+                    di.sources[di.reverse].add('GO_lig_rec')
 
         self.update_vname()
         self.update_sources()
