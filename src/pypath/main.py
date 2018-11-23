@@ -2227,8 +2227,13 @@ class PyPath(object):
 
                 # reading from remote or local file, or executing import
                 # function:
-                if settings.inFile.startswith('http') or \
-                        settings.inFile.startswith('ftp'):
+                if (
+                    isinstance(settings.inFile, common.basestring) and (
+                        settings.inFile.startswith('http') or
+                        settings.inFile.startswith('ftp')
+                    )
+                ):
+
                     curl_use_cache = not redownload
                     c = curl.Curl(
                         settings.inFile,
@@ -4641,6 +4646,7 @@ class PyPath(object):
         g = self.graph
 
         if pwlist is None:
+            self.update_pathway_types()
             pwlist = self.pathway_types
 
         for p in pwlist:
@@ -4691,8 +4697,8 @@ class PyPath(object):
 
                 edges[pw].append(e.index)
 
-        sNodes = self.sorensen_groups(nodes)
-        sEdges = self.sorensen_groups(edges)
+        sNodes = self.similarity_groups(nodes, index='sorensen')
+        sEdges = self.similarity_groups(edges, index='sorensen')
 
         return {"nodes": sNodes, "edges": sEdges}
 
@@ -4883,12 +4889,12 @@ class PyPath(object):
                     keepA = self.search_attr_or(g.vs[e.source], crit["node"])
 
                     if keepA:
-                        keep += [e.source]
+                        keepV += [e.source]
 
                     keepB = self.search_attr_or(g.vs[e.target], crit["node"])
 
                     if keepB:
-                        keep += [e.target]
+                        keepV += [e.target]
 
         return {"nodes": list(set(keepV)), "edges": list(set(delE))}
 
@@ -5037,7 +5043,7 @@ class PyPath(object):
         if outfile is None:
             outfile = ''.join(["pwnet-", self.session, "-sim-src"])
 
-        res = self.sorensen_databases()
+        res = self.database_similarity(index='sorensen')
         self.write_table(res["nodes"], outfile + "-nodes")
         self.write_table(res["edges"], outfile + "-edges")
 
@@ -5060,7 +5066,6 @@ class PyPath(object):
         if outfile is None:
             outfile = ''.join(["pwnet-", self.session, "-sim-pw"])
 
-        self.update_pathway_types()
         res = self.sorensen_pathways()
         self.write_table(res["nodes"], outfile + "-nodes", cut=20)
         self.write_table(res["edges"], outfile + "-edges", cut=20)
@@ -5243,8 +5248,9 @@ class PyPath(object):
                 dds[s] = g.degree_distribution()
 
         for k, v in iteritems(dds):
-            filename = ''.join([self.outdir, "pwnet-", self.session,
-                                "-degdist-", k])
+            filename = os.path.join(self.outdir,
+                                    ''.join(["pwnet-", self.session,
+                                             "-degdist-", k]))
             bins = []
             vals = []
 
@@ -5543,24 +5549,15 @@ class PyPath(object):
         self.update_sources()
         g = self.graph
 
-        for i in self.sources:
+        for i, j in itertools.product(self.sources, self.sources):
 
-            for j in self.sources:
-                ini = []
-                inj = []
+            ini = [e.index for e in g.es if i in e['sources']]
+            inj = [e.index for e in g.es if j in e['sources']]
 
-                for e in g.es:
-
-                    if i in e["sources"]:
-                        ini.append(e.index)
-
-                    if j in e["sources"]:
-                        inj.append(e.index)
-
-                onlyi = str(len(list(set(ini) - set(inj))))
-                onlyj = str(len(list(set(inj) - set(ini))))
-                inter = str(len(list(set(ini) & set(inj))))
-                result[i + "-" + j] = [i, j, onlyi, onlyj, inter]
+            onlyi = str(len(list(set(ini) - set(inj))))
+            onlyj = str(len(list(set(inj) - set(ini))))
+            inter = str(len(list(set(ini) & set(inj))))
+            result[i + "-" + j] = [i, j, onlyi, onlyj, inter]
 
         if fname:
             self.write_table(result, fname)
@@ -5576,10 +5573,7 @@ class PyPath(object):
         default).
         """
 
-        srcnum = []
-
-        for e in self.graph.es:
-            srcnum.append(len(e["sources"]))
+        srcnum = [len(e['sources']) for e in self.graph.es]
 
         self.write_table({"srcnum": srcnum}, "source_num", sep=";",
                          rownames=False, colnames=False)
@@ -5723,9 +5717,13 @@ class PyPath(object):
                 #    sys.stdout.flush()
 
         sys.stdout.write('\n')
+
         self.clean_graph()
         self.update_sources()
         self.update_vertex_sources()
+        self.update_pathways()
+        self.update_pathway_types()
+
         sys.stdout.write("\n > %u interactions between %u nodes"
                          "\n from %u resources have been loaded,"
                          "\n for details see the log: ./%s\n"
@@ -7377,10 +7375,10 @@ class PyPath(object):
         v_target = self.get_node(target) \
             if not self.graph.is_directed() else self.get_node_d(target)
 
-        if source is not None and target is not None:
+        if v_source is not None and v_target is not None:
             eid = self.graph.get_eid(
-                source.index,
-                target.index,
+                v_source.index,
+                v_target.index,
                 directed=directed,
                 error=False
             )
@@ -10076,7 +10074,7 @@ class PyPath(object):
 
         if inference_from_go:
             go_desc = dataio.go_descendants_goose(aspects = ('C', 'F'))
-            self.work(sources)
+            self.init_network(sources)
 
             if 'go' not in self.graph.vs.attributes():
                 self.go_annotate()
@@ -10089,6 +10087,9 @@ class PyPath(object):
             receptors = vids_plasmamem & vids_recactivity
             ligands   = vids_extracell & vids_recbinding
 
+            ureceptors = set(self.nodNam[i] for i in receptors)
+            uligands = set(self.nodNam[i] for i in ligands)
+
             lig_with_interactions = set()
             rec_with_interactions = set()
             lig_rec_edges = set()
@@ -10096,25 +10097,57 @@ class PyPath(object):
             rec_rec_edges = set()
 
             for e in self.graph.es:
+
+                di = e['dirs']
+
                 srcs = set(
                     self.up(u).index
-                    for u in e['dirs'].src(keep_undirected)
+                    for u in di.src(keep_undirected)
                 )
                 tgts = set(
                     self.up(u).index
-                    for u in e['dirs'].tgt(keep_undirected)
+                    for u in di.tgt(keep_undirected)
                 )
 
                 if srcs & ligands and tgts & receptors:
                     lig_rec_edges.add(e.index)
                     lig_with_interactions.update(srcs)
                     rec_with_interactions.update(tgts)
+                    e['sources'].add('GO_lig_rec')
+
+                    if (
+                        di.straight[0] in uligands and
+                        di.straight[1] in ureceptors
+                    ):
+
+                        di.sources[di.straight].add('GO_lig_rec')
+
+                    if (
+                        di.reverse[0] in uligands and
+                        di.reverse[1] in ureceptors
+                    ):
+
+                        di.sources[di.reverse].add('GO_lig_rec')
 
                 elif keep_lig_lig and srcs & ligands and tgts & ligands:
                     lig_lig_edges.add(e.index)
+                    e['sources'].add('GO_lig_lig')
+
+                    for d in di.sources.values():
+
+                        if d:
+
+                            d.add('GO_lig_lig')
 
                 elif keep_rec_rec and srcs & receptors and tgts & receptors:
                     rec_rec_edges.add(e.index)
+                    e['sources'].add('GO_rec_rec')
+
+                    for d in di.sources.values():
+
+                        if d:
+
+                            d.add('GO_rec_rec')
 
             self.set_boolean_vattr('ligand_go',   lig_with_interactions)
             self.set_boolean_vattr('receptor_go', rec_with_interactions)
@@ -10131,9 +10164,6 @@ class PyPath(object):
             self.graph.delete_vertices(
                 [i for i, d in enumerate(self.graph.degree()) if not d]
             )
-
-            for e in self.graph.es:
-                e['sources'].add('GO_lig_rec')
 
         self.update_vname()
         self.update_sources()
