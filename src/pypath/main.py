@@ -5091,7 +5091,7 @@ class PyPath(object):
             result["header"] = header
             self.write_table(result, outfile, colnames=True)
 
-    def sources_venn_data(self, fname = None, return_data = False):
+    def sources_venn_data(self, fname=None, return_data=False):
         """
         """
 
@@ -5099,24 +5099,15 @@ class PyPath(object):
         self.update_sources()
         g = self.graph
 
-        for i in self.sources:
+        for i, j in itertools.product(self.sources, self.sources):
 
-            for j in self.sources:
-                ini = []
-                inj = []
+            ini = [e.index for e in g.es if i in e['sources']]
+            inj = [e.index for e in g.es if j in e['sources']]
 
-                for e in g.es:
-
-                    if i in e["sources"]:
-                        ini.append(e.index)
-
-                    if j in e["sources"]:
-                        inj.append(e.index)
-
-                onlyi = str(len(list(set(ini) - set(inj))))
-                onlyj = str(len(list(set(inj) - set(ini))))
-                inter = str(len(list(set(ini) & set(inj))))
-                result[i + "-" + j] = [i, j, onlyi, onlyj, inter]
+            onlyi = str(len(list(set(ini) - set(inj))))
+            onlyj = str(len(list(set(inj) - set(ini))))
+            inter = str(len(list(set(ini) & set(inj))))
+            result[i + "-" + j] = [i, j, onlyi, onlyj, inter]
 
         if fname:
             self.write_table(result, fname)
