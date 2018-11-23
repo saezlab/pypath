@@ -5119,19 +5119,10 @@ class PyPath(object):
         """
         """
 
-        srcnum = []
+        srcnum = [len(e['sources']) for e in self.graph.es]
 
-        for e in self.graph.es:
-            srcnum.append(len(e["sources"]))
-
-        self.write_table(
-            {
-                "srcnum": srcnum
-            },
-            "source_num",
-            sep=";",
-            rownames=False,
-            colnames=False)
+        self.write_table({"srcnum": srcnum}, "source_num", sep=";",
+                         rownames=False, colnames=False)
 
     def degree_dist(self, prefix, g, group=None):
         """
