@@ -2483,14 +2483,7 @@ class PyPath(object):
                         "taxB": taxB,
                         "type": settings.intType
                     }
-                    # except:
-                    # self.ownlog.msg(2,("""Wrong name column indexes (%u and %u),
-                    # or wrong separator (%s)? Line #%u\n"""
-                    #% (
-                    #settings.nameColA, settings.nameColB,
-                    # settings.separator, lnum)), 'ERROR')
-                    #readError = 1
-                    # break
+                    
                     # getting additional edge and node attributes
                     attrsEdge = self.get_attrs(line, settings.extraEdgeAttrs,
                                                lnum)
@@ -2498,6 +2491,15 @@ class PyPath(object):
                                                 lnum)
                     attrsNodeB = self.get_attrs(line, settings.extraNodeAttrsB,
                                                 lnum)
+                    
+                    if settings.mark_source:
+                        
+                        attrsNodeA[settings.mark_source] = thisEdgeDir
+                    
+                    if settings.mark_target:
+                        
+                        attrsNodeB[settings.mark_target] = thisEdgeDir
+                    
                     # merging dictionaries
                     nodeAttrs = {
                         "attrsNodeA": attrsNodeA,
@@ -10353,7 +10355,7 @@ class PyPath(object):
                 if v['name'] in sf
             ]
     
-    def load_matrisome_attrs(organism = None):
+    def load_matrisome_attrs(self, organism = None):
         """
         Loads vertex attributes from MatrisomeDB 2.0. Attributes are
         ``matrisome_class``, ``matrisome_subclass`` and ``matrisome_notes``.
