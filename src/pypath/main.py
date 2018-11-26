@@ -2562,6 +2562,16 @@ class PyPath(object):
             self.mapper.map_name(rec, 'genesymbol', 'uniprot',
                                  ncbi_tax_id = 9606)
             for rec in dataio.get_hpmr()]))
+    
+    def cspa_list(self):
+        """
+        Loads a list of cell surface proteins from the Cell Surface Protein
+        Atlas as a list. This resource is available for human and mouse.
+        """
+        
+        self.lists['cspa'] = list(
+            dataio.get_cspa(organism = self.ncbi_tax_id)
+        )
 
     def druggability_list(self):
         """
@@ -10243,6 +10253,24 @@ class PyPath(object):
 
             if rec in self.nodDct:
                 self.graph.vs[self.nodDct[rec]]['rec'] = True
+    
+    def set_plasma_membrane_proteins_cspa(self):
+        """
+        Creates a vertex attribute `cspa` with value *True* if
+        the protein is a plasma membrane protein according to CPSA,
+        otherwise *False*.
+        """
+
+        self.update_vname()
+        self.graph.vs['cspa'] = [False for _ in self.graph.vs]
+
+        if 'cspa' not in self.lists:
+            self.cspa_list()
+
+        for sp in self.lists['cspa']:
+
+            if sp in self.nodDct:
+                self.graph.vs[self.nodDct[sp]]['cspa'] = True
 
     def set_kinases(self):
         """

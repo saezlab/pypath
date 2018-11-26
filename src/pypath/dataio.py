@@ -8107,3 +8107,20 @@ def stitch_interactions(threshold = None):
             a, b = b, a
         
         
+
+def get_cspa(organism = 9606):
+    
+    sheets = {
+        'Human': 'Table A',
+        'Mouse': 'Table B',
+    }
+    
+    str_organism = common.taxids[organism].capitalize()
+    
+    url = urls.urls['cspa']['url']
+    c = curl.Curl(url, large = True, silent = False)
+    xlsname = c.fname
+    del(c)
+    raw = read_xls(xlsname, sheets[str_organism])[1:]
+    
+    return set(r[1] for r in raw)
