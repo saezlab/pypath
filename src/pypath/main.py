@@ -10326,7 +10326,11 @@ class PyPath(object):
         
         for i, attr in enumerate(attrs):
             
-            self.graph.vs[attr] = [self.graph]
+            self.graph.vs[attr] = [
+                sf[v['name']][i]
+                for v in self.graph.vs
+                if v['name'] in sf
+            ]
 
     def set_kinases(self):
         """
