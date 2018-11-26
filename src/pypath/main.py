@@ -10352,7 +10352,31 @@ class PyPath(object):
                 for v in self.graph.vs
                 if v['name'] in sf
             ]
-
+    
+    def load_matrisome_attrs(organism = None):
+        """
+        Loads vertex attributes from MatrisomeDB 2.0. Attributes are
+        ``matrisome_class``, ``matrisome_subclass`` and ``matrisome_notes``.
+        """
+        
+        attrs = (
+            'matrisome_class',
+            'matrisome_subclass',
+            'matrisome_notes',
+        )
+        
+        organism = organism or self.ncbi_tax_id
+        
+        matrisome = dataio.get_matrisome(organism = organism)
+        
+        for i, attr in enumerate(attrs):
+            
+            self.graph.vs[attr] = [
+                matrisome[v['name']][i]
+                for v in self.graph.vs
+                if v['name'] in matrisome
+            ]
+    
     def set_kinases(self):
         """
         Creates a vertex attribute `kin` with value *True* if
