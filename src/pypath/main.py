@@ -2583,9 +2583,9 @@ class PyPath(object):
         """
         
         self.lists['ishs'] = [
-            i[0]
-            for i in dataio.get_surfaceome()
-            if i[1] >= score_threshold
+            uniprot
+            for uniprot, data in iteritems(dataio.get_surfaceome())
+            if data[0] >= score_threshold
         ]
 
     def druggability_list(self):
@@ -10306,6 +10306,27 @@ class PyPath(object):
             if sp in self.nodDct:
                 
                 self.graph.vs[self.nodDct[sp]]['ishs'] = True
+    
+    def load_surfaceome_attrs(self):
+        """
+        Loads vertex attributes from the In Silico Human Surfaceome.
+        Attributes are ``surfaceome_score``, ``surfaceome_class`` and
+        ``surfaceome_subclass``.
+        """
+        
+        attrs = (
+            'surfaceome_score',
+            'surfaceome_class',
+            'surfaceome_subclass',
+        )
+        
+        self.update_vname()
+        
+        sf = dict( dataio.get_surfaceome())
+        
+        for i, attr in enumerate(attrs):
+            
+            self.graph.vs[attr] = [self.graph]
 
     def set_kinases(self):
         """

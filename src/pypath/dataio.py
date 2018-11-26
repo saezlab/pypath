@@ -8126,8 +8126,8 @@ def get_cspa(organism = 9606):
 def get_surfaceome():
     """
     Downloads the "In silico human surfaceome".
-    Yields tuples of UniProt ID, surface prediction score,
-    class and subclass (columns B, N, S and T of table S3).
+    Dict with UniProt IDs as key and tuples of surface prediction score,
+    class and subclass as values (columns B, N, S and T of table S3).
     """
     
     url = urls.urls['surfaceome']['url']
@@ -8136,11 +8136,14 @@ def get_surfaceome():
     del(c)
     raw = read_xls(xlsname, 'in silico surfaceome only')[2:]
     
-    for r in raw:
-        
-        yield (
+    return dict(
+        (
             r[1], # uniprot
-            float(r[13]), # score
-            set(r[18].split(';')) if r[18] else set(), # class
-            set(r[19].split(';')) if r[19] else set(), # subclass
+            (
+                float(r[13]), # score
+                set(r[18].split(';')) if r[18] else set(), # class
+                set(r[19].split(';')) if r[19] else set(), # subclass
+            )
         )
+        for r in raw
+    )
