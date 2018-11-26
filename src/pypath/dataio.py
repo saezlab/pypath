@@ -8147,3 +8147,49 @@ def get_surfaceome():
         )
         for r in raw
     )
+
+def get_matrisome(organism = 9606):
+    """
+    Downloads MatrisomeDB 2.0, a database of extracellular matrix proteins.
+    Returns dict where keys are UniProt IDs and values are tuples of
+    classes, subclasses and notes.
+    """
+    
+    tax_names = {
+        10090: ('Murine', 'mm'),
+        9606:  ('Human',  'hs'),
+    }
+    
+    url = urls.urls['matrisome']['url_xls'] % tax_names[organism]
+    c = curl.Curl(url, large = True, silent = False)
+    xlsname = c.fname
+    del(c)
+    raw = read_xls(xlsname)[1:]
+    
+    result = {}
+    
+    return dict(
+        (
+            genesymbol,
+            (
+                r[0],  # class
+                r[1],  # subclass
+                r[10], # notes
+            )
+        )
+        for r in raw
+        for genesymbol in r[7].split(':')
+    )
+
+def __get_matrisome_2():
+    """
+    This I made only to find out why certain proteins are missing from this
+    output. I will contact Matrisome people to ask why.
+    """
+    
+    url = urls.urls['matrisome']['url_dl']
+    c = curl.Curl(url, large = True, silent = False)
+    
+    _ = next(c.result)
+    
+    return set(r.decode('utf-8').split(',')[1] for r in c.result)

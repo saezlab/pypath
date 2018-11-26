@@ -10343,7 +10343,7 @@ class PyPath(object):
         
         self.update_vname()
         
-        sf = dict( dataio.get_surfaceome())
+        sf = dataio.get_surfaceome()
         
         for i, attr in enumerate(attrs):
             
