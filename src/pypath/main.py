@@ -5585,7 +5585,7 @@ class PyPath(object):
         self.write_table({"srcnum": srcnum}, "source_num", sep=";",
                          rownames=False, colnames=False)
 
-    def degree_dist(self, prefix, g, group=None):
+    def degree_dist(self, prefix, g=None, group=None):
         """
         Computes the degree distribution over all nodes of the network.
         If *group* is provided, also across nodes of that group(s).
@@ -5602,29 +5602,24 @@ class PyPath(object):
             its degree distribution.
         """
 
+        if g is None:
+            g = self.graph
+
         deg = g.vs.degree()
         self.write_table({"deg": deg}, prefix + "-whole-degdist", sep=";",
                          rownames=False, colnames=False)
 
         if group is not None:
 
+            if not isinstance(group, list):
+                group = [group]
+
             if len(set(group) - set(self.graph.vs.attributes())) > 0:
                 self.ownlog.msg(2, ("Missing vertex attribute!"), 'ERROR')
                 return False
 
-            if not isinstance(group, list):
-                group = [group]
-
             for gr in group:
-                dgr = []
-                i = 0
-
-                for v in g.vs:
-
-                    if v[gr]:
-                        dgr.append(deg[i])
-
-                    i += 1
+                dgr = [deg[i] for i, v in enumerate(g.vs) if v[gr]]
 
                 self.write_table({"deg": dgr}, prefix + "-" + gr + "-degdist",
                                  sep=";", rownames=False, colnames=False)
@@ -10189,11 +10184,13 @@ class PyPath(object):
             sources = data_formats.pathway
 
         CC_EXTRACELL   = 'GO:0005576'
+        CC_EXOSOME     = 'GO:0070062'
         CC_PLASMAMEM   = 'GO:0005887'
         MF_RECBINDING  = 'GO:0005102'
         MF_RECACTIVITY = 'GO:0038023'
 
         if inference_from_go:
+
             go_desc = dataio.go_descendants_goose(aspects = ('C', 'F'))
             self.init_network(sources)
 
@@ -10201,6 +10198,8 @@ class PyPath(object):
                 self.go_annotate()
 
             vids_extracell   = self.select_by_go(CC_EXTRACELL,   go_desc)
+            vids_exosome     = self.select_by_go(CC_EXOSOME,     go_desc)
+            vids_extracell   = vids_extracell - vids_exosome
             vids_plasmamem   = self.select_by_go(CC_PLASMAMEM,   go_desc)
             vids_recbinding  = self.select_by_go(MF_RECBINDING,  go_desc)
             vids_recactivity = self.select_by_go(MF_RECACTIVITY, go_desc)

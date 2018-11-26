@@ -56,6 +56,7 @@ class Export(object):
     def __init__(
             self,
             pa,
+            only_sources = None,
             extra_node_attrs = None,
             extra_edge_attrs = None,
             outfile = None,
@@ -68,6 +69,11 @@ class Export(object):
         self.outfile = outfile
         self.pa    = pa
         self.graph = pa._get_undirected()
+        self.only_sources = only_sources
+        
+        if isinstance(self.only_sources, list):
+            
+            self.only_sources = set(self.only_sources)
         
         self.default_vertex_attr_processor = (
             default_vertex_attr_processor or
@@ -185,6 +191,10 @@ class Export(object):
             An edge from a pypath igraph object.
         """
         
+        if self.only_sources and not e['sources'] & self.only_sources:
+            
+            return []
+        
         name_a = self.graph.vs[e.source]['name']
         name_b = self.graph.vs[e.target]['name']
         
@@ -258,6 +268,10 @@ class Export(object):
                     e['dirs'].get_dir(uniprots, sources=True) |
                     e['dirs'].get_dir('undirected', sources=True)
                 )
+                
+                if self.only_sources and not dsources & self.only_sources:
+                    
+                    continue
                 
                 this_edge.extend([
                     ';'.join(sorted(dsources)),
@@ -500,6 +514,7 @@ class Export(object):
         
         new = cls(
             pa = pa,
+            only_sources = only_sources,
             extra_edge_attrs = extra_edge_attrs or {},
             extra_node_attrs = extra_node_attrs or {},
             outfile = outfile,
