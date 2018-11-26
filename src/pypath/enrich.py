@@ -32,15 +32,19 @@ import sys
 
 try:
     import scipy.stats
+
 except:
     sys.stdout.write('\t:: Module `scipy` not available.\n')
 
 try:
     import statsmodels.stats.multitest as smm
+
 except ModuleNotFoundError:
     sys.stdout.write('\t:: Module `statsmodels` not available.\n')
 
 from collections import OrderedDict
+
+from pypath.common import get_args
 
 
 class Enrichment(object):
