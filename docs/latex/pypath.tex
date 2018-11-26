@@ -56,8 +56,8 @@
 
 
 \title{pypath Documentation}
-\date{Nov 23, 2018}
-\release{0.7.111}
+\date{Nov 26, 2018}
+\release{0.7.114}
 \author{Dénes Türei}
 \newcommand{\sphinxlogo}{\vbox{}}
 \renewcommand{\releasename}{Release}
@@ -1164,6 +1164,27 @@ similarity index between those sources {[}float{]}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.degree_dist}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{degree\_dist}}}{\emph{prefix}, \emph{g}, \emph{group=None}}{}
+Computes the degree distribution over all nodes of the network.
+If \sphinxstyleemphasis{group} is provided, also across nodes of that group(s).
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{prefix}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Prefix for the file name(s).
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{g}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The network over which to
+compute the degree distribution. If none is passed, takes
+the undirected network of the current instance.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{group}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Additional group(s) name(s)
+{[}str{]} of node attributes to subset the network and compute
+its degree distribution.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{degree\_dists() (pypath.main.PyPath method)}
@@ -1184,6 +1205,27 @@ A file is created for each resource under the name
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.delete_by_source}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{delete\_by\_source}}}{\emph{source}, \emph{vertexAttrsToDel=None}, \emph{edgeAttrsToDel=None}}{}
+Deletes nodes and edges from the network according to a provided
+source name. Optionally can also remove the given list of
+attributes from nodes and/or edges.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{source}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Name of the source from which the nodes and edges have to be
+removed.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{vertexAttrsToDel}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Contains the names {[}str{]} of
+the attributes to be removed from the nodes.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{edgeAttrsToDel}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Contains the names {[}str{]} of
+the attributes to be removed from the edges.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{delete\_by\_taxon() (pypath.main.PyPath method)}
@@ -2390,6 +2432,17 @@ E.g. 10090 for mouse.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.info}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{info}}}{\emph{name}}{}
+Given the name of a resource, prints out the information about
+that source/database. You can check the list of available
+resource descriptions in
+\sphinxcode{\sphinxupquote{ypath.descriptions.descriptions.keys()}}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The name of the resource from which to print the
+information.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{init\_complex\_attr() (pypath.main.PyPath method)}
@@ -2587,6 +2640,8 @@ the node is annotated by all or any (see \sphinxcode{\sphinxupquote{method}} par
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.list_resources}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{list\_resources}}}{}{}
+Prints the list of resources throught the standard output.
+
 \end{fulllineitems}
 
 \index{load\_3dcomplexes() (pypath.main.PyPath method)}
@@ -3045,29 +3100,116 @@ Those not used by \sphinxtitleref{PtmProcessor} are forwarded to the
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.load_reflist}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_reflist}}}{\emph{reflist}}{}
+Takes a \sphinxcode{\sphinxupquote{pypath.reflists.ReferenceList}} and loads it
+into the current network’s attribute
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.reflists}}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{reflist}} (\sphinxstyleliteralemphasis{\sphinxupquote{pypath.reflists.ReferenceList}}) \textendash{} Contains the information and methods to load the specified
+reference information from a resource. See the class
+documentation for more information.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{load\_reflists() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.load_reflists}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_reflists}}}{\emph{reflst=None}}{}
+Loads the reference lists defined as
+\sphinxcode{\sphinxupquote{pypath.reflists.ReferenceList}} instances, either
+provided by user through keyword argument \sphinxstyleemphasis{reflist} or from
+all human UniProts by default.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{reflst}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Contains the instances of
+\sphinxcode{\sphinxupquote{pypath.reflists.ReferenceList}} to be loaded. If
+none is passed, loads the reference list of all UniProt.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{load\_resource() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.load_resource}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_resource}}}{\emph{settings}, \emph{clean=True}, \emph{cache\_files=\{\}}, \emph{reread=False}, \emph{redownload=False}}{}
+Loads the data from a single resource and attaches it to the
+network
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{settings}} (\sphinxstyleliteralemphasis{\sphinxupquote{pypath.input\_formats.ReadSettings}}) \textendash{} \sphinxcode{\sphinxupquote{pypath.input\_formats.ReadSettings}} instance
+containing the detailed definition of the input format of
+the downloaded file.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{clean}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{True}} by default. Whether to clean the graph
+after importing the data or not. See
+{\hyperref[\detokenize{main:pypath.main.PyPath.clean_graph}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.clean\_graph()}}}}} for more
+information.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{cache\_files}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{\{\}}} by default. Contains the resource name(s)
+{[}str{]} (keys) and the corresponding cached file name {[}str{]}.
+If provided (and file exists) bypasses the download of the
+data for that resource and uses the cache file instead.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{reread}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Specifies whether to reread
+the data files from the cache or omit them (similar to
+\sphinxstyleemphasis{redownload}).
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{redownload}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Specifies whether to
+re-download the data and ignore the cache.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{load\_resources() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.load_resources}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_resources}}}{\emph{lst=None}, \emph{exclude={[}{]}}, \emph{cache\_files=\{\}}, \emph{reread=False}, \emph{redownload=False}}{}
-Loads multiple resources, and cleans up after.
-Looks up ID types, and loads all ID conversion
-tables from UniProt if necessary. This is much
-faster than loading the ID conversion and the
-resources one by one.
+Loads multiple resources, and cleans up after. Looks up ID
+types, and loads all ID conversion tables from UniProt if
+necessary. This is much faster than loading the ID conversion
+and the resources one by one.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{lst}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Specifies the data input
+formats for the different resources (keys) {[}str{]}. Values
+are \sphinxcode{\sphinxupquote{pypath.input\_formats.ReadSettings}} instances
+containing the information. By default uses the set of
+resources of OmniPath.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{exclude}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{{[}{]}}} by default. List of resources {[}str{]} to
+exclude from the network.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{cache\_files}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{\{\}}} by default. Contains the resource name(s)
+{[}str{]} (keys) and the corresponding cached file name {[}str{]}.
+If provided (and file exists) bypasses the download of the
+data for that resource and uses the cache file instead.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{reread}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Specifies whether to reread
+the data files from the cache or omit them (similar to
+\sphinxstyleemphasis{redownload}).
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{redownload}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Specifies whether to
+re-download the data and ignore the cache.
+
+\end{itemize}
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -3082,31 +3224,26 @@ resources one by one.
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.load_tfregulons}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_tfregulons}}}{\emph{levels=set({[}'A'}, \emph{'B'{]})}, \emph{only\_curated=False}}{}
 Adds TF-target interactions from TF regulons to the network.
+TF regulons is a comprehensive resource of TF-target
+interactions combining multiple lines of evidences: literature
+curated databases, ChIP-Seq data, PWM based prediction using
+HOCOMOCO and JASPAR matrices and prediction from GTEx expression
+data by ARACNe.
+
+For details see \sphinxurl{https://github.com/saezlab/DoRothEA}.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{levels}} (\sphinxstyleliteralemphasis{\sphinxupquote{set}}) \textendash{} Confidence levels to be used.
+\sphinxstyleliteralstrong{\sphinxupquote{levels}} (\sphinxstyleliteralemphasis{\sphinxupquote{set}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{\{'A', 'B'\}}} by default. Confidence levels to be
+loaded (from A to E) {[}str{]}.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{only\_curated}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Retrieve only literature curated interactions.
+\sphinxstyleliteralstrong{\sphinxupquote{only\_curated}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Whether to retrieve only the
+literature curated interactions or not.
 
 \end{itemize}
 
 \end{description}\end{quote}
-
-TF regulons is a comprehensive resource of TF-target interactions
-combining multiple lines of evidences: literature curated databases,
-ChIP-Seq data, PWM based prediction using HOCOMOCO and JASPAR matrices
-and prediction from GTEx expression data by ARACNe.
-
-For details see \sphinxurl{https://github.com/saezlab/DoRothEA}.
-
-\fvset{hllines={, ,}}%
-\begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{k+kn}{import} \PYG{n+nn}{pypath}
-\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{pa} \PYG{o}{=} \PYG{n}{pypath}\PYG{o}{.}\PYG{n}{PyPath}\PYG{p}{(}\PYG{p}{)}
-\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{pa}\PYG{o}{.}\PYG{n}{load\PYGZus{}tfregulons}\PYG{p}{(}\PYG{n}{levels} \PYG{o}{=} \PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{A}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{\PYGZcb{}}\PYG{p}{)}
-\end{sphinxVerbatim}
 
 \end{fulllineitems}
 
@@ -3929,6 +4066,20 @@ undirected graph).
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.reference_hist}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{reference\_hist}}}{\emph{filename=None}}{}
+Generates a file containing a table with information about the
+network’s edges. First column contains the source node ID,
+followed by the target’s ID, third column contains the number of
+references for that interaction and finally the number of
+sources. Writes the results in a tab file.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{filename}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Specifies the file name and
+path to save the table. If none is passed, file will be
+saved in \sphinxcode{\sphinxupquote{pypath.main.PyPath.outdir}} (\sphinxcode{\sphinxupquote{'results'}}
+by default) with the name \sphinxcode{\sphinxupquote{'\textless{}session\textgreater{}-refs-hist'}}.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{reload() (pypath.main.PyPath method)}

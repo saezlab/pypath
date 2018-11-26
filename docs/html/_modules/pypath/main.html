@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>pypath.main &#8212; pypath 0.7.111 documentation</title>
+    <title>pypath.main &#8212; pypath 0.7.114 documentation</title>
     <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -25,7 +25,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.111 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.114 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -97,6 +97,12 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="c1"># XXX: Put together all import tries</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">basestring</span>
+
+<span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+    <span class="n">basestring</span> <span class="o">=</span> <span class="nb">str</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">cPickle</span> <span class="k">as</span> <span class="nn">pickle</span>
@@ -2265,8 +2271,13 @@
 
                 <span class="c1"># reading from remote or local file, or executing import</span>
                 <span class="c1"># function:</span>
-                <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">)</span> <span class="ow">or</span> \
-                        <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;ftp&#39;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">,</span> <span class="n">basestring</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                        <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">)</span> <span class="ow">or</span>
+                        <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;ftp&#39;</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">):</span>
+
                     <span class="n">curl_use_cache</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">redownload</span>
                     <span class="n">c</span> <span class="o">=</span> <span class="n">curl</span><span class="o">.</span><span class="n">Curl</span><span class="p">(</span>
                         <span class="n">settings</span><span class="o">.</span><span class="n">inFile</span><span class="p">,</span>
@@ -4679,6 +4690,7 @@
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
 
         <span class="k">if</span> <span class="n">pwlist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_pathway_types</span><span class="p">()</span>
             <span class="n">pwlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathway_types</span>
 
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pwlist</span><span class="p">:</span>
@@ -4729,8 +4741,8 @@
 
                 <span class="n">edges</span><span class="p">[</span><span class="n">pw</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 
-        <span class="n">sNodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sorensen_groups</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
-        <span class="n">sEdges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sorensen_groups</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+        <span class="n">sNodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">similarity_groups</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s1">&#39;sorensen&#39;</span><span class="p">)</span>
+        <span class="n">sEdges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">similarity_groups</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s1">&#39;sorensen&#39;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;nodes&quot;</span><span class="p">:</span> <span class="n">sNodes</span><span class="p">,</span> <span class="s2">&quot;edges&quot;</span><span class="p">:</span> <span class="n">sEdges</span><span class="p">}</span></div>
 
@@ -4921,12 +4933,12 @@
                     <span class="n">keepA</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_attr_or</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">],</span> <span class="n">crit</span><span class="p">[</span><span class="s2">&quot;node&quot;</span><span class="p">])</span>
 
                     <span class="k">if</span> <span class="n">keepA</span><span class="p">:</span>
-                        <span class="n">keep</span> <span class="o">+=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">]</span>
+                        <span class="n">keepV</span> <span class="o">+=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">]</span>
 
                     <span class="n">keepB</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_attr_or</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">target</span><span class="p">],</span> <span class="n">crit</span><span class="p">[</span><span class="s2">&quot;node&quot;</span><span class="p">])</span>
 
                     <span class="k">if</span> <span class="n">keepB</span><span class="p">:</span>
-                        <span class="n">keep</span> <span class="o">+=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">target</span><span class="p">]</span>
+                        <span class="n">keepV</span> <span class="o">+=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">target</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;nodes&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">keepV</span><span class="p">)),</span> <span class="s2">&quot;edges&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">delE</span><span class="p">))}</span></div>
 
@@ -5075,7 +5087,7 @@
         <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">outfile</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;pwnet-&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="s2">&quot;-sim-src&quot;</span><span class="p">])</span>
 
-        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sorensen_databases</span><span class="p">()</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_similarity</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s1">&#39;sorensen&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;nodes&quot;</span><span class="p">],</span> <span class="n">outfile</span> <span class="o">+</span> <span class="s2">&quot;-nodes&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;edges&quot;</span><span class="p">],</span> <span class="n">outfile</span> <span class="o">+</span> <span class="s2">&quot;-edges&quot;</span><span class="p">)</span></div>
 
@@ -5098,7 +5110,6 @@
         <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">outfile</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;pwnet-&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="s2">&quot;-sim-pw&quot;</span><span class="p">])</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_pathway_types</span><span class="p">()</span>
         <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sorensen_pathways</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;nodes&quot;</span><span class="p">],</span> <span class="n">outfile</span> <span class="o">+</span> <span class="s2">&quot;-nodes&quot;</span><span class="p">,</span> <span class="n">cut</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;edges&quot;</span><span class="p">],</span> <span class="n">outfile</span> <span class="o">+</span> <span class="s2">&quot;-edges&quot;</span><span class="p">,</span> <span class="n">cut</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span></div>
@@ -5281,8 +5292,9 @@
                 <span class="n">dds</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">degree_distribution</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">dds</span><span class="p">):</span>
-            <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span> <span class="s2">&quot;pwnet-&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span>
-                                <span class="s2">&quot;-degdist-&quot;</span><span class="p">,</span> <span class="n">k</span><span class="p">])</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span>
+                                    <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;pwnet-&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span>
+                                             <span class="s2">&quot;-degdist-&quot;</span><span class="p">,</span> <span class="n">k</span><span class="p">]))</span>
             <span class="n">bins</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">vals</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -5437,6 +5449,7 @@
 <span class="sd">        (``&#39;cat&#39;``) as well the edge attribute coercing the references</span>
 <span class="sd">        by category (``&#39;refs_by_cat&#39;``). The possible categories are</span>
 <span class="sd">        as follows:</span>
+
 <span class="sd">            * ``&#39;m&#39;``: PTM/enzyme-substrate resources.</span>
 <span class="sd">            * ``&#39;p&#39;``: Pathway/activity flow resources.</span>
 <span class="sd">            * ``&#39;i&#39;``: Undirected/PPI resources.</span>
@@ -5581,24 +5594,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">update_sources</span><span class="p">()</span>
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
 
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">):</span>
 
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">:</span>
-                <span class="n">ini</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="n">inj</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">ini</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">index</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]]</span>
+            <span class="n">inj</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">index</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span> <span class="k">if</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]]</span>
 
-                <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">:</span>
-
-                    <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">]:</span>
-                        <span class="n">ini</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
-
-                    <span class="k">if</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">]:</span>
-                        <span class="n">inj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
-
-                <span class="n">onlyi</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ini</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">inj</span><span class="p">))))</span>
-                <span class="n">onlyj</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">inj</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">ini</span><span class="p">))))</span>
-                <span class="n">inter</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ini</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">inj</span><span class="p">))))</span>
-                <span class="n">result</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">onlyi</span><span class="p">,</span> <span class="n">onlyj</span><span class="p">,</span> <span class="n">inter</span><span class="p">]</span>
+            <span class="n">onlyi</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ini</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">inj</span><span class="p">))))</span>
+            <span class="n">onlyj</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">inj</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">ini</span><span class="p">))))</span>
+            <span class="n">inter</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ini</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">inj</span><span class="p">))))</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">onlyi</span><span class="p">,</span> <span class="n">onlyj</span><span class="p">,</span> <span class="n">inter</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">fname</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
@@ -5614,16 +5618,26 @@
 <span class="sd">        default).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">srcnum</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">:</span>
-            <span class="n">srcnum</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">]))</span>
+        <span class="n">srcnum</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">({</span><span class="s2">&quot;srcnum&quot;</span><span class="p">:</span> <span class="n">srcnum</span><span class="p">},</span> <span class="s2">&quot;source_num&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span>
                          <span class="n">rownames</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PyPath.degree_dist"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.degree_dist">[docs]</a>    <span class="k">def</span> <span class="nf">degree_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the degree distribution over all nodes of the network.</span>
+<span class="sd">        If *group* is provided, also across nodes of that group(s).</span>
+
+<span class="sd">        :arg str prefix:</span>
+<span class="sd">            Prefix for the file name(s).</span>
+<span class="sd">        :arg igraph.Graph g:</span>
+<span class="sd">            Optional, ``None`` by default. The network over which to</span>
+<span class="sd">            compute the degree distribution. If none is passed, takes</span>
+<span class="sd">            the undirected network of the current instance.</span>
+<span class="sd">        :arg list group:</span>
+<span class="sd">            Optional, ``None`` by default. Additional group(s) name(s)</span>
+<span class="sd">            [str] of node attributes to subset the network and compute</span>
+<span class="sd">            its degree distribution.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">deg</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
@@ -5656,11 +5670,28 @@
 <div class="viewcode-block" id="PyPath.delete_by_source"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.delete_by_source">[docs]</a>    <span class="k">def</span> <span class="nf">delete_by_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">vertexAttrsToDel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                          <span class="n">edgeAttrsToDel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deletes nodes and edges from the network according to a provided</span>
+<span class="sd">        source name. Optionally can also remove the given list of</span>
+<span class="sd">        attributes from nodes and/or edges.</span>
+
+<span class="sd">        :arg str source:</span>
+<span class="sd">            Name of the source from which the nodes and edges have to be</span>
+<span class="sd">            removed.</span>
+<span class="sd">        :arg list vertexAttrsToDel:</span>
+<span class="sd">            Optional, ``None`` by default. Contains the names [str] of</span>
+<span class="sd">            the attributes to be removed from the nodes.</span>
+<span class="sd">        :arg list edgeAttrsToDel:</span>
+<span class="sd">            Optional, ``None`` by default. Contains the names [str] of</span>
+<span class="sd">            the attributes to be removed from the edges.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">update_vertex_sources</span><span class="p">()</span>
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
         <span class="n">verticesToDel</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># XXX: Refactor to?:</span>
+        <span class="c1">#      verticesToDel = [v.index for v in g.vs</span>
+        <span class="c1">#                       if len(v[&#39;sources&#39;]-set([source])) == 0]</span>
 
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">:</span>
 
@@ -5668,6 +5699,7 @@
                 <span class="n">verticesToDel</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 
         <span class="n">g</span><span class="o">.</span><span class="n">delete_vertices</span><span class="p">(</span><span class="n">verticesToDel</span><span class="p">)</span>
+
         <span class="n">edgesToDel</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">:</span>
@@ -5698,6 +5730,17 @@
 
 <div class="viewcode-block" id="PyPath.reference_hist"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.reference_hist">[docs]</a>    <span class="k">def</span> <span class="nf">reference_hist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a file containing a table with information about the</span>
+<span class="sd">        network&#39;s edges. First column contains the source node ID,</span>
+<span class="sd">        followed by the target&#39;s ID, third column contains the number of</span>
+<span class="sd">        references for that interaction and finally the number of</span>
+<span class="sd">        sources. Writes the results in a tab file.</span>
+
+<span class="sd">        :arg str filename:</span>
+<span class="sd">            Optional, ``None`` by default. Specifies the file name and</span>
+<span class="sd">            path to save the table. If none is passed, file will be</span>
+<span class="sd">            saved in :py:attr:`pypath.main.PyPath.outdir` (``&#39;results&#39;``</span>
+<span class="sd">            by default) with the name ``&#39;&lt;session&gt;-refs-hist&#39;``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
@@ -5708,7 +5751,7 @@
                         <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;references&#39;</span><span class="p">])),</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]))))</span>
 
         <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">outdir</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">+</span> <span class="s2">&quot;-refs-hist&quot;</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">+</span> <span class="s2">&quot;-refs-hist&quot;</span><span class="p">)</span>
 
         <span class="n">out</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
@@ -5722,11 +5765,32 @@
 <div class="viewcode-block" id="PyPath.load_resources"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_resources">[docs]</a>    <span class="k">def</span> <span class="nf">load_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[],</span> <span class="n">cache_files</span><span class="o">=</span><span class="p">{},</span>
                        <span class="n">reread</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">redownload</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Loads multiple resources, and cleans up after.</span>
-<span class="sd">        Looks up ID types, and loads all ID conversion</span>
-<span class="sd">        tables from UniProt if necessary. This is much</span>
-<span class="sd">        faster than loading the ID conversion and the</span>
-<span class="sd">        resources one by one.</span>
+<span class="sd">        Loads multiple resources, and cleans up after. Looks up ID</span>
+<span class="sd">        types, and loads all ID conversion tables from UniProt if</span>
+<span class="sd">        necessary. This is much faster than loading the ID conversion</span>
+<span class="sd">        and the resources one by one.</span>
+
+<span class="sd">        :arg dict lst:</span>
+<span class="sd">            Optional, ``None`` by default. Specifies the data input</span>
+<span class="sd">            formats for the different resources (keys) [str]. Values</span>
+<span class="sd">            are :py:class:`pypath.input_formats.ReadSettings` instances</span>
+<span class="sd">            containing the information. By default uses the set of</span>
+<span class="sd">            resources of OmniPath.</span>
+<span class="sd">        :arg list exclude:</span>
+<span class="sd">            Optional, ``[]`` by default. List of resources [str] to</span>
+<span class="sd">            exclude from the network.</span>
+<span class="sd">        :arg dict cache_files:</span>
+<span class="sd">            Optional, ``{}`` by default. Contains the resource name(s)</span>
+<span class="sd">            [str] (keys) and the corresponding cached file name [str].</span>
+<span class="sd">            If provided (and file exists) bypasses the download of the</span>
+<span class="sd">            data for that resource and uses the cache file instead.</span>
+<span class="sd">        :arg bool reread:</span>
+<span class="sd">            Optional, ``False`` by default. Specifies whether to reread</span>
+<span class="sd">            the data files from the cache or omit them (similar to</span>
+<span class="sd">            *redownload*).</span>
+<span class="sd">        :arg bool redownload:</span>
+<span class="sd">            Optional, ``False`` by default. Specifies whether to</span>
+<span class="sd">            re-download the data and ignore the cache.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">lst</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -5739,6 +5803,8 @@
                        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">v</span><span class="o">.</span><span class="n">huge</span> <span class="ow">or</span> <span class="n">v</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">cache_files</span><span class="p">)</span>
                        <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">)</span>
 
+        <span class="c1"># XXX: Not very good practice to name the iterator element</span>
+        <span class="c1">#      as one of the kwargs... can lead to confusion</span>
         <span class="k">for</span> <span class="n">lst</span> <span class="ow">in</span> <span class="p">[</span><span class="n">huge</span><span class="p">,</span> <span class="n">nothuge</span><span class="p">]:</span>
 
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
@@ -5761,16 +5827,20 @@
                 <span class="c1">#    sys.stdout.flush()</span>
 
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">clean_graph</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_sources</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_vertex_sources</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_pathways</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_pathway_types</span><span class="p">()</span>
+
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &gt; </span><span class="si">%u</span><span class="s2"> interactions between </span><span class="si">%u</span><span class="s2"> nodes&quot;</span>
                          <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> from </span><span class="si">%u</span><span class="s2"> resources have been loaded,&quot;</span>
                          <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> for details see the log: ./</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span>
                          <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">ecount</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">(),</span>
                             <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">logfile</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="PyPath.load_mappings"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_mappings">[docs]</a>    <span class="k">def</span> <span class="nf">load_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.load_mappings"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_mappings">[docs]</a>    <span class="k">def</span> <span class="nf">load_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c1"># FIXME: module data_formats has no attribute mapList</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -5779,6 +5849,30 @@
 <div class="viewcode-block" id="PyPath.load_resource"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_resource">[docs]</a>    <span class="k">def</span> <span class="nf">load_resource</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">clean</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache_files</span><span class="o">=</span><span class="p">{},</span> <span class="n">reread</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                       <span class="n">redownload</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads the data from a single resource and attaches it to the</span>
+<span class="sd">        network</span>
+
+<span class="sd">        :arg pypath.input_formats.ReadSettings settings:</span>
+<span class="sd">            :py:class:`pypath.input_formats.ReadSettings` instance</span>
+<span class="sd">            containing the detailed definition of the input format of</span>
+<span class="sd">            the downloaded file.</span>
+<span class="sd">        :arg bool clean:</span>
+<span class="sd">            Optional, ``True`` by default. Whether to clean the graph</span>
+<span class="sd">            after importing the data or not. See</span>
+<span class="sd">            :py:meth:`pypath.main.PyPath.clean_graph` for more</span>
+<span class="sd">            information.</span>
+<span class="sd">        :arg dict cache_files:</span>
+<span class="sd">            Optional, ``{}`` by default. Contains the resource name(s)</span>
+<span class="sd">            [str] (keys) and the corresponding cached file name [str].</span>
+<span class="sd">            If provided (and file exists) bypasses the download of the</span>
+<span class="sd">            data for that resource and uses the cache file instead.</span>
+<span class="sd">        :arg bool reread:</span>
+<span class="sd">            Optional, ``False`` by default. Specifies whether to reread</span>
+<span class="sd">            the data files from the cache or omit them (similar to</span>
+<span class="sd">            *redownload*).</span>
+<span class="sd">        :arg bool redownload:</span>
+<span class="sd">            Optional, ``False`` by default. Specifies whether to</span>
+<span class="sd">            re-download the data and ignore the cache.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; &gt; &#39;</span> <span class="o">+</span> <span class="n">settings</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -5794,6 +5888,15 @@
 
 <div class="viewcode-block" id="PyPath.load_reflists"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_reflists">[docs]</a>    <span class="k">def</span> <span class="nf">load_reflists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reflst</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads the reference lists defined as</span>
+<span class="sd">        :py:class:`pypath.reflists.ReferenceList` instances, either</span>
+<span class="sd">        provided by user through keyword argument *reflist* or from</span>
+<span class="sd">        all human UniProts by default.</span>
+
+<span class="sd">        :arg list reflst:</span>
+<span class="sd">            Optional, ``None`` by default. Contains the instances of</span>
+<span class="sd">            :py:class:`pypath.reflists.ReferenceList` to be loaded. If</span>
+<span class="sd">            none is passed, loads the reference list of all UniProt.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">reflst</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -5804,13 +5907,21 @@
 
 <div class="viewcode-block" id="PyPath.load_reflist"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_reflist">[docs]</a>    <span class="k">def</span> <span class="nf">load_reflist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reflist</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Takes a :py:class:`pypath.reflists.ReferenceList` and loads it</span>
+<span class="sd">        into the current network&#39;s attribute</span>
+<span class="sd">        :py:attr:`pypath.main.PyPath.reflists`.</span>
+
+<span class="sd">        :arg pypath.reflists.ReferenceList reflist:</span>
+<span class="sd">            Contains the information and methods to load the specified</span>
+<span class="sd">            reference information from a resource. See the class</span>
+<span class="sd">            documentation for more information.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">reflist</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">reflist</span><span class="o">.</span><span class="n">nameType</span><span class="p">,</span> <span class="n">reflist</span><span class="o">.</span><span class="n">typ</span><span class="p">,</span> <span class="n">reflist</span><span class="o">.</span><span class="n">tax</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reflists</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">reflist</span></div>
 
-<div class="viewcode-block" id="PyPath.load_negatives"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_negatives">[docs]</a>    <span class="k">def</span> <span class="nf">load_negatives</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.load_negatives"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_negatives">[docs]</a>    <span class="k">def</span> <span class="nf">load_negatives</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c1"># FIXME: global name &#39;negative&#39; is not defined</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -5821,26 +5932,20 @@
 <div class="viewcode-block" id="PyPath.load_tfregulons"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_tfregulons">[docs]</a>    <span class="k">def</span> <span class="nf">load_tfregulons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">},</span> <span class="n">only_curated</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds TF-target interactions from TF regulons to the network.</span>
-
-<span class="sd">        :param set levels:</span>
-<span class="sd">            Confidence levels to be used.</span>
-<span class="sd">        :param bool only_curated:</span>
-<span class="sd">            Retrieve only literature curated interactions.</span>
-
-<span class="sd">        Details</span>
-<span class="sd">        -------</span>
-<span class="sd">        TF regulons is a comprehensive resource of TF-target interactions</span>
-<span class="sd">        combining multiple lines of evidences: literature curated databases,</span>
-<span class="sd">        ChIP-Seq data, PWM based prediction using HOCOMOCO and JASPAR matrices</span>
-<span class="sd">        and prediction from GTEx expression data by ARACNe.</span>
+<span class="sd">        TF regulons is a comprehensive resource of TF-target</span>
+<span class="sd">        interactions combining multiple lines of evidences: literature</span>
+<span class="sd">        curated databases, ChIP-Seq data, PWM based prediction using</span>
+<span class="sd">        HOCOMOCO and JASPAR matrices and prediction from GTEx expression</span>
+<span class="sd">        data by ARACNe.</span>
 
 <span class="sd">        For details see https://github.com/saezlab/DoRothEA.</span>
 
-<span class="sd">        Example</span>
-<span class="sd">        -------</span>
-<span class="sd">        &gt;&gt;&gt; import pypath</span>
-<span class="sd">        &gt;&gt;&gt; pa = pypath.PyPath()</span>
-<span class="sd">        &gt;&gt;&gt; pa.load_tfregulons(levels = {&#39;A&#39;})</span>
+<span class="sd">        :arg set levels:</span>
+<span class="sd">            Optional, ``{&#39;A&#39;, &#39;B&#39;}`` by default. Confidence levels to be</span>
+<span class="sd">            loaded (from A to E) [str].</span>
+<span class="sd">        :arg bool only_curated:</span>
+<span class="sd">            Optional, ``False`` by default. Whether to retrieve only the</span>
+<span class="sd">            literature curated interactions or not.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">settings</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">data_formats</span><span class="o">.</span><span class="n">transcription</span><span class="p">[</span><span class="s1">&#39;tfregulons&#39;</span><span class="p">])</span>
@@ -5848,8 +5953,14 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">load_resources</span><span class="p">({</span><span class="s1">&#39;tfregulons&#39;</span><span class="p">:</span> <span class="n">settings</span><span class="p">})</span></div>
 
+    <span class="c1"># XXX: Wouldn&#39;t it be better if only printed the resources loaded in</span>
+    <span class="c1">#      **the current network** rather than omnipath? (e.g. if the user</span>
+    <span class="c1">#      just removed one or several of them because he doesn&#39;t like/want them</span>
+    <span class="c1">#      and then this function still prints them, as if they were still</span>
+    <span class="c1">#      part of the network).</span>
 <div class="viewcode-block" id="PyPath.list_resources"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.list_resources">[docs]</a>    <span class="k">def</span> <span class="nf">list_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prints the list of resources throught the standard output.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; &gt; omnipath</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -5859,11 +5970,19 @@
 
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; &gt; good</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">good</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">good</span><span class="p">):</span> <span class="c1"># FIXME: global name &#39;good&#39; is not defined</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">:: </span><span class="si">%s</span><span class="s1"> (</span><span class="si">%s</span><span class="s1">)</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="PyPath.info"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.info">[docs]</a>    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given the name of a resource, prints out the information about</span>
+<span class="sd">        that source/database. You can check the list of available</span>
+<span class="sd">        resource descriptions in</span>
+<span class="sd">        :py:func:`ypath.descriptions.descriptions.keys`.</span>
+
+<span class="sd">        :arg str name:</span>
+<span class="sd">            The name of the resource from which to print the</span>
+<span class="sd">            information.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">d</span> <span class="o">=</span> <span class="n">descriptions</span><span class="o">.</span><span class="n">descriptions</span>
@@ -7415,10 +7534,10 @@
         <span class="n">v_target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">target</span><span class="p">)</span> \
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">is_directed</span><span class="p">()</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node_d</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">v_source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">v_target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">eid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_eid</span><span class="p">(</span>
-                <span class="n">source</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
-                <span class="n">target</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+                <span class="n">v_source</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+                <span class="n">v_target</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
                 <span class="n">directed</span><span class="o">=</span><span class="n">directed</span><span class="p">,</span>
                 <span class="n">error</span><span class="o">=</span><span class="kc">False</span>
             <span class="p">)</span>
@@ -10114,7 +10233,7 @@
 
         <span class="k">if</span> <span class="n">inference_from_go</span><span class="p">:</span>
             <span class="n">go_desc</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">go_descendants_goose</span><span class="p">(</span><span class="n">aspects</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">work</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_network</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="s1">&#39;go&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">attributes</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">go_annotate</span><span class="p">()</span>
@@ -10127,6 +10246,9 @@
             <span class="n">receptors</span> <span class="o">=</span> <span class="n">vids_plasmamem</span> <span class="o">&amp;</span> <span class="n">vids_recactivity</span>
             <span class="n">ligands</span>   <span class="o">=</span> <span class="n">vids_extracell</span> <span class="o">&amp;</span> <span class="n">vids_recbinding</span>
 
+            <span class="n">ureceptors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodNam</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">receptors</span><span class="p">)</span>
+            <span class="n">uligands</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodNam</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ligands</span><span class="p">)</span>
+
             <span class="n">lig_with_interactions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
             <span class="n">rec_with_interactions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
             <span class="n">lig_rec_edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
@@ -10134,25 +10256,57 @@
             <span class="n">rec_rec_edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">:</span>
+
+                <span class="n">di</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span>
+
                 <span class="n">srcs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">up</span><span class="p">(</span><span class="n">u</span><span class="p">)</span><span class="o">.</span><span class="n">index</span>
-                    <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">src</span><span class="p">(</span><span class="n">keep_undirected</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">di</span><span class="o">.</span><span class="n">src</span><span class="p">(</span><span class="n">keep_undirected</span><span class="p">)</span>
                 <span class="p">)</span>
                 <span class="n">tgts</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">up</span><span class="p">(</span><span class="n">u</span><span class="p">)</span><span class="o">.</span><span class="n">index</span>
-                    <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tgt</span><span class="p">(</span><span class="n">keep_undirected</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">di</span><span class="o">.</span><span class="n">tgt</span><span class="p">(</span><span class="n">keep_undirected</span><span class="p">)</span>
                 <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">srcs</span> <span class="o">&amp;</span> <span class="n">ligands</span> <span class="ow">and</span> <span class="n">tgts</span> <span class="o">&amp;</span> <span class="n">receptors</span><span class="p">:</span>
                     <span class="n">lig_rec_edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
                     <span class="n">lig_with_interactions</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">srcs</span><span class="p">)</span>
                     <span class="n">rec_with_interactions</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">tgts</span><span class="p">)</span>
+                    <span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;GO_lig_rec&#39;</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">di</span><span class="o">.</span><span class="n">straight</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">uligands</span> <span class="ow">and</span>
+                        <span class="n">di</span><span class="o">.</span><span class="n">straight</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">ureceptors</span>
+                    <span class="p">):</span>
+
+                        <span class="n">di</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">di</span><span class="o">.</span><span class="n">straight</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;GO_lig_rec&#39;</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">di</span><span class="o">.</span><span class="n">reverse</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">uligands</span> <span class="ow">and</span>
+                        <span class="n">di</span><span class="o">.</span><span class="n">reverse</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">ureceptors</span>
+                    <span class="p">):</span>
+
+                        <span class="n">di</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">di</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;GO_lig_rec&#39;</span><span class="p">)</span>
 
                 <span class="k">elif</span> <span class="n">keep_lig_lig</span> <span class="ow">and</span> <span class="n">srcs</span> <span class="o">&amp;</span> <span class="n">ligands</span> <span class="ow">and</span> <span class="n">tgts</span> <span class="o">&amp;</span> <span class="n">ligands</span><span class="p">:</span>
                     <span class="n">lig_lig_edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+                    <span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;GO_lig_lig&#39;</span><span class="p">)</span>
+
+                    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">di</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+
+                        <span class="k">if</span> <span class="n">d</span><span class="p">:</span>
+
+                            <span class="n">d</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;GO_lig_lig&#39;</span><span class="p">)</span>
 
                 <span class="k">elif</span> <span class="n">keep_rec_rec</span> <span class="ow">and</span> <span class="n">srcs</span> <span class="o">&amp;</span> <span class="n">receptors</span> <span class="ow">and</span> <span class="n">tgts</span> <span class="o">&amp;</span> <span class="n">receptors</span><span class="p">:</span>
                     <span class="n">rec_rec_edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+                    <span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;GO_rec_rec&#39;</span><span class="p">)</span>
+
+                    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">di</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+
+                        <span class="k">if</span> <span class="n">d</span><span class="p">:</span>
+
+                            <span class="n">d</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;GO_rec_rec&#39;</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">set_boolean_vattr</span><span class="p">(</span><span class="s1">&#39;ligand_go&#39;</span><span class="p">,</span>   <span class="n">lig_with_interactions</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_boolean_vattr</span><span class="p">(</span><span class="s1">&#39;receptor_go&#39;</span><span class="p">,</span> <span class="n">rec_with_interactions</span><span class="p">)</span>
@@ -10169,9 +10323,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">delete_vertices</span><span class="p">(</span>
                 <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">degree</span><span class="p">())</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">d</span><span class="p">]</span>
             <span class="p">)</span>
-
-            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">:</span>
-                <span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;GO_lig_rec&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">update_vname</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_sources</span><span class="p">()</span>
@@ -12817,7 +12968,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.111 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.114 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>

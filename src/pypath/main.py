@@ -61,6 +61,12 @@ import numpy as np
 # XXX: Put together all import tries
 
 try:
+    basestring
+
+except NameError:
+    basestring = str
+
+try:
     import cPickle as pickle
 
 except ImportError:
@@ -2228,7 +2234,7 @@ class PyPath(object):
                 # reading from remote or local file, or executing import
                 # function:
                 if (
-                    isinstance(settings.inFile, common.basestring) and (
+                    isinstance(settings.inFile, basestring) and (
                         settings.inFile.startswith('http') or
                         settings.inFile.startswith('ftp')
                     )
@@ -5405,6 +5411,7 @@ class PyPath(object):
         (``'cat'``) as well the edge attribute coercing the references
         by category (``'refs_by_cat'``). The possible categories are
         as follows:
+
             * ``'m'``: PTM/enzyme-substrate resources.
             * ``'p'``: Pathway/activity flow resources.
             * ``'i'``: Undirected/PPI resources.
@@ -5580,6 +5587,19 @@ class PyPath(object):
 
     def degree_dist(self, prefix, g, group=None):
         """
+        Computes the degree distribution over all nodes of the network.
+        If *group* is provided, also across nodes of that group(s).
+
+        :arg str prefix:
+            Prefix for the file name(s).
+        :arg igraph.Graph g:
+            Optional, ``None`` by default. The network over which to
+            compute the degree distribution. If none is passed, takes
+            the undirected network of the current instance.
+        :arg list group:
+            Optional, ``None`` by default. Additional group(s) name(s)
+            [str] of node attributes to subset the network and compute
+            its degree distribution.
         """
 
         deg = g.vs.degree()
@@ -5612,11 +5632,28 @@ class PyPath(object):
     def delete_by_source(self, source, vertexAttrsToDel=None,
                          edgeAttrsToDel=None):
         """
+        Deletes nodes and edges from the network according to a provided
+        source name. Optionally can also remove the given list of
+        attributes from nodes and/or edges.
+
+        :arg str source:
+            Name of the source from which the nodes and edges have to be
+            removed.
+        :arg list vertexAttrsToDel:
+            Optional, ``None`` by default. Contains the names [str] of
+            the attributes to be removed from the nodes.
+        :arg list edgeAttrsToDel:
+            Optional, ``None`` by default. Contains the names [str] of
+            the attributes to be removed from the edges.
         """
 
         self.update_vertex_sources()
         g = self.graph
         verticesToDel = []
+
+        # XXX: Refactor to?:
+        #      verticesToDel = [v.index for v in g.vs
+        #                       if len(v['sources']-set([source])) == 0]
 
         for v in g.vs:
 
@@ -5624,6 +5661,7 @@ class PyPath(object):
                 verticesToDel.append(v.index)
 
         g.delete_vertices(verticesToDel)
+
         edgesToDel = []
 
         for e in g.es:
@@ -5654,6 +5692,17 @@ class PyPath(object):
 
     def reference_hist(self, filename=None):
         """
+        Generates a file containing a table with information about the
+        network's edges. First column contains the source node ID,
+        followed by the target's ID, third column contains the number of
+        references for that interaction and finally the number of
+        sources. Writes the results in a tab file.
+
+        :arg str filename:
+            Optional, ``None`` by default. Specifies the file name and
+            path to save the table. If none is passed, file will be
+            saved in :py:attr:`pypath.main.PyPath.outdir` (``'results'``
+            by default) with the name ``'<session>-refs-hist'``.
         """
 
         g = self.graph
@@ -5664,7 +5713,7 @@ class PyPath(object):
                         str(len(e['references'])), str(len(e['sources']))))
 
         if filename is None:
-            filename = self.outdir + "/" + self.session + "-refs-hist"
+            filename = os.path.join(self.outdir, self.session + "-refs-hist")
 
         out = ''
 
@@ -5678,11 +5727,32 @@ class PyPath(object):
     def load_resources(self, lst=None, exclude=[], cache_files={},
                        reread=False, redownload=False):
         """
-        Loads multiple resources, and cleans up after.
-        Looks up ID types, and loads all ID conversion
-        tables from UniProt if necessary. This is much
-        faster than loading the ID conversion and the
-        resources one by one.
+        Loads multiple resources, and cleans up after. Looks up ID
+        types, and loads all ID conversion tables from UniProt if
+        necessary. This is much faster than loading the ID conversion
+        and the resources one by one.
+
+        :arg dict lst:
+            Optional, ``None`` by default. Specifies the data input
+            formats for the different resources (keys) [str]. Values
+            are :py:class:`pypath.input_formats.ReadSettings` instances
+            containing the information. By default uses the set of
+            resources of OmniPath.
+        :arg list exclude:
+            Optional, ``[]`` by default. List of resources [str] to
+            exclude from the network.
+        :arg dict cache_files:
+            Optional, ``{}`` by default. Contains the resource name(s)
+            [str] (keys) and the corresponding cached file name [str].
+            If provided (and file exists) bypasses the download of the
+            data for that resource and uses the cache file instead.
+        :arg bool reread:
+            Optional, ``False`` by default. Specifies whether to reread
+            the data files from the cache or omit them (similar to
+            *redownload*).
+        :arg bool redownload:
+            Optional, ``False`` by default. Specifies whether to
+            re-download the data and ignore the cache.
         """
 
         if lst is None:
@@ -5695,6 +5765,8 @@ class PyPath(object):
                        if (not v.huge or v.name in cache_files)
                        and k not in exclude)
 
+        # XXX: Not very good practice to name the iterator element
+        #      as one of the kwargs... can lead to confusion
         for lst in [huge, nothuge]:
 
             for k, v in iteritems(lst):
@@ -5730,7 +5802,7 @@ class PyPath(object):
                          % (self.graph.ecount(), self.graph.vcount(),
                             len(self.sources), self.ownlog.logfile))
 
-    def load_mappings(self):
+    def load_mappings(self): # FIXME: module data_formats has no attribute mapList
         """
         """
 
@@ -5739,6 +5811,30 @@ class PyPath(object):
     def load_resource(self, settings, clean=True, cache_files={}, reread=False,
                       redownload=False):
         """
+        Loads the data from a single resource and attaches it to the
+        network
+
+        :arg pypath.input_formats.ReadSettings settings:
+            :py:class:`pypath.input_formats.ReadSettings` instance
+            containing the detailed definition of the input format of
+            the downloaded file.
+        :arg bool clean:
+            Optional, ``True`` by default. Whether to clean the graph
+            after importing the data or not. See
+            :py:meth:`pypath.main.PyPath.clean_graph` for more
+            information.
+        :arg dict cache_files:
+            Optional, ``{}`` by default. Contains the resource name(s)
+            [str] (keys) and the corresponding cached file name [str].
+            If provided (and file exists) bypasses the download of the
+            data for that resource and uses the cache file instead.
+        :arg bool reread:
+            Optional, ``False`` by default. Specifies whether to reread
+            the data files from the cache or omit them (similar to
+            *redownload*).
+        :arg bool redownload:
+            Optional, ``False`` by default. Specifies whether to
+            re-download the data and ignore the cache.
         """
 
         sys.stdout.write(' > ' + settings.name + '\n')
@@ -5754,6 +5850,15 @@ class PyPath(object):
 
     def load_reflists(self, reflst=None):
         """
+        Loads the reference lists defined as
+        :py:class:`pypath.reflists.ReferenceList` instances, either
+        provided by user through keyword argument *reflist* or from
+        all human UniProts by default.
+
+        :arg list reflst:
+            Optional, ``None`` by default. Contains the instances of
+            :py:class:`pypath.reflists.ReferenceList` to be loaded. If
+            none is passed, loads the reference list of all UniProt.
         """
 
         if reflst is None:
@@ -5764,13 +5869,21 @@ class PyPath(object):
 
     def load_reflist(self, reflist):
         """
+        Takes a :py:class:`pypath.reflists.ReferenceList` and loads it
+        into the current network's attribute
+        :py:attr:`pypath.main.PyPath.reflists`.
+
+        :arg pypath.reflists.ReferenceList reflist:
+            Contains the information and methods to load the specified
+            reference information from a resource. See the class
+            documentation for more information.
         """
 
         reflist.load()
         idx = (reflist.nameType, reflist.typ, reflist.tax)
         self.reflists[idx] = reflist
 
-    def load_negatives(self):
+    def load_negatives(self): # FIXME: global name 'negative' is not defined
         """
         """
 
@@ -5781,26 +5894,20 @@ class PyPath(object):
     def load_tfregulons(self, levels={'A', 'B'}, only_curated=False):
         """
         Adds TF-target interactions from TF regulons to the network.
-
-        :param set levels:
-            Confidence levels to be used.
-        :param bool only_curated:
-            Retrieve only literature curated interactions.
-
-        Details
-        -------
-        TF regulons is a comprehensive resource of TF-target interactions
-        combining multiple lines of evidences: literature curated databases,
-        ChIP-Seq data, PWM based prediction using HOCOMOCO and JASPAR matrices
-        and prediction from GTEx expression data by ARACNe.
+        TF regulons is a comprehensive resource of TF-target
+        interactions combining multiple lines of evidences: literature
+        curated databases, ChIP-Seq data, PWM based prediction using
+        HOCOMOCO and JASPAR matrices and prediction from GTEx expression
+        data by ARACNe.
 
         For details see https://github.com/saezlab/DoRothEA.
 
-        Example
-        -------
-        >>> import pypath
-        >>> pa = pypath.PyPath()
-        >>> pa.load_tfregulons(levels = {'A'})
+        :arg set levels:
+            Optional, ``{'A', 'B'}`` by default. Confidence levels to be
+            loaded (from A to E) [str].
+        :arg bool only_curated:
+            Optional, ``False`` by default. Whether to retrieve only the
+            literature curated interactions or not.
         """
 
         settings = copy.deepcopy(data_formats.transcription['tfregulons'])
@@ -5808,8 +5915,14 @@ class PyPath(object):
 
         self.load_resources({'tfregulons': settings})
 
+    # XXX: Wouldn't it be better if only printed the resources loaded in
+    #      **the current network** rather than omnipath? (e.g. if the user
+    #      just removed one or several of them because he doesn't like/want them
+    #      and then this function still prints them, as if they were still
+    #      part of the network).
     def list_resources(self):
         """
+        Prints the list of resources throught the standard output.
         """
 
         sys.stdout.write(' > omnipath\n')
@@ -5819,11 +5932,19 @@ class PyPath(object):
 
         sys.stdout.write(' > good\n')
 
-        for k, v in iteritems(good):
+        for k, v in iteritems(good): # FIXME: global name 'good' is not defined
             sys.stdout.write('\t:: %s (%s)\n' % (v.name, k))
 
     def info(self, name):
         """
+        Given the name of a resource, prints out the information about
+        that source/database. You can check the list of available
+        resource descriptions in
+        :py:func:`ypath.descriptions.descriptions.keys`.
+
+        :arg str name:
+            The name of the resource from which to print the
+            information.
         """
 
         d = descriptions.descriptions

@@ -12,26 +12,26 @@
 \contentsline {subsection}{\numberline {1.3.2}With other Python distributions}{5}{subsection.1.3.2}
 \contentsline {subsection}{\numberline {1.3.3}Known issues}{5}{subsection.1.3.3}
 \contentsline {chapter}{\numberline {2}Reference}{7}{chapter.2}
-\contentsline {chapter}{\numberline {3}Webservice}{47}{chapter.3}
-\contentsline {section}{\numberline {3.1}Mouse and rat}{47}{section.3.1}
-\contentsline {section}{\numberline {3.2}Examples}{47}{section.3.2}
-\contentsline {chapter}{\numberline {4}Release history}{49}{chapter.4}
-\contentsline {section}{\numberline {4.1}0.1.0}{49}{section.4.1}
-\contentsline {section}{\numberline {4.2}0.2.0}{49}{section.4.2}
-\contentsline {section}{\numberline {4.3}0.3.0}{49}{section.4.3}
-\contentsline {section}{\numberline {4.4}0.4.0}{49}{section.4.4}
-\contentsline {section}{\numberline {4.5}0.5.0}{49}{section.4.5}
-\contentsline {section}{\numberline {4.6}0.7.74}{50}{section.4.6}
-\contentsline {section}{\numberline {4.7}Upcoming}{50}{section.4.7}
-\contentsline {chapter}{\numberline {5}Features}{51}{chapter.5}
-\contentsline {section}{\numberline {5.1}ID conversion}{51}{section.5.1}
-\contentsline {section}{\numberline {5.2}Pathways}{51}{section.5.2}
-\contentsline {section}{\numberline {5.3}Structural features}{51}{section.5.3}
-\contentsline {section}{\numberline {5.4}Sequences}{51}{section.5.4}
-\contentsline {section}{\numberline {5.5}Tissue expression}{52}{section.5.5}
-\contentsline {section}{\numberline {5.6}Functional annotations}{52}{section.5.6}
-\contentsline {section}{\numberline {5.7}Drug compounds}{52}{section.5.7}
-\contentsline {section}{\numberline {5.8}Technical}{52}{section.5.8}
-\contentsline {chapter}{\numberline {6}OmniPath in R}{53}{chapter.6}
-\contentsline {chapter}{Python Module Index}{55}{section*.379}
-\contentsline {chapter}{Index}{57}{section*.380}
+\contentsline {chapter}{\numberline {3}Webservice}{49}{chapter.3}
+\contentsline {section}{\numberline {3.1}Mouse and rat}{49}{section.3.1}
+\contentsline {section}{\numberline {3.2}Examples}{49}{section.3.2}
+\contentsline {chapter}{\numberline {4}Release history}{51}{chapter.4}
+\contentsline {section}{\numberline {4.1}0.1.0}{51}{section.4.1}
+\contentsline {section}{\numberline {4.2}0.2.0}{51}{section.4.2}
+\contentsline {section}{\numberline {4.3}0.3.0}{51}{section.4.3}
+\contentsline {section}{\numberline {4.4}0.4.0}{51}{section.4.4}
+\contentsline {section}{\numberline {4.5}0.5.0}{51}{section.4.5}
+\contentsline {section}{\numberline {4.6}0.7.74}{52}{section.4.6}
+\contentsline {section}{\numberline {4.7}Upcoming}{52}{section.4.7}
+\contentsline {chapter}{\numberline {5}Features}{53}{chapter.5}
+\contentsline {section}{\numberline {5.1}ID conversion}{53}{section.5.1}
+\contentsline {section}{\numberline {5.2}Pathways}{53}{section.5.2}
+\contentsline {section}{\numberline {5.3}Structural features}{53}{section.5.3}
+\contentsline {section}{\numberline {5.4}Sequences}{53}{section.5.4}
+\contentsline {section}{\numberline {5.5}Tissue expression}{54}{section.5.5}
+\contentsline {section}{\numberline {5.6}Functional annotations}{54}{section.5.6}
+\contentsline {section}{\numberline {5.7}Drug compounds}{54}{section.5.7}
+\contentsline {section}{\numberline {5.8}Technical}{54}{section.5.8}
+\contentsline {chapter}{\numberline {6}OmniPath in R}{55}{chapter.6}
+\contentsline {chapter}{Python Module Index}{57}{section*.379}
+\contentsline {chapter}{Index}{59}{section*.380}

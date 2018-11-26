@@ -35,7 +35,7 @@ __all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes',
            'delEmpty', 'get_args', 'something', 'rotate', 'cleanDict',
            'igraph_graphics_attrs', 'md5', 'mod_keywords', 'Namespace', 'fun',
            'taxids', 'taxa', 'phosphoelm_taxids', 'dbptm_taxids',
-           'uniqOrdList', 'dict_diff', 'basestring']
+           'uniqOrdList', 'dict_diff']
 
 # get the location
 ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -49,17 +49,17 @@ except NameError:
 
 
 class _const:
-    
+
     class ConstError(TypeError):
-        
+
         pass
 
     def __setattr__(self, name, value):
-        
+
         if name in self.__dict__:
-            
+
             raise(self.ConstError, "Can't rebind const(%s)" % name)
-        
+
         self.__dict__[name] = value
 
 
