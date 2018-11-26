@@ -2556,6 +2556,7 @@ class PyPath(object):
         """
         Loads the Human Plasma Membrane Receptome as a list. This
         resource is human only.
+        The list name is ``rec``.
         """
 
         self.lists['rec'] = common.uniqList(common.flatList([
@@ -2567,16 +2568,31 @@ class PyPath(object):
         """
         Loads a list of cell surface proteins from the Cell Surface Protein
         Atlas as a list. This resource is available for human and mouse.
+        The list name is ``cspa``.
         """
         
         self.lists['cspa'] = list(
             dataio.get_cspa(organism = self.ncbi_tax_id)
         )
+    
+    def surfaceome_list(self, score_threshold = .0):
+        """
+        Loads a list of cell surface proteins from the In Silico Human
+        Surfaceome as a list. This resource is human only.
+        The list name is ``ishs``.
+        """
+        
+        self.lists['ishs'] = [
+            i[0]
+            for i in dataio.get_surfaceome()
+            if i[1] >= score_threshold
+        ]
 
     def druggability_list(self):
         """
         Loads the list of druggable proteins from DgiDB. This resource
         is human only.
+        The list name is ``dgb``.
         """
 
         self.lists['dgb'] = common.uniqList(common.flatList([
@@ -10271,6 +10287,25 @@ class PyPath(object):
 
             if sp in self.nodDct:
                 self.graph.vs[self.nodDct[sp]]['cspa'] = True
+    
+    def set_plasma_membrane_proteins_surfaceome(self, score_threshold = .0):
+        """
+        Creates a vertex attribute `ishs` with value *True* if
+        the protein is a plasma membrane protein according to the In Silico
+        Human Surfaceome, otherwise *False*.
+        """
+        
+        self.update_vname()
+        self.graph.vs['ishs'] = [False for _ in self.graph.vs]
+
+        # always load this to apply score threshold
+        self.surfaceome_list(score_threshold = score_threshold)
+
+        for sp in self.lists['ishs']:
+
+            if sp in self.nodDct:
+                
+                self.graph.vs[self.nodDct[sp]]['ishs'] = True
 
     def set_kinases(self):
         """
