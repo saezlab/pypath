@@ -10307,6 +10307,27 @@ class PyPath(object):
                 
                 self.graph.vs[self.nodDct[sp]]['ishs'] = True
     
+    def set_plasma_membrane_proteins_cspa_surfaceome(
+            self,
+            score_threshold = .0,
+        ):
+        """
+        Creates a vertex attribute ``surf`` with value *True* if
+        the protein is a plasma membrane protein according either to the
+        Cell Surface Protein Atlas or the In Silico Human Surfaceome.
+        """
+        
+        self.set_plasma_membrane_proteins_cspa()
+        self.set_plasma_membrane_proteins_surfaceome(
+            score_threshold = score_threshold
+        )
+        
+        self.graph.vs = [
+            cspa or ishs
+            for cspa, ishs in
+            zip(self.graph.vs['cspa'], self.graph.vs['ishs'])
+        ]
+    
     def load_surfaceome_attrs(self):
         """
         Loads vertex attributes from the In Silico Human Surfaceome.
