@@ -847,6 +847,10 @@ urls = {
         'actions': 'http://stitch.embl.de/download/actions.v5.0/'\
             '9606.actions.v5.0.tsv.gz'
     },
+    'cspa': {
+        'label': 'Cell Surface Protein Atlas',
+        'url': 'http://wlab.ethz.ch/cspa/data/S2_File.xlsx',
+    },
 }
 
 files = {
