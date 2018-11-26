@@ -10322,7 +10322,7 @@ class PyPath(object):
             score_threshold = score_threshold
         )
         
-        self.graph.vs = [
+        self.graph.vs['surf'] = [
             cspa or ishs
             for cspa, ishs in
             zip(self.graph.vs['cspa'], self.graph.vs['ishs'])
