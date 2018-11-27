@@ -10412,6 +10412,30 @@ class PyPath(object):
                 if v['name'] in matrisome
             ]
     
+    def load_membranome_attrs(self):
+        """
+        Loads attributes from Membranome, a database of single-helix
+        transmembrane proteins.
+        """
+        
+        self.update_vname()
+        
+        self.graph.vs['membranome_location'] = [
+            None for _ in xrange(self.graph.vcount())
+        ]
+        
+        m = dataio.get_membranome()
+        
+        for uniprot, mem, side in m:
+            
+            if uniprot in self.nodDct:
+                
+                self.graph.vs[
+                        self.nodDct[uniprot]
+                    ][
+                        'membranome_location'
+                    ] = (mem, side)
+    
     def set_kinases(self):
         """
         Creates a vertex attribute `kin` with value *True* if
