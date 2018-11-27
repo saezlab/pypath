@@ -115,7 +115,7 @@ import pypath.settings as settings
 omnipath = data_formats.omnipath
 
 # this is for GO terms parsing:
-__rego = re.compile(r'and|or|not|\(|\)|GO:[0-9]{7}')
+_rego = re.compile(r'and|or|not|\(|\)|GO:[0-9]{7}')
 
 # XXX: The following aliases are already defined in common.py
 if 'long' not in __builtins__:
@@ -9730,39 +9730,84 @@ class PyPath(object):
         
         if isinstance(go_expr, common.basestring):
             
-            go_expr = __rego.findall(go_expr)
+            # tokenizing expression if it is a string
+            go_expr = _rego.findall(go_expr)
         
-        result = set()
-        stack  = []
-        sub    = False
-        negate = False
-        op     = None
+        # initial values
+        result   = set()
+        stack    = []
+        sub      = False
+        negate   = False
+        op       = None
+        this_set = None
         
         for it in go_expr:
+            
+            # processing expression by tokens
             
             if sub:
                 
                 if it == ')':
                     
-                    stack.append(it)
+                    # token is a closing parenthesis
+                    # execute sub-selection
+                    this_set = self.select_by_go_expr(
+                        go_expr = stack,
+                        go_desc = go_desc,
+                        aspects = aspects,
+                    )
+                    stack = []
                 
                 else:
                     
+                    # token is something else
+                    # add to sub-selection stack
                     stack.append(it)
                 
             elif it == 'not':
                 
+                # token is negation
+                # turn on negation for the next set
                 negate = True
                 continue
                 
             elif it == '(':
                 
+                # token is a parenthesis
+                # start a new sub-selection
                 sub = True
                 continue
                 
             elif it[:3] == 'GO:':
                 
+                # token is a GO term
+                # get the vertex selection by the single term method
+                this_set = self.select_by_go_single(
+                    it,
+                    go_desc = go_desc,
+                    aspects = aspects,
+                )
                 
+            elif it in ops:
+                
+                # token is an operator
+                # set it for use at the next operation
+                op = ops[it]
+            
+            if this_set is not None:
+                
+                if op is not None:
+                    
+                    result = getattr(result, op)(this_set)
+                
+                else:
+                    
+                    result = this_set
+                
+                this_set = None
+                op       = None
+        
+        return result
 
     def label_by_go(self, label, go_terms, **kwargs):
         """
