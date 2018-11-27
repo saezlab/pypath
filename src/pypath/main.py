@@ -9652,11 +9652,15 @@ class PyPath(object):
         if sources is None:
             sources = data_formats.pathway
 
-        CC_EXTRACELL   = 'GO:0005576'
-        CC_EXOSOME     = 'GO:0070062'
-        CC_PLASMAMEM   = 'GO:0005887'
-        MF_RECBINDING  = 'GO:0005102'
-        MF_RECACTIVITY = 'GO:0038023'
+        CC_EXTRACELL   = 'GO:0005576' # select all extracellular
+        CC_EXOSOME     = 'GO:0070062' # remove exosome localized proteins
+        CC_PLASMAMEM   = 'GO:0005887' # select plasma membrane proteins
+        MF_RECBINDING  = 'GO:0005102' # select ligands
+        MF_RECACTIVITY = 'GO:0038023' # select receptors
+        MF_ECM_STRUCT  = 'GO:0005201' # select matrix structure proteins
+                                      # e.g. collagene
+        MF_CATALYTIC   = 'GO:0003824' # select enzymes, e.g. MMPs
+        
 
         if inference_from_go:
             
