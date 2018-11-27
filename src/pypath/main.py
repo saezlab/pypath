@@ -78,7 +78,7 @@ except ImportError:#ModuleNotFoundError:
 try:
     import pandas
 
-except ImportError:#ModuleNotFoundError:
+except ModuleNotFoundError:
     sys.stdout.write('\t:: Module `pandas` not available.\n')
     sys.stdout.flush()
 
@@ -111,7 +111,11 @@ from pypath.gr_plot import *
 from pypath.progress import *
 import pypath.settings as settings
 
+# to make it accessible directly from the module
 omnipath = data_formats.omnipath
+
+# this is for GO terms parsing:
+__rego = re.compile(r'and|or|not|\(|\)|GO:[0-9]{7}')
 
 # XXX: The following aliases are already defined in common.py
 if 'long' not in __builtins__:
@@ -9580,8 +9584,13 @@ class PyPath(object):
 
         return toDel, disrupted
 
-    def select_by_go(self, go_terms, go_desc=None, aspects=('C', 'F', 'P'),
-                     method='ANY'):
+    def select_by_go_old(
+            self,
+            go_terms,
+            go_desc=None,
+            aspects=('C', 'F', 'P'),
+            method='ANY',
+        ):
         """
         Selects the nodes annotated by certain GO terms.
 
@@ -9591,15 +9600,18 @@ class PyPath(object):
             If `ANY` nodes annotated with any of the terms returned.
             If `ALL` nodes annotated with all the terms returned.
         """
-
-        _method = (
-            lambda s1, s2: not s2.difference(s1)
-            if method == 'ALL' else
-            lambda s1, s2: s1.intersection(s2)
-        )
-
-        def _method(s1, s2):
-            return s1.intersection(s2)
+        
+        if method == 'ALL':
+            
+            def _method(s1, s2):
+                
+                return s2.difference(s1)
+            
+        else:
+            
+            def _method(s1, s2):
+                
+                return s1.intersection(s2)
 
         if go_desc is None:
             go_desc = dataio.go_descendants_goose(aspects = aspects)
@@ -9625,6 +9637,114 @@ class PyPath(object):
         )
 
         return vids
+    
+    def select_by_go(
+            self,
+            go_terms,
+            go_desc=None,
+            aspects=('C', 'F', 'P'),
+            method='ANY',
+        ):
+        """
+        Selects the nodes annotated by certain GO terms.
+
+        Returns set of vertex IDs.
+
+        :param str method:
+            If `ANY` nodes annotated with any of the terms returned.
+            If `ALL` nodes annotated with all the terms returned.
+        """
+        
+        pass
+    
+    def select_by_go_single(self, term, go_desc, aspects = ('C', 'F', 'P')):
+        """
+        Retrieves the vertex IDs of all vertices annotated with a Gene
+        Ontology term or its descendants.
+        
+        The method is not aware which aspect the term belongs to, it checks
+        in all aspects, but providing the ``aspects`` argument you can
+        avoid loading all data from GO and also checking unnecessarily in
+        all.
+        """
+        
+        if go_desc is None:
+            
+            go_desc = dataio.go_descendants_goose(aspects = aspects)
+        
+        if 'go' not in self.graph.vs.attributes():
+            
+            self.go_annotate(aspects = aspects)
+        
+        all_terms = go_desc[term]
+        all_terms.add(term)
+        
+        return set(
+            v.index
+            for v in self.graph.vs
+            if any(v['go'][a] & all_terms for a in aspects)
+        )
+    
+    def select_by_go_expr(
+            self,
+            go_expr,
+            go_desc = None,
+            aspects = ('C', 'F', 'P'),
+        ):
+        """
+        Selects vertices based on an expression of Gene Ontology terms.
+        
+        :param str go_expr:
+            An expression of Gene Ontology terms. E.g.
+            ``'(GO:0005576 and not GO:0070062) or GO:0005887'``. Parentheses
+            and usual Python keywords like ``and``, ``or`` and ``not``
+            can be used.
+        """
+        
+        ops = {
+            'and': 'intersection',
+            'or':  'union',
+        }
+        
+        if go_desc is None:
+            
+            go_desc = dataio.go_descendants_goose(aspects = aspects)
+        
+        if isinstance(go_expr, common.basestring):
+            
+            go_expr = __rego.findall(go_expr)
+        
+        result = set()
+        stack  = []
+        sub    = False
+        negate = False
+        op     = None
+        
+        for it in go_expr:
+            
+            if sub:
+                
+                if it == ')':
+                    
+                    stack.append(it)
+                
+                else:
+                    
+                    stack.append(it)
+                
+            elif it == 'not':
+                
+                negate = True
+                continue
+                
+            elif it == '(':
+                
+                sub = True
+                continue
+                
+            elif it[:3] == 'GO:':
+                
+                
 
     def label_by_go(self, label, go_terms, **kwargs):
         """
