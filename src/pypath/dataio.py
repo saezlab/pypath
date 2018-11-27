@@ -8193,3 +8193,48 @@ def __get_matrisome_2():
     _ = next(c.result)
     
     return set(r.decode('utf-8').split(',')[1] for r in c.result)
+
+def get_membranome():
+    
+    membr_url = urls.urls['membranome']['baseurl'] % ('membranes', '')
+    c = curl.Curl(membr_url, large = True, silent = False)
+    membr_data = json.loads(c.fileobj.read().decode('utf-8'))
+    del c
+    
+    membr = dict((m['id'], m) for m in membr_data['objects'])
+    
+    page = 1
+    prot_all = []
+    
+    prg = progress.Progress(7, 'Downloading Membranome', 1)
+    
+    while True:
+        
+        prg.step()
+        
+        prot_url = urls.urls['membranome']['baseurl'] % (
+            'proteins',
+            '?pageSize=1000&pageNum=%u' % page,
+        )
+        c = curl.Curl(prot_url, large = True, silent = True)
+        prot = json.loads(c.fileobj.read().decode('utf-8'))
+        
+        prot_all.extend(prot['objects'])
+        
+        if prot['page_end'] >= prot['total_objects']:
+            
+            break
+        
+        page = prot['page_num'] + 1
+    
+    prg.terminate()
+    
+    for p in prot_all:
+        
+        yield (
+            p['uniprotcode'],
+            membr[p['membrane_id']]['name'],
+            membr[p['membrane_id']]['topology_in']
+                if p['topology_show_in'] else
+            membr[p['membrane_id']]['topology_out'],
+        )

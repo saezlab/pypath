@@ -866,7 +866,12 @@ urls = {
         'url_xls': 'http://matrisomeproject.mit.edu/static/media/uploads/'\
             'Files/%s%%20in%%20silico%%20matrisome/'\
             'matrisome_%s_masterlist.xls',
-    }
+    },
+    'membranome': {
+        'label': 'Database of single helix transmembrane proteins: '\
+            'Membranome',
+        'baseurl': 'http://lomize-group-membranome.herokuapp.com/%s%s',
+    },
 }
 
 files = {
