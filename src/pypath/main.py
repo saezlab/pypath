@@ -9684,9 +9684,35 @@ class PyPath(object):
             lig_rec_edges = set()
             lig_lig_edges = set()
             rec_rec_edges = set()
+            
+            # vertex attributes to mark ligands and receptors
+            self.graph.vs['GO_ligand'] = [
+                False for _ in xrange(self.graph.vcount())
+            ]
+            self.graph.vs['GO_receptor'] = [
+                False for _ in xrange(self.graph.vcount())
+            ]
 
             for e in self.graph.es:
                 
+                # set boolean vertex attributes
+                if e.source in ligands:
+                    
+                    self.graph.vs[e.source]['GO_ligand'] = True
+                
+                if e.target in ligands:
+                    
+                    self.graph.vs[e.target]['GO_ligand'] = True
+                
+                if e.source in receptors:
+                    
+                    self.graph.vs[e.source]['GO_receptors'] = True
+                
+                if e.target in receptors:
+                    
+                    self.graph.vs[e.target]['GO_receptors'] = True
+                
+                # set edge attributes and collect edges to keep
                 di = e['dirs']
                 
                 srcs = set(
@@ -9697,7 +9723,8 @@ class PyPath(object):
                     self.up(u).index
                     for u in di.tgt(keep_undirected)
                 )
-
+                
+                # ligand-receptor interaction
                 if srcs & ligands and tgts & receptors:
                     lig_rec_edges.add(e.index)
                     lig_with_interactions.update(srcs)
@@ -9717,7 +9744,8 @@ class PyPath(object):
                     ):
                         
                         di.sources[di.reverse].add('GO_lig_rec')
-
+                
+                # ligand-ligand interaction
                 elif keep_lig_lig and srcs & ligands and tgts & ligands:
                     lig_lig_edges.add(e.index)
                     e['sources'].add('GO_lig_lig')
@@ -9727,7 +9755,8 @@ class PyPath(object):
                         if d:
                             
                             d.add('GO_lig_lig')
-
+                
+                # receptor-receptor interaction
                 elif keep_rec_rec and srcs & receptors and tgts & receptors:
                     rec_rec_edges.add(e.index)
                     e['sources'].add('GO_rec_rec')
