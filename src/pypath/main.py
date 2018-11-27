@@ -9655,9 +9655,27 @@ class PyPath(object):
             If `ALL` nodes annotated with all the terms returned.
         """
         
-        pass
+        _method = 'union' if method == 'ANY' else 'intersection'
+        
+        if go_desc is None:
+            
+            go_desc = dataio.go_descendants_goose(aspects = aspects)
+        
+        return getattr(set, _method)(
+            self.select_by_go_single(
+                term = term,
+                go_desc = go_desc,
+                aspects = aspects,
+            )
+            for term in go_terms
+        )
     
-    def select_by_go_single(self, term, go_desc, aspects = ('C', 'F', 'P')):
+    def select_by_go_single(
+            self,
+            term,
+            go_desc = None,
+            aspects = ('C', 'F', 'P'),
+        ):
         """
         Retrieves the vertex IDs of all vertices annotated with a Gene
         Ontology term or its descendants.
