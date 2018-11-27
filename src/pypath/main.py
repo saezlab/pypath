@@ -9638,6 +9638,51 @@ class PyPath(object):
 
         for vid in vids:
             self.graph.vs[vid][label] = True
+    
+    def network_by_go(
+            self,
+            node_categories,
+            network_sources = None,
+            include = None,
+            exclude = None,
+            prefix  = 'GO',
+            delete  = True,
+            vertex_attrs = True,
+            edge_attrs = True,
+        ):
+        """
+        Creates or filters a network based on Gene Ontology annotations.
+        
+        :param dict node_categories:
+            A dict with custom category labels as keys and expressions of
+            GO terms as values. E.g.
+            ``{'extracell': 'GO:0005576 and not GO:0070062',
+               'plasmamem': 'GO:0005887'}``.
+        :param dict network_sources:
+            A dict with anything as keys and network input format definintions
+            (``input_formats.ReadSettings`` instances) as values.
+        :param list include:
+            A list of tuples of category label pairs. By default we keep all
+            edges connecting proteins annotated with any of the defined
+            categories. If ``include`` is defined then only edges between
+            category pairs defined here will be kept and all others deleted.
+        :param list exclude:
+            Similarly to include, all edges will be kept but the ones listed
+            in ``exclude`` will be deleted.
+        :param str prefix:
+            Prefix for all vertex and edge attributes created in this
+            operation. E.g. if you have a category label 'bar' and prefix
+            is 'foo' then you will have a new vertex attribute 'foo_bar'.
+        :param bool delete:
+            Delete the vertices and edges which don't belong to any of the
+            categories.
+        :param bool vertex_attrs:
+            Create vertex attributes.
+        :param bool edge_attrs:
+            Create edge attributes.
+        """
+        
+        pass
 
     def load_ligand_receptor_network(self, lig_rec_resources=True,
                                      inference_from_go=True,
@@ -9660,7 +9705,6 @@ class PyPath(object):
         MF_ECM_STRUCT  = 'GO:0005201' # select matrix structure proteins
                                       # e.g. collagene
         MF_CATALYTIC   = 'GO:0003824' # select enzymes, e.g. MMPs
-        
 
         if inference_from_go:
             
