@@ -872,6 +872,13 @@ urls = {
             'Membranome',
         'baseurl': 'http://lomize-group-membranome.herokuapp.com/%s%s',
     },
+    'exocarta': {
+        'label': 'Exosome protein, RNA and lipid database',
+        'url_protein': 'http://exocarta.org/Archive/'\
+            'EXOCARTA_PROTEIN_MRNA_DETAILS_5.txt',
+        'url_study': 'http://exocarta.org/Archive/'
+            'EXOCARTA_EXPERIMENT_DETAILS_5.txt',
+    }
 }
 
 files = {

@@ -1075,7 +1075,11 @@ phosphoelm_taxids = {9606: 'Homo sapiens',
                      9940: 'Ovis aries',
                      10116: 'Rattus norvegicus',
                      9823: 'Sus scrofa',
-                     8355: 'Xenopus laevis'}
+                     8355: 'Xenopus laevis',
+                     10141: 'Cavia porcellus',
+                     9796: 'Equus caballus',
+                     7227: 'Drosophila melanogaster',
+}
 
 dbptm_taxids = {9606: 'HUMAN',
                 10090: 'MOUSE',

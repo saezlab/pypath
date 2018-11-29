@@ -8238,3 +8238,52 @@ def get_membranome():
                 if p['topology_show_in'] else
             membr[p['membrane_id']]['topology_out'],
         )
+
+def get_exocarta(organism = 9606, types = None):
+    """
+    :param set types:
+        Molecule types to retrieve. Possible values: `protein`, `mrna`.
+    """
+    
+    types = types or {'protein'}
+    
+    organism = common.phosphoelm_taxids[organism]
+    
+    taxid_rev = dict((v, k) for k, v in iteritems(common.phosphoelm_taxids))
+    
+    # collecting the references
+    url_s = urls.urls['exocarta']['url_study']
+    c = curl.Curl(url_s, large = True, silent = False)
+    _ = next(c.result)
+    
+    studies = {}
+    
+    for s in c.result:
+        
+        s = s.decode('utf-8').split('\t')
+        
+        studies[int(s[0])] = (
+            s[1], # PubMed ID
+            tuple(taxid_rev[t] for t in s[2].split('|')), # organism
+            s[4], # sample source (cell type, tissue)
+        )
+    
+    # processing proteins
+    url_p = urls.urls['exocarta']['url_protein']
+    c = curl.Curl(url_p, large = True, silent = False)
+    _ = next(c.result)
+    
+    for s in c.result:
+        
+        s = s.decode('utf-8').split('\t')
+        
+        if s[4] != organism or s[1] not in types:
+            
+            continue
+        
+        yield (
+            s[2], # Entrez ID
+            s[3], # Gene Symbol
+            common.phosphoelm_taxids[s[4]], # NCBI Taxonomy ID
+            studies[s[5]], # study reference
+        )
