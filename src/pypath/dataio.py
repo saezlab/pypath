@@ -8245,6 +8245,38 @@ def get_exocarta(organism = 9606, types = None):
         Molecule types to retrieve. Possible values: `protein`, `mrna`.
     """
     
+    return _get_exocarta_vesiclepedia(
+        database = 'exocarta',
+        organism = organism,
+        types = types,
+    )
+
+def get_vesiclepedia(organism = 9606, types = None):
+    """
+    :param set types:
+        Molecule types to retrieve. Possible values: `protein`, `mrna`.
+    """
+    
+    return _get_exocarta_vesiclepedia(
+        database = 'vesiclepedia',
+        organism = organism,
+        types = types,
+    )
+
+def _get_exocarta_vesiclepedia(
+        database = 'exocarta',
+        organism = 9606,
+        types = None
+    ):
+    """
+    :param str database:
+        Which database to download: ExoCarta or Vesiclepedia.
+    :param set types:
+        Molecule types to retrieve. Possible values: `protein`, `mrna`.
+    """
+    
+    database = database.lower()
+    
     types = types or {'protein'}
     
     organism = common.phosphoelm_taxids[organism]
@@ -8287,7 +8319,3 @@ def get_exocarta(organism = 9606, types = None):
             taxid_rev[s[4]], # NCBI Taxonomy ID
             studies[int(s[5])], # study reference
         )
-
-def get_vesiclepedia(organism = 9606, types = None):
-    
-    
