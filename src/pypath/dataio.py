@@ -8263,7 +8263,7 @@ def get_exocarta(organism = 9606, types = None):
         s = s.decode('utf-8').split('\t')
         
         studies[int(s[0])] = (
-            s[1], # PubMed ID
+            s[1] if s[1] != '0' else None, # PubMed ID
             tuple(taxid_rev[t] for t in s[2].split('|')), # organism
             s[4], # sample source (cell type, tissue)
         )
@@ -8284,6 +8284,6 @@ def get_exocarta(organism = 9606, types = None):
         yield (
             s[2], # Entrez ID
             s[3], # Gene Symbol
-            common.phosphoelm_taxids[s[4]], # NCBI Taxonomy ID
-            studies[s[5]], # study reference
+            taxid_rev[s[4]], # NCBI Taxonomy ID
+            studies[int(s[5])], # study reference
         )

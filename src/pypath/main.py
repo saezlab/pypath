@@ -10663,6 +10663,58 @@ class PyPath(object):
                         'membranome_location'
                     ] = (mem, side)
     
+    def load_exocarta_attrs(self, load_samples = False, load_refs = False):
+        """
+        Creates vertex attributes from ExoCarta data. Creates a boolean
+        attribute ``exocarts_exosomal`` which tells whether a protein is
+        in ExoCarta i.e. has been found in exosomes. Optionally creates
+        attributes ``exocarta_samples`` and ``exocarta_refs`` listing the
+        sample tissue and the PubMed references, respectively.
+        """
+        
+        exo = dataio.get_exocarta(organism = self.ncbi_tax_id)
+        
+        self.graph.vs['exocarta_exosomal'] = [
+            False for _ in xrange(self.graph.vcount())
+        ]
+        if load_samples:
+            
+            self.graph.vs['exocarta_samples'] = [
+                set() for _ in xrange(self.graph.vcount())
+            ]
+        if load_refs:
+            
+            self.graph.vs['exocarta_refs'] = [
+                set() for _ in xrange(self.graph.vcount())
+            ]
+        
+        for e in exo:
+            
+            uniprots = self.mapper.map_name(
+                e[1],
+                'genesymbol',
+                'uniprot',
+                ncbi_tax_id = self.ncbi_tax_id,
+            )
+            
+            for u in uniprots:
+                
+                if u not in self.nodInd:
+                    
+                    continue
+                
+                v = self.graph.vs[self.nodDct[u]]
+                
+                v['exocarta_exosomal'] = True
+                
+                if load_samples:
+                    
+                    v['exocarta_samples'].add(e[3][2])
+                
+                if load_refs and e[3][0] is not None:
+                    
+                    v['exocarta_refs'].add(e[3][0])
+    
     def set_kinases(self):
         """
         Creates a vertex attribute `kin` with value *True* if
