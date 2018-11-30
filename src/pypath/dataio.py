@@ -8294,16 +8294,28 @@ def _get_exocarta_vesiclepedia(
         
         s = s.decode('utf-8').split('\t')
         
+        organisms = tuple(
+            taxid_rev[t.strip()]
+            for t in s[2].split('|')
+            if t.strip() in taxid_rev
+        )
+        
+        if not organisms:
+            
+            continue
+        
         stud = (
             s[1] if s[1] != '0' else None, # PubMed ID
-            tuple(taxid_rev[t] for t in s[2].split('|')), # organism
+            organisms, # organism
             s[4], # sample source (cell type, tissue)
         )
         
         if database == 'vesiclepedia':
             
+            vtype = s[11].strip()
+            
             stud += (
-                s[11],
+                tuple(vtype.split('/')) if vtype else (),
             )
         
         studies[int(s[0])] = tuple(stud)

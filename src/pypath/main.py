@@ -10663,7 +10663,11 @@ class PyPath(object):
                         'membranome_location'
                     ] = (mem, side)
     
-    def load_exocarta_attrs(self, load_samples = False, load_refs = False):
+    def load_exocarta_attrs(
+            self,
+            load_samples = False,
+            load_refs = False,
+        ):
         """
         Creates vertex attributes from ExoCarta data. Creates a boolean
         attribute ``exocarts_exosomal`` which tells whether a protein is
@@ -10672,19 +10676,71 @@ class PyPath(object):
         sample tissue and the PubMed references, respectively.
         """
         
-        exo = dataio.get_exocarta(organism = self.ncbi_tax_id)
+        self._load_exocarta_vesiclepedia_attrs(
+            database = 'exocarta',
+            load_samples = load_samples,
+            load_refs = load_refs,
+        )
+    
+    def load_vesiclepedia_attrs(
+            self,
+            load_samples = False,
+            load_refs = False,
+            load_vesicle_type = False,
+        ):
+        """
+        Creates vertex attributes from Vesiclepedia data. Creates a boolean
+        attribute ``vesiclepedia_in_vesicle`` which tells whether a protein is
+        in ExoCarta i.e. has been found in exosomes. Optionally creates
+        attributes ``vesiclepedia_samples``, ``vesiclepedia_refs`` and
+        ``vesiclepedia_vesicles`` listing the sample tissue, the PubMed
+        references and the vesicle types, respectively.
+        """
         
-        self.graph.vs['exocarta_exosomal'] = [
+        self._load_exocarta_vesiclepedia_attrs(
+            database = 'vesiclepedia',
+            load_samples = load_samples,
+            load_refs = load_refs,
+            load_vesicle_type = load_vesicle_type,
+        )
+    
+    def _load_exocarta_vesiclepedia_attrs(
+            self,
+            database = 'exocarta',
+            load_samples = False,
+            load_refs = False,
+            load_vesicle_type = False,
+        ):
+        
+        database = database.lower()
+        
+        exo = dataio._get_exocarta_vesiclepedia(
+            database = database,
+            organism = self.ncbi_tax_id
+        )
+        
+        bool_attr = (
+            'exocarta_exosomal'
+                if database == 'exocarta' else
+            'vesiclepedia_in_vesicle'
+        )
+        
+        self.graph.vs[bool_attr] = [
             False for _ in xrange(self.graph.vcount())
         ]
         if load_samples:
             
-            self.graph.vs['exocarta_samples'] = [
+            self.graph.vs['%s_samples' % database] = [
                 set() for _ in xrange(self.graph.vcount())
             ]
         if load_refs:
             
-            self.graph.vs['exocarta_refs'] = [
+            self.graph.vs['%s_refs' % database] = [
+                set() for _ in xrange(self.graph.vcount())
+            ]
+        if database == 'vesiclepedia' and load_vesicle_type:
+            
+            self.graph.vs['%s_vesicles' % database] = [
                 set() for _ in xrange(self.graph.vcount())
             ]
         
@@ -10705,15 +10761,19 @@ class PyPath(object):
                 
                 v = self.graph.vs[self.nodDct[u]]
                 
-                v['exocarta_exosomal'] = True
+                v[bool_attr] = True
                 
                 if load_samples:
                     
-                    v['exocarta_samples'].add(e[3][2])
+                    v['%s_samples' % database].add(e[3][2])
                 
                 if load_refs and e[3][0] is not None:
                     
-                    v['exocarta_refs'].add(e[3][0])
+                    v['%s_refs' % database].add(e[3][0])
+                
+                if database == 'vesiclepedia' and load_vesicle_type:
+                    
+                    v['%s_vesicles' % database].update(set(e[3][3]))
     
     def set_kinases(self):
         """
