@@ -8284,7 +8284,7 @@ def _get_exocarta_vesiclepedia(
     taxid_rev = dict((v, k) for k, v in iteritems(common.phosphoelm_taxids))
     
     # collecting the references
-    url_s = urls.urls['exocarta']['url_study']
+    url_s = urls.urls[database]['url_study']
     c = curl.Curl(url_s, large = True, silent = False)
     _ = next(c.result)
     
@@ -8294,14 +8294,22 @@ def _get_exocarta_vesiclepedia(
         
         s = s.decode('utf-8').split('\t')
         
-        studies[int(s[0])] = (
+        stud = (
             s[1] if s[1] != '0' else None, # PubMed ID
             tuple(taxid_rev[t] for t in s[2].split('|')), # organism
             s[4], # sample source (cell type, tissue)
         )
+        
+        if database == 'vesiclepedia':
+            
+            stud += (
+                s[11],
+            )
+        
+        studies[int(s[0])] = tuple(stud)
     
     # processing proteins
-    url_p = urls.urls['exocarta']['url_protein']
+    url_p = urls.urls[database]['url_protein']
     c = curl.Curl(url_p, large = True, silent = False)
     _ = next(c.result)
     
