@@ -8287,3 +8287,7 @@ def get_exocarta(organism = 9606, types = None):
             taxid_rev[s[4]], # NCBI Taxonomy ID
             studies[int(s[5])], # study reference
         )
+
+def get_vesiclepedia(organism = 9606, types = None):
+    
+    

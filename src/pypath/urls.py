@@ -878,6 +878,13 @@ urls = {
             'EXOCARTA_PROTEIN_MRNA_DETAILS_5.txt',
         'url_study': 'http://exocarta.org/Archive/'
             'EXOCARTA_EXPERIMENT_DETAILS_5.txt',
+    },
+    'vesiclepedia': {
+        'label': 'Extracellular vesicle database',
+        'url_protein': 'http://microvesicles.org/Archive/'\
+            'VESICLEPEDIA_PROTEIN_MRNA_DETAILS_4.1.txt',
+        'url_study': 'http://microvesicles.org/Archive/'\
+            'VESICLEPEDIA_EXPERIMENT_DETAILS_4.1.txt',
     }
 }
 
