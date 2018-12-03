@@ -6,13 +6,14 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>pypath.main &#8212; pypath 0.7.115 documentation</title>
+    <title>pypath.main &#8212; pypath 0.7.117 documentation</title>
     <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
@@ -25,7 +26,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.115 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.117 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -122,7 +123,7 @@
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">pandas</span>
 
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span><span class="c1">#ModuleNotFoundError:</span>
+<span class="k">except</span> <span class="n">ModuleNotFoundError</span><span class="p">:</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">:: Module `pandas` not available.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
@@ -155,7 +156,11 @@
 <span class="kn">from</span> <span class="nn">pypath.progress</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">pypath.settings</span> <span class="k">as</span> <span class="nn">settings</span>
 
+<span class="c1"># to make it accessible directly from the module</span>
 <span class="n">omnipath</span> <span class="o">=</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">omnipath</span>
+
+<span class="c1"># this is for GO terms parsing:</span>
+<span class="n">_rego</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;and|or|not|\(|\)|GO:[0-9]</span><span class="si">{7}</span><span class="s1">&#39;</span><span class="p">)</span>
 
 <span class="c1"># XXX: The following aliases are already defined in common.py</span>
 <span class="k">if</span> <span class="s1">&#39;long&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">__builtins__</span><span class="p">:</span>
@@ -2532,14 +2537,7 @@
                         <span class="s2">&quot;taxB&quot;</span><span class="p">:</span> <span class="n">taxB</span><span class="p">,</span>
                         <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">intType</span>
                     <span class="p">}</span>
-                    <span class="c1"># except:</span>
-                    <span class="c1"># self.ownlog.msg(2,(&quot;&quot;&quot;Wrong name column indexes (%u and %u),</span>
-                    <span class="c1"># or wrong separator (%s)? Line #%u\n&quot;&quot;&quot;</span>
-                    <span class="c1">#% (</span>
-                    <span class="c1">#settings.nameColA, settings.nameColB,</span>
-                    <span class="c1"># settings.separator, lnum)), &#39;ERROR&#39;)</span>
-                    <span class="c1">#readError = 1</span>
-                    <span class="c1"># break</span>
+
                     <span class="c1"># getting additional edge and node attributes</span>
                     <span class="n">attrsEdge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_attrs</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">extraEdgeAttrs</span><span class="p">,</span>
                                                <span class="n">lnum</span><span class="p">)</span>
@@ -2547,6 +2545,15 @@
                                                 <span class="n">lnum</span><span class="p">)</span>
                     <span class="n">attrsNodeB</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_attrs</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">extraNodeAttrsB</span><span class="p">,</span>
                                                 <span class="n">lnum</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">mark_source</span><span class="p">:</span>
+
+                        <span class="n">attrsNodeA</span><span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">mark_source</span><span class="p">]</span> <span class="o">=</span> <span class="n">thisEdgeDir</span>
+
+                    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">mark_target</span><span class="p">:</span>
+
+                        <span class="n">attrsNodeB</span><span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">mark_target</span><span class="p">]</span> <span class="o">=</span> <span class="n">thisEdgeDir</span>
+
                     <span class="c1"># merging dictionaries</span>
                     <span class="n">nodeAttrs</span> <span class="o">=</span> <span class="p">{</span>
                         <span class="s2">&quot;attrsNodeA&quot;</span><span class="p">:</span> <span class="n">attrsNodeA</span><span class="p">,</span>
@@ -2605,6 +2612,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads the Human Plasma Membrane Receptome as a list. This</span>
 <span class="sd">        resource is human only.</span>
+<span class="sd">        The list name is ``rec``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="s1">&#39;rec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">uniqList</span><span class="p">(</span><span class="n">common</span><span class="o">.</span><span class="n">flatList</span><span class="p">([</span>
@@ -2612,10 +2620,35 @@
                                  <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="mi">9606</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">dataio</span><span class="o">.</span><span class="n">get_hpmr</span><span class="p">()]))</span></div>
 
+<div class="viewcode-block" id="PyPath.cspa_list"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.cspa_list">[docs]</a>    <span class="k">def</span> <span class="nf">cspa_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads a list of cell surface proteins from the Cell Surface Protein</span>
+<span class="sd">        Atlas as a list. This resource is available for human and mouse.</span>
+<span class="sd">        The list name is ``cspa``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="s1">&#39;cspa&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="n">dataio</span><span class="o">.</span><span class="n">get_cspa</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="PyPath.surfaceome_list"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.surfaceome_list">[docs]</a>    <span class="k">def</span> <span class="nf">surfaceome_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_threshold</span> <span class="o">=</span> <span class="o">.</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads a list of cell surface proteins from the In Silico Human</span>
+<span class="sd">        Surfaceome as a list. This resource is human only.</span>
+<span class="sd">        The list name is ``ishs``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="s1">&#39;ishs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">uniprot</span>
+            <span class="k">for</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">dataio</span><span class="o">.</span><span class="n">get_surfaceome</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">score_threshold</span>
+        <span class="p">]</span></div>
+
 <div class="viewcode-block" id="PyPath.druggability_list"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.druggability_list">[docs]</a>    <span class="k">def</span> <span class="nf">druggability_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads the list of druggable proteins from DgiDB. This resource</span>
 <span class="sd">        is human only.</span>
+<span class="sd">        The list name is ``dgb``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="s1">&#39;dgb&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">uniqList</span><span class="p">(</span><span class="n">common</span><span class="o">.</span><span class="n">flatList</span><span class="p">([</span>
@@ -6058,7 +6091,7 @@
 
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">es_or_vs</span><span class="p">:</span>
 
-                <span class="k">if</span> <span class="n">something</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="n">attr</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">common</span><span class="o">.</span><span class="n">something</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="n">attr</span><span class="p">]):</span>
                     <span class="k">yield</span> <span class="n">i</span><span class="o">.</span><span class="n">index</span> <span class="k">if</span> <span class="n">index</span> <span class="k">else</span> <span class="n">i</span></div>
 
 <div class="viewcode-block" id="PyPath.having_eattr"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.having_eattr">[docs]</a>    <span class="k">def</span> <span class="nf">having_eattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -6160,6 +6193,19 @@
 
 <div class="viewcode-block" id="PyPath.first_neighbours"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.first_neighbours">[docs]</a>    <span class="k">def</span> <span class="nf">first_neighbours</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Looks for the first neighbours of a given node and returns a</span>
+<span class="sd">        list of their UniProt IDs.</span>
+
+<span class="sd">        :arg str node:</span>
+<span class="sd">            The UniProt ID of the node of interest. Can also be the</span>
+<span class="sd">            index of such node [int].</span>
+<span class="sd">        :arg bool indices:</span>
+<span class="sd">            Optional, ``False`` by default. Whether to return the</span>
+<span class="sd">            neighbour nodes indices or their UniProt IDs.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*list*) -- The list containing the first neighbours of the</span>
+<span class="sd">            queried node.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
@@ -6189,6 +6235,22 @@
 
 <div class="viewcode-block" id="PyPath.second_neighbours"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.second_neighbours">[docs]</a>    <span class="k">def</span> <span class="nf">second_neighbours</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">with_first</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Looks for the (first and) second neighbours of a given node and</span>
+<span class="sd">        returns a list of their UniProt IDs.</span>
+
+<span class="sd">        :arg str node:</span>
+<span class="sd">            The UniProt ID of the node of interest. Can also be the</span>
+<span class="sd">            index of such node [int].</span>
+<span class="sd">        :arg bool indices:</span>
+<span class="sd">            Optional, ``False`` by default. Whether to return the</span>
+<span class="sd">            neighbour nodes indices or their UniProt IDs.</span>
+<span class="sd">        :arg bool wit_first:</span>
+<span class="sd">            Optional, ``False`` by default. Whether to return also the</span>
+<span class="sd">            first neighbours or not.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*list*) -- The list containing the second neighbours of the</span>
+<span class="sd">            queried node (including the first ones if specified).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
@@ -6227,12 +6289,19 @@
 
 <div class="viewcode-block" id="PyPath.all_neighbours"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.all_neighbours">[docs]</a>    <span class="k">def</span> <span class="nf">all_neighbours</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Looks for the first neighbours of all the nodes and creates an</span>
+<span class="sd">        attribute (``&#39;neighbours&#39;``) on each one of them containing a</span>
+<span class="sd">        list of their UniProt IDs.</span>
+
+<span class="sd">        :arg bool indices:</span>
+<span class="sd">            Optional, ``False`` by default. Whether to list the</span>
+<span class="sd">            neighbour nodes indices or their UniProt IDs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
         <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;neighbours&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">())]</span>
-        <span class="n">prg</span> <span class="o">=</span> <span class="n">Progress</span><span class="p">(</span>
-            <span class="n">total</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Searching neighbours&quot;</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+        <span class="n">prg</span> <span class="o">=</span> <span class="n">Progress</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Searching neighbours&quot;</span><span class="p">,</span>
+                       <span class="n">interval</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">:</span>
             <span class="n">v</span><span class="p">[</span><span class="s1">&#39;neighbours&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_neighbours</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">)</span>
@@ -6242,19 +6311,35 @@
 
 <div class="viewcode-block" id="PyPath.jaccard_edges"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.jaccard_edges">[docs]</a>    <span class="k">def</span> <span class="nf">jaccard_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the Jaccard similarity index between the sets of first</span>
+<span class="sd">        neighbours of all node pairs. **NOTE:** this method can take a</span>
+<span class="sd">        while to compute, e.g.: if the network has 10K nodes, the total</span>
+<span class="sd">        number of possible pairs to compute is:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">          \\binom{10^4}{2} = 49995000</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*list*) -- Large list of [tuple] elements containing the</span>
+<span class="sd">            node pair names [str] and their corresponding first</span>
+<span class="sd">            neighbours Jaccard index [float].</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_neighbours</span><span class="p">(</span><span class="n">indices</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">metaEdges</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">prg</span> <span class="o">=</span> <span class="n">Progress</span><span class="p">(</span>
-            <span class="n">total</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Calculating Jaccard-indices&quot;</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+        <span class="n">prg</span> <span class="o">=</span> <span class="n">Progress</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Calculating Jaccard-indices&quot;</span><span class="p">,</span>
+                       <span class="n">interval</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
 
+        <span class="c1"># XXX: could reduce to a single for loop using itertools.combinations()</span>
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
 
             <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">v</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">vcount</span><span class="p">()):</span>
                 <span class="n">vv</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
                 <span class="n">vw</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">w</span><span class="p">]</span>
+
+        <span class="c1"># XXX: Why not using the function from common.jaccard_index()?</span>
+
                 <span class="n">ja</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">vv</span><span class="p">[</span><span class="s1">&#39;neighbours&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">vw</span><span class="p">[</span><span class="s1">&#39;neighbours&#39;</span><span class="p">]))</span> <span class="o">/</span>
                       <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vv</span><span class="p">[</span><span class="s1">&#39;neighbours&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">vw</span><span class="p">[</span><span class="s1">&#39;neighbours&#39;</span><span class="p">])))</span>
                 <span class="n">metaEdges</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">vv</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">vw</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">ja</span><span class="p">))</span>
@@ -6265,8 +6350,28 @@
 
         <span class="k">return</span> <span class="n">metaEdges</span></div>
 
+    <span class="c1"># XXX: Should consider returning a generator instead of list in the</span>
+    <span class="c1">#      function above... that list and pa.graph are overflowing 16GB</span>
+    <span class="c1">#      of RAM + 8GB of swap (maybe Chrome and Atom also helping, but</span>
+    <span class="c1">#      you get the point)</span>
+
 <div class="viewcode-block" id="PyPath.jaccard_meta"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.jaccard_meta">[docs]</a>    <span class="k">def</span> <span class="nf">jaccard_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">jedges</span><span class="p">,</span> <span class="n">critical</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a (undirected) graph from a list of edges filtering by</span>
+<span class="sd">        their Jaccard index.</span>
+
+<span class="sd">        :arg list jedges:</span>
+<span class="sd">            List of [tuple] containing the edges node names [str] and</span>
+<span class="sd">            their Jaccard index. Basically, the output of</span>
+<span class="sd">            :py:meth:`pypath.main.PyPath.jaccard_edges`.</span>
+<span class="sd">        :arg float critical:</span>
+<span class="sd">            Specifies the threshold of the Jaccard index from above</span>
+<span class="sd">            which an edge will be included in the graph.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*igraph.Graph*) -- The Undirected graph instance containing</span>
+<span class="sd">            only the edges whose Jaccard similarity index is above the</span>
+<span class="sd">            threshold specified by *critical*.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
@@ -6290,17 +6395,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">negatives</span><span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span>
 
         <span class="n">neg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">negatives</span><span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-        <span class="n">prg</span> <span class="o">=</span> <span class="n">Progress</span><span class="p">(</span>
-            <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">neg</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Matching interactions&quot;</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+        <span class="n">prg</span> <span class="o">=</span> <span class="n">Progress</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">neg</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Matching interactions&quot;</span><span class="p">,</span>
+                       <span class="n">interval</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
         <span class="n">matches</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s1">&#39;negative&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="nb">set</span><span class="p">([])</span> <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;negative&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;negative&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span>
-        <span class="p">]</span>
-        <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s1">&#39;negative_refs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="nb">set</span><span class="p">([])</span> <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;negative_refs&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;negative_refs&#39;</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span>
-        <span class="p">]</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s1">&#39;negative&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">set</span><span class="p">([])</span> <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;negative&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;negative&#39;</span><span class="p">]</span>
+                            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">]</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s1">&#39;negative_refs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">set</span><span class="p">([])</span> <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;negative_refs&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
+                                 <span class="k">else</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;negative_refs&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">]</span>
 
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">neg</span><span class="p">:</span>
             <span class="n">aexists</span> <span class="o">=</span> <span class="n">n</span><span class="p">[</span><span class="s2">&quot;defaultNameA&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
@@ -6311,10 +6413,8 @@
 
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
                     <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">edge</span><span class="p">][</span><span class="s1">&#39;negative&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                    <span class="n">refs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
-                        <span class="nb">list</span><span class="p">(</span>
-                            <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">_refs</span><span class="o">.</span><span class="n">Reference</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">)),</span> <span class="n">n</span><span class="p">[</span>
-                                <span class="s1">&#39;attrsEdge&#39;</span><span class="p">][</span><span class="s1">&#39;references&#39;</span><span class="p">])))</span>
+                    <span class="n">refs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">_refs</span><span class="o">.</span><span class="n">Reference</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">)),</span>
+                                        <span class="n">n</span><span class="p">[</span><span class="s1">&#39;attrsEdge&#39;</span><span class="p">][</span><span class="s1">&#39;references&#39;</span><span class="p">])))</span>
                     <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="n">edge</span><span class="p">][</span><span class="s1">&#39;negative_refs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">refs</span><span class="p">)</span>
                     <span class="n">matches</span> <span class="o">+=</span> <span class="mi">1</span>
 
@@ -6340,13 +6440,15 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;negative&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
 
                 <span class="k">if</span> <span class="n">outFile</span><span class="p">:</span>
-                    <span class="n">out</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
-                        <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">target</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
-                        <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">][</span><span class="s1">&#39;label&#39;</span><span class="p">],</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">target</span><span class="p">][</span><span class="s1">&#39;label&#39;</span><span class="p">],</span>
-                        <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">])),</span>
-                        <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">pmid</span><span class="p">,</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;references&#39;</span><span class="p">])),</span>
-                        <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;negative&#39;</span><span class="p">]),</span> <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;negative_refs&#39;</span><span class="p">])</span>
-                    <span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                    <span class="n">out</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
+                                      <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">target</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
+                                      <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">][</span><span class="s1">&#39;label&#39;</span><span class="p">],</span>
+                                      <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">target</span><span class="p">][</span><span class="s1">&#39;label&#39;</span><span class="p">],</span>
+                                      <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">])),</span>
+                                      <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">pmid</span><span class="p">,</span>
+                                                   <span class="n">e</span><span class="p">[</span><span class="s1">&#39;references&#39;</span><span class="p">])),</span>
+                                      <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;negative&#39;</span><span class="p">]),</span>
+                                      <span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;negative_refs&#39;</span><span class="p">])])</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
 
                 <span class="k">if</span> <span class="n">lst</span><span class="p">:</span>
                     <span class="n">neg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
@@ -6377,19 +6479,19 @@
         <span class="k">if</span> <span class="s1">&#39;ptm&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="o">.</span><span class="n">attributes</span><span class="p">():</span>
             <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s1">&#39;ptm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">]</span>
 
-        <span class="n">header</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s1">&#39;UniProt_A&#39;</span><span class="p">,</span> <span class="s1">&#39;UniProt_B&#39;</span><span class="p">,</span> <span class="s1">&#39;GeneSymbol_A&#39;</span><span class="p">,</span> <span class="s1">&#39;GeneSymbol_B&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;Databases&#39;</span><span class="p">,</span> <span class="s1">&#39;PubMed_IDs&#39;</span><span class="p">,</span> <span class="s1">&#39;Stimulation&#39;</span><span class="p">,</span> <span class="s1">&#39;Inhibition&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;Substrate-isoform&#39;</span><span class="p">,</span> <span class="s1">&#39;Residue_number&#39;</span><span class="p">,</span> <span class="s1">&#39;Residue_letter&#39;</span><span class="p">,</span> <span class="s1">&#39;PTM_type&#39;</span>
-        <span class="p">]</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;UniProt_A&#39;</span><span class="p">,</span> <span class="s1">&#39;UniProt_B&#39;</span><span class="p">,</span> <span class="s1">&#39;GeneSymbol_A&#39;</span><span class="p">,</span> <span class="s1">&#39;GeneSymbol_B&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;Databases&#39;</span><span class="p">,</span> <span class="s1">&#39;PubMed_IDs&#39;</span><span class="p">,</span> <span class="s1">&#39;Stimulation&#39;</span><span class="p">,</span> <span class="s1">&#39;Inhibition&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;Substrate-isoform&#39;</span><span class="p">,</span> <span class="s1">&#39;Residue_number&#39;</span><span class="p">,</span> <span class="s1">&#39;Residue_letter&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;PTM_type&#39;</span><span class="p">]</span>
+
         <span class="n">stripJson</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[\[\]</span><span class="si">{}</span><span class="s1">\&quot;]&#39;</span><span class="p">)</span>
         <span class="c1"># first row is header</span>
         <span class="n">outl</span> <span class="o">=</span> <span class="p">[</span><span class="n">header</span><span class="p">]</span>
 
         <span class="k">with</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">header</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="n">prg</span> <span class="o">=</span> <span class="n">Progress</span><span class="p">(</span>
-                <span class="n">total</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">ecount</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Writing table&#39;</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">31</span><span class="p">)</span>
+            <span class="n">prg</span> <span class="o">=</span> <span class="n">Progress</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">ecount</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Writing table&#39;</span><span class="p">,</span>
+                           <span class="n">interval</span><span class="o">=</span><span class="mi">31</span><span class="p">)</span>
             <span class="n">uniqedges</span> <span class="o">=</span> <span class="p">[]</span>
 
             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">:</span>
@@ -6407,13 +6509,10 @@
                     <span class="n">dbs</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_dir</span><span class="p">(</span><span class="n">di</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                     <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dbs</span><span class="p">))</span>
                     <span class="c1"># references</span>
-                    <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
-                        <span class="n">r</span>
-                        <span class="k">for</span> <span class="n">rs</span> <span class="ow">in</span> <span class="p">[</span>
-                            <span class="n">refs</span> <span class="k">for</span> <span class="n">db</span><span class="p">,</span> <span class="n">refs</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;refs_by_source&#39;</span><span class="p">])</span>
-                            <span class="k">if</span> <span class="n">db</span> <span class="ow">in</span> <span class="n">dbs</span>
-                        <span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rs</span>
-                    <span class="p">]))</span>
+                    <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">r</span> <span class="k">for</span> <span class="n">rs</span> <span class="ow">in</span>
+                                         <span class="p">[</span><span class="n">refs</span> <span class="k">for</span> <span class="n">db</span><span class="p">,</span> <span class="n">refs</span>
+                                          <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;refs_by_source&#39;</span><span class="p">])</span>
+                                          <span class="k">if</span> <span class="n">db</span> <span class="ow">in</span> <span class="n">dbs</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rs</span><span class="p">]))</span>
                     <span class="c1"># signs</span>
                     <span class="n">row</span> <span class="o">+=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_sign</span><span class="p">(</span><span class="n">di</span><span class="p">)]</span>
                     <span class="c1"># domain-motif</span>
@@ -6428,12 +6527,11 @@
 
                                 <span class="k">if</span> <span class="n">dmi</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">protein</span> <span class="o">==</span> <span class="n">di</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
                                     <span class="n">uniqedges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
-                                    <span class="n">r</span> <span class="o">=</span> <span class="n">row</span> <span class="o">+</span> <span class="p">[</span>
-                                        <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">-</span><span class="si">%u</span><span class="s1">&#39;</span> <span class="o">%</span>
-                                        <span class="p">(</span><span class="n">dmi</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">protein</span><span class="p">,</span> <span class="n">dmi</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">isoform</span>
-                                         <span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dmi</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">number</span><span class="p">),</span>
-                                        <span class="n">dmi</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">dmi</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">typ</span>
-                                    <span class="p">]</span>
+                                    <span class="n">r</span> <span class="o">=</span> <span class="n">row</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">-</span><span class="si">%u</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dmi</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">protein</span><span class="p">,</span>
+                                                          <span class="n">dmi</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">isoform</span><span class="p">),</span>
+                                               <span class="nb">str</span><span class="p">(</span><span class="n">dmi</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">number</span><span class="p">),</span>
+                                               <span class="n">dmi</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                               <span class="n">dmi</span><span class="o">.</span><span class="n">ptm</span><span class="o">.</span><span class="n">typ</span><span class="p">]</span>
                                     <span class="c1"># here each ptm in separate row:</span>
                                     <span class="n">outl</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
                     <span class="c1"># row complete, appending to main list</span>
@@ -6468,19 +6566,17 @@
         <span class="k">if</span> <span class="s1">&#39;ptm&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="o">.</span><span class="n">attributes</span><span class="p">():</span>
             <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s1">&#39;ptm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">]</span>
 
-        <span class="n">header</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s1">&#39;UniProt_A&#39;</span><span class="p">,</span> <span class="s1">&#39;UniProt_B&#39;</span><span class="p">,</span> <span class="s1">&#39;GeneSymbol_B&#39;</span><span class="p">,</span> <span class="s1">&#39;GeneSymbol_A&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;Databases&#39;</span><span class="p">,</span> <span class="s1">&#39;PubMed_IDs&#39;</span><span class="p">,</span> <span class="s1">&#39;Stimulation&#39;</span><span class="p">,</span> <span class="s1">&#39;Inhibition&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;Domain-domain&#39;</span><span class="p">,</span> <span class="s1">&#39;Domain-motif-PTM&#39;</span><span class="p">,</span> <span class="s1">&#39;PTM-regulation&#39;</span>
-        <span class="p">]</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;UniProt_A&#39;</span><span class="p">,</span> <span class="s1">&#39;UniProt_B&#39;</span><span class="p">,</span> <span class="s1">&#39;GeneSymbol_B&#39;</span><span class="p">,</span> <span class="s1">&#39;GeneSymbol_A&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;Databases&#39;</span><span class="p">,</span> <span class="s1">&#39;PubMed_IDs&#39;</span><span class="p">,</span> <span class="s1">&#39;Stimulation&#39;</span><span class="p">,</span> <span class="s1">&#39;Inhibition&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;Domain-domain&#39;</span><span class="p">,</span> <span class="s1">&#39;Domain-motif-PTM&#39;</span><span class="p">,</span> <span class="s1">&#39;PTM-regulation&#39;</span><span class="p">]</span>
         <span class="n">stripJson</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[\[\]</span><span class="si">{}</span><span class="s1">\&quot;]&#39;</span><span class="p">)</span>
         <span class="c1"># first row is header</span>
         <span class="n">outl</span> <span class="o">=</span> <span class="p">[</span><span class="n">header</span><span class="p">]</span>
 
         <span class="k">with</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">header</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="n">prg</span> <span class="o">=</span> <span class="n">Progress</span><span class="p">(</span>
-                <span class="n">total</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">ecount</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Writing table&#39;</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">31</span><span class="p">)</span>
+            <span class="n">prg</span> <span class="o">=</span> <span class="n">Progress</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">ecount</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Writing table&#39;</span><span class="p">,</span>
+                           <span class="n">interval</span><span class="o">=</span><span class="mi">31</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">es</span><span class="p">:</span>
                 <span class="n">prg</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
@@ -6497,27 +6593,20 @@
                     <span class="n">dbs</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_dir</span><span class="p">(</span><span class="n">di</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                     <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dbs</span><span class="p">))</span>
                     <span class="c1"># references</span>
-                    <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
-                        <span class="n">r</span>
-                        <span class="k">for</span> <span class="n">rs</span> <span class="ow">in</span> <span class="p">[</span>
-                            <span class="n">refs</span> <span class="k">for</span> <span class="n">db</span><span class="p">,</span> <span class="n">refs</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;refs_by_source&#39;</span><span class="p">])</span>
-                            <span class="k">if</span> <span class="n">db</span> <span class="ow">in</span> <span class="n">dbs</span>
-                        <span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rs</span>
-                    <span class="p">]))</span>
+                    <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">r</span> <span class="k">for</span> <span class="n">rs</span> <span class="ow">in</span>
+                                         <span class="p">[</span><span class="n">refs</span> <span class="k">for</span> <span class="n">db</span><span class="p">,</span> <span class="n">refs</span> <span class="ow">in</span>
+                                          <span class="n">iteritems</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;refs_by_source&#39;</span><span class="p">])</span>
+                                          <span class="k">if</span> <span class="n">db</span> <span class="ow">in</span> <span class="n">dbs</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rs</span><span class="p">]))</span>
                     <span class="c1"># signs</span>
                     <span class="n">row</span> <span class="o">+=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_sign</span><span class="p">(</span><span class="n">di</span><span class="p">)]</span>
                     <span class="c1"># domain-domain</span>
                     <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;ddi&#39;</span><span class="p">]]))</span>
                     <span class="c1"># domain-motif</span>
-                    <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
-                        <span class="n">x</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;ptm&#39;</span><span class="p">]</span>
-                        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;Ptm&#39;</span>
-                    <span class="p">]))</span>
+                    <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;ptm&#39;</span><span class="p">]</span>
+                                         <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;Ptm&#39;</span><span class="p">]))</span>
                     <span class="c1"># domain-motif</span>
-                    <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
-                        <span class="n">x</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;ptm&#39;</span><span class="p">]</span>
-                        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;Regulation&#39;</span>
-                    <span class="p">]))</span>
+                    <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;ptm&#39;</span><span class="p">]</span> <span class="k">if</span>
+                                         <span class="n">x</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;Regulation&#39;</span><span class="p">]))</span>
                     <span class="c1"># row complete, appending to main list</span>
                     <span class="n">outl</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
 
@@ -6556,20 +6645,16 @@
 <span class="sd">            of edge attributes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">e</span> <span class="o">=</span> <span class="n">export</span><span class="o">.</span><span class="n">Export</span><span class="p">(</span>
-            <span class="n">pa</span> <span class="o">=</span> <span class="bp">self</span><span class="p">,</span>
-            <span class="n">extra_node_attrs</span> <span class="o">=</span> <span class="n">extra_node_attrs</span><span class="p">,</span>
-            <span class="n">extra_edge_attrs</span> <span class="o">=</span> <span class="n">extra_edge_attrs</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span>
-        <span class="p">)</span>
-        <span class="n">e</span><span class="o">.</span><span class="n">write_tab</span><span class="p">(</span><span class="n">unique_pairs</span> <span class="o">=</span> <span class="n">unique_pairs</span><span class="p">,</span> <span class="n">outfile</span> <span class="o">=</span> <span class="n">outfile</span><span class="p">)</span></div>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">export</span><span class="o">.</span><span class="n">Export</span><span class="p">(</span><span class="n">pa</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">extra_node_attrs</span><span class="o">=</span><span class="n">extra_node_attrs</span><span class="p">,</span>
+                          <span class="n">extra_edge_attrs</span><span class="o">=</span><span class="n">extra_edge_attrs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">e</span><span class="o">.</span><span class="n">write_tab</span><span class="p">(</span><span class="n">unique_pairs</span><span class="o">=</span><span class="n">unique_pairs</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="n">outfile</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PyPath.export_sif"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.export_sif">[docs]</a>    <span class="k">def</span> <span class="nf">export_sif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">outfile</span> <span class="o">=</span> <span class="n">outfile</span> <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> \
-            <span class="k">else</span> <span class="s1">&#39;network-</span><span class="si">%s</span><span class="s1">.sif&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
+        <span class="n">outfile</span> <span class="o">=</span> <span class="p">(</span><span class="n">outfile</span> <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                   <span class="k">else</span> <span class="s1">&#39;network-</span><span class="si">%s</span><span class="s1">.sif&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
 
@@ -6580,14 +6665,14 @@
                     <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">is_directed</span><span class="p">()</span> <span class="ow">and</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;undirected&#39;</span><span class="p">:</span>
                         <span class="k">continue</span>
 
-                    <span class="n">sign</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;undirected&#39;</span> \
-                        <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([[</span><span class="s1">&#39;+&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
-                                      <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_sign</span><span class="p">(</span><span class="n">d</span><span class="p">))</span> <span class="k">if</span> <span class="n">v</span><span class="p">])</span>
+                    <span class="n">sign</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;undirected&#39;</span> <span class="k">else</span>
+                            <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([[</span><span class="s1">&#39;+&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span>
+                                     <span class="nb">enumerate</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_sign</span><span class="p">(</span><span class="n">d</span><span class="p">))</span> <span class="k">if</span> <span class="n">v</span><span class="p">]))</span>
                     <span class="n">dirn</span> <span class="o">=</span> <span class="s1">&#39;=&#39;</span> <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;undirected&#39;</span> <span class="k">else</span> <span class="s1">&#39;&gt;&#39;</span>
-                    <span class="n">source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> \
-                        <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;undirected&#39;</span> <span class="k">else</span> <span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                    <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">target</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> \
-                        <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;undirected&#39;</span> <span class="k">else</span> <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">source</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+                              <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;undirected&#39;</span> <span class="k">else</span> <span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">target</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">target</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+                              <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;undirected&#39;</span> <span class="k">else</span> <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
                     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">source</span><span class="p">,</span> <span class="n">sign</span> <span class="o">+</span> <span class="n">dirn</span><span class="p">,</span> <span class="n">target</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PyPath.export_graphml"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.export_graphml">[docs]</a>    <span class="k">def</span> <span class="nf">export_graphml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;main&#39;</span><span class="p">):</span>
@@ -10235,8 +10320,13 @@
 
         <span class="k">return</span> <span class="n">toDel</span><span class="p">,</span> <span class="n">disrupted</span></div>
 
-<div class="viewcode-block" id="PyPath.select_by_go"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.select_by_go">[docs]</a>    <span class="k">def</span> <span class="nf">select_by_go</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">go_terms</span><span class="p">,</span> <span class="n">go_desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aspects</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">),</span>
-                     <span class="n">method</span><span class="o">=</span><span class="s1">&#39;ANY&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.select_by_go_old"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.select_by_go_old">[docs]</a>    <span class="k">def</span> <span class="nf">select_by_go_old</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">go_terms</span><span class="p">,</span>
+            <span class="n">go_desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">aspects</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">),</span>
+            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;ANY&#39;</span><span class="p">,</span>
+        <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Selects the nodes annotated by certain GO terms.</span>
 
@@ -10247,14 +10337,17 @@
 <span class="sd">            If `ALL` nodes annotated with all the terms returned.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">_method</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">:</span> <span class="ow">not</span> <span class="n">s2</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;ALL&#39;</span> <span class="k">else</span>
-            <span class="k">lambda</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">:</span> <span class="n">s1</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;ALL&#39;</span><span class="p">:</span>
 
-        <span class="k">def</span> <span class="nf">_method</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">s1</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
+            <span class="k">def</span> <span class="nf">_method</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">):</span>
+
+                <span class="k">return</span> <span class="n">s2</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">def</span> <span class="nf">_method</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">):</span>
+
+                <span class="k">return</span> <span class="n">s1</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">go_desc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">go_desc</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">go_descendants_goose</span><span class="p">(</span><span class="n">aspects</span> <span class="o">=</span> <span class="n">aspects</span><span class="p">)</span>
@@ -10281,6 +10374,177 @@
 
         <span class="k">return</span> <span class="n">vids</span></div>
 
+<div class="viewcode-block" id="PyPath.select_by_go"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.select_by_go">[docs]</a>    <span class="k">def</span> <span class="nf">select_by_go</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">go_terms</span><span class="p">,</span>
+            <span class="n">go_desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">aspects</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">),</span>
+            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;ANY&#39;</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Selects the nodes annotated by certain GO terms.</span>
+
+<span class="sd">        Returns set of vertex IDs.</span>
+
+<span class="sd">        :param str method:</span>
+<span class="sd">            If `ANY` nodes annotated with any of the terms returned.</span>
+<span class="sd">            If `ALL` nodes annotated with all the terms returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">_method</span> <span class="o">=</span> <span class="s1">&#39;union&#39;</span> <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;ANY&#39;</span> <span class="k">else</span> <span class="s1">&#39;intersection&#39;</span>
+
+        <span class="k">if</span> <span class="n">go_desc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="n">go_desc</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">go_descendants_goose</span><span class="p">(</span><span class="n">aspects</span> <span class="o">=</span> <span class="n">aspects</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="n">_method</span><span class="p">)(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">select_by_go_single</span><span class="p">(</span>
+                <span class="n">term</span> <span class="o">=</span> <span class="n">term</span><span class="p">,</span>
+                <span class="n">go_desc</span> <span class="o">=</span> <span class="n">go_desc</span><span class="p">,</span>
+                <span class="n">aspects</span> <span class="o">=</span> <span class="n">aspects</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">go_terms</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="PyPath.select_by_go_single"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.select_by_go_single">[docs]</a>    <span class="k">def</span> <span class="nf">select_by_go_single</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">term</span><span class="p">,</span>
+            <span class="n">go_desc</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">aspects</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">),</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the vertex IDs of all vertices annotated with a Gene</span>
+<span class="sd">        Ontology term or its descendants.</span>
+
+<span class="sd">        The method is not aware which aspect the term belongs to, it checks</span>
+<span class="sd">        in all aspects, but providing the ``aspects`` argument you can</span>
+<span class="sd">        avoid loading all data from GO and also checking unnecessarily in</span>
+<span class="sd">        all.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">go_desc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="n">go_desc</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">go_descendants_goose</span><span class="p">(</span><span class="n">aspects</span> <span class="o">=</span> <span class="n">aspects</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;go&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">attributes</span><span class="p">():</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">go_annotate</span><span class="p">(</span><span class="n">aspects</span> <span class="o">=</span> <span class="n">aspects</span><span class="p">)</span>
+
+        <span class="n">all_terms</span> <span class="o">=</span> <span class="n">go_desc</span><span class="p">[</span><span class="n">term</span><span class="p">]</span>
+        <span class="n">all_terms</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">term</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="n">v</span><span class="o">.</span><span class="n">index</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;go&#39;</span><span class="p">][</span><span class="n">a</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">all_terms</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">aspects</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="PyPath.select_by_go_expr"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.select_by_go_expr">[docs]</a>    <span class="k">def</span> <span class="nf">select_by_go_expr</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">go_expr</span><span class="p">,</span>
+            <span class="n">go_desc</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">aspects</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">),</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Selects vertices based on an expression of Gene Ontology terms.</span>
+
+<span class="sd">        :param str go_expr:</span>
+<span class="sd">            An expression of Gene Ontology terms. E.g.</span>
+<span class="sd">            ``&#39;(GO:0005576 and not GO:0070062) or GO:0005887&#39;``. Parentheses</span>
+<span class="sd">            and usual Python keywords like ``and``, ``or`` and ``not``</span>
+<span class="sd">            can be used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">ops</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;and&#39;</span><span class="p">:</span> <span class="s1">&#39;intersection&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;or&#39;</span><span class="p">:</span>  <span class="s1">&#39;union&#39;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">go_desc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="n">go_desc</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">go_descendants_goose</span><span class="p">(</span><span class="n">aspects</span> <span class="o">=</span> <span class="n">aspects</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">go_expr</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">basestring</span><span class="p">):</span>
+
+            <span class="c1"># tokenizing expression if it is a string</span>
+            <span class="n">go_expr</span> <span class="o">=</span> <span class="n">_rego</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">go_expr</span><span class="p">)</span>
+
+        <span class="c1"># initial values</span>
+        <span class="n">result</span>   <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">stack</span>    <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">sub</span>      <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">negate</span>   <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">op</span>       <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">this_set</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">go_expr</span><span class="p">:</span>
+
+            <span class="c1"># processing expression by tokens</span>
+
+            <span class="k">if</span> <span class="n">sub</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="n">it</span> <span class="o">==</span> <span class="s1">&#39;)&#39;</span><span class="p">:</span>
+
+                    <span class="c1"># token is a closing parenthesis</span>
+                    <span class="c1"># execute sub-selection</span>
+                    <span class="n">this_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_by_go_expr</span><span class="p">(</span>
+                        <span class="n">go_expr</span> <span class="o">=</span> <span class="n">stack</span><span class="p">,</span>
+                        <span class="n">go_desc</span> <span class="o">=</span> <span class="n">go_desc</span><span class="p">,</span>
+                        <span class="n">aspects</span> <span class="o">=</span> <span class="n">aspects</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">stack</span> <span class="o">=</span> <span class="p">[]</span>
+
+                <span class="k">else</span><span class="p">:</span>
+
+                    <span class="c1"># token is something else</span>
+                    <span class="c1"># add to sub-selection stack</span>
+                    <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">it</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">it</span> <span class="o">==</span> <span class="s1">&#39;not&#39;</span><span class="p">:</span>
+
+                <span class="c1"># token is negation</span>
+                <span class="c1"># turn on negation for the next set</span>
+                <span class="n">negate</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">continue</span>
+
+            <span class="k">elif</span> <span class="n">it</span> <span class="o">==</span> <span class="s1">&#39;(&#39;</span><span class="p">:</span>
+
+                <span class="c1"># token is a parenthesis</span>
+                <span class="c1"># start a new sub-selection</span>
+                <span class="n">sub</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">continue</span>
+
+            <span class="k">elif</span> <span class="n">it</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;GO:&#39;</span><span class="p">:</span>
+
+                <span class="c1"># token is a GO term</span>
+                <span class="c1"># get the vertex selection by the single term method</span>
+                <span class="n">this_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_by_go_single</span><span class="p">(</span>
+                    <span class="n">it</span><span class="p">,</span>
+                    <span class="n">go_desc</span> <span class="o">=</span> <span class="n">go_desc</span><span class="p">,</span>
+                    <span class="n">aspects</span> <span class="o">=</span> <span class="n">aspects</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">ops</span><span class="p">:</span>
+
+                <span class="c1"># token is an operator</span>
+                <span class="c1"># set it for use at the next operation</span>
+                <span class="n">op</span> <span class="o">=</span> <span class="n">ops</span><span class="p">[</span><span class="n">it</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">this_set</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="n">op</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+                    <span class="n">result</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">op</span><span class="p">)(</span><span class="n">this_set</span><span class="p">)</span>
+
+                <span class="k">else</span><span class="p">:</span>
+
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">this_set</span>
+
+                <span class="n">this_set</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">op</span>       <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
 <div class="viewcode-block" id="PyPath.label_by_go"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.label_by_go">[docs]</a>    <span class="k">def</span> <span class="nf">label_by_go</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">go_terms</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assigns a boolean vertex attribute to nodes which tells whether</span>
@@ -10293,6 +10557,51 @@
 
         <span class="k">for</span> <span class="n">vid</span> <span class="ow">in</span> <span class="n">vids</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">vid</span><span class="p">][</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="PyPath.network_by_go"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.network_by_go">[docs]</a>    <span class="k">def</span> <span class="nf">network_by_go</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">node_categories</span><span class="p">,</span>
+            <span class="n">network_sources</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">include</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">exclude</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">prefix</span>  <span class="o">=</span> <span class="s1">&#39;GO&#39;</span><span class="p">,</span>
+            <span class="n">delete</span>  <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">vertex_attrs</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">edge_attrs</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates or filters a network based on Gene Ontology annotations.</span>
+
+<span class="sd">        :param dict node_categories:</span>
+<span class="sd">            A dict with custom category labels as keys and expressions of</span>
+<span class="sd">            GO terms as values. E.g.</span>
+<span class="sd">            ``{&#39;extracell&#39;: &#39;GO:0005576 and not GO:0070062&#39;,</span>
+<span class="sd">               &#39;plasmamem&#39;: &#39;GO:0005887&#39;}``.</span>
+<span class="sd">        :param dict network_sources:</span>
+<span class="sd">            A dict with anything as keys and network input format definintions</span>
+<span class="sd">            (``input_formats.ReadSettings`` instances) as values.</span>
+<span class="sd">        :param list include:</span>
+<span class="sd">            A list of tuples of category label pairs. By default we keep all</span>
+<span class="sd">            edges connecting proteins annotated with any of the defined</span>
+<span class="sd">            categories. If ``include`` is defined then only edges between</span>
+<span class="sd">            category pairs defined here will be kept and all others deleted.</span>
+<span class="sd">        :param list exclude:</span>
+<span class="sd">            Similarly to include, all edges will be kept but the ones listed</span>
+<span class="sd">            in ``exclude`` will be deleted.</span>
+<span class="sd">        :param str prefix:</span>
+<span class="sd">            Prefix for all vertex and edge attributes created in this</span>
+<span class="sd">            operation. E.g. if you have a category label &#39;bar&#39; and prefix</span>
+<span class="sd">            is &#39;foo&#39; then you will have a new vertex attribute &#39;foo_bar&#39;.</span>
+<span class="sd">        :param bool delete:</span>
+<span class="sd">            Delete the vertices and edges which don&#39;t belong to any of the</span>
+<span class="sd">            categories.</span>
+<span class="sd">        :param bool vertex_attrs:</span>
+<span class="sd">            Create vertex attributes.</span>
+<span class="sd">        :param bool edge_attrs:</span>
+<span class="sd">            Create edge attributes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="PyPath.load_ligand_receptor_network"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_ligand_receptor_network">[docs]</a>    <span class="k">def</span> <span class="nf">load_ligand_receptor_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lig_rec_resources</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                      <span class="n">inference_from_go</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -10307,11 +10616,14 @@
         <span class="k">if</span> <span class="n">sources</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">sources</span> <span class="o">=</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">pathway</span>
 
-        <span class="n">CC_EXTRACELL</span>   <span class="o">=</span> <span class="s1">&#39;GO:0005576&#39;</span>
-        <span class="n">CC_EXOSOME</span>     <span class="o">=</span> <span class="s1">&#39;GO:0070062&#39;</span>
-        <span class="n">CC_PLASMAMEM</span>   <span class="o">=</span> <span class="s1">&#39;GO:0005887&#39;</span>
-        <span class="n">MF_RECBINDING</span>  <span class="o">=</span> <span class="s1">&#39;GO:0005102&#39;</span>
-        <span class="n">MF_RECACTIVITY</span> <span class="o">=</span> <span class="s1">&#39;GO:0038023&#39;</span>
+        <span class="n">CC_EXTRACELL</span>   <span class="o">=</span> <span class="s1">&#39;GO:0005576&#39;</span> <span class="c1"># select all extracellular</span>
+        <span class="n">CC_EXOSOME</span>     <span class="o">=</span> <span class="s1">&#39;GO:0070062&#39;</span> <span class="c1"># remove exosome localized proteins</span>
+        <span class="n">CC_PLASMAMEM</span>   <span class="o">=</span> <span class="s1">&#39;GO:0005887&#39;</span> <span class="c1"># select plasma membrane proteins</span>
+        <span class="n">MF_RECBINDING</span>  <span class="o">=</span> <span class="s1">&#39;GO:0005102&#39;</span> <span class="c1"># select ligands</span>
+        <span class="n">MF_RECACTIVITY</span> <span class="o">=</span> <span class="s1">&#39;GO:0038023&#39;</span> <span class="c1"># select receptors</span>
+        <span class="n">MF_ECM_STRUCT</span>  <span class="o">=</span> <span class="s1">&#39;GO:0005201&#39;</span> <span class="c1"># select matrix structure proteins</span>
+                                      <span class="c1"># e.g. collagene</span>
+        <span class="n">MF_CATALYTIC</span>   <span class="o">=</span> <span class="s1">&#39;GO:0003824&#39;</span> <span class="c1"># select enzymes, e.g. MMPs</span>
 
         <span class="k">if</span> <span class="n">inference_from_go</span><span class="p">:</span>
 
@@ -10340,8 +10652,34 @@
             <span class="n">lig_lig_edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
             <span class="n">rec_rec_edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
+            <span class="c1"># vertex attributes to mark ligands and receptors</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;GO_ligand&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="kc">False</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">())</span>
+            <span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;GO_receptor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="kc">False</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">())</span>
+            <span class="p">]</span>
+
             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">:</span>
 
+                <span class="c1"># set boolean vertex attributes</span>
+                <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">source</span> <span class="ow">in</span> <span class="n">ligands</span><span class="p">:</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">][</span><span class="s1">&#39;GO_ligand&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">target</span> <span class="ow">in</span> <span class="n">ligands</span><span class="p">:</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">target</span><span class="p">][</span><span class="s1">&#39;GO_ligand&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">source</span> <span class="ow">in</span> <span class="n">receptors</span><span class="p">:</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">source</span><span class="p">][</span><span class="s1">&#39;GO_receptors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">target</span> <span class="ow">in</span> <span class="n">receptors</span><span class="p">:</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">target</span><span class="p">][</span><span class="s1">&#39;GO_receptors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="c1"># set edge attributes and collect edges to keep</span>
                 <span class="n">di</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span>
 
                 <span class="n">srcs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
@@ -10353,6 +10691,7 @@
                     <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">di</span><span class="o">.</span><span class="n">tgt</span><span class="p">(</span><span class="n">keep_undirected</span><span class="p">)</span>
                 <span class="p">)</span>
 
+                <span class="c1"># ligand-receptor interaction</span>
                 <span class="k">if</span> <span class="n">srcs</span> <span class="o">&amp;</span> <span class="n">ligands</span> <span class="ow">and</span> <span class="n">tgts</span> <span class="o">&amp;</span> <span class="n">receptors</span><span class="p">:</span>
                     <span class="n">lig_rec_edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
                     <span class="n">lig_with_interactions</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">srcs</span><span class="p">)</span>
@@ -10373,6 +10712,7 @@
 
                         <span class="n">di</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">di</span><span class="o">.</span><span class="n">reverse</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;GO_lig_rec&#39;</span><span class="p">)</span>
 
+                <span class="c1"># ligand-ligand interaction</span>
                 <span class="k">elif</span> <span class="n">keep_lig_lig</span> <span class="ow">and</span> <span class="n">srcs</span> <span class="o">&amp;</span> <span class="n">ligands</span> <span class="ow">and</span> <span class="n">tgts</span> <span class="o">&amp;</span> <span class="n">ligands</span><span class="p">:</span>
                     <span class="n">lig_lig_edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
                     <span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;GO_lig_lig&#39;</span><span class="p">)</span>
@@ -10383,6 +10723,7 @@
 
                             <span class="n">d</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;GO_lig_lig&#39;</span><span class="p">)</span>
 
+                <span class="c1"># receptor-receptor interaction</span>
                 <span class="k">elif</span> <span class="n">keep_rec_rec</span> <span class="ow">and</span> <span class="n">srcs</span> <span class="o">&amp;</span> <span class="n">receptors</span> <span class="ow">and</span> <span class="n">tgts</span> <span class="o">&amp;</span> <span class="n">receptors</span><span class="p">:</span>
                     <span class="n">rec_rec_edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
                     <span class="n">e</span><span class="p">[</span><span class="s1">&#39;sources&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;GO_rec_rec&#39;</span><span class="p">)</span>
@@ -10926,6 +11267,249 @@
 
             <span class="k">if</span> <span class="n">rec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">rec</span><span class="p">]][</span><span class="s1">&#39;rec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="PyPath.set_plasma_membrane_proteins_cspa"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.set_plasma_membrane_proteins_cspa">[docs]</a>    <span class="k">def</span> <span class="nf">set_plasma_membrane_proteins_cspa</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a vertex attribute `cspa` with value *True* if</span>
+<span class="sd">        the protein is a plasma membrane protein according to CPSA,</span>
+<span class="sd">        otherwise *False*.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_vname</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;cspa&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s1">&#39;cspa&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cspa_list</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="s1">&#39;cspa&#39;</span><span class="p">]:</span>
+
+            <span class="k">if</span> <span class="n">sp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">sp</span><span class="p">]][</span><span class="s1">&#39;cspa&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="PyPath.set_plasma_membrane_proteins_surfaceome"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.set_plasma_membrane_proteins_surfaceome">[docs]</a>    <span class="k">def</span> <span class="nf">set_plasma_membrane_proteins_surfaceome</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_threshold</span> <span class="o">=</span> <span class="o">.</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a vertex attribute `ishs` with value *True* if</span>
+<span class="sd">        the protein is a plasma membrane protein according to the In Silico</span>
+<span class="sd">        Human Surfaceome, otherwise *False*.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_vname</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;ishs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">]</span>
+
+        <span class="c1"># always load this to apply score threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">surfaceome_list</span><span class="p">(</span><span class="n">score_threshold</span> <span class="o">=</span> <span class="n">score_threshold</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lists</span><span class="p">[</span><span class="s1">&#39;ishs&#39;</span><span class="p">]:</span>
+
+            <span class="k">if</span> <span class="n">sp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">:</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">sp</span><span class="p">]][</span><span class="s1">&#39;ishs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="PyPath.set_plasma_membrane_proteins_cspa_surfaceome"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.set_plasma_membrane_proteins_cspa_surfaceome">[docs]</a>    <span class="k">def</span> <span class="nf">set_plasma_membrane_proteins_cspa_surfaceome</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">score_threshold</span> <span class="o">=</span> <span class="o">.</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a vertex attribute ``surf`` with value *True* if</span>
+<span class="sd">        the protein is a plasma membrane protein according either to the</span>
+<span class="sd">        Cell Surface Protein Atlas or the In Silico Human Surfaceome.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_plasma_membrane_proteins_cspa</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_plasma_membrane_proteins_surfaceome</span><span class="p">(</span>
+            <span class="n">score_threshold</span> <span class="o">=</span> <span class="n">score_threshold</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;surf&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">cspa</span> <span class="ow">or</span> <span class="n">ishs</span>
+            <span class="k">for</span> <span class="n">cspa</span><span class="p">,</span> <span class="n">ishs</span> <span class="ow">in</span>
+            <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;cspa&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;ishs&#39;</span><span class="p">])</span>
+        <span class="p">]</span></div>
+
+<div class="viewcode-block" id="PyPath.load_surfaceome_attrs"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_surfaceome_attrs">[docs]</a>    <span class="k">def</span> <span class="nf">load_surfaceome_attrs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads vertex attributes from the In Silico Human Surfaceome.</span>
+<span class="sd">        Attributes are ``surfaceome_score``, ``surfaceome_class`` and</span>
+<span class="sd">        ``surfaceome_subclass``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">attrs</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">&#39;surfaceome_score&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;surfaceome_class&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;surfaceome_subclass&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_vname</span><span class="p">()</span>
+
+        <span class="n">sf</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">get_surfaceome</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">attrs</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">sf</span><span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]][</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span>
+                <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">sf</span>
+            <span class="p">]</span></div>
+
+<div class="viewcode-block" id="PyPath.load_matrisome_attrs"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_matrisome_attrs">[docs]</a>    <span class="k">def</span> <span class="nf">load_matrisome_attrs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads vertex attributes from MatrisomeDB 2.0. Attributes are</span>
+<span class="sd">        ``matrisome_class``, ``matrisome_subclass`` and ``matrisome_notes``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">attrs</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">&#39;matrisome_class&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;matrisome_subclass&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;matrisome_notes&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span>
+
+        <span class="n">matrisome</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">get_matrisome</span><span class="p">(</span><span class="n">organism</span> <span class="o">=</span> <span class="n">organism</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">attrs</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">matrisome</span><span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]][</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span>
+                <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">matrisome</span>
+            <span class="p">]</span></div>
+
+<div class="viewcode-block" id="PyPath.load_membranome_attrs"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_membranome_attrs">[docs]</a>    <span class="k">def</span> <span class="nf">load_membranome_attrs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads attributes from Membranome, a database of single-helix</span>
+<span class="sd">        transmembrane proteins.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_vname</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;membranome_location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="kc">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">())</span>
+        <span class="p">]</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">get_membranome</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">uniprot</span><span class="p">,</span> <span class="n">mem</span><span class="p">,</span> <span class="n">side</span> <span class="ow">in</span> <span class="n">m</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">:</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">uniprot</span><span class="p">]</span>
+                    <span class="p">][</span>
+                        <span class="s1">&#39;membranome_location&#39;</span>
+                    <span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">mem</span><span class="p">,</span> <span class="n">side</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PyPath.load_exocarta_attrs"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_exocarta_attrs">[docs]</a>    <span class="k">def</span> <span class="nf">load_exocarta_attrs</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">load_samples</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">load_refs</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates vertex attributes from ExoCarta data. Creates a boolean</span>
+<span class="sd">        attribute ``exocarts_exosomal`` which tells whether a protein is</span>
+<span class="sd">        in ExoCarta i.e. has been found in exosomes. Optionally creates</span>
+<span class="sd">        attributes ``exocarta_samples`` and ``exocarta_refs`` listing the</span>
+<span class="sd">        sample tissue and the PubMed references, respectively.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_exocarta_vesiclepedia_attrs</span><span class="p">(</span>
+            <span class="n">database</span> <span class="o">=</span> <span class="s1">&#39;exocarta&#39;</span><span class="p">,</span>
+            <span class="n">load_samples</span> <span class="o">=</span> <span class="n">load_samples</span><span class="p">,</span>
+            <span class="n">load_refs</span> <span class="o">=</span> <span class="n">load_refs</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="PyPath.load_vesiclepedia_attrs"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_vesiclepedia_attrs">[docs]</a>    <span class="k">def</span> <span class="nf">load_vesiclepedia_attrs</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">load_samples</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">load_refs</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">load_vesicle_type</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates vertex attributes from Vesiclepedia data. Creates a boolean</span>
+<span class="sd">        attribute ``vesiclepedia_in_vesicle`` which tells whether a protein is</span>
+<span class="sd">        in ExoCarta i.e. has been found in exosomes. Optionally creates</span>
+<span class="sd">        attributes ``vesiclepedia_samples``, ``vesiclepedia_refs`` and</span>
+<span class="sd">        ``vesiclepedia_vesicles`` listing the sample tissue, the PubMed</span>
+<span class="sd">        references and the vesicle types, respectively.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_exocarta_vesiclepedia_attrs</span><span class="p">(</span>
+            <span class="n">database</span> <span class="o">=</span> <span class="s1">&#39;vesiclepedia&#39;</span><span class="p">,</span>
+            <span class="n">load_samples</span> <span class="o">=</span> <span class="n">load_samples</span><span class="p">,</span>
+            <span class="n">load_refs</span> <span class="o">=</span> <span class="n">load_refs</span><span class="p">,</span>
+            <span class="n">load_vesicle_type</span> <span class="o">=</span> <span class="n">load_vesicle_type</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_load_exocarta_vesiclepedia_attrs</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">database</span> <span class="o">=</span> <span class="s1">&#39;exocarta&#39;</span><span class="p">,</span>
+            <span class="n">load_samples</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">load_refs</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">load_vesicle_type</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">):</span>
+
+        <span class="n">database</span> <span class="o">=</span> <span class="n">database</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="n">exo</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">_get_exocarta_vesiclepedia</span><span class="p">(</span>
+            <span class="n">database</span> <span class="o">=</span> <span class="n">database</span><span class="p">,</span>
+            <span class="n">organism</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span>
+        <span class="p">)</span>
+
+        <span class="n">bool_attr</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">&#39;exocarta_exosomal&#39;</span>
+                <span class="k">if</span> <span class="n">database</span> <span class="o">==</span> <span class="s1">&#39;exocarta&#39;</span> <span class="k">else</span>
+            <span class="s1">&#39;vesiclepedia_in_vesicle&#39;</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="n">bool_attr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="kc">False</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">())</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">load_samples</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_samples&#39;</span> <span class="o">%</span> <span class="n">database</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="nb">set</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">())</span>
+            <span class="p">]</span>
+        <span class="k">if</span> <span class="n">load_refs</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_refs&#39;</span> <span class="o">%</span> <span class="n">database</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="nb">set</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">())</span>
+            <span class="p">]</span>
+        <span class="k">if</span> <span class="n">database</span> <span class="o">==</span> <span class="s1">&#39;vesiclepedia&#39;</span> <span class="ow">and</span> <span class="n">load_vesicle_type</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_vesicles&#39;</span> <span class="o">%</span> <span class="n">database</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="nb">set</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">())</span>
+            <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">exo</span><span class="p">:</span>
+
+            <span class="n">uniprots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_name</span><span class="p">(</span>
+                <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="s1">&#39;genesymbol&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;uniprot&#39;</span><span class="p">,</span>
+                <span class="n">ncbi_tax_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncbi_tax_id</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">uniprots</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodInd</span><span class="p">:</span>
+
+                    <span class="k">continue</span>
+
+                <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodDct</span><span class="p">[</span><span class="n">u</span><span class="p">]]</span>
+
+                <span class="n">v</span><span class="p">[</span><span class="n">bool_attr</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="k">if</span> <span class="n">load_samples</span><span class="p">:</span>
+
+                    <span class="n">v</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_samples&#39;</span> <span class="o">%</span> <span class="n">database</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
+
+                <span class="k">if</span> <span class="n">load_refs</span> <span class="ow">and</span> <span class="n">e</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+                    <span class="n">v</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_refs&#39;</span> <span class="o">%</span> <span class="n">database</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+                <span class="k">if</span> <span class="n">database</span> <span class="o">==</span> <span class="s1">&#39;vesiclepedia&#39;</span> <span class="ow">and</span> <span class="n">load_vesicle_type</span><span class="p">:</span>
+
+                    <span class="n">v</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_vesicles&#39;</span> <span class="o">%</span> <span class="n">database</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">3</span><span class="p">]))</span>
 
 <div class="viewcode-block" id="PyPath.set_kinases"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.set_kinases">[docs]</a>    <span class="k">def</span> <span class="nf">set_kinases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -13053,7 +13637,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.115 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.117 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>

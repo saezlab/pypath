@@ -6154,6 +6154,19 @@ class PyPath(object):
 
     def first_neighbours(self, node, indices=False):
         """
+        Looks for the first neighbours of a given node and returns a
+        list of their UniProt IDs.
+
+        :arg str node:
+            The UniProt ID of the node of interest. Can also be the
+            index of such node [int].
+        :arg bool indices:
+            Optional, ``False`` by default. Whether to return the
+            neighbour nodes indices or their UniProt IDs.
+
+        :return:
+            (*list*) -- The list containing the first neighbours of the
+            queried node.
         """
 
         g = self.graph
@@ -6183,6 +6196,22 @@ class PyPath(object):
 
     def second_neighbours(self, node, indices=False, with_first=False):
         """
+        Looks for the (first and) second neighbours of a given node and
+        returns a list of their UniProt IDs.
+
+        :arg str node:
+            The UniProt ID of the node of interest. Can also be the
+            index of such node [int].
+        :arg bool indices:
+            Optional, ``False`` by default. Whether to return the
+            neighbour nodes indices or their UniProt IDs.
+        :arg bool wit_first:
+            Optional, ``False`` by default. Whether to return also the
+            first neighbours or not.
+
+        :return:
+            (*list*) -- The list containing the second neighbours of the
+            queried node (including the first ones if specified).
         """
 
         g = self.graph
@@ -6221,12 +6250,19 @@ class PyPath(object):
 
     def all_neighbours(self, indices=False):
         """
+        Looks for the first neighbours of all the nodes and creates an
+        attribute (``'neighbours'``) on each one of them containing a
+        list of their UniProt IDs.
+
+        :arg bool indices:
+            Optional, ``False`` by default. Whether to list the
+            neighbour nodes indices or their UniProt IDs.
         """
 
         g = self.graph
         g.vs['neighbours'] = [[] for _ in xrange(g.vcount())]
-        prg = Progress(
-            total=g.vcount(), name="Searching neighbours", interval=30)
+        prg = Progress(total=g.vcount(), name="Searching neighbours",
+                       interval=30)
 
         for v in g.vs:
             v['neighbours'] = self.first_neighbours(v.index, indices=indices)
@@ -6236,19 +6272,35 @@ class PyPath(object):
 
     def jaccard_edges(self):
         """
+        Computes the Jaccard similarity index between the sets of first
+        neighbours of all node pairs. **NOTE:** this method can take a
+        while to compute, e.g.: if the network has 10K nodes, the total
+        number of possible pairs to compute is:
+
+        .. math::
+          \\binom{10^4}{2} = 49995000
+
+        :return:
+            (*list*) -- Large list of [tuple] elements containing the
+            node pair names [str] and their corresponding first
+            neighbours Jaccard index [float].
         """
 
         g = self.graph
         self.all_neighbours(indices=True)
         metaEdges = []
-        prg = Progress(
-            total=g.vcount(), name="Calculating Jaccard-indices", interval=11)
+        prg = Progress(total=g.vcount(), name="Calculating Jaccard-indices",
+                       interval=11)
 
+        # XXX: could reduce to a single for loop using itertools.combinations()
         for v in xrange(0, g.vcount() - 1):
 
             for w in xrange(v + 1, g.vcount()):
                 vv = g.vs[v]
                 vw = g.vs[w]
+
+        # XXX: Why not using the function from common.jaccard_index()?
+
                 ja = (len(set(vv['neighbours']) & set(vw['neighbours'])) /
                       float(len(vv['neighbours']) + len(vw['neighbours'])))
                 metaEdges.append((vv['name'], vw['name'], ja))
@@ -6259,8 +6311,28 @@ class PyPath(object):
 
         return metaEdges
 
+    # XXX: Should consider returning a generator instead of list in the
+    #      function above... that list and pa.graph are overflowing 16GB
+    #      of RAM + 8GB of swap (maybe Chrome and Atom also helping, but
+    #      you get the point)
+
     def jaccard_meta(self, jedges, critical):
         """
+        Creates a (undirected) graph from a list of edges filtering by
+        their Jaccard index.
+
+        :arg list jedges:
+            List of [tuple] containing the edges node names [str] and
+            their Jaccard index. Basically, the output of
+            :py:meth:`pypath.main.PyPath.jaccard_edges`.
+        :arg float critical:
+            Specifies the threshold of the Jaccard index from above
+            which an edge will be included in the graph.
+
+        :return:
+            (*igraph.Graph*) -- The Undirected graph instance containing
+            only the edges whose Jaccard similarity index is above the
+            threshold specified by *critical*.
         """
 
         edges = []
@@ -6284,17 +6356,14 @@ class PyPath(object):
             self.negatives[settings.name] = self.raw_data
 
         neg = self.negatives[settings.name]
-        prg = Progress(
-            total=len(neg), name="Matching interactions", interval=11)
+        prg = Progress(total=len(neg), name="Matching interactions",
+                       interval=11)
         matches = 0
 
-        g.es['negative'] = [
-            set([]) if e['negative'] is None else e['negative'] for e in g.es
-        ]
-        g.es['negative_refs'] = [
-            set([]) if e['negative_refs'] is None else e['negative_refs']
-            for e in g.es
-        ]
+        g.es['negative'] = [set([]) if e['negative'] is None else e['negative']
+                            for e in g.es]
+        g.es['negative_refs'] = [set([]) if e['negative_refs'] is None
+                                 else e['negative_refs'] for e in g.es]
 
         for n in neg:
             aexists = n["defaultNameA"] in g.vs['name']
@@ -6305,10 +6374,8 @@ class PyPath(object):
 
                 if isinstance(edge, int):
                     g.es[edge]['negative'].add(settings.name)
-                    refs = set(
-                        list(
-                            map(lambda r: _refs.Reference(int(r)), n[
-                                'attrsEdge']['references'])))
+                    refs = set(list(map(lambda r: _refs.Reference(int(r)),
+                                        n['attrsEdge']['references'])))
                     g.es[edge]['negative_refs'].add(refs)
                     matches += 1
 
@@ -6334,13 +6401,15 @@ class PyPath(object):
             if len(e['negative']) > 0:
 
                 if outFile:
-                    out += '\t'.join([
-                        g.vs[e.source]['name'], g.vs[e.target]['name'],
-                        g.vs[e.source]['label'], g.vs[e.target]['label'],
-                        ';'.join(list(e['sources'])),
-                        ';'.join(map(lambda r: r.pmid, e['references'])),
-                        ';'.join(e['negative']), ';'.join(e['negative_refs'])
-                    ]) + '\n'
+                    out += '\t'.join([g.vs[e.source]['name'],
+                                      g.vs[e.target]['name'],
+                                      g.vs[e.source]['label'],
+                                      g.vs[e.target]['label'],
+                                      ';'.join(list(e['sources'])),
+                                      ';'.join(map(lambda r: r.pmid,
+                                                   e['references'])),
+                                      ';'.join(e['negative']),
+                                      ';'.join(e['negative_refs'])]) + '\n'
 
                 if lst:
                     neg.append(e)
@@ -6371,19 +6440,19 @@ class PyPath(object):
         if 'ptm' not in g.es.attributes():
             g.es['ptm'] = [[] for _ in g.es]
 
-        header = [
-            'UniProt_A', 'UniProt_B', 'GeneSymbol_A', 'GeneSymbol_B',
-            'Databases', 'PubMed_IDs', 'Stimulation', 'Inhibition',
-            'Substrate-isoform', 'Residue_number', 'Residue_letter', 'PTM_type'
-        ]
+        header = ['UniProt_A', 'UniProt_B', 'GeneSymbol_A', 'GeneSymbol_B',
+                  'Databases', 'PubMed_IDs', 'Stimulation', 'Inhibition',
+                  'Substrate-isoform', 'Residue_number', 'Residue_letter',
+                  'PTM_type']
+
         stripJson = re.compile(r'[\[\]{}\"]')
         # first row is header
         outl = [header]
 
         with codecs.open(outfile, encoding='utf-8', mode='w') as f:
             f.write('\t'.join(header) + '\n')
-            prg = Progress(
-                total=self.graph.ecount(), name='Writing table', interval=31)
+            prg = Progress(total=self.graph.ecount(), name='Writing table',
+                           interval=31)
             uniqedges = []
 
             for e in g.es:
@@ -6401,13 +6470,10 @@ class PyPath(object):
                     dbs = e['dirs'].get_dir(di, sources=True)
                     row.append(';'.join(dbs))
                     # references
-                    row.append(';'.join([
-                        r
-                        for rs in [
-                            refs for db, refs in iteritems(e['refs_by_source'])
-                            if db in dbs
-                        ] for r in rs
-                    ]))
+                    row.append(';'.join([r for rs in
+                                         [refs for db, refs
+                                          in iteritems(e['refs_by_source'])
+                                          if db in dbs] for r in rs]))
                     # signs
                     row += [str(int(x)) for x in e['dirs'].get_sign(di)]
                     # domain-motif
@@ -6422,12 +6488,11 @@ class PyPath(object):
 
                                 if dmi.ptm.residue.protein == di[1]:
                                     uniqedges.append(e.index)
-                                    r = row + [
-                                        '%s-%u' %
-                                        (dmi.ptm.protein, dmi.ptm.isoform
-                                         ), str(dmi.ptm.residue.number),
-                                        dmi.ptm.residue.name, dmi.ptm.typ
-                                    ]
+                                    r = row + ['%s-%u' % (dmi.ptm.protein,
+                                                          dmi.ptm.isoform),
+                                               str(dmi.ptm.residue.number),
+                                               dmi.ptm.residue.name,
+                                               dmi.ptm.typ]
                                     # here each ptm in separate row:
                                     outl.append(r)
                     # row complete, appending to main list
@@ -6462,19 +6527,17 @@ class PyPath(object):
         if 'ptm' not in g.es.attributes():
             g.es['ptm'] = [[] for _ in g.es]
 
-        header = [
-            'UniProt_A', 'UniProt_B', 'GeneSymbol_B', 'GeneSymbol_A',
-            'Databases', 'PubMed_IDs', 'Stimulation', 'Inhibition',
-            'Domain-domain', 'Domain-motif-PTM', 'PTM-regulation'
-        ]
+        header = ['UniProt_A', 'UniProt_B', 'GeneSymbol_B', 'GeneSymbol_A',
+                  'Databases', 'PubMed_IDs', 'Stimulation', 'Inhibition',
+                  'Domain-domain', 'Domain-motif-PTM', 'PTM-regulation']
         stripJson = re.compile(r'[\[\]{}\"]')
         # first row is header
         outl = [header]
 
         with codecs.open(outfile, encoding='utf-8', mode='w') as f:
             f.write('\t'.join(header) + '\n')
-            prg = Progress(
-                total=self.graph.ecount(), name='Writing table', interval=31)
+            prg = Progress(total=self.graph.ecount(), name='Writing table',
+                           interval=31)
 
             for e in g.es:
                 prg.step()
@@ -6491,27 +6554,20 @@ class PyPath(object):
                     dbs = e['dirs'].get_dir(di, sources=True)
                     row.append(';'.join(dbs))
                     # references
-                    row.append(';'.join([
-                        r
-                        for rs in [
-                            refs for db, refs in iteritems(e['refs_by_source'])
-                            if db in dbs
-                        ] for r in rs
-                    ]))
+                    row.append(';'.join([r for rs in
+                                         [refs for db, refs in
+                                          iteritems(e['refs_by_source'])
+                                          if db in dbs] for r in rs]))
                     # signs
                     row += [str(int(x)) for x in e['dirs'].get_sign(di)]
                     # domain-domain
                     row.append('#'.join([x.serialize() for x in e['ddi']]))
                     # domain-motif
-                    row.append('#'.join([
-                        x.serialize() for x in e['ptm']
-                        if x.__class__.__name__ == 'Ptm'
-                    ]))
+                    row.append('#'.join([x.serialize() for x in e['ptm']
+                                         if x.__class__.__name__ == 'Ptm']))
                     # domain-motif
-                    row.append('#'.join([
-                        x.serialize() for x in e['ptm']
-                        if x.__class__.__name__ == 'Regulation'
-                    ]))
+                    row.append('#'.join([x.serialize() for x in e['ptm'] if
+                                         x.__class__.__name__ == 'Regulation']))
                     # row complete, appending to main list
                     outl.append(row)
 
@@ -6550,20 +6606,16 @@ class PyPath(object):
             of edge attributes.
         """
 
-        e = export.Export(
-            pa = self,
-            extra_node_attrs = extra_node_attrs,
-            extra_edge_attrs = extra_edge_attrs,
-            **kwargs
-        )
-        e.write_tab(unique_pairs = unique_pairs, outfile = outfile)
+        e = export.Export(pa=self, extra_node_attrs=extra_node_attrs,
+                          extra_edge_attrs=extra_edge_attrs, **kwargs)
+        e.write_tab(unique_pairs=unique_pairs, outfile=outfile)
 
     def export_sif(self, outfile=None):
         """
         """
 
-        outfile = outfile if outfile is not None \
-            else 'network-%s.sif' % self.session
+        outfile = (outfile if outfile is not None
+                   else 'network-%s.sif' % self.session)
 
         with open(outfile, 'w') as f:
 
@@ -6574,14 +6626,14 @@ class PyPath(object):
                     if e['dirs'].is_directed() and d == 'undirected':
                         continue
 
-                    sign = '' if d == 'undirected' \
-                        else ''.join([['+', '-'][i]
-                                      for i, v in enumerate(e['dirs'].get_sign(d)) if v])
+                    sign = ('' if d == 'undirected' else
+                            ''.join([['+', '-'][i] for i, v in
+                                     enumerate(e['dirs'].get_sign(d)) if v]))
                     dirn = '=' if d == 'undirected' else '>'
-                    source = self.graph.vs[e.source]['name'] \
-                        if d == 'undirected' else d[0]
-                    target = self.graph.vs[e.target]['name'] \
-                        if d == 'undirected' else d[1]
+                    source = (self.graph.vs[e.source]['name']
+                              if d == 'undirected' else d[0])
+                    target = (self.graph.vs[e.target]['name']
+                              if d == 'undirected' else d[1])
                     f.write('\t'.join([source, sign + dirn, target]) + '\n')
 
     def export_graphml(self, outfile=None, graph=None, name='main'):
@@ -10583,7 +10635,7 @@ class PyPath(object):
                 if e.source in receptors:
 
                     self.graph.vs[e.source]['GO_receptors'] = True
-                
+
                 if e.target in receptors:
 
                     self.graph.vs[e.target]['GO_receptors'] = True

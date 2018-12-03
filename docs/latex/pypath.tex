@@ -57,7 +57,7 @@
 
 \title{pypath Documentation}
 \date{Dec 03, 2018}
-\release{0.7.115}
+\release{0.7.117}
 \author{Dénes Türei}
 \newcommand{\sphinxlogo}{\vbox{}}
 \renewcommand{\releasename}{Release}
@@ -808,6 +808,16 @@ order).
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.all_neighbours}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{all\_neighbours}}}{\emph{indices=False}}{}
+Looks for the first neighbours of all the nodes and creates an
+attribute (\sphinxcode{\sphinxupquote{'neighbours'}}) on each one of them containing a
+list of their UniProt IDs.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{indices}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Whether to list the
+neighbour nodes indices or their UniProt IDs.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{apply\_list() (pypath.main.PyPath method)}
@@ -1101,6 +1111,16 @@ such list exists in \sphinxcode{\sphinxupquote{pypath.main.PyPath.lists}}).
 
 \end{fulllineitems}
 
+\index{cspa\_list() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.cspa_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{cspa\_list}}}{}{}
+Loads a list of cell surface proteins from the Cell Surface Protein
+Atlas as a list. This resource is available for human and mouse.
+The list name is \sphinxcode{\sphinxupquote{cspa}}.
+
+\end{fulllineitems}
+
 \index{curation\_effort() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -1376,6 +1396,7 @@ Vertex index (int) or GeneSymbol (str) or UniProt ID (str) or
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.druggability_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{druggability\_list}}}{}{}
 Loads the list of druggable proteins from DgiDB. This resource
 is human only.
+The list name is \sphinxcode{\sphinxupquote{dgb}}.
 
 \end{fulllineitems}
 
@@ -1799,6 +1820,26 @@ in CORUM.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.first_neighbours}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{first\_neighbours}}}{\emph{node}, \emph{indices=False}}{}
+Looks for the first neighbours of a given node and returns a
+list of their UniProt IDs.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{node}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The UniProt ID of the node of interest. Can also be the
+index of such node {[}int{]}.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{indices}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Whether to return the
+neighbour nodes indices or their UniProt IDs.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{list}) \textendash{} The list containing the first neighbours of the
+queried node.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{fisher\_enrichment() (pypath.main.PyPath method)}
@@ -2674,12 +2715,48 @@ the data. In general, anything accepted by
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.jaccard_edges}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{jaccard\_edges}}}{}{}
+Computes the Jaccard similarity index between the sets of first
+neighbours of all node pairs. \sphinxstylestrong{NOTE:} this method can take a
+while to compute, e.g.: if the network has 10K nodes, the total
+number of possible pairs to compute is:
+\begin{equation*}
+\begin{split}\binom{10^4}{2} = 49995000\end{split}
+\end{equation*}\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{list}) \textendash{} Large list of {[}tuple{]} elements containing the
+node pair names {[}str{]} and their corresponding first
+neighbours Jaccard index {[}float{]}.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{jaccard\_meta() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.jaccard_meta}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{jaccard\_meta}}}{\emph{jedges}, \emph{critical}}{}
+Creates a (undirected) graph from a list of edges filtering by
+their Jaccard index.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{jedges}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} List of {[}tuple{]} containing the edges node names {[}str{]} and
+their Jaccard index. Basically, the output of
+{\hyperref[\detokenize{main:pypath.main.PyPath.jaccard_edges}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.jaccard\_edges()}}}}}.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{critical}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} Specifies the threshold of the Jaccard index from above
+which an edge will be included in the graph.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{igraph.Graph}) \textendash{} The Undirected graph instance containing
+only the edges whose Jaccard similarity index is above the
+threshold specified by \sphinxstyleemphasis{critical}.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{kegg\_directions() (pypath.main.PyPath method)}
@@ -2900,6 +2977,18 @@ or a function resulting this list
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.load_elm}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_elm}}}{}{}
 \end{fulllineitems}
 
+\index{load\_exocarta\_attrs() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_exocarta_attrs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_exocarta\_attrs}}}{\emph{load\_samples=False}, \emph{load\_refs=False}}{}
+Creates vertex attributes from ExoCarta data. Creates a boolean
+attribute \sphinxcode{\sphinxupquote{exocarts\_exosomal}} which tells whether a protein is
+in ExoCarta i.e. has been found in exosomes. Optionally creates
+attributes \sphinxcode{\sphinxupquote{exocarta\_samples}} and \sphinxcode{\sphinxupquote{exocarta\_refs}} listing the
+sample tissue and the PubMed references, respectively.
+
+\end{fulllineitems}
+
 \index{load\_expression() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -3002,6 +3091,24 @@ category (\sphinxstyleemphasis{name}).
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.load_mappings}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_mappings}}}{}{}
+\end{fulllineitems}
+
+\index{load\_matrisome\_attrs() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_matrisome_attrs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_matrisome\_attrs}}}{\emph{organism=None}}{}
+Loads vertex attributes from MatrisomeDB 2.0. Attributes are
+\sphinxcode{\sphinxupquote{matrisome\_class}}, \sphinxcode{\sphinxupquote{matrisome\_subclass}} and \sphinxcode{\sphinxupquote{matrisome\_notes}}.
+
+\end{fulllineitems}
+
+\index{load\_membranome\_attrs() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_membranome_attrs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_membranome\_attrs}}}{}{}
+Loads attributes from Membranome, a database of single-helix
+transmembrane proteins.
+
 \end{fulllineitems}
 
 \index{load\_mimp\_dmi() (pypath.main.PyPath method)}
@@ -3320,6 +3427,16 @@ re-download the data and ignore the cache.
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.load_signor_ptms}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_signor\_ptms}}}{\emph{non\_matching=False}, \emph{trace=False}, \emph{**kwargs}}{}
 \end{fulllineitems}
 
+\index{load\_surfaceome\_attrs() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_surfaceome_attrs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_surfaceome\_attrs}}}{}{}
+Loads vertex attributes from the In Silico Human Surfaceome.
+Attributes are \sphinxcode{\sphinxupquote{surfaceome\_score}}, \sphinxcode{\sphinxupquote{surfaceome\_class}} and
+\sphinxcode{\sphinxupquote{surfaceome\_subclass}}.
+
+\end{fulllineitems}
+
 \index{load\_tfregulons() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -3345,6 +3462,19 @@ literature curated interactions or not.
 \end{itemize}
 
 \end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{load\_vesiclepedia\_attrs() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_vesiclepedia_attrs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_vesiclepedia\_attrs}}}{\emph{load\_samples=False}, \emph{load\_refs=False}, \emph{load\_vesicle\_type=False}}{}
+Creates vertex attributes from Vesiclepedia data. Creates a boolean
+attribute \sphinxcode{\sphinxupquote{vesiclepedia\_in\_vesicle}} which tells whether a protein is
+in ExoCarta i.e. has been found in exosomes. Optionally creates
+attributes \sphinxcode{\sphinxupquote{vesiclepedia\_samples}}, \sphinxcode{\sphinxupquote{vesiclepedia\_refs}} and
+\sphinxcode{\sphinxupquote{vesiclepedia\_vesicles}} listing the sample tissue, the PubMed
+references and the vesicle types, respectively.
 
 \end{fulllineitems}
 
@@ -3618,6 +3748,59 @@ searched.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.neighbourhood_network}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{neighbourhood\_network}}}{\emph{center}, \emph{second=False}}{}
+\end{fulllineitems}
+
+\index{network\_by\_go() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.network_by_go}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{network\_by\_go}}}{\emph{node\_categories}, \emph{network\_sources=None}, \emph{include=None}, \emph{exclude=None}, \emph{prefix='GO'}, \emph{delete=True}, \emph{vertex\_attrs=True}, \emph{edge\_attrs=True}}{}
+Creates or filters a network based on Gene Ontology annotations.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{node\_categories}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} 
+A dict with custom category labels as keys and expressions of
+GO terms as values. E.g.
+{\color{red}\bfseries{}{}`{}`}\{‘extracell’: ‘\sphinxurl{GO:0005576} and not \sphinxurl{GO:0070062}’,
+\begin{quote}
+
+’plasmamem’: ‘\sphinxurl{GO:0005887}’\}{}`{}`.
+\end{quote}
+
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{network\_sources}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} A dict with anything as keys and network input format definintions
+(\sphinxcode{\sphinxupquote{input\_formats.ReadSettings}} instances) as values.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{include}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} A list of tuples of category label pairs. By default we keep all
+edges connecting proteins annotated with any of the defined
+categories. If \sphinxcode{\sphinxupquote{include}} is defined then only edges between
+category pairs defined here will be kept and all others deleted.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{exclude}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Similarly to include, all edges will be kept but the ones listed
+in \sphinxcode{\sphinxupquote{exclude}} will be deleted.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{prefix}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Prefix for all vertex and edge attributes created in this
+operation. E.g. if you have a category label ‘bar’ and prefix
+is ‘foo’ then you will have a new vertex attribute ‘foo\_bar’.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{delete}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Delete the vertices and edges which don’t belong to any of the
+categories.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{vertex\_attrs}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Create vertex attributes.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{edge\_attrs}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Create edge attributes.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{network\_filter() (pypath.main.PyPath method)}
@@ -4168,6 +4351,7 @@ defined in \sphinxcode{\sphinxupquote{pypath.dataio}}.
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.receptors_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{receptors\_list}}}{}{}
 Loads the Human Plasma Membrane Receptome as a list. This
 resource is human only.
+The list name is \sphinxcode{\sphinxupquote{rec}}.
 
 \end{fulllineitems}
 
@@ -4318,6 +4502,30 @@ find anything.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.second_neighbours}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{second\_neighbours}}}{\emph{node}, \emph{indices=False}, \emph{with\_first=False}}{}
+Looks for the (first and) second neighbours of a given node and
+returns a list of their UniProt IDs.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{node}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The UniProt ID of the node of interest. Can also be the
+index of such node {[}int{]}.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{indices}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Whether to return the
+neighbour nodes indices or their UniProt IDs.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{wit\_first}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Whether to return also the
+first neighbours or not.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{list}) \textendash{} The list containing the second neighbours of the
+queried node (including the first ones if specified).
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{select\_by\_go() (pypath.main.PyPath method)}
@@ -4333,6 +4541,52 @@ Returns set of vertex IDs.
 If \sphinxtitleref{ALL} nodes annotated with all the terms returned.
 
 \end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{select\_by\_go\_expr() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.select_by_go_expr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{select\_by\_go\_expr}}}{\emph{go\_expr}, \emph{go\_desc=None}, \emph{aspects=('C'}, \emph{'F'}, \emph{'P')}}{}
+Selects vertices based on an expression of Gene Ontology terms.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{go\_expr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} An expression of Gene Ontology terms. E.g.
+\sphinxcode{\sphinxupquote{'(GO:0005576 and not GO:0070062) or GO:0005887'}}. Parentheses
+and usual Python keywords like \sphinxcode{\sphinxupquote{and}}, \sphinxcode{\sphinxupquote{or}} and \sphinxcode{\sphinxupquote{not}}
+can be used.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{select\_by\_go\_old() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.select_by_go_old}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{select\_by\_go\_old}}}{\emph{go\_terms}, \emph{go\_desc=None}, \emph{aspects=('C'}, \emph{'F'}, \emph{'P')}, \emph{method='ANY'}}{}
+Selects the nodes annotated by certain GO terms.
+
+Returns set of vertex IDs.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{method}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} If \sphinxtitleref{ANY} nodes annotated with any of the terms returned.
+If \sphinxtitleref{ALL} nodes annotated with all the terms returned.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{select\_by\_go\_single() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.select_by_go_single}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{select\_by\_go\_single}}}{\emph{term}, \emph{go\_desc=None}, \emph{aspects=('C'}, \emph{'F'}, \emph{'P')}}{}
+Retrieves the vertex IDs of all vertices annotated with a Gene
+Ontology term or its descendants.
+
+The method is not aware which aspect the term belongs to, it checks
+in all aspects, but providing the \sphinxcode{\sphinxupquote{aspects}} argument you can
+avoid loading all data from GO and also checking unnecessarily in
+all.
 
 \end{fulllineitems}
 
@@ -4495,6 +4749,36 @@ affinity higher than \sphinxtitleref{pchembl}, otherwise \sphinxstyleemphasis{Fa
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.set_kinases}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_kinases}}}{}{}
 Creates a vertex attribute \sphinxtitleref{kin} with value \sphinxstyleemphasis{True} if
 the protein is a kinase, otherwise \sphinxstyleemphasis{False}.
+
+\end{fulllineitems}
+
+\index{set\_plasma\_membrane\_proteins\_cspa() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.set_plasma_membrane_proteins_cspa}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_plasma\_membrane\_proteins\_cspa}}}{}{}
+Creates a vertex attribute \sphinxtitleref{cspa} with value \sphinxstyleemphasis{True} if
+the protein is a plasma membrane protein according to CPSA,
+otherwise \sphinxstyleemphasis{False}.
+
+\end{fulllineitems}
+
+\index{set\_plasma\_membrane\_proteins\_cspa\_surfaceome() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.set_plasma_membrane_proteins_cspa_surfaceome}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_plasma\_membrane\_proteins\_cspa\_surfaceome}}}{\emph{score\_threshold=0.0}}{}
+Creates a vertex attribute \sphinxcode{\sphinxupquote{surf}} with value \sphinxstyleemphasis{True} if
+the protein is a plasma membrane protein according either to the
+Cell Surface Protein Atlas or the In Silico Human Surfaceome.
+
+\end{fulllineitems}
+
+\index{set\_plasma\_membrane\_proteins\_surfaceome() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.set_plasma_membrane_proteins_surfaceome}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_plasma\_membrane\_proteins\_surfaceome}}}{\emph{score\_threshold=0.0}}{}
+Creates a vertex attribute \sphinxtitleref{ishs} with value \sphinxstyleemphasis{True} if
+the protein is a plasma membrane protein according to the In Silico
+Human Surfaceome, otherwise \sphinxstyleemphasis{False}.
 
 \end{fulllineitems}
 
@@ -4756,6 +5040,16 @@ List of complex resources. Should be already loaded.
 The graph object to do the calculations on.
 
 \end{description}
+
+\end{fulllineitems}
+
+\index{surfaceome\_list() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.surfaceome_list}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{surfaceome\_list}}}{\emph{score\_threshold=0.0}}{}
+Loads a list of cell surface proteins from the In Silico Human
+Surfaceome as a list. This resource is human only.
+The list name is \sphinxcode{\sphinxupquote{ishs}}.
 
 \end{fulllineitems}
 
