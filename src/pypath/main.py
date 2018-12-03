@@ -84,7 +84,7 @@ except ImportError:#ModuleNotFoundError:
 try:
     import pandas
 
-except ImportError:#ModuleNotFoundError:
+except ModuleNotFoundError:
     sys.stdout.write('\t:: Module `pandas` not available.\n')
     sys.stdout.flush()
 
@@ -117,7 +117,11 @@ from pypath.gr_plot import *
 from pypath.progress import *
 import pypath.settings as settings
 
+# to make it accessible directly from the module
 omnipath = data_formats.omnipath
+
+# this is for GO terms parsing:
+_rego = re.compile(r'and|or|not|\(|\)|GO:[0-9]{7}')
 
 # XXX: The following aliases are already defined in common.py
 if 'long' not in __builtins__:
@@ -2494,14 +2498,7 @@ class PyPath(object):
                         "taxB": taxB,
                         "type": settings.intType
                     }
-                    # except:
-                    # self.ownlog.msg(2,("""Wrong name column indexes (%u and %u),
-                    # or wrong separator (%s)? Line #%u\n"""
-                    #% (
-                    #settings.nameColA, settings.nameColB,
-                    # settings.separator, lnum)), 'ERROR')
-                    #readError = 1
-                    # break
+
                     # getting additional edge and node attributes
                     attrsEdge = self.get_attrs(line, settings.extraEdgeAttrs,
                                                lnum)
@@ -2509,6 +2506,15 @@ class PyPath(object):
                                                 lnum)
                     attrsNodeB = self.get_attrs(line, settings.extraNodeAttrsB,
                                                 lnum)
+
+                    if settings.mark_source:
+
+                        attrsNodeA[settings.mark_source] = thisEdgeDir
+
+                    if settings.mark_target:
+
+                        attrsNodeB[settings.mark_target] = thisEdgeDir
+
                     # merging dictionaries
                     nodeAttrs = {
                         "attrsNodeA": attrsNodeA,
@@ -2567,6 +2573,7 @@ class PyPath(object):
         """
         Loads the Human Plasma Membrane Receptome as a list. This
         resource is human only.
+        The list name is ``rec``.
         """
 
         self.lists['rec'] = common.uniqList(common.flatList([
@@ -2574,10 +2581,35 @@ class PyPath(object):
                                  ncbi_tax_id = 9606)
             for rec in dataio.get_hpmr()]))
 
+    def cspa_list(self):
+        """
+        Loads a list of cell surface proteins from the Cell Surface Protein
+        Atlas as a list. This resource is available for human and mouse.
+        The list name is ``cspa``.
+        """
+
+        self.lists['cspa'] = list(
+            dataio.get_cspa(organism = self.ncbi_tax_id)
+        )
+
+    def surfaceome_list(self, score_threshold = .0):
+        """
+        Loads a list of cell surface proteins from the In Silico Human
+        Surfaceome as a list. This resource is human only.
+        The list name is ``ishs``.
+        """
+
+        self.lists['ishs'] = [
+            uniprot
+            for uniprot, data in iteritems(dataio.get_surfaceome())
+            if data[0] >= score_threshold
+        ]
+
     def druggability_list(self):
         """
         Loads the list of druggable proteins from DgiDB. This resource
         is human only.
+        The list name is ``dgb``.
         """
 
         self.lists['dgb'] = common.uniqList(common.flatList([
@@ -6020,7 +6052,7 @@ class PyPath(object):
 
             for i in es_or_vs:
 
-                if something(i[attr]):
+                if common.something(i[attr]):
                     yield i.index if index else i
 
     def having_eattr(self, attr, graph=None, index=True):
@@ -10197,8 +10229,13 @@ class PyPath(object):
 
         return toDel, disrupted
 
-    def select_by_go(self, go_terms, go_desc=None, aspects=('C', 'F', 'P'),
-                     method='ANY'):
+    def select_by_go_old(
+            self,
+            go_terms,
+            go_desc=None,
+            aspects=('C', 'F', 'P'),
+            method='ANY',
+        ):
         """
         Selects the nodes annotated by certain GO terms.
 
@@ -10209,14 +10246,17 @@ class PyPath(object):
             If `ALL` nodes annotated with all the terms returned.
         """
 
-        _method = (
-            lambda s1, s2: not s2.difference(s1)
-            if method == 'ALL' else
-            lambda s1, s2: s1.intersection(s2)
-        )
+        if method == 'ALL':
 
-        def _method(s1, s2):
-            return s1.intersection(s2)
+            def _method(s1, s2):
+
+                return s2.difference(s1)
+
+        else:
+
+            def _method(s1, s2):
+
+                return s1.intersection(s2)
 
         if go_desc is None:
             go_desc = dataio.go_descendants_goose(aspects = aspects)
@@ -10243,6 +10283,177 @@ class PyPath(object):
 
         return vids
 
+    def select_by_go(
+            self,
+            go_terms,
+            go_desc=None,
+            aspects=('C', 'F', 'P'),
+            method='ANY',
+        ):
+        """
+        Selects the nodes annotated by certain GO terms.
+
+        Returns set of vertex IDs.
+
+        :param str method:
+            If `ANY` nodes annotated with any of the terms returned.
+            If `ALL` nodes annotated with all the terms returned.
+        """
+
+        _method = 'union' if method == 'ANY' else 'intersection'
+
+        if go_desc is None:
+
+            go_desc = dataio.go_descendants_goose(aspects = aspects)
+
+        return getattr(set, _method)(
+            self.select_by_go_single(
+                term = term,
+                go_desc = go_desc,
+                aspects = aspects,
+            )
+            for term in go_terms
+        )
+
+    def select_by_go_single(
+            self,
+            term,
+            go_desc = None,
+            aspects = ('C', 'F', 'P'),
+        ):
+        """
+        Retrieves the vertex IDs of all vertices annotated with a Gene
+        Ontology term or its descendants.
+
+        The method is not aware which aspect the term belongs to, it checks
+        in all aspects, but providing the ``aspects`` argument you can
+        avoid loading all data from GO and also checking unnecessarily in
+        all.
+        """
+
+        if go_desc is None:
+
+            go_desc = dataio.go_descendants_goose(aspects = aspects)
+
+        if 'go' not in self.graph.vs.attributes():
+
+            self.go_annotate(aspects = aspects)
+
+        all_terms = go_desc[term]
+        all_terms.add(term)
+
+        return set(
+            v.index
+            for v in self.graph.vs
+            if any(v['go'][a] & all_terms for a in aspects)
+        )
+
+    def select_by_go_expr(
+            self,
+            go_expr,
+            go_desc = None,
+            aspects = ('C', 'F', 'P'),
+        ):
+        """
+        Selects vertices based on an expression of Gene Ontology terms.
+
+        :param str go_expr:
+            An expression of Gene Ontology terms. E.g.
+            ``'(GO:0005576 and not GO:0070062) or GO:0005887'``. Parentheses
+            and usual Python keywords like ``and``, ``or`` and ``not``
+            can be used.
+        """
+
+        ops = {
+            'and': 'intersection',
+            'or':  'union',
+        }
+
+        if go_desc is None:
+
+            go_desc = dataio.go_descendants_goose(aspects = aspects)
+
+        if isinstance(go_expr, common.basestring):
+
+            # tokenizing expression if it is a string
+            go_expr = _rego.findall(go_expr)
+
+        # initial values
+        result   = set()
+        stack    = []
+        sub      = False
+        negate   = False
+        op       = None
+        this_set = None
+
+        for it in go_expr:
+
+            # processing expression by tokens
+
+            if sub:
+
+                if it == ')':
+
+                    # token is a closing parenthesis
+                    # execute sub-selection
+                    this_set = self.select_by_go_expr(
+                        go_expr = stack,
+                        go_desc = go_desc,
+                        aspects = aspects,
+                    )
+                    stack = []
+
+                else:
+
+                    # token is something else
+                    # add to sub-selection stack
+                    stack.append(it)
+
+            elif it == 'not':
+
+                # token is negation
+                # turn on negation for the next set
+                negate = True
+                continue
+
+            elif it == '(':
+
+                # token is a parenthesis
+                # start a new sub-selection
+                sub = True
+                continue
+
+            elif it[:3] == 'GO:':
+
+                # token is a GO term
+                # get the vertex selection by the single term method
+                this_set = self.select_by_go_single(
+                    it,
+                    go_desc = go_desc,
+                    aspects = aspects,
+                )
+
+            elif it in ops:
+
+                # token is an operator
+                # set it for use at the next operation
+                op = ops[it]
+
+            if this_set is not None:
+
+                if op is not None:
+
+                    result = getattr(result, op)(this_set)
+
+                else:
+
+                    result = this_set
+
+                this_set = None
+                op       = None
+
+        return result
+
     def label_by_go(self, label, go_terms, **kwargs):
         """
         Assigns a boolean vertex attribute to nodes which tells whether
@@ -10255,6 +10466,51 @@ class PyPath(object):
 
         for vid in vids:
             self.graph.vs[vid][label] = True
+
+    def network_by_go(
+            self,
+            node_categories,
+            network_sources = None,
+            include = None,
+            exclude = None,
+            prefix  = 'GO',
+            delete  = True,
+            vertex_attrs = True,
+            edge_attrs = True,
+        ):
+        """
+        Creates or filters a network based on Gene Ontology annotations.
+
+        :param dict node_categories:
+            A dict with custom category labels as keys and expressions of
+            GO terms as values. E.g.
+            ``{'extracell': 'GO:0005576 and not GO:0070062',
+               'plasmamem': 'GO:0005887'}``.
+        :param dict network_sources:
+            A dict with anything as keys and network input format definintions
+            (``input_formats.ReadSettings`` instances) as values.
+        :param list include:
+            A list of tuples of category label pairs. By default we keep all
+            edges connecting proteins annotated with any of the defined
+            categories. If ``include`` is defined then only edges between
+            category pairs defined here will be kept and all others deleted.
+        :param list exclude:
+            Similarly to include, all edges will be kept but the ones listed
+            in ``exclude`` will be deleted.
+        :param str prefix:
+            Prefix for all vertex and edge attributes created in this
+            operation. E.g. if you have a category label 'bar' and prefix
+            is 'foo' then you will have a new vertex attribute 'foo_bar'.
+        :param bool delete:
+            Delete the vertices and edges which don't belong to any of the
+            categories.
+        :param bool vertex_attrs:
+            Create vertex attributes.
+        :param bool edge_attrs:
+            Create edge attributes.
+        """
+
+        pass
 
     def load_ligand_receptor_network(self, lig_rec_resources=True,
                                      inference_from_go=True,
@@ -10269,11 +10525,14 @@ class PyPath(object):
         if sources is None:
             sources = data_formats.pathway
 
-        CC_EXTRACELL   = 'GO:0005576'
-        CC_EXOSOME     = 'GO:0070062'
-        CC_PLASMAMEM   = 'GO:0005887'
-        MF_RECBINDING  = 'GO:0005102'
-        MF_RECACTIVITY = 'GO:0038023'
+        CC_EXTRACELL   = 'GO:0005576' # select all extracellular
+        CC_EXOSOME     = 'GO:0070062' # remove exosome localized proteins
+        CC_PLASMAMEM   = 'GO:0005887' # select plasma membrane proteins
+        MF_RECBINDING  = 'GO:0005102' # select ligands
+        MF_RECACTIVITY = 'GO:0038023' # select receptors
+        MF_ECM_STRUCT  = 'GO:0005201' # select matrix structure proteins
+                                      # e.g. collagene
+        MF_CATALYTIC   = 'GO:0003824' # select enzymes, e.g. MMPs
 
         if inference_from_go:
 
@@ -10302,8 +10561,34 @@ class PyPath(object):
             lig_lig_edges = set()
             rec_rec_edges = set()
 
+            # vertex attributes to mark ligands and receptors
+            self.graph.vs['GO_ligand'] = [
+                False for _ in xrange(self.graph.vcount())
+            ]
+            self.graph.vs['GO_receptor'] = [
+                False for _ in xrange(self.graph.vcount())
+            ]
+
             for e in self.graph.es:
 
+                # set boolean vertex attributes
+                if e.source in ligands:
+
+                    self.graph.vs[e.source]['GO_ligand'] = True
+
+                if e.target in ligands:
+
+                    self.graph.vs[e.target]['GO_ligand'] = True
+
+                if e.source in receptors:
+
+                    self.graph.vs[e.source]['GO_receptors'] = True
+                
+                if e.target in receptors:
+
+                    self.graph.vs[e.target]['GO_receptors'] = True
+
+                # set edge attributes and collect edges to keep
                 di = e['dirs']
 
                 srcs = set(
@@ -10315,6 +10600,7 @@ class PyPath(object):
                     for u in di.tgt(keep_undirected)
                 )
 
+                # ligand-receptor interaction
                 if srcs & ligands and tgts & receptors:
                     lig_rec_edges.add(e.index)
                     lig_with_interactions.update(srcs)
@@ -10335,6 +10621,7 @@ class PyPath(object):
 
                         di.sources[di.reverse].add('GO_lig_rec')
 
+                # ligand-ligand interaction
                 elif keep_lig_lig and srcs & ligands and tgts & ligands:
                     lig_lig_edges.add(e.index)
                     e['sources'].add('GO_lig_lig')
@@ -10345,6 +10632,7 @@ class PyPath(object):
 
                             d.add('GO_lig_lig')
 
+                # receptor-receptor interaction
                 elif keep_rec_rec and srcs & receptors and tgts & receptors:
                     rec_rec_edges.add(e.index)
                     e['sources'].add('GO_rec_rec')
@@ -10888,6 +11176,249 @@ class PyPath(object):
 
             if rec in self.nodDct:
                 self.graph.vs[self.nodDct[rec]]['rec'] = True
+
+    def set_plasma_membrane_proteins_cspa(self):
+        """
+        Creates a vertex attribute `cspa` with value *True* if
+        the protein is a plasma membrane protein according to CPSA,
+        otherwise *False*.
+        """
+
+        self.update_vname()
+        self.graph.vs['cspa'] = [False for _ in self.graph.vs]
+
+        if 'cspa' not in self.lists:
+            self.cspa_list()
+
+        for sp in self.lists['cspa']:
+
+            if sp in self.nodDct:
+                self.graph.vs[self.nodDct[sp]]['cspa'] = True
+
+    def set_plasma_membrane_proteins_surfaceome(self, score_threshold = .0):
+        """
+        Creates a vertex attribute `ishs` with value *True* if
+        the protein is a plasma membrane protein according to the In Silico
+        Human Surfaceome, otherwise *False*.
+        """
+
+        self.update_vname()
+        self.graph.vs['ishs'] = [False for _ in self.graph.vs]
+
+        # always load this to apply score threshold
+        self.surfaceome_list(score_threshold = score_threshold)
+
+        for sp in self.lists['ishs']:
+
+            if sp in self.nodDct:
+
+                self.graph.vs[self.nodDct[sp]]['ishs'] = True
+
+    def set_plasma_membrane_proteins_cspa_surfaceome(
+            self,
+            score_threshold = .0,
+        ):
+        """
+        Creates a vertex attribute ``surf`` with value *True* if
+        the protein is a plasma membrane protein according either to the
+        Cell Surface Protein Atlas or the In Silico Human Surfaceome.
+        """
+
+        self.set_plasma_membrane_proteins_cspa()
+        self.set_plasma_membrane_proteins_surfaceome(
+            score_threshold = score_threshold
+        )
+
+        self.graph.vs['surf'] = [
+            cspa or ishs
+            for cspa, ishs in
+            zip(self.graph.vs['cspa'], self.graph.vs['ishs'])
+        ]
+
+    def load_surfaceome_attrs(self):
+        """
+        Loads vertex attributes from the In Silico Human Surfaceome.
+        Attributes are ``surfaceome_score``, ``surfaceome_class`` and
+        ``surfaceome_subclass``.
+        """
+
+        attrs = (
+            'surfaceome_score',
+            'surfaceome_class',
+            'surfaceome_subclass',
+        )
+
+        self.update_vname()
+
+        sf = dataio.get_surfaceome()
+
+        for i, attr in enumerate(attrs):
+
+            self.graph.vs[attr] = [
+                sf[v['name']][i]
+                for v in self.graph.vs
+                if v['name'] in sf
+            ]
+
+    def load_matrisome_attrs(self, organism = None):
+        """
+        Loads vertex attributes from MatrisomeDB 2.0. Attributes are
+        ``matrisome_class``, ``matrisome_subclass`` and ``matrisome_notes``.
+        """
+
+        attrs = (
+            'matrisome_class',
+            'matrisome_subclass',
+            'matrisome_notes',
+        )
+
+        organism = organism or self.ncbi_tax_id
+
+        matrisome = dataio.get_matrisome(organism = organism)
+
+        for i, attr in enumerate(attrs):
+
+            self.graph.vs[attr] = [
+                matrisome[v['name']][i]
+                for v in self.graph.vs
+                if v['name'] in matrisome
+            ]
+
+    def load_membranome_attrs(self):
+        """
+        Loads attributes from Membranome, a database of single-helix
+        transmembrane proteins.
+        """
+
+        self.update_vname()
+
+        self.graph.vs['membranome_location'] = [
+            None for _ in xrange(self.graph.vcount())
+        ]
+
+        m = dataio.get_membranome()
+
+        for uniprot, mem, side in m:
+
+            if uniprot in self.nodDct:
+
+                self.graph.vs[
+                        self.nodDct[uniprot]
+                    ][
+                        'membranome_location'
+                    ] = (mem, side)
+
+    def load_exocarta_attrs(
+            self,
+            load_samples = False,
+            load_refs = False,
+        ):
+        """
+        Creates vertex attributes from ExoCarta data. Creates a boolean
+        attribute ``exocarts_exosomal`` which tells whether a protein is
+        in ExoCarta i.e. has been found in exosomes. Optionally creates
+        attributes ``exocarta_samples`` and ``exocarta_refs`` listing the
+        sample tissue and the PubMed references, respectively.
+        """
+
+        self._load_exocarta_vesiclepedia_attrs(
+            database = 'exocarta',
+            load_samples = load_samples,
+            load_refs = load_refs,
+        )
+
+    def load_vesiclepedia_attrs(
+            self,
+            load_samples = False,
+            load_refs = False,
+            load_vesicle_type = False,
+        ):
+        """
+        Creates vertex attributes from Vesiclepedia data. Creates a boolean
+        attribute ``vesiclepedia_in_vesicle`` which tells whether a protein is
+        in ExoCarta i.e. has been found in exosomes. Optionally creates
+        attributes ``vesiclepedia_samples``, ``vesiclepedia_refs`` and
+        ``vesiclepedia_vesicles`` listing the sample tissue, the PubMed
+        references and the vesicle types, respectively.
+        """
+
+        self._load_exocarta_vesiclepedia_attrs(
+            database = 'vesiclepedia',
+            load_samples = load_samples,
+            load_refs = load_refs,
+            load_vesicle_type = load_vesicle_type,
+        )
+
+    def _load_exocarta_vesiclepedia_attrs(
+            self,
+            database = 'exocarta',
+            load_samples = False,
+            load_refs = False,
+            load_vesicle_type = False,
+        ):
+
+        database = database.lower()
+
+        exo = dataio._get_exocarta_vesiclepedia(
+            database = database,
+            organism = self.ncbi_tax_id
+        )
+
+        bool_attr = (
+            'exocarta_exosomal'
+                if database == 'exocarta' else
+            'vesiclepedia_in_vesicle'
+        )
+
+        self.graph.vs[bool_attr] = [
+            False for _ in xrange(self.graph.vcount())
+        ]
+        if load_samples:
+
+            self.graph.vs['%s_samples' % database] = [
+                set() for _ in xrange(self.graph.vcount())
+            ]
+        if load_refs:
+
+            self.graph.vs['%s_refs' % database] = [
+                set() for _ in xrange(self.graph.vcount())
+            ]
+        if database == 'vesiclepedia' and load_vesicle_type:
+
+            self.graph.vs['%s_vesicles' % database] = [
+                set() for _ in xrange(self.graph.vcount())
+            ]
+
+        for e in exo:
+
+            uniprots = self.mapper.map_name(
+                e[1],
+                'genesymbol',
+                'uniprot',
+                ncbi_tax_id = self.ncbi_tax_id,
+            )
+
+            for u in uniprots:
+
+                if u not in self.nodInd:
+
+                    continue
+
+                v = self.graph.vs[self.nodDct[u]]
+
+                v[bool_attr] = True
+
+                if load_samples:
+
+                    v['%s_samples' % database].add(e[3][2])
+
+                if load_refs and e[3][0] is not None:
+
+                    v['%s_refs' % database].add(e[3][0])
+
+                if database == 'vesiclepedia' and load_vesicle_type:
+
+                    v['%s_vesicles' % database].update(set(e[3][3]))
 
     def set_kinases(self):
         """

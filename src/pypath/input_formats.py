@@ -203,10 +203,20 @@ class ReadSettings:
                  interactionType='PPI',
                  positiveFilters=[],
                  negativeFilters=[],
+                 mark_source = None,
+                 mark_target = None,
                  inputArgs={},
                  must_have_references=True,
                  huge=False,
                  resource=None):
+        """
+        :param str mark_source:
+            Creates a boolean vertex attribute and sets it True for the
+            source vertex of directed interactions from this particular
+            resource.
+        :param str mark_target:
+            Same as ``mark_source`` but for target vertices.
+        """
         self.typeA = typeA
         self.typeB = typeB
         self.nameColA = nameColA
@@ -233,6 +243,8 @@ class ReadSettings:
         self.must_have_references = must_have_references and bool(references)
         self.huge = huge
         self.resource = self.name if resource is None else resource
+        self.mark_source = mark_source
+        self.mark_target = mark_target
 
 
 class ReadList:

@@ -847,6 +847,45 @@ urls = {
         'actions': 'http://stitch.embl.de/download/actions.v5.0/'\
             '9606.actions.v5.0.tsv.gz'
     },
+    'cspa': {
+        'label': 'Cell Surface Protein Atlas',
+        'url': 'http://wlab.ethz.ch/cspa/data/S2_File.xlsx',
+    },
+    'surfaceome': {
+        'label': 'In silico human surfaceome',
+        'url': 'http://wlab.ethz.ch/surfaceome/table_S3_surfaceome.xlsx',
+    },
+    'matrisome': {
+        'label': 'MatrisomeDB 2.0: ECM proteins',
+        'url_dl': 'http://matrisomeproject.mit.edu/matrisomeDB/search/?'\
+            'keywords=&genesymbol=&category=1&category=2&category=5&'\
+            'category=4&category=3&category=6&human=on&mouse=on&tissue=3&'\
+            'tissue=4&tissue=6&tissue=5&tissue=11&tissue=12&tissue=13&'\
+            'tissue=14&tissue=7&tissue=8&tissue=9&tissue=1&tissue=10&'\
+            'tissue=2&download=Download',
+        'url_xls': 'http://matrisomeproject.mit.edu/static/media/uploads/'\
+            'Files/%s%%20in%%20silico%%20matrisome/'\
+            'matrisome_%s_masterlist.xls',
+    },
+    'membranome': {
+        'label': 'Database of single helix transmembrane proteins: '\
+            'Membranome',
+        'baseurl': 'http://lomize-group-membranome.herokuapp.com/%s%s',
+    },
+    'exocarta': {
+        'label': 'Exosome protein, RNA and lipid database',
+        'url_protein': 'http://exocarta.org/Archive/'\
+            'EXOCARTA_PROTEIN_MRNA_DETAILS_5.txt',
+        'url_study': 'http://exocarta.org/Archive/'
+            'EXOCARTA_EXPERIMENT_DETAILS_5.txt',
+    },
+    'vesiclepedia': {
+        'label': 'Extracellular vesicle database',
+        'url_protein': 'http://microvesicles.org/Archive/'\
+            'VESICLEPEDIA_PROTEIN_MRNA_DETAILS_4.1.txt',
+        'url_study': 'http://microvesicles.org/Archive/'\
+            'VESICLEPEDIA_EXPERIMENT_DETAILS_4.1.txt',
+    }
 }
 
 files = {

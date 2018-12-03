@@ -1693,6 +1693,8 @@ ligand_receptor = {
         extraEdgeAttrs={"ramilowski_sources": (3, ';')},
         extraNodeAttrsA={},
         extraNodeAttrsB={},
+        mark_source = 'ramilowski_ligand',
+        mark_target = 'ramilowski_receptor',
         must_have_references=False,
         inputArgs={
             'putative': False
@@ -1714,7 +1716,9 @@ ligand_receptor = {
         header=False,
         extraEdgeAttrs={},
         extraNodeAttrsA={},
-        extraNodeAttrsB={}),
+        extraNodeAttrsB={},
+        mark_source = 'kirouac_ligand',
+        mark_target = 'kirouac_receptor'),
     'hpmr': input_formats.ReadSettings(
         name="HPMR",
         separator=None,
@@ -1734,6 +1738,8 @@ ligand_receptor = {
         extraEdgeAttrs={},
         extraNodeAttrsA={},
         extraNodeAttrsB={},
+        mark_source = 'hpmr_ligand',
+        mark_target = 'hpmr_receptor',
         positiveFilters=[(1, 'Ligand')]),
     'cellphonedb': input_formats.ReadSettings(
         name="CellPhoneDB",

@@ -8105,5 +8105,237 @@ def stitch_interactions(threshold = None):
         if l[4] == 'f':
             
             a, b = b, a
+
+def get_cspa(organism = 9606):
+    
+    sheets = {
+        'Human': 'Table A',
+        'Mouse': 'Table B',
+    }
+    
+    str_organism = common.taxids[organism].capitalize()
+    
+    url = urls.urls['cspa']['url']
+    c = curl.Curl(url, large = True, silent = False)
+    xlsname = c.fname
+    del(c)
+    raw = read_xls(xlsname, sheets[str_organism])[1:]
+    
+    return set(r[1] for r in raw)
+
+def get_surfaceome():
+    """
+    Downloads the "In silico human surfaceome".
+    Dict with UniProt IDs as key and tuples of surface prediction score,
+    class and subclass as values (columns B, N, S and T of table S3).
+    """
+    
+    url = urls.urls['surfaceome']['url']
+    c = curl.Curl(url, large = True, silent = False)
+    xlsname = c.fname
+    del(c)
+    raw = read_xls(xlsname, 'in silico surfaceome only')[2:]
+    
+    return dict(
+        (
+            r[1], # uniprot
+            (
+                float(r[13]), # score
+                set(r[18].split(';')) if r[18] else set(), # class
+                set(r[19].split(';')) if r[19] else set(), # subclass
+            )
+        )
+        for r in raw
+    )
+
+def get_matrisome(organism = 9606):
+    """
+    Downloads MatrisomeDB 2.0, a database of extracellular matrix proteins.
+    Returns dict where keys are UniProt IDs and values are tuples of
+    classes, subclasses and notes.
+    """
+    
+    tax_names = {
+        10090: ('Murine', 'mm'),
+        9606:  ('Human',  'hs'),
+    }
+    
+    url = urls.urls['matrisome']['url_xls'] % tax_names[organism]
+    c = curl.Curl(url, large = True, silent = False)
+    xlsname = c.fname
+    del(c)
+    raw = read_xls(xlsname)[1:]
+    
+    result = {}
+    
+    return dict(
+        (
+            genesymbol,
+            (
+                r[0],  # class
+                r[1],  # subclass
+                r[10], # notes
+            )
+        )
+        for r in raw
+        for genesymbol in r[7].split(':')
+    )
+
+def __get_matrisome_2():
+    """
+    This I made only to find out why certain proteins are missing from this
+    output. I will contact Matrisome people to ask why.
+    """
+    
+    url = urls.urls['matrisome']['url_dl']
+    c = curl.Curl(url, large = True, silent = False)
+    
+    _ = next(c.result)
+    
+    return set(r.decode('utf-8').split(',')[1] for r in c.result)
+
+def get_membranome():
+    
+    membr_url = urls.urls['membranome']['baseurl'] % ('membranes', '')
+    c = curl.Curl(membr_url, large = True, silent = False)
+    membr_data = json.loads(c.fileobj.read().decode('utf-8'))
+    del c
+    
+    membr = dict((m['id'], m) for m in membr_data['objects'])
+    
+    page = 1
+    prot_all = []
+    
+    prg = progress.Progress(7, 'Downloading Membranome', 1)
+    
+    while True:
         
+        prg.step()
         
+        prot_url = urls.urls['membranome']['baseurl'] % (
+            'proteins',
+            '?pageSize=1000&pageNum=%u' % page,
+        )
+        c = curl.Curl(prot_url, large = True, silent = True)
+        prot = json.loads(c.fileobj.read().decode('utf-8'))
+        
+        prot_all.extend(prot['objects'])
+        
+        if prot['page_end'] >= prot['total_objects']:
+            
+            break
+        
+        page = prot['page_num'] + 1
+    
+    prg.terminate()
+    
+    for p in prot_all:
+        
+        yield (
+            p['uniprotcode'],
+            membr[p['membrane_id']]['name'],
+            membr[p['membrane_id']]['topology_in']
+                if p['topology_show_in'] else
+            membr[p['membrane_id']]['topology_out'],
+        )
+
+def get_exocarta(organism = 9606, types = None):
+    """
+    :param set types:
+        Molecule types to retrieve. Possible values: `protein`, `mrna`.
+    """
+    
+    return _get_exocarta_vesiclepedia(
+        database = 'exocarta',
+        organism = organism,
+        types = types,
+    )
+
+def get_vesiclepedia(organism = 9606, types = None):
+    """
+    :param set types:
+        Molecule types to retrieve. Possible values: `protein`, `mrna`.
+    """
+    
+    return _get_exocarta_vesiclepedia(
+        database = 'vesiclepedia',
+        organism = organism,
+        types = types,
+    )
+
+def _get_exocarta_vesiclepedia(
+        database = 'exocarta',
+        organism = 9606,
+        types = None
+    ):
+    """
+    :param str database:
+        Which database to download: ExoCarta or Vesiclepedia.
+    :param set types:
+        Molecule types to retrieve. Possible values: `protein`, `mrna`.
+    """
+    
+    database = database.lower()
+    
+    types = types or {'protein'}
+    
+    organism = common.phosphoelm_taxids[organism]
+    
+    taxid_rev = dict((v, k) for k, v in iteritems(common.phosphoelm_taxids))
+    
+    # collecting the references
+    url_s = urls.urls[database]['url_study']
+    c = curl.Curl(url_s, large = True, silent = False)
+    _ = next(c.result)
+    
+    studies = {}
+    
+    for s in c.result:
+        
+        s = s.decode('utf-8').split('\t')
+        
+        organisms = tuple(
+            taxid_rev[t.strip()]
+            for t in s[2].split('|')
+            if t.strip() in taxid_rev
+        )
+        
+        if not organisms:
+            
+            continue
+        
+        stud = (
+            s[1] if s[1] != '0' else None, # PubMed ID
+            organisms, # organism
+            s[4], # sample source (cell type, tissue)
+        )
+        
+        if database == 'vesiclepedia':
+            
+            vtype = s[11].strip()
+            
+            stud += (
+                tuple(vtype.split('/')) if vtype else (),
+            )
+        
+        studies[int(s[0])] = tuple(stud)
+    
+    # processing proteins
+    url_p = urls.urls[database]['url_protein']
+    c = curl.Curl(url_p, large = True, silent = False)
+    _ = next(c.result)
+    
+    for s in c.result:
+        
+        s = s.decode('utf-8').split('\t')
+        
+        if s[4] != organism or s[1] not in types:
+            
+            continue
+        
+        yield (
+            s[2], # Entrez ID
+            s[3], # Gene Symbol
+            taxid_rev[s[4]], # NCBI Taxonomy ID
+            studies[int(s[5])], # study reference
+        )
