@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Reference &#8212; pypath 0.7.114 documentation</title>
+    <title>Reference &#8212; pypath 0.7.115 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="installation.html" title="Installation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">pypath 0.7.114 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">pypath 0.7.115 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -737,7 +737,7 @@ similarity index between those sources [float].</td>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.degree_dist">
-<code class="descname">degree_dist</code><span class="sig-paren">(</span><em>prefix</em>, <em>g</em>, <em>group=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.degree_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.degree_dist" title="Permalink to this definition">¶</a></dt>
+<code class="descname">degree_dist</code><span class="sig-paren">(</span><em>prefix</em>, <em>g=None</em>, <em>group=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.degree_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.degree_dist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the degree distribution over all nodes of the network.
 If <em>group</em> is provided, also across nodes of that group(s).</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1784,22 +1784,115 @@ the 2 proteins, otherwise <code class="docutils literal notranslate"><span class
 <dl class="method">
 <dt id="pypath.main.PyPath.having_attr">
 <code class="descname">having_attr</code><span class="sig-paren">(</span><em>attr</em>, <em>graph=None</em>, <em>index=True</em>, <em>edges=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.having_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.having_attr" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Checks if edges or nodes of the network have a specific
+attribute and returns an iterator of the indices (or the
+edge/node instances) of edges/nodes having such attribute.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>attr</strong> (<em>str</em>) – The name of the attribute to look for.</li>
+<li><strong>graph</strong> (<em>igraph.Graph</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. The graph object where the
+edge/node attribute is to be searched. If none is passed,
+takes the undirected network of the current instance.</li>
+<li><strong>index</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">True</span></code> by default. Whether to return the
+iterator of the indices or the node/edge instances.</li>
+<li><strong>edges</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">True</span></code> by default. Whether to look for the
+attribute in the networks edges or nodes instead.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>generator</em>) – Generator object containing the edge/node
+indices (or instances) having the specified attribute.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.having_eattr">
 <code class="descname">having_eattr</code><span class="sig-paren">(</span><em>attr</em>, <em>graph=None</em>, <em>index=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.having_eattr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.having_eattr" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Checks if edges of the network have a specific attribute and
+returns an iterator of the indices (or the edge instances) of
+edges having such attribute.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>attr</strong> (<em>str</em>) – The name of the attribute to look for.</li>
+<li><strong>graph</strong> (<em>igraph.Graph</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. The graph object where the
+edge/node attribute is to be searched. If none is passed,
+takes the undirected network of the current instance.</li>
+<li><strong>index</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">True</span></code> by default. Whether to return the
+iterator of the indices or the node/edge instances.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>generator</em>) – Generator object containing the edge
+indices (or instances) having the specified attribute.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.having_ptm">
 <code class="descname">having_ptm</code><span class="sig-paren">(</span><em>index=True</em>, <em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.having_ptm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.having_ptm" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Checks if edges of the network have the <code class="docutils literal notranslate"><span class="pre">'ptm'</span></code> attribute and
+returns an iterator of the indices (or the edge instances) of
+edges having such attribute.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>index</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">True</span></code> by default. Whether to return the
+iterator of the indices or the node/edge instances.</li>
+<li><strong>graph</strong> (<em>igraph.Graph</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. The graph object where the
+edge/node attribute is to be searched. If none is passed,
+takes the undirected network of the current instance.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>generator</em>) – Generator object containing the edge
+indices (or instances) having the <code class="docutils literal notranslate"><span class="pre">ptm''</span></code> attribute.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.having_vattr">
 <code class="descname">having_vattr</code><span class="sig-paren">(</span><em>attr</em>, <em>graph=None</em>, <em>index=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.having_vattr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.having_vattr" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Checks if nodes of the network have a specific attribute and
+returns an iterator of the indices (or the node instances) of
+nodes having such attribute.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>attr</strong> (<em>str</em>) – The name of the attribute to look for.</li>
+<li><strong>graph</strong> (<em>igraph.Graph</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. The graph object where the
+edge/node attribute is to be searched. If none is passed,
+takes the undirected network of the current instance.</li>
+<li><strong>index</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">True</span></code> by default. Whether to return the
+iterator of the indices or the node/edge instances.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>generator</em>) – Generator object containing the node
+indices (or instances) having the specified attribute.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.homology_translation">
@@ -2023,7 +2116,7 @@ the node is annotated by all or any (see <code class="docutils literal notransla
 <dl class="method">
 <dt id="pypath.main.PyPath.list_resources">
 <code class="descname">list_resources</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.list_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.list_resources" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints the list of resources throught the standard output.</p>
+<dd><p>Prints the list of resources through the standard output.</p>
 </dd></dl>
 
 <dl class="method">
@@ -2577,7 +2670,29 @@ information from the edges. <code class="docutils literal notranslate"><span cla
 <dl class="method">
 <dt id="pypath.main.PyPath.loop_edges">
 <code class="descname">loop_edges</code><span class="sig-paren">(</span><em>index=True</em>, <em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.loop_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.loop_edges" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns an iterator of the indices (or the edge instances) of
+the edges which represent a loop (whose source and target node
+are the same).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>index</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">True</span></code> by default. Whether to return the
+iterator of the indices or the edge instances.</li>
+<li><strong>graph</strong> (<em>igraph.Graph</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. The graph object where the
+edge loops are to be searched. If none is passed, takes the
+undirected network of the current instance.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>generator</em>) – Generator object containing the edge
+indices (or instances) containing loops.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.map_edge">
@@ -4998,7 +5113,7 @@ their attribute <code class="xref py py-attr docutils literal notranslate"><span
         <li class="right" >
           <a href="installation.html" title="Installation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">pypath 0.7.114 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">pypath 0.7.115 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>pypath.main &#8212; pypath 0.7.114 documentation</title>
+    <title>pypath.main &#8212; pypath 0.7.115 documentation</title>
     <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -25,7 +25,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.114 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.115 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -5623,7 +5623,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">({</span><span class="s2">&quot;srcnum&quot;</span><span class="p">:</span> <span class="n">srcnum</span><span class="p">},</span> <span class="s2">&quot;source_num&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span>
                          <span class="n">rownames</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PyPath.degree_dist"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.degree_dist">[docs]</a>    <span class="k">def</span> <span class="nf">degree_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="PyPath.degree_dist"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.degree_dist">[docs]</a>    <span class="k">def</span> <span class="nf">degree_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the degree distribution over all nodes of the network.</span>
 <span class="sd">        If *group* is provided, also across nodes of that group(s).</span>
@@ -5640,29 +5640,24 @@
 <span class="sd">            its degree distribution.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="k">if</span> <span class="n">g</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
+
         <span class="n">deg</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">({</span><span class="s2">&quot;deg&quot;</span><span class="p">:</span> <span class="n">deg</span><span class="p">},</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;-whole-degdist&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span>
                          <span class="n">rownames</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">group</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">group</span> <span class="o">=</span> <span class="p">[</span><span class="n">group</span><span class="p">]</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">group</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="o">.</span><span class="n">attributes</span><span class="p">()))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ownlog</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;Missing vertex attribute!&quot;</span><span class="p">),</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                <span class="n">group</span> <span class="o">=</span> <span class="p">[</span><span class="n">group</span><span class="p">]</span>
-
             <span class="k">for</span> <span class="n">gr</span> <span class="ow">in</span> <span class="n">group</span><span class="p">:</span>
-                <span class="n">dgr</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
-
-                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">:</span>
-
-                    <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="n">gr</span><span class="p">]:</span>
-                        <span class="n">dgr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deg</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-
-                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">dgr</span> <span class="o">=</span> <span class="p">[</span><span class="n">deg</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">vs</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="n">gr</span><span class="p">]]</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">({</span><span class="s2">&quot;deg&quot;</span><span class="p">:</span> <span class="n">dgr</span><span class="p">},</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">gr</span> <span class="o">+</span> <span class="s2">&quot;-degdist&quot;</span><span class="p">,</span>
                                  <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="n">rownames</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
@@ -5957,10 +5952,10 @@
     <span class="c1">#      **the current network** rather than omnipath? (e.g. if the user</span>
     <span class="c1">#      just removed one or several of them because he doesn&#39;t like/want them</span>
     <span class="c1">#      and then this function still prints them, as if they were still</span>
-    <span class="c1">#      part of the network).</span>
+    <span class="c1">#      part of the network can be confusing).</span>
 <div class="viewcode-block" id="PyPath.list_resources"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.list_resources">[docs]</a>    <span class="k">def</span> <span class="nf">list_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Prints the list of resources throught the standard output.</span>
+<span class="sd">        Prints the list of resources through the standard output.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; &gt; omnipath</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -6030,8 +6025,30 @@
     <span class="c1"># functions to make life easier</span>
     <span class="c1">#</span>
 
+    <span class="c1"># XXX: all these having_* functions are actually not used anywhere</span>
+
 <div class="viewcode-block" id="PyPath.having_attr"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.having_attr">[docs]</a>    <span class="k">def</span> <span class="nf">having_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">edges</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if edges or nodes of the network have a specific</span>
+<span class="sd">        attribute and returns an iterator of the indices (or the</span>
+<span class="sd">        edge/node instances) of edges/nodes having such attribute.</span>
+
+<span class="sd">        :arg str attr:</span>
+<span class="sd">            The name of the attribute to look for.</span>
+<span class="sd">        :arg igraph.Graph graph:</span>
+<span class="sd">            Optional, ``None`` by default. The graph object where the</span>
+<span class="sd">            edge/node attribute is to be searched. If none is passed,</span>
+<span class="sd">            takes the undirected network of the current instance.</span>
+<span class="sd">        :arg bool index:</span>
+<span class="sd">            Optional, ``True`` by default. Whether to return the</span>
+<span class="sd">            iterator of the indices or the node/edge instances.</span>
+<span class="sd">        :arg bool edges:</span>
+<span class="sd">            Optional, ``True`` by default. Whether to look for the</span>
+<span class="sd">            attribute in the networks edges or nodes instead.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*generator*) -- Generator object containing the edge/node</span>
+<span class="sd">            indices (or instances) having the specified attribute.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
@@ -6046,24 +6063,88 @@
 
 <div class="viewcode-block" id="PyPath.having_eattr"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.having_eattr">[docs]</a>    <span class="k">def</span> <span class="nf">having_eattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if edges of the network have a specific attribute and</span>
+<span class="sd">        returns an iterator of the indices (or the edge instances) of</span>
+<span class="sd">        edges having such attribute.</span>
+
+<span class="sd">        :arg str attr:</span>
+<span class="sd">            The name of the attribute to look for.</span>
+<span class="sd">        :arg igraph.Graph graph:</span>
+<span class="sd">            Optional, ``None`` by default. The graph object where the</span>
+<span class="sd">            edge/node attribute is to be searched. If none is passed,</span>
+<span class="sd">            takes the undirected network of the current instance.</span>
+<span class="sd">        :arg bool index:</span>
+<span class="sd">            Optional, ``True`` by default. Whether to return the</span>
+<span class="sd">            iterator of the indices or the node/edge instances.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*generator*) -- Generator object containing the edge</span>
+<span class="sd">            indices (or instances) having the specified attribute.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">having_attr</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PyPath.having_vattr"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.having_vattr">[docs]</a>    <span class="k">def</span> <span class="nf">having_vattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if nodes of the network have a specific attribute and</span>
+<span class="sd">        returns an iterator of the indices (or the node instances) of</span>
+<span class="sd">        nodes having such attribute.</span>
+
+<span class="sd">        :arg str attr:</span>
+<span class="sd">            The name of the attribute to look for.</span>
+<span class="sd">        :arg igraph.Graph graph:</span>
+<span class="sd">            Optional, ``None`` by default. The graph object where the</span>
+<span class="sd">            edge/node attribute is to be searched. If none is passed,</span>
+<span class="sd">            takes the undirected network of the current instance.</span>
+<span class="sd">        :arg bool index:</span>
+<span class="sd">            Optional, ``True`` by default. Whether to return the</span>
+<span class="sd">            iterator of the indices or the node/edge instances.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*generator*) -- Generator object containing the node</span>
+<span class="sd">            indices (or instances) having the specified attribute.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">having_attr</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PyPath.having_ptm"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.having_ptm">[docs]</a>    <span class="k">def</span> <span class="nf">having_ptm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if edges of the network have the ``&#39;ptm&#39;`` attribute and</span>
+<span class="sd">        returns an iterator of the indices (or the edge instances) of</span>
+<span class="sd">        edges having such attribute.</span>
+
+<span class="sd">        :arg bool index:</span>
+<span class="sd">            Optional, ``True`` by default. Whether to return the</span>
+<span class="sd">            iterator of the indices or the node/edge instances.</span>
+<span class="sd">        :arg igraph.Graph graph:</span>
+<span class="sd">            Optional, ``None`` by default. The graph object where the</span>
+<span class="sd">            edge/node attribute is to be searched. If none is passed,</span>
+<span class="sd">            takes the undirected network of the current instance.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*generator*) -- Generator object containing the edge</span>
+<span class="sd">            indices (or instances) having the ``ptm&#39;&#39;`` attribute.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">having_eattr</span><span class="p">(</span><span class="s1">&#39;ptm&#39;</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PyPath.loop_edges"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.loop_edges">[docs]</a>    <span class="k">def</span> <span class="nf">loop_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an iterator of the indices (or the edge instances) of</span>
+<span class="sd">        the edges which represent a loop (whose source and target node</span>
+<span class="sd">        are the same).</span>
+
+<span class="sd">        :arg bool index:</span>
+<span class="sd">            Optional, ``True`` by default. Whether to return the</span>
+<span class="sd">            iterator of the indices or the edge instances.</span>
+<span class="sd">        :arg igraph.Graph graph:</span>
+<span class="sd">            Optional, ``None`` by default. The graph object where the</span>
+<span class="sd">            edge loops are to be searched. If none is passed, takes the</span>
+<span class="sd">            undirected network of the current instance.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*generator*) -- Generator object containing the edge</span>
+<span class="sd">            indices (or instances) containing loops.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
@@ -10227,11 +10308,13 @@
             <span class="n">sources</span> <span class="o">=</span> <span class="n">data_formats</span><span class="o">.</span><span class="n">pathway</span>
 
         <span class="n">CC_EXTRACELL</span>   <span class="o">=</span> <span class="s1">&#39;GO:0005576&#39;</span>
+        <span class="n">CC_EXOSOME</span>     <span class="o">=</span> <span class="s1">&#39;GO:0070062&#39;</span>
         <span class="n">CC_PLASMAMEM</span>   <span class="o">=</span> <span class="s1">&#39;GO:0005887&#39;</span>
         <span class="n">MF_RECBINDING</span>  <span class="o">=</span> <span class="s1">&#39;GO:0005102&#39;</span>
         <span class="n">MF_RECACTIVITY</span> <span class="o">=</span> <span class="s1">&#39;GO:0038023&#39;</span>
 
         <span class="k">if</span> <span class="n">inference_from_go</span><span class="p">:</span>
+
             <span class="n">go_desc</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">go_descendants_goose</span><span class="p">(</span><span class="n">aspects</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">init_network</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
 
@@ -10239,6 +10322,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">go_annotate</span><span class="p">()</span>
 
             <span class="n">vids_extracell</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_by_go</span><span class="p">(</span><span class="n">CC_EXTRACELL</span><span class="p">,</span>   <span class="n">go_desc</span><span class="p">)</span>
+            <span class="n">vids_exosome</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_by_go</span><span class="p">(</span><span class="n">CC_EXOSOME</span><span class="p">,</span>     <span class="n">go_desc</span><span class="p">)</span>
+            <span class="n">vids_extracell</span>   <span class="o">=</span> <span class="n">vids_extracell</span> <span class="o">-</span> <span class="n">vids_exosome</span>
             <span class="n">vids_plasmamem</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_by_go</span><span class="p">(</span><span class="n">CC_PLASMAMEM</span><span class="p">,</span>   <span class="n">go_desc</span><span class="p">)</span>
             <span class="n">vids_recbinding</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_by_go</span><span class="p">(</span><span class="n">MF_RECBINDING</span><span class="p">,</span>  <span class="n">go_desc</span><span class="p">)</span>
             <span class="n">vids_recactivity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_by_go</span><span class="p">(</span><span class="n">MF_RECACTIVITY</span><span class="p">,</span> <span class="n">go_desc</span><span class="p">)</span>
@@ -12968,7 +13053,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.114 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypath 0.7.115 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>

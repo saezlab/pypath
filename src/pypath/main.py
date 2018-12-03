@@ -5914,10 +5914,10 @@ class PyPath(object):
     #      **the current network** rather than omnipath? (e.g. if the user
     #      just removed one or several of them because he doesn't like/want them
     #      and then this function still prints them, as if they were still
-    #      part of the network).
+    #      part of the network can be confusing).
     def list_resources(self):
         """
-        Prints the list of resources throught the standard output.
+        Prints the list of resources through the standard output.
         """
 
         sys.stdout.write(' > omnipath\n')
@@ -5987,8 +5987,30 @@ class PyPath(object):
     # functions to make life easier
     #
 
+    # XXX: all these having_* functions are actually not used anywhere
+
     def having_attr(self, attr, graph=None, index=True, edges=True):
         """
+        Checks if edges or nodes of the network have a specific
+        attribute and returns an iterator of the indices (or the
+        edge/node instances) of edges/nodes having such attribute.
+
+        :arg str attr:
+            The name of the attribute to look for.
+        :arg igraph.Graph graph:
+            Optional, ``None`` by default. The graph object where the
+            edge/node attribute is to be searched. If none is passed,
+            takes the undirected network of the current instance.
+        :arg bool index:
+            Optional, ``True`` by default. Whether to return the
+            iterator of the indices or the node/edge instances.
+        :arg bool edges:
+            Optional, ``True`` by default. Whether to look for the
+            attribute in the networks edges or nodes instead.
+
+        :return:
+            (*generator*) -- Generator object containing the edge/node
+            indices (or instances) having the specified attribute.
         """
 
         graph = graph or self.graph
@@ -6003,24 +6025,88 @@ class PyPath(object):
 
     def having_eattr(self, attr, graph=None, index=True):
         """
+        Checks if edges of the network have a specific attribute and
+        returns an iterator of the indices (or the edge instances) of
+        edges having such attribute.
+
+        :arg str attr:
+            The name of the attribute to look for.
+        :arg igraph.Graph graph:
+            Optional, ``None`` by default. The graph object where the
+            edge/node attribute is to be searched. If none is passed,
+            takes the undirected network of the current instance.
+        :arg bool index:
+            Optional, ``True`` by default. Whether to return the
+            iterator of the indices or the node/edge instances.
+
+        :return:
+            (*generator*) -- Generator object containing the edge
+            indices (or instances) having the specified attribute.
         """
 
         return self.having_attr(attr, graph, index)
 
     def having_vattr(self, attr, graph=None, index=True):
         """
+        Checks if nodes of the network have a specific attribute and
+        returns an iterator of the indices (or the node instances) of
+        nodes having such attribute.
+
+        :arg str attr:
+            The name of the attribute to look for.
+        :arg igraph.Graph graph:
+            Optional, ``None`` by default. The graph object where the
+            edge/node attribute is to be searched. If none is passed,
+            takes the undirected network of the current instance.
+        :arg bool index:
+            Optional, ``True`` by default. Whether to return the
+            iterator of the indices or the node/edge instances.
+
+        :return:
+            (*generator*) -- Generator object containing the node
+            indices (or instances) having the specified attribute.
         """
 
         return self.having_attr(attr, graph, index, False)
 
     def having_ptm(self, index=True, graph=None):
         """
+        Checks if edges of the network have the ``'ptm'`` attribute and
+        returns an iterator of the indices (or the edge instances) of
+        edges having such attribute.
+
+        :arg bool index:
+            Optional, ``True`` by default. Whether to return the
+            iterator of the indices or the node/edge instances.
+        :arg igraph.Graph graph:
+            Optional, ``None`` by default. The graph object where the
+            edge/node attribute is to be searched. If none is passed,
+            takes the undirected network of the current instance.
+
+        :return:
+            (*generator*) -- Generator object containing the edge
+            indices (or instances) having the ``ptm''`` attribute.
         """
 
         return self.having_eattr('ptm', graph, index)
 
     def loop_edges(self, index=True, graph=None):
         """
+        Returns an iterator of the indices (or the edge instances) of
+        the edges which represent a loop (whose source and target node
+        are the same).
+
+        :arg bool index:
+            Optional, ``True`` by default. Whether to return the
+            iterator of the indices or the edge instances.
+        :arg igraph.Graph graph:
+            Optional, ``None`` by default. The graph object where the
+            edge loops are to be searched. If none is passed, takes the
+            undirected network of the current instance.
+
+        :return:
+            (*generator*) -- Generator object containing the edge
+            indices (or instances) containing loops.
         """
 
         graph = graph or self.graph

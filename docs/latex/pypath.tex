@@ -56,8 +56,8 @@
 
 
 \title{pypath Documentation}
-\date{Nov 26, 2018}
-\release{0.7.114}
+\date{Dec 03, 2018}
+\release{0.7.115}
 \author{Dénes Türei}
 \newcommand{\sphinxlogo}{\vbox{}}
 \renewcommand{\releasename}{Release}
@@ -1163,7 +1163,7 @@ similarity index between those sources {[}float{]}.
 \index{degree\_dist() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.degree_dist}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{degree\_dist}}}{\emph{prefix}, \emph{g}, \emph{group=None}}{}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.degree_dist}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{degree\_dist}}}{\emph{prefix}, \emph{g=None}, \emph{group=None}}{}
 Computes the degree distribution over all nodes of the network.
 If \sphinxstyleemphasis{group} is provided, also across nodes of that group(s).
 \begin{quote}\begin{description}
@@ -2369,24 +2369,125 @@ To be passed to igraph.Graph.get\_eid()
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.having_attr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{having\_attr}}}{\emph{attr}, \emph{graph=None}, \emph{index=True}, \emph{edges=True}}{}
+Checks if edges or nodes of the network have a specific
+attribute and returns an iterator of the indices (or the
+edge/node instances) of edges/nodes having such attribute.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The name of the attribute to look for.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{graph}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The graph object where the
+edge/node attribute is to be searched. If none is passed,
+takes the undirected network of the current instance.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{index}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{True}} by default. Whether to return the
+iterator of the indices or the node/edge instances.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{edges}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{True}} by default. Whether to look for the
+attribute in the networks edges or nodes instead.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{generator}) \textendash{} Generator object containing the edge/node
+indices (or instances) having the specified attribute.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{having\_eattr() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.having_eattr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{having\_eattr}}}{\emph{attr}, \emph{graph=None}, \emph{index=True}}{}
+Checks if edges of the network have a specific attribute and
+returns an iterator of the indices (or the edge instances) of
+edges having such attribute.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The name of the attribute to look for.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{graph}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The graph object where the
+edge/node attribute is to be searched. If none is passed,
+takes the undirected network of the current instance.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{index}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{True}} by default. Whether to return the
+iterator of the indices or the node/edge instances.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{generator}) \textendash{} Generator object containing the edge
+indices (or instances) having the specified attribute.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{having\_ptm() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.having_ptm}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{having\_ptm}}}{\emph{index=True}, \emph{graph=None}}{}
+Checks if edges of the network have the \sphinxcode{\sphinxupquote{'ptm'}} attribute and
+returns an iterator of the indices (or the edge instances) of
+edges having such attribute.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{index}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{True}} by default. Whether to return the
+iterator of the indices or the node/edge instances.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{graph}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The graph object where the
+edge/node attribute is to be searched. If none is passed,
+takes the undirected network of the current instance.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{generator}) \textendash{} Generator object containing the edge
+indices (or instances) having the \sphinxcode{\sphinxupquote{ptm'{'}}} attribute.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{having\_vattr() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.having_vattr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{having\_vattr}}}{\emph{attr}, \emph{graph=None}, \emph{index=True}}{}
+Checks if nodes of the network have a specific attribute and
+returns an iterator of the indices (or the node instances) of
+nodes having such attribute.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{attr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The name of the attribute to look for.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{graph}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The graph object where the
+edge/node attribute is to be searched. If none is passed,
+takes the undirected network of the current instance.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{index}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{True}} by default. Whether to return the
+iterator of the indices or the node/edge instances.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{generator}) \textendash{} Generator object containing the node
+indices (or instances) having the specified attribute.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{homology\_translation() (pypath.main.PyPath method)}
@@ -2640,7 +2741,7 @@ the node is annotated by all or any (see \sphinxcode{\sphinxupquote{method}} par
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.list_resources}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{list\_resources}}}{}{}
-Prints the list of resources throught the standard output.
+Prints the list of resources through the standard output.
 
 \end{fulllineitems}
 
@@ -3293,6 +3394,28 @@ information from the edges. \sphinxcode{\sphinxupquote{{[}{]}}} otherwise.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.loop_edges}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{loop\_edges}}}{\emph{index=True}, \emph{graph=None}}{}
+Returns an iterator of the indices (or the edge instances) of
+the edges which represent a loop (whose source and target node
+are the same).
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{index}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{True}} by default. Whether to return the
+iterator of the indices or the edge instances.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{graph}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The graph object where the
+edge loops are to be searched. If none is passed, takes the
+undirected network of the current instance.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{generator}) \textendash{} Generator object containing the edge
+indices (or instances) containing loops.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{map\_edge() (pypath.main.PyPath method)}
