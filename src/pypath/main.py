@@ -5664,7 +5664,7 @@ class PyPath(object):
                         list(
                             map(lambda r: _refs.Reference(int(r)), n[
                                 'attrsEdge']['references'])))
-                    g.es[edge]['negative_refs'].add(refs)
+                    g.es[edge]['negative_refs'].update(refs)
                     matches += 1
 
             prg.step()
