@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.10.12)  3 DEC 2018 17:40
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.10.12)  5 DEC 2018 16:02
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1200,263 +1200,301 @@ r/m/n/10 chembl\TS1/pcr/m/n/10 '\T1/pcr/m/n/10 , \TS1/pcr/m/n/10 '\T1/pcr/m/n/1
  []
 
 [7] [8]
-Underfull \hbox (badness 10000) in paragraph at lines 424--434
-\T1/pcr/m/n/10 receptor_list() \T1/ptm/m/n/10 (\TS1/pcr/m/n/10 '\T1/pcr/m/n/10 
-rec\TS1/pcr/m/n/10 '\T1/ptm/m/n/10 ), [][]\T1/pcr/m/sl/10 PyPath.druggability_l
-ist()[][] \T1/ptm/m/n/10 (\TS1/pcr/m/n/10 '\T1/pcr/m/n/10 dgb\TS1/pcr/m/n/10 '\
-T1/ptm/m/n/10 ),
+Underfull \hbox (badness 10000) in paragraph at lines 424--436
+\T1/ptm/m/n/10 in-clude \T1/pcr/m/n/10 pypath.main.PyPath.receptor_list() \T1/p
+tm/m/n/10 (\TS1/pcr/m/n/10 '\T1/pcr/m/n/10 rec\TS1/pcr/m/n/10 '\T1/ptm/m/n/10 )
+, [][]\T1/pcr/m/sl/10 pypath.
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 424--434
-\T1/ptm/m/n/10 (\TS1/pcr/m/n/10 '\T1/pcr/m/n/10 sig\TS1/pcr/m/n/10 '\T1/ptm/m/n
-/10 ), [][]\T1/pcr/m/sl/10 PyPath.proteome_list()[][] \T1/ptm/m/n/10 (\TS1/pcr/
-m/n/10 '\T1/pcr/m/n/10 proteome\TS1/pcr/m/n/10 '\T1/ptm/m/n/10 ) and [][]\T1/pc
-r/m/sl/10 PyPath.
+Underfull \hbox (badness 10000) in paragraph at lines 424--436
+\T1/pcr/m/sl/10 main.PyPath.druggability_list()[][] \T1/ptm/m/n/10 (\TS1/pcr/m/
+n/10 '\T1/pcr/m/n/10 dgb\TS1/pcr/m/n/10 '\T1/ptm/m/n/10 ), [][]\T1/pcr/m/sl/10 
+pypath.main.PyPath.
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 502--504
+Underfull \hbox (badness 10000) in paragraph at lines 424--436
+\T1/pcr/m/sl/10 kinases_list()[][] \T1/ptm/m/n/10 (\TS1/pcr/m/n/10 '\T1/pcr/m/n
+/10 kin\TS1/pcr/m/n/10 '\T1/ptm/m/n/10 ), [][]\T1/pcr/m/sl/10 pypath.main.PyPat
+h.tfs_list()[][] \T1/ptm/m/n/10 (\TS1/pcr/m/n/10 '\T1/pcr/m/n/10 tf\TS1/pcr/m/n
+/10 '\T1/ptm/m/n/10 ),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 424--436
+[][]\T1/pcr/m/sl/10 pypath.main.PyPath.disease_genes_list()[][] \T1/ptm/m/n/10 
+(\TS1/pcr/m/n/10 '\T1/pcr/m/n/10 dis\TS1/pcr/m/n/10 '\T1/ptm/m/n/10 ), [][]\T1/
+pcr/m/sl/10 pypath.
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 424--436
+\T1/pcr/m/sl/10 main.PyPath.signaling_proteins_list()[][] \T1/ptm/m/n/10 (\TS1/
+pcr/m/n/10 '\T1/pcr/m/n/10 sig\TS1/pcr/m/n/10 '\T1/ptm/m/n/10 ), [][]\T1/pcr/m/
+sl/10 pypath.main.
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 424--436
+\T1/pcr/m/sl/10 PyPath.proteome_list()[][] \T1/ptm/m/n/10 (\TS1/pcr/m/n/10 '\T1
+/pcr/m/n/10 proteome\TS1/pcr/m/n/10 '\T1/ptm/m/n/10 ) and [][]\T1/pcr/m/sl/10 p
+ypath.main.PyPath.
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 505--507
 []\T1/pcr/b/n/10 proteomicsdb \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 pypath.proteomics
 db.ProteomicsDB\T1/ptm/m/n/10 ) ^^U Con-tains a
  []
 
-[9] [10] [11] [12]
-Underfull \hbox (badness 10000) in paragraph at lines 1032--1032
+[9] [10] [11]
+Underfull \hbox (badness 10000) in paragraph at lines 857--862
+[]\T1/pcr/b/n/10 settings \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 pypath.input_formats.
+ReadSettings\T1/ptm/m/n/10 ) ^^U \T1/pcr/m/n/10 pypath.
+ []
+
+[12] [13]
+Underfull \hbox (badness 10000) in paragraph at lines 1046--1046
 []\T1/ptm/m/it/10 chembl_mysql=None, nodes=None, crit=None, an-dor='or',
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1032--1032
+Underfull \hbox (badness 10000) in paragraph at lines 1046--1046
 \T1/ptm/m/it/10 as-say_types=['B', 'F'], re-la-tion-ship_types=['D', 'H'],
  []
 
-[13]
-Underfull \hbox (badness 7814) in paragraph at lines 1147--1147
+
+Underfull \hbox (badness 5288) in paragraph at lines 1098--1100
+[]\T1/pcr/b/n/10 **kwargs \T1/ptm/m/n/10 ^^U Ad-di-tional key-word ar-gu-ments 
+for \T1/pcr/m/n/10 pypath.chembl.Chembl.
+ []
+
+[14]
+Underfull \hbox (badness 7814) in paragraph at lines 1219--1219
 []\T1/ptm/m/it/10 fname='curation_stats.tex', by_category=True, use_cats=['p', 
 'm', 'i', 'r'],
  []
 
-[14] [15]
-Underfull \hbox (badness 10000) in paragraph at lines 1407--1411
+[15] [16]
+Underfull \hbox (badness 10000) in paragraph at lines 1480--1484
 \T1/ptm/m/n/10 Same as \T1/pcr/m/n/10 PyPath.uniprot(), just for directed graph
 . Returns \TS1/pcr/m/n/10 ``\T1/pcr/m/n/10 igraph.
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1434--1438
+Underfull \hbox (badness 10000) in paragraph at lines 1507--1511
 \T1/ptm/m/n/10 Same as \T1/pcr/m/n/10 PyPath.uniprot(), just for directed graph
 . Returns \TS1/pcr/m/n/10 ``\T1/pcr/m/n/10 igraph.
  []
 
-[16]
-Underfull \hbox (badness 10000) in paragraph at lines 1599--1599
+[17]
+Underfull \hbox (badness 10000) in paragraph at lines 1672--1672
 \T1/ptm/m/it/10 <lambda>>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 nodes_filter=<functio
 n <lambda>>\T1/ptm/m/n/10 , \T1/ptm/m/it/10 edge_sources=None\T1/ptm/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1599--1599
+Underfull \hbox (badness 10000) in paragraph at lines 1672--1672
 \T1/ptm/m/it/10 dir_sources=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 graph=None\T1/
 ptm/m/n/10 , \T1/ptm/m/it/10 re-turn_object=False\T1/ptm/m/n/10 , \T1/ptm/m/it/
 10 save_dot=None\T1/ptm/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1599--1599
+Underfull \hbox (badness 10000) in paragraph at lines 1672--1672
 \T1/ptm/m/it/10 save_graphics=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 prog='neato'
 \T1/ptm/m/n/10 , \T1/ptm/m/it/10 for-mat=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 h
 ide=False\T1/ptm/m/n/10 , \T1/ptm/m/it/10 font=None\T1/ptm/m/n/10 ,
  []
 
-[17]
-Underfull \hbox (badness 10000) in paragraph at lines 1737--1737
+[18]
+Underfull \hbox (badness 10000) in paragraph at lines 1869--1869
 []\T1/ptm/m/it/10 outfile=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 ex-tra_node_attr
 s={}\T1/ptm/m/n/10 , \T1/ptm/m/it/10 ex-tra_edge_attrs={}\T1/ptm/m/n/10 , \T1/p
 tm/m/it/10 unique_pairs=True\T1/ptm/m/n/10 ,
  []
 
-[18] [19]
-Underfull \hbox (badness 6493) in paragraph at lines 1900--1900
+[19] [20]
+Underfull \hbox (badness 6493) in paragraph at lines 2046--2046
 []\T1/ptm/m/it/10 proteins\T1/ptm/m/n/10 , \T1/ptm/m/it/10 all_proteins=None\T1
 /ptm/m/n/10 , \T1/ptm/m/it/10 gene-set_ids=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10
  al-pha=0.05\T1/ptm/m/n/10 , \T1/ptm/m/it/10 cor-rec-
  []
 
-[20]
-Underfull \hbox (badness 10000) in paragraph at lines 2120--2124
+[21] [22]
+Underfull \hbox (badness 10000) in paragraph at lines 2266--2270
 [][]\T1/pcr/m/sl/10 pypath.main.PyPath.search_attr_or()[][] \T1/ptm/m/n/10 and 
 [][]\T1/pcr/m/sl/10 pypath.main.PyPath.
  []
 
-[21]
-Underfull \hbox (badness 10000) in paragraph at lines 2243--2247
+
+Underfull \hbox (badness 10000) in paragraph at lines 2389--2393
 [][]\T1/pcr/m/sl/10 pypath.main.PyPath.search_attr_or()[][] \T1/ptm/m/n/10 and 
 [][]\T1/pcr/m/sl/10 pypath.main.PyPath.
  []
 
-[22]
-Underfull \hbox (badness 10000) in paragraph at lines 2299--2299
+[23]
+Underfull \hbox (badness 10000) in paragraph at lines 2445--2445
 []\T1/ptm/m/it/10 proteins=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 as-pect='P'\T1/
 ptm/m/n/10 , \T1/ptm/m/it/10 al-pha=0.05\T1/ptm/m/n/10 , \T1/ptm/m/it/10 cor-re
 c-tion_method='hommel'\T1/ptm/m/n/10 ,
  []
 
-[23] [24] [25]
-Underfull \hbox (badness 10000) in paragraph at lines 2875--2878
+[24] [25] [26] [27]
+Underfull \hbox (badness 10000) in paragraph at lines 3021--3024
 \T1/ptm/m/n/10 Loads com-plexes from Com-plex-Por-tal. Loads data into ver-tex 
 at-tribute
  []
 
-[26]
-Underfull \hbox (badness 10000) in paragraph at lines 2891--2894
+
+Underfull \hbox (badness 10000) in paragraph at lines 3037--3040
 \T1/ptm/m/n/10 Loads com-plexes from CO-RUM database. Loads data into ver-tex a
 t-tribute
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2965--2965
+Underfull \hbox (badness 10000) in paragraph at lines 3111--3111
 []\T1/ptm/m/it/10 methods=['self.pfam_regions', 'self.load_depod_dmi', 'self.lo
 ad_dbptm',
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2965--2965
+Underfull \hbox (badness 10000) in paragraph at lines 3111--3111
 \T1/ptm/m/it/10 'self.load_mimp_dmi', 'self.load_pnetworks_dmi', 'self.load_dom
 ino_dmi',
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2965--2965
+Underfull \hbox (badness 10000) in paragraph at lines 3111--3111
 \T1/ptm/m/it/10 'self.load_pepcyber', 'self.load_psite_reg', 'self.load_psite_p
 hos', 'self.load_ielm',
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 3016--3019
+[28]
+Underfull \hbox (badness 10000) in paragraph at lines 3162--3165
 \T1/ptm/m/n/10 Loads com-plexes from Havugi-mana 2012. Loads data into ver-tex 
 at-tribute
  []
 
-[27]
-Underfull \hbox (badness 10000) in paragraph at lines 3057--3057
+
+Underfull \hbox (badness 10000) in paragraph at lines 3203--3203
 []\T1/ptm/m/it/10 lig_rec_resources=True\T1/ptm/m/n/10 , \T1/ptm/m/it/10 in-fer
 -ence_from_go=True\T1/ptm/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 3100--3102
+Underfull \hbox (badness 10000) in paragraph at lines 3246--3248
 \T1/ptm/m/n/10 Loads ver-tex at-tributes from Ma-tri-someDB 2.0. At-tributes ar
 e \T1/pcr/m/n/10 matrisome_class\T1/ptm/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 3140--3140
+Underfull \hbox (badness 10000) in paragraph at lines 3286--3286
 []\T1/ptm/m/it/10 kinase_substrate_extra=False\T1/ptm/m/n/10 , \T1/ptm/m/it/10 
 re-move_htp=False\T1/ptm/m/n/10 , \T1/ptm/m/it/10 htp_threshold=1\T1/ptm/m/n/10
  ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 3149--3149
+Underfull \hbox (badness 10000) in paragraph at lines 3295--3295
 []\T1/ptm/m/it/10 kinase_substrate_extra=False\T1/ptm/m/n/10 , \T1/ptm/m/it/10 
 re-move_htp=True\T1/ptm/m/n/10 , \T1/ptm/m/it/10 htp_threshold=1\T1/ptm/m/n/10 
 ,
  []
 
-[28]
-Underfull \hbox (badness 10000) in paragraph at lines 3255--3255
+[29]
+Underfull \hbox (badness 10000) in paragraph at lines 3401--3401
 []\T1/ptm/m/it/10 input_methods=None, map_by_homology_from=[9606], ho-mol-
  []
 
-[29]
-Underfull \hbox (badness 10000) in paragraph at lines 3351--3354
+[30]
+Underfull \hbox (badness 10000) in paragraph at lines 3497--3500
 []\T1/pcr/b/n/10 settings \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 pypath.input_formats.
 ReadSettings\T1/ptm/m/n/10 ) ^^U \T1/pcr/m/n/10 pypath.
  []
 
-[30]
-Underfull \hbox (badness 10000) in paragraph at lines 3472--3478
+[31]
+Underfull \hbox (badness 10000) in paragraph at lines 3618--3624
 \T1/ptm/m/n/10 Creates ver-tex at-tributes from Vesi-cle-pe-dia data. Cre-ates 
 a boolean at-tribute
  []
 
-[31] [32] [33] [34]
-Underfull \hbox (badness 10000) in paragraph at lines 4083--4083
+[32] [33] [34] [35] [36]
+Underfull \hbox (badness 10000) in paragraph at lines 4253--4253
 []\T1/ptm/m/it/10 dirs\T1/ptm/m/n/10 , \T1/ptm/m/it/10 name\T1/ptm/m/n/10 , \T1
 /ptm/m/it/10 di-rected=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 stim-u-la-tion=None
 \T1/ptm/m/n/10 , \T1/ptm/m/it/10 in-hi-bi-tion=None\T1/ptm/m/n/10 ,
  []
 
-[35]
+[37]
 LaTeX Font Info:    Font shape `T1/pcr/bx/n' in size <9> not available
-(Font)              Font shape `T1/pcr/b/n' tried instead on input line 4231.
- [36]
-Underfull \hbox (badness 10000) in paragraph at lines 4271--4277
+(Font)              Font shape `T1/pcr/b/n' tried instead on input line 4401.
+
+Underfull \hbox (badness 10000) in paragraph at lines 4441--4447
 []\T1/pcr/b/n/10 settings \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 pypath.input_formats.
 ReadSettings\T1/ptm/m/n/10 ) ^^U \T1/pcr/m/n/10 pypath.
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 4332--4335
+[38]
+Underfull \hbox (badness 10000) in paragraph at lines 4502--4505
 []\T1/pcr/b/n/10 settings \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 pypath.input_formats.
 ReadList\T1/ptm/m/n/10 ) ^^U \T1/pcr/m/n/10 python.
  []
 
-[37] [38] [39] [40] [41] [42] [43] [44] [45]
+[39] [40] [41] [42] [43] [44] [45] [46]
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <10> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 5579.
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 5749.
 LaTeX Font Info:    Font shape `TS1/pcr/bx/n' in size <10> not available
 (Font)              Font shape `TS1/pcr/b/n' tried instead on input line 1.
- [46] [47] [48] [49] [50] [51]
-[52
+ [47] [48] [49] [50] [51] [52]
+Chapter 3.
+[53
 
 ]
-Chapter 3.
-[53]
-Underfull \hbox (badness 10000) in paragraph at lines 1--6387
+Underfull \hbox (badness 10000) in paragraph at lines 1--6557
 [][][]$\T1/ptm/m/n/10 http : / / omnipathdb . org / interactions / ?genesymbols
  = 1 & ^^\elds = type ,[] ncbi _ tax _ id ,[] tfregulons _ level &
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--6394
+Underfull \hbox (badness 10000) in paragraph at lines 1--6564
 [][][]$\T1/ptm/m/n/10 http : / / omnipathdb . org / interactions / ?genesymbols
  = 1 & ^^\elds = sources & databases = PhosphoNetworks &
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--6400
+Underfull \hbox (badness 10000) in paragraph at lines 1--6570
 [][][]$\T1/ptm/m/n/10 http : / / omnipathdb . org / interactions / ?genesymbols
  = 1 & ^^\elds = sources ,[] references & databases = Signor ,[]
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--6414
+Underfull \hbox (badness 10000) in paragraph at lines 1--6584
 [][][]$\T1/ptm/m/n/10 http : / / omnipathdb . org / interactions / ?genesymbols
  = 1 & ^^\elds = sources ,[] references & sources = ATG3 ,[]
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--6414
+Underfull \hbox (badness 10000) in paragraph at lines 1--6584
 \T1/ptm/m/n/10 ATG7 ,[] ATG4B ,[] SQSTM1 & targets = MAP1LC3B ,[] MAP1LC3A ,[] 
 MAP1LC3C ,[] Q9H0R8 ,[] GABARAP ,[]
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--6421
+Underfull \hbox (badness 10000) in paragraph at lines 1--6591
 [][][]$\T1/ptm/m/n/10 http : / / omnipathdb . org / interactions / ?genesymbols
  = 1 & ^^\elds = sources ,[] references & datasets = mirnatarget &
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--6443
+Underfull \hbox (badness 10000) in paragraph at lines 1--6613
 [][][]$\T1/ptm/m/n/10 http : / / omnipathdb . org / ptms ? genesymbols = 1 & ^^
 \elds = sources ,[] references & types = acetylation & organisms =
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--6450
+Underfull \hbox (badness 10000) in paragraph at lines 1--6620
 [][][]$\T1/ptm/m/n/10 http : / / omnipathdb . org / ptms ? genesymbols = 1 & ^^
 \elds = sources ,[] references & organisms = 10116 & databases =
  []
@@ -1569,24 +1607,24 @@ Underfull \hbox (badness 10000) in paragraph at lines 373--374
  []
 
 [66] [67])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 6689.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 6689.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 6859.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 6859.
  (./pypath.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 6689.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 6689.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 6859.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 6859.
 
 Package rerunfilecheck Info: File `pypath.out' has not changed.
 (rerunfilecheck)             Checksum: 9B42A5C17D620E2D0B5F709F9B9DEBBD;820.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 6689.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 6859.
  ) 
 Here is how much of TeX's memory you used:
- 14534 strings out of 494923
- 209853 string characters out of 6180741
- 307792 words of memory out of 5000000
- 17032 multiletter control sequences out of 15000+600000
- 57288 words of font info for 80 fonts, out of 8000000 for 9000
+ 14531 strings out of 494923
+ 209819 string characters out of 6180741
+ 305792 words of memory out of 5000000
+ 17031 multiletter control sequences out of 15000+600000
+ 54566 words of font info for 78 fonts, out of 8000000 for 9000
  15 hyphenation exceptions out of 8191
- 37i,16n,45p,767b,641s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 37i,16n,45p,767b,673s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/
@@ -1599,10 +1637,10 @@ exmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/share/texlive/texmf-dist/fo
 nts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/t
 imes/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pf
 b></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on pypath.pdf (71 pages, 335166 bytes).
+Output written on pypath.pdf (71 pages, 340276 bytes).
 PDF statistics:
- 1413 PDF objects out of 1440 (max. 8388607)
- 1308 compressed objects within 14 object streams
+ 1421 PDF objects out of 1440 (max. 8388607)
+ 1316 compressed objects within 14 object streams
  498 named destinations out of 1000 (max. 500000)
  85 words of extra memory for PDF output out of 10000 (max. 10000000)
 

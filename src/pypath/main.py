@@ -1304,7 +1304,7 @@ class PyPath(object):
     :var pandas.DataFrame exp_prod:
         Stores the edge expression data (as the product of the
         normalized expression between the pair of nodes by default). For
-        more details see :py:meth:`PyPath.edges_expression`.
+        more details see :py:meth:`pypath.main.PyPath.edges_expression`.
     :var set exp_samples:
         Contains a list of tissues as downloaded by ProteomicsDB. See
         :py:meth:`PyPath.get_proteomicsdb` for more information.
@@ -1343,14 +1343,16 @@ class PyPath(object):
     :var dict lists:
         Contains specific lists of nodes (values) for different
         categories [str] (keys). These can to be loaded from a file or
-        a resource. Some methods include :py:meth:`PyPath.receptor_list`
-        (``'rec'``), :py:meth:`PyPath.druggability_list` (``'dgb'``),
-        :py:meth:`PyPath.kinases_list` (``'kin'``),
-        :py:meth:`PyPath.tfs_list` (``'tf'``),
-        :py:meth:`PyPath.disease_genes_list` (``'dis'``),
-        :py:meth:`PyPath.signaling_proteins_list` (``'sig'``),
-        :py:meth:`PyPath.proteome_list` (``'proteome'``) and
-        :py:meth:`PyPath.cancer_drivers_list` (``'cdv'``).
+        a resource. Some methods include
+        :py:meth:`pypath.main.PyPath.receptor_list` (``'rec'``),
+        :py:meth:`pypath.main.PyPath.druggability_list` (``'dgb'``),
+        :py:meth:`pypath.main.PyPath.kinases_list` (``'kin'``),
+        :py:meth:`pypath.main.PyPath.tfs_list` (``'tf'``),
+        :py:meth:`pypath.main.PyPath.disease_genes_list` (``'dis'``),
+        :py:meth:`pypath.main.PyPath.signaling_proteins_list`
+        (``'sig'``), :py:meth:`pypath.main.PyPath.proteome_list`
+        (``'proteome'``) and
+        :py:meth:`pypath.main.PyPath.cancer_drivers_list` (``'cdv'``).
     :var str loglevel:
         The level of the logger.
     :var bool loops:
@@ -1372,7 +1374,8 @@ class PyPath(object):
     :var dict negatives:
         Contains a list of negative interactions according to a given
         source (e.g.: Negatome database). See
-        :py:meth:`PyPath.apply_negative` for more information.
+        :py:meth:`pypath.main.PyPath.apply_negative` for more
+        information.
     :var dict nodDct:
         Maps the undirected graph node names [str] (keys) to their
         indices [int] (values).
@@ -1431,7 +1434,7 @@ class PyPath(object):
         DEPRECATED (?)
     :var list unmapped:
         Contains the names of unmapped items [str]. See
-        :py:meth:`PyPath.map_item` for more information.
+        :py:meth:`pypath.main.PyPath.map_item` for more information.
     :var dict vertexAttrs:
         Stores the node attribute names [str] as keys and their
         corresponding types (e.g.: ``set``, ``list``, ``str``, ...) as
@@ -4572,7 +4575,7 @@ class PyPath(object):
         """
         Save the current session state into pickle dump. The file will
         be saved in the current working directory as
-        ``pypath-<session-id>.pickle``.
+        ``'pypath-<session_id>.pickle'``.
         """
 
         pickleFile = "pypath-" + self.session + ".pickle"
@@ -4821,9 +4824,8 @@ class PyPath(object):
 
         for a, v in iteritems(lst): # XXX: Why call it lst if it's dict?
 
-            if (isinstance(v, list) and
-                    len(set(obj[a]).intersection(v)) > 0) or (
-                        not isinstance(v, list) and obj[a] == v):
+            if ((isinstance(v, list) and len(set(obj[a]).intersection(v)) > 0)
+                    or (not isinstance(v, list) and obj[a] == v)):
                 return True
 
         return False
@@ -4849,9 +4851,8 @@ class PyPath(object):
 
         for a, v in iteritems(lst): # XXX: Why call it lst if it's dict?
 
-            if (isinstance(v, list) and
-                    len(set(obj[a]).intersection(v)) == 0) or (
-                        not isinstance(v, list) and obj[a] != v):
+            if ((isinstance(v, list) and len(set(obj[a]).intersection(v)) == 0)
+                    or (not isinstance(v, list) and obj[a] != v)):
                 return False
 
         return True
@@ -5075,7 +5076,7 @@ class PyPath(object):
             Optional, ``None`` by default. Specifies the file name
             prefix (suffixes will be ``'-nodes'`` and ``'-edges'``). If
             none is specified, this will be
-            ``'pwnet-<session>-sim-src'``.
+            ``'pwnet-<session_id>-sim-src'``.
         """
 
         if outfile is None:
@@ -5098,7 +5099,7 @@ class PyPath(object):
             Optional, ``None`` by default. Specifies the file name
             prefix (suffixes will be ``'-nodes'`` and ``'-edges'``). If
             none is specified, this will be
-            ``'pwnet-<session>-sim-pw'``.
+            ``'pwnet-<session_id>-sim-pw'``.
         """
 
         if outfile is None:
@@ -5243,7 +5244,8 @@ class PyPath(object):
 
         :arg str outfile:
             Optional, ``None`` by default. Specifies the file name. If
-            none is specified, this will be ``'pwnet-<session>-stats'``.
+            none is specified, this will be
+            ``'pwnet-<session_id>-stats'``.
         """
 
         if outfile is None:
@@ -5273,8 +5275,9 @@ class PyPath(object):
         interactions coming from it is extracted and the degree
         distribution information is computed and saved into a file.
         A file is created for each resource under the name
-        ``pwnet-<session>-degdist-<resource>``. Files are stored in
-        :py:attr:`pypath.main.PyPath.outdir` (``'results'`` by default).
+        ``'pwnet-<session_id>-degdist-<resource>''``. Files are stored
+        in :py:attr:`pypath.main.PyPath.outdir` (``'results'`` by
+        default).
         """
 
         dds = {}
@@ -5729,7 +5732,7 @@ class PyPath(object):
             Optional, ``None`` by default. Specifies the file name and
             path to save the table. If none is passed, file will be
             saved in :py:attr:`pypath.main.PyPath.outdir` (``'results'``
-            by default) with the name ``'<session>-refs-hist'``.
+            by default) with the name ``'<session_id>-refs-hist'``.
         """
 
         g = self.graph
@@ -5843,7 +5846,7 @@ class PyPath(object):
 
         :arg pypath.input_formats.ReadSettings settings:
             :py:class:`pypath.input_formats.ReadSettings` instance
-            containing the detailed definition of the input format of
+            containing the detailed definition of the input format to
             the downloaded file.
         :arg bool clean:
             Optional, ``True`` by default. Whether to clean the graph
@@ -6346,6 +6349,14 @@ class PyPath(object):
 
     def apply_negative(self, settings):
         """
+        Loads a negative interaction source (e.g.: Negatome) into the
+        current network.
+
+        :arg pypath.input_formats.ReadSettings settings:
+            :py:class:`pypath.input_formats.ReadSettings` instance
+            containing the detailed definition of the input format to
+            the downloaded file. For instance
+            :py:data:`pypath.data_formats.negative['negatome']`
         """
 
         g = self.graph
@@ -6386,6 +6397,22 @@ class PyPath(object):
 
     def negative_report(self, lst=True, outFile=None):
         """
+        Generates a report file with the negative interactions (assumed
+        to be already loaded).
+
+        :arg bool lst:
+            Optional, ``True`` by default. Whether to retun a list of
+            edges containing the edge instances which have negative
+            references.
+        :arg str outFile:
+            Optional, ``None`` by default. The output file name/path. If
+            none is passed, the default is
+            ``'results/<session_id>-negatives'``
+
+        :return:
+            (*list*) -- If *lst* is set to ``True``, returns a [list]
+            is returned with the :py:class:`igraph.Edge` instances that
+            contain at least a negative reference.
         """
 
         if outFile is None:
@@ -6424,8 +6451,21 @@ class PyPath(object):
 
     def export_ptms_tab(self, outfile=None):
         """
+        Exports a tab file containing the PTM interaction information
+        loaded in the network.
+
+        :arg str outfile:
+            Optional, ``None`` by default. The output file nama/path to
+            store the PTM information. If none is provided, the default
+            is ``'results/network-<session_id>.tab'``.
+
+        :return:
+            (*list*) -- Contains the edge indices [int] of all PTM
+            interactions.
         """
 
+        # XXX: Shouldn't we use another default name for the file? too generic
+        #      plus the same one is used in the functions below
         if outfile is None:
             outfile = os.path.join(self.outdir,
                                    'network-' + self.session + '.tab')
@@ -6511,6 +6551,17 @@ class PyPath(object):
 
     def export_struct_tab(self, outfile=None):
         """
+        Exports a tab file containing the domain interaction information
+        and PTM regulation loaded in the network.
+
+        :arg str outfile:
+            Optional, ``None`` by default. The output file nama/path to
+            store the PTM information. If none is provided, the default
+            is ``'results/network-<session_id>.tab'``.
+
+        :return:
+            (*list*) -- Contains the edge indices [int] of all PTM
+            interactions.
         """
 
         if outfile is None:
@@ -6530,6 +6581,7 @@ class PyPath(object):
         header = ['UniProt_A', 'UniProt_B', 'GeneSymbol_B', 'GeneSymbol_A',
                   'Databases', 'PubMed_IDs', 'Stimulation', 'Inhibition',
                   'Domain-domain', 'Domain-motif-PTM', 'PTM-regulation']
+
         stripJson = re.compile(r'[\[\]{}\"]')
         # first row is header
         outl = [header]
@@ -6583,27 +6635,37 @@ class PyPath(object):
     def export_tab(self, outfile=None, extra_node_attrs={},
                    extra_edge_attrs={}, unique_pairs=True, **kwargs):
         """
-        Exports the network in a tabular format.
+        Exports the network in a tabular format. By default UniProt IDs,
+        Gene Symbols, source databases, literature references,
+        directionality and sign information and interaction type are
+        included.
 
-        By default UniProt IDs, Gene Symbols, source databases, literature
-        references, directionality and sign information and interaction type
-        are included.
-
-        Args:
-        -----
-        :param str outfile:
-            Name of the output file. If `None` a file name
-            "netrowk-<session id>.tab" is used.
-        :param dict extra_node_attrs:
-            Additional node attributes to be included in the exported table.
-            Keys are column ames used in the header while values are names
-            of vertex attributes. In the header `_A` and `_B` suffixes will
-            be appended to the column names so the values can be assigned to
-            A and B side interaction partners.
-        :param dict extra_edge_attrs:
-            Additional edge attributes to be included in the exported table.
-            Keys are column ames used in the header while values are names
-            of edge attributes.
+        :arg str outfile:
+            Optional, ``None`` by default. Name/path of the output file.
+            If none is passed, ``'results/netrowk-<session_id>.tab'``
+            is used.
+        :arg dict extra_node_attrs:
+            Optional, ``{}`` by default. Additional node attributes to
+            be included in the exported table. Keys are column names
+            used in the header while values are names of vertex
+            attributes. In the header ``'_A'`` and ``'_B'`` suffixes
+            will be appended to the column names so the values can be
+            assigned to A and B side interaction partners.
+        :arg dict extra_edge_attrs:
+            Optional, ``{}`` by default. Additional edge attributes to
+            be included in the exported table. Keys are column names
+            used in the header while values are names of edge
+            attributes.
+        :arg bool unique_pairs:
+            Optional, ``True`` by default. If set to ``True`` each line
+            corresponds to a unique pair of molecules, all
+            directionality and sign information are covered in other
+            columns. If ``False``, order of ``'A'`` and ``'B'`` IDs
+            corresponds to the direction while sign covered in further
+            columns.
+        :arg \*\* kwargs:
+            Additional keyword arguments passed to
+            :py:class:`pypath.export.Export`.
         """
 
         e = export.Export(pa=self, extra_node_attrs=extra_node_attrs,
@@ -6612,6 +6674,13 @@ class PyPath(object):
 
     def export_sif(self, outfile=None):
         """
+        Exports the network interactions in ``.sif`` format (Simple
+        Interaction Format).
+
+        :arg str outfile:
+            Optional, ``None`` by default. Name/path of the output file.
+            If none is passed, ``'results/netrowk-<session_id>.sif'``
+            is used.
         """
 
         outfile = (outfile if outfile is not None
@@ -6636,8 +6705,22 @@ class PyPath(object):
                               if d == 'undirected' else d[1])
                     f.write('\t'.join([source, sign + dirn, target]) + '\n')
 
+    # TODO: Further description when function works/know what to do.
     def export_graphml(self, outfile=None, graph=None, name='main'):
         """
+        Saves the network in a ``.graphml`` file.
+
+        :arg str outfile:
+            Optional, ``None`` by default. Name/path of the output file.
+            If none is passed,
+            ``'results/netrowk-<session_id>.graphml'`` is used.
+        :arg igraph.Graph graph:
+            Optional, ``None`` by default. The network object to be
+            saved. If none is passed, takes the undirected network of
+            the current instance.
+        :arg str name:
+            Optional, ``'main'`` by default. The graph name for the
+            output file.
         """
 
         self.genesymbol_labels()
@@ -6705,6 +6788,7 @@ class PyPath(object):
                 f.write(
                     '\t<data key="PubMedIDs">%s</data>\n' %
                     (';'.join(list(map(lambda r: r.pmid, e['references'])))))
+    # XXX: attribute 'dirs_by_source' does not exist (nor created anywhere)
                 f.write('\t<data key="Undirected">%s</data>\n' %
                         (';'.join(common.uniqList(e['dirs_by_source'][0]))))
                 f.write('\t<data key="DirectionAB">%s</data>\n' %
@@ -6727,11 +6811,57 @@ class PyPath(object):
 
         prg.terminate()
 
+    # XXX: Consider to remove kwarg `multi_query` since it's not used.
     def compounds_from_chembl(self, chembl_mysql=None, nodes=None, crit=None,
                               andor="or", assay_types=['B', 'F'],
                               relationship_types=['D', 'H'], multi_query=False,
                               **kwargs):
         """
+        Loads compound data from ChEMBL to the network.
+
+        :arg tuple chebl_mysql:
+            Optional, ``None`` by default. Contains the MySQL parameters
+            used by the :py:mod:`pypath.mapping` module to loadthe
+            ChEMBL ID conversion tables. If none is passed, takes the
+            current instance :py:attr:`pypath.main.PyPath.chembl_mysql`
+            attribute.
+        :arg list nodes:
+            Optional, ``None`` by default. List of node indices for
+            which the information is to be loaded. If none is provided
+            calls the method :py:meth:`pypath.main.PyPath.get_sub` with
+            the provided *crit* parameter.
+        :arg dict crit:
+            Optional, ``None`` by default. Defines the critical
+            attributes to generate a subnetwork to extract the nodes in
+            case *nodes* is not provided. Keys are ``'edge'`` and
+            ``'node'`` and values are [dict] containing the critical
+            attribute names [str] and values are [set] containing those
+            attributes of the nodes/edges that are to be kept in the
+            subnetwork. If none is provided, takes the whole network.
+        :arg str andor:
+            Optional, ``'or'`` by default. Determines the search mode
+            for the subnetwork generation (if ``nodes=None``). See
+            :py:meth:`pypath.main.PyPath.search_attr_or` and
+            :py:meth:`pypath.main.PyPath.search_attr_and` for more
+            details.
+        :arg list assay_types:
+            Optional, ``['B', 'F']`` by default. Types of assay to query
+            Options are: ``'A'`` (ADME), ``'B'`` (Binding),``'F'``
+            (Functional), ``'P'`` (Physicochemical), ``'T'`` (Toxicity)
+            and/or ``'U'`` (Unassigned).
+        :arg list relationship_types:
+            Optional, ``['D', 'H']`` by default. Assay relationship
+            types to query. Possible values are: ``'D'`` (Direct protein
+            target assigned), ``'H'`` (Homologous protein target
+            assigned), ``'M'`` (Molecular target other than protein
+            assigned), ``'N'`` (Non-molecular target assigned), ``'S'``
+            (Subcellular target assigned) and/or ``'U'`` (Default value,
+            target has yet to be curated).
+        :arg bool multi_query:
+            Optional, ``False`` by default. Not used.
+        :arg \*\*kwargs:
+            Additional keyword arguments for
+            :py:meth:`pypath.chembl.Chembl.compounds_targets`.
         """
 
         chembl_mysql = chembl_mysql or self.chembl_mysql
@@ -6754,22 +6884,17 @@ class PyPath(object):
             if v.index in nodes and v['nameType'] == 'uniprot':
                 uniprots.append(v['name'])
 
-        self.chembl.compounds_targets(
-            uniprots,
-            assay_types=assay_types,
-            relationship_types=relationship_types,
-            **kwargs)
+        self.chembl.compounds_targets(uniprots, assay_types=assay_types,
+                                      relationship_types=relationship_types,
+                                      **kwargs)
         self.chembl.compounds_by_target()
         self.update_vname()
-        self.graph.vs['compounds_chembl'] = [
-            [] for _ in xrange(self.graph.vcount())
-        ]
-        self.graph.vs['compounds_names'] = [
-            [] for _ in xrange(self.graph.vcount())
-        ]
-        self.graph.vs['compounds_data'] = [[]
-                                           for _ in xrange(self.graph.vcount())
-                                           ]
+        self.graph.vs['compounds_chembl'] = [[] for _ in
+                                             xrange(self.graph.vcount())]
+        self.graph.vs['compounds_names'] = [[] for _ in
+                                            xrange(self.graph.vcount())]
+        self.graph.vs['compounds_data'] = [[] for _ in
+                                           xrange(self.graph.vcount())]
         num = len(self.chembl.compounds)
         prg = Progress(total=num, name='Adding compounds', interval=11)
         hascomp = 0
@@ -6786,10 +6911,8 @@ class PyPath(object):
                     node['compounds_chembl'].append(comp['chembl'])
                     node['compounds_names'] += comp['compound_names']
 
-                node['compounds_chembl'] = common.uniqList(node[
-                    'compounds_chembl'])
-                node['compounds_names'] = common.uniqList(node[
-                    'compounds_names'])
+                node['compounds_chembl'] = common.uniqList(node['compounds_chembl'])
+                node['compounds_names'] = common.uniqList(node['compounds_names'])
 
         prg.terminate()
         percent = hascomp / float(self.graph.vcount())

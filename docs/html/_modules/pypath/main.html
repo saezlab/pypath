@@ -1343,7 +1343,7 @@
 <span class="sd">    :var pandas.DataFrame exp_prod:</span>
 <span class="sd">        Stores the edge expression data (as the product of the</span>
 <span class="sd">        normalized expression between the pair of nodes by default). For</span>
-<span class="sd">        more details see :py:meth:`PyPath.edges_expression`.</span>
+<span class="sd">        more details see :py:meth:`pypath.main.PyPath.edges_expression`.</span>
 <span class="sd">    :var set exp_samples:</span>
 <span class="sd">        Contains a list of tissues as downloaded by ProteomicsDB. See</span>
 <span class="sd">        :py:meth:`PyPath.get_proteomicsdb` for more information.</span>
@@ -1382,14 +1382,16 @@
 <span class="sd">    :var dict lists:</span>
 <span class="sd">        Contains specific lists of nodes (values) for different</span>
 <span class="sd">        categories [str] (keys). These can to be loaded from a file or</span>
-<span class="sd">        a resource. Some methods include :py:meth:`PyPath.receptor_list`</span>
-<span class="sd">        (``&#39;rec&#39;``), :py:meth:`PyPath.druggability_list` (``&#39;dgb&#39;``),</span>
-<span class="sd">        :py:meth:`PyPath.kinases_list` (``&#39;kin&#39;``),</span>
-<span class="sd">        :py:meth:`PyPath.tfs_list` (``&#39;tf&#39;``),</span>
-<span class="sd">        :py:meth:`PyPath.disease_genes_list` (``&#39;dis&#39;``),</span>
-<span class="sd">        :py:meth:`PyPath.signaling_proteins_list` (``&#39;sig&#39;``),</span>
-<span class="sd">        :py:meth:`PyPath.proteome_list` (``&#39;proteome&#39;``) and</span>
-<span class="sd">        :py:meth:`PyPath.cancer_drivers_list` (``&#39;cdv&#39;``).</span>
+<span class="sd">        a resource. Some methods include</span>
+<span class="sd">        :py:meth:`pypath.main.PyPath.receptor_list` (``&#39;rec&#39;``),</span>
+<span class="sd">        :py:meth:`pypath.main.PyPath.druggability_list` (``&#39;dgb&#39;``),</span>
+<span class="sd">        :py:meth:`pypath.main.PyPath.kinases_list` (``&#39;kin&#39;``),</span>
+<span class="sd">        :py:meth:`pypath.main.PyPath.tfs_list` (``&#39;tf&#39;``),</span>
+<span class="sd">        :py:meth:`pypath.main.PyPath.disease_genes_list` (``&#39;dis&#39;``),</span>
+<span class="sd">        :py:meth:`pypath.main.PyPath.signaling_proteins_list`</span>
+<span class="sd">        (``&#39;sig&#39;``), :py:meth:`pypath.main.PyPath.proteome_list`</span>
+<span class="sd">        (``&#39;proteome&#39;``) and</span>
+<span class="sd">        :py:meth:`pypath.main.PyPath.cancer_drivers_list` (``&#39;cdv&#39;``).</span>
 <span class="sd">    :var str loglevel:</span>
 <span class="sd">        The level of the logger.</span>
 <span class="sd">    :var bool loops:</span>
@@ -1411,7 +1413,8 @@
 <span class="sd">    :var dict negatives:</span>
 <span class="sd">        Contains a list of negative interactions according to a given</span>
 <span class="sd">        source (e.g.: Negatome database). See</span>
-<span class="sd">        :py:meth:`PyPath.apply_negative` for more information.</span>
+<span class="sd">        :py:meth:`pypath.main.PyPath.apply_negative` for more</span>
+<span class="sd">        information.</span>
 <span class="sd">    :var dict nodDct:</span>
 <span class="sd">        Maps the undirected graph node names [str] (keys) to their</span>
 <span class="sd">        indices [int] (values).</span>
@@ -1470,7 +1473,7 @@
 <span class="sd">        DEPRECATED (?)</span>
 <span class="sd">    :var list unmapped:</span>
 <span class="sd">        Contains the names of unmapped items [str]. See</span>
-<span class="sd">        :py:meth:`PyPath.map_item` for more information.</span>
+<span class="sd">        :py:meth:`pypath.main.PyPath.map_item` for more information.</span>
 <span class="sd">    :var dict vertexAttrs:</span>
 <span class="sd">        Stores the node attribute names [str] as keys and their</span>
 <span class="sd">        corresponding types (e.g.: ``set``, ``list``, ``str``, ...) as</span>
@@ -4611,7 +4614,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the current session state into pickle dump. The file will</span>
 <span class="sd">        be saved in the current working directory as</span>
-<span class="sd">        ``pypath-&lt;session-id&gt;.pickle``.</span>
+<span class="sd">        ``&#39;pypath-&lt;session_id&gt;.pickle&#39;``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">pickleFile</span> <span class="o">=</span> <span class="s2">&quot;pypath-&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">+</span> <span class="s2">&quot;.pickle&quot;</span>
@@ -4860,9 +4863,8 @@
 
         <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span> <span class="c1"># XXX: Why call it lst if it&#39;s dict?</span>
 
-            <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span>
-                    <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">a</span><span class="p">])</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
-                        <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">==</span> <span class="n">v</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">((</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">a</span><span class="p">])</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">==</span> <span class="n">v</span><span class="p">)):</span>
                 <span class="k">return</span> <span class="kc">True</span>
 
         <span class="k">return</span> <span class="kc">False</span></div>
@@ -4888,9 +4890,8 @@
 
         <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span> <span class="c1"># XXX: Why call it lst if it&#39;s dict?</span>
 
-            <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span>
-                    <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">a</span><span class="p">])</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
-                        <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">!=</span> <span class="n">v</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">((</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">a</span><span class="p">])</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">!=</span> <span class="n">v</span><span class="p">)):</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">return</span> <span class="kc">True</span></div>
@@ -5114,7 +5115,7 @@
 <span class="sd">            Optional, ``None`` by default. Specifies the file name</span>
 <span class="sd">            prefix (suffixes will be ``&#39;-nodes&#39;`` and ``&#39;-edges&#39;``). If</span>
 <span class="sd">            none is specified, this will be</span>
-<span class="sd">            ``&#39;pwnet-&lt;session&gt;-sim-src&#39;``.</span>
+<span class="sd">            ``&#39;pwnet-&lt;session_id&gt;-sim-src&#39;``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -5137,7 +5138,7 @@
 <span class="sd">            Optional, ``None`` by default. Specifies the file name</span>
 <span class="sd">            prefix (suffixes will be ``&#39;-nodes&#39;`` and ``&#39;-edges&#39;``). If</span>
 <span class="sd">            none is specified, this will be</span>
-<span class="sd">            ``&#39;pwnet-&lt;session&gt;-sim-pw&#39;``.</span>
+<span class="sd">            ``&#39;pwnet-&lt;session_id&gt;-sim-pw&#39;``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -5282,7 +5283,8 @@
 
 <span class="sd">        :arg str outfile:</span>
 <span class="sd">            Optional, ``None`` by default. Specifies the file name. If</span>
-<span class="sd">            none is specified, this will be ``&#39;pwnet-&lt;session&gt;-stats&#39;``.</span>
+<span class="sd">            none is specified, this will be</span>
+<span class="sd">            ``&#39;pwnet-&lt;session_id&gt;-stats&#39;``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -5312,8 +5314,9 @@
 <span class="sd">        interactions coming from it is extracted and the degree</span>
 <span class="sd">        distribution information is computed and saved into a file.</span>
 <span class="sd">        A file is created for each resource under the name</span>
-<span class="sd">        ``pwnet-&lt;session&gt;-degdist-&lt;resource&gt;``. Files are stored in</span>
-<span class="sd">        :py:attr:`pypath.main.PyPath.outdir` (``&#39;results&#39;`` by default).</span>
+<span class="sd">        ``&#39;pwnet-&lt;session_id&gt;-degdist-&lt;resource&gt;&#39;&#39;``. Files are stored</span>
+<span class="sd">        in :py:attr:`pypath.main.PyPath.outdir` (``&#39;results&#39;`` by</span>
+<span class="sd">        default).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">dds</span> <span class="o">=</span> <span class="p">{}</span>
@@ -5768,7 +5771,7 @@
 <span class="sd">            Optional, ``None`` by default. Specifies the file name and</span>
 <span class="sd">            path to save the table. If none is passed, file will be</span>
 <span class="sd">            saved in :py:attr:`pypath.main.PyPath.outdir` (``&#39;results&#39;``</span>
-<span class="sd">            by default) with the name ``&#39;&lt;session&gt;-refs-hist&#39;``.</span>
+<span class="sd">            by default) with the name ``&#39;&lt;session_id&gt;-refs-hist&#39;``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
@@ -5882,7 +5885,7 @@
 
 <span class="sd">        :arg pypath.input_formats.ReadSettings settings:</span>
 <span class="sd">            :py:class:`pypath.input_formats.ReadSettings` instance</span>
-<span class="sd">            containing the detailed definition of the input format of</span>
+<span class="sd">            containing the detailed definition of the input format to</span>
 <span class="sd">            the downloaded file.</span>
 <span class="sd">        :arg bool clean:</span>
 <span class="sd">            Optional, ``True`` by default. Whether to clean the graph</span>
@@ -6385,6 +6388,14 @@
 
 <div class="viewcode-block" id="PyPath.apply_negative"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.apply_negative">[docs]</a>    <span class="k">def</span> <span class="nf">apply_negative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads a negative interaction source (e.g.: Negatome) into the</span>
+<span class="sd">        current network.</span>
+
+<span class="sd">        :arg pypath.input_formats.ReadSettings settings:</span>
+<span class="sd">            :py:class:`pypath.input_formats.ReadSettings` instance</span>
+<span class="sd">            containing the detailed definition of the input format to</span>
+<span class="sd">            the downloaded file. For instance</span>
+<span class="sd">            :py:data:`pypath.data_formats.negative[&#39;negatome&#39;]`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
@@ -6425,6 +6436,22 @@
 
 <div class="viewcode-block" id="PyPath.negative_report"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.negative_report">[docs]</a>    <span class="k">def</span> <span class="nf">negative_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">outFile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a report file with the negative interactions (assumed</span>
+<span class="sd">        to be already loaded).</span>
+
+<span class="sd">        :arg bool lst:</span>
+<span class="sd">            Optional, ``True`` by default. Whether to retun a list of</span>
+<span class="sd">            edges containing the edge instances which have negative</span>
+<span class="sd">            references.</span>
+<span class="sd">        :arg str outFile:</span>
+<span class="sd">            Optional, ``None`` by default. The output file name/path. If</span>
+<span class="sd">            none is passed, the default is</span>
+<span class="sd">            ``&#39;results/&lt;session_id&gt;-negatives&#39;``</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*list*) -- If *lst* is set to ``True``, returns a [list]</span>
+<span class="sd">            is returned with the :py:class:`igraph.Edge` instances that</span>
+<span class="sd">            contain at least a negative reference.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">outFile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -6463,8 +6490,21 @@
 
 <div class="viewcode-block" id="PyPath.export_ptms_tab"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.export_ptms_tab">[docs]</a>    <span class="k">def</span> <span class="nf">export_ptms_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Exports a tab file containing the PTM interaction information</span>
+<span class="sd">        loaded in the network.</span>
+
+<span class="sd">        :arg str outfile:</span>
+<span class="sd">            Optional, ``None`` by default. The output file nama/path to</span>
+<span class="sd">            store the PTM information. If none is provided, the default</span>
+<span class="sd">            is ``&#39;results/network-&lt;session_id&gt;.tab&#39;``.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*list*) -- Contains the edge indices [int] of all PTM</span>
+<span class="sd">            interactions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="c1"># XXX: Shouldn&#39;t we use another default name for the file? too generic</span>
+        <span class="c1">#      plus the same one is used in the functions below</span>
         <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">outfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span>
                                    <span class="s1">&#39;network-&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">+</span> <span class="s1">&#39;.tab&#39;</span><span class="p">)</span>
@@ -6550,6 +6590,17 @@
 
 <div class="viewcode-block" id="PyPath.export_struct_tab"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.export_struct_tab">[docs]</a>    <span class="k">def</span> <span class="nf">export_struct_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Exports a tab file containing the domain interaction information</span>
+<span class="sd">        and PTM regulation loaded in the network.</span>
+
+<span class="sd">        :arg str outfile:</span>
+<span class="sd">            Optional, ``None`` by default. The output file nama/path to</span>
+<span class="sd">            store the PTM information. If none is provided, the default</span>
+<span class="sd">            is ``&#39;results/network-&lt;session_id&gt;.tab&#39;``.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*list*) -- Contains the edge indices [int] of all PTM</span>
+<span class="sd">            interactions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -6569,6 +6620,7 @@
         <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;UniProt_A&#39;</span><span class="p">,</span> <span class="s1">&#39;UniProt_B&#39;</span><span class="p">,</span> <span class="s1">&#39;GeneSymbol_B&#39;</span><span class="p">,</span> <span class="s1">&#39;GeneSymbol_A&#39;</span><span class="p">,</span>
                   <span class="s1">&#39;Databases&#39;</span><span class="p">,</span> <span class="s1">&#39;PubMed_IDs&#39;</span><span class="p">,</span> <span class="s1">&#39;Stimulation&#39;</span><span class="p">,</span> <span class="s1">&#39;Inhibition&#39;</span><span class="p">,</span>
                   <span class="s1">&#39;Domain-domain&#39;</span><span class="p">,</span> <span class="s1">&#39;Domain-motif-PTM&#39;</span><span class="p">,</span> <span class="s1">&#39;PTM-regulation&#39;</span><span class="p">]</span>
+
         <span class="n">stripJson</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[\[\]</span><span class="si">{}</span><span class="s1">\&quot;]&#39;</span><span class="p">)</span>
         <span class="c1"># first row is header</span>
         <span class="n">outl</span> <span class="o">=</span> <span class="p">[</span><span class="n">header</span><span class="p">]</span>
@@ -6622,27 +6674,37 @@
 <div class="viewcode-block" id="PyPath.export_tab"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.export_tab">[docs]</a>    <span class="k">def</span> <span class="nf">export_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extra_node_attrs</span><span class="o">=</span><span class="p">{},</span>
                    <span class="n">extra_edge_attrs</span><span class="o">=</span><span class="p">{},</span> <span class="n">unique_pairs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Exports the network in a tabular format.</span>
+<span class="sd">        Exports the network in a tabular format. By default UniProt IDs,</span>
+<span class="sd">        Gene Symbols, source databases, literature references,</span>
+<span class="sd">        directionality and sign information and interaction type are</span>
+<span class="sd">        included.</span>
 
-<span class="sd">        By default UniProt IDs, Gene Symbols, source databases, literature</span>
-<span class="sd">        references, directionality and sign information and interaction type</span>
-<span class="sd">        are included.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">        -----</span>
-<span class="sd">        :param str outfile:</span>
-<span class="sd">            Name of the output file. If `None` a file name</span>
-<span class="sd">            &quot;netrowk-&lt;session id&gt;.tab&quot; is used.</span>
-<span class="sd">        :param dict extra_node_attrs:</span>
-<span class="sd">            Additional node attributes to be included in the exported table.</span>
-<span class="sd">            Keys are column ames used in the header while values are names</span>
-<span class="sd">            of vertex attributes. In the header `_A` and `_B` suffixes will</span>
-<span class="sd">            be appended to the column names so the values can be assigned to</span>
-<span class="sd">            A and B side interaction partners.</span>
-<span class="sd">        :param dict extra_edge_attrs:</span>
-<span class="sd">            Additional edge attributes to be included in the exported table.</span>
-<span class="sd">            Keys are column ames used in the header while values are names</span>
-<span class="sd">            of edge attributes.</span>
+<span class="sd">        :arg str outfile:</span>
+<span class="sd">            Optional, ``None`` by default. Name/path of the output file.</span>
+<span class="sd">            If none is passed, ``&#39;results/netrowk-&lt;session_id&gt;.tab&#39;``</span>
+<span class="sd">            is used.</span>
+<span class="sd">        :arg dict extra_node_attrs:</span>
+<span class="sd">            Optional, ``{}`` by default. Additional node attributes to</span>
+<span class="sd">            be included in the exported table. Keys are column names</span>
+<span class="sd">            used in the header while values are names of vertex</span>
+<span class="sd">            attributes. In the header ``&#39;_A&#39;`` and ``&#39;_B&#39;`` suffixes</span>
+<span class="sd">            will be appended to the column names so the values can be</span>
+<span class="sd">            assigned to A and B side interaction partners.</span>
+<span class="sd">        :arg dict extra_edge_attrs:</span>
+<span class="sd">            Optional, ``{}`` by default. Additional edge attributes to</span>
+<span class="sd">            be included in the exported table. Keys are column names</span>
+<span class="sd">            used in the header while values are names of edge</span>
+<span class="sd">            attributes.</span>
+<span class="sd">        :arg bool unique_pairs:</span>
+<span class="sd">            Optional, ``True`` by default. If set to ``True`` each line</span>
+<span class="sd">            corresponds to a unique pair of molecules, all</span>
+<span class="sd">            directionality and sign information are covered in other</span>
+<span class="sd">            columns. If ``False``, order of ``&#39;A&#39;`` and ``&#39;B&#39;`` IDs</span>
+<span class="sd">            corresponds to the direction while sign covered in further</span>
+<span class="sd">            columns.</span>
+<span class="sd">        :arg \*\* kwargs:</span>
+<span class="sd">            Additional keyword arguments passed to</span>
+<span class="sd">            :py:class:`pypath.export.Export`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">e</span> <span class="o">=</span> <span class="n">export</span><span class="o">.</span><span class="n">Export</span><span class="p">(</span><span class="n">pa</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">extra_node_attrs</span><span class="o">=</span><span class="n">extra_node_attrs</span><span class="p">,</span>
@@ -6651,6 +6713,13 @@
 
 <div class="viewcode-block" id="PyPath.export_sif"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.export_sif">[docs]</a>    <span class="k">def</span> <span class="nf">export_sif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Exports the network interactions in ``.sif`` format (Simple</span>
+<span class="sd">        Interaction Format).</span>
+
+<span class="sd">        :arg str outfile:</span>
+<span class="sd">            Optional, ``None`` by default. Name/path of the output file.</span>
+<span class="sd">            If none is passed, ``&#39;results/netrowk-&lt;session_id&gt;.sif&#39;``</span>
+<span class="sd">            is used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">outfile</span> <span class="o">=</span> <span class="p">(</span><span class="n">outfile</span> <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
@@ -6675,8 +6744,22 @@
                               <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;undirected&#39;</span> <span class="k">else</span> <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
                     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">source</span><span class="p">,</span> <span class="n">sign</span> <span class="o">+</span> <span class="n">dirn</span><span class="p">,</span> <span class="n">target</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
+    <span class="c1"># TODO: Further description when function works/know what to do.</span>
 <div class="viewcode-block" id="PyPath.export_graphml"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.export_graphml">[docs]</a>    <span class="k">def</span> <span class="nf">export_graphml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;main&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves the network in a ``.graphml`` file.</span>
+
+<span class="sd">        :arg str outfile:</span>
+<span class="sd">            Optional, ``None`` by default. Name/path of the output file.</span>
+<span class="sd">            If none is passed,</span>
+<span class="sd">            ``&#39;results/netrowk-&lt;session_id&gt;.graphml&#39;`` is used.</span>
+<span class="sd">        :arg igraph.Graph graph:</span>
+<span class="sd">            Optional, ``None`` by default. The network object to be</span>
+<span class="sd">            saved. If none is passed, takes the undirected network of</span>
+<span class="sd">            the current instance.</span>
+<span class="sd">        :arg str name:</span>
+<span class="sd">            Optional, ``&#39;main&#39;`` by default. The graph name for the</span>
+<span class="sd">            output file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">genesymbol_labels</span><span class="p">()</span>
@@ -6744,6 +6827,7 @@
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
                     <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&lt;data key=&quot;PubMedIDs&quot;&gt;</span><span class="si">%s</span><span class="s1">&lt;/data&gt;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span>
                     <span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">pmid</span><span class="p">,</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;references&#39;</span><span class="p">])))))</span>
+    <span class="c1"># XXX: attribute &#39;dirs_by_source&#39; does not exist (nor created anywhere)</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&lt;data key=&quot;Undirected&quot;&gt;</span><span class="si">%s</span><span class="s1">&lt;/data&gt;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span>
                         <span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">common</span><span class="o">.</span><span class="n">uniqList</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;dirs_by_source&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]))))</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&lt;data key=&quot;DirectionAB&quot;&gt;</span><span class="si">%s</span><span class="s1">&lt;/data&gt;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span>
@@ -6766,11 +6850,57 @@
 
         <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span></div>
 
+    <span class="c1"># XXX: Consider to remove kwarg `multi_query` since it&#39;s not used.</span>
 <div class="viewcode-block" id="PyPath.compounds_from_chembl"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.compounds_from_chembl">[docs]</a>    <span class="k">def</span> <span class="nf">compounds_from_chembl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chembl_mysql</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">crit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                               <span class="n">andor</span><span class="o">=</span><span class="s2">&quot;or&quot;</span><span class="p">,</span> <span class="n">assay_types</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">],</span>
                               <span class="n">relationship_types</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">],</span> <span class="n">multi_query</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                               <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads compound data from ChEMBL to the network.</span>
+
+<span class="sd">        :arg tuple chebl_mysql:</span>
+<span class="sd">            Optional, ``None`` by default. Contains the MySQL parameters</span>
+<span class="sd">            used by the :py:mod:`pypath.mapping` module to loadthe</span>
+<span class="sd">            ChEMBL ID conversion tables. If none is passed, takes the</span>
+<span class="sd">            current instance :py:attr:`pypath.main.PyPath.chembl_mysql`</span>
+<span class="sd">            attribute.</span>
+<span class="sd">        :arg list nodes:</span>
+<span class="sd">            Optional, ``None`` by default. List of node indices for</span>
+<span class="sd">            which the information is to be loaded. If none is provided</span>
+<span class="sd">            calls the method :py:meth:`pypath.main.PyPath.get_sub` with</span>
+<span class="sd">            the provided *crit* parameter.</span>
+<span class="sd">        :arg dict crit:</span>
+<span class="sd">            Optional, ``None`` by default. Defines the critical</span>
+<span class="sd">            attributes to generate a subnetwork to extract the nodes in</span>
+<span class="sd">            case *nodes* is not provided. Keys are ``&#39;edge&#39;`` and</span>
+<span class="sd">            ``&#39;node&#39;`` and values are [dict] containing the critical</span>
+<span class="sd">            attribute names [str] and values are [set] containing those</span>
+<span class="sd">            attributes of the nodes/edges that are to be kept in the</span>
+<span class="sd">            subnetwork. If none is provided, takes the whole network.</span>
+<span class="sd">        :arg str andor:</span>
+<span class="sd">            Optional, ``&#39;or&#39;`` by default. Determines the search mode</span>
+<span class="sd">            for the subnetwork generation (if ``nodes=None``). See</span>
+<span class="sd">            :py:meth:`pypath.main.PyPath.search_attr_or` and</span>
+<span class="sd">            :py:meth:`pypath.main.PyPath.search_attr_and` for more</span>
+<span class="sd">            details.</span>
+<span class="sd">        :arg list assay_types:</span>
+<span class="sd">            Optional, ``[&#39;B&#39;, &#39;F&#39;]`` by default. Types of assay to query</span>
+<span class="sd">            Options are: ``&#39;A&#39;`` (ADME), ``&#39;B&#39;`` (Binding),``&#39;F&#39;``</span>
+<span class="sd">            (Functional), ``&#39;P&#39;`` (Physicochemical), ``&#39;T&#39;`` (Toxicity)</span>
+<span class="sd">            and/or ``&#39;U&#39;`` (Unassigned).</span>
+<span class="sd">        :arg list relationship_types:</span>
+<span class="sd">            Optional, ``[&#39;D&#39;, &#39;H&#39;]`` by default. Assay relationship</span>
+<span class="sd">            types to query. Possible values are: ``&#39;D&#39;`` (Direct protein</span>
+<span class="sd">            target assigned), ``&#39;H&#39;`` (Homologous protein target</span>
+<span class="sd">            assigned), ``&#39;M&#39;`` (Molecular target other than protein</span>
+<span class="sd">            assigned), ``&#39;N&#39;`` (Non-molecular target assigned), ``&#39;S&#39;``</span>
+<span class="sd">            (Subcellular target assigned) and/or ``&#39;U&#39;`` (Default value,</span>
+<span class="sd">            target has yet to be curated).</span>
+<span class="sd">        :arg bool multi_query:</span>
+<span class="sd">            Optional, ``False`` by default. Not used.</span>
+<span class="sd">        :arg \*\*kwargs:</span>
+<span class="sd">            Additional keyword arguments for</span>
+<span class="sd">            :py:meth:`pypath.chembl.Chembl.compounds_targets`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">chembl_mysql</span> <span class="o">=</span> <span class="n">chembl_mysql</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">chembl_mysql</span>
@@ -6793,22 +6923,17 @@
             <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">index</span> <span class="ow">in</span> <span class="n">nodes</span> <span class="ow">and</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;nameType&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;uniprot&#39;</span><span class="p">:</span>
                 <span class="n">uniprots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">chembl</span><span class="o">.</span><span class="n">compounds_targets</span><span class="p">(</span>
-            <span class="n">uniprots</span><span class="p">,</span>
-            <span class="n">assay_types</span><span class="o">=</span><span class="n">assay_types</span><span class="p">,</span>
-            <span class="n">relationship_types</span><span class="o">=</span><span class="n">relationship_types</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chembl</span><span class="o">.</span><span class="n">compounds_targets</span><span class="p">(</span><span class="n">uniprots</span><span class="p">,</span> <span class="n">assay_types</span><span class="o">=</span><span class="n">assay_types</span><span class="p">,</span>
+                                      <span class="n">relationship_types</span><span class="o">=</span><span class="n">relationship_types</span><span class="p">,</span>
+                                      <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chembl</span><span class="o">.</span><span class="n">compounds_by_target</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_vname</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;compounds_chembl&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">())</span>
-        <span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;compounds_names&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">())</span>
-        <span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;compounds_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[]</span>
-                                           <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">())</span>
-                                           <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;compounds_chembl&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span>
+                                             <span class="n">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">())]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;compounds_names&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span>
+                                            <span class="n">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">())]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;compounds_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span>
+                                           <span class="n">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">())]</span>
         <span class="n">num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chembl</span><span class="o">.</span><span class="n">compounds</span><span class="p">)</span>
         <span class="n">prg</span> <span class="o">=</span> <span class="n">Progress</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">num</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Adding compounds&#39;</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
         <span class="n">hascomp</span> <span class="o">=</span> <span class="mi">0</span>
@@ -6825,10 +6950,8 @@
                     <span class="n">node</span><span class="p">[</span><span class="s1">&#39;compounds_chembl&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">comp</span><span class="p">[</span><span class="s1">&#39;chembl&#39;</span><span class="p">])</span>
                     <span class="n">node</span><span class="p">[</span><span class="s1">&#39;compounds_names&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">comp</span><span class="p">[</span><span class="s1">&#39;compound_names&#39;</span><span class="p">]</span>
 
-                <span class="n">node</span><span class="p">[</span><span class="s1">&#39;compounds_chembl&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">uniqList</span><span class="p">(</span><span class="n">node</span><span class="p">[</span>
-                    <span class="s1">&#39;compounds_chembl&#39;</span><span class="p">])</span>
-                <span class="n">node</span><span class="p">[</span><span class="s1">&#39;compounds_names&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">uniqList</span><span class="p">(</span><span class="n">node</span><span class="p">[</span>
-                    <span class="s1">&#39;compounds_names&#39;</span><span class="p">])</span>
+                <span class="n">node</span><span class="p">[</span><span class="s1">&#39;compounds_chembl&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">uniqList</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;compounds_chembl&#39;</span><span class="p">])</span>
+                <span class="n">node</span><span class="p">[</span><span class="s1">&#39;compounds_names&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">common</span><span class="o">.</span><span class="n">uniqList</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;compounds_names&#39;</span><span class="p">])</span>
 
         <span class="n">prg</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
         <span class="n">percent</span> <span class="o">=</span> <span class="n">hascomp</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">())</span>

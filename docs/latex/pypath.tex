@@ -56,7 +56,7 @@
 
 
 \title{pypath Documentation}
-\date{Dec 03, 2018}
+\date{Dec 05, 2018}
 \release{0.7.117}
 \author{Dénes Türei}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -375,7 +375,7 @@ values.
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{exp\_prod}} (\sphinxstyleliteralemphasis{\sphinxupquote{pandas.DataFrame}}) \textendash{} Stores the edge expression data (as the product of the
 normalized expression between the pair of nodes by default). For
-more details see {\hyperref[\detokenize{main:pypath.main.PyPath.edges_expression}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.edges\_expression()}}}}}.
+more details see {\hyperref[\detokenize{main:pypath.main.PyPath.edges_expression}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.edges\_expression()}}}}}.
 
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{exp\_samples}} (\sphinxstyleliteralemphasis{\sphinxupquote{set}}) \textendash{} Contains a list of tissues as downloaded by ProteomicsDB. See
@@ -423,14 +423,16 @@ indices {[}int{]} (values).
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{lists}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Contains specific lists of nodes (values) for different
 categories {[}str{]} (keys). These can to be loaded from a file or
-a resource. Some methods include \sphinxcode{\sphinxupquote{PyPath.receptor\_list()}}
-(\sphinxcode{\sphinxupquote{'rec'}}), {\hyperref[\detokenize{main:pypath.main.PyPath.druggability_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.druggability\_list()}}}}} (\sphinxcode{\sphinxupquote{'dgb'}}),
-{\hyperref[\detokenize{main:pypath.main.PyPath.kinases_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.kinases\_list()}}}}} (\sphinxcode{\sphinxupquote{'kin'}}),
-{\hyperref[\detokenize{main:pypath.main.PyPath.tfs_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.tfs\_list()}}}}} (\sphinxcode{\sphinxupquote{'tf'}}),
-{\hyperref[\detokenize{main:pypath.main.PyPath.disease_genes_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.disease\_genes\_list()}}}}} (\sphinxcode{\sphinxupquote{'dis'}}),
-{\hyperref[\detokenize{main:pypath.main.PyPath.signaling_proteins_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.signaling\_proteins\_list()}}}}} (\sphinxcode{\sphinxupquote{'sig'}}),
-{\hyperref[\detokenize{main:pypath.main.PyPath.proteome_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.proteome\_list()}}}}} (\sphinxcode{\sphinxupquote{'proteome'}}) and
-{\hyperref[\detokenize{main:pypath.main.PyPath.cancer_drivers_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.cancer\_drivers\_list()}}}}} (\sphinxcode{\sphinxupquote{'cdv'}}).
+a resource. Some methods include
+\sphinxcode{\sphinxupquote{pypath.main.PyPath.receptor\_list()}} (\sphinxcode{\sphinxupquote{'rec'}}),
+{\hyperref[\detokenize{main:pypath.main.PyPath.druggability_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.druggability\_list()}}}}} (\sphinxcode{\sphinxupquote{'dgb'}}),
+{\hyperref[\detokenize{main:pypath.main.PyPath.kinases_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.kinases\_list()}}}}} (\sphinxcode{\sphinxupquote{'kin'}}),
+{\hyperref[\detokenize{main:pypath.main.PyPath.tfs_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.tfs\_list()}}}}} (\sphinxcode{\sphinxupquote{'tf'}}),
+{\hyperref[\detokenize{main:pypath.main.PyPath.disease_genes_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.disease\_genes\_list()}}}}} (\sphinxcode{\sphinxupquote{'dis'}}),
+{\hyperref[\detokenize{main:pypath.main.PyPath.signaling_proteins_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.signaling\_proteins\_list()}}}}}
+(\sphinxcode{\sphinxupquote{'sig'}}), {\hyperref[\detokenize{main:pypath.main.PyPath.proteome_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.proteome\_list()}}}}}
+(\sphinxcode{\sphinxupquote{'proteome'}}) and
+{\hyperref[\detokenize{main:pypath.main.PyPath.cancer_drivers_list}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.cancer\_drivers\_list()}}}}} (\sphinxcode{\sphinxupquote{'cdv'}}).
 
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{loglevel}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The level of the logger.
@@ -460,7 +462,8 @@ will be downloaded.
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{negatives}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Contains a list of negative interactions according to a given
 source (e.g.: Negatome database). See
-{\hyperref[\detokenize{main:pypath.main.PyPath.apply_negative}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.apply\_negative()}}}}} for more information.
+{\hyperref[\detokenize{main:pypath.main.PyPath.apply_negative}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.apply\_negative()}}}}} for more
+information.
 
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{nodDct}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Maps the undirected graph node names {[}str{]} (keys) to their
@@ -541,7 +544,7 @@ to their respective protein families and other information.
 
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{unmapped}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Contains the names of unmapped items {[}str{]}. See
-{\hyperref[\detokenize{main:pypath.main.PyPath.map_item}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{PyPath.map\_item()}}}}} for more information.
+{\hyperref[\detokenize{main:pypath.main.PyPath.map_item}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.map\_item()}}}}} for more information.
 
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{vertexAttrs}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Stores the node attribute names {[}str{]} as keys and their
@@ -848,6 +851,17 @@ is to be added to the nodes or to the edges.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.apply_negative}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{apply\_negative}}}{\emph{settings}}{}
+Loads a negative interaction source (e.g.: Negatome) into the
+current network.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{settings}} (\sphinxstyleliteralemphasis{\sphinxupquote{pypath.input\_formats.ReadSettings}}) \textendash{} \sphinxcode{\sphinxupquote{pypath.input\_formats.ReadSettings}} instance
+containing the detailed definition of the input format to
+the downloaded file. For instance
+\sphinxcode{\sphinxupquote{pypath.data\_formats.negative{[}'negatome'{]}}}
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{attach\_network() (pypath.main.PyPath method)}
@@ -1030,6 +1044,64 @@ attributes.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.compounds_from_chembl}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{compounds\_from\_chembl}}}{\emph{chembl\_mysql=None, nodes=None, crit=None, andor='or', assay\_types={[}'B', 'F'{]}, relationship\_types={[}'D', 'H'{]}, multi\_query=False, **kwargs}}{}
+Loads compound data from ChEMBL to the network.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{chebl\_mysql}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Contains the MySQL parameters
+used by the \sphinxcode{\sphinxupquote{pypath.mapping}} module to loadthe
+ChEMBL ID conversion tables. If none is passed, takes the
+current instance \sphinxcode{\sphinxupquote{pypath.main.PyPath.chembl\_mysql}}
+attribute.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{nodes}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. List of node indices for
+which the information is to be loaded. If none is provided
+calls the method {\hyperref[\detokenize{main:pypath.main.PyPath.get_sub}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.get\_sub()}}}}} with
+the provided \sphinxstyleemphasis{crit} parameter.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{crit}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Defines the critical
+attributes to generate a subnetwork to extract the nodes in
+case \sphinxstyleemphasis{nodes} is not provided. Keys are \sphinxcode{\sphinxupquote{'edge'}} and
+\sphinxcode{\sphinxupquote{'node'}} and values are {[}dict{]} containing the critical
+attribute names {[}str{]} and values are {[}set{]} containing those
+attributes of the nodes/edges that are to be kept in the
+subnetwork. If none is provided, takes the whole network.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{andor}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{'or'}} by default. Determines the search mode
+for the subnetwork generation (if \sphinxcode{\sphinxupquote{nodes=None}}). See
+{\hyperref[\detokenize{main:pypath.main.PyPath.search_attr_or}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.search\_attr\_or()}}}}} and
+{\hyperref[\detokenize{main:pypath.main.PyPath.search_attr_and}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{pypath.main.PyPath.search\_attr\_and()}}}}} for more
+details.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{assay\_types}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{{[}'B', 'F'{]}}} by default. Types of assay to query
+Options are: \sphinxcode{\sphinxupquote{'A'}} (ADME), \sphinxcode{\sphinxupquote{'B'}} (Binding),{}`{}`’F’{}`{}`
+(Functional), \sphinxcode{\sphinxupquote{'P'}} (Physicochemical), \sphinxcode{\sphinxupquote{'T'}} (Toxicity)
+and/or \sphinxcode{\sphinxupquote{'U'}} (Unassigned).
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{relationship\_types}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{{[}'D', 'H'{]}}} by default. Assay relationship
+types to query. Possible values are: \sphinxcode{\sphinxupquote{'D'}} (Direct protein
+target assigned), \sphinxcode{\sphinxupquote{'H'}} (Homologous protein target
+assigned), \sphinxcode{\sphinxupquote{'M'}} (Molecular target other than protein
+assigned), \sphinxcode{\sphinxupquote{'N'}} (Non-molecular target assigned), \sphinxcode{\sphinxupquote{'S'}}
+(Subcellular target assigned) and/or \sphinxcode{\sphinxupquote{'U'}} (Default value,
+target has yet to be curated).
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{multi\_query}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{False}} by default. Not used.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{**kwargs}} \textendash{} Additional keyword arguments for
+\sphinxcode{\sphinxupquote{pypath.chembl.Chembl.compounds\_targets()}}.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{consistency() (pypath.main.PyPath method)}
@@ -1216,8 +1288,9 @@ sources. This is, for each source, the subnetwork comprising all
 interactions coming from it is extracted and the degree
 distribution information is computed and saved into a file.
 A file is created for each resource under the name
-\sphinxcode{\sphinxupquote{pwnet-\textless{}session\textgreater{}-degdist-\textless{}resource\textgreater{}}}. Files are stored in
-\sphinxcode{\sphinxupquote{pypath.main.PyPath.outdir}} (\sphinxcode{\sphinxupquote{'results'}} by default).
+\sphinxcode{\sphinxupquote{'pwnet-\textless{}session\_id\textgreater{}-degdist-\textless{}resource\textgreater{}'{'}}}. Files are stored
+in \sphinxcode{\sphinxupquote{pypath.main.PyPath.outdir}} (\sphinxcode{\sphinxupquote{'results'}} by
+default).
 
 \end{fulllineitems}
 
@@ -1711,52 +1784,125 @@ to be printed
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.export_graphml}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{export\_graphml}}}{\emph{outfile=None}, \emph{graph=None}, \emph{name='main'}}{}
+Saves the network in a \sphinxcode{\sphinxupquote{.graphml}} file.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{outfile}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Name/path of the output file.
+If none is passed,
+\sphinxcode{\sphinxupquote{'results/netrowk-\textless{}session\_id\textgreater{}.graphml'}} is used.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{graph}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The network object to be
+saved. If none is passed, takes the undirected network of
+the current instance.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{'main'}} by default. The graph name for the
+output file.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{export\_ptms\_tab() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.export_ptms_tab}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{export\_ptms\_tab}}}{\emph{outfile=None}}{}
+Exports a tab file containing the PTM interaction information
+loaded in the network.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{outfile}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The output file nama/path to
+store the PTM information. If none is provided, the default
+is \sphinxcode{\sphinxupquote{'results/network-\textless{}session\_id\textgreater{}.tab'}}.
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{list}) \textendash{} Contains the edge indices {[}int{]} of all PTM
+interactions.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{export\_sif() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.export_sif}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{export\_sif}}}{\emph{outfile=None}}{}
+Exports the network interactions in \sphinxcode{\sphinxupquote{.sif}} format (Simple
+Interaction Format).
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{outfile}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Name/path of the output file.
+If none is passed, \sphinxcode{\sphinxupquote{'results/netrowk-\textless{}session\_id\textgreater{}.sif'}}
+is used.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{export\_struct\_tab() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.export_struct_tab}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{export\_struct\_tab}}}{\emph{outfile=None}}{}
+Exports a tab file containing the domain interaction information
+and PTM regulation loaded in the network.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{outfile}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The output file nama/path to
+store the PTM information. If none is provided, the default
+is \sphinxcode{\sphinxupquote{'results/network-\textless{}session\_id\textgreater{}.tab'}}.
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{list}) \textendash{} Contains the edge indices {[}int{]} of all PTM
+interactions.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{export\_tab() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.export_tab}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{export\_tab}}}{\emph{outfile=None}, \emph{extra\_node\_attrs=\{\}}, \emph{extra\_edge\_attrs=\{\}}, \emph{unique\_pairs=True}, \emph{**kwargs}}{}
-Exports the network in a tabular format.
-
-By default UniProt IDs, Gene Symbols, source databases, literature
-references, directionality and sign information and interaction type
-are included.
+Exports the network in a tabular format. By default UniProt IDs,
+Gene Symbols, source databases, literature references,
+directionality and sign information and interaction type are
+included.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{outfile}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Name of the output file. If \sphinxtitleref{None} a file name
-“netrowk-\textless{}session id\textgreater{}.tab” is used.
+\sphinxstyleliteralstrong{\sphinxupquote{outfile}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Name/path of the output file.
+If none is passed, \sphinxcode{\sphinxupquote{'results/netrowk-\textless{}session\_id\textgreater{}.tab'}}
+is used.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{extra\_node\_attrs}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Additional node attributes to be included in the exported table.
-Keys are column ames used in the header while values are names
-of vertex attributes. In the header \sphinxtitleref{\_A} and \sphinxtitleref{\_B} suffixes will
-be appended to the column names so the values can be assigned to
-A and B side interaction partners.
+\sphinxstyleliteralstrong{\sphinxupquote{extra\_node\_attrs}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{\{\}}} by default. Additional node attributes to
+be included in the exported table. Keys are column names
+used in the header while values are names of vertex
+attributes. In the header \sphinxcode{\sphinxupquote{'\_A'}} and \sphinxcode{\sphinxupquote{'\_B'}} suffixes
+will be appended to the column names so the values can be
+assigned to A and B side interaction partners.
 
 \item {} 
-\sphinxstyleliteralstrong{\sphinxupquote{extra\_edge\_attrs}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Additional edge attributes to be included in the exported table.
-Keys are column ames used in the header while values are names
-of edge attributes.
+\sphinxstyleliteralstrong{\sphinxupquote{extra\_edge\_attrs}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{\{\}}} by default. Additional edge attributes to
+be included in the exported table. Keys are column names
+used in the header while values are names of edge
+attributes.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{unique\_pairs}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{True}} by default. If set to \sphinxcode{\sphinxupquote{True}} each line
+corresponds to a unique pair of molecules, all
+directionality and sign information are covered in other
+columns. If \sphinxcode{\sphinxupquote{False}}, order of \sphinxcode{\sphinxupquote{'A'}} and \sphinxcode{\sphinxupquote{'B'}} IDs
+corresponds to the direction while sign covered in further
+columns.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{kwargs}} (\sphinxstyleliteralemphasis{\sphinxupquote{**}}) \textendash{} Additional keyword arguments passed to
+\sphinxcode{\sphinxupquote{pypath.export.Export}}.
 
 \end{itemize}
 
@@ -3349,7 +3495,7 @@ network
 \item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{settings}} (\sphinxstyleliteralemphasis{\sphinxupquote{pypath.input\_formats.ReadSettings}}) \textendash{} \sphinxcode{\sphinxupquote{pypath.input\_formats.ReadSettings}} instance
-containing the detailed definition of the input format of
+containing the detailed definition of the input format to
 the downloaded file.
 
 \item {} 
@@ -3730,6 +3876,29 @@ searched.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.negative_report}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{negative\_report}}}{\emph{lst=True}, \emph{outFile=None}}{}
+Generates a report file with the negative interactions (assumed
+to be already loaded).
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{lst}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{True}} by default. Whether to retun a list of
+edges containing the edge instances which have negative
+references.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{outFile}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The output file name/path. If
+none is passed, the default is
+\sphinxcode{\sphinxupquote{'results/\textless{}session\_id\textgreater{}-negatives'}}
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{list}) \textendash{} If \sphinxstyleemphasis{lst} is set to \sphinxcode{\sphinxupquote{True}}, returns a {[}list{]}
+is returned with the \sphinxcode{\sphinxupquote{igraph.Edge}} instances that
+contain at least a negative reference.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{neighborhood() (pypath.main.PyPath method)}
@@ -3825,7 +3994,8 @@ results in a tab file. File is stored in
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode
 \sphinxstyleliteralstrong{\sphinxupquote{outfile}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Specifies the file name. If
-none is specified, this will be \sphinxcode{\sphinxupquote{'pwnet-\textless{}session\textgreater{}-stats'}}.
+none is specified, this will be
+\sphinxcode{\sphinxupquote{'pwnet-\textless{}session\_id\textgreater{}-stats'}}.
 
 \end{description}\end{quote}
 
@@ -3989,7 +4159,7 @@ information..
 \sphinxstyleliteralstrong{\sphinxupquote{outfile}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Specifies the file name
 prefix (suffixes will be \sphinxcode{\sphinxupquote{'-nodes'}} and \sphinxcode{\sphinxupquote{'-edges'}}). If
 none is specified, this will be
-\sphinxcode{\sphinxupquote{'pwnet-\textless{}session\textgreater{}-sim-pw'}}.
+\sphinxcode{\sphinxupquote{'pwnet-\textless{}session\_id\textgreater{}-sim-pw'}}.
 
 \end{description}\end{quote}
 
@@ -4383,7 +4553,7 @@ sources. Writes the results in a tab file.
 \sphinxstyleliteralstrong{\sphinxupquote{filename}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Specifies the file name and
 path to save the table. If none is passed, file will be
 saved in \sphinxcode{\sphinxupquote{pypath.main.PyPath.outdir}} (\sphinxcode{\sphinxupquote{'results'}}
-by default) with the name \sphinxcode{\sphinxupquote{'\textless{}session\textgreater{}-refs-hist'}}.
+by default) with the name \sphinxcode{\sphinxupquote{'\textless{}session\_id\textgreater{}-refs-hist'}}.
 
 \end{description}\end{quote}
 
@@ -4438,7 +4608,7 @@ to its default location
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.save_session}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{save\_session}}}{}{}
 Save the current session state into pickle dump. The file will
 be saved in the current working directory as
-\sphinxcode{\sphinxupquote{pypath-\textless{}session-id\textgreater{}.pickle}}.
+\sphinxcode{\sphinxupquote{'pypath-\textless{}session\_id\textgreater{}.pickle'}}.
 
 \end{fulllineitems}
 
@@ -4934,7 +5104,7 @@ information.
 \sphinxstyleliteralstrong{\sphinxupquote{outfile}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Specifies the file name
 prefix (suffixes will be \sphinxcode{\sphinxupquote{'-nodes'}} and \sphinxcode{\sphinxupquote{'-edges'}}). If
 none is specified, this will be
-\sphinxcode{\sphinxupquote{'pwnet-\textless{}session\textgreater{}-sim-src'}}.
+\sphinxcode{\sphinxupquote{'pwnet-\textless{}session\_id\textgreater{}-sim-src'}}.
 
 \end{description}\end{quote}
 

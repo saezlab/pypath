@@ -115,7 +115,7 @@ values.</li>
 <li><strong>exp</strong> (<em>pandas.DataFrame</em>) – Stores the expression data for the nodes (if loaded).</li>
 <li><strong>exp_prod</strong> (<em>pandas.DataFrame</em>) – Stores the edge expression data (as the product of the
 normalized expression between the pair of nodes by default). For
-more details see <a class="reference internal" href="#pypath.main.PyPath.edges_expression" title="pypath.main.PyPath.edges_expression"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.edges_expression()</span></code></a>.</li>
+more details see <a class="reference internal" href="#pypath.main.PyPath.edges_expression" title="pypath.main.PyPath.edges_expression"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.edges_expression()</span></code></a>.</li>
 <li><strong>exp_samples</strong> (<em>set</em>) – Contains a list of tissues as downloaded by ProteomicsDB. See
 <a class="reference internal" href="#pypath.main.PyPath.get_proteomicsdb" title="pypath.main.PyPath.get_proteomicsdb"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.get_proteomicsdb()</span></code></a> for more information.</li>
 <li><strong>failed_edges</strong> (<em>list</em>) – List of lists containing information about the failed edges.
@@ -145,14 +145,16 @@ given threshold (<code class="docutils literal notranslate"><span class="pre">'h
 indices [int] (values).</li>
 <li><strong>lists</strong> (<em>dict</em>) – Contains specific lists of nodes (values) for different
 categories [str] (keys). These can to be loaded from a file or
-a resource. Some methods include <code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.receptor_list()</span></code>
-(<code class="docutils literal notranslate"><span class="pre">'rec'</span></code>), <a class="reference internal" href="#pypath.main.PyPath.druggability_list" title="pypath.main.PyPath.druggability_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.druggability_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'dgb'</span></code>),
-<a class="reference internal" href="#pypath.main.PyPath.kinases_list" title="pypath.main.PyPath.kinases_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.kinases_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'kin'</span></code>),
-<a class="reference internal" href="#pypath.main.PyPath.tfs_list" title="pypath.main.PyPath.tfs_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.tfs_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'tf'</span></code>),
-<a class="reference internal" href="#pypath.main.PyPath.disease_genes_list" title="pypath.main.PyPath.disease_genes_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.disease_genes_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'dis'</span></code>),
-<a class="reference internal" href="#pypath.main.PyPath.signaling_proteins_list" title="pypath.main.PyPath.signaling_proteins_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.signaling_proteins_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'sig'</span></code>),
-<a class="reference internal" href="#pypath.main.PyPath.proteome_list" title="pypath.main.PyPath.proteome_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.proteome_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'proteome'</span></code>) and
-<a class="reference internal" href="#pypath.main.PyPath.cancer_drivers_list" title="pypath.main.PyPath.cancer_drivers_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.cancer_drivers_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'cdv'</span></code>).</li>
+a resource. Some methods include
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.receptor_list()</span></code> (<code class="docutils literal notranslate"><span class="pre">'rec'</span></code>),
+<a class="reference internal" href="#pypath.main.PyPath.druggability_list" title="pypath.main.PyPath.druggability_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.druggability_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'dgb'</span></code>),
+<a class="reference internal" href="#pypath.main.PyPath.kinases_list" title="pypath.main.PyPath.kinases_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.kinases_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'kin'</span></code>),
+<a class="reference internal" href="#pypath.main.PyPath.tfs_list" title="pypath.main.PyPath.tfs_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.tfs_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'tf'</span></code>),
+<a class="reference internal" href="#pypath.main.PyPath.disease_genes_list" title="pypath.main.PyPath.disease_genes_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.disease_genes_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'dis'</span></code>),
+<a class="reference internal" href="#pypath.main.PyPath.signaling_proteins_list" title="pypath.main.PyPath.signaling_proteins_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.signaling_proteins_list()</span></code></a>
+(<code class="docutils literal notranslate"><span class="pre">'sig'</span></code>), <a class="reference internal" href="#pypath.main.PyPath.proteome_list" title="pypath.main.PyPath.proteome_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.proteome_list()</span></code></a>
+(<code class="docutils literal notranslate"><span class="pre">'proteome'</span></code>) and
+<a class="reference internal" href="#pypath.main.PyPath.cancer_drivers_list" title="pypath.main.PyPath.cancer_drivers_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.cancer_drivers_list()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">'cdv'</span></code>).</li>
 <li><strong>loglevel</strong> (<em>str</em>) – The level of the logger.</li>
 <li><strong>loops</strong> (<em>bool</em>) – Whether if self-loop edges are allowed in the graph.</li>
 <li><strong>mapper</strong> (<em>pypath.mapping.Mapper</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">pypath.mapper.Mapper</span></code> object for ID conversion and
@@ -166,7 +168,8 @@ tables.</li>
 will be downloaded.</li>
 <li><strong>negatives</strong> (<em>dict</em>) – Contains a list of negative interactions according to a given
 source (e.g.: Negatome database). See
-<a class="reference internal" href="#pypath.main.PyPath.apply_negative" title="pypath.main.PyPath.apply_negative"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.apply_negative()</span></code></a> for more information.</li>
+<a class="reference internal" href="#pypath.main.PyPath.apply_negative" title="pypath.main.PyPath.apply_negative"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.apply_negative()</span></code></a> for more
+information.</li>
 <li><strong>nodDct</strong> (<em>dict</em>) – Maps the undirected graph node names [str] (keys) to their
 indices [int] (values).</li>
 <li><strong>nodInd</strong> (<em>set</em>) – Stores the undirected graph node names [str].</li>
@@ -203,7 +206,7 @@ documentation for more information).</li>
 to their respective protein families and other information.</li>
 <li><strong>uniprot_mapped</strong> (<em>list</em>) – DEPRECATED (?)</li>
 <li><strong>unmapped</strong> (<em>list</em>) – Contains the names of unmapped items [str]. See
-<a class="reference internal" href="#pypath.main.PyPath.map_item" title="pypath.main.PyPath.map_item"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PyPath.map_item()</span></code></a> for more information.</li>
+<a class="reference internal" href="#pypath.main.PyPath.map_item" title="pypath.main.PyPath.map_item"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.map_item()</span></code></a> for more information.</li>
 <li><strong>vertexAttrs</strong> (<em>dict</em>) – Stores the node attribute names [str] as keys and their
 corresponding types (e.g.: <code class="docutils literal notranslate"><span class="pre">set</span></code>, <code class="docutils literal notranslate"><span class="pre">list</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>, …) as
 values.</li>
@@ -460,7 +463,20 @@ is to be added to the nodes or to the edges.</li>
 <dl class="method">
 <dt id="pypath.main.PyPath.apply_negative">
 <code class="descname">apply_negative</code><span class="sig-paren">(</span><em>settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.apply_negative"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.apply_negative" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Loads a negative interaction source (e.g.: Negatome) into the
+current network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>settings</strong> (<em>pypath.input_formats.ReadSettings</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">pypath.input_formats.ReadSettings</span></code> instance
+containing the detailed definition of the input format to
+the downloaded file. For instance
+<code class="xref py py-data docutils literal notranslate"><span class="pre">pypath.data_formats.negative['negatome']</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.attach_network">
@@ -618,7 +634,53 @@ attributes.</li>
 <dl class="method">
 <dt id="pypath.main.PyPath.compounds_from_chembl">
 <code class="descname">compounds_from_chembl</code><span class="sig-paren">(</span><em>chembl_mysql=None, nodes=None, crit=None, andor='or', assay_types=['B', 'F'], relationship_types=['D', 'H'], multi_query=False, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.compounds_from_chembl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.compounds_from_chembl" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Loads compound data from ChEMBL to the network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>chebl_mysql</strong> (<em>tuple</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Contains the MySQL parameters
+used by the <code class="xref py py-mod docutils literal notranslate"><span class="pre">pypath.mapping</span></code> module to loadthe
+ChEMBL ID conversion tables. If none is passed, takes the
+current instance <code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.chembl_mysql</span></code>
+attribute.</li>
+<li><strong>nodes</strong> (<em>list</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. List of node indices for
+which the information is to be loaded. If none is provided
+calls the method <a class="reference internal" href="#pypath.main.PyPath.get_sub" title="pypath.main.PyPath.get_sub"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.get_sub()</span></code></a> with
+the provided <em>crit</em> parameter.</li>
+<li><strong>crit</strong> (<em>dict</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Defines the critical
+attributes to generate a subnetwork to extract the nodes in
+case <em>nodes</em> is not provided. Keys are <code class="docutils literal notranslate"><span class="pre">'edge'</span></code> and
+<code class="docutils literal notranslate"><span class="pre">'node'</span></code> and values are [dict] containing the critical
+attribute names [str] and values are [set] containing those
+attributes of the nodes/edges that are to be kept in the
+subnetwork. If none is provided, takes the whole network.</li>
+<li><strong>andor</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">'or'</span></code> by default. Determines the search mode
+for the subnetwork generation (if <code class="docutils literal notranslate"><span class="pre">nodes=None</span></code>). See
+<a class="reference internal" href="#pypath.main.PyPath.search_attr_or" title="pypath.main.PyPath.search_attr_or"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.search_attr_or()</span></code></a> and
+<a class="reference internal" href="#pypath.main.PyPath.search_attr_and" title="pypath.main.PyPath.search_attr_and"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.main.PyPath.search_attr_and()</span></code></a> for more
+details.</li>
+<li><strong>assay_types</strong> (<em>list</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">['B',</span> <span class="pre">'F']</span></code> by default. Types of assay to query
+Options are: <code class="docutils literal notranslate"><span class="pre">'A'</span></code> (ADME), <code class="docutils literal notranslate"><span class="pre">'B'</span></code> (Binding),``’F’``
+(Functional), <code class="docutils literal notranslate"><span class="pre">'P'</span></code> (Physicochemical), <code class="docutils literal notranslate"><span class="pre">'T'</span></code> (Toxicity)
+and/or <code class="docutils literal notranslate"><span class="pre">'U'</span></code> (Unassigned).</li>
+<li><strong>relationship_types</strong> (<em>list</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">['D',</span> <span class="pre">'H']</span></code> by default. Assay relationship
+types to query. Possible values are: <code class="docutils literal notranslate"><span class="pre">'D'</span></code> (Direct protein
+target assigned), <code class="docutils literal notranslate"><span class="pre">'H'</span></code> (Homologous protein target
+assigned), <code class="docutils literal notranslate"><span class="pre">'M'</span></code> (Molecular target other than protein
+assigned), <code class="docutils literal notranslate"><span class="pre">'N'</span></code> (Non-molecular target assigned), <code class="docutils literal notranslate"><span class="pre">'S'</span></code>
+(Subcellular target assigned) and/or <code class="docutils literal notranslate"><span class="pre">'U'</span></code> (Default value,
+target has yet to be curated).</li>
+<li><strong>multi_query</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">False</span></code> by default. Not used.</li>
+<li><strong>**kwargs</strong> – Additional keyword arguments for
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">pypath.chembl.Chembl.compounds_targets()</span></code>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.consistency">
@@ -788,8 +850,9 @@ sources. This is, for each source, the subnetwork comprising all
 interactions coming from it is extracted and the degree
 distribution information is computed and saved into a file.
 A file is created for each resource under the name
-<code class="docutils literal notranslate"><span class="pre">pwnet-&lt;session&gt;-degdist-&lt;resource&gt;</span></code>. Files are stored in
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.outdir</span></code> (<code class="docutils literal notranslate"><span class="pre">'results'</span></code> by default).</p>
+<code class="docutils literal notranslate"><span class="pre">'pwnet-&lt;session_id&gt;-degdist-&lt;resource&gt;''</span></code>. Files are stored
+in <code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.outdir</span></code> (<code class="docutils literal notranslate"><span class="pre">'results'</span></code> by
+default).</p>
 </dd></dl>
 
 <dl class="method">
@@ -1218,45 +1281,117 @@ to be printed</li>
 <dl class="method">
 <dt id="pypath.main.PyPath.export_graphml">
 <code class="descname">export_graphml</code><span class="sig-paren">(</span><em>outfile=None</em>, <em>graph=None</em>, <em>name='main'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.export_graphml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.export_graphml" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pypath.main.PyPath.export_ptms_tab">
-<code class="descname">export_ptms_tab</code><span class="sig-paren">(</span><em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.export_ptms_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.export_ptms_tab" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pypath.main.PyPath.export_sif">
-<code class="descname">export_sif</code><span class="sig-paren">(</span><em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.export_sif"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.export_sif" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pypath.main.PyPath.export_struct_tab">
-<code class="descname">export_struct_tab</code><span class="sig-paren">(</span><em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.export_struct_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.export_struct_tab" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pypath.main.PyPath.export_tab">
-<code class="descname">export_tab</code><span class="sig-paren">(</span><em>outfile=None</em>, <em>extra_node_attrs={}</em>, <em>extra_edge_attrs={}</em>, <em>unique_pairs=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.export_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.export_tab" title="Permalink to this definition">¶</a></dt>
-<dd><p>Exports the network in a tabular format.</p>
-<p>By default UniProt IDs, Gene Symbols, source databases, literature
-references, directionality and sign information and interaction type
-are included.</p>
+<dd><p>Saves the network in a <code class="docutils literal notranslate"><span class="pre">.graphml</span></code> file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>outfile</strong> (<em>str</em>) – Name of the output file. If <cite>None</cite> a file name
-“netrowk-&lt;session id&gt;.tab” is used.</li>
-<li><strong>extra_node_attrs</strong> (<em>dict</em>) – Additional node attributes to be included in the exported table.
-Keys are column ames used in the header while values are names
-of vertex attributes. In the header <cite>_A</cite> and <cite>_B</cite> suffixes will
-be appended to the column names so the values can be assigned to
-A and B side interaction partners.</li>
-<li><strong>extra_edge_attrs</strong> (<em>dict</em>) – Additional edge attributes to be included in the exported table.
-Keys are column ames used in the header while values are names
-of edge attributes.</li>
+<li><strong>outfile</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Name/path of the output file.
+If none is passed,
+<code class="docutils literal notranslate"><span class="pre">'results/netrowk-&lt;session_id&gt;.graphml'</span></code> is used.</li>
+<li><strong>graph</strong> (<em>igraph.Graph</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. The network object to be
+saved. If none is passed, takes the undirected network of
+the current instance.</li>
+<li><strong>name</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">'main'</span></code> by default. The graph name for the
+output file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.export_ptms_tab">
+<code class="descname">export_ptms_tab</code><span class="sig-paren">(</span><em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.export_ptms_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.export_ptms_tab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exports a tab file containing the PTM interaction information
+loaded in the network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outfile</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. The output file nama/path to
+store the PTM information. If none is provided, the default
+is <code class="docutils literal notranslate"><span class="pre">'results/network-&lt;session_id&gt;.tab'</span></code>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(<em>list</em>) – Contains the edge indices [int] of all PTM
+interactions.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.export_sif">
+<code class="descname">export_sif</code><span class="sig-paren">(</span><em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.export_sif"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.export_sif" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exports the network interactions in <code class="docutils literal notranslate"><span class="pre">.sif</span></code> format (Simple
+Interaction Format).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outfile</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Name/path of the output file.
+If none is passed, <code class="docutils literal notranslate"><span class="pre">'results/netrowk-&lt;session_id&gt;.sif'</span></code>
+is used.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.export_struct_tab">
+<code class="descname">export_struct_tab</code><span class="sig-paren">(</span><em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.export_struct_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.export_struct_tab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exports a tab file containing the domain interaction information
+and PTM regulation loaded in the network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outfile</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. The output file nama/path to
+store the PTM information. If none is provided, the default
+is <code class="docutils literal notranslate"><span class="pre">'results/network-&lt;session_id&gt;.tab'</span></code>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(<em>list</em>) – Contains the edge indices [int] of all PTM
+interactions.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.export_tab">
+<code class="descname">export_tab</code><span class="sig-paren">(</span><em>outfile=None</em>, <em>extra_node_attrs={}</em>, <em>extra_edge_attrs={}</em>, <em>unique_pairs=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.export_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.export_tab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exports the network in a tabular format. By default UniProt IDs,
+Gene Symbols, source databases, literature references,
+directionality and sign information and interaction type are
+included.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>outfile</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Name/path of the output file.
+If none is passed, <code class="docutils literal notranslate"><span class="pre">'results/netrowk-&lt;session_id&gt;.tab'</span></code>
+is used.</li>
+<li><strong>extra_node_attrs</strong> (<em>dict</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">{}</span></code> by default. Additional node attributes to
+be included in the exported table. Keys are column names
+used in the header while values are names of vertex
+attributes. In the header <code class="docutils literal notranslate"><span class="pre">'_A'</span></code> and <code class="docutils literal notranslate"><span class="pre">'_B'</span></code> suffixes
+will be appended to the column names so the values can be
+assigned to A and B side interaction partners.</li>
+<li><strong>extra_edge_attrs</strong> (<em>dict</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">{}</span></code> by default. Additional edge attributes to
+be included in the exported table. Keys are column names
+used in the header while values are names of edge
+attributes.</li>
+<li><strong>unique_pairs</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">True</span></code> by default. If set to <code class="docutils literal notranslate"><span class="pre">True</span></code> each line
+corresponds to a unique pair of molecules, all
+directionality and sign information are covered in other
+columns. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, order of <code class="docutils literal notranslate"><span class="pre">'A'</span></code> and <code class="docutils literal notranslate"><span class="pre">'B'</span></code> IDs
+corresponds to the direction while sign covered in further
+columns.</li>
+<li><strong>kwargs</strong> (<em>**</em>) – Additional keyword arguments passed to
+<code class="xref py py-class docutils literal notranslate"><span class="pre">pypath.export.Export</span></code>.</li>
 </ul>
 </td>
 </tr>
@@ -2650,7 +2785,7 @@ network</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>settings</strong> (<em>pypath.input_formats.ReadSettings</em>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">pypath.input_formats.ReadSettings</span></code> instance
-containing the detailed definition of the input format of
+containing the detailed definition of the input format to
 the downloaded file.</li>
 <li><strong>clean</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">True</span></code> by default. Whether to clean the graph
 after importing the data or not. See
@@ -2983,7 +3118,30 @@ searched.</td>
 <dl class="method">
 <dt id="pypath.main.PyPath.negative_report">
 <code class="descname">negative_report</code><span class="sig-paren">(</span><em>lst=True</em>, <em>outFile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.negative_report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.negative_report" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Generates a report file with the negative interactions (assumed
+to be already loaded).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>lst</strong> (<em>bool</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">True</span></code> by default. Whether to retun a list of
+edges containing the edge instances which have negative
+references.</li>
+<li><strong>outFile</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. The output file name/path. If
+none is passed, the default is
+<code class="docutils literal notranslate"><span class="pre">'results/&lt;session_id&gt;-negatives'</span></code></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>list</em>) – If <em>lst</em> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns a [list]
+is returned with the <code class="xref py py-class docutils literal notranslate"><span class="pre">igraph.Edge</span></code> instances that
+contain at least a negative reference.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.neighborhood">
@@ -3058,7 +3216,8 @@ results in a tab file. File is stored in
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outfile</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Specifies the file name. If
-none is specified, this will be <code class="docutils literal notranslate"><span class="pre">'pwnet-&lt;session&gt;-stats'</span></code>.</td>
+none is specified, this will be
+<code class="docutils literal notranslate"><span class="pre">'pwnet-&lt;session_id&gt;-stats'</span></code>.</td>
 </tr>
 </tbody>
 </table>
@@ -3217,7 +3376,7 @@ information..</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outfile</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Specifies the file name
 prefix (suffixes will be <code class="docutils literal notranslate"><span class="pre">'-nodes'</span></code> and <code class="docutils literal notranslate"><span class="pre">'-edges'</span></code>). If
 none is specified, this will be
-<code class="docutils literal notranslate"><span class="pre">'pwnet-&lt;session&gt;-sim-pw'</span></code>.</td>
+<code class="docutils literal notranslate"><span class="pre">'pwnet-&lt;session_id&gt;-sim-pw'</span></code>.</td>
 </tr>
 </tbody>
 </table>
@@ -3572,7 +3731,7 @@ sources. Writes the results in a tab file.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Specifies the file name and
 path to save the table. If none is passed, file will be
 saved in <code class="xref py py-attr docutils literal notranslate"><span class="pre">pypath.main.PyPath.outdir</span></code> (<code class="docutils literal notranslate"><span class="pre">'results'</span></code>
-by default) with the name <code class="docutils literal notranslate"><span class="pre">'&lt;session&gt;-refs-hist'</span></code>.</td>
+by default) with the name <code class="docutils literal notranslate"><span class="pre">'&lt;session_id&gt;-refs-hist'</span></code>.</td>
 </tr>
 </tbody>
 </table>
@@ -3622,7 +3781,7 @@ to its default location
 <code class="descname">save_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.save_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.save_session" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the current session state into pickle dump. The file will
 be saved in the current working directory as
-<code class="docutils literal notranslate"><span class="pre">pypath-&lt;session-id&gt;.pickle</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">'pypath-&lt;session_id&gt;.pickle'</span></code>.</p>
 </dd></dl>
 
 <dl class="method">
@@ -4068,7 +4227,7 @@ information.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outfile</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Specifies the file name
 prefix (suffixes will be <code class="docutils literal notranslate"><span class="pre">'-nodes'</span></code> and <code class="docutils literal notranslate"><span class="pre">'-edges'</span></code>). If
 none is specified, this will be
-<code class="docutils literal notranslate"><span class="pre">'pwnet-&lt;session&gt;-sim-src'</span></code>.</td>
+<code class="docutils literal notranslate"><span class="pre">'pwnet-&lt;session_id&gt;-sim-src'</span></code>.</td>
 </tr>
 </tbody>
 </table>
