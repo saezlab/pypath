@@ -6385,9 +6385,11 @@ class PyPath(object):
 
                 if isinstance(edge, int):
                     g.es[edge]['negative'].add(settings.name)
-                    refs = set(list(map(lambda r: _refs.Reference(int(r)),
-                                        n['attrsEdge']['references'])))
-                    g.es[edge]['negative_refs'].add(refs)
+                    refs = set(
+                        list(
+                            map(lambda r: _refs.Reference(int(r)), n[
+                                'attrsEdge']['references'])))
+                    g.es[edge]['negative_refs'].update(refs)
                     matches += 1
 
             prg.step()
