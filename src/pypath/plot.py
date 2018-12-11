@@ -151,6 +151,7 @@ def get_moves(bbox1, bbox2):
 
 
 class Plot(object):
+    
     def __init__(self,
                  fname=None,
                  font_family='Helvetica Neue LT Std',
@@ -617,7 +618,7 @@ class MultiBarplot(Plot):
         Converts width and height to a tuple so can be used for figsize.
         """
         if hasattr(self, 'width') and hasattr(self, 'height'):
-            self.figsize = (self.width, selg.height)
+            self.figsize = (self.width, self.height)
 
     def init_fig(self):
         """
@@ -1212,7 +1213,7 @@ class StackedBarplot(object):
         Converts width and height to a tuple so can be used for figsize.
         """
         if hasattr(self, 'width') and hasattr(self, 'height'):
-            self.figsize = (self.width, selg.height)
+            self.figsize = (self.width, self.height)
 
     def init_fig(self):
         """
@@ -2923,7 +2924,7 @@ class HtpCharacteristics(object):
         Converts width and height to a tuple so can be used for figsize.
         """
         if hasattr(self, 'width') and hasattr(self, 'height'):
-            self.figsize = (self.width, selg.height)
+            self.figsize = (self.width, self.height)
 
     def init_fig(self):
         """
@@ -3184,7 +3185,7 @@ class RefsComposite(object):
         Converts width and height to a tuple so can be used for figsize.
         """
         if hasattr(self, 'width') and hasattr(self, 'height'):
-            self.figsize = (self.width, selg.height)
+            self.figsize = (self.width, self.height)
 
     def init_fig(self):
         """
@@ -3629,7 +3630,7 @@ class CurationPlot(object):
         Converts width and height to a tuple so can be used for figsize.
         """
         if hasattr(self, 'width') and hasattr(self, 'height'):
-            self.figsize = (self.width, selg.height)
+            self.figsize = (self.width, self.height)
 
     def init_fig(self):
         """
@@ -3888,7 +3889,7 @@ class BarplotsGrid(object):
         Converts width and height to a tuple so can be used for figsize.
         """
         if hasattr(self, 'width') and hasattr(self, 'height'):
-            self.figsize = (self.width, selg.height)
+            self.figsize = (self.width, self.height)
 
     def number_of_plots(self):
         self.numof_plots = len(getattr(self.data, self.by).unique())
@@ -4159,7 +4160,7 @@ class Dendrogram(object):
         Converts width and height to a tuple so can be used for figsize.
         """
         if hasattr(self, 'width') and hasattr(self, 'height'):
-            self.figsize = (self.width, selg.height)
+            self.figsize = (self.width, self.height)
 
     def init_fig(self):
         """
