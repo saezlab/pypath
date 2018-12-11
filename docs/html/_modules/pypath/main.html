@@ -6959,10 +6959,12 @@
             <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">Compounds found for </span><span class="si">%u</span><span class="s1"> targets, (</span><span class="si">%.2f%%</span><span class="s1"> of all proteins).</span><span class="se">\n\n</span><span class="s1">&#39;</span>
             <span class="o">%</span> <span class="p">(</span><span class="n">hascomp</span><span class="p">,</span> <span class="n">percent</span> <span class="o">*</span> <span class="mf">100.0</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="PyPath.network_filter"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.network_filter">[docs]</a>    <span class="k">def</span> <span class="nf">network_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">2.0</span><span class="p">):</span>
+    <span class="c1"># XXX: Is it me or this function does not actually filter but only</span>
+    <span class="c1">#      computes the score for the edges and that&#39;s all?</span>
+<div class="viewcode-block" id="PyPath.network_filter"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.network_filter">[docs]</a>    <span class="k">def</span> <span class="nf">network_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">2.0</span><span class="p">):</span> <span class="c1"># TODO</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This function aims to cut the number of edges in the network,</span>
-<span class="sd">        without loosing nodes, to make the network less connected,</span>
+<span class="sd">        without losing nodes, to make the network less connected,</span>
 <span class="sd">        less hairball-like, more usable for analysis.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -7010,26 +7012,57 @@
 <div class="viewcode-block" id="PyPath.shortest_path_dist"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.shortest_path_dist">[docs]</a>    <span class="k">def</span> <span class="nf">shortest_path_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        subset is a tuple of two lists if you wish to look for</span>
-<span class="sd">        paths between elements of two groups, or a list if you</span>
-<span class="sd">        wish to look for shortest paths within this group</span>
+<span class="sd">        Computes the distribution of shortest paths for each pair of</span>
+<span class="sd">        nodes in the network (or between group(s) of nodes if *subset*</span>
+<span class="sd">        is provided). **NOTE:** this method can take a while to compute,</span>
+<span class="sd">        e.g.: if the network has 10K nodes, the total number of possible</span>
+<span class="sd">        pairs to compute is:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">          \\binom{10^4}{2} = 49995000</span>
+
+<span class="sd">        :arg igraph.Graph graph:</span>
+<span class="sd">            Optional, ``None`` by default. The network object for which</span>
+<span class="sd">            the shortest path distribution is to be computed. If none is</span>
+<span class="sd">            passed, takes the undirected network of the current</span>
+<span class="sd">            instance.</span>
+<span class="sd">        :arg tuple susbet:</span>
+<span class="sd">            Optional, ``None`` by default. Contains two lists of node</span>
+<span class="sd">            indices defining two groups between which the distribution</span>
+<span class="sd">            is to be computed. Can also be [list] if the shortest paths</span>
+<span class="sd">            are to be searched whithin the group. If none is passed, the</span>
+<span class="sd">            whole network is taken by default.</span>
+<span class="sd">        :arg str outfile:</span>
+<span class="sd">            Optional, ``None`` by default. File name/path to save the</span>
+<span class="sd">            shortest path distribution. If none is passed, no file is</span>
+<span class="sd">            generated.</span>
+<span class="sd">        :arg \*\*kwargs:</span>
+<span class="sd">            Additional keyword arguments passed to</span>
+<span class="sd">            :py:meth:`igraph.Graph.get_shortest_paths`.</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">            (*list*) -- The length of the shortest paths for each pair</span>
+<span class="sd">            of nodes of the network (or whithin/between group/s if</span>
+<span class="sd">            *subset* is provided).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span> <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
         <span class="n">shortest_paths</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">subset</span> <span class="o">=</span> <span class="n">subset</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subset</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">or</span> <span class="n">subset</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span>
-            <span class="n">subset</span><span class="p">,</span> <span class="n">subset</span><span class="p">)</span>
+        <span class="n">subset</span> <span class="o">=</span> <span class="p">(</span><span class="n">subset</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subset</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">or</span> <span class="n">subset</span> <span class="ow">is</span> <span class="kc">None</span>
+                  <span class="k">else</span> <span class="p">(</span><span class="n">subset</span><span class="p">,</span> <span class="n">subset</span><span class="p">))</span>
         <span class="n">prg</span> <span class="o">=</span> <span class="n">Progress</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">(),</span> <span class="s1">&#39;Calculating paths&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span> <span class="c1"># i = node index</span>
 
             <span class="k">if</span> <span class="n">subset</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">subset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">subset</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
                 <span class="n">paths</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_shortest_paths</span><span class="p">(</span><span class="n">i</span><span class="p">,</span>
                                                  <span class="n">xrange</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">graph</span><span class="o">.</span><span class="n">vcount</span><span class="p">()),</span>
                                                  <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">paths</span><span class="p">)):</span>
-
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">paths</span><span class="p">)):</span> <span class="c1"># j = `paths` list index</span>
+    <span class="c1"># XXX: Or I&#39;m missing something or something&#39;s wrong here... you&#39;re</span>
+    <span class="c1">#      adding a node index to a index of the `paths` list and checking</span>
+    <span class="c1">#      if such number is in a subset?</span>
                     <span class="k">if</span> <span class="n">subset</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span>
                             <span class="n">i</span> <span class="ow">in</span> <span class="n">subset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span> <span class="ow">in</span> <span class="n">subset</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span>
                                 <span class="n">i</span> <span class="ow">in</span> <span class="n">subset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span> <span class="ow">in</span> <span class="n">subset</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
@@ -7049,6 +7082,17 @@
 
 <div class="viewcode-block" id="PyPath.load_pdb"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_pdb">[docs]</a>    <span class="k">def</span> <span class="nf">load_pdb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads the 3D structure information from PDB into the network.</span>
+<span class="sd">        Creates the node attribute ``&#39;pdb&#39;`` containing a [dict] whose</span>
+<span class="sd">        keys are the PDB identifier [str] and values are [tuple] of two</span>
+<span class="sd">        elements denoting the experimental method [str] (e.g.:</span>
+<span class="sd">        ``&#39;X-ray&#39;``, ``&#39;NMR&#39;``, ...) and the resolution [float] (if</span>
+<span class="sd">        applicable).</span>
+
+<span class="sd">        :arg igraph.Graph graph:</span>
+<span class="sd">            Optional, ``None`` by default. The network object for which</span>
+<span class="sd">            the information is to be loaded. If none is passed, takes</span>
+<span class="sd">            the undirected network of the current instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span> <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
@@ -7074,6 +7118,14 @@
 
 <div class="viewcode-block" id="PyPath.load_pfam"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_pfam">[docs]</a>    <span class="k">def</span> <span class="nf">load_pfam</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads the protein family information from UniProt into the</span>
+<span class="sd">        network. Creates the node attribute ``&#39;pfam&#39;`` containing a</span>
+<span class="sd">        [list] of protein family identifier(s) [str].</span>
+
+<span class="sd">        :arg igraph.Graph graph:</span>
+<span class="sd">            Optional, ``None`` by default. The network object for which</span>
+<span class="sd">            the information is to be loaded. If none is passed, takes</span>
+<span class="sd">            the undirected network of the current instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span> <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
@@ -7084,6 +7136,7 @@
                             <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># FIXME: should assign `[None]` if the attribute is empty not otherwise</span>
             <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s1">&#39;pfam&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
 
             <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">:</span>
@@ -7096,6 +7149,17 @@
 
 <div class="viewcode-block" id="PyPath.load_pfam2"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_pfam2">[docs]</a>    <span class="k">def</span> <span class="nf">load_pfam2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads the protein family information from Pfam into the network.</span>
+<span class="sd">        Creates the node attribute ``&#39;pfam&#39;`` containing a [list] of</span>
+<span class="sd">        [dict] whose keys are protein family identifier(s) [str] and</span>
+<span class="sd">        corresponding values are [list] of [dict] containing detailed</span>
+<span class="sd">        information about the protein family(ies) for regions and</span>
+<span class="sd">        isoforms of the protein.</span>
+
+<span class="sd">        :arg igraph.Graph graph:</span>
+<span class="sd">            Optional, ``None`` by default. The network object for which</span>
+<span class="sd">            the information is to be loaded. If none is passed, takes</span>
+<span class="sd">            the undirected network of the current instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">pfam_regions</span><span class="p">()</span>
@@ -7115,6 +7179,11 @@
 
 <div class="viewcode-block" id="PyPath.load_pfam3"><a class="viewcode-back" href="../../main.html#pypath.main.PyPath.load_pfam3">[docs]</a>    <span class="k">def</span> <span class="nf">load_pfam3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads the protein domain information from Pfam into the network.</span>
+<span class="sd">        Creates the node attribute ``&#39;doms&#39;`` containing a [list] of</span>
+<span class="sd">        :py:class:`pypath.intera.Domain` instances with information</span>
+<span class="sd">        about each domain of the protein (see the corresponding class</span>
+<span class="sd">        documentation for more information).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">pfam_regions</span><span class="p">()</span>

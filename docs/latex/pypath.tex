@@ -56,7 +56,7 @@
 
 
 \title{pypath Documentation}
-\date{Dec 05, 2018}
+\date{Dec 11, 2018}
 \release{0.7.117}
 \author{Dénes Türei}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -3327,6 +3327,20 @@ current instance.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.load_pdb}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_pdb}}}{\emph{graph=None}}{}
+Loads the 3D structure information from PDB into the network.
+Creates the node attribute \sphinxcode{\sphinxupquote{'pdb'}} containing a {[}dict{]} whose
+keys are the PDB identifier {[}str{]} and values are {[}tuple{]} of two
+elements denoting the experimental method {[}str{]} (e.g.:
+\sphinxcode{\sphinxupquote{'X-ray'}}, \sphinxcode{\sphinxupquote{'NMR'}}, …) and the resolution {[}float{]} (if
+applicable).
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{graph}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The network object for which
+the information is to be loaded. If none is passed, takes
+the undirected network of the current instance.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{load\_pepcyber() (pypath.main.PyPath method)}
@@ -3339,18 +3353,49 @@ current instance.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.load_pfam}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_pfam}}}{\emph{graph=None}}{}
+Loads the protein family information from UniProt into the
+network. Creates the node attribute \sphinxcode{\sphinxupquote{'pfam'}} containing a
+{[}list{]} of protein family identifier(s) {[}str{]}.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{graph}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The network object for which
+the information is to be loaded. If none is passed, takes
+the undirected network of the current instance.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{load\_pfam2() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.load_pfam2}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_pfam2}}}{}{}
+Loads the protein family information from Pfam into the network.
+Creates the node attribute \sphinxcode{\sphinxupquote{'pfam'}} containing a {[}list{]} of
+{[}dict{]} whose keys are protein family identifier(s) {[}str{]} and
+corresponding values are {[}list{]} of {[}dict{]} containing detailed
+information about the protein family(ies) for regions and
+isoforms of the protein.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{graph}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The network object for which
+the information is to be loaded. If none is passed, takes
+the undirected network of the current instance.
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{load\_pfam3() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.load_pfam3}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_pfam3}}}{}{}
+Loads the protein domain information from Pfam into the network.
+Creates the node attribute \sphinxcode{\sphinxupquote{'doms'}} containing a {[}list{]} of
+\sphinxcode{\sphinxupquote{pypath.intera.Domain}} instances with information
+about each domain of the protein (see the corresponding class
+documentation for more information).
+
 \end{fulllineitems}
 
 \index{load\_phospho\_dmi() (pypath.main.PyPath method)}
@@ -3977,7 +4022,7 @@ categories.
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.network_filter}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{network\_filter}}}{\emph{p=2.0}}{}
 This function aims to cut the number of edges in the network,
-without loosing nodes, to make the network less connected,
+without losing nodes, to make the network less connected,
 less hairball-like, more usable for analysis.
 
 \end{fulllineitems}
@@ -4994,9 +5039,45 @@ the protein is a transcription factor, otherwise \sphinxstyleemphasis{False}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.shortest_path_dist}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{shortest\_path\_dist}}}{\emph{graph=None}, \emph{subset=None}, \emph{outfile=None}, \emph{**kwargs}}{}
-subset is a tuple of two lists if you wish to look for
-paths between elements of two groups, or a list if you
-wish to look for shortest paths within this group
+Computes the distribution of shortest paths for each pair of
+nodes in the network (or between group(s) of nodes if \sphinxstyleemphasis{subset}
+is provided). \sphinxstylestrong{NOTE:} this method can take a while to compute,
+e.g.: if the network has 10K nodes, the total number of possible
+pairs to compute is:
+\begin{equation*}
+\begin{split}\binom{10^4}{2} = 49995000\end{split}
+\end{equation*}\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{graph}} (\sphinxstyleliteralemphasis{\sphinxupquote{igraph.Graph}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. The network object for which
+the shortest path distribution is to be computed. If none is
+passed, takes the undirected network of the current
+instance.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{susbet}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. Contains two lists of node
+indices defining two groups between which the distribution
+is to be computed. Can also be {[}list{]} if the shortest paths
+are to be searched whithin the group. If none is passed, the
+whole network is taken by default.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{outfile}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Optional, \sphinxcode{\sphinxupquote{None}} by default. File name/path to save the
+shortest path distribution. If none is passed, no file is
+generated.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{**kwargs}} \textendash{} Additional keyword arguments passed to
+\sphinxcode{\sphinxupquote{igraph.Graph.get\_shortest\_paths()}}.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+(\sphinxstyleemphasis{list}) \textendash{} The length of the shortest paths for each pair
+of nodes of the network (or whithin/between group/s if
+\sphinxstyleemphasis{subset} is provided).
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 

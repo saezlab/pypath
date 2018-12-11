@@ -6920,10 +6920,12 @@ class PyPath(object):
             '\n\tCompounds found for %u targets, (%.2f%% of all proteins).\n\n'
             % (hascomp, percent * 100.0))
 
-    def network_filter(self, p=2.0):
+    # XXX: Is it me or this function does not actually filter but only
+    #      computes the score for the edges and that's all?
+    def network_filter(self, p=2.0): # TODO
         """
         This function aims to cut the number of edges in the network,
-        without loosing nodes, to make the network less connected,
+        without losing nodes, to make the network less connected,
         less hairball-like, more usable for analysis.
         """
 
@@ -6971,26 +6973,57 @@ class PyPath(object):
     def shortest_path_dist(self, graph=None, subset=None, outfile=None,
                            **kwargs):
         """
-        subset is a tuple of two lists if you wish to look for
-        paths between elements of two groups, or a list if you
-        wish to look for shortest paths within this group
+        Computes the distribution of shortest paths for each pair of
+        nodes in the network (or between group(s) of nodes if *subset*
+        is provided). **NOTE:** this method can take a while to compute,
+        e.g.: if the network has 10K nodes, the total number of possible
+        pairs to compute is:
+
+        .. math::
+          \\binom{10^4}{2} = 49995000
+
+        :arg igraph.Graph graph:
+            Optional, ``None`` by default. The network object for which
+            the shortest path distribution is to be computed. If none is
+            passed, takes the undirected network of the current
+            instance.
+        :arg tuple susbet:
+            Optional, ``None`` by default. Contains two lists of node
+            indices defining two groups between which the distribution
+            is to be computed. Can also be [list] if the shortest paths
+            are to be searched whithin the group. If none is passed, the
+            whole network is taken by default.
+        :arg str outfile:
+            Optional, ``None`` by default. File name/path to save the
+            shortest path distribution. If none is passed, no file is
+            generated.
+        :arg \*\*kwargs:
+            Additional keyword arguments passed to
+            :py:meth:`igraph.Graph.get_shortest_paths`.
+
+        :return:
+            (*list*) -- The length of the shortest paths for each pair
+            of nodes of the network (or whithin/between group/s if
+            *subset* is provided).
         """
 
         graph = graph if graph is not None else self.graph
         shortest_paths = []
-        subset = subset if isinstance(subset, tuple) or subset is None else (
-            subset, subset)
+        subset = (subset if isinstance(subset, tuple) or subset is None
+                  else (subset, subset))
         prg = Progress(graph.vcount(), 'Calculating paths', 1)
 
-        for i in xrange(0, graph.vcount() - 1):
+        for i in xrange(0, graph.vcount() - 1): # i = node index
 
             if subset is None or i in subset[0] or i in subset[1]:
                 paths = graph.get_shortest_paths(i,
                                                  xrange(i + 1, graph.vcount()),
                                                  **kwargs)
 
-                for j in xrange(0, len(paths)):
-
+                for j in xrange(0, len(paths)): # j = `paths` list index
+    # XXX: Or I'm missing something or something's wrong here... you're
+    #      adding a node index to a index of the `paths` list and checking
+    #      if such number is in a subset?
                     if subset is None or (
                             i in subset[0] and i + j + 1 in subset[1]) or (
                                 i in subset[1] and i + j + 1 in subset[0]):
@@ -7010,6 +7043,17 @@ class PyPath(object):
 
     def load_pdb(self, graph=None):
         """
+        Loads the 3D structure information from PDB into the network.
+        Creates the node attribute ``'pdb'`` containing a [dict] whose
+        keys are the PDB identifier [str] and values are [tuple] of two
+        elements denoting the experimental method [str] (e.g.:
+        ``'X-ray'``, ``'NMR'``, ...) and the resolution [float] (if
+        applicable).
+
+        :arg igraph.Graph graph:
+            Optional, ``None`` by default. The network object for which
+            the information is to be loaded. If none is passed, takes
+            the undirected network of the current instance.
         """
 
         graph = graph if graph is not None else self.graph
@@ -7035,6 +7079,14 @@ class PyPath(object):
 
     def load_pfam(self, graph=None):
         """
+        Loads the protein family information from UniProt into the
+        network. Creates the node attribute ``'pfam'`` containing a
+        [list] of protein family identifier(s) [str].
+
+        :arg igraph.Graph graph:
+            Optional, ``None`` by default. The network object for which
+            the information is to be loaded. If none is passed, takes
+            the undirected network of the current instance.
         """
 
         graph = graph if graph is not None else self.graph
@@ -7045,6 +7097,7 @@ class PyPath(object):
                             'ERROR')
 
         else:
+        # FIXME: should assign `[None]` if the attribute is empty not otherwise
             graph.vs['pfam'] = [None]
 
             for v in graph.vs:
@@ -7057,6 +7110,17 @@ class PyPath(object):
 
     def load_pfam2(self):
         """
+        Loads the protein family information from Pfam into the network.
+        Creates the node attribute ``'pfam'`` containing a [list] of
+        [dict] whose keys are protein family identifier(s) [str] and
+        corresponding values are [list] of [dict] containing detailed
+        information about the protein family(ies) for regions and
+        isoforms of the protein.
+
+        :arg igraph.Graph graph:
+            Optional, ``None`` by default. The network object for which
+            the information is to be loaded. If none is passed, takes
+            the undirected network of the current instance.
         """
 
         self.pfam_regions()
@@ -7076,6 +7140,11 @@ class PyPath(object):
 
     def load_pfam3(self):
         """
+        Loads the protein domain information from Pfam into the network.
+        Creates the node attribute ``'doms'`` containing a [list] of
+        :py:class:`pypath.intera.Domain` instances with information
+        about each domain of the protein (see the corresponding class
+        documentation for more information).
         """
 
         self.pfam_regions()

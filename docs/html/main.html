@@ -2634,7 +2634,23 @@ current instance.</li>
 <dl class="method">
 <dt id="pypath.main.PyPath.load_pdb">
 <code class="descname">load_pdb</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_pdb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_pdb" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Loads the 3D structure information from PDB into the network.
+Creates the node attribute <code class="docutils literal notranslate"><span class="pre">'pdb'</span></code> containing a [dict] whose
+keys are the PDB identifier [str] and values are [tuple] of two
+elements denoting the experimental method [str] (e.g.:
+<code class="docutils literal notranslate"><span class="pre">'X-ray'</span></code>, <code class="docutils literal notranslate"><span class="pre">'NMR'</span></code>, …) and the resolution [float] (if
+applicable).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>graph</strong> (<em>igraph.Graph</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. The network object for which
+the information is to be loaded. If none is passed, takes
+the undirected network of the current instance.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.load_pepcyber">
@@ -2644,17 +2660,51 @@ current instance.</li>
 <dl class="method">
 <dt id="pypath.main.PyPath.load_pfam">
 <code class="descname">load_pfam</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_pfam"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_pfam" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Loads the protein family information from UniProt into the
+network. Creates the node attribute <code class="docutils literal notranslate"><span class="pre">'pfam'</span></code> containing a
+[list] of protein family identifier(s) [str].</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>graph</strong> (<em>igraph.Graph</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. The network object for which
+the information is to be loaded. If none is passed, takes
+the undirected network of the current instance.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.load_pfam2">
 <code class="descname">load_pfam2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_pfam2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_pfam2" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Loads the protein family information from Pfam into the network.
+Creates the node attribute <code class="docutils literal notranslate"><span class="pre">'pfam'</span></code> containing a [list] of
+[dict] whose keys are protein family identifier(s) [str] and
+corresponding values are [list] of [dict] containing detailed
+information about the protein family(ies) for regions and
+isoforms of the protein.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>graph</strong> (<em>igraph.Graph</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. The network object for which
+the information is to be loaded. If none is passed, takes
+the undirected network of the current instance.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.load_pfam3">
 <code class="descname">load_pfam3</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_pfam3"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_pfam3" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Loads the protein domain information from Pfam into the network.
+Creates the node attribute <code class="docutils literal notranslate"><span class="pre">'doms'</span></code> containing a [list] of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">pypath.intera.Domain</span></code> instances with information
+about each domain of the protein (see the corresponding class
+documentation for more information).</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.load_phospho_dmi">
@@ -3199,7 +3249,7 @@ categories.</li>
 <dt id="pypath.main.PyPath.network_filter">
 <code class="descname">network_filter</code><span class="sig-paren">(</span><em>p=2.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.network_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.network_filter" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function aims to cut the number of edges in the network,
-without loosing nodes, to make the network less connected,
+without losing nodes, to make the network less connected,
 less hairball-like, more usable for analysis.</p>
 </dd></dl>
 
@@ -4126,9 +4176,42 @@ the protein is a transcription factor, otherwise <em>False</em>.</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.shortest_path_dist">
 <code class="descname">shortest_path_dist</code><span class="sig-paren">(</span><em>graph=None</em>, <em>subset=None</em>, <em>outfile=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.shortest_path_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.shortest_path_dist" title="Permalink to this definition">¶</a></dt>
-<dd><p>subset is a tuple of two lists if you wish to look for
-paths between elements of two groups, or a list if you
-wish to look for shortest paths within this group</p>
+<dd><p>Computes the distribution of shortest paths for each pair of
+nodes in the network (or between group(s) of nodes if <em>subset</em>
+is provided). <strong>NOTE:</strong> this method can take a while to compute,
+e.g.: if the network has 10K nodes, the total number of possible
+pairs to compute is:</p>
+<div class="math notranslate nohighlight">
+\[\binom{10^4}{2} = 49995000\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>graph</strong> (<em>igraph.Graph</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. The network object for which
+the shortest path distribution is to be computed. If none is
+passed, takes the undirected network of the current
+instance.</li>
+<li><strong>susbet</strong> (<em>tuple</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. Contains two lists of node
+indices defining two groups between which the distribution
+is to be computed. Can also be [list] if the shortest paths
+are to be searched whithin the group. If none is passed, the
+whole network is taken by default.</li>
+<li><strong>outfile</strong> (<em>str</em>) – Optional, <code class="docutils literal notranslate"><span class="pre">None</span></code> by default. File name/path to save the
+shortest path distribution. If none is passed, no file is
+generated.</li>
+<li><strong>**kwargs</strong> – Additional keyword arguments passed to
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">igraph.Graph.get_shortest_paths()</span></code>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(<em>list</em>) – The length of the shortest paths for each pair
+of nodes of the network (or whithin/between group/s if
+<em>subset</em> is provided).</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
