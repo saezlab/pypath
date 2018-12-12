@@ -1037,28 +1037,34 @@ class Workflow(object):
             
             _ = sys.stdout.write('\t:: Plotting %s\n' % par[1])
             
-            data_attr = 'data_%s' % par[2]
+            # 
+            data_attr = 'data_%s' % par.name
             
-            self.get_data(par[3], data_attr)
+            # heights of the bars
+            self.get_data(par.method, data_attr)
             
-            if par[4] is not None:
-                data_attr2 = 'data_%s' % par[4]
-                self.get_data(par[4], data_attr2)
+            # data for the shaded area heights
+            if par.smethod is not None:
+                
+                data_attr2 = 'data_%s_2' % par.name
+                self.get_data(par.smethod, data_attr2)
             
-            data = getattr(self, data_attr)
+            data  = getattr(self, data_attr)
             data2 = getattr(self, data_attr2)
             
-            ordr = self.vcount_ordr if par[5] == 'vcount' else par[5]
+            # ordering of the columns
+            ordr = self.vcount_ordr if par.order == 'vcount' else par.order
             
-            csvname = self.get_path('%s-by-db_%s.csv' % (par[2], self.name))
+            # csv file to export the data
+            csvname = self.get_path('%s-by-db_%s.csv' % (par.name, self.name))
             
             with open(csvname, 'w') as csv:
-                # print(data)
-                # print(list(zip(*data)))
-                # print(data2)
-                ddata = dict(zip(*data))
+                
+                ddata  = dict(zip(*data))
                 ddata2 = dict(zip(*data2))
-                csv.write('Label;%s;%s\n' % (par[0], par[0]))
+                
+                csv.write('Label;%s;%s\n' % (par.ylab, par.ylab))
+                
                 csv.write(
                     '\n'.join(
                         map(
@@ -1075,12 +1081,15 @@ class Workflow(object):
                         )
                     )
                 )
-
-            self.multi_barplots[par[2]] = \
+            
+            # creating the barplot object
+            self.multi_barplots[par.name] = (
+                
                 plot.MultiBarplot(
-                    data[0], data[1],
-                    categories=self.cats,
-                    color=self.labcol,
+                    data[0], # resource names
+                    data[1], # values for each resource
+                    categories = self.cats, # resource to category dict
+                    color = self.labcol,
                     cat_ordr=self.cat_ordr,
                     ylab=par[0],
                     title=par[1],
@@ -1092,44 +1101,74 @@ class Workflow(object):
                     color2=None if par[4] is None else self.labcol2,
                     summary=self.multi_barplots_summary,
                     do=True
+                )
+                
             )
 
     def barplot_colors(self):
-
-        self.data_protein_counts = \
-            list(zip(*[(s,
-                        len([v for v in self.pp.graph.vs
-                             if s in v['sources']]))
-                       for s in sorted(self.pp.sources)] +
-                     list(map(lambda c: (('All', c),
-                                         self.csep[c].vcount()),
-                              sorted(self.csep.keys())))))
+        """
+        Creates lists of color codes for multi-section barplots according
+        to the current set of resources and categories.
+        """
         
+        # size of resources and resource categories
+        self.data_protein_counts = \
+            list(
+                zip(
+                    *[
+                        (
+                            s,
+                            len([
+                                v for v in self.pp.graph.vs
+                                if s in v['sources']
+                            ])
+                        )
+                        for s in sorted(self.pp.sources)
+                    ] +
+                    [
+                        (
+                            ('All', c),
+                            self.csep[c].vcount()
+                        )
+                        for c in sorted(self.csep.keys())
+                    ]
+                )
+            )
+        
+        # colors of the bars
         self.labcol = \
             list(
                 map(
                     lambda lab:
+                        # for resources
                         self.ccolors[data_formats.categories[lab]]
-                    if lab in data_formats.categories
-                    else self.ccolors[lab[1]],
+                        if lab in data_formats.categories
+                        else self.ccolors[lab[1]], # for resource categories
                     self.data_protein_counts[0]
                 )
             )
-
+        
+        # colors of the shaded parts
         self.labcol2 = \
             list(
                 map(
                     lambda lab:
+                        # for resources
                         self.ccolors2[data_formats.categories[lab]]
-                    if lab in data_formats.categories
-                    else self.ccolors2[lab[1]],
+                        if lab in data_formats.categories
+                        else self.ccolors2[lab[1]], # for resource categories
                     self.data_protein_counts[0]
                 )
             )
 
     def make_coverage_groups_plot(self):
+        """
+        Creates multi-section barplot showing the coverage of resources
+        and resource categories on a group of proteins.
+        """
 
-        self.coverage_groups = \
+        self.coverage_groups = (
+            
             plot.MultiBarplot(
                 self.labels_coverage_groups,
                 self.data_coverage_groups,
@@ -1149,13 +1188,23 @@ class Workflow(object):
                 order=self.vcount_ordr,
                 ylim=[0.0, 100.0]
             )
+            
+        )
 
     def get_coverage_groups_data(self):
-
+        """
+        Creates data about the coverage of resources and resource categories
+        on various groups of proteins: receptors, kinases, TFs and
+        druggable proteins.
+        """
+        
+        
         covdata = list(
             map(
                 lambda fun:
+                    # dict of resources and coverage
                     dict(zip(*self.get_data(fun, None))),
+                # methods to calculate the coverage in percent
                 [
                     lambda gs: len([v for v in gs[0].vs if v['rec']]) /
                         float(len(self.pp.lists['rec'])) * 100.0,
@@ -1168,7 +1217,8 @@ class Workflow(object):
                 ]
             )
         )
-
+        
+        
         self.labels_coverage_groups = list(covdata[0].keys())
 
         self.data_coverage_groups = \

@@ -4296,6 +4296,7 @@ def get_tfcensus(classes=['a', 'b', 'other']):
     Downloads and processes list of all human transcripton factors.
     Returns dict with lists of ENSGene IDs and HGNC Gene Names.
     """
+    
     ensg = []
     hgnc = []
     reensg = re.compile(r'ENSG[0-9]{11}')

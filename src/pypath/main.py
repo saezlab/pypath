@@ -2628,7 +2628,7 @@ class PyPath(object):
         # is having issues with Ensemble IDs
         # utfs = [self.mapper.map_name(tf, 'ensg', 'uniprot', 9606)
         #        for tf in tfs['ensg']]
-        utfs += [self.mapper.map_name(h, 'hgnc', 'uniprot', 9606)
+        utfs += [self.mapper.map_name(h, 'genesymbol', 'uniprot', 9606)
                  for h in tfs['hgnc']]
 
         self.lists['tf'] = common.uniqList(common.flatList(utfs))
