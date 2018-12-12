@@ -156,6 +156,7 @@ class Workflow(object):
                 'r': '#CC99BB',
                 'l': '#77AADD',
             },
+            # colors of the shaded parts
             'ccolors2': {
                 'p': '#4477AA',
                 'm': '#117777',
@@ -164,14 +165,25 @@ class Workflow(object):
                 'l': '#4477AA',
             },
             'group_colors': [
-                '#4477AA', '#44AAAA', '#DDAA77', '#CC99BB', '#4477AA'
+                '#4477AA',
+                '#44AAAA',
+                '#DDAA77',
+                '#CC99BB',
+                '#4477AA',
             ],
             'group_colors2': [
-                '#77AADD', '#77CCCC', '#DDAA77', '#CC99BB', '#77AADD'
+                '#77AADD',
+                '#77CCCC',
+                '#DDAA77',
+                '#CC99BB',
+                '#77AADD',
             ],
-            'table2file': 'curation_tab_%s.tex' % self.name,
-            'stable2file': 'curation_tab_stripped_%s.tex' % self.name,
-            'latex': '/usr/bin/xelatex',
+            'table2file':
+                'curation_tab_%s.tex' % self.name,
+            'stable2file':
+                'curation_tab_stripped_%s.tex' % self.name,
+            'latex':
+                '/usr/bin/xelatex',
             'latex_timeout': 10,
             'compile_latex': True,
             'multi_barplots_summary': True,
@@ -192,44 +204,77 @@ class Workflow(object):
                 'ptms': 'post-translational modifications',
                 'disgenet': 'DisGeNet disease related genes'
             },
-            'fiher_file': 'fisher_%s' % self.name,
+            'fiher_file':
+                'fisher_%s' % self.name,
             'fisher':
-            [('dis', 'Disease related genes'), ('rec', 'Receptors'),
-             ('tf', 'Transcription factors'), ('kin', 'Kinases'),
-             ('dgb', 'Druggable proteins'), ('cdv', 'Cancer drivers'),
-             ('sig', 'Signaling proteins')],
-            'cat_ordr': [
-                'Activity flow', 'Enzyme-substrate', 'Undirected PPI',
-                'Process description'
+                [('dis', 'Disease related genes'),
+                 ('rec', 'Receptors'),
+                ('tf', 'Transcription factors'),
+                ('kin', 'Kinases'),
+                ('dgb', 'Druggable proteins'),
+                ('cdv', 'Cancer drivers'),
+                ('sig', 'Signaling proteins'),
             ],
-            'pdf_vcount_order': 'vcount_ordr.pdf',
+            'cat_ordr': [
+                'Activity flow',
+                'Ligand-receptor',
+                'Enzyme-substrate',
+                'Undirected PPI',
+                'Process description',
+            ],
+            'pdf_vcount_order':
+                'vcount_ordr.pdf',
             'htp_lower': 1,
             'htp_upper': 500,
-            'history_tree_fname': 'history_tree.tex',
-            'main_table_fname': 'main_table_%s.tex' % self.name,
+            'history_tree_fname':
+                'history_tree.tex',
+            'main_table_fname':
+                'main_table_%s.tex' % self.name,
             'main_table_stripped_fname':
-            'main_table_stripped_%s.tex' % self.name,
+                'main_table_stripped_%s.tex' % self.name,
             'simgraph_vertex_fname':
-            'sources_similarity_vertex_%s.pdf' % self.name,
+                'sources_similarity_vertex_%s.pdf' % self.name,
             'simgraph_edge_fname':
-            'sources_similarity_edge_%s.pdf' % self.name,
+                'sources_similarity_edge_%s.pdf' % self.name,
             'simgraph_curation_fname':
-            'sources_similarity_curation_%s.pdf' % self.name,
-            'refs_journal_grid_fname': 'refs_by_db_journal_%s.pdf' % self.name,
-            'refs_year_grid_fname': 'refs_by_db_year_%s.pdf' % self.name,
-            'dirs_stacked_fname': 'dirs-signes-by-db-%s_%s.pdf',
-            'refs_composite_fname': 'refs-composite_%s.pdf',
-            'refs_by_j_file': 'references-by-journal-%u_%s.pdf',
-            'refs_by_db_file': 'references-by-db_%s.pdf',
-            'refs_by_year_file': 'references-by-year_%s.pdf',
-            'curation_plot_fname': 'new-curated-by-year_%s.pdf' % self.name,
-            'resource_list_fname': 'resources.tex',
-            'resource_list_fname_stripped': 'resources_stripped.tex',
+                'sources_similarity_curation_%s.pdf' % self.name,
+            'refs_journal_grid_fname':
+                'refs_by_db_journal_%s.pdf' % self.name,
+            'refs_year_grid_fname':
+                'refs_by_db_year_%s.pdf' % self.name,
+            'dirs_stacked_fname':
+                'dirs-signes-by-db-%s_%s.pdf',
+            'refs_composite_fname':
+                'refs-composite_%s.pdf',
+            'refs_by_j_file':
+                'references-by-journal-%u_%s.pdf',
+            'refs_by_db_file':
+                'references-by-db_%s.pdf',
+            'refs_by_year_file':
+                'references-by-year_%s.pdf',
+            'curation_plot_fname':
+                'new-curated-by-year_%s.pdf' % self.name,
+            'resource_list_fname':
+                'resources.tex',
+            'resource_list_fname_stripped':
+                'resources_stripped.tex',
             'consistency_dedrogram_fname':
-            'inconsistency-dendrogram_%s.pdf' % self.name,
-            'consistency_table_fname': 'inconsistency-table_%s.tex' % self.name
+                'inconsistency-dendrogram_%s.pdf' % self.name,
+            'consistency_table_fname':
+                'inconsistency-table_%s.tex' % self.name
         }
-
+        
+        # settings for barplots
+        # each element of the list is for one barplot
+        # settings in each tuple:
+        #   - Y axis label
+        #   - Main title
+        #   - Label included in the file name
+        #   - Method to calculate the height of each bar
+        #     Accepts one argument: a tuple of resource name and
+        #     an ``igraph.Graph`` object
+        #   - Method to calculate the height of the shaded part of each bar
+        #   - 
         self.barplots_settings = [
             (
                 'Proteins',
@@ -277,16 +322,19 @@ class Workflow(object):
                 'receptors',
                 lambda gs: len([v for v in gs[0].vs if v['rec']]),
                 lambda gs: len(
-                    [v for v in self.specific(gs[1], gs[0].vs) if v['rec']]),
+                    [v for v in self.specific(gs[1], gs[0].vs) if v['rec']]
+                ),
                 'vcount'
             ),
             (
                 r'Receptors [%]',
                 'Percentage of receptors',
                 'receptorprop',
-                lambda gs: len([v for v in gs[0].vs if v['rec']]) /
-                float(gs[0].vcount()) * 100.0,
-                lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['rec']]) /
+                lambda gs:
+                    len([v for v in gs[0].vs if v['rec']]) /
+                    float(gs[0].vcount()) * 100.0,
+                lambda gs:
+                    len([v for v in self.specific(gs[1], gs[0].vs) if v['rec']]) /
                 float(gs[0].vcount()) * 100.0,
                 'vcount'
             ),
@@ -568,20 +616,32 @@ class Workflow(object):
         setattr(self, '__class__', new)
 
     def run(self):
+        """
+        Executes the entire workflow. Loads data and creates the figures
+        and tables.
+        """
 
         self.load_data()
         self.make_plots()
 
     def load_data(self):
-
+        """
+        Calls methods to loads and preprocess the data.
+        """
+        
+        # creating output directory
         self.set_outdir()
+        # creating PyPath object
         self.init_pypath()
+        # load list of protein annotations (e.g. kinases, receptors, ...)
         self.load_protein_lists()
+        # load annotations of proteins
         self.load_annotations()
+        # set the resource categories
         self.set_categories()
+        # separate the network by resources
         self.separate()
-        if self.do_multi_barplots:
-            self.barplot_colors()
+        self.barplot_colors()
         if self.do_refs_composite or \
                 self.do_refs_journals_grid or \
                 self.do_refs_years_grid or \
@@ -653,14 +713,31 @@ class Workflow(object):
             self.make_consistency_table()
 
     def set_outdir(self):
+        """
+        Creates the directory to save all output files.
+        If no outdir given the ``name`` attribute will be used.
+        """
+        
         self.outdir = self.name if self.outdir is None else self.outdir
+        
         if not os.path.exists(self.outdir):
+            
             os.mkdir(self.outdir)
 
     def get_path(self, fname):
+        """
+        Returns the path of an output file by adding the path of the outdir.
+        """
+        
         return os.path.join(self.outdir, fname)
 
     def init_pypath(self):
+        """
+        Initializes a ``pypath.PyPath`` object using the resources from
+        ``network_datasets``. If ``network_datasets`` is already a ``PyPath``
+        object it will be used without any change. The ``PyPath`` object
+        assigned to the ``pp`` attribute.
+        """
         
         if isinstance(self.network_datasets, main.PyPath):
             
@@ -673,17 +750,28 @@ class Workflow(object):
                 self.pp.load_resources(getattr(data_formats, netdata))
 
     def load_protein_lists(self):
-
+        """
+        Loads the lists of protein categories: the entire proteome,
+        the list of signaling proteins, cancer drivers from IntOGen and
+        Cancer Gene Census.
+        """
+        
         for meth, name in iteritems(self.protein_lists):
-
+            
             self.console('Loading list of %s' % name)
             getattr(self.pp, '%s_list' % meth)()
-
+        
         self.console('Loading list of Cancer Gene Census %scancer drivers' %
                      ('and IntOGen ' if self.intogen_file else ''))
+        
         self.pp.cancer_drivers_list(intogen_file=self.intogen_file)
 
     def load_annotations(self):
+        """
+        Loads protein annotations to vertex attributes of the network object.
+        By default these are kinases, TFs, receptors, druggability, disease
+        relatedness.
+        """
 
         for meth, name in iteritems(self.set_annots):
 
@@ -696,14 +784,24 @@ class Workflow(object):
             getattr(self.pp, 'load_%s' % meth)()
 
     def set_categories(self):
+        """
+        Sets the resource categories as a vertex and edge attribute on the
+        network.
+        """
         
         self.pp.set_categories()
 
     def separate(self):
+        """
+        Separates the network by resource category and resource.
+        """
         
+        # separated by resource
         self.sep = self.pp.separate()
+        # separated by category
         self.csep = self.pp.separate_by_category()
         
+        # dict of resource names to category names
         self.cats = dict(
             (c[0], data_formats.catnames[cc])
             for c in iteritems(data_formats.categories)
@@ -711,6 +809,7 @@ class Workflow(object):
             if not self.only_categories or cc in self.only_categories
         )
         
+        # tuples representing the total per each category
         self.cats.update(
             dict(
                 (('All', c[0]), cc)
@@ -723,34 +822,62 @@ class Workflow(object):
             )
         )
         
+        # order of the categories on the multi section barplots
         self.cat_ordr = [
             c
-            for c in self.cat_ordr
+            for c in self.cat_ordr # as given in the settings
+            # if the category presents in the network
             if c in self.pp.has_cats and (
+                # and it is allowed in the settings
                 self.only_categories is None or
                 c in self.only_categories
             )
         ]
 
     def fisher_tests(self):
+        """
+        Does Fisher tests for the enrichment of protein categories in
+        resources and resource categories.
+        """
 
         self.console('Doing Fisher tests, writing results to `%s`' %
                      self.get_path(self.fisher_file))
+        
         with open(self.get_path(self.fisher_file), 'w') as fi:
 
             for attr, name in self.fisher:
-                print(attr, name)
+                
+                # contingency table
                 cont = np.array(
-                    [[len(self.pp.lists['proteome']), self.pp.graph.vcount()],
-                     [
-                         len(self.pp.lists[attr]),
-                         len([1 for v in self.pp.graph.vs if v[attr]])
-                     ]])
+                    [
+                        [
+                            # size of the proteome
+                            len(self.pp.lists['proteome']),
+                            # vertices in the network
+                            self.pp.graph.vcount()
+                        ],
+                        [
+                            # proteins in the protein category
+                            len(self.pp.lists[attr]),
+                            # proteins of category in the network
+                            len([1 for v in self.pp.graph.vs if v[attr]])
+                        ]
+                     ]
+                )
+                
                 fi.write('%s:' % name)
                 fi.write('\t%s\t%s\n' % stats.fisher_exact(cont))
 
     def get_data(self, fun, attr):
+        """
+        Executes a method for each network and creates a list of
+        tuples of resource names and results from the method.
+        The result is either assigned to the attribute ``attr`` or returned
+        of ``attr`` is ``None``.
+        """
+        
         if attr is None or not hasattr(self, attr):
+            
             result = \
                 list(
                     zip(
@@ -765,12 +892,20 @@ class Workflow(object):
                         )
                     )
                 )
+            
             if attr is None:
+                
                 return result
+                
             else:
+                
                 setattr(self, attr, result)
 
     def specific(self, s, seq):
+        """
+        
+        """
+        
         return [
             w for w in seq
             if s in data_formats.categories and s in w['sources'] and len(w[
