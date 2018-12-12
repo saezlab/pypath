@@ -39,6 +39,7 @@ import pypath.refs as _refs
 
 
 class Workflow(object):
+    
     def __init__(self,
                  name,
                  network_datasets=[],
@@ -72,6 +73,71 @@ class Workflow(object):
                  htdata={},
                  inc_raw=None,
                  **kwargs):
+        """
+        Executes the workflow of comparative analysis of network resuorces
+        by categories. Creates tables and figures.
+        
+        :arg str name:
+            A label included in the name of all files.
+        :arg list network_datasets:
+            Datasets to use at building the network. Dicts from
+            ``pypath.data_formats``.
+        :arg bool do_main_table:
+            Create a LaTeX table with key numbers.
+        :arg bool do_compile_main_table:
+            Compile the table by running xelatex.
+        :arg bool do_curation_table:
+            Create a table of curation effort.
+        :arg bool do_compile_curation_table:
+            Compile the curation effort table using xelatex.
+        :arg bool do_simgraphs:
+            Create graph figures of similarities between resources.
+        :arg bool do_multi_barplots:
+            Create multi section barplots showing size and coverage of the
+            resources, categories and their overlaps.
+        :arg bool do_coverage_groups:
+            ??
+        :arg bool do_htp_char:
+            High throughput characteristics figure.
+        :arg bool do_ptms_barplot:
+            Barplot about size of PTM resources.
+        :arg bool do_scatterplots:
+            Create scatterplots of resource sizes.
+        :arg bool do_history_tree:
+            Create a TikZ figures about the history of the resources.
+        :arg bool do_compile_history_tree:
+            Compile the history figure using xelatex.
+        :arg bool do_refs_journals_grid:
+            Create multifacet plot showing the most often curated journals
+            for each resource.
+        :arg bool do_refs_years_grid:
+            Create multifacet plot showing the publication years of references
+            in each resource.
+        :arg bool do_dirs_stacked:
+            Create a stacked barplot about number of undirected, directed
+            and signed interactions.
+        :arg bool do_refs_composite:
+            Create composite figure about references.
+        :arg bool do_curation_plot:
+            ??
+        :arg bool do_refs_by_j:
+            Create histogram of publication years.
+        :arg bool do_refs_by_db:
+            Create barplot of references per database.
+        :arg bool do_refs_by_year:
+            Create a barplot with refrences by year.
+        :arg bool do_resource_list:
+            Create a table with the resources listed.
+        :arg bool do_compile_resource_list:
+            Compile the table using xelatex.
+        :arg bool do_consistency_dedrogram:
+            Create a dendrogram using consistencies as a distance metric
+            across all resources.
+        :arg bool do_consistency_table:
+            Create a table with inconsistency statistics across resources.
+        :arg str outdir:
+            Directory to save the output files.
+        """
 
         for k, v in iteritems(locals()):
             setattr(self, k, v)
@@ -82,6 +148,7 @@ class Workflow(object):
         self.title = self.name if self.title is None else self.title
 
         self.defaults = {
+            # colors for the categories
             'ccolors': {
                 'p': '#77AADD',
                 'm': '#77CCCC',
