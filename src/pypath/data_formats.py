@@ -2048,7 +2048,7 @@ categories = {
     'DEPOD': 'm',
     'phosphoELM': 'm',
     'MPPI': 'i',
-    'Guide2Pharma': 'pl',
+    'Guide2Pharma': 'p',
     'TRIP': 'p',
     'AlzPathway': 'r',
     'PhosphoSite': 'm',
@@ -2079,6 +2079,10 @@ categories = {
     'CellPhoneDB': 'l',
     'Guide2Pharma': 'l',
     'GO_lig_rec': 'l',
+    'guidetopharmacology.org': 'l',
+    'UniProt': 'l',
+    'InnateDB-All': 'i',
+    'MINT': 'i',
 }
 
 p = set([])

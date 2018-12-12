@@ -2622,8 +2622,12 @@ class PyPath(object):
         """
 
         tfs = dataio.get_tfcensus()
-        utfs = [self.mapper.map_name(tf, 'ensg', 'uniprot', 9606)
-                for tf in tfs['ensg']]
+        
+        utfs = []
+        # this part turned off 12/2018 bc UniProt mapping service
+        # is having issues with Ensemble IDs
+        # utfs = [self.mapper.map_name(tf, 'ensg', 'uniprot', 9606)
+        #        for tf in tfs['ensg']]
         utfs += [self.mapper.map_name(h, 'hgnc', 'uniprot', 9606)
                  for h in tfs['hgnc']]
 
@@ -2652,11 +2656,11 @@ class PyPath(object):
         terms.
         """
 
-        goq = dataio.get_go_quick()
+        goannot = dataio.go_annotations_goose()
 
         gosig = set([])
 
-        for term, name in iteritems(goq['names']):
+        for term, name in iteritems(goannot[0]['P']):
 
             if 'signal' in name or 'regulat' in name:
                 gosig.add(term)
@@ -2666,7 +2670,7 @@ class PyPath(object):
         if 'proteome' not in self.lists:
             self.proteome_list()
 
-        for up, term in iteritems(goq['terms']['P']):
+        for up, term in iteritems(goannot[1]['P']):
 
             if len(term & gosig):
                 upsig.add(up)
@@ -9662,13 +9666,13 @@ class PyPath(object):
             go_desc = dataio.go_descendants_goose(aspects = aspects)
         
         return getattr(set, _method)(
-            self.select_by_go_single(
+            *[self.select_by_go_single(
                 term = term,
                 go_desc = go_desc,
                 aspects = aspects,
             )
             for term in go_terms
-        )
+        ])
     
     def select_by_go_single(
             self,
@@ -10801,7 +10805,7 @@ class PyPath(object):
         self.update_vname()
         self.graph.vs['sig'] = [False for _ in self.graph.vs]
 
-        if 'kin' not in self.lists:
+        if 'sig' not in self.lists:
             self.signaling_proteins_list()
 
         for sig in self.lists['sig']:

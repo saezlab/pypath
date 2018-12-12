@@ -246,7 +246,7 @@ class MappingTable(object):
                                                       param.target_ac_name,
                                                       uniprots)
 
-            _ = utarget.readline()
+            _ = next(utarget)
             ac_list = list(map(lambda l:
                                    l.decode('ascii').split('\t')[1].strip(),
                                    utarget))
@@ -257,9 +257,13 @@ class MappingTable(object):
                                    param.ac_name,
                                    ac_list)
 
-        _ = udata.readline()
+        _ = next(udata)
 
         for l in udata:
+            
+            if not l:
+                
+                continue
 
             l = l.decode('ascii').strip().split('\t')
 
@@ -297,14 +301,23 @@ class MappingTable(object):
         c = curl.Curl(url, post=post, large=True, silent = False)
 
         if c.result is None:
+            
             for i in xrange(3):
+                
                 c = curl.Curl(url, post=post, large=True,
                               silent = False, cache = False)
+                
                 if c.result is not None:
+                    
                     break
-
-            if c.result is None:
-                sys.stdout.write('\t:: Error at downloading from UniProt.\n')
+        
+        if c.result is None or c.fileobj.read(5) == b'<!DOC':
+            
+            sys.stdout.write('\t:: Error at downloading from UniProt.\n')
+            
+            c.result = b''
+        
+        c.fileobj.seek(0)
 
         return c.result
 

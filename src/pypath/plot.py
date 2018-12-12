@@ -419,6 +419,8 @@ class MultiBarplot(Plot):
                     map(reversed,
                         enumerate(
                             sorted(list(set(self.categories.values()))))))
+            print(self.cnames)
+            print(self.categories)
             self.cats = list(
                 map(lambda name: self.cnames[self.categories[name]], self.x))
         elif type(self.categories) is list:
@@ -2276,6 +2278,7 @@ class SimilarityGraph(object):
                               self.layout_method)(**self.layout_param)
 
     def sizes_vertex(self):
+        
         self.sgraph.vs['size'] = \
             list(
                 map(
@@ -2297,6 +2300,7 @@ class SimilarityGraph(object):
         """
         Sets the size according to number of edges for each resource.
         """
+        
         self.sgraph.vs['size'] = \
             list(
                 map(

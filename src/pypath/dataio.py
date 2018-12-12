@@ -145,7 +145,7 @@ def read_table(cols,
                rem=[],
                hdr=None,
                encoding='ascii'):
-    '''
+    """
     Generic function to read data tables.
 
     fileObject : file-like
@@ -162,7 +162,7 @@ def read_table(cols,
         Number of header lines. If None, no headers assumed.
     rem : list
         Strings to remove. For each line these elements will be replaced with ''.
-    '''
+    """
     if data is None:
         if hasattr(fileObject, 'readline'):
             fileObject.seek(0)
@@ -454,12 +454,12 @@ def get_corum():
 
 
 def get_complexportal(species=9606, zipped=True):
-    '''
+    """
     Complex dataset from IntAct.
     See more:
     http://www.ebi.ac.uk/intact/complex/
     http://nar.oxfordjournals.org/content/early/2014/10/13/nar.gku975.full.pdf
-    '''
+    """
     spec = {9606: 'Homo_sapiens'}
     species = species if type(species) is not int else spec[species]
     if zipped:
@@ -569,10 +569,10 @@ def get_havugimana():
 
 
 def read_complexes_havugimana():
-    '''
+    """
     Supplement Table S3/1 from Havugimana 2012
     Cell. 150(5): 1068–1081.
-    '''
+    """
     return map(lambda l: l[2].split(','), get_havugimana())
 
 
@@ -736,7 +736,7 @@ def get_domino_ddi():
 
 
 def get_domino_ptms():
-    '''
+    """
     The table comes from dataio.get_domino(), having the following fields:
     header = ['uniprot-A', 'uniprot-B', 'isoform-A', 'isoform-B', #3
     'exp. method', 'references', 'taxon-A', 'taxon-B', #7
@@ -746,7 +746,7 @@ def get_domino_ptms():
     'ptm-res-name-A', 'ptm-res-name-B', 'mutations-A', 'mutations-B', #23
     'mutation-effects-A', 'mutation-effects-B', 'domains-interpro-A', #26
     'domains-interpro-B', 'negative'] #28
-    '''
+    """
     domino = get_domino()
     try:
         miont = get_ontology('MI')
@@ -1491,12 +1491,12 @@ def process_3did_dmi():
 
 
 def get_instruct():
-    '''
+    """
     Instruct contains residue numbers in UniProt sequences, it means
     no further calculations of offsets in chains of PDB structures needed.
     Chains are not given, only a set of PDB structures supporting the
     domain-domain // protein-protein interaction.
-    '''
+    """
     non_digit = re.compile(r'[^\d.-]+')
     c = curl.Curl(urls.urls['instruct_human']['url'], silent=False)
     data = c.result
@@ -1537,9 +1537,9 @@ def get_instruct():
 
 
 def get_instruct_offsets():
-    '''
+    """
     These offsets should be understood as from UniProt to PDB.
-    '''
+    """
     non_digit = re.compile(r'[^\d.-]+')
     c = curl.Curl(urls.urls['instruct_offsets']['url'], silent=False)
     data = c.result
@@ -1565,12 +1565,12 @@ def get_instruct_offsets():
 
 
 def get_i3d():
-    '''
+    """
     Interaction3D contains residue numbers in given chains in
     given PDB stuctures, so we need to add an offset to get the residue
     numbers valid for UniProt sequences. Offsets can be obtained from
     Instruct, or from the Pfam PDB-chain-UniProt mapping table.
-    '''
+    """
     dname_pfam, pfam_dname = get_pfam_names()
     if dname_pfam is None:
         sys.stdout.write('\n\t:: Could not get Pfam domain names\n\n')
@@ -1622,11 +1622,11 @@ def get_i3d():
 
 
 def get_switches_elm():
-    '''
+    """
     switches.elm is a resource containing functional switches in molecular regulation,
     in domain-motif level resolution, classified into categories according to their
     mechanism.
-    '''
+    """
     residue = re.compile(r'(^[A-Z])([0-9]+)')
     url = data.formats.urls['switches.elm']['url']
     c = curl.Curl(url, silent=False)
@@ -1862,9 +1862,9 @@ class ResidueMapper(object):
         return None
 
     def clean(self):
-        '''
+        """
         Removes cached mappings, freeing up memory.
-        '''
+        """
         self.mappers = {}
 
 
@@ -3003,10 +3003,10 @@ def get_elm_instances():
 
 
 def get_elm_interactions():
-    '''
+    """
     Downlods manually curated interactions from ELM.
     This is the gold standard set of ELM.
-    '''
+    """
     result = []
     url = urls.urls['elm_int']['url']
     c = curl.Curl(url, silent=False)
@@ -4292,10 +4292,10 @@ def hpmr_interactions():
 
 
 def get_tfcensus(classes=['a', 'b', 'other']):
-    '''
+    """
     Downloads and processes list of all human transcripton factors.
     Returns dict with lists of ENSGene IDs and HGNC Gene Names.
-    '''
+    """
     ensg = []
     hgnc = []
     reensg = re.compile(r'ENSG[0-9]{11}')
@@ -4313,7 +4313,7 @@ def get_tfcensus(classes=['a', 'b', 'other']):
 
 
 def get_guide2pharma(organism='human', endogenous=True):
-    '''
+    """
     Downloads and processes Guide to Pharmacology data.
     Returns list of dicts.
 
@@ -4321,7 +4321,7 @@ def get_guide2pharma(organism='human', endogenous=True):
         Name of the organism, e.g. `human`.
     @endogenous : bool
         Whether to include only endogenous ligands interactions.
-    '''
+    """
     positives = [
         'agonist', 'activator', 'potentiation', 'partial agonist',
         'inverse antagonist', 'full agonist', 'activation',
@@ -4494,19 +4494,19 @@ def cellphonedb_interactions(
 
 
 def open_pubmed(pmid):
-    '''
+    """
     Opens PubMed record in web browser.
 
     @pmid : str or int
         PubMed ID
-    '''
+    """
     pmid = str(pmid)
     url = urls.urls['pubmed']['url'] % pmid
     webbrowser.open(url)
 
 
 def only_pmids(idList, strict=True):
-    '''
+    """
     Return elements unchanged which compy to PubMed ID format,
     and attempts to translate the DOIs and PMC IDs using NCBI
     E-utils.
@@ -4517,7 +4517,7 @@ def only_pmids(idList, strict=True):
     @strict : bool
         Whether keep in the list those IDs which are not PMIDs,
         neither DOIs or PMC IDs or NIH manuscript IDs.
-    '''
+    """
     if type(idList) in common.simpleTypes:
         idList = [idList]
     pmids = set([i for i in idList if i.isdigit()])
@@ -4536,10 +4536,10 @@ def only_pmids(idList, strict=True):
 
 
 def get_pmid(idList):
-    '''
+    """
     For a list of doi or PMC IDs
     fetches the corresponding PMIDs.
-    '''
+    """
     if type(idList) in common.simpleTypes:
         idList = [idList]
     url = urls.urls['pubmed-eutils']['conv'] % ','.join(str(i) for i in idList)
@@ -4576,9 +4576,9 @@ def pmids_list(idList):
 
 
 def get_hprd(in_vivo=True):
-    '''
+    """
     Downloads and preprocesses HPRD data.
-    '''
+    """
     url = urls.urls['hprd_all']['url']
     files = [urls.urls['hprd_all']['ptm_file']]
     c = curl.Curl(url, silent=False, files_needed=files)
@@ -4592,10 +4592,10 @@ def get_hprd(in_vivo=True):
 
 
 def hprd_interactions(in_vivo=True):
-    '''
+    """
     Processes HPRD data and extracts interactions.
     Returns list of interactions.
-    '''
+    """
     return [i for i in get_hprd(in_vivo=in_vivo) if i[6] != '-']
 
 
@@ -4609,10 +4609,10 @@ def hprd_htp():
 
 
 def get_hprd_ptms(in_vivo=True):
-    '''
+    """
     Processes HPRD data and extracts PTMs.
     Returns list of kinase-substrate interactions.
-    '''
+    """
     ptms = []
     non_digit = re.compile(r'[^\d]+')
     data = get_hprd(in_vivo=in_vivo)
@@ -4640,7 +4640,7 @@ def get_hprd_ptms(in_vivo=True):
 
 
 def get_disgenet(dataset='curated'):
-    '''
+    """
     Downloads and processes the list of all human disease related proteins
     from DisGeNet.
     Returns dict of dicts.
@@ -4648,7 +4648,7 @@ def get_disgenet(dataset='curated'):
     @dataset : str
         Name of DisGeNet dataset to be obtained:
         `curated`, `literature`, `befree` or `all`.
-    '''
+    """
     url = urls.urls['disgenet']['url'] % dataset
     c = curl.Curl(
         url,
@@ -4679,13 +4679,13 @@ def get_disgenet(dataset='curated'):
 
 
 def load_lmpid(fname='LMPID_DATA_pubmed_ref.xml', organism=9606):
-    '''
+    """
     Reads and processes LMPID data from local file
     `pypath.data/LMPID_DATA_pubmed_ref.xml`.
     The file was provided by LMPID authors and is now
     redistributed with the module.
     Returns list of domain-motif interactions.
-    '''
+    """
     result = []
     with open(os.path.join(common.ROOT, 'data', fname), 'r') as f:
         data = f.read()
@@ -4712,20 +4712,20 @@ def load_lmpid(fname='LMPID_DATA_pubmed_ref.xml', organism=9606):
 
 
 def lmpid_interactions(fname='LMPID_DATA_pubmed_ref.xml', organism=9606):
-    '''
+    """
     Converts list of domain-motif interactions supplied by
     `pypath.dataio.load_lmpid()` to list of interactions.
-    '''
+    """
     data = load_lmpid(fname=fname, organism=organism)
     return [[l['prey'], l['bait'], ';'.join(l['refs'])] for l in data]
 
 
 def lmpid_dmi(fname='LMPID_DATA_pubmed_ref.xml', organism=9606):
-    '''
+    """
     Converts list of domain-motif interactions supplied by
     `pypath.dataio.load_lmpid()` to list of
     `pypath.intera.DomainMotif() objects.
-    '''
+    """
     data = load_lmpid(fname=fname, organism=organism)
     return [{
         'motif_protein': l['bait'],
@@ -4740,11 +4740,11 @@ def lmpid_dmi(fname='LMPID_DATA_pubmed_ref.xml', organism=9606):
 
 
 def get_hsn():
-    '''
+    """
     Downloads and processes HumanSignalingNetwork version 6
     (published 2014 Jan by Edwin Wang).
     Returns list of interactions.
-    '''
+    """
     url = urls.urls['hsn']['url']
     c = curl.Curl(url, silent=False).split('\n')[1:]
     data = c.result
@@ -4753,10 +4753,10 @@ def get_hsn():
 
 
 def get_li2012():
-    '''
+    """
     Reads supplementary data of Li 2012 from local file.
     Returns table (list of lists).
-    '''
+    """
     url = urls.urls['li2012']['url']
     c = curl.Curl(url, silent=False, large=True)
     xls = c.fileobj
@@ -4767,10 +4767,10 @@ def get_li2012():
 
 
 def li2012_interactions():
-    '''
+    """
     Converts table read by `pypath.dataio.get_li2012()` to
     list of interactions.
-    '''
+    """
     result = []
     data = get_li2012()
     for l in data:
@@ -4785,10 +4785,10 @@ def li2012_interactions():
 
 
 def li2012_phospho():
-    '''
+    """
     Converts table read by `pypath.dataio.get_li2012()` to
     list of dicts of kinase-substrate interactions.
-    '''
+    """
     result = []
     non_digit = re.compile(r'[^\d]+')
     data = get_li2012()
@@ -4809,7 +4809,7 @@ def li2012_phospho():
 
 
 def li2012_dmi(mapper=None):
-    '''
+    """
     Converts table read by `pypath.dataio.get_li2012()` to
     list of `pypath.intera.DomainMotif()` objects.
     Translates GeneSymbols to UniProt IDs.
@@ -4817,7 +4817,7 @@ def li2012_dmi(mapper=None):
     @mapper : pypath.mapping.Mapper()
         If not provided, a new `Mapper()` instance will be
         initialized, reserving more memory.
-    '''
+    """
     result = {}
     nondigit = re.compile(r'[^\d]+')
     se = uniprot_input.swissprot_seq(isoforms=True)
@@ -4865,7 +4865,7 @@ def li2012_dmi(mapper=None):
 
 
 def take_a_trip(cachefile='trip.pickle'):
-    '''
+    """
     Downloads TRIP data from webpage and preprocesses it.
     Saves preprocessed data into `cachefile` and next
     time loads from this file.
@@ -4874,7 +4874,7 @@ def take_a_trip(cachefile='trip.pickle'):
         Filename, located in `./cache`.
         To disable cache, pass `None`.
         To download again, remove file from `./cache`.
-    '''
+    """
     if cachefile is not None:
         cachedir = settings.get('cachedir')
         cachefile = os.path.join(cachedir, cachefile)
@@ -4926,7 +4926,7 @@ def take_a_trip(cachefile='trip.pickle'):
 
 
 def trip_process_table(tab, result, intrs, trp_uniprot):
-    '''
+    """
     Processes one HTML table downloaded from TRIP webpage.
 
     @tab : bs4.element.Tag()
@@ -4939,7 +4939,7 @@ def trip_process_table(tab, result, intrs, trp_uniprot):
         the same ID twice.
     @trp_uniprot : str
         UniProt ID of TRP domain containing protein.
-    '''
+    """
     for row in tab.find_all('tr'):
         cells = row.find_all(['td', 'th'])
         if 'th' not in [c.name for c in cells]:
@@ -4960,13 +4960,13 @@ def trip_process_table(tab, result, intrs, trp_uniprot):
 
 
 def trip_get_uniprot(syn):
-    '''
+    """
     Downloads table from TRIP webpage and UniProt attempts to
     look up the UniProt ID for one synonym.
 
     @syn : str
         The synonym as shown on TRIP webpage.
-    '''
+    """
     url = urls.urls['trip']['show'] % syn
     c = curl.Curl(url)
     html = c.result
@@ -4975,13 +4975,13 @@ def trip_get_uniprot(syn):
 
 
 def trip_find_uniprot(soup):
-    '''
+    """
     Looks up a UniProt name in table downloaded from TRIP
     webpage.
 
     @soup : bs4.BeautifulSoup
         The `BeautifulSoup` instance returned by `pypath.dataio.trip_get_uniprot()`.
-    '''
+    """
     for tr in soup.find_all('div', id='tab2')[0].find_all('tr'):
         if tr.find('td') is not None and tr.find('td').text.strip() == 'Human':
             uniprot = tr.find_all('td')[2].text.strip()
@@ -4993,7 +4993,7 @@ def trip_process(exclude_methods=['Inference', 'Speculation'],
                  predictions=False,
                  species='Human',
                  strict=False):
-    '''
+    """
     Downloads TRIP data by calling `pypath.dadio.take_a_trip()` and
     further provcesses it.
     Returns dict of dict with TRIP data.
@@ -5007,7 +5007,7 @@ def trip_process(exclude_methods=['Inference', 'Speculation'],
     @strict : bool
         Whether include interactions with species not
         used as a bait or not specified.
-    '''
+    """
     nd = 'Not determined'
     spec = set([]) if strict \
         else set(['Not specified', 'Not used as a bait', ''])
@@ -5078,11 +5078,11 @@ def trip_interactions(exclude_methods=['Inference', 'Speculation'],
                       predictions=False,
                       species='Human',
                       strict=False):
-    '''
+    """
     Obtains processed TRIP interactions by calling `pypath.dataio.trip_process()`
     and returns list of interactions. All arguments are passed to
     `trip_process()`, see their definition there.
-    '''
+    """
     data = trip_process(exclude_methods, predictions, species, strict)
 
     def trip_effect(eff):
@@ -5141,10 +5141,10 @@ def load_signor_ptms(organism=9606):
 
 
 def load_macrophage():
-    '''
+    """
     Loads Macrophage from local file.
     Returns list of interactions.
-    '''
+    """
     fname = urls.files['macrophage']
     fname = os.path.join(common.ROOT, 'data', fname)
     with open(fname, 'r') as f:
@@ -5153,10 +5153,10 @@ def load_macrophage():
 
 
 def get_kegg(mapper=None):
-    '''
+    """
     Downloads and processes KEGG Pathways.
     Returns list of interactions.
-    '''
+    """
     rehsa = re.compile(r'.*(hsa[0-9]+).*')
     req_hdrs = ['Referer: http://www.genome.jp/kegg-bin/show_pathway'
         '?map=hsa04710&show_description=show']
@@ -5225,9 +5225,9 @@ def kegg_pathways(mapper=None):
 
 
 def signor_pathways(**kwargs):
-    '''
+    """
     Obtains pathway annotations from Signor.
-    '''
+    """
 
     url = urls.urls['signor']['list_url']
     baseurl = urls.urls['signor']['all_url_new']
@@ -5365,13 +5365,13 @@ def csv_sep_change(csv, old, new):
 
 
 def signor_interactions(organism=9606):
-    '''
+    """
     Downloads the full dataset from Signor.
     Returns the file contents.
 
     Note: this method has been updated Oct 2016,
     as Signor updated both their data and webpage.
-    '''
+    """
     if type(organism) is int:
         if organism in common.taxids:
             _organism = common.taxids[organism]
@@ -5408,11 +5408,11 @@ def signor_interactions(organism=9606):
 
 
 def rolland_hi_ii_14():
-    '''
+    """
     Loads the HI-II-14 unbiased interactome from the large scale screening
     of from Rolland 2014.
     Returns list of interactions.
-    '''
+    """
     url = urls.urls['hiii14']['url']
     c = curl.Curl(url, silent=False, large=True)
     xls = c.result
@@ -5423,7 +5423,7 @@ def rolland_hi_ii_14():
 
 
 def vidal_hi_iii(fname):
-    '''
+    """
     Loads the HI-III  unbiased interactome from preliminary data of
     the next large scale screening of Vidal Lab.
 
@@ -5432,7 +5432,7 @@ def vidal_hi_iii(fname):
     You need to register and accept the license terms.
 
     Returns list of interactions.
-    '''
+    """
     f = curl.FileOpener(fname)
     return \
         list(
@@ -5445,10 +5445,10 @@ def vidal_hi_iii(fname):
 
 
 def read_xls(xls_file, sheet='', csv_file=None, return_table=True):
-    '''
+    """
     Generic function to read MS Excel XLS file, and convert one sheet
     to CSV, or return as a list of lists
-    '''
+    """
     try:
         book = xlrd.open_workbook(xls_file, on_demand=True)
         try:
@@ -5470,13 +5470,13 @@ def read_xls(xls_file, sheet='', csv_file=None, return_table=True):
 
 
 def get_kinases():
-    '''
+    """
     Downloads and processes the list of all human kinases.
     Returns a list of GeneSymbols.
-    '''
+    """
     url = urls.urls['kinome']['url']
     c = curl.Curl(url, large=True, silent=False)
-    xlsf = c.result
+    xlsf = c.fileobj
     xlsname = xlsf.name
     xlsf.close()
     tbl = read_xls(xlsname)
@@ -5485,10 +5485,10 @@ def get_kinases():
 
 
 def get_dgidb():
-    '''
+    """
     Downloads and processes the list of all human druggable proteins.
     Returns a list of GeneSymbols.
-    '''
+    """
     genesymbols = []
     url = urls.urls['dgidb']['main_url']
     c = curl.Curl(url, silent=False)
@@ -5510,10 +5510,10 @@ def get_dgidb():
 
 
 def reactome_sbml():
-    '''
+    """
     Downloads Reactome human reactions in SBML format.
     Returns gzip.GzipFile object.
-    '''
+    """
     url = urls.urls['reactome']['sbml']
     c = curl.Curl(url, silent=False, large=True)
     sbml = c.result
@@ -5521,10 +5521,10 @@ def reactome_sbml():
 
 
 def reactome_biopax(organism=9606, cache=True):
-    '''
+    """
     Downloads Reactome human reactions in SBML format.
     Returns File object.
-    '''
+    """
     organisms = {9606: 'Homo_sapiens'}
     unzipped = os.path.join(
         settings.get('cachedir'),
@@ -5592,9 +5592,9 @@ def reactions_biopax(biopax_file,
                      organism=9606,
                      protein_name_type='UniProt',
                      clean=True):
-    '''
+    """
     Processes a BioPAX file and extracts binary interactions.
-    '''
+    """
     cachefile = os.path.join(
         settings.get('cachedir'), '%s.processed.pickle' %
             os.path.split(biopax_file.name)[1]
@@ -6046,12 +6046,12 @@ def process_complex(depth, cref, entity_uniprot, complexes, complexvariations,
 
 
 def reactome_interactions(cacheFile=None, **kwargs):
-    '''
+    """
     Downloads and processes Reactome BioPAX.
     Extracts binary interactions.
     The applied criteria are very stringent, yields very few interactions.
     Requires large free memory, approx. 2G.
-    '''
+    """
     cacheFile = os.path.join(
         settings.get('cachedir'),
         'reactome.interactions.pickle'
@@ -6369,10 +6369,10 @@ def _reactome_collect_species(elem, tag):
 
 
 def signalink_interactions():
-    '''
+    """
     Reads and processes SignaLink3 interactions from local file.
     Returns list of interactions.
-    '''
+    """
     repar = re.compile(r'.*\(([a-z\s]+)\)')
     notNeeded = set(['acsn', 'reactome'])
     edgesFile = os.path.join(common.ROOT, 'data',
@@ -6444,11 +6444,11 @@ def signalink_interactions():
 
 
 def get_laudanna_directions():
-    '''
+    """
     Downloads and processes the SignalingFlow edge attributes
     from Laudanna Lab.
     Returns list of directions.
-    '''
+    """
     url = urls.urls['laudanna']['sigflow']
     c = curl.Curl(url, silent=False)
     data = c.result
@@ -6461,11 +6461,11 @@ def get_laudanna_directions():
 
 
 def get_laudanna_effects():
-    '''
+    """
     Downloads and processes the SignalingDirection edge attributes
     from Laudanna Lab.
     Returns list of effects.
-    '''
+    """
     url = urls.urls['laudanna']['sigdir']
     c = curl.Curl(url, silent=False)
     data = c.result
@@ -6479,9 +6479,9 @@ def get_laudanna_effects():
 
 
 def get_acsn_effects():
-    '''
+    """
     Processes ACSN data, returns list of effects.
-    '''
+    """
     negatives = set(['NEGATIVE_INFLUENCE', 'UNKNOWN_NEGATIVE_INFLUENCE'])
     positives = set(
         ['TRIGGER', 'POSITIVE_INFLUENCE', 'UNKNOWN_POSITIVE_INFLUENCE'])
@@ -6508,10 +6508,10 @@ def get_acsn_effects():
 
 
 def get_wang_effects():
-    '''
+    """
     Downloads and processes Wang Lab HumanSignalingNetwork.
     Returns list of effects.
-    '''
+    """
     url = urls.urls['wang']['url']
     c = curl.Curl(url, silent=False)
     data = c.result
@@ -6538,7 +6538,7 @@ def get_wang_effects():
 
 
 def biogrid_interactions(organism=9606, htp_limit=1, ltp=True):
-    '''
+    """
     Downloads and processes BioGRID interactions.
     Keeps only the "low throughput" interactions.
     Returns list of interactions.
@@ -6548,7 +6548,7 @@ def biogrid_interactions(organism=9606, htp_limit=1, ltp=True):
     @htp_limit : int
         Exclude interactions only from references
         cited at more than this number of interactions.
-    '''
+    """
     organism = str(organism)
     interactions = []
     refc = []
@@ -6571,13 +6571,13 @@ def biogrid_interactions(organism=9606, htp_limit=1, ltp=True):
 
 
 def acsn_ppi(keep_in_complex_interactions=True):
-    '''
+    """
     Processes ACSN data from local file.
     Returns list of interactions.
 
     @keep_in_complex_interactions : bool
         Whether to include interactions from complex expansion.
-    '''
+    """
     nfname = urls.files['acsn']['names']
     pfname = urls.files['acsn']['ppi']
     names = {}
@@ -6603,10 +6603,10 @@ def acsn_ppi(keep_in_complex_interactions=True):
 
 
 def get_graphviz_attrs():
-    '''
+    """
     Downloads graphviz attribute list from graphviz.org.
     Returns 3 dicts of dicts: graph_attrs, vertex_attrs and edge_attrs.
-    '''
+    """
     url = urls.urls['graphviz']['url']
     c = curl.Curl(url)
     html = c.result
@@ -6638,12 +6638,12 @@ def get_graphviz_attrs():
 
 
 def get_phosphosite(cache=True):
-    '''
+    """
     Downloads curated and HTP data from Phosphosite,
     from preprocessed cache file if available.
     Processes BioPAX format.
     Returns list of interactions.
-    '''
+    """
     curated_cache = urls.files['phosphosite']['curated']
     noref_cache = urls.files['phosphosite']['noref']
     if cache and os.path.exists(curated_cache) and os.path.exists(noref_cache):
@@ -6777,11 +6777,11 @@ def get_phosphosite(cache=True):
 
 
 def get_phosphosite_curated():
-    '''
+    """
     Loads literature curated PhosphoSite data,
     from preprocessed cache file if available.
     Returns list of interactions.
-    '''
+    """
     curated_cache = urls.files['phosphosite']['curated']
     if not os.path.exists(curated_cache):
         curated, noref = get_phosphosite()
@@ -6791,11 +6791,11 @@ def get_phosphosite_curated():
 
 
 def get_phosphosite_noref():
-    '''
+    """
     Loads HTP PhosphoSite data,
     from preprocessed cache file if available.
     Returns list of interactions.
-    '''
+    """
     noref_cache = urls.files['phosphosite']['noref']
     if not os.path.exists(noref_cache):
         curated, noref = get_phosphosite()
@@ -6805,10 +6805,10 @@ def get_phosphosite_noref():
 
 
 def phosphosite_directions(organism='human'):
-    '''
+    """
     From curated and HTP PhosphoSite data generates a
     list of directions.
-    '''
+    """
     curated, noref = get_phosphosite()
     return [
         i[:2] for i in curated + noref if i[2] == organism and i[3] == organism
@@ -6816,11 +6816,11 @@ def phosphosite_directions(organism='human'):
 
 
 def get_lit_bm_13():
-    '''
+    """
     Downloads and processes Lit-BM-13 dataset, the high confidence
     literature curated interactions from CCSB.
     Returns list of interactions.
-    '''
+    """
     url = urls.urls['hid']['lit-bm-13']
     c = curl.Curl(url, silent=False)
     data = c.result
@@ -6828,10 +6828,10 @@ def get_lit_bm_13():
 
 
 def get_ca1():
-    '''
+    """
     Downloads and processes the CA1 signaling network (Ma\'ayan 2005).
     Returns list of interactions.
-    '''
+    """
     url = urls.urls['ca1']['url']
     c = curl.Curl(url, silent=False, files_needed=['S1.txt'])
     data = c.result
@@ -6841,13 +6841,13 @@ def get_ca1():
 
 
 def get_ccmap(organism=9606):
-    '''
+    """
     Downloads and processes CancerCellMap.
     Returns list of interactions.
 
     @organism : int
         NCBI Taxonomy ID to match column #7 in nodes file.
-    '''
+    """
     organism = '%u' % organism
     interactions = []
     nodes_url = urls.urls['ccmap']['nodes']
@@ -6882,8 +6882,10 @@ def get_ccmap(organism=9606):
 
 
 def get_cgc(user=None, passwd=None):
+    
     host = urls.urls['cgc']['host']
     fname = urls.urls['cgc']['file']
+    
     ask = 'To access Cancer Gene Census data you need to be '\
         'registered at COSMIC\n'\
         '(http://cancer.sanger.ac.uk/cosmic/).\n'\
@@ -6891,6 +6893,7 @@ def get_cgc(user=None, passwd=None):
         'In case you don\'t, you can register now.\n'\
         'Please see licensing terms to find out how you are allowed to\n'\
         'use COSMIC data: http://cancer.sanger.ac.uk/cosmic/license\n'
+    
     c = curl.Curl(
         fname,
         sftp_host=host,
@@ -6898,9 +6901,12 @@ def get_cgc(user=None, passwd=None):
         sftp_user=user,
         sftp_passwd=passwd,
         large=True)
+    
     data = c.result
-    null = data.readline()
+    null = next(data)
+    
     for line in data:
+        
         next_line = line.decode('utf-8')
         fields = []
         field = ''
@@ -6913,6 +6919,7 @@ def get_cgc(user=None, passwd=None):
                 in_quotes = not in_quotes
             else:
                 field += char
+        
         yield fields
 
 

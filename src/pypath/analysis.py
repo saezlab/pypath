@@ -66,6 +66,7 @@ class Workflow(object):
                  do_compile_resource_list=True,
                  do_consistency_dedrogram=True,
                  do_consistency_table=True,
+                 only_categories = None,
                  title=None,
                  outdir=None,
                  htdata={},
@@ -85,16 +86,22 @@ class Workflow(object):
                 'p': '#77AADD',
                 'm': '#77CCCC',
                 'i': '#DDAA77',
-                'r': '#CC99BB'
+                'r': '#CC99BB',
+                'l': '#77AADD',
             },
             'ccolors2': {
                 'p': '#4477AA',
                 'm': '#117777',
                 'i': '#774411',
-                'r': '#771155'
+                'r': '#771155',
+                'l': '#4477AA',
             },
-            'group_colors': ['#4477AA', '#44AAAA', '#DDAA77', '#CC99BB'],
-            'group_colors2': ['#77AADD', '#77CCCC', '#DDAA77', '#CC99BB'],
+            'group_colors': [
+                '#4477AA', '#44AAAA', '#DDAA77', '#CC99BB', '#4477AA'
+            ],
+            'group_colors2': [
+                '#77AADD', '#77CCCC', '#DDAA77', '#CC99BB', '#77AADD'
+            ],
             'table2file': 'curation_tab_%s.tex' % self.name,
             'stable2file': 'curation_tab_stripped_%s.tex' % self.name,
             'latex': '/usr/bin/xelatex',
@@ -506,7 +513,8 @@ class Workflow(object):
         self.load_annotations()
         self.set_categories()
         self.separate()
-        self.barplot_colors()
+        if self.do_multi_barplots:
+            self.barplot_colors()
         if self.do_refs_composite or \
                 self.do_refs_journals_grid or \
                 self.do_refs_years_grid or \
@@ -529,7 +537,8 @@ class Workflow(object):
             self.curation_table()
             if self.do_compile_curation_table:
                 self.latex_compile(self.stable2file)
-        self.get_multibarplot_ordr()
+        if self.do_multi_barplots:
+            self.get_multibarplot_ordr()
         if self.do_simgraphs:
             self.make_simgraph_vertex()
             self.make_simgraph_edge()
@@ -585,10 +594,16 @@ class Workflow(object):
         return os.path.join(self.outdir, fname)
 
     def init_pypath(self):
-
-        self.pp = main.PyPath(9606)
-        for netdata in self.network_datasets:
-            self.pp.load_resources(getattr(data_formats, netdata))
+        
+        if isinstance(self.network_datasets, main.PyPath):
+            
+            self.pp = self.network_datasets
+            
+        else:
+            
+            self.pp = main.PyPath(9606)
+            for netdata in self.network_datasets:
+                self.pp.load_resources(getattr(data_formats, netdata))
 
     def load_protein_lists(self):
 
@@ -614,22 +629,41 @@ class Workflow(object):
             getattr(self.pp, 'load_%s' % meth)()
 
     def set_categories(self):
+        
         self.pp.set_categories()
 
     def separate(self):
+        
         self.sep = self.pp.separate()
         self.csep = self.pp.separate_by_category()
+        
         self.cats = dict(
-            map(lambda c: (c[0], data_formats.catnames[c[1]]),
-                iteritems(data_formats.categories)))
+            (c[0], data_formats.catnames[cc])
+            for c in iteritems(data_formats.categories)
+            for cc in c[1]
+            if not self.only_categories or cc in self.only_categories
+        )
+        
         self.cats.update(
             dict(
-                map(lambda c: (('All', c[0]), c[1]),
-                    filter(lambda c: c[0] in self.pp.has_cats,
-                           iteritems(data_formats.catnames)))))
-        self.cat_ordr = list(
-            filter(lambda c: data_formats.catletters[c] in self.pp.has_cats,
-                   self.cat_ordr))
+                (('All', c[0]), cc)
+                for c in iteritems(data_formats.catnames)
+                for cc in c[1]
+                if cc in self.pp.has_cats and (
+                    not self.only_categories or
+                    cc in self.only_categories
+                )
+            )
+        )
+        
+        self.cat_ordr = [
+            c
+            for c in self.cat_ordr
+            if c in self.pp.has_cats and (
+                self.only_categories is None or
+                c in self.only_categories
+            )
+        ]
 
     def fisher_tests(self):
 
@@ -752,7 +786,7 @@ class Workflow(object):
                      list(map(lambda c: (('All', c),
                                          self.csep[c].vcount()),
                               sorted(self.csep.keys())))))
-
+        
         self.labcol = \
             list(
                 map(
