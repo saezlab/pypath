@@ -28,6 +28,7 @@ import imp
 import locale
 import numpy as np
 import pandas as pd
+import collections
 
 import pypath.main as main
 import pypath.plot as plot
@@ -36,6 +37,13 @@ import pypath.dataio as dataio
 import pypath.descriptions as descriptions
 from pypath.common import *
 import pypath.refs as _refs
+
+
+MultiBarplotParam = collections.namedtuple(
+    'MultiBarplotParam',
+    ['ylab', 'title', 'name', 'method', 'smethod', 'order']
+)
+MultiBarplotParam.__new__.__defaults__ = (None, 'vcount')
 
 
 class Workflow(object):
@@ -276,7 +284,7 @@ class Workflow(object):
         #   - Method to calculate the height of the shaded part of each bar
         #   - 
         self.barplots_settings = [
-            (
+            MultiBarplotParam(
                 'Proteins',
                 'Number of proteins',
                 'proteins',
@@ -284,7 +292,7 @@ class Workflow(object):
                 lambda gs: len(self.specific(gs[1], gs[0].vs)),
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'Interactions',
                 'Number of interactions',
                 'interactions',
@@ -292,7 +300,7 @@ class Workflow(object):
                 lambda gs: len(self.specific(gs[1], gs[0].es)),
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'Density',
                 'Graph density',
                 'density',
@@ -300,7 +308,7 @@ class Workflow(object):
                 None,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'Transitivity',
                 'Graph global transitivity',
                 'transitivity',
@@ -308,7 +316,7 @@ class Workflow(object):
                 None,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'Diameter',
                 'Graph diameter',
                 'diameter',
@@ -316,7 +324,7 @@ class Workflow(object):
                 None,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'Receptors',
                 'Number of receptors',
                 'receptors',
@@ -326,7 +334,7 @@ class Workflow(object):
                 ),
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'Receptors [%]',
                 'Percentage of receptors',
                 'receptorprop',
@@ -334,21 +342,27 @@ class Workflow(object):
                     len([v for v in gs[0].vs if v['rec']]) /
                     float(gs[0].vcount()) * 100.0,
                 lambda gs:
-                    len([v for v in self.specific(gs[1], gs[0].vs) if v['rec']]) /
-                float(gs[0].vcount()) * 100.0,
+                    len([
+                        v for v in self.specific(gs[1], gs[0].vs)
+                        if v['rec']
+                    ]) /
+                    float(gs[0].vcount()) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'Receptors [%]',
                 'Percentage of all human receptors covered',
                 'receptorcov',
                 lambda gs: len([v for v in gs[0].vs if v['rec']]) /
-                float(len(self.pp.lists['rec'])) * 100.0,
-                lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['rec']]) /
-                float(len(self.pp.lists['rec'])) * 100.0,
+                    float(len(self.pp.lists['rec'])) * 100.0,
+                lambda gs: len([
+                        v for v in self.specific(gs[1], gs[0].vs)
+                        if v['rec']
+                    ]) /
+                    float(len(self.pp.lists['rec'])) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'TFs',
                 'Number of transcription factors',
                 'tfs',
@@ -357,27 +371,33 @@ class Workflow(object):
                     [v for v in self.specific(gs[1], gs[0].vs) if v['tf']]),
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'TFs [%]',
                 'Percentage of transcription factors',
                 'tfprop',
                 lambda gs: len([v for v in gs[0].vs if v['tf']]) /
-                float(gs[0].vcount()) * 100.0,
-                lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['tf']]) /
-                float(gs[0].vcount()) * 100.0,
+                    float(gs[0].vcount()) * 100.0,
+                lambda gs: len([
+                        v for v in self.specific(gs[1], gs[0].vs)
+                        if v['tf']
+                    ]) /
+                    float(gs[0].vcount()) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'TFs [%]',
                 'Percentage of all human TFs covered',
                 'tfcov',
                 lambda gs: len([v for v in gs[0].vs if v['tf']]) /
-                float(len(self.pp.lists['tf'])) * 100.0,
-                lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['tf']]) /
-                float(len(self.pp.lists['tf'])) * 100.0,
+                    float(len(self.pp.lists['tf'])) * 100.0,
+                lambda gs: len([
+                        v for v in self.specific(gs[1], gs[0].vs)
+                        if v['tf']
+                    ]) /
+                    float(len(self.pp.lists['tf'])) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'Kinases',
                 'Number of kinases',
                 'kinases',
@@ -386,57 +406,72 @@ class Workflow(object):
                     [v for v in self.specific(gs[1], gs[0].vs) if v['kin']]),
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'Kinases [%]',
                 'Percentage of kinases',
                 'kinprop',
                 lambda gs: len([v for v in gs[0].vs if v['kin']]) /
-                float(gs[0].vcount()) * 100.0,
-                lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['kin']]) /
-                float(gs[0].vcount()) * 100.0,
+                    float(gs[0].vcount()) * 100.0,
+                lambda gs: len([
+                        v for v in self.specific(gs[1], gs[0].vs)
+                        if v['kin']
+                    ]) /
+                    float(gs[0].vcount()) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'Kinases [%]',
                 'Percentage of all human kinases covered',
                 'kincov',
                 lambda gs: len([v for v in gs[0].vs if v['kin']]) /
-                float(len(self.pp.lists['kin'])) * 100.0,
-                lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['kin']]) /
-                float(len(self.pp.lists['kin'])) * 100.0,
+                    float(len(self.pp.lists['kin'])) * 100.0,
+                lambda gs: len([
+                        v for v in self.specific(gs[1], gs[0].vs)
+                        if v['kin']
+                    ]) /
+                    float(len(self.pp.lists['kin'])) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'Druggable proteins [%]',
                 'Percentage of druggable proteins',
                 'dgbprop',
                 lambda gs: len([v for v in gs[0].vs if v['dgb']]) /
-                float(gs[0].vcount()) * 100.0,
-                lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['dgb']]) /
-                float(gs[0].vcount()) * 100.0,
+                    float(gs[0].vcount()) * 100.0,
+                lambda gs: len([
+                        v for v in self.specific(gs[1], gs[0].vs)
+                        if v['dgb']
+                    ]) /
+                    float(gs[0].vcount()) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'Druggable proteins [%]',
                 'Percentage of all human druggable proteins covered',
                 'dgbcov',
                 lambda gs: len([v for v in gs[0].vs if v['dgb']]) /
-                float(len(self.pp.lists['dgb'])) * 100.0,
-                lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['dgb']]) /
-                float(len(self.pp.lists['dgb'])) * 100.0,
+                    float(len(self.pp.lists['dgb'])) * 100.0,
+                lambda gs: len([
+                        v for v in self.specific(gs[1], gs[0].vs)
+                        if v['dgb']
+                    ]) /
+                    float(len(self.pp.lists['dgb'])) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'Disease genes [%]',
                 'Percentage of disease-gene associations covered',
                 'discov',
-                lambda gs: len([v for v in gs[0].vs if v['dis']]) /
-                float(len(self.pp.lists['dis'])) * 100.0,
-                lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['dis']]) /
-                float(len(self.pp.lists['dis'])) * 100.0,
+                lambda gs:  len([v for v in gs[0].vs if v['dis']]) /
+                    float(len(self.pp.lists['dis'])) * 100.0,
+                lambda gs: len([
+                        v for v in self.specific(gs[1], gs[0].vs)
+                        if v['dis']
+                    ]) /
+                    float(len(self.pp.lists['dis'])) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'Complexes',
                 'Number of complexes covered',
                 'complexes',
@@ -444,84 +479,135 @@ class Workflow(object):
                 None,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'E-S interactions',
                 'Number of enzyme-substrate interactions covered',
                 'ptmnum',
                 lambda gs: sum(map(lambda e: len(e['ptm']), gs[0].es)),
                 lambda gs: sum(
-                    map(lambda e: len(e['ptm']), self.specific(gs[1], gs[0].es))),
+                        map(
+                            lambda e: len(e['ptm']),
+                            self.specific(gs[1], gs[0].es)
+                        )
+                    ),
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'E-S interactions',
-                'Number of interactions associated with enzyme-substrate relationship',
+                (
+                    'Number of interactions associated with '
+                    'enzyme-substrate relationship'
+                ),
                 'havingptm',
                 lambda gs: sum(map(lambda e: len(e['ptm']) > 0, gs[0].es)),
                 lambda gs: sum(
-                    map(lambda e: len(e['ptm']) > 0, self.specific(gs[1], gs[0].es))),
+                        map(
+                            lambda e: len(e['ptm']) > 0,
+                            self.specific(gs[1], gs[0].es)
+                        )
+                    ),
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'Interactions with \n' + r'E-S relationship [%]',
-                'Percentage of interactions associated with enzyme-substrate relationship',
+                (
+                    'Percentage of interactions associated with '
+                    'enzyme-substrate relationship'
+                ),
                 'ptmprop',
-                lambda gs: sum(map(lambda e: len(e['ptm']) > 0, gs[
-                               0].es)) / float(gs[0].ecount()) * 100.0,
-                lambda gs: sum(map(lambda e: len(e['ptm']) > 0, self.specific(
-                    gs[1], gs[0].es))) / float(gs[0].ecount()) * 100.0,
+                lambda gs: sum(
+                        map(
+                            lambda e: len(e['ptm']) > 0,
+                            gs[0].es
+                        )
+                    ) /
+                    float(gs[0].ecount()) * 100.0,
+                lambda gs: sum(
+                        map(
+                            lambda e: len(e['ptm']) > 0,
+                            self.specific(gs[1], gs[0].es)
+                        )
+                    ) / float(gs[0].ecount()) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'CGC genes [%]',
-                'Percentage of COSMIC Cancer Gene Census cancer drivers covered',
+                (
+                    'Percentage of COSMIC Cancer Gene Census '
+                    'cancer drivers covered'
+                ),
                 'ccgccov',
-                lambda gs: len(set(gs[0].vs['name']) & set(self.pp.lists['cgc'])) /
-                float(len(self.pp.lists['cgc'])) * 100.0,
                 lambda gs: len(
-                    set(map(lambda v: v['name'], self.specific(gs[1], gs[0].vs))) &
-                    set(self.pp.lists['cgc'])
-                ) /
-                float(len(self.pp.lists['cgc'])) * 100.0,
+                        set(gs[0].vs['name']) & set(self.pp.lists['cgc'])
+                    ) /
+                    float(len(self.pp.lists['cgc'])) * 100.0,
+                lambda gs: len(
+                        set(
+                            map(
+                                lambda v: v['name'],
+                                self.specific(gs[1], gs[0].vs)
+                            )
+                        ) &
+                        set(self.pp.lists['cgc'])
+                    ) /
+                    float(len(self.pp.lists['cgc'])) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'IntOGen genes [%]',
                 'Percentage of IntOGen cancer drivers covered',
                 'intocov',
-                lambda gs: len(set(gs[0].vs['name']) & set(self.pp.lists['IntOGen'])) /
-                float(len(self.pp.lists['IntOGen'])) * 100.0,
                 lambda gs: len(
-                    set(map(lambda v: v['name'], self.specific(gs[1], gs[0].vs))) &
-                    set(self.pp.lists['IntOGen'])
-                ) /
-                float(len(self.pp.lists['IntOGen'])) * 100.0,
+                        set(gs[0].vs['name']) &
+                        set(self.pp.lists['IntOGen'])
+                    ) /
+                    float(len(self.pp.lists['IntOGen'])) * 100.0,
+                lambda gs: len(
+                        set(
+                            map(
+                                lambda v: v['name'],
+                                self.specific(gs[1], gs[0].vs)
+                            )
+                        ) &
+                        set(self.pp.lists['IntOGen'])
+                    ) /
+                    float(len(self.pp.lists['IntOGen'])) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'Signaling proteins [%]',
                 'Percentage of all human signaling proteins covered',
                 'sigcov',
-                lambda gs: len(set(gs[0].vs['name']) & set(self.pp.lists['sig'])) /
-                float(len(self.pp.lists['sig'])) * 100.0,
                 lambda gs: len(
-                    set(map(lambda v: v['name'], self.specific(gs[1], gs[0].vs))) &
-                    set(self.pp.lists['sig'])
-                ) /
-                float(len(self.pp.lists['sig'])) * 100.0,
+                        set(gs[0].vs['name']) & set(self.pp.lists['sig'])
+                    ) / float(len(self.pp.lists['sig'])) * 100.0,
+                lambda gs: len(
+                        set(
+                            map(
+                                lambda v: v['name'],
+                                self.specific(gs[1], gs[0].vs)
+                            )
+                        ) &
+                        set(self.pp.lists['sig'])
+                    ) / float(len(self.pp.lists['sig'])) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'Signaling proteins [%]',
                 'Percentage of signaling proteins',
                 'sigpct',
-                lambda gs: len(set(gs[0].vs['name']) & set(self.pp.lists['sig'])) /
-                float(gs[0].vcount()) * 100.0,
                 lambda gs: len(
-                    set(map(lambda v: v['name'], self.specific(gs[1], gs[0].vs))) &
+                        set(gs[0].vs['name']) & set(self.pp.lists['sig'])
+                    ) / float(gs[0].vcount()) * 100.0,
+                lambda gs: len(
+                    set(
+                        map(
+                            lambda v: v['name'],
+                            self.specific(gs[1], gs[0].vs)
+                        )
+                    ) &
                     set(self.pp.lists['sig'])
-                ) /
-                float(gs[0].vcount()) * 100.0,
+                ) / float(gs[0].vcount()) * 100.0,
                 'vcount'
             )
         ]
@@ -539,7 +625,10 @@ class Workflow(object):
                     'xlab': 'Number of proteins',
                     'ylab': 'Number of interacting pairs',
                     'legtitle': 'Density',
-                    'title': 'Number of proteins, interactions and graph density'
+                    'title': (
+                        'Number of proteins, '
+                        'interactions and graph density'
+                    )
                 },
                 'vcount-ecount',
                 True
@@ -881,15 +970,21 @@ class Workflow(object):
             result = \
                 list(
                     zip(
-                        *[(s, fun((self.sep[s], s))) for s in sorted(self.pp.sources)] +
-                        list(
-                            map(
-                                lambda c:
-                                    (('All', c[0]), fun(
-                                        (self.csep[c[0]], c[0]))),
-                                sorted(self.csep.keys())
+                        *[
+                            (
+                                s,
+                                fun((self.sep[s], s))
                             )
-                        )
+                            for s in sorted(self.pp.sources)
+                        ] +
+                        [
+                            (
+                                ('All', c[0]), # instead of resource name
+                                fun((self.csep[c[0]], c[0]))
+                            )
+                            for c in
+                            sorted(self.csep.keys())
+                        ]
                     )
                 )
             
@@ -903,39 +998,60 @@ class Workflow(object):
 
     def specific(self, s, seq):
         """
-        
+        Returns the elements from a sequence of vertices or edges which
+        are specific for a resource within a resource category.
         """
         
         return [
-            w for w in seq
-            if s in data_formats.categories and s in w['sources'] and len(w[
-                'sources'] & getattr(data_formats, data_formats.categories[s]))
-            == 1 or s in w['cat'] and len(w['cat']) == 1
+            w # vertex or edge
+            for w in seq
+            if (
+                s in data_formats.categories and # the resource has category
+                s in w['sources'] and # the element belongs to the resource
+                (
+                    len(
+                        w['sources'] & # set of resources for the element
+                        getattr(data_formats, data_formats.categories[s])
+                            # set of resources in the category
+                    ) or
+                    (
+                        s in w['cat'] and # if not a resource but a category
+                        len(w['cat']) == 1 # element belongs only to this
+                            # category
+                    )
+                )
+            )
         ]
 
     def make_multi_barplots(self):
-
+        """
+        Creates multi-section barplots. A section (subplot) created for
+        each resource category. Generates plots according to settings in
+        the ``barplot_settings`` attribute.
+        """
+        
+        # keeping the plot objects in dict
         self.multi_barplots = {}
-
+        
         for par in self.barplots_settings:
-
+            
             _ = sys.stdout.write('\t:: Plotting %s\n' % par[1])
-
+            
             data_attr = 'data_%s' % par[2]
-
+            
             self.get_data(par[3], data_attr)
-
+            
             if par[4] is not None:
                 data_attr2 = 'data_%s' % par[4]
                 self.get_data(par[4], data_attr2)
-
+            
             data = getattr(self, data_attr)
             data2 = getattr(self, data_attr2)
-
+            
             ordr = self.vcount_ordr if par[5] == 'vcount' else par[5]
-
+            
             csvname = self.get_path('%s-by-db_%s.csv' % (par[2], self.name))
-
+            
             with open(csvname, 'w') as csv:
                 # print(data)
                 # print(list(zip(*data)))
