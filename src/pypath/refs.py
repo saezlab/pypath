@@ -58,19 +58,19 @@ class Reference(object):
 
 
 def open_pubmed(pmid):
-    '''
+    """
     Opens PubMed record in web browser.
 
     @pmid : str or int
         PubMed ID
-    '''
+    """
     pmid = str(pmid)
     url = urls.urls['pubmed']['url'] % pmid
     webbrowser.open(url)
 
 
 def only_pmids(idList, strict=True):
-    '''
+    """
     Return elements unchanged which comply with PubMed ID format,
     and attempts to translate the DOIs and PMC IDs using NCBI
     E-utils.
@@ -81,7 +81,7 @@ def only_pmids(idList, strict=True):
     @strict : bool
         Whether keep in the list those IDs which are not PMIDs,
         neither DOIs or PMC IDs or NIH manuscript IDs.
-    '''
+    """
     if type(idList) in common.simpleTypes:
         idList = [idList]
     pmids = set([i for i in idList if i.isdigit()])
@@ -100,10 +100,10 @@ def only_pmids(idList, strict=True):
 
 
 def get_pmid(idList):
-    '''
+    """
     For a list of doi or PMC IDs 
     fetches the corresponding PMIDs.
-    '''
+    """
     if type(idList) in common.simpleTypes:
         idList = [idList]
     url = urls.urls['pubmed-eutils']['conv'] % ','.join(str(i) for i in idList)
@@ -139,18 +139,23 @@ def pmids_list(idList):
     return result
 
 
-def get_pubmed_data(pp,
-                    cache='pubmed2.pickle',
-                    cachedir='cache',
-                    htp_threshold=20):
+def get_pubmed_data(
+        pp,
+        cache = 'pubmed2.pickle',
+        cachedir = 'cache',
+        htp_threshold = 20
+    ):
     """
     For one PyPath object, obtains metadata for all PubMed IDs
     through NCBI E-utils.
 
-    :param pp: pypath.PyPath object
-    :param htp_threshold: the number of interactions for one reference
-        over the study considered to be high-throughput
+    :param pp:
+        ``pypath.PyPath`` object
+    :param htp_threshold:
+        The number of interactions for one reference
+        above the study considered to be high-throughput.
     """
+    
     cachefile = os.path.join(cachedir, cache)
 
     if htp_threshold is not None:
@@ -190,8 +195,11 @@ def get_pubmed_data(pp,
 
     points = []
     earliest = []
+    
     for e in pp.graph.es:
+        
         for s, rs in iteritems(e['refs_by_source']):
+            
             pms = [
                 r.pmid for r in rs
                 if (htp_threshold is None or r.pmid not in pp.htp[
@@ -212,4 +220,5 @@ def get_pubmed_data(pp,
     earliest = pd.DataFrame.from_records(earliest)
     points.columns = ['database', 'pmid', 'year', 'journal', 'eid']
     earliest.columns = ['database', 'none', 'year', 'none', 'eid']
+    
     return points, earliest

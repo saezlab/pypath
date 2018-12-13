@@ -8,7 +8,7 @@ import pypath.data_formats as data_formats
 causal = analysis.Workflow(
         name = 'causal',
         network_datasets = ['pathway', 'ptm'],
-        intogen_file = '../../a2/src/pypath/data/intogene_cancerdrivers.tsv',
+        intogen_file = '/home/denes/documents/pw/a2/src/pypath/data/intogene_cancerdrivers.tsv',
         do_curation_table = True,
         do_compile_curation_table = True,
         do_simgraphs = True,

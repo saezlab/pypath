@@ -39,11 +39,45 @@ from pypath.common import *
 import pypath.refs as _refs
 
 
+# defines a multi-section barplot
 MultiBarplotParam = collections.namedtuple(
     'MultiBarplotParam',
     ['ylab', 'title', 'name', 'method', 'smethod', 'order']
 )
 MultiBarplotParam.__new__.__defaults__ = (None, 'vcount')
+
+
+# defines a scatterplot
+ScatterplotParam = collections.namedtuple(
+    'ScatterplotParam',
+    [
+        'xmethod', # method for variable x
+        'ymethod', # method for variable y
+        'smethod', # method for variable size
+        'gparam',  # graphics params
+        'name',    # name included in the file name
+        'sdiv',    # have no idea what it is...
+    ]
+)
+ScatterplotParam.__new__.__defaults__ = (False,)
+
+
+# defines graphics details for a scatterplot
+ScatterplotGraphicsParam = collections.namedtuple(
+    'ScatterplotGraphicsParam',
+    [
+        'ylim',
+        'xlim',
+        'xlog',
+        'ylog',
+        'xlab',
+        'ylab',
+        'legtitle',
+        'title',
+        'legstrip',
+    ]
+)
+ScatterplotGraphicsParam.__new__.__defaults__ = ((None, None),)
 
 
 class Workflow(object):
@@ -613,81 +647,81 @@ class Workflow(object):
         ]
 
         self.scatterplots_settings = [
-            (
+            ScatterplotParam(
                 lambda gs: gs[0].vcount(),
                 lambda gs: gs[0].ecount(),
                 lambda gs: gs[0].density(),
-                {
-                    'ylim': [20.0, 200000.0],
-                    'xlim': [30.0, 15000.0],
-                    'ylog': True,
-                    'xlog': True,
-                    'xlab': 'Number of proteins',
-                    'ylab': 'Number of interacting pairs',
-                    'legtitle': 'Density',
-                    'title': (
+                ScatterplotGraphicsParam(
+                    ylim = [20.0, 200000.0],
+                    xlim = [30.0, 15000.0],
+                    ylog = True,
+                    xlog = True,
+                    xlab = 'Number of proteins',
+                    ylab = 'Number of interacting pairs',
+                    legtitle = 'Density',
+                    title = (
                         'Number of proteins, '
                         'interactions and graph density'
                     )
-                },
+                ),
                 'vcount-ecount',
                 True
             ),
-            (
+            ScatterplotParam(
                 lambda gs: len(set(gs[0].vs['name']) &
-                               (set(self.pp.lists['dis']))),
+                               ScatterplotParam(set(self.pp.lists['dis']))),
                 lambda gs: len(set(gs[0].vs['name']) &
                                set(self.pp.lists['cdv'])),
                 lambda gs: gs[0].vcount(),
-                {
-                    'ylim': [0.0, 2000.0],
-                    'xlim': [30.0, 5500.0],
-                    'ylog': True,
-                    'xlog': True,
-                    'xlab': 'Number of\ndisease related proteins',
-                    'ylab': 'Number of cancer drivers',
-                    'legtitle': 'Total number of proteins',
-                    'title': 'Number of disease related proteins and cancer drivers',
-                    'legstrip': (3, None)
-                },
+                ScatterplotGraphicsParam(
+                    ylim = [0.0, 2000.0],
+                    xlim = [30.0, 5500.0],
+                    ylog = True,
+                    xlog = True,
+                    xlab = 'Number of\ndisease related proteins',
+                    ylab = 'Number of cancer drivers',
+                    legtitle = 'Total number of proteins',
+                    title = 'Number of disease related proteins and cancer drivers',
+                    legstrip = (3, None)
+                ),
                 'dis-cancer',
                 False
             ),
-            (
+            ScatterplotParam(
                 lambda gs: len(set(gs[0].vs['name']) &
                                set(self.pp.lists['rec'])),
                 lambda gs: len(set(gs[0].vs['name']) &
                                set(self.pp.lists['tf'])),
                 lambda gs: gs[0].vcount(),
-                {
-                    'ylim': [0.5, 2000.0],
-                    'xlim': [5.0, 1200.0],
-                    'ylog': True,
-                    'xlog': True,
-                    'xlab': 'Number of receptors',
-                    'ylab': 'Number of transcription factors',
-                    'legtitle': 'Total number of proteins',
-                    'title': 'Number of receptors and TFs',
-                    'legstrip': (3, None)
-                },
+                ScatterplotGraphicsParam(
+                    ylim = [0.5, 2000.0],
+                    xlim = [5.0, 1200.0],
+                    ylog = True,
+                    xlog = True,
+                    xlab = 'Number of receptors',
+                    ylab = 'Number of transcription factors',
+                    legtitle = 'Total number of proteins',
+                    title = 'Number of receptors and TFs',
+                    legstrip = (3, None)
+                ),
                 'tf-rec',
                 False
             ),
-            (
+            ScatterplotParam(
                 lambda gs: len(self.pp.complexes_in_network(graph=gs[0])),
                 lambda gs: sum(map(lambda e: len(e['ptm']) > 0, gs[0].es)),
                 lambda gs: gs[0].ecount(),
-                {
-                    'ylim': [0.5, 5400.0],
-                    'xlim': [3.0, 1500.0],
-                    'ylog': True,
-                    'xlog': True,
-                    'xlab': 'Number of complexes',
-                    'ylab': 'Number of\nenzyme-substrate relationships',
-                    'legtitle': 'Total number of interactions',
-                    'title': 'Number of complexes and enzyme-substrate relationships',
-                    'legstrip': (3, None)
-                },
+                ScatterplotGraphicsParam(
+                    ylim = [0.5, 5400.0],
+                    xlim = [3.0, 1500.0],
+                    ylog = True,
+                    xlog = True,
+                    xlab = 'Number of complexes',
+                    ylab = 'Number of\nenzyme-substrate relationships',
+                    legtitle = 'Total number of interactions',
+                    title = 'Number of complexes and enzyme-substrate relationships',
+                    legstrip = (3, None)
+                ),
                 'comp-ptm',
                 False
             )
@@ -715,7 +749,7 @@ class Workflow(object):
 
     def load_data(self):
         """
-        Calls methods to loads and preprocess the data.
+        Calls methods to load and preprocess the data.
         """
         
         # creating output directory
@@ -730,74 +764,104 @@ class Workflow(object):
         self.set_categories()
         # separate the network by resources
         self.separate()
+        # assign colors for each resource for the multi-section barplots
         self.barplot_colors()
-        if self.do_refs_composite or \
-                self.do_refs_journals_grid or \
-                self.do_refs_years_grid or \
-                self.do_curation_plot or \
-                self.do_htp_char:
+        # if we create any figure about literature curation
+        # need to load the data from PubMed
+        if (
+            self.do_refs_composite or
+            self.do_refs_journals_grid or
+            self.do_refs_years_grid or
+            self.do_curation_plot or
+            self.do_htp_char
+        ):
             self.load_pubmed_data()
+        # for the directions plot compile the data about directions
         if self.do_dirs_stacked:
             self.get_dirs_data()
+        # for consistency plots and tables compile the consistency data
         if self.do_consistency_dedrogram or \
                 self.do_consistency_table:
             self.inconsistency_data()
 
     def make_plots(self):
+        """
+        Calls methods to create figures and tables.
+        """
 
         if self.do_main_table:
             self.main_table()
             if self.do_compile_main_table:
                 self.latex_compile(self.main_table_fname)
+        
         if self.do_curation_table:
             self.curation_table()
             if self.do_compile_curation_table:
                 self.latex_compile(self.stable2file)
+        
         if self.do_multi_barplots:
             self.get_multibarplot_ordr()
+        
         if self.do_simgraphs:
             self.make_simgraph_vertex()
             self.make_simgraph_edge()
             self.make_simgraph_curation()
+        
         if self.do_multi_barplots:
             self.make_multi_barplots()
+        
         if self.do_coverage_groups:
             self.get_coverage_groups_data()
             self.make_coverage_groups_plot()
+        
         if self.do_scatterplots:
             self.make_scatterplots()
+        
         if self.do_ptms_barplot:
             self.all_ptms_list()
             self.make_ptms_barplot()
+        
         if self.do_htp_char:
             self.make_htp_characteristics()
+        
         if self.do_history_tree:
             self.make_history_tree()
             if self.do_compile_history_tree:
                 self.latex_compile(self.history_tree_fname)
+        
         if self.do_refs_by_j:
             self.make_refs_by_journal()
+        
         if self.do_refs_by_db:
             self.make_refs_by_db()
+        
         if self.do_refs_by_year:
             self.make_refs_by_year()
+        
         if self.do_refs_years_grid:
             self.make_refs_years_grid()
+        
         if self.do_refs_journals_grid:
             self.make_refs_journals_grid()
+        
         if self.do_dirs_stacked:
             self.make_dirs_stacked()
             self.make_dirs_stacked(include_all=False)
+        
         if self.do_refs_composite:
             self.make_refs_composite()
+        
         if self.do_curation_plot:
             self.make_curation_plot()
+        
         if self.do_resource_list:
             self.resource_list_table()
             if self.do_compile_resource_list:
                 self.compile_latex(self.resource_list_fname)
+        
         if self.do_consistency_dedrogram:
             self.make_consistency_dendrogram()
+        
         if self.do_consistency_table:
             self.make_consistency_table()
 
@@ -1198,7 +1262,6 @@ class Workflow(object):
         druggable proteins.
         """
         
-        
         covdata = list(
             map(
                 lambda fun:
@@ -1218,9 +1281,12 @@ class Workflow(object):
             )
         )
         
-        
+        # labels for coverage groups: resource names
+        # and tuples for resource categories
         self.labels_coverage_groups = list(covdata[0].keys())
-
+        
+        # coverage data:
+        # list of lists of percentages
         self.data_coverage_groups = \
             list(
                 map(
@@ -1235,7 +1301,8 @@ class Workflow(object):
                     covdata
                 )
             )
-
+        
+        # labels for protein categories
         self.coverage_groups_group_labels = [
             'Receptors (all: %s)' % locale.format(
                 '%d', len(self.pp.lists['rec']), grouping=True),
@@ -1246,9 +1313,15 @@ class Workflow(object):
             'Druggable proteins (all: %s)' % locale.format(
                 '%d', len(self.pp.lists['dgb']), grouping=True)
         ]
-
+    
     def get_multibarplot_ordr(self):
-
+        """
+        Creates a ``plot.MultiBarplot`` object which orders by values
+        on the y axis, in this case the number of proteins.
+        This way obtains the order of resources and resource categories.
+        Assigns the order to the ``vcount_ordr`` attribute.
+        """
+        
         self.vcount_ordr_barplot = \
             plot.MultiBarplot(
                 self.data_protein_counts[0],
@@ -1263,34 +1336,46 @@ class Workflow(object):
                 fname=self.pdf_vcount_order,
                 order='y'
             )
-
+        
+        # we anyways create this figure later
+        # now we remove it
         os.remove(self.pdf_vcount_order)
-
+        
         self.vcount_ordr = self.vcount_ordr_barplot.x
-
+    
     def make_scatterplots(self):
-
+        """
+        Creates scatterplots showing pairs of variables.
+        Each point represents one resource.
+        """
+        'xmethod', 'ymethod', 'smethod', 'gparam', 'name', 'sdiv'
         for par in self.scatterplots_settings:
 
-            _ = sys.stdout.write('\t:: Plotting %s\n' % par[3]['title'])
+            _ = sys.stdout.write('\t:: Plotting %s\n' % par.gparam.title)
 
-            xattr = 'data_%s_x' % par[4]
-            yattr = 'data_%s_y' % par[4]
-            sattr = 'data_%s_s' % par[4]
-            lattr = 'labels_scatterplot_%s' % par[4]
+            xattr = 'data_%s_x' % par.name
+            yattr = 'data_%s_y' % par.name
+            sattr = 'data_%s_s' % par.name
+            lattr = 'labels_scatterplot_%s' % par.name
 
-            self.get_data(par[0], xattr)
-            self.get_data(par[1], yattr)
-            self.get_data(par[2], sattr)
+            self.get_data(par.xmethod, xattr)
+            self.get_data(par.ymethod, yattr)
+            self.get_data(par.smethod, sattr)
 
             x = getattr(self, xattr)
             y = getattr(self, yattr)
             s = getattr(self, sattr)
 
-            setattr(self, lattr,
-                    list(
-                        filter(lambda l: type(l) is not tuple,
-                               getattr(self, xattr)[0])))
+            setattr(
+                self,
+                lattr,
+                list(
+                    filter(
+                        lambda l: not isinstance(l, tuple),
+                        getattr(self, xattr)[0]
+                    )
+                )
+            )
 
             labels = getattr(self, lattr)
 
@@ -1302,7 +1387,7 @@ class Workflow(object):
             y = list(map(lambda l: y[l], labels))
             s = np.array(list(map(lambda l: s[l], labels)))
 
-            if par[5]:
+            if par.sdiv:
                 s = s / 1.0
 
             colors = list(
@@ -1310,37 +1395,59 @@ class Workflow(object):
                     labels))
 
             color_labels = []
-            for c in ['p', 'm', 'i', 'r']:
-                color_labels.append(
-                    (data_formats.catnames[c], self.ccolors2[c]))
+            for c in ['p', 'l', 'm', 'i', 'r']:
+                
+                if (
+                    c in self.pp.has_cats and (
+                        self.only_categories is None or
+                        c in self.only_categories
+                    )
+                ):
+                    
+                    color_labels.append(
+                        (data_formats.catnames[c], self.ccolors2[c])
+                    )
 
             for i, l in enumerate(labels):
                 if type(l) is tuple:
                     labels[i] = data_formats.catnames[l[1]]
 
-            csvname = self.get_path('%s_%s.csv' % (par[4], self.name))
+            csvname = self.get_path('%s_%s.csv' % (par.name, self.name))
 
             with open(csvname, 'w') as csv:
 
-                csv.write('Label;%s;%s;%s\n' %
-                          (par[3]['xlab'], par[3]['ylab'], par[3]['legtitle']))
-                csv.write('\n'.join(
-                    map(lambda l: ';'.join(map(str, l)), zip(labels, x, y,
-                                                             s))))
+                csv.write('Label;%s;%s;%s\n' % (
+                    par.gparam.xlab, par.gparam.ylab, par.gparam.legtitle
+                ))
+                csv.write(
+                    '\n'.join(
+                        map(
+                            lambda l: ';'.join(map(str, l)),
+                            zip(labels, x, y, s)
+                        )
+                    )
+                )
 
             sp = plot.ScatterPlus(
                 x,
                 y,
-                size=s,
-                min_size=30,
-                max_size=1000,
-                labels=labels,
-                color=colors,
-                color_labels=color_labels,
-                fname=self.get_path('%s_%s.pdf' % (par[4], self.name)),
-                **par[3])
+                size = s,
+                min_size = 30,
+                max_size = 1000,
+                labels = labels,
+                color = colors,
+                color_labels = color_labels,
+                fname = self.get_path('%s_%s.pdf' % (par.name, self.name)),
+                **par.gparam._asdict(),
+            )
 
     def all_ptms_list(self):
+        """
+        Obtains a list of PTM objects from all databases.
+        Creates a dict with resource names as keys and
+        lists of PTMs as values.
+        Result assigned to the ``ptms`` attribute.
+        """
 
         self.ptms = {
             #'DEPOD': net.load_depod_dmi(return_raw = True),
@@ -1355,6 +1462,12 @@ class Workflow(object):
         }
 
     def make_ptms_barplot(self):
+        """
+        Creates a barplot with enzyme-substrate resources on the x axis
+        and number of interactions on the y axis.
+        Each resource represented by two columns, one showing the total,
+        other the specific interactions.
+        """
 
         self.pp.uniq_ptms()
 
@@ -1368,7 +1481,8 @@ class Workflow(object):
                       uniqList(flatList(self.ptms.values()))), len(
                           self.ptms_all_in_network))]))
 
-        self.ptms_barplot = \
+        self.ptms_barplot = (
+            
             plot.MultiBarplot(
                 self.data_ptms[0],
                 self.data_ptms[1:],
@@ -1389,8 +1503,18 @@ class Workflow(object):
                 legend_font={'size': 'x-large'},
                 bar_args={'width': 0.8}
             )
+            
+        )
 
     def make_htp_characteristics(self):
+        """
+        Creates a 5 plot figures showing the high-throughput characteristics
+        of the network.
+        The x axis represents the number of interactions curated from one
+        single publication. Above this threshold we consider a study HTP.
+        The y axis on each plot shows various characteristics of the network
+        depending on the HTP threshold.
+        """
 
         self.htp_char = \
             plot.HtpCharacteristics(
@@ -1402,9 +1526,13 @@ class Workflow(object):
                 upper=self.htp_upper,
                 htdata=self.htdata
             )
+        
         self.htdata = self.htp_char.htdata
 
     def make_history_tree(self):
+        """
+        Creates a TikZ figure of the history of resources.
+        """
 
         self.history_tree = plot.HistoryTree(
             fname=self.get_path(self.history_tree_fname),
@@ -1412,6 +1540,9 @@ class Workflow(object):
             dotlineopacity=1.0)
 
     def compile_history_tree(self):
+        """
+        Compiles the history of resources figure by LaTeX.
+        """
 
         self.console('Running `%s` on `%s`' %
                      (self.latex, self.get_path(self.history_tree_fname)))
@@ -1419,7 +1550,8 @@ class Workflow(object):
         self.history_tree_latex_proc = subprocess.Popen(
             [self.latex, self.get_path(self.history_tree_fname)],
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
+            stderr=subprocess.PIPE
+        )
         self.history_tree_latex_output, self.history_tree_latex_error = \
             self.history_tree_latex_proc.communicate()
         self.history_tree_latex_return = \
@@ -1960,8 +2092,15 @@ class Workflow(object):
         self.consistency_table = tbl
 
     def load_pubmed_data(self):
+        """
+        Loads data about all references using the web query interface of
+        NCBI PubMed (E-utils).
+        """
+        
         self.pubmeds, self.pubmeds_earliest = _refs.get_pubmed_data(
-            self.pp, htp_threshold=None)
+            self.pp,
+            htp_threshold = None,
+        )
 
     def console(self, msg):
         _ = sys.stdout.write('\t:: %s\n' % msg)
