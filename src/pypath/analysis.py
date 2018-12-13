@@ -1027,7 +1027,7 @@ class Workflow(object):
                 fi.write('%s:' % name)
                 fi.write('\t%s\t%s\n' % stats.fisher_exact(cont))
 
-    def get_data(self, fun, attr):
+    def get_data(self, fun, attr = None):
         """
         Executes a method for each network and creates a list of
         tuples of resource names and results from the method.
@@ -1076,19 +1076,22 @@ class Workflow(object):
             w # vertex or edge
             for w in seq
             if (
-                s in data_formats.categories and # the resource has category
-                s in w['sources'] and # the element belongs to the resource
                 (
+                    s in data_formats.categories and # the resource
+                                                     # has category
+                    s in w['sources'] and # the element belongs
+                                          # to the resource
                     len(
                         w['sources'] & # set of resources for the element
                         getattr(data_formats, data_formats.categories[s])
                             # set of resources in the category
-                    ) or
-                    (
-                        s in w['cat'] and # if not a resource but a category
-                        len(w['cat']) == 1 # element belongs only to this
-                            # category
-                    )
+                    ) == 1
+                ) or (
+                    isinstance(s, tuple) and
+                    s[1] in w['cat'] and # if not a resource
+                                         # but a category
+                    len(w['cat']) == 1 # element belongs only to this
+                                       # category
                 )
             )
         ]
@@ -1107,7 +1110,7 @@ class Workflow(object):
             
             _ = sys.stdout.write('\t:: Plotting %s\n' % par[1])
             
-            # 
+            # attribute name for y variable
             data_attr = 'data_%s' % par.name
             
             # heights of the bars
@@ -1116,6 +1119,7 @@ class Workflow(object):
             # data for the shaded area heights
             if par.smethod is not None:
                 
+                # attribute name for 2nd y variable
                 data_attr2 = 'data_%s_2' % par.name
                 self.get_data(par.smethod, data_attr2)
             
@@ -1342,8 +1346,6 @@ class Workflow(object):
                 fname=self.pdf_vcount_order,
                 order='y',
             )
-        
-        return self.vcount_ordr_barplot
         
         # we anyways create this figure later
         # now we remove it
