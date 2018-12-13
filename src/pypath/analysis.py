@@ -799,7 +799,7 @@ class Workflow(object):
         if self.do_curation_table:
             self.curation_table()
             if self.do_compile_curation_table:
-                self.latex_compile(self.stable2file)
+                self.latex_compile(self.table2file)
         
         if self.do_multi_barplots:
             self.get_multibarplot_ordr()
@@ -967,12 +967,14 @@ class Workflow(object):
         # tuples representing the total per each category
         self.cats.update(
             dict(
-                (('All', c[0]), cc)
-                for c in iteritems(data_formats.catnames)
-                for cc in c[1]
-                if cc in self.pp.has_cats and (
+                (
+                    ('All', c[0]),
+                    cname
+                )
+                for c, cname in iteritems(data_formats.catnames)
+                if c[0] in self.pp.has_cats and (
                     not self.only_categories or
-                    cc in self.only_categories
+                    c[0] in self.only_categories
                 )
             )
         )
@@ -1336,8 +1338,11 @@ class Workflow(object):
                 desc=True,
                 lab_angle=90,
                 fname=self.pdf_vcount_order,
-                order='y'
+                order='y',
+                do = False,
             )
+        
+        return self.vcount_ordr_barplot
         
         # we anyways create this figure later
         # now we remove it
@@ -1832,6 +1837,10 @@ class Workflow(object):
             latex_hdr=False)
 
     def latex_compile(self, fname):
+        """
+        Compiles the tex file ``fname`` using the LaTeX compiler defined in
+        the ``latex`` attribute.
+        """
 
         self.console('Running `%s` on `%s`' %
                      (self.latex, self.get_path(fname)))
@@ -1846,7 +1855,7 @@ class Workflow(object):
                     self.get_path(fname)
                 ],
                 stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
+                stderr=subprocess.PIPE,
             )
             self.latex_output, self.latex_error = self.latex_proc.communicate(
                 timeout = self.latex_timeout

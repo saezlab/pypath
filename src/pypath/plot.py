@@ -212,6 +212,7 @@ class Plot(object):
 
 
 class MultiBarplot(Plot):
+    
     def __init__(self,
                  x,
                  y,
@@ -405,24 +406,53 @@ class MultiBarplot(Plot):
         Sets a list with category indices (integers) of length equal of x,
         and sets dicts to translate between category names and indices.
         """
+        
+        # setting category names
         self.cnames = None
+        
         if type(self.categories) is dict:
             # self.cnames: name -> number dict
-            if self.summary and any(
-                    map(lambda c: type(c) is tuple, self.categories.keys())):
+            # each category has a number
+            if (
+                # we have the summary panel of all categories
+                self.summary and
+                any(
+                    map(
+                        lambda c: type(c) is tuple,
+                        self.categories.keys()
+                    )
+                )
+            ):
                 self.cnames = dict(
-                    map(reversed,
-                        enumerate([self.summary_name] + sorted(
-                            list(set(self.categories.values()))))))
-            else:
-                self.cnames = dict(
-                    map(reversed,
+                    map(
+                        reversed,
                         enumerate(
-                            sorted(list(set(self.categories.values()))))))
-            print(self.cnames)
-            print(self.categories)
+                            [self.summary_name] +
+                            sorted(list(set(self.categories.values())))
+                        )
+                    )
+                )
+            else:
+                # only the categories, no summary panel
+                self.cnames = dict(
+                    map(
+                        reversed,
+                        enumerate(sorted(list(set(
+                            self.categories.values()
+                        ))))
+                    )
+                )
+            
+            # which element belongs to which category
+            # list of integers
+            # each category has a number
             self.cats = list(
-                map(lambda name: self.cnames[self.categories[name]], self.x))
+                map(
+                    lambda name: self.cnames[self.categories[name]],
+                    self.x
+                )
+            )
+            
         elif type(self.categories) is list:
             if type(self.categories[0]) is int:
                 self.cats = self.categories
@@ -442,7 +472,11 @@ class MultiBarplot(Plot):
             self.x = _x
         else:
             self.cats = [0] * len(self.x)
+        
+        # this is the number of subplots including the summary plot
         self.numof_cats = len(set(self.cats)) + (1 if self.summary else 0)
+        
+        # if category names provided directly
         if self.cnames is None:
             if self.cat_names is not None:
                 self.cnames = dict(zip(self.cat_names, list(set(self.cats))))
@@ -452,7 +486,10 @@ class MultiBarplot(Plot):
                         sorted(common.uniqList(self.cats))))
                 if len(self.cnames) == 1:
                     self.cnames = {self.xlab: 0}
+        
+        # dict to translate category number to category name
         self.cnums = dict(map(reversed, iteritems(self.cnames)))
+        
         self.cats = np.array(self.cats)
 
     def set_colors(self, colseries=''):
