@@ -780,8 +780,10 @@ class Workflow(object):
         if self.do_dirs_stacked:
             self.get_dirs_data()
         # for consistency plots and tables compile the consistency data
-        if self.do_consistency_dedrogram or \
-                self.do_consistency_table:
+        if (
+            self.do_consistency_dedrogram or
+            self.do_consistency_table
+        ):
             self.inconsistency_data()
 
     def make_plots(self):
@@ -1548,9 +1550,15 @@ class Workflow(object):
                      (self.latex, self.get_path(self.history_tree_fname)))
 
         self.history_tree_latex_proc = subprocess.Popen(
-            [self.latex, self.get_path(self.history_tree_fname)],
+            [
+                self.latex,
+                '-halt-on-error',
+                '-output-directory',
+                self.outdir,
+                self.get_path(self.history_tree_fname),
+            ],
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+            stderr=subprocess.PIPE,
         )
         self.history_tree_latex_output, self.history_tree_latex_error = \
             self.history_tree_latex_proc.communicate()
@@ -1830,18 +1838,32 @@ class Workflow(object):
 
         try:
             self.latex_proc = subprocess.Popen(
-                [self.latex, self.get_path(fname)],
+                [
+                    self.latex,
+                    '-halt-on-error',
+                    '-output-directory',
+                    self.outdir,
+                    self.get_path(fname)
+                ],
                 stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE)
+                stderr=subprocess.PIPE
+            )
             self.latex_output, self.latex_error = self.latex_proc.communicate(
-                timeout=self.latex_timeout)
+                timeout = self.latex_timeout
+            )
             self.latex_return = self.latex_proc.returncode
+            
         except subprocess.TimeoutExpired:
+            
             self.latex_return = 1
 
-        self.console('LaTeX %s' % ('compiled successfully'
-                                   if self.latex_return == 0 else
-                                   'compilation failed'))
+        self.console(
+            'LaTeX %s' % (
+                'compiled successfully'
+                    if self.latex_return == 0 else
+                'compilation failed'
+            )
+        )
 
     def inconsistency_data(self):
 
