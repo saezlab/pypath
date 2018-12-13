@@ -5475,7 +5475,7 @@ class PyPath(object):
 
             for i in es_or_vs:
 
-                if something(i[attr]):
+                if common.something(i[attr]):
                     yield i.index if index else i
 
     def having_eattr(self, attr, graph=None, index=True):
@@ -5668,7 +5668,7 @@ class PyPath(object):
                         list(
                             map(lambda r: _refs.Reference(int(r)), n[
                                 'attrsEdge']['references'])))
-                    g.es[edge]['negative_refs'].add(refs)
+                    g.es[edge]['negative_refs'].update(refs)
                     matches += 1
 
             prg.step()
