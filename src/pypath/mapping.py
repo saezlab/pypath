@@ -289,7 +289,7 @@ class MappingTable(object):
         """
         Reads a mapping table from UniProt "upload lists" service.
         """
-
+        
         url = urls.urls['uniprot_basic']['lists']
         post = {
             'from': source,
@@ -502,9 +502,9 @@ class Mapper(object):
             'refseqp': 'RefSeq',
             'refseqn': 'RefSeq_NT',
             'ensembl': 'Ensembl',
-            'ensg': 'Ensembl Genome',
-            'ensp': 'Ensembl_PRO',
-            'enst': 'Ensembl_TRS',
+            'ensg': 'ENSEMBL',
+            'ensp': 'ENSEMBL_PRO_ID',
+            'enst': 'ENSEMBL_TRS',
             'hgnc': 'HGNC'
         }
         self.types_name = dict(
@@ -575,10 +575,13 @@ class Mapper(object):
             if tbl is None:
 
                 if nameType in self.name_types:
+                    # for uniprot/uploadlists
+                    # we create here the mapping params
                     this_param = input_formats.UniprotListMapping(
                         nameType = nameType,
                         targetNameType = targetNameType,
-                        ncbi_tax_id = ncbi_tax_id)
+                        ncbi_tax_id = ncbi_tax_id
+                    )
 
                     tables[tblName] = MappingTable(
                         nameType,

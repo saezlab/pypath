@@ -2048,7 +2048,7 @@ categories = {
     'DEPOD': 'm',
     'phosphoELM': 'm',
     'MPPI': 'i',
-    'Guide2Pharma': 'p',
+    'Guide2Pharma': 'l',
     'TRIP': 'p',
     'AlzPathway': 'r',
     'PhosphoSite': 'm',

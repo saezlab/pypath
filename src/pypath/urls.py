@@ -30,8 +30,8 @@ urls = {
     },
     'uniprot_basic': {
         'label': 'URL for UniProt queries',
-        'url': 'http://www.uniprot.org/uniprot/',
-        'lists': 'http://www.uniprot.org/uploadlists/'
+        'url': 'https://www.uniprot.org/uniprot/',
+        'lists': 'https://www.uniprot.org/uploadlists/'
     },
     'corum': {
         'label':

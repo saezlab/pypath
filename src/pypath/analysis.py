@@ -193,18 +193,18 @@ class Workflow(object):
             # colors for the categories
             'ccolors': {
                 'p': '#77AADD',
-                'm': '#77CCCC',
-                'i': '#DDAA77',
-                'r': '#CC99BB',
-                'l': '#77AADD',
+                'l': '#77CCCC',
+                'm': '#DDAA77',
+                'i': '#CC99BB',
+                'r': '#77AADD',
             },
             # colors of the shaded parts
             'ccolors2': {
                 'p': '#4477AA',
-                'm': '#117777',
-                'i': '#774411',
-                'r': '#771155',
-                'l': '#4477AA',
+                'l': '#117777',
+                'm': '#774411',
+                'i': '#771155',
+                'r': '#4477AA',
             },
             'group_colors': [
                 '#4477AA',
@@ -669,7 +669,7 @@ class Workflow(object):
             ),
             ScatterplotParam(
                 lambda gs: len(set(gs[0].vs['name']) &
-                               ScatterplotParam(set(self.pp.lists['dis']))),
+                    (set(self.pp.lists['dis']))),
                 lambda gs: len(set(gs[0].vs['name']) &
                                set(self.pp.lists['cdv'])),
                 lambda gs: gs[0].vcount(),
@@ -859,7 +859,7 @@ class Workflow(object):
         if self.do_resource_list:
             self.resource_list_table()
             if self.do_compile_resource_list:
-                self.compile_latex(self.resource_list_fname)
+                self.latex_compile(self.resource_list_fname)
         
         if self.do_consistency_dedrogram:
             self.make_consistency_dendrogram()
@@ -1344,11 +1344,9 @@ class Workflow(object):
                 do = False,
             )
         
-        return self.vcount_ordr_barplot
-        
         # we anyways create this figure later
         # now we remove it
-        os.remove(self.pdf_vcount_order)
+        # os.remove(self.pdf_vcount_order)
         
         self.vcount_ordr = self.vcount_ordr_barplot.x
     

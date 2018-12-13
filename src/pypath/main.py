@@ -2623,11 +2623,8 @@ class PyPath(object):
 
         tfs = dataio.get_tfcensus()
         
-        utfs = []
-        # this part turned off 12/2018 bc UniProt mapping service
-        # is having issues with Ensemble IDs
-        # utfs = [self.mapper.map_name(tf, 'ensg', 'uniprot', 9606)
-        #        for tf in tfs['ensg']]
+        utfs = [self.mapper.map_name(tf, 'ensembl', 'uniprot', 9606)
+                for tf in tfs['ensg']]
         utfs += [self.mapper.map_name(h, 'genesymbol', 'uniprot', 9606)
                  for h in tfs['hgnc']]
 
@@ -9903,7 +9900,7 @@ class PyPath(object):
 
             vids_extracell   = self.select_by_go(CC_EXTRACELL,   go_desc)
             vids_exosome     = self.select_by_go(CC_EXOSOME,     go_desc)
-            vids_extracell   = vids_extracell - vids_exosome
+            #vids_extracell   = vids_extracell - vids_exosome
             vids_plasmamem   = self.select_by_go(CC_PLASMAMEM,   go_desc)
             vids_recbinding  = self.select_by_go(MF_RECBINDING,  go_desc)
             vids_recactivity = self.select_by_go(MF_RECACTIVITY, go_desc)

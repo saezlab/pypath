@@ -207,7 +207,11 @@ class Plot(object):
         '''
         Saves and closes a figure.
         '''
-        self.fig.tight_layout()
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.fig.tight_layout()
+        
         self.fig.savefig(self.fname)
         plt.close(self.fig)
 
@@ -1328,7 +1332,7 @@ class StackedBarplot(object):
         self.ax.set_axisbelow(True)
 
     def set_gridlines(self):
-        self.ax.set_axis_bgcolor('#EAEAF2')
+        self.ax.set_facecolor('#EAEAF2')
         list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
         self.ax.tick_params(which='both', length=0)
 
@@ -1360,7 +1364,7 @@ class StackedBarplot(object):
 
         for j in xrange(len(self.y), 0, -1):
             this_level = reduce(lambda l1, l2: l1.__add__(l2), self.y[:j])
-            self.ax.bar(left=self.xcoo,
+            self.ax.bar(x=self.xcoo,
                         height=this_level,
                         tick_label=self.x,
                         color=self.colors[j - 1],
@@ -1410,10 +1414,18 @@ class StackedBarplot(object):
         """
         Applies tight layout, draws the figure, writes the file and closes.
         """
-        self.fig.tight_layout()
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.fig.tight_layout()
+        
         self.fig.subplots_adjust(top=0.85)
         self.cvs.draw()
-        self.cvs.print_figure(self.pdf)
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.cvs.print_figure(self.pdf)
+        
         self.pdf.close()
         self.fig.clf()
 
@@ -1570,7 +1582,11 @@ class ScatterPlus(object):
         self.axes_ticklabels()
         self.set_title()
         self.axes_limits()
-        self.fig.tight_layout()
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.fig.tight_layout()
+        
         self.axes_limits()
         self.remove_annotation_overlaps()
         self.make_legend()
@@ -1738,7 +1754,7 @@ class ScatterPlus(object):
         self.ax.set_axisbelow(True)
 
     def set_gridlines(self):
-        self.ax.set_axis_bgcolor('#EAEAF2')
+        self.ax.set_facecolor('#EAEAF2')
         list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
         self.ax.tick_params(which='both', length=0)
 
@@ -1964,14 +1980,23 @@ class ScatterPlus(object):
             self.ax.yaxis.label.set_fontproperties(self.fp_axis_lab)
 
     def remove_annotation_overlaps(self):
+        
+        return None
+        
         if self.labels is not None:
+            
             self.fig.savefig(self.fname)
-            # self.ax.figure.canvas.draw()
+            self.ax.figure.canvas.draw()
             steps = [0] * len(self.annots)
             for i, a2 in enumerate(self.annots):
                 overlaps = False
                 for z in xrange(100):
                     for a1 in self.annots[:i]:
+                        print(a1, a2)
+                        if a1 is None or a2 is None:
+                            
+                            continue
+                        
                         if overlap(a1.get_window_extent(),
                                    a2.get_window_extent()):
                             #print('Overlapping labels: %s and %s' % (a1._text, a2._text))
@@ -1996,7 +2021,11 @@ class ScatterPlus(object):
         """
         Applies tight layout, draws the figure, writes the file and closes.
         """
-        self.fig.tight_layout()
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.fig.tight_layout()
+        
         self.fig.subplots_adjust(top=0.92)
         self.cvs.draw()
         self.cvs.print_figure(self.pdf)
@@ -2230,6 +2259,7 @@ class SimilarityGraph(object):
         self.size_param_defaults = {
             'vertex': (1.12, 0.55, 0.040),
             'edge': (1.25, 0.48, 0.065),
+            # 'edge': (1.25, 0.48, 0.065),
             'curation': (0.125, 0.44, 0.08)
         }
         self.scale_defaults = {
@@ -2239,9 +2269,10 @@ class SimilarityGraph(object):
                 'ew': lambda x: (x * 10.0)**1.8
             },
             'edge': {
+                #'vscale': [10, 50, 100],
                 'vscale': [50, 100, 500, 1000, 2000],
                 'escale': [0.05, 0.1, 0.2, 0.5],
-                'ew': lambda x: (x * 10.0)**1.8
+                'ew': lambda x: (x * 10.0)**1.3 # this was 1.8
             },
             'curation': {
                 'vscale': [100, 1000, 5000, 10000, 20000],
@@ -3080,7 +3111,7 @@ class HtpCharacteristics(object):
             self.ax.yaxis.grid(True, color='#FFFFFF', lw=2, ls='solid')
             self.ax.xaxis.grid(False)
             self.ax.set_axisbelow(True)
-            self.ax.set_axis_bgcolor('#EAEAF2')
+            self.ax.set_facecolor('#EAEAF2')
             list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
             self.ax.tick_params(which='both', length=0)
 
@@ -3118,10 +3149,18 @@ class HtpCharacteristics(object):
         """
         Applies tight layout, draws the figure, writes the file and closes.
         """
-        self.fig.tight_layout()
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.fig.tight_layout()
+        
         self.fig.subplots_adjust(top=0.94)
         self.cvs.draw()
-        self.cvs.print_figure(self.pdf)
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.cvs.print_figure(self.pdf)
+        
         self.pdf.close()
         self.fig.clf()
 
@@ -3369,7 +3408,7 @@ class RefsComposite(object):
         self.ax.yaxis.grid(True, color='#FFFFFF', lw=1, ls='solid')
         self.ax.xaxis.grid(False)
         self.ax.set_axisbelow(True)
-        self.ax.set_axis_bgcolor('#EAEAF2')
+        self.ax.set_facecolor('#EAEAF2')
         list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
         self.ax.tick_params(which='both', length=0)
 
@@ -3413,7 +3452,7 @@ class RefsComposite(object):
         self.ax.xaxis.grid(True, color='#FFFFFF', lw=1, ls='solid')
         self.ax.yaxis.grid(False)
         self.ax.set_axisbelow(True)
-        self.ax.set_axis_bgcolor('#EAEAF2')
+        self.ax.set_facecolor('#EAEAF2')
         list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
         self.ax.tick_params(which='both', length=0)
 
@@ -3455,7 +3494,7 @@ class RefsComposite(object):
         self.ax.xaxis.grid(True, color='#FFFFFF', lw=1, ls='solid')
         self.ax.yaxis.grid(False)
         self.ax.set_axisbelow(True)
-        self.ax.set_axis_bgcolor('#EAEAF2')
+        self.ax.set_facecolor('#EAEAF2')
         list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
         self.ax.tick_params(which='both', length=0)
 
@@ -3502,7 +3541,7 @@ class RefsComposite(object):
         self.ax.yaxis.grid(True, color='#FFFFFF', lw=1, ls='solid')
         self.ax.xaxis.grid(False)
         self.ax.set_axisbelow(True)
-        self.ax.set_axis_bgcolor('#EAEAF2')
+        self.ax.set_facecolor('#EAEAF2')
         list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
         self.ax.tick_params(which='both', length=0)
 
@@ -3593,7 +3632,7 @@ class RefsComposite(object):
         self.ax.yaxis.grid(True, color='#FFFFFF', lw=1, ls='solid')
         self.ax.xaxis.grid(False)
         self.ax.set_axisbelow(True)
-        self.ax.set_axis_bgcolor('#EAEAF2')
+        self.ax.set_facecolor('#EAEAF2')
         list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
         self.ax.tick_params(which='both', length=0)
 
@@ -3610,10 +3649,18 @@ class RefsComposite(object):
         """
         Applies tight layout, draws the figure, writes the file and closes.
         """
-        self.fig.tight_layout()
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.fig.tight_layout()
+        
         self.fig.subplots_adjust(top=0.92)
         self.cvs.draw()
-        self.cvs.print_figure(self.pdf)
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.cvs.print_figure(self.pdf)
+        
         self.pdf.close()
         self.fig.clf()
 
@@ -3747,7 +3794,7 @@ class CurationPlot(object):
         self.first_y_edges = dict(self.pubmeds.groupby(['eid']).year.min())
 
         self.ecount_y = dict(
-            (y, len([_ for fy in self.first_y_edges.values() if fy <= y]))
+            (y, len([fy for fy in self.first_y_edges.values() if fy <= y]))
             for y in np.unique(self.pubmeds.year))
 
         self.vcount_y = dict((y, len(
@@ -3814,7 +3861,7 @@ class CurationPlot(object):
         self.ax.yaxis.grid(True, color='#FFFFFF', lw=1, ls='solid')
         self.ax.xaxis.grid(False)
         self.ax.set_axisbelow(True)
-        self.ax.set_axis_bgcolor('#EAEAF2')
+        self.ax.set_facecolor('#EAEAF2')
         list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
         self.ax.tick_params(which='both', length=0)
 
@@ -3822,14 +3869,23 @@ class CurationPlot(object):
         """
         Applies tight layout, draws the figure, writes the file and closes.
         """
-        self.fig.tight_layout()
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.fig.tight_layout()
+        
         self.cvs.draw()
-        self.cvs.print_figure(self.pdf)
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.cvs.print_figure(self.pdf)
+        
         self.pdf.close()
         self.fig.clf()
 
 
 class BarplotsGrid(object):
+    
     def __init__(self,
                  pp,
                  x,
@@ -4077,9 +4133,9 @@ class BarplotsGrid(object):
                         ordr = ordr[::-1]
                     y = y[ordr]
                     x = x[ordr]
-                self.ax.bar(left=np.arange(len(x)),
-                            height=y,
-                            tick_label=x,
+                self.ax.bar(x = np.arange(len(x)),
+                            height = y,
+                            tick_label = x,
                             color=self.get_color(x),
                             **copy.deepcopy(self.bar_args))
                 self.level_by_plots.append(level)
@@ -4098,8 +4154,15 @@ class BarplotsGrid(object):
                     self.ax.set_xlim(
                         [list(x).index(self.xmin), self.ax.get_xlim()[1]])
                 list(
-                    map(lambda tl: tl.set_fontproperties(self.fp_small_ticklabel if self.small_xticklabels else self.fp_ticklabel) or tl.set_rotation(90),
-                        self.ax.get_xticklabels()))
+                    map(lambda tl:
+                        tl.set_fontproperties(
+                            self.fp_small_ticklabel
+                                if self.small_xticklabels else
+                            self.fp_ticklabel
+                        ) or tl.set_rotation(90),
+                        self.ax.get_xticklabels()
+                    )
+                )
                 list(
                     map(lambda tl: tl.set_fontproperties(self.fp_ticklabel),
                         self.ax.get_yticklabels()))
@@ -4108,7 +4171,7 @@ class BarplotsGrid(object):
                 self.ax.yaxis.grid(True, color='#FFFFFF', lw=1, ls='solid')
                 self.ax.xaxis.grid(False)
                 self.ax.set_axisbelow(True)
-                self.ax.set_axis_bgcolor('#EAEAF2')
+                self.ax.set_facecolor('#EAEAF2')
                 list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
                 self.ax.tick_params(which='both', length=0)
                 self.ax.set_title(level, fontproperties=self.fp_axis_lab)
@@ -4123,7 +4186,7 @@ class BarplotsGrid(object):
                 # self.ax.xaxis.label.set_verticalalignment('bottom')
                 #list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
                 #self.ax.tick_params(which = 'both', length = 0)
-                # self.ax.set_axis_bgcolor('#CCCCCC')
+                # self.ax.set_facecolor('#CCCCCC')
 
                 if col == 0:
                     self.get_subplot(row, 0)
@@ -4164,10 +4227,18 @@ class BarplotsGrid(object):
         Applies tight layout, draws the figure, writes the file and closes.
         """
         #self.gs.update(wspace=0.1, hspace=0.1)
-        self.fig.tight_layout()
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.fig.tight_layout()
+        
         self.fig.subplots_adjust(top=0.94)
         self.cvs.draw()
-        self.cvs.print_figure(self.pdf)
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.cvs.print_figure(self.pdf)
+        
         self.pdf.close()
         self.fig.clf()
 
@@ -4295,7 +4366,7 @@ class Dendrogram(object):
         self.ax.xaxis.grid(True, color='#FFFFFF', lw=1, ls='solid')
         self.ax.yaxis.grid(False)
         self.ax.set_axisbelow(True)
-        self.ax.set_axis_bgcolor('#EAEAF2')
+        self.ax.set_facecolor('#EAEAF2')
         list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
         self.ax.tick_params(which='both', length=0)
 
@@ -4304,9 +4375,16 @@ class Dendrogram(object):
         Applies tight layout, draws the figure, writes the file and closes.
         """
         #self.gs.update(wspace=0.1, hspace=0.1)
-        self.fig.tight_layout()
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.fig.tight_layout()
+        
         #self.fig.subplots_adjust(top = 0.94)
         self.cvs.draw()
-        self.cvs.print_figure(self.pdf)
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.cvs.print_figure(self.pdf)
+        
         self.pdf.close()
         self.fig.clf()
