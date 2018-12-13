@@ -3711,6 +3711,9 @@ def go_descendants_goose(aspects=('C','F','P')):
     for term, ancs in iteritems(anc):
 
         for terma in ancs:
+            
+            if len(terma) == 1:
+                print(terma)
 
             desc[terma].add(term)
 

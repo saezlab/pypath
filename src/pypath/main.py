@@ -9658,6 +9658,10 @@ class PyPath(object):
         
         _method = 'union' if method == 'ANY' else 'intersection'
         
+        if isinstance(go_terms, common.basestring):
+            
+            go_terms = (go_terms,)
+        
         if go_desc is None:
             
             go_desc = dataio.go_descendants_goose(aspects = aspects)
@@ -9887,7 +9891,7 @@ class PyPath(object):
         MF_RECBINDING  = 'GO:0005102' # select ligands
         MF_RECACTIVITY = 'GO:0038023' # select receptors
         MF_ECM_STRUCT  = 'GO:0005201' # select matrix structure proteins
-                                      # e.g. collagene
+                                        # e.g. collagene
         MF_CATALYTIC   = 'GO:0003824' # select enzymes, e.g. MMPs
 
         if inference_from_go:
