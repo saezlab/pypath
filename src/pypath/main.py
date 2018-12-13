@@ -9891,7 +9891,7 @@ class PyPath(object):
         MF_RECBINDING  = 'GO:0005102' # select ligands
         MF_RECACTIVITY = 'GO:0038023' # select receptors
         MF_ECM_STRUCT  = 'GO:0005201' # select matrix structure proteins
-                                        # e.g. collagene
+                                      # e.g. collagene
         MF_CATALYTIC   = 'GO:0003824' # select enzymes, e.g. MMPs
 
         if inference_from_go:

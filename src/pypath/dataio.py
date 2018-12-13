@@ -4431,7 +4431,9 @@ def cellphonedb_interactions(
         sources = (
             'CellPhoneDB'
                 if l[1] == 'curated' else
-            '%s;CellPhoneDB' % l[1]
+            '%s;CellPhoneDB' % (
+                l[1].replace('guidetopharmacology.org', 'Guide2Pharma_CP')
+            )
         )
         refs   = ';'.join(repmid.findall(l[8]))
 
