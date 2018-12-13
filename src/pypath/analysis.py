@@ -1087,8 +1087,7 @@ class Workflow(object):
                             # set of resources in the category
                     ) == 1
                 ) or (
-                    isinstance(s, tuple) and
-                    s[1] in w['cat'] and # if not a resource
+                    s in w['cat'] and # if not a resource
                                          # but a category
                     len(w['cat']) == 1 # element belongs only to this
                                        # category
