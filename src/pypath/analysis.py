@@ -1341,8 +1341,9 @@ class Workflow(object):
                 lab_angle=90,
                 fname=self.pdf_vcount_order,
                 order='y',
-                do = False,
             )
+        
+        return self.vcount_ordr_barplot
         
         # we anyways create this figure later
         # now we remove it
