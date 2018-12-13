@@ -257,7 +257,7 @@ class Workflow(object):
                 ('cdv', 'Cancer drivers'),
                 ('sig', 'Signaling proteins'),
             ],
-            'cat_ordr': [
+            'cat_ordr_default': [
                 'Activity flow',
                 'Ligand-receptor',
                 'Enzyme-substrate',
@@ -949,6 +949,8 @@ class Workflow(object):
     def separate(self):
         """
         Separates the network by resource category and resource.
+        Also defines important variables for category names and their order
+        which later will be used by the multi-section barplots.
         """
         
         # separated by resource
@@ -982,12 +984,12 @@ class Workflow(object):
         # order of the categories on the multi section barplots
         self.cat_ordr = [
             c
-            for c in self.cat_ordr # as given in the settings
+            for c in self.cat_ordr_default # as given in the settings
             # if the category presents in the network
-            if c in self.pp.has_cats and (
+            if data_formats.catletters[c] in self.pp.has_cats and (
                 # and it is allowed in the settings
                 self.only_categories is None or
-                c in self.only_categories
+                data_formats.catletters[c] in self.only_categories
             )
         ]
 

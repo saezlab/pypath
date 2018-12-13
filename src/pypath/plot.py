@@ -29,6 +29,7 @@ import collections
 import imp
 import copy
 import subprocess
+import warnings
 from datetime import date
 
 import math
@@ -547,51 +548,90 @@ class MultiBarplot(Plot):
         """
         Defines the order of the subplots.
         """
+        
         if self.cat_ordr is None and self.cat_names is not None:
+            
             self.cat_ordr = common.uniqOrdList(sorted(self.cat_names))
+        
         elif self.cat_ordr is None:
+            
             self.cat_ordr = common.uniqList(sorted(self.cnames.keys()))
 
     def by_plot(self):
         """
         Sets list of lists with x and y values and colors by category.
         """
+        
         # print(self.cnames)
         # print(self.cnums)
         # print(self.cats)
         # print(self.cat_ordr)
-        #print(list(sorted(filter(lambda s: type(s[1]) is tuple, zip(self.cats, self.x, self.y)), key = lambda s: self.cat_ordr.index(self.cnums[s[0]]))))
+        # print(list(sorted(filter(lambda s: type(s[1]) is tuple,
+        # zip(self.cats, self.x, self.y)),
+        # key = lambda s: self.cat_ordr.index(self.cnums[s[0]]))))
+        
+        # variables to set
         attrs = ['x', 'y', 'col', 'cats']
+        
+        # if we have second series of data for shaded bars
         if hasattr(self, 'y2') and self.y2 is not None:
             attrs.extend(['y2', 'col2'])
+        
+        # for grouped barplot
         if self.grouped:
+            
             for i in xrange(len(self.grouped_y)):
+                
                 attrs.append('y_g%u' % i)
                 attrs.append('col_g%u' % i)
+        
         for dim in attrs:
+            
             attr = 'cat_%s' % dim
-            # this only if we do summary plot:
+            # this only if we do summary plot
+            # (the one on the left with summary of categories)
             if self.summary:
+                
                 setattr(
                     self,
-                    attr, [
+                    attr,
+                    [
                         list(
-                            map(lambda s: s[2],
+                            map(
+                                lambda s: s[2],
                                 sorted(
-                                    filter(lambda s: type(s[1]) is tuple,
-                                           zip(self.cats, self.x,
-                                               getattr(self, dim))),
-                                    key=lambda s: self.cat_ordr.index(self.cnums[s[0]])
-                                )))
-                    ])
+                                    filter(
+                                        lambda s: isinstance(s[1], tuple),
+                                           zip(
+                                               self.cats,
+                                               self.x,
+                                               getattr(self, dim)
+                                            )
+                                        ),
+                                    key = lambda s:
+                                        self.cat_ordr.index(self.cnums[s[0]])
+                                )
+                            )
+                        )
+                    ]
+                )
+                
             else:
                 setattr(self, attr, [])
+        
         if self.summary:
             # only here we set the elements of the summary subplot
             # to the dummy category of summary
             self.cats = list(
-                map(lambda name: self.cnames[self.summary_name] if type(name) is tuple else self.cnames[self.categories[name]],
-                    self.x))
+                map(
+                    lambda name:
+                        self.cnames[self.summary_name]
+                            if type(name) is tuple else
+                        self.cnames[self.categories[name]],
+                    self.x
+                )
+            )
+        
         for dim in attrs:
             attr = 'cat_%s' % dim
             # this is what is always necessary:
@@ -635,16 +675,21 @@ class MultiBarplot(Plot):
             )))
         else:
             self.ordr = np.array(xrange(len(self.x)))
+        # descending order
         if self.desc:
             self.ordr = self.ordr[::-1]
+        # ordering all variables
         self.x = self.x[self.ordr]
         self.y = self.y[self.ordr]
         self.col = self.col[self.ordr]
         self.cats = self.cats[self.ordr]
+        # if we have second data series (shaded parts of bars)
+        # order also those variables
         if hasattr(self, 'y2') and self.y2 is not None:
             self.y2 = self.y2[self.ordr]
         if hasattr(self, 'col2'):
             self.col2 = self.col2[self.ordr]
+        # for grouped barplot
         if self.grouped:
             for g in xrange(len(self.grouped_y)):
                 yattr = 'y_g%u' % g
@@ -654,15 +699,18 @@ class MultiBarplot(Plot):
 
     def set_figsize(self):
         """
-        Converts width and height to a tuple so can be used for figsize.
+        Converts width and height to a tuple which can be used as figsize.
         """
+        
         if hasattr(self, 'width') and hasattr(self, 'height'):
+            
             self.figsize = (self.width, self.height)
 
     def init_fig(self):
         """
         Creates a figure using the object oriented matplotlib interface.
         """
+        
         self.pdf = mpl.backends.backend_pdf.PdfPages(self.fname)
         self.fig = mpl.figure.Figure(figsize=self.figsize)
         self.cvs = mpl.backends.backend_pdf.FigureCanvasPdf(self.fig)
@@ -673,6 +721,7 @@ class MultiBarplot(Plot):
         with proportions according to the number of elements
         in each subplot.
         """
+        
         self.gs = mpl.gridspec.GridSpec(
             2,
             self.numof_cats,
@@ -713,21 +762,21 @@ class MultiBarplot(Plot):
                         )
                     )
                 )
-            self.ax.bar(left=xcoo - correction,
-                        height=self.cat_y[i],
-                        color=self.cat_col[i],
-                        tick_label=xtlabs,
+            self.ax.bar(x = xcoo - correction,
+                        height = self.cat_y[i],
+                        color = self.cat_col[i],
+                        tick_label = xtlabs,
                         **copy.deepcopy(self.bar_args))
             if self.grouped:
                 for j in xrange(1, len(self.grouped_y)):
-                    self.ax.bar(left=xcoo + width * j - correction,
-                                height=getattr(self, 'cat_y_g%u' % j)[i],
-                                color=getattr(self, 'cat_col_g%u' % j)[i],
+                    self.ax.bar(x = xcoo + width * j - correction,
+                                height = getattr(self, 'cat_y_g%u' % j)[i],
+                                color = getattr(self, 'cat_col_g%u' % j)[i],
                                 **copy.deepcopy(self.bar_args))
             if hasattr(self, 'y2') and self.y2 is not None:
-                self.ax.bar(left=xcoo - correction,
-                            height=self.cat_y2[i],
-                            color=self.cat_col2[i],
+                self.ax.bar(x = xcoo - correction,
+                            height = self.cat_y2[i],
+                            color = self.cat_col2[i],
                             **copy.deepcopy(self.bar_args))
             self.labels()
             self.ax.xaxis.grid(False)
@@ -743,7 +792,7 @@ class MultiBarplot(Plot):
             self.ax.yaxis.grid(True, color='#FFFFFF', lw=1, ls='solid')
             self.ax.xaxis.grid(False)
             self.ax.set_axisbelow(True)
-            self.ax.set_axis_bgcolor('#EAEAF2')
+            self.ax.set_facecolor('#EAEAF2')
             list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
             self.ax.tick_params(which='both', length=0)
 
@@ -833,11 +882,20 @@ class MultiBarplot(Plot):
         """
         Applies tight layout, draws the figure, writes the file and closes.
         """
-        self.fig.tight_layout()
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.fig.tight_layout()
+        
         if self.maketitle:
             self.fig.subplots_adjust(top=0.85)
+        
         self.cvs.draw()
-        self.cvs.print_figure(self.pdf)
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.cvs.print_figure(self.pdf)
+        
         self.pdf.close()
         self.fig.clf()
 
