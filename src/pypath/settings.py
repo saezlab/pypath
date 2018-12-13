@@ -53,6 +53,7 @@ _defaults = {
     'slk3_edges': 'signalink3_edges.tsv',
     'slk01human': 'slk01human.csv',
     'cachedir': None,
+    'pubmed_cache': 'pubmed.pickle',
 }
 
 in_datadir = {
@@ -72,6 +73,11 @@ in_datadir = {
     'old_dbptm',
     'slk3_edges',
     'slk01human',
+}
+
+
+in_cachedir = {
+    'pubmed_cache',
 }
 
 
@@ -95,6 +101,10 @@ def reset_all():
             '.pypath',
             'cache',
         )
+    
+    for k in in_cachedir:
+        
+        setattr(settings, k, os.path.join(settings.cachedir, _defaults[k]))
     
     globals()['settings'] = settings
 

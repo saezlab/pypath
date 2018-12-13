@@ -4035,7 +4035,6 @@ def get_pubmeds(pmids):
             'retmode': 'json',
             'db': 'pubmed'
         }
-        #hdr = ['X-HTTP-Method-Override:GET']
         for i in xrange(3):
             try:
                 c = curl.Curl(
@@ -4044,7 +4043,6 @@ def get_pubmeds(pmids):
                     cache=cache,
                     post=post,
                     override_post = True,
-                    #req_headers=hdr,
                 )
                 res = c.result
                 data = dict([(k, v)

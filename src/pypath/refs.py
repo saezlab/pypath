@@ -32,6 +32,7 @@ import pypath.curl as curl
 import pypath.common as common
 import pypath.urls as urls
 import pypath.dataio as dataio
+import pypath.settings as settings
 
 
 class Reference(object):
@@ -141,8 +142,7 @@ def pmids_list(idList):
 
 def get_pubmed_data(
         pp,
-        cache = 'pubmed2.pickle',
-        cachedir = 'cache',
+        cachefile = None,
         htp_threshold = 20
     ):
     """
@@ -156,7 +156,10 @@ def get_pubmed_data(
         above the study considered to be high-throughput.
     """
     
-    cachefile = os.path.join(cachedir, cache)
+    
+    if cachefile is None:
+        
+        cachefile = settings.get('pubmed_cache')
 
     if htp_threshold is not None:
         pp.htp_stats()
