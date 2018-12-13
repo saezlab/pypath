@@ -496,9 +496,11 @@ urls = {
     },
     'pubmed-eutils': {
         'label': 'Retrieving summary of PubMed records',
-        'url': 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi',
-        'conv':
-        'http://www.ncbi.nlm.nih.gov/pmc/utils/idconv/v1.0/?ids=%s&format=json'
+        'url': 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi',
+        'conv': (
+            'https://www.ncbi.nlm.nih.gov/pmc/utils/idconv/'
+            'v1.0/?ids=%s&format=json'
+        )
     },
     'pubmed': {
         'label': 'PubMed baseurl',
