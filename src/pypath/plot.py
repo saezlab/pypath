@@ -29,6 +29,7 @@ import collections
 import imp
 import copy
 import subprocess
+import warnings
 from datetime import date
 
 import math
@@ -151,6 +152,7 @@ def get_moves(bbox1, bbox2):
 
 
 class Plot(object):
+    
     def __init__(self,
                  fname=None,
                  font_family='Helvetica Neue LT Std',
@@ -205,12 +207,17 @@ class Plot(object):
         '''
         Saves and closes a figure.
         '''
-        self.fig.tight_layout()
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.fig.tight_layout()
+        
         self.fig.savefig(self.fname)
         plt.close(self.fig)
 
 
 class MultiBarplot(Plot):
+    
     def __init__(self,
                  x,
                  y,
@@ -404,22 +411,53 @@ class MultiBarplot(Plot):
         Sets a list with category indices (integers) of length equal of x,
         and sets dicts to translate between category names and indices.
         """
+        
+        # setting category names
         self.cnames = None
+        
         if type(self.categories) is dict:
             # self.cnames: name -> number dict
-            if self.summary and any(
-                    map(lambda c: type(c) is tuple, self.categories.keys())):
+            # each category has a number
+            if (
+                # we have the summary panel of all categories
+                self.summary and
+                any(
+                    map(
+                        lambda c: type(c) is tuple,
+                        self.categories.keys()
+                    )
+                )
+            ):
                 self.cnames = dict(
-                    map(reversed,
-                        enumerate([self.summary_name] + sorted(
-                            list(set(self.categories.values()))))))
-            else:
-                self.cnames = dict(
-                    map(reversed,
+                    map(
+                        reversed,
                         enumerate(
-                            sorted(list(set(self.categories.values()))))))
+                            [self.summary_name] +
+                            sorted(list(set(self.categories.values())))
+                        )
+                    )
+                )
+            else:
+                # only the categories, no summary panel
+                self.cnames = dict(
+                    map(
+                        reversed,
+                        enumerate(sorted(list(set(
+                            self.categories.values()
+                        ))))
+                    )
+                )
+            
+            # which element belongs to which category
+            # list of integers
+            # each category has a number
             self.cats = list(
-                map(lambda name: self.cnames[self.categories[name]], self.x))
+                map(
+                    lambda name: self.cnames[self.categories[name]],
+                    self.x
+                )
+            )
+            
         elif type(self.categories) is list:
             if type(self.categories[0]) is int:
                 self.cats = self.categories
@@ -439,7 +477,11 @@ class MultiBarplot(Plot):
             self.x = _x
         else:
             self.cats = [0] * len(self.x)
+        
+        # this is the number of subplots including the summary plot
         self.numof_cats = len(set(self.cats)) + (1 if self.summary else 0)
+        
+        # if category names provided directly
         if self.cnames is None:
             if self.cat_names is not None:
                 self.cnames = dict(zip(self.cat_names, list(set(self.cats))))
@@ -449,7 +491,10 @@ class MultiBarplot(Plot):
                         sorted(common.uniqList(self.cats))))
                 if len(self.cnames) == 1:
                     self.cnames = {self.xlab: 0}
+        
+        # dict to translate category number to category name
         self.cnums = dict(map(reversed, iteritems(self.cnames)))
+        
         self.cats = np.array(self.cats)
 
     def set_colors(self, colseries=''):
@@ -507,51 +552,90 @@ class MultiBarplot(Plot):
         """
         Defines the order of the subplots.
         """
+        
         if self.cat_ordr is None and self.cat_names is not None:
+            
             self.cat_ordr = common.uniqOrdList(sorted(self.cat_names))
+        
         elif self.cat_ordr is None:
+            
             self.cat_ordr = common.uniqList(sorted(self.cnames.keys()))
 
     def by_plot(self):
         """
         Sets list of lists with x and y values and colors by category.
         """
+        
         # print(self.cnames)
         # print(self.cnums)
         # print(self.cats)
         # print(self.cat_ordr)
-        #print(list(sorted(filter(lambda s: type(s[1]) is tuple, zip(self.cats, self.x, self.y)), key = lambda s: self.cat_ordr.index(self.cnums[s[0]]))))
+        # print(list(sorted(filter(lambda s: type(s[1]) is tuple,
+        # zip(self.cats, self.x, self.y)),
+        # key = lambda s: self.cat_ordr.index(self.cnums[s[0]]))))
+        
+        # variables to set
         attrs = ['x', 'y', 'col', 'cats']
+        
+        # if we have second series of data for shaded bars
         if hasattr(self, 'y2') and self.y2 is not None:
             attrs.extend(['y2', 'col2'])
+        
+        # for grouped barplot
         if self.grouped:
+            
             for i in xrange(len(self.grouped_y)):
+                
                 attrs.append('y_g%u' % i)
                 attrs.append('col_g%u' % i)
+        
         for dim in attrs:
+            
             attr = 'cat_%s' % dim
-            # this only if we do summary plot:
+            # this only if we do summary plot
+            # (the one on the left with summary of categories)
             if self.summary:
+                
                 setattr(
                     self,
-                    attr, [
+                    attr,
+                    [
                         list(
-                            map(lambda s: s[2],
+                            map(
+                                lambda s: s[2],
                                 sorted(
-                                    filter(lambda s: type(s[1]) is tuple,
-                                           zip(self.cats, self.x,
-                                               getattr(self, dim))),
-                                    key=lambda s: self.cat_ordr.index(self.cnums[s[0]])
-                                )))
-                    ])
+                                    filter(
+                                        lambda s: isinstance(s[1], tuple),
+                                           zip(
+                                               self.cats,
+                                               self.x,
+                                               getattr(self, dim)
+                                            )
+                                        ),
+                                    key = lambda s:
+                                        self.cat_ordr.index(self.cnums[s[0]])
+                                )
+                            )
+                        )
+                    ]
+                )
+                
             else:
                 setattr(self, attr, [])
+        
         if self.summary:
             # only here we set the elements of the summary subplot
             # to the dummy category of summary
             self.cats = list(
-                map(lambda name: self.cnames[self.summary_name] if type(name) is tuple else self.cnames[self.categories[name]],
-                    self.x))
+                map(
+                    lambda name:
+                        self.cnames[self.summary_name]
+                            if type(name) is tuple else
+                        self.cnames[self.categories[name]],
+                    self.x
+                )
+            )
+        
         for dim in attrs:
             attr = 'cat_%s' % dim
             # this is what is always necessary:
@@ -595,16 +679,21 @@ class MultiBarplot(Plot):
             )))
         else:
             self.ordr = np.array(xrange(len(self.x)))
+        # descending order
         if self.desc:
             self.ordr = self.ordr[::-1]
+        # ordering all variables
         self.x = self.x[self.ordr]
         self.y = self.y[self.ordr]
         self.col = self.col[self.ordr]
         self.cats = self.cats[self.ordr]
+        # if we have second data series (shaded parts of bars)
+        # order also those variables
         if hasattr(self, 'y2') and self.y2 is not None:
             self.y2 = self.y2[self.ordr]
         if hasattr(self, 'col2'):
             self.col2 = self.col2[self.ordr]
+        # for grouped barplot
         if self.grouped:
             for g in xrange(len(self.grouped_y)):
                 yattr = 'y_g%u' % g
@@ -614,15 +703,18 @@ class MultiBarplot(Plot):
 
     def set_figsize(self):
         """
-        Converts width and height to a tuple so can be used for figsize.
+        Converts width and height to a tuple which can be used as figsize.
         """
+        
         if hasattr(self, 'width') and hasattr(self, 'height'):
-            self.figsize = (self.width, selg.height)
+            
+            self.figsize = (self.width, self.height)
 
     def init_fig(self):
         """
         Creates a figure using the object oriented matplotlib interface.
         """
+        
         self.pdf = mpl.backends.backend_pdf.PdfPages(self.fname)
         self.fig = mpl.figure.Figure(figsize=self.figsize)
         self.cvs = mpl.backends.backend_pdf.FigureCanvasPdf(self.fig)
@@ -633,6 +725,7 @@ class MultiBarplot(Plot):
         with proportions according to the number of elements
         in each subplot.
         """
+        
         self.gs = mpl.gridspec.GridSpec(
             2,
             self.numof_cats,
@@ -673,21 +766,21 @@ class MultiBarplot(Plot):
                         )
                     )
                 )
-            self.ax.bar(left=xcoo - correction,
-                        height=self.cat_y[i],
-                        color=self.cat_col[i],
-                        tick_label=xtlabs,
+            self.ax.bar(x = xcoo - correction,
+                        height = self.cat_y[i],
+                        color = self.cat_col[i],
+                        tick_label = xtlabs,
                         **copy.deepcopy(self.bar_args))
             if self.grouped:
                 for j in xrange(1, len(self.grouped_y)):
-                    self.ax.bar(left=xcoo + width * j - correction,
-                                height=getattr(self, 'cat_y_g%u' % j)[i],
-                                color=getattr(self, 'cat_col_g%u' % j)[i],
+                    self.ax.bar(x = xcoo + width * j - correction,
+                                height = getattr(self, 'cat_y_g%u' % j)[i],
+                                color = getattr(self, 'cat_col_g%u' % j)[i],
                                 **copy.deepcopy(self.bar_args))
             if hasattr(self, 'y2') and self.y2 is not None:
-                self.ax.bar(left=xcoo - correction,
-                            height=self.cat_y2[i],
-                            color=self.cat_col2[i],
+                self.ax.bar(x = xcoo - correction,
+                            height = self.cat_y2[i],
+                            color = self.cat_col2[i],
                             **copy.deepcopy(self.bar_args))
             self.labels()
             self.ax.xaxis.grid(False)
@@ -703,7 +796,7 @@ class MultiBarplot(Plot):
             self.ax.yaxis.grid(True, color='#FFFFFF', lw=1, ls='solid')
             self.ax.xaxis.grid(False)
             self.ax.set_axisbelow(True)
-            self.ax.set_axis_bgcolor('#EAEAF2')
+            self.ax.set_facecolor('#EAEAF2')
             list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
             self.ax.tick_params(which='both', length=0)
 
@@ -793,11 +886,20 @@ class MultiBarplot(Plot):
         """
         Applies tight layout, draws the figure, writes the file and closes.
         """
-        self.fig.tight_layout()
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.fig.tight_layout()
+        
         if self.maketitle:
             self.fig.subplots_adjust(top=0.85)
+        
         self.cvs.draw()
-        self.cvs.print_figure(self.pdf)
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.cvs.print_figure(self.pdf)
+        
         self.pdf.close()
         self.fig.clf()
 
@@ -1212,7 +1314,7 @@ class StackedBarplot(object):
         Converts width and height to a tuple so can be used for figsize.
         """
         if hasattr(self, 'width') and hasattr(self, 'height'):
-            self.figsize = (self.width, selg.height)
+            self.figsize = (self.width, self.height)
 
     def init_fig(self):
         """
@@ -1230,7 +1332,7 @@ class StackedBarplot(object):
         self.ax.set_axisbelow(True)
 
     def set_gridlines(self):
-        self.ax.set_axis_bgcolor('#EAEAF2')
+        self.ax.set_facecolor('#EAEAF2')
         list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
         self.ax.tick_params(which='both', length=0)
 
@@ -1262,7 +1364,7 @@ class StackedBarplot(object):
 
         for j in xrange(len(self.y), 0, -1):
             this_level = reduce(lambda l1, l2: l1.__add__(l2), self.y[:j])
-            self.ax.bar(left=self.xcoo,
+            self.ax.bar(x=self.xcoo,
                         height=this_level,
                         tick_label=self.x,
                         color=self.colors[j - 1],
@@ -1312,10 +1414,18 @@ class StackedBarplot(object):
         """
         Applies tight layout, draws the figure, writes the file and closes.
         """
-        self.fig.tight_layout()
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.fig.tight_layout()
+        
         self.fig.subplots_adjust(top=0.85)
         self.cvs.draw()
-        self.cvs.print_figure(self.pdf)
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.cvs.print_figure(self.pdf)
+        
         self.pdf.close()
         self.fig.clf()
 
@@ -1472,7 +1582,11 @@ class ScatterPlus(object):
         self.axes_ticklabels()
         self.set_title()
         self.axes_limits()
-        self.fig.tight_layout()
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.fig.tight_layout()
+        
         self.axes_limits()
         self.remove_annotation_overlaps()
         self.make_legend()
@@ -1640,7 +1754,7 @@ class ScatterPlus(object):
         self.ax.set_axisbelow(True)
 
     def set_gridlines(self):
-        self.ax.set_axis_bgcolor('#EAEAF2')
+        self.ax.set_facecolor('#EAEAF2')
         list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
         self.ax.tick_params(which='both', length=0)
 
@@ -1866,14 +1980,23 @@ class ScatterPlus(object):
             self.ax.yaxis.label.set_fontproperties(self.fp_axis_lab)
 
     def remove_annotation_overlaps(self):
+        
+        return None
+        
         if self.labels is not None:
+            
             self.fig.savefig(self.fname)
-            # self.ax.figure.canvas.draw()
+            self.ax.figure.canvas.draw()
             steps = [0] * len(self.annots)
             for i, a2 in enumerate(self.annots):
                 overlaps = False
                 for z in xrange(100):
                     for a1 in self.annots[:i]:
+                        print(a1, a2)
+                        if a1 is None or a2 is None:
+                            
+                            continue
+                        
                         if overlap(a1.get_window_extent(),
                                    a2.get_window_extent()):
                             #print('Overlapping labels: %s and %s' % (a1._text, a2._text))
@@ -1898,7 +2021,11 @@ class ScatterPlus(object):
         """
         Applies tight layout, draws the figure, writes the file and closes.
         """
-        self.fig.tight_layout()
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.fig.tight_layout()
+        
         self.fig.subplots_adjust(top=0.92)
         self.cvs.draw()
         self.cvs.print_figure(self.pdf)
@@ -2132,6 +2259,7 @@ class SimilarityGraph(object):
         self.size_param_defaults = {
             'vertex': (1.12, 0.55, 0.040),
             'edge': (1.25, 0.48, 0.065),
+            # 'edge': (1.25, 0.48, 0.065),
             'curation': (0.125, 0.44, 0.08)
         }
         self.scale_defaults = {
@@ -2141,9 +2269,10 @@ class SimilarityGraph(object):
                 'ew': lambda x: (x * 10.0)**1.8
             },
             'edge': {
+                #'vscale': [10, 50, 100],
                 'vscale': [50, 100, 500, 1000, 2000],
                 'escale': [0.05, 0.1, 0.2, 0.5],
-                'ew': lambda x: (x * 10.0)**1.8
+                'ew': lambda x: (x * 10.0)**1.3 # this was 1.8
             },
             'curation': {
                 'vscale': [100, 1000, 5000, 10000, 20000],
@@ -2275,6 +2404,7 @@ class SimilarityGraph(object):
                               self.layout_method)(**self.layout_param)
 
     def sizes_vertex(self):
+        
         self.sgraph.vs['size'] = \
             list(
                 map(
@@ -2296,6 +2426,7 @@ class SimilarityGraph(object):
         """
         Sets the size according to number of edges for each resource.
         """
+        
         self.sgraph.vs['size'] = \
             list(
                 map(
@@ -2923,7 +3054,7 @@ class HtpCharacteristics(object):
         Converts width and height to a tuple so can be used for figsize.
         """
         if hasattr(self, 'width') and hasattr(self, 'height'):
-            self.figsize = (self.width, selg.height)
+            self.figsize = (self.width, self.height)
 
     def init_fig(self):
         """
@@ -2980,7 +3111,7 @@ class HtpCharacteristics(object):
             self.ax.yaxis.grid(True, color='#FFFFFF', lw=2, ls='solid')
             self.ax.xaxis.grid(False)
             self.ax.set_axisbelow(True)
-            self.ax.set_axis_bgcolor('#EAEAF2')
+            self.ax.set_facecolor('#EAEAF2')
             list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
             self.ax.tick_params(which='both', length=0)
 
@@ -3018,10 +3149,18 @@ class HtpCharacteristics(object):
         """
         Applies tight layout, draws the figure, writes the file and closes.
         """
-        self.fig.tight_layout()
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.fig.tight_layout()
+        
         self.fig.subplots_adjust(top=0.94)
         self.cvs.draw()
-        self.cvs.print_figure(self.pdf)
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.cvs.print_figure(self.pdf)
+        
         self.pdf.close()
         self.fig.clf()
 
@@ -3184,7 +3323,7 @@ class RefsComposite(object):
         Converts width and height to a tuple so can be used for figsize.
         """
         if hasattr(self, 'width') and hasattr(self, 'height'):
-            self.figsize = (self.width, selg.height)
+            self.figsize = (self.width, self.height)
 
     def init_fig(self):
         """
@@ -3269,7 +3408,7 @@ class RefsComposite(object):
         self.ax.yaxis.grid(True, color='#FFFFFF', lw=1, ls='solid')
         self.ax.xaxis.grid(False)
         self.ax.set_axisbelow(True)
-        self.ax.set_axis_bgcolor('#EAEAF2')
+        self.ax.set_facecolor('#EAEAF2')
         list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
         self.ax.tick_params(which='both', length=0)
 
@@ -3313,7 +3452,7 @@ class RefsComposite(object):
         self.ax.xaxis.grid(True, color='#FFFFFF', lw=1, ls='solid')
         self.ax.yaxis.grid(False)
         self.ax.set_axisbelow(True)
-        self.ax.set_axis_bgcolor('#EAEAF2')
+        self.ax.set_facecolor('#EAEAF2')
         list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
         self.ax.tick_params(which='both', length=0)
 
@@ -3355,7 +3494,7 @@ class RefsComposite(object):
         self.ax.xaxis.grid(True, color='#FFFFFF', lw=1, ls='solid')
         self.ax.yaxis.grid(False)
         self.ax.set_axisbelow(True)
-        self.ax.set_axis_bgcolor('#EAEAF2')
+        self.ax.set_facecolor('#EAEAF2')
         list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
         self.ax.tick_params(which='both', length=0)
 
@@ -3402,7 +3541,7 @@ class RefsComposite(object):
         self.ax.yaxis.grid(True, color='#FFFFFF', lw=1, ls='solid')
         self.ax.xaxis.grid(False)
         self.ax.set_axisbelow(True)
-        self.ax.set_axis_bgcolor('#EAEAF2')
+        self.ax.set_facecolor('#EAEAF2')
         list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
         self.ax.tick_params(which='both', length=0)
 
@@ -3493,7 +3632,7 @@ class RefsComposite(object):
         self.ax.yaxis.grid(True, color='#FFFFFF', lw=1, ls='solid')
         self.ax.xaxis.grid(False)
         self.ax.set_axisbelow(True)
-        self.ax.set_axis_bgcolor('#EAEAF2')
+        self.ax.set_facecolor('#EAEAF2')
         list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
         self.ax.tick_params(which='both', length=0)
 
@@ -3510,10 +3649,18 @@ class RefsComposite(object):
         """
         Applies tight layout, draws the figure, writes the file and closes.
         """
-        self.fig.tight_layout()
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.fig.tight_layout()
+        
         self.fig.subplots_adjust(top=0.92)
         self.cvs.draw()
-        self.cvs.print_figure(self.pdf)
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.cvs.print_figure(self.pdf)
+        
         self.pdf.close()
         self.fig.clf()
 
@@ -3629,7 +3776,7 @@ class CurationPlot(object):
         Converts width and height to a tuple so can be used for figsize.
         """
         if hasattr(self, 'width') and hasattr(self, 'height'):
-            self.figsize = (self.width, selg.height)
+            self.figsize = (self.width, self.height)
 
     def init_fig(self):
         """
@@ -3647,7 +3794,7 @@ class CurationPlot(object):
         self.first_y_edges = dict(self.pubmeds.groupby(['eid']).year.min())
 
         self.ecount_y = dict(
-            (y, len([_ for fy in self.first_y_edges.values() if fy <= y]))
+            (y, len([fy for fy in self.first_y_edges.values() if fy <= y]))
             for y in np.unique(self.pubmeds.year))
 
         self.vcount_y = dict((y, len(
@@ -3714,7 +3861,7 @@ class CurationPlot(object):
         self.ax.yaxis.grid(True, color='#FFFFFF', lw=1, ls='solid')
         self.ax.xaxis.grid(False)
         self.ax.set_axisbelow(True)
-        self.ax.set_axis_bgcolor('#EAEAF2')
+        self.ax.set_facecolor('#EAEAF2')
         list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
         self.ax.tick_params(which='both', length=0)
 
@@ -3722,14 +3869,23 @@ class CurationPlot(object):
         """
         Applies tight layout, draws the figure, writes the file and closes.
         """
-        self.fig.tight_layout()
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.fig.tight_layout()
+        
         self.cvs.draw()
-        self.cvs.print_figure(self.pdf)
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.cvs.print_figure(self.pdf)
+        
         self.pdf.close()
         self.fig.clf()
 
 
 class BarplotsGrid(object):
+    
     def __init__(self,
                  pp,
                  x,
@@ -3888,7 +4044,7 @@ class BarplotsGrid(object):
         Converts width and height to a tuple so can be used for figsize.
         """
         if hasattr(self, 'width') and hasattr(self, 'height'):
-            self.figsize = (self.width, selg.height)
+            self.figsize = (self.width, self.height)
 
     def number_of_plots(self):
         self.numof_plots = len(getattr(self.data, self.by).unique())
@@ -3977,9 +4133,9 @@ class BarplotsGrid(object):
                         ordr = ordr[::-1]
                     y = y[ordr]
                     x = x[ordr]
-                self.ax.bar(left=np.arange(len(x)),
-                            height=y,
-                            tick_label=x,
+                self.ax.bar(x = np.arange(len(x)),
+                            height = y,
+                            tick_label = x,
                             color=self.get_color(x),
                             **copy.deepcopy(self.bar_args))
                 self.level_by_plots.append(level)
@@ -3998,8 +4154,15 @@ class BarplotsGrid(object):
                     self.ax.set_xlim(
                         [list(x).index(self.xmin), self.ax.get_xlim()[1]])
                 list(
-                    map(lambda tl: tl.set_fontproperties(self.fp_small_ticklabel if self.small_xticklabels else self.fp_ticklabel) or tl.set_rotation(90),
-                        self.ax.get_xticklabels()))
+                    map(lambda tl:
+                        tl.set_fontproperties(
+                            self.fp_small_ticklabel
+                                if self.small_xticklabels else
+                            self.fp_ticklabel
+                        ) or tl.set_rotation(90),
+                        self.ax.get_xticklabels()
+                    )
+                )
                 list(
                     map(lambda tl: tl.set_fontproperties(self.fp_ticklabel),
                         self.ax.get_yticklabels()))
@@ -4008,7 +4171,7 @@ class BarplotsGrid(object):
                 self.ax.yaxis.grid(True, color='#FFFFFF', lw=1, ls='solid')
                 self.ax.xaxis.grid(False)
                 self.ax.set_axisbelow(True)
-                self.ax.set_axis_bgcolor('#EAEAF2')
+                self.ax.set_facecolor('#EAEAF2')
                 list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
                 self.ax.tick_params(which='both', length=0)
                 self.ax.set_title(level, fontproperties=self.fp_axis_lab)
@@ -4023,7 +4186,7 @@ class BarplotsGrid(object):
                 # self.ax.xaxis.label.set_verticalalignment('bottom')
                 #list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
                 #self.ax.tick_params(which = 'both', length = 0)
-                # self.ax.set_axis_bgcolor('#CCCCCC')
+                # self.ax.set_facecolor('#CCCCCC')
 
                 if col == 0:
                     self.get_subplot(row, 0)
@@ -4064,10 +4227,18 @@ class BarplotsGrid(object):
         Applies tight layout, draws the figure, writes the file and closes.
         """
         #self.gs.update(wspace=0.1, hspace=0.1)
-        self.fig.tight_layout()
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.fig.tight_layout()
+        
         self.fig.subplots_adjust(top=0.94)
         self.cvs.draw()
-        self.cvs.print_figure(self.pdf)
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.cvs.print_figure(self.pdf)
+        
         self.pdf.close()
         self.fig.clf()
 
@@ -4159,7 +4330,7 @@ class Dendrogram(object):
         Converts width and height to a tuple so can be used for figsize.
         """
         if hasattr(self, 'width') and hasattr(self, 'height'):
-            self.figsize = (self.width, selg.height)
+            self.figsize = (self.width, self.height)
 
     def init_fig(self):
         """
@@ -4195,7 +4366,7 @@ class Dendrogram(object):
         self.ax.xaxis.grid(True, color='#FFFFFF', lw=1, ls='solid')
         self.ax.yaxis.grid(False)
         self.ax.set_axisbelow(True)
-        self.ax.set_axis_bgcolor('#EAEAF2')
+        self.ax.set_facecolor('#EAEAF2')
         list(map(lambda s: s.set_lw(0), self.ax.spines.values()))
         self.ax.tick_params(which='both', length=0)
 
@@ -4204,9 +4375,16 @@ class Dendrogram(object):
         Applies tight layout, draws the figure, writes the file and closes.
         """
         #self.gs.update(wspace=0.1, hspace=0.1)
-        self.fig.tight_layout()
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.fig.tight_layout()
+        
         #self.fig.subplots_adjust(top = 0.94)
         self.cvs.draw()
-        self.cvs.print_figure(self.pdf)
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.cvs.print_figure(self.pdf)
+        
         self.pdf.close()
         self.fig.clf()

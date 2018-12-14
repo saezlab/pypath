@@ -2048,7 +2048,7 @@ categories = {
     'DEPOD': 'm',
     'phosphoELM': 'm',
     'MPPI': 'i',
-    'Guide2Pharma': 'p',
+    'Guide2Pharma': 'l',
     'TRIP': 'p',
     'AlzPathway': 'r',
     'PhosphoSite': 'm',
@@ -2072,7 +2072,17 @@ categories = {
     'PhosphoNetworks': 'm',
     'Li2012': 'm',
     'PhosphoPoint': 'm',
-    'PhosphoSite_noref': 'm'
+    'PhosphoSite_noref': 'm',
+    'Ramilowski2015': 'l',
+    'Kirouac2010': 'l',
+    'HPMR': 'l',
+    'CellPhoneDB': 'l',
+    'Guide2Pharma': 'l',
+    'GO_lig_rec': 'l',
+    'guidetopharmacology.org': 'l',
+    'UniProt': 'l',
+    'InnateDB-All': 'i',
+    'MINT': 'i',
 }
 
 p = set([])
@@ -2080,16 +2090,21 @@ i = set([])
 r = set([])
 m = set([])
 t = set([])
+l = set([])
 
-for db, c in iteritems(categories):
-    locals()[c].add(db)
+for db, cats in iteritems(categories):
+    
+    for c in cats:
+        
+        locals()[c].add(db)
 
 catnames = {
     'm': 'Enzyme-substrate',
     'p': 'Activity flow',
     'i': 'Undirected PPI',
     'r': 'Process description',
-    't': 'Transcription'
+    't': 'Transcription',
+    'l': 'Ligand-receptor',
 }
 
 catletters = dict(map(reversed, iteritems(catnames)))
@@ -2099,3 +2114,4 @@ interaction_resources = i
 ptm_resources = m
 reaction_resources = r
 transctiption_resources = t
+ligand_receptor_resources = l

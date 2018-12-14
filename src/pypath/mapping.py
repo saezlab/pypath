@@ -246,7 +246,7 @@ class MappingTable(object):
                                                       param.target_ac_name,
                                                       uniprots)
 
-            _ = utarget.readline()
+            _ = next(utarget)
             ac_list = list(map(lambda l:
                                    l.decode('ascii').split('\t')[1].strip(),
                                    utarget))
@@ -257,9 +257,13 @@ class MappingTable(object):
                                    param.ac_name,
                                    ac_list)
 
-        _ = udata.readline()
+        _ = next(udata)
 
         for l in udata:
+            
+            if not l:
+                
+                continue
 
             l = l.decode('ascii').strip().split('\t')
 
@@ -285,7 +289,7 @@ class MappingTable(object):
         """
         Reads a mapping table from UniProt "upload lists" service.
         """
-
+        
         url = urls.urls['uniprot_basic']['lists']
         post = {
             'from': source,
@@ -297,14 +301,23 @@ class MappingTable(object):
         c = curl.Curl(url, post=post, large=True, silent = False)
 
         if c.result is None:
+            
             for i in xrange(3):
+                
                 c = curl.Curl(url, post=post, large=True,
                               silent = False, cache = False)
+                
                 if c.result is not None:
+                    
                     break
-
-            if c.result is None:
-                sys.stdout.write('\t:: Error at downloading from UniProt.\n')
+        
+        if c.result is None or c.fileobj.read(5) == b'<!DOC':
+            
+            sys.stdout.write('\t:: Error at downloading from UniProt.\n')
+            
+            c.result = b''
+        
+        c.fileobj.seek(0)
 
         return c.result
 
@@ -489,9 +502,9 @@ class Mapper(object):
             'refseqp': 'RefSeq',
             'refseqn': 'RefSeq_NT',
             'ensembl': 'Ensembl',
-            'ensg': 'Ensembl Genome',
-            'ensp': 'Ensembl_PRO',
-            'enst': 'Ensembl_TRS',
+            'ensg': 'ENSEMBL',
+            'ensp': 'ENSEMBL_PRO_ID',
+            'enst': 'ENSEMBL_TRS',
             'hgnc': 'HGNC'
         }
         self.types_name = dict(
@@ -562,10 +575,13 @@ class Mapper(object):
             if tbl is None:
 
                 if nameType in self.name_types:
+                    # for uniprot/uploadlists
+                    # we create here the mapping params
                     this_param = input_formats.UniprotListMapping(
                         nameType = nameType,
                         targetNameType = targetNameType,
-                        ncbi_tax_id = ncbi_tax_id)
+                        ncbi_tax_id = ncbi_tax_id
+                    )
 
                     tables[tblName] = MappingTable(
                         nameType,

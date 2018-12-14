@@ -1551,6 +1551,22 @@ _omnipath_logo = u'''
     .replace('\n', '').replace(' ', '')
 
 _default_css = u'''
+                @media screen and (min-width: 600px) {
+                    html {
+                        font-size: 16px;
+                    }
+                }
+                @media screen and (min-width: 900px) {
+                    html {
+                        font-size: 17px;
+                    }
+                }
+                
+                @media screen and (min-width: 1200px) {
+                    html {
+                        font-size: 18px;
+                    }
+                }
                 %s
                 .code {
                     font-family: monospace;
@@ -1577,11 +1593,13 @@ _default_css = u'''
                 body {
                     margin: 6ex 23.61%% 18ex 14.59%%;
                     width: 61.8%%;
-                    color: #646567;
+                    /* color: #646567; old gray, changed to darker one */
+                    color: #454447;
                     font-family: "HelveticaNeueLT Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
                 }
                 a:link, a:active, a:visited {
-                    color: #646567;
+                    /* color: #646567; old gray, changed to darker one */
+                    color: #454447;
                     text-decoration: underline;
                     text-decoration-style: dotted;
                 }
@@ -1593,7 +1611,8 @@ _default_css = u'''
                     text-decoration: none;
                 }
                 h2.base, a.base:link, a.base:active, a.base:visited {
-                    color: #646567;
+                    /* color: #646567; old gray, changed to darker one */
+                    color: #454447;
                     text-decoration: none;
                 }
                 .align-middle {
@@ -1617,7 +1636,7 @@ _default_css = u'''
                 }
                 .nav a {
                     text-decoration: none!important;
-                    font-weight: heavy;
+                    font-weight: 600;
                 }
                 a.topmenu {
                     text-decoration: none!important;
@@ -1628,9 +1647,6 @@ _default_css = u'''
                 }
                 .logo {
                     margin: 10px 1.8%% 10px 0;
-                }
-                html {
-                    padding-bottom: 24px;
                 }
                 #top-left {
                     width: calc(100%% - 245px);

@@ -28,6 +28,7 @@ import imp
 import locale
 import numpy as np
 import pandas as pd
+import collections
 
 import pypath.main as main
 import pypath.plot as plot
@@ -38,7 +39,49 @@ from pypath.common import *
 import pypath.refs as _refs
 
 
+# defines a multi-section barplot
+MultiBarplotParam = collections.namedtuple(
+    'MultiBarplotParam',
+    ['ylab', 'title', 'name', 'method', 'smethod', 'order']
+)
+MultiBarplotParam.__new__.__defaults__ = (None, 'vcount')
+
+
+# defines a scatterplot
+ScatterplotParam = collections.namedtuple(
+    'ScatterplotParam',
+    [
+        'xmethod', # method for variable x
+        'ymethod', # method for variable y
+        'smethod', # method for variable size
+        'gparam',  # graphics params
+        'name',    # name included in the file name
+        'sdiv',    # have no idea what it is...
+    ]
+)
+ScatterplotParam.__new__.__defaults__ = (False,)
+
+
+# defines graphics details for a scatterplot
+ScatterplotGraphicsParam = collections.namedtuple(
+    'ScatterplotGraphicsParam',
+    [
+        'ylim',
+        'xlim',
+        'xlog',
+        'ylog',
+        'xlab',
+        'ylab',
+        'legtitle',
+        'title',
+        'legstrip',
+    ]
+)
+ScatterplotGraphicsParam.__new__.__defaults__ = ((None, None),)
+
+
 class Workflow(object):
+    
     def __init__(self,
                  name,
                  network_datasets=[],
@@ -66,11 +109,77 @@ class Workflow(object):
                  do_compile_resource_list=True,
                  do_consistency_dedrogram=True,
                  do_consistency_table=True,
+                 only_categories = None,
                  title=None,
                  outdir=None,
                  htdata={},
                  inc_raw=None,
                  **kwargs):
+        """
+        Executes the workflow of comparative analysis of network resuorces
+        by categories. Creates tables and figures.
+        
+        :arg str name:
+            A label included in the name of all files.
+        :arg list network_datasets:
+            Datasets to use at building the network. Dicts from
+            ``pypath.data_formats``.
+        :arg bool do_main_table:
+            Create a LaTeX table with key numbers.
+        :arg bool do_compile_main_table:
+            Compile the table by running xelatex.
+        :arg bool do_curation_table:
+            Create a table of curation effort.
+        :arg bool do_compile_curation_table:
+            Compile the curation effort table using xelatex.
+        :arg bool do_simgraphs:
+            Create graph figures of similarities between resources.
+        :arg bool do_multi_barplots:
+            Create multi section barplots showing size and coverage of the
+            resources, categories and their overlaps.
+        :arg bool do_coverage_groups:
+            ??
+        :arg bool do_htp_char:
+            High throughput characteristics figure.
+        :arg bool do_ptms_barplot:
+            Barplot about size of PTM resources.
+        :arg bool do_scatterplots:
+            Create scatterplots of resource sizes.
+        :arg bool do_history_tree:
+            Create a TikZ figures about the history of the resources.
+        :arg bool do_compile_history_tree:
+            Compile the history figure using xelatex.
+        :arg bool do_refs_journals_grid:
+            Create multifacet plot showing the most often curated journals
+            for each resource.
+        :arg bool do_refs_years_grid:
+            Create multifacet plot showing the publication years of references
+            in each resource.
+        :arg bool do_dirs_stacked:
+            Create a stacked barplot about number of undirected, directed
+            and signed interactions.
+        :arg bool do_refs_composite:
+            Create composite figure about references.
+        :arg bool do_curation_plot:
+            ??
+        :arg bool do_refs_by_j:
+            Create histogram of publication years.
+        :arg bool do_refs_by_db:
+            Create barplot of references per database.
+        :arg bool do_refs_by_year:
+            Create a barplot with refrences by year.
+        :arg bool do_resource_list:
+            Create a table with the resources listed.
+        :arg bool do_compile_resource_list:
+            Compile the table using xelatex.
+        :arg bool do_consistency_dedrogram:
+            Create a dendrogram using consistencies as a distance metric
+            across all resources.
+        :arg bool do_consistency_table:
+            Create a table with inconsistency statistics across resources.
+        :arg str outdir:
+            Directory to save the output files.
+        """
 
         for k, v in iteritems(locals()):
             setattr(self, k, v)
@@ -81,23 +190,42 @@ class Workflow(object):
         self.title = self.name if self.title is None else self.title
 
         self.defaults = {
+            # colors for the categories
             'ccolors': {
                 'p': '#77AADD',
-                'm': '#77CCCC',
-                'i': '#DDAA77',
-                'r': '#CC99BB'
+                'l': '#77CCCC',
+                'm': '#DDAA77',
+                'i': '#CC99BB',
+                'r': '#77AADD',
             },
+            # colors of the shaded parts
             'ccolors2': {
                 'p': '#4477AA',
-                'm': '#117777',
-                'i': '#774411',
-                'r': '#771155'
+                'l': '#117777',
+                'm': '#774411',
+                'i': '#771155',
+                'r': '#4477AA',
             },
-            'group_colors': ['#4477AA', '#44AAAA', '#DDAA77', '#CC99BB'],
-            'group_colors2': ['#77AADD', '#77CCCC', '#DDAA77', '#CC99BB'],
-            'table2file': 'curation_tab_%s.tex' % self.name,
-            'stable2file': 'curation_tab_stripped_%s.tex' % self.name,
-            'latex': '/usr/bin/xelatex',
+            'group_colors': [
+                '#4477AA',
+                '#44AAAA',
+                '#DDAA77',
+                '#CC99BB',
+                '#4477AA',
+            ],
+            'group_colors2': [
+                '#77AADD',
+                '#77CCCC',
+                '#DDAA77',
+                '#CC99BB',
+                '#77AADD',
+            ],
+            'table2file':
+                'curation_tab_%s.tex' % self.name,
+            'stable2file':
+                'curation_tab_stripped_%s.tex' % self.name,
+            'latex':
+                '/usr/bin/xelatex',
             'latex_timeout': 10,
             'compile_latex': True,
             'multi_barplots_summary': True,
@@ -118,46 +246,79 @@ class Workflow(object):
                 'ptms': 'post-translational modifications',
                 'disgenet': 'DisGeNet disease related genes'
             },
-            'fiher_file': 'fisher_%s' % self.name,
+            'fiher_file':
+                'fisher_%s' % self.name,
             'fisher':
-            [('dis', 'Disease related genes'), ('rec', 'Receptors'),
-             ('tf', 'Transcription factors'), ('kin', 'Kinases'),
-             ('dgb', 'Druggable proteins'), ('cdv', 'Cancer drivers'),
-             ('sig', 'Signaling proteins')],
-            'cat_ordr': [
-                'Activity flow', 'Enzyme-substrate', 'Undirected PPI',
-                'Process description'
+                [('dis', 'Disease related genes'),
+                 ('rec', 'Receptors'),
+                ('tf', 'Transcription factors'),
+                ('kin', 'Kinases'),
+                ('dgb', 'Druggable proteins'),
+                ('cdv', 'Cancer drivers'),
+                ('sig', 'Signaling proteins'),
             ],
-            'pdf_vcount_order': 'vcount_ordr.pdf',
+            'cat_ordr_default': [
+                'Activity flow',
+                'Ligand-receptor',
+                'Enzyme-substrate',
+                'Undirected PPI',
+                'Process description',
+            ],
+            'pdf_vcount_order':
+                'vcount_ordr.pdf',
             'htp_lower': 1,
             'htp_upper': 500,
-            'history_tree_fname': 'history_tree.tex',
-            'main_table_fname': 'main_table_%s.tex' % self.name,
+            'history_tree_fname':
+                'history_tree.tex',
+            'main_table_fname':
+                'main_table_%s.tex' % self.name,
             'main_table_stripped_fname':
-            'main_table_stripped_%s.tex' % self.name,
+                'main_table_stripped_%s.tex' % self.name,
             'simgraph_vertex_fname':
-            'sources_similarity_vertex_%s.pdf' % self.name,
+                'sources_similarity_vertex_%s.pdf' % self.name,
             'simgraph_edge_fname':
-            'sources_similarity_edge_%s.pdf' % self.name,
+                'sources_similarity_edge_%s.pdf' % self.name,
             'simgraph_curation_fname':
-            'sources_similarity_curation_%s.pdf' % self.name,
-            'refs_journal_grid_fname': 'refs_by_db_journal_%s.pdf' % self.name,
-            'refs_year_grid_fname': 'refs_by_db_year_%s.pdf' % self.name,
-            'dirs_stacked_fname': 'dirs-signes-by-db-%s_%s.pdf',
-            'refs_composite_fname': 'refs-composite_%s.pdf',
-            'refs_by_j_file': 'references-by-journal-%u_%s.pdf',
-            'refs_by_db_file': 'references-by-db_%s.pdf',
-            'refs_by_year_file': 'references-by-year_%s.pdf',
-            'curation_plot_fname': 'new-curated-by-year_%s.pdf' % self.name,
-            'resource_list_fname': 'resources.tex',
-            'resource_list_fname_stripped': 'resources_stripped.tex',
+                'sources_similarity_curation_%s.pdf' % self.name,
+            'refs_journal_grid_fname':
+                'refs_by_db_journal_%s.pdf' % self.name,
+            'refs_year_grid_fname':
+                'refs_by_db_year_%s.pdf' % self.name,
+            'dirs_stacked_fname':
+                'dirs-signes-by-db-%s_%s.pdf',
+            'refs_composite_fname':
+                'refs-composite_%s.pdf',
+            'refs_by_j_file':
+                'references-by-journal-%u_%s.pdf',
+            'refs_by_db_file':
+                'references-by-db_%s.pdf',
+            'refs_by_year_file':
+                'references-by-year_%s.pdf',
+            'curation_plot_fname':
+                'new-curated-by-year_%s.pdf' % self.name,
+            'resource_list_fname':
+                'resources.tex',
+            'resource_list_fname_stripped':
+                'resources_stripped.tex',
             'consistency_dedrogram_fname':
-            'inconsistency-dendrogram_%s.pdf' % self.name,
-            'consistency_table_fname': 'inconsistency-table_%s.tex' % self.name
+                'inconsistency-dendrogram_%s.pdf' % self.name,
+            'consistency_table_fname':
+                'inconsistency-table_%s.tex' % self.name
         }
-
+        
+        # settings for barplots
+        # each element of the list is for one barplot
+        # settings in each tuple:
+        #   - Y axis label
+        #   - Main title
+        #   - Label included in the file name
+        #   - Method to calculate the height of each bar
+        #     Accepts one argument: a tuple of resource name and
+        #     an ``igraph.Graph`` object
+        #   - Method to calculate the height of the shaded part of each bar
+        #   - 
         self.barplots_settings = [
-            (
+            MultiBarplotParam(
                 'Proteins',
                 'Number of proteins',
                 'proteins',
@@ -165,7 +326,7 @@ class Workflow(object):
                 lambda gs: len(self.specific(gs[1], gs[0].vs)),
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'Interactions',
                 'Number of interactions',
                 'interactions',
@@ -173,7 +334,7 @@ class Workflow(object):
                 lambda gs: len(self.specific(gs[1], gs[0].es)),
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'Density',
                 'Graph density',
                 'density',
@@ -181,7 +342,7 @@ class Workflow(object):
                 None,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'Transitivity',
                 'Graph global transitivity',
                 'transitivity',
@@ -189,7 +350,7 @@ class Workflow(object):
                 None,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'Diameter',
                 'Graph diameter',
                 'diameter',
@@ -197,36 +358,45 @@ class Workflow(object):
                 None,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'Receptors',
                 'Number of receptors',
                 'receptors',
                 lambda gs: len([v for v in gs[0].vs if v['rec']]),
                 lambda gs: len(
-                    [v for v in self.specific(gs[1], gs[0].vs) if v['rec']]),
+                    [v for v in self.specific(gs[1], gs[0].vs) if v['rec']]
+                ),
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'Receptors [%]',
                 'Percentage of receptors',
                 'receptorprop',
-                lambda gs: len([v for v in gs[0].vs if v['rec']]) /
-                float(gs[0].vcount()) * 100.0,
-                lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['rec']]) /
-                float(gs[0].vcount()) * 100.0,
+                lambda gs:
+                    len([v for v in gs[0].vs if v['rec']]) /
+                    float(gs[0].vcount()) * 100.0,
+                lambda gs:
+                    len([
+                        v for v in self.specific(gs[1], gs[0].vs)
+                        if v['rec']
+                    ]) /
+                    float(gs[0].vcount()) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'Receptors [%]',
                 'Percentage of all human receptors covered',
                 'receptorcov',
                 lambda gs: len([v for v in gs[0].vs if v['rec']]) /
-                float(len(self.pp.lists['rec'])) * 100.0,
-                lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['rec']]) /
-                float(len(self.pp.lists['rec'])) * 100.0,
+                    float(len(self.pp.lists['rec'])) * 100.0,
+                lambda gs: len([
+                        v for v in self.specific(gs[1], gs[0].vs)
+                        if v['rec']
+                    ]) /
+                    float(len(self.pp.lists['rec'])) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'TFs',
                 'Number of transcription factors',
                 'tfs',
@@ -235,27 +405,33 @@ class Workflow(object):
                     [v for v in self.specific(gs[1], gs[0].vs) if v['tf']]),
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'TFs [%]',
                 'Percentage of transcription factors',
                 'tfprop',
                 lambda gs: len([v for v in gs[0].vs if v['tf']]) /
-                float(gs[0].vcount()) * 100.0,
-                lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['tf']]) /
-                float(gs[0].vcount()) * 100.0,
+                    float(gs[0].vcount()) * 100.0,
+                lambda gs: len([
+                        v for v in self.specific(gs[1], gs[0].vs)
+                        if v['tf']
+                    ]) /
+                    float(gs[0].vcount()) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'TFs [%]',
                 'Percentage of all human TFs covered',
                 'tfcov',
                 lambda gs: len([v for v in gs[0].vs if v['tf']]) /
-                float(len(self.pp.lists['tf'])) * 100.0,
-                lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['tf']]) /
-                float(len(self.pp.lists['tf'])) * 100.0,
+                    float(len(self.pp.lists['tf'])) * 100.0,
+                lambda gs: len([
+                        v for v in self.specific(gs[1], gs[0].vs)
+                        if v['tf']
+                    ]) /
+                    float(len(self.pp.lists['tf'])) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'Kinases',
                 'Number of kinases',
                 'kinases',
@@ -264,57 +440,72 @@ class Workflow(object):
                     [v for v in self.specific(gs[1], gs[0].vs) if v['kin']]),
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'Kinases [%]',
                 'Percentage of kinases',
                 'kinprop',
                 lambda gs: len([v for v in gs[0].vs if v['kin']]) /
-                float(gs[0].vcount()) * 100.0,
-                lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['kin']]) /
-                float(gs[0].vcount()) * 100.0,
+                    float(gs[0].vcount()) * 100.0,
+                lambda gs: len([
+                        v for v in self.specific(gs[1], gs[0].vs)
+                        if v['kin']
+                    ]) /
+                    float(gs[0].vcount()) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'Kinases [%]',
                 'Percentage of all human kinases covered',
                 'kincov',
                 lambda gs: len([v for v in gs[0].vs if v['kin']]) /
-                float(len(self.pp.lists['kin'])) * 100.0,
-                lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['kin']]) /
-                float(len(self.pp.lists['kin'])) * 100.0,
+                    float(len(self.pp.lists['kin'])) * 100.0,
+                lambda gs: len([
+                        v for v in self.specific(gs[1], gs[0].vs)
+                        if v['kin']
+                    ]) /
+                    float(len(self.pp.lists['kin'])) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'Druggable proteins [%]',
                 'Percentage of druggable proteins',
                 'dgbprop',
                 lambda gs: len([v for v in gs[0].vs if v['dgb']]) /
-                float(gs[0].vcount()) * 100.0,
-                lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['dgb']]) /
-                float(gs[0].vcount()) * 100.0,
+                    float(gs[0].vcount()) * 100.0,
+                lambda gs: len([
+                        v for v in self.specific(gs[1], gs[0].vs)
+                        if v['dgb']
+                    ]) /
+                    float(gs[0].vcount()) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'Druggable proteins [%]',
                 'Percentage of all human druggable proteins covered',
                 'dgbcov',
                 lambda gs: len([v for v in gs[0].vs if v['dgb']]) /
-                float(len(self.pp.lists['dgb'])) * 100.0,
-                lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['dgb']]) /
-                float(len(self.pp.lists['dgb'])) * 100.0,
+                    float(len(self.pp.lists['dgb'])) * 100.0,
+                lambda gs: len([
+                        v for v in self.specific(gs[1], gs[0].vs)
+                        if v['dgb']
+                    ]) /
+                    float(len(self.pp.lists['dgb'])) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'Disease genes [%]',
                 'Percentage of disease-gene associations covered',
                 'discov',
-                lambda gs: len([v for v in gs[0].vs if v['dis']]) /
-                float(len(self.pp.lists['dis'])) * 100.0,
-                lambda gs: len([v for v in self.specific(gs[1], gs[0].vs) if v['dis']]) /
-                float(len(self.pp.lists['dis'])) * 100.0,
+                lambda gs:  len([v for v in gs[0].vs if v['dis']]) /
+                    float(len(self.pp.lists['dis'])) * 100.0,
+                lambda gs: len([
+                        v for v in self.specific(gs[1], gs[0].vs)
+                        if v['dis']
+                    ]) /
+                    float(len(self.pp.lists['dis'])) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'Complexes',
                 'Number of complexes covered',
                 'complexes',
@@ -322,161 +513,215 @@ class Workflow(object):
                 None,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'E-S interactions',
                 'Number of enzyme-substrate interactions covered',
                 'ptmnum',
                 lambda gs: sum(map(lambda e: len(e['ptm']), gs[0].es)),
                 lambda gs: sum(
-                    map(lambda e: len(e['ptm']), self.specific(gs[1], gs[0].es))),
+                        map(
+                            lambda e: len(e['ptm']),
+                            self.specific(gs[1], gs[0].es)
+                        )
+                    ),
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'E-S interactions',
-                'Number of interactions associated with enzyme-substrate relationship',
+                (
+                    'Number of interactions associated with '
+                    'enzyme-substrate relationship'
+                ),
                 'havingptm',
                 lambda gs: sum(map(lambda e: len(e['ptm']) > 0, gs[0].es)),
                 lambda gs: sum(
-                    map(lambda e: len(e['ptm']) > 0, self.specific(gs[1], gs[0].es))),
+                        map(
+                            lambda e: len(e['ptm']) > 0,
+                            self.specific(gs[1], gs[0].es)
+                        )
+                    ),
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 'Interactions with \n' + r'E-S relationship [%]',
-                'Percentage of interactions associated with enzyme-substrate relationship',
+                (
+                    'Percentage of interactions associated with '
+                    'enzyme-substrate relationship'
+                ),
                 'ptmprop',
-                lambda gs: sum(map(lambda e: len(e['ptm']) > 0, gs[
-                               0].es)) / float(gs[0].ecount()) * 100.0,
-                lambda gs: sum(map(lambda e: len(e['ptm']) > 0, self.specific(
-                    gs[1], gs[0].es))) / float(gs[0].ecount()) * 100.0,
+                lambda gs: sum(
+                        map(
+                            lambda e: len(e['ptm']) > 0,
+                            gs[0].es
+                        )
+                    ) /
+                    float(gs[0].ecount()) * 100.0,
+                lambda gs: sum(
+                        map(
+                            lambda e: len(e['ptm']) > 0,
+                            self.specific(gs[1], gs[0].es)
+                        )
+                    ) / float(gs[0].ecount()) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'CGC genes [%]',
-                'Percentage of COSMIC Cancer Gene Census cancer drivers covered',
+                (
+                    'Percentage of COSMIC Cancer Gene Census '
+                    'cancer drivers covered'
+                ),
                 'ccgccov',
-                lambda gs: len(set(gs[0].vs['name']) & set(self.pp.lists['cgc'])) /
-                float(len(self.pp.lists['cgc'])) * 100.0,
                 lambda gs: len(
-                    set(map(lambda v: v['name'], self.specific(gs[1], gs[0].vs))) &
-                    set(self.pp.lists['cgc'])
-                ) /
-                float(len(self.pp.lists['cgc'])) * 100.0,
+                        set(gs[0].vs['name']) & set(self.pp.lists['cgc'])
+                    ) /
+                    float(len(self.pp.lists['cgc'])) * 100.0,
+                lambda gs: len(
+                        set(
+                            map(
+                                lambda v: v['name'],
+                                self.specific(gs[1], gs[0].vs)
+                            )
+                        ) &
+                        set(self.pp.lists['cgc'])
+                    ) /
+                    float(len(self.pp.lists['cgc'])) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'IntOGen genes [%]',
                 'Percentage of IntOGen cancer drivers covered',
                 'intocov',
-                lambda gs: len(set(gs[0].vs['name']) & set(self.pp.lists['IntOGen'])) /
-                float(len(self.pp.lists['IntOGen'])) * 100.0,
                 lambda gs: len(
-                    set(map(lambda v: v['name'], self.specific(gs[1], gs[0].vs))) &
-                    set(self.pp.lists['IntOGen'])
-                ) /
-                float(len(self.pp.lists['IntOGen'])) * 100.0,
+                        set(gs[0].vs['name']) &
+                        set(self.pp.lists['IntOGen'])
+                    ) /
+                    float(len(self.pp.lists['IntOGen'])) * 100.0,
+                lambda gs: len(
+                        set(
+                            map(
+                                lambda v: v['name'],
+                                self.specific(gs[1], gs[0].vs)
+                            )
+                        ) &
+                        set(self.pp.lists['IntOGen'])
+                    ) /
+                    float(len(self.pp.lists['IntOGen'])) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'Signaling proteins [%]',
                 'Percentage of all human signaling proteins covered',
                 'sigcov',
-                lambda gs: len(set(gs[0].vs['name']) & set(self.pp.lists['sig'])) /
-                float(len(self.pp.lists['sig'])) * 100.0,
                 lambda gs: len(
-                    set(map(lambda v: v['name'], self.specific(gs[1], gs[0].vs))) &
-                    set(self.pp.lists['sig'])
-                ) /
-                float(len(self.pp.lists['sig'])) * 100.0,
+                        set(gs[0].vs['name']) & set(self.pp.lists['sig'])
+                    ) / float(len(self.pp.lists['sig'])) * 100.0,
+                lambda gs: len(
+                        set(
+                            map(
+                                lambda v: v['name'],
+                                self.specific(gs[1], gs[0].vs)
+                            )
+                        ) &
+                        set(self.pp.lists['sig'])
+                    ) / float(len(self.pp.lists['sig'])) * 100.0,
                 'vcount'
             ),
-            (
+            MultiBarplotParam(
                 r'Signaling proteins [%]',
                 'Percentage of signaling proteins',
                 'sigpct',
-                lambda gs: len(set(gs[0].vs['name']) & set(self.pp.lists['sig'])) /
-                float(gs[0].vcount()) * 100.0,
                 lambda gs: len(
-                    set(map(lambda v: v['name'], self.specific(gs[1], gs[0].vs))) &
+                        set(gs[0].vs['name']) & set(self.pp.lists['sig'])
+                    ) / float(gs[0].vcount()) * 100.0,
+                lambda gs: len(
+                    set(
+                        map(
+                            lambda v: v['name'],
+                            self.specific(gs[1], gs[0].vs)
+                        )
+                    ) &
                     set(self.pp.lists['sig'])
-                ) /
-                float(gs[0].vcount()) * 100.0,
+                ) / float(gs[0].vcount()) * 100.0,
                 'vcount'
             )
         ]
 
         self.scatterplots_settings = [
-            (
+            ScatterplotParam(
                 lambda gs: gs[0].vcount(),
                 lambda gs: gs[0].ecount(),
                 lambda gs: gs[0].density(),
-                {
-                    'ylim': [20.0, 200000.0],
-                    'xlim': [30.0, 15000.0],
-                    'ylog': True,
-                    'xlog': True,
-                    'xlab': 'Number of proteins',
-                    'ylab': 'Number of interacting pairs',
-                    'legtitle': 'Density',
-                    'title': 'Number of proteins, interactions and graph density'
-                },
+                ScatterplotGraphicsParam(
+                    ylim = [20.0, 200000.0],
+                    xlim = [30.0, 15000.0],
+                    ylog = True,
+                    xlog = True,
+                    xlab = 'Number of proteins',
+                    ylab = 'Number of interacting pairs',
+                    legtitle = 'Density',
+                    title = (
+                        'Number of proteins, '
+                        'interactions and graph density'
+                    )
+                ),
                 'vcount-ecount',
                 True
             ),
-            (
+            ScatterplotParam(
                 lambda gs: len(set(gs[0].vs['name']) &
-                               (set(self.pp.lists['dis']))),
+                    (set(self.pp.lists['dis']))),
                 lambda gs: len(set(gs[0].vs['name']) &
                                set(self.pp.lists['cdv'])),
                 lambda gs: gs[0].vcount(),
-                {
-                    'ylim': [0.0, 2000.0],
-                    'xlim': [30.0, 5500.0],
-                    'ylog': True,
-                    'xlog': True,
-                    'xlab': 'Number of\ndisease related proteins',
-                    'ylab': 'Number of cancer drivers',
-                    'legtitle': 'Total number of proteins',
-                    'title': 'Number of disease related proteins and cancer drivers',
-                    'legstrip': (3, None)
-                },
+                ScatterplotGraphicsParam(
+                    ylim = [0.0, 2000.0],
+                    xlim = [30.0, 5500.0],
+                    ylog = True,
+                    xlog = True,
+                    xlab = 'Number of\ndisease related proteins',
+                    ylab = 'Number of cancer drivers',
+                    legtitle = 'Total number of proteins',
+                    title = 'Number of disease related proteins and cancer drivers',
+                    legstrip = (3, None)
+                ),
                 'dis-cancer',
                 False
             ),
-            (
+            ScatterplotParam(
                 lambda gs: len(set(gs[0].vs['name']) &
                                set(self.pp.lists['rec'])),
                 lambda gs: len(set(gs[0].vs['name']) &
                                set(self.pp.lists['tf'])),
                 lambda gs: gs[0].vcount(),
-                {
-                    'ylim': [0.5, 2000.0],
-                    'xlim': [5.0, 1200.0],
-                    'ylog': True,
-                    'xlog': True,
-                    'xlab': 'Number of receptors',
-                    'ylab': 'Number of transcription factors',
-                    'legtitle': 'Total number of proteins',
-                    'title': 'Number of receptors and TFs',
-                    'legstrip': (3, None)
-                },
+                ScatterplotGraphicsParam(
+                    ylim = [0.5, 2000.0],
+                    xlim = [5.0, 1200.0],
+                    ylog = True,
+                    xlog = True,
+                    xlab = 'Number of receptors',
+                    ylab = 'Number of transcription factors',
+                    legtitle = 'Total number of proteins',
+                    title = 'Number of receptors and TFs',
+                    legstrip = (3, None)
+                ),
                 'tf-rec',
                 False
             ),
-            (
+            ScatterplotParam(
                 lambda gs: len(self.pp.complexes_in_network(graph=gs[0])),
                 lambda gs: sum(map(lambda e: len(e['ptm']) > 0, gs[0].es)),
                 lambda gs: gs[0].ecount(),
-                {
-                    'ylim': [0.5, 5400.0],
-                    'xlim': [3.0, 1500.0],
-                    'ylog': True,
-                    'xlog': True,
-                    'xlab': 'Number of complexes',
-                    'ylab': 'Number of\nenzyme-substrate relationships',
-                    'legtitle': 'Total number of interactions',
-                    'title': 'Number of complexes and enzyme-substrate relationships',
-                    'legstrip': (3, None)
-                },
+                ScatterplotGraphicsParam(
+                    ylim = [0.5, 5400.0],
+                    xlim = [3.0, 1500.0],
+                    ylog = True,
+                    xlog = True,
+                    xlab = 'Number of complexes',
+                    ylab = 'Number of\nenzyme-substrate relationships',
+                    legtitle = 'Total number of interactions',
+                    title = 'Number of complexes and enzyme-substrate relationships',
+                    legstrip = (3, None)
+                ),
                 'comp-ptm',
                 False
             )
@@ -494,114 +739,194 @@ class Workflow(object):
         setattr(self, '__class__', new)
 
     def run(self):
+        """
+        Executes the entire workflow. Loads data and creates the figures
+        and tables.
+        """
 
         self.load_data()
         self.make_plots()
 
     def load_data(self):
-
+        """
+        Calls methods to load and preprocess the data.
+        """
+        
+        # creating output directory
         self.set_outdir()
+        # creating PyPath object
         self.init_pypath()
+        # load list of protein annotations (e.g. kinases, receptors, ...)
         self.load_protein_lists()
+        # load annotations of proteins
         self.load_annotations()
+        # set the resource categories
         self.set_categories()
+        # separate the network by resources
         self.separate()
+        # assign colors for each resource for the multi-section barplots
         self.barplot_colors()
-        if self.do_refs_composite or \
-                self.do_refs_journals_grid or \
-                self.do_refs_years_grid or \
-                self.do_curation_plot or \
-                self.do_htp_char:
+        # if we create any figure about literature curation
+        # need to load the data from PubMed
+        if (
+            self.do_refs_composite or
+            self.do_refs_journals_grid or
+            self.do_refs_years_grid or
+            self.do_curation_plot or
+            self.do_htp_char
+        ):
             self.load_pubmed_data()
+        # for the directions plot compile the data about directions
         if self.do_dirs_stacked:
             self.get_dirs_data()
-        if self.do_consistency_dedrogram or \
-                self.do_consistency_table:
+        # for consistency plots and tables compile the consistency data
+        if (
+            self.do_consistency_dedrogram or
+            self.do_consistency_table
+        ):
             self.inconsistency_data()
 
     def make_plots(self):
+        """
+        Calls methods to create figures and tables.
+        """
 
         if self.do_main_table:
             self.main_table()
             if self.do_compile_main_table:
                 self.latex_compile(self.main_table_fname)
+        
         if self.do_curation_table:
             self.curation_table()
             if self.do_compile_curation_table:
-                self.latex_compile(self.stable2file)
-        self.get_multibarplot_ordr()
+                self.latex_compile(self.table2file)
+        
+        if self.do_multi_barplots:
+            self.get_multibarplot_ordr()
+        
         if self.do_simgraphs:
             self.make_simgraph_vertex()
             self.make_simgraph_edge()
             self.make_simgraph_curation()
+        
         if self.do_multi_barplots:
             self.make_multi_barplots()
+        
         if self.do_coverage_groups:
             self.get_coverage_groups_data()
             self.make_coverage_groups_plot()
+        
         if self.do_scatterplots:
             self.make_scatterplots()
+        
         if self.do_ptms_barplot:
             self.all_ptms_list()
             self.make_ptms_barplot()
+        
         if self.do_htp_char:
             self.make_htp_characteristics()
+        
         if self.do_history_tree:
             self.make_history_tree()
             if self.do_compile_history_tree:
                 self.latex_compile(self.history_tree_fname)
+        
         if self.do_refs_by_j:
             self.make_refs_by_journal()
+        
         if self.do_refs_by_db:
             self.make_refs_by_db()
+        
         if self.do_refs_by_year:
             self.make_refs_by_year()
+        
         if self.do_refs_years_grid:
             self.make_refs_years_grid()
+        
         if self.do_refs_journals_grid:
             self.make_refs_journals_grid()
+        
         if self.do_dirs_stacked:
             self.make_dirs_stacked()
             self.make_dirs_stacked(include_all=False)
+        
         if self.do_refs_composite:
             self.make_refs_composite()
+        
         if self.do_curation_plot:
             self.make_curation_plot()
+        
         if self.do_resource_list:
             self.resource_list_table()
             if self.do_compile_resource_list:
-                self.compile_latex(self.resource_list_fname)
+                self.latex_compile(self.resource_list_fname)
+        
         if self.do_consistency_dedrogram:
             self.make_consistency_dendrogram()
+        
         if self.do_consistency_table:
             self.make_consistency_table()
 
     def set_outdir(self):
+        """
+        Creates the directory to save all output files.
+        If no outdir given the ``name`` attribute will be used.
+        """
+        
         self.outdir = self.name if self.outdir is None else self.outdir
+        
         if not os.path.exists(self.outdir):
+            
             os.mkdir(self.outdir)
 
     def get_path(self, fname):
+        """
+        Returns the path of an output file by adding the path of the outdir.
+        """
+        
         return os.path.join(self.outdir, fname)
 
     def init_pypath(self):
-
-        self.pp = main.PyPath(9606)
-        for netdata in self.network_datasets:
-            self.pp.load_resources(getattr(data_formats, netdata))
+        """
+        Initializes a ``pypath.PyPath`` object using the resources from
+        ``network_datasets``. If ``network_datasets`` is already a ``PyPath``
+        object it will be used without any change. The ``PyPath`` object
+        assigned to the ``pp`` attribute.
+        """
+        
+        if isinstance(self.network_datasets, main.PyPath):
+            
+            self.pp = self.network_datasets
+            
+        else:
+            
+            self.pp = main.PyPath(9606)
+            for netdata in self.network_datasets:
+                self.pp.load_resources(getattr(data_formats, netdata))
 
     def load_protein_lists(self):
-
+        """
+        Loads the lists of protein categories: the entire proteome,
+        the list of signaling proteins, cancer drivers from IntOGen and
+        Cancer Gene Census.
+        """
+        
         for meth, name in iteritems(self.protein_lists):
-
+            
             self.console('Loading list of %s' % name)
             getattr(self.pp, '%s_list' % meth)()
-
+        
         self.console('Loading list of Cancer Gene Census %scancer drivers' %
                      ('and IntOGen ' if self.intogen_file else ''))
+        
         self.pp.cancer_drivers_list(intogen_file=self.intogen_file)
 
     def load_annotations(self):
+        """
+        Loads protein annotations to vertex attributes of the network object.
+        By default these are kinases, TFs, receptors, druggability, disease
+        relatedness.
+        """
 
         for meth, name in iteritems(self.set_annots):
 
@@ -614,99 +939,205 @@ class Workflow(object):
             getattr(self.pp, 'load_%s' % meth)()
 
     def set_categories(self):
+        """
+        Sets the resource categories as a vertex and edge attribute on the
+        network.
+        """
+        
         self.pp.set_categories()
 
     def separate(self):
+        """
+        Separates the network by resource category and resource.
+        Also defines important variables for category names and their order
+        which later will be used by the multi-section barplots.
+        """
+        
+        # separated by resource
         self.sep = self.pp.separate()
+        # separated by category
         self.csep = self.pp.separate_by_category()
+        
+        # dict of resource names to category names
         self.cats = dict(
-            map(lambda c: (c[0], data_formats.catnames[c[1]]),
-                iteritems(data_formats.categories)))
+            (c[0], data_formats.catnames[cc])
+            for c in iteritems(data_formats.categories)
+            for cc in c[1]
+            if not self.only_categories or cc in self.only_categories
+        )
+        
+        # tuples representing the total per each category
         self.cats.update(
             dict(
-                map(lambda c: (('All', c[0]), c[1]),
-                    filter(lambda c: c[0] in self.pp.has_cats,
-                           iteritems(data_formats.catnames)))))
-        self.cat_ordr = list(
-            filter(lambda c: data_formats.catletters[c] in self.pp.has_cats,
-                   self.cat_ordr))
+                (
+                    ('All', c[0]),
+                    cname
+                )
+                for c, cname in iteritems(data_formats.catnames)
+                if c[0] in self.pp.has_cats and (
+                    not self.only_categories or
+                    c[0] in self.only_categories
+                )
+            )
+        )
+        
+        # order of the categories on the multi section barplots
+        self.cat_ordr = [
+            c
+            for c in self.cat_ordr_default # as given in the settings
+            # if the category presents in the network
+            if data_formats.catletters[c] in self.pp.has_cats and (
+                # and it is allowed in the settings
+                self.only_categories is None or
+                data_formats.catletters[c] in self.only_categories
+            )
+        ]
 
     def fisher_tests(self):
+        """
+        Does Fisher tests for the enrichment of protein categories in
+        resources and resource categories.
+        """
 
         self.console('Doing Fisher tests, writing results to `%s`' %
                      self.get_path(self.fisher_file))
+        
         with open(self.get_path(self.fisher_file), 'w') as fi:
 
             for attr, name in self.fisher:
-                print(attr, name)
+                
+                # contingency table
                 cont = np.array(
-                    [[len(self.pp.lists['proteome']), self.pp.graph.vcount()],
-                     [
-                         len(self.pp.lists[attr]),
-                         len([1 for v in self.pp.graph.vs if v[attr]])
-                     ]])
+                    [
+                        [
+                            # size of the proteome
+                            len(self.pp.lists['proteome']),
+                            # vertices in the network
+                            self.pp.graph.vcount()
+                        ],
+                        [
+                            # proteins in the protein category
+                            len(self.pp.lists[attr]),
+                            # proteins of category in the network
+                            len([1 for v in self.pp.graph.vs if v[attr]])
+                        ]
+                     ]
+                )
+                
                 fi.write('%s:' % name)
                 fi.write('\t%s\t%s\n' % stats.fisher_exact(cont))
 
-    def get_data(self, fun, attr):
+    def get_data(self, fun, attr = None):
+        """
+        Executes a method for each network and creates a list of
+        tuples of resource names and results from the method.
+        The result is either assigned to the attribute ``attr`` or returned
+        of ``attr`` is ``None``.
+        """
+        
         if attr is None or not hasattr(self, attr):
+            
             result = \
                 list(
                     zip(
-                        *[(s, fun((self.sep[s], s))) for s in sorted(self.pp.sources)] +
-                        list(
-                            map(
-                                lambda c:
-                                    (('All', c[0]), fun(
-                                        (self.csep[c[0]], c[0]))),
-                                sorted(self.csep.keys())
+                        *[
+                            (
+                                s,
+                                fun((self.sep[s], s))
                             )
-                        )
+                            for s in sorted(self.pp.sources)
+                        ] +
+                        [
+                            (
+                                ('All', c[0]), # instead of resource name
+                                fun((self.csep[c[0]], c[0]))
+                            )
+                            for c in
+                            sorted(self.csep.keys())
+                        ]
                     )
                 )
+            
             if attr is None:
+                
                 return result
+                
             else:
+                
                 setattr(self, attr, result)
 
     def specific(self, s, seq):
+        """
+        Returns the elements from a sequence of vertices or edges which
+        are specific for a resource within a resource category.
+        """
+        
         return [
-            w for w in seq
-            if s in data_formats.categories and s in w['sources'] and len(w[
-                'sources'] & getattr(data_formats, data_formats.categories[s]))
-            == 1 or s in w['cat'] and len(w['cat']) == 1
+            w # vertex or edge
+            for w in seq
+            if (
+                (
+                    s in data_formats.categories and # the resource
+                                                     # has category
+                    s in w['sources'] and # the element belongs
+                                          # to the resource
+                    len(
+                        w['sources'] & # set of resources for the element
+                        getattr(data_formats, data_formats.categories[s])
+                            # set of resources in the category
+                    ) == 1
+                ) or (
+                    s in w['cat'] and # if not a resource
+                                         # but a category
+                    len(w['cat']) == 1 # element belongs only to this
+                                       # category
+                )
+            )
         ]
 
     def make_multi_barplots(self):
-
+        """
+        Creates multi-section barplots. A section (subplot) created for
+        each resource category. Generates plots according to settings in
+        the ``barplot_settings`` attribute.
+        """
+        
+        # keeping the plot objects in dict
         self.multi_barplots = {}
-
+        
         for par in self.barplots_settings:
-
+            
             _ = sys.stdout.write('\t:: Plotting %s\n' % par[1])
-
-            data_attr = 'data_%s' % par[2]
-
-            self.get_data(par[3], data_attr)
-
-            if par[4] is not None:
-                data_attr2 = 'data_%s' % par[4]
-                self.get_data(par[4], data_attr2)
-
-            data = getattr(self, data_attr)
+            
+            # attribute name for y variable
+            data_attr = 'data_%s' % par.name
+            
+            # heights of the bars
+            self.get_data(par.method, data_attr)
+            
+            # data for the shaded area heights
+            if par.smethod is not None:
+                
+                # attribute name for 2nd y variable
+                data_attr2 = 'data_%s_2' % par.name
+                self.get_data(par.smethod, data_attr2)
+            
+            data  = getattr(self, data_attr)
             data2 = getattr(self, data_attr2)
-
-            ordr = self.vcount_ordr if par[5] == 'vcount' else par[5]
-
-            csvname = self.get_path('%s-by-db_%s.csv' % (par[2], self.name))
-
+            
+            # ordering of the columns
+            ordr = self.vcount_ordr if par.order == 'vcount' else par.order
+            
+            # csv file to export the data
+            csvname = self.get_path('%s-by-db_%s.csv' % (par.name, self.name))
+            
             with open(csvname, 'w') as csv:
-                # print(data)
-                # print(list(zip(*data)))
-                # print(data2)
-                ddata = dict(zip(*data))
+                
+                ddata  = dict(zip(*data))
                 ddata2 = dict(zip(*data2))
-                csv.write('Label;%s;%s\n' % (par[0], par[0]))
+                
+                csv.write('Label;%s;%s\n' % (par.ylab, par.ylab))
+                
                 csv.write(
                     '\n'.join(
                         map(
@@ -723,12 +1154,15 @@ class Workflow(object):
                         )
                     )
                 )
-
-            self.multi_barplots[par[2]] = \
+            
+            # creating the barplot object
+            self.multi_barplots[par.name] = (
+                
                 plot.MultiBarplot(
-                    data[0], data[1],
-                    categories=self.cats,
-                    color=self.labcol,
+                    data[0], # resource names
+                    data[1], # values for each resource
+                    categories = self.cats, # resource to category dict
+                    color = self.labcol,
                     cat_ordr=self.cat_ordr,
                     ylab=par[0],
                     title=par[1],
@@ -740,44 +1174,74 @@ class Workflow(object):
                     color2=None if par[4] is None else self.labcol2,
                     summary=self.multi_barplots_summary,
                     do=True
+                )
+                
             )
 
     def barplot_colors(self):
-
+        """
+        Creates lists of color codes for multi-section barplots according
+        to the current set of resources and categories.
+        """
+        
+        # size of resources and resource categories
         self.data_protein_counts = \
-            list(zip(*[(s,
-                        len([v for v in self.pp.graph.vs
-                             if s in v['sources']]))
-                       for s in sorted(self.pp.sources)] +
-                     list(map(lambda c: (('All', c),
-                                         self.csep[c].vcount()),
-                              sorted(self.csep.keys())))))
-
+            list(
+                zip(
+                    *[
+                        (
+                            s,
+                            len([
+                                v for v in self.pp.graph.vs
+                                if s in v['sources']
+                            ])
+                        )
+                        for s in sorted(self.pp.sources)
+                    ] +
+                    [
+                        (
+                            ('All', c),
+                            self.csep[c].vcount()
+                        )
+                        for c in sorted(self.csep.keys())
+                    ]
+                )
+            )
+        
+        # colors of the bars
         self.labcol = \
             list(
                 map(
                     lambda lab:
+                        # for resources
                         self.ccolors[data_formats.categories[lab]]
-                    if lab in data_formats.categories
-                    else self.ccolors[lab[1]],
+                        if lab in data_formats.categories
+                        else self.ccolors[lab[1]], # for resource categories
                     self.data_protein_counts[0]
                 )
             )
-
+        
+        # colors of the shaded parts
         self.labcol2 = \
             list(
                 map(
                     lambda lab:
+                        # for resources
                         self.ccolors2[data_formats.categories[lab]]
-                    if lab in data_formats.categories
-                    else self.ccolors2[lab[1]],
+                        if lab in data_formats.categories
+                        else self.ccolors2[lab[1]], # for resource categories
                     self.data_protein_counts[0]
                 )
             )
 
     def make_coverage_groups_plot(self):
+        """
+        Creates multi-section barplot showing the coverage of resources
+        and resource categories on a group of proteins.
+        """
 
-        self.coverage_groups = \
+        self.coverage_groups = (
+            
             plot.MultiBarplot(
                 self.labels_coverage_groups,
                 self.data_coverage_groups,
@@ -797,13 +1261,22 @@ class Workflow(object):
                 order=self.vcount_ordr,
                 ylim=[0.0, 100.0]
             )
+            
+        )
 
     def get_coverage_groups_data(self):
-
+        """
+        Creates data about the coverage of resources and resource categories
+        on various groups of proteins: receptors, kinases, TFs and
+        druggable proteins.
+        """
+        
         covdata = list(
             map(
                 lambda fun:
+                    # dict of resources and coverage
                     dict(zip(*self.get_data(fun, None))),
+                # methods to calculate the coverage in percent
                 [
                     lambda gs: len([v for v in gs[0].vs if v['rec']]) /
                         float(len(self.pp.lists['rec'])) * 100.0,
@@ -816,9 +1289,13 @@ class Workflow(object):
                 ]
             )
         )
-
+        
+        # labels for coverage groups: resource names
+        # and tuples for resource categories
         self.labels_coverage_groups = list(covdata[0].keys())
-
+        
+        # coverage data:
+        # list of lists of percentages
         self.data_coverage_groups = \
             list(
                 map(
@@ -833,7 +1310,8 @@ class Workflow(object):
                     covdata
                 )
             )
-
+        
+        # labels for protein categories
         self.coverage_groups_group_labels = [
             'Receptors (all: %s)' % locale.format(
                 '%d', len(self.pp.lists['rec']), grouping=True),
@@ -844,9 +1322,15 @@ class Workflow(object):
             'Druggable proteins (all: %s)' % locale.format(
                 '%d', len(self.pp.lists['dgb']), grouping=True)
         ]
-
+    
     def get_multibarplot_ordr(self):
-
+        """
+        Creates a ``plot.MultiBarplot`` object which orders by values
+        on the y axis, in this case the number of proteins.
+        This way obtains the order of resources and resource categories.
+        Assigns the order to the ``vcount_ordr`` attribute.
+        """
+        
         self.vcount_ordr_barplot = \
             plot.MultiBarplot(
                 self.data_protein_counts[0],
@@ -859,36 +1343,48 @@ class Workflow(object):
                 desc=True,
                 lab_angle=90,
                 fname=self.pdf_vcount_order,
-                order='y'
+                order='y',
             )
-
-        os.remove(self.pdf_vcount_order)
-
+        
+        # we anyways create this figure later
+        # now we remove it
+        # os.remove(self.pdf_vcount_order)
+        
         self.vcount_ordr = self.vcount_ordr_barplot.x
-
+    
     def make_scatterplots(self):
-
+        """
+        Creates scatterplots showing pairs of variables.
+        Each point represents one resource.
+        """
+        'xmethod', 'ymethod', 'smethod', 'gparam', 'name', 'sdiv'
         for par in self.scatterplots_settings:
 
-            _ = sys.stdout.write('\t:: Plotting %s\n' % par[3]['title'])
+            _ = sys.stdout.write('\t:: Plotting %s\n' % par.gparam.title)
 
-            xattr = 'data_%s_x' % par[4]
-            yattr = 'data_%s_y' % par[4]
-            sattr = 'data_%s_s' % par[4]
-            lattr = 'labels_scatterplot_%s' % par[4]
+            xattr = 'data_%s_x' % par.name
+            yattr = 'data_%s_y' % par.name
+            sattr = 'data_%s_s' % par.name
+            lattr = 'labels_scatterplot_%s' % par.name
 
-            self.get_data(par[0], xattr)
-            self.get_data(par[1], yattr)
-            self.get_data(par[2], sattr)
+            self.get_data(par.xmethod, xattr)
+            self.get_data(par.ymethod, yattr)
+            self.get_data(par.smethod, sattr)
 
             x = getattr(self, xattr)
             y = getattr(self, yattr)
             s = getattr(self, sattr)
 
-            setattr(self, lattr,
-                    list(
-                        filter(lambda l: type(l) is not tuple,
-                               getattr(self, xattr)[0])))
+            setattr(
+                self,
+                lattr,
+                list(
+                    filter(
+                        lambda l: not isinstance(l, tuple),
+                        getattr(self, xattr)[0]
+                    )
+                )
+            )
 
             labels = getattr(self, lattr)
 
@@ -900,7 +1396,7 @@ class Workflow(object):
             y = list(map(lambda l: y[l], labels))
             s = np.array(list(map(lambda l: s[l], labels)))
 
-            if par[5]:
+            if par.sdiv:
                 s = s / 1.0
 
             colors = list(
@@ -908,37 +1404,59 @@ class Workflow(object):
                     labels))
 
             color_labels = []
-            for c in ['p', 'm', 'i', 'r']:
-                color_labels.append(
-                    (data_formats.catnames[c], self.ccolors2[c]))
+            for c in ['p', 'l', 'm', 'i', 'r']:
+                
+                if (
+                    c in self.pp.has_cats and (
+                        self.only_categories is None or
+                        c in self.only_categories
+                    )
+                ):
+                    
+                    color_labels.append(
+                        (data_formats.catnames[c], self.ccolors2[c])
+                    )
 
             for i, l in enumerate(labels):
                 if type(l) is tuple:
                     labels[i] = data_formats.catnames[l[1]]
 
-            csvname = self.get_path('%s_%s.csv' % (par[4], self.name))
+            csvname = self.get_path('%s_%s.csv' % (par.name, self.name))
 
             with open(csvname, 'w') as csv:
 
-                csv.write('Label;%s;%s;%s\n' %
-                          (par[3]['xlab'], par[3]['ylab'], par[3]['legtitle']))
-                csv.write('\n'.join(
-                    map(lambda l: ';'.join(map(str, l)), zip(labels, x, y,
-                                                             s))))
+                csv.write('Label;%s;%s;%s\n' % (
+                    par.gparam.xlab, par.gparam.ylab, par.gparam.legtitle
+                ))
+                csv.write(
+                    '\n'.join(
+                        map(
+                            lambda l: ';'.join(map(str, l)),
+                            zip(labels, x, y, s)
+                        )
+                    )
+                )
 
             sp = plot.ScatterPlus(
                 x,
                 y,
-                size=s,
-                min_size=30,
-                max_size=1000,
-                labels=labels,
-                color=colors,
-                color_labels=color_labels,
-                fname=self.get_path('%s_%s.pdf' % (par[4], self.name)),
-                **par[3])
+                size = s,
+                min_size = 30,
+                max_size = 1000,
+                labels = labels,
+                color = colors,
+                color_labels = color_labels,
+                fname = self.get_path('%s_%s.pdf' % (par.name, self.name)),
+                **par.gparam._asdict(),
+            )
 
     def all_ptms_list(self):
+        """
+        Obtains a list of PTM objects from all databases.
+        Creates a dict with resource names as keys and
+        lists of PTMs as values.
+        Result assigned to the ``ptms`` attribute.
+        """
 
         self.ptms = {
             #'DEPOD': net.load_depod_dmi(return_raw = True),
@@ -953,6 +1471,12 @@ class Workflow(object):
         }
 
     def make_ptms_barplot(self):
+        """
+        Creates a barplot with enzyme-substrate resources on the x axis
+        and number of interactions on the y axis.
+        Each resource represented by two columns, one showing the total,
+        other the specific interactions.
+        """
 
         self.pp.uniq_ptms()
 
@@ -966,7 +1490,8 @@ class Workflow(object):
                       uniqList(flatList(self.ptms.values()))), len(
                           self.ptms_all_in_network))]))
 
-        self.ptms_barplot = \
+        self.ptms_barplot = (
+            
             plot.MultiBarplot(
                 self.data_ptms[0],
                 self.data_ptms[1:],
@@ -987,8 +1512,18 @@ class Workflow(object):
                 legend_font={'size': 'x-large'},
                 bar_args={'width': 0.8}
             )
+            
+        )
 
     def make_htp_characteristics(self):
+        """
+        Creates a 5 plot figures showing the high-throughput characteristics
+        of the network.
+        The x axis represents the number of interactions curated from one
+        single publication. Above this threshold we consider a study HTP.
+        The y axis on each plot shows various characteristics of the network
+        depending on the HTP threshold.
+        """
 
         self.htp_char = \
             plot.HtpCharacteristics(
@@ -1000,9 +1535,13 @@ class Workflow(object):
                 upper=self.htp_upper,
                 htdata=self.htdata
             )
+        
         self.htdata = self.htp_char.htdata
 
     def make_history_tree(self):
+        """
+        Creates a TikZ figure of the history of resources.
+        """
 
         self.history_tree = plot.HistoryTree(
             fname=self.get_path(self.history_tree_fname),
@@ -1010,14 +1549,24 @@ class Workflow(object):
             dotlineopacity=1.0)
 
     def compile_history_tree(self):
+        """
+        Compiles the history of resources figure by LaTeX.
+        """
 
         self.console('Running `%s` on `%s`' %
                      (self.latex, self.get_path(self.history_tree_fname)))
 
         self.history_tree_latex_proc = subprocess.Popen(
-            [self.latex, self.get_path(self.history_tree_fname)],
+            [
+                self.latex,
+                '-halt-on-error',
+                '-output-directory',
+                self.outdir,
+                self.get_path(self.history_tree_fname),
+            ],
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
+            stderr=subprocess.PIPE,
+        )
         self.history_tree_latex_output, self.history_tree_latex_error = \
             self.history_tree_latex_proc.communicate()
         self.history_tree_latex_return = \
@@ -1290,24 +1839,42 @@ class Workflow(object):
             latex_hdr=False)
 
     def latex_compile(self, fname):
+        """
+        Compiles the tex file ``fname`` using the LaTeX compiler defined in
+        the ``latex`` attribute.
+        """
 
         self.console('Running `%s` on `%s`' %
                      (self.latex, self.get_path(fname)))
 
         try:
             self.latex_proc = subprocess.Popen(
-                [self.latex, self.get_path(fname)],
+                [
+                    self.latex,
+                    '-halt-on-error',
+                    '-output-directory',
+                    self.outdir,
+                    self.get_path(fname)
+                ],
                 stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE)
+                stderr=subprocess.PIPE,
+            )
             self.latex_output, self.latex_error = self.latex_proc.communicate(
-                timeout=self.latex_timeout)
+                timeout = self.latex_timeout
+            )
             self.latex_return = self.latex_proc.returncode
+            
         except subprocess.TimeoutExpired:
+            
             self.latex_return = 1
 
-        self.console('LaTeX %s' % ('compiled successfully'
-                                   if self.latex_return == 0 else
-                                   'compilation failed'))
+        self.console(
+            'LaTeX %s' % (
+                'compiled successfully'
+                    if self.latex_return == 0 else
+                'compilation failed'
+            )
+        )
 
     def inconsistency_data(self):
 
@@ -1558,8 +2125,15 @@ class Workflow(object):
         self.consistency_table = tbl
 
     def load_pubmed_data(self):
+        """
+        Loads data about all references using the web query interface of
+        NCBI PubMed (E-utils).
+        """
+        
         self.pubmeds, self.pubmeds_earliest = _refs.get_pubmed_data(
-            self.pp, htp_threshold=None)
+            self.pp,
+            htp_threshold = None,
+        )
 
     def console(self, msg):
         _ = sys.stdout.write('\t:: %s\n' % msg)

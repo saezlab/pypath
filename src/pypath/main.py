@@ -2636,9 +2636,10 @@ class PyPath(object):
         """
 
         tfs = dataio.get_tfcensus()
-        utfs = [self.mapper.map_name(tf, 'ensg', 'uniprot', 9606)
+
+        utfs = [self.mapper.map_name(tf, 'ensembl', 'uniprot', 9606)
                 for tf in tfs['ensg']]
-        utfs += [self.mapper.map_name(h, 'hgnc', 'uniprot', 9606)
+        utfs += [self.mapper.map_name(h, 'genesymbol', 'uniprot', 9606)
                  for h in tfs['hgnc']]
 
         self.lists['tf'] = common.uniqList(common.flatList(utfs))
@@ -2666,11 +2667,11 @@ class PyPath(object):
         terms.
         """
 
-        goq = dataio.get_go_quick()
+        goannot = dataio.go_annotations_goose()
 
         gosig = set([])
 
-        for term, name in iteritems(goq['names']):
+        for term, name in iteritems(goannot[0]['P']):
 
             if 'signal' in name or 'regulat' in name:
                 gosig.add(term)
@@ -2680,7 +2681,7 @@ class PyPath(object):
         if 'proteome' not in self.lists:
             self.proteome_list()
 
-        for up, term in iteritems(goq['terms']['P']):
+        for up, term in iteritems(goannot[1]['P']):
 
             if len(term & gosig):
                 upsig.add(up)
@@ -10548,18 +10549,22 @@ class PyPath(object):
 
         _method = 'union' if method == 'ANY' else 'intersection'
 
+        if isinstance(go_terms, common.basestring):
+
+            go_terms = (go_terms,)
+
         if go_desc is None:
 
             go_desc = dataio.go_descendants_goose(aspects = aspects)
 
         return getattr(set, _method)(
-            self.select_by_go_single(
+            *[self.select_by_go_single(
                 term = term,
                 go_desc = go_desc,
                 aspects = aspects,
             )
             for term in go_terms
-        )
+        ])
 
     def select_by_go_single(
             self,
@@ -10790,7 +10795,7 @@ class PyPath(object):
 
             vids_extracell   = self.select_by_go(CC_EXTRACELL,   go_desc)
             vids_exosome     = self.select_by_go(CC_EXOSOME,     go_desc)
-            vids_extracell   = vids_extracell - vids_exosome
+            #vids_extracell   = vids_extracell - vids_exosome
             vids_plasmamem   = self.select_by_go(CC_PLASMAMEM,   go_desc)
             vids_recbinding  = self.select_by_go(MF_RECBINDING,  go_desc)
             vids_recactivity = self.select_by_go(MF_RECACTIVITY, go_desc)
@@ -11692,7 +11697,7 @@ class PyPath(object):
         self.update_vname()
         self.graph.vs['sig'] = [False for _ in self.graph.vs]
 
-        if 'kin' not in self.lists:
+        if 'sig' not in self.lists:
             self.signaling_proteins_list()
 
         for sig in self.lists['sig']:
