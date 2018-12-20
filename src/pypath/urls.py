@@ -39,7 +39,7 @@ urls = {
         'url_old':
         'http://mips.helmholtz-muenchen.de/genre/proj/corum/allComplexes.csv',
         'url':
-        'http://mips.helmholtz-muenchen.de/corum/download/allComplexes.txt'
+        'http://mips.helmholtz-muenchen.de/corum/download/allComplexes.txt.zip'
     },
     'pfam_pdb': {
         'label': 'PDB-Pfam mapping and names of Pfam domains',
