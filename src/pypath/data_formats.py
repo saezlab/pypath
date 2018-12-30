@@ -2049,6 +2049,7 @@ categories = {
     'phosphoELM': 'm',
     'MPPI': 'i',
     'Guide2Pharma': 'l',
+    'Guide2Pharma_CP': 'l',
     'TRIP': 'p',
     'AlzPathway': 'r',
     'PhosphoSite': 'm',

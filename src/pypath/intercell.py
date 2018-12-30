@@ -85,6 +85,96 @@ go_annot = {
         'stereocilium membrane',
         'stereocilia coupling link',
         
+    },
+    
+    'M': {
         
-    }
+        # upper level terms which help to categorize
+        # molecular functions in the intercellular signaling
+        'molecular carrier activity',
+        'cargo receptor activity',
+        'binding',
+        'regulation of binding',
+        'positive regulation of binding',
+        'negative regulation of binding',
+        'protein folding chaperone',
+        'antioxidant activity',
+        
+        # upper level generic terms for regulation
+        'regulation of molecular function',
+        'negative regulation of molecular function',
+        'positive regulation of molecular function',
+        
+        # enzymes
+        'catalytic activity',
+        'regulation of catalytic activity',
+        'positive regulation of catalytic activity',
+        'negative regulation of catalytic activity',
+        'enzyme regulator activity',
+        'enzyme activator activity',
+        'enzyme inhibitor activity',
+        'catalytic activity, acting on a protein',
+        # peptidases
+        'peptidase activity',
+        'peptidase regulator activity',
+        'peptidase activator activity',
+        'peptidase inhibitor activity',
+        'regulation of peptidase activity',
+        'peptidase activator activity',
+        # receptors
+        'receptor regulator activity',
+        'receptor activator activity',
+        'receptor inhibitor activity',
+        'receptor ligand activity',
+        'neurotransmitter receptor regulator activity',
+        'signaling receptor activity',
+        'negative regulation of signaling receptor activity',
+        'positive regulation of signaling receptor activity',
+        'receptor activator activity',
+        'receptor inhibitor activity',
+        'regulation of signaling receptor activity',
+        'receptor complex',
+        (
+            'transforming growth factor beta receptor,'
+            'cytoplasmic mediator activity'
+        ),
+        # other relevant binding activities
+        'antigen binding',
+        'hormone binding',
+        'neurotransmitter binding',
+        
+        # endocytosis
+        'endocytic adaptor activity',
+        
+        # ECM, structural proteins
+        'structural molecule activity',
+        'extracellular matrix structural constituent',
+        'structural constituent of bone',
+        
+        # adhesion to base membrane and ECM
+        'cell adhesion mediator activity',
+        'extracellular matrix binding',
+        'hydroxyapatite binding',
+        
+        # transporters
+        'transporter activity',
+        'regulation of transporter activity',
+        'positive regulation of transporter activity',
+        'negative regulation of transporter activity',
+        'transmembrane transporter activity',
+        'drug transmembrane transporter activity',
+        'regulation of transmembrane transporter activity',
+        # channels
+        'channel regulator activity',
+        'channel activator activity',
+        'channel inhibitor activity',
+        # ion channels
+        'ion channel inhibitor activity',
+        'ion channel regulator activity',
+        'ion transmembrane transporter activity',
+        'regulation of ion transmembrane transporter activity',
+        'positive regulation of ion transmembrane transporter activity',
+        'negative regulation of ion transmembrane transporter activity',
+    },
+    
 }

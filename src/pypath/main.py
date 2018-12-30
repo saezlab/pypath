@@ -9885,14 +9885,18 @@ class PyPath(object):
         if sources is None:
             sources = data_formats.pathway
 
-        CC_EXTRACELL   = 'GO:0005576' # select all extracellular
-        CC_EXOSOME     = 'GO:0070062' # remove exosome localized proteins
-        CC_PLASMAMEM   = 'GO:0005887' # select plasma membrane proteins
-        MF_RECBINDING  = 'GO:0005102' # select ligands
-        MF_RECACTIVITY = 'GO:0038023' # select receptors
-        MF_ECM_STRUCT  = 'GO:0005201' # select matrix structure proteins
-                                      # e.g. collagene
-        MF_CATALYTIC   = 'GO:0003824' # select enzymes, e.g. MMPs
+        CC_EXTRACELL    = 'GO:0005576' # select all extracellular
+        CC_EXOSOME      = 'GO:0070062' # remove exosome localized proteins
+        CC_PLASMAMEM    = 'GO:0005887' # select plasma membrane proteins
+        MF_RECBINDING   = 'GO:0005102' # select ligands
+        MF_RECACTIVITY  = 'GO:0038023' # select receptors
+        MF_ECM_STRUCT   = 'GO:0005201' # select matrix structure proteins
+                                       # e.g. collagene
+        MF_CATALYTIC    = 'GO:0003824' # select enzymes, e.g. MMPs
+        
+        BP_SURF_REC_SIG = 'GO:0007166' # cell surface receptor signaling pw.
+        CC_ECM_COMP     = 'GO:0044420' # ECM component
+        
 
         if inference_from_go:
             
@@ -9901,7 +9905,7 @@ class PyPath(object):
 
             if 'go' not in self.graph.vs.attributes():
                 self.go_annotate()
-
+            
             vids_extracell   = self.select_by_go(CC_EXTRACELL,   go_desc)
             vids_exosome     = self.select_by_go(CC_EXOSOME,     go_desc)
             #vids_extracell   = vids_extracell - vids_exosome
