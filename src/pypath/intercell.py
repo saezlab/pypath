@@ -28,6 +28,8 @@ Gene Ontology annotations to select categories relevant in intercellular
 signaling.
 """
 go_annot = {
+    
+    # cellular component
     'C': {
         'cell junction',
         'extracellular region',
@@ -87,7 +89,8 @@ go_annot = {
         
     },
     
-    'M': {
+    # molecular function
+    'F': {
         
         # upper level terms which help to categorize
         # molecular functions in the intercellular signaling
@@ -175,6 +178,106 @@ go_annot = {
         'regulation of ion transmembrane transporter activity',
         'positive regulation of ion transmembrane transporter activity',
         'negative regulation of ion transmembrane transporter activity',
+    },
+    
+    # biological process
+    'P': {
+        
+        # cell adhesion
+        'cell adhesion',
+        'cell-cell adhesion',
+        'cell-substrate adhesion',
+        'cell adhesion molecule production',
+        'cell-cell adhesion in response to extracellular stimulus',
+        'cellular response to cell-matrix adhesion',
+        'contact inhibition',
+        'establishment or maintenance of cell polarity'
+        
+        # cellular responses
+        'myofibroblast cell apoptotic process',
+        'fibroblast apoptotic process',
+        'epithelial cell apoptotic process',
+        
+        # cell activation
+        'cell activation',
+        'endothelial cell activation',
+        'fibroblast activation',
+        'leukocyte activation',
+        
+        # cell communication
+        'cell communication',
+        'cell communication by chemical coupling',
+        'cell communication by electrical coupling',
+        'cell-cell signaling',
+        'autocrine signaling',
+        'paracrine signaling',
+        'cell-cell signaling via exosome',
+        'epithelial-mesenchymal cell signaling',
+        'cellular response to extracellular stimulus',
+        'synaptic signaling',
+        'cell-cell recognition',
+        
+        # signal release
+        'signal release',
+        'hormone secretion',
+        'exocytic process',
+        'secretion by cell',
+        'hormone metabolic process',
+        'cytokine production',
+        'cytokine secretion',
+        
+        # receptors
+        'regulation of receptor recycling',
+        'receptor clustering',
+        'receptor diffusion trapping',
+        'membrane raft localization',
+        
+        # exosomes
+        'extracellular vesicle biogenesis',
+        'extracellular exosome assembly',
+        'vesicle-mediated intercellular transport',
+        
+        # junction
+        'cell junction assembly',
+        'cell junction organization',
+        'intercellular bridge organization',
+        'gap junction-mediated intercellular transport',
+        
+        # ECM
+        'extracellular matrix assembly',
+        'extracellular matrix organization',
+        'extracellular matrix constituent secretion',
+        'extracellular matrix-cell signaling',
+        'cell-matrix recognition',
+        'collagen metabolic process',
+        
+        # motility
+        'fibroblast migration',
+        'epithelial cell migration',
+        'endothelial cell migration',
+        'leukocyte migration',
+        'substrate-dependent cell migration',
+        'cell chemotaxis to fibroblast growth factor',
+        'endothelial cell chemotaxis',
+        'fibroblast chemotaxis',
+        'leukocyte chemotaxis',
+        'epithelial structure maintenance',
+        'connective tissue replacement', # this is fibrosis actually
+        
+        # channels
+        'ion channel activity',
+        
+        # docking
+        'membrane docking',
+        'protein to membrane docking',
+        'membrane to membrane docking',
+        
+        # kidney specific stuff
+        'nephron',
+        'outer medulla of kidney',
+        'inner medulla of kidney',
+        'kidney pyramid',
+        
     },
     
 }
