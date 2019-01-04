@@ -9577,6 +9577,37 @@ class PyPath(object):
 
         return toDel, disrupted
     
+    def label(self, label, idx, what = 'vertices'):
+        """
+        Creates a boolean attribute ``label`` True for the
+        vertex or edge IDs in the set ``idx``.
+        """
+        
+        seq = self.graph.es if what == 'edges' else self.graph.vs
+        cnt = self.graph.ecount() if what == 'edges' else self.graph.vcount()
+        
+        seq[label] = [False for _ in xrange(cnt)]
+        
+        for i in idx:
+            
+            seq[i][label] = True
+    
+    def label_vertices(self, label, vertices):
+        """
+        Creates a boolean vertex attribute ``label`` True for the
+        vertex IDs in the set ``vertices``.
+        """
+        
+        self.label(label, vertices)
+    
+    def label_edges(self, label, edges):
+        """
+        Creates a boolean edge attribute ``label`` True for the
+        edge IDs in the set ``edges``.
+        """
+        
+        self.label(label, edges, 'edges')
+    
     def select_by_go_all(self, go_terms):
         """
         Selects the nodes annotated by all GO terms in ``go_terms``.
@@ -9740,10 +9771,8 @@ class PyPath(object):
         )
         
         vids = _method(go_terms)
-        self.graph.vs[label] = [False for _ in xrange(self.graph.vcount())]
-
-        for vid in vids:
-            self.graph.vs[vid][label] = True
+        
+        self.label_vertices(label, vids)
     
     def network_by_go(
             self,
@@ -9751,6 +9780,7 @@ class PyPath(object):
             network_sources = None,
             include = None,
             exclude = None,
+            directed = False,
             prefix  = 'GO',
             delete  = True,
             vertex_attrs = True,
@@ -9775,6 +9805,9 @@ class PyPath(object):
         :param list exclude:
             Similarly to include, all edges will be kept but the ones listed
             in ``exclude`` will be deleted.
+        :param bool directed:
+            If True ``include`` and ``exclude`` relations will be processed
+            with directed (source, target) else direction won't be considered.
         :param str prefix:
             Prefix for all vertex and edge attributes created in this
             operation. E.g. if you have a category label 'bar' and prefix
@@ -9788,7 +9821,27 @@ class PyPath(object):
             Create edge attributes.
         """
         
-        pass
+        if network_sources:
+            
+            self.init_network(network_sources)
+        
+        selections = dict(
+            (
+                label,
+                self.select_by_go(definition)
+            )
+            for label, definition in iteritems(node_categories)
+        )
+        
+        if vertex_attrs:
+            
+            for label, vertices in iteritems(selections):
+                
+                self.label_vertices(label, vertices)
+        
+        if include:
+            
+            
 
     def load_ligand_receptor_network(self, lig_rec_resources=True,
                                      inference_from_go=True,
