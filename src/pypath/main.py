@@ -9577,6 +9577,46 @@ class PyPath(object):
 
         return toDel, disrupted
     
+    def edges_between(self, group1, group2, directed = True, strict = False):
+        """
+        Selects edges between two groups of vertex IDs.
+        Returns set of edge IDs.
+        
+        :param set group1,group2:
+            List, set or tuple of vertex IDs.
+        :param bool directed:
+            Only edges with direction `group1 -> group2` selected.
+        :param bool strict:
+            Edges with no direction information still selected even if
+            ``directed`` is `False`.
+        """
+        
+        edges = set()
+        
+        for e in self.graph.es:
+            
+            if (
+                (e.source in group1 and e.target in group2) or
+                (e.target in group1 and e.target in group2)
+            ):
+                
+                if not directed or (not e['dirs'].is_directed and not strict):
+                    
+                    edges.add(e.index)
+                    continue
+                
+                up1 = self.up(e.source)
+                up2 = self.up(e.target)
+                
+                if (
+                    (e.source in group1 and e['dirs'].get_dir((up1, up2))) or
+                    (e.target in group1 and e['dirs'].get_dir((up2, up1)))
+                ):
+                    
+                    edges.add(e.index)
+        
+        return edges
+    
     def label(self, label, idx, what = 'vertices'):
         """
         Creates a boolean attribute ``label`` True for the
@@ -9833,11 +9873,24 @@ class PyPath(object):
             for label, definition in iteritems(node_categories)
         )
         
+        categories = tuple(selections.keys())
+        
         if vertex_attrs:
             
             for label, vertices in iteritems(selections):
                 
                 self.label_vertices(label, vertices)
+        
+        if edge_attrs:
+            
+            for label1, label2 in itertools.product(categories, categories):
+                
+                edges = self.edges_between(
+                    selections[label1],
+                    selections[label2],
+                )
+                
+                self.label_edges(label, edges)
         
         if include:
             
