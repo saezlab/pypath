@@ -427,8 +427,8 @@ urls = {
     },
     'goa': {
         'label': 'UniProt GO annotations from GOA',
-        'url': 'ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/%s/'
-        'goa_%s.gaf.gz'
+        'go_url': 'http://geneontology.org/gene-associations/goa_%s.gaf.gz',
+        'ebi_url': 'ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/%s/goa_%s.gaf.gz'
     },
     'quickgo_old': {
         'label': 'UniProt GO annotations from QuickGO',
@@ -441,6 +441,25 @@ urls = {
         'downloadSearch?includeFields=goName,name&taxonId=%u'
         '&aspect=%s%s'
     },
+    'quickgo_rest': {
+        'label': 'REST API of the QuickGO Gene Ontology server',
+        'graph': 'https://www.ebi.ac.uk/QuickGO/services/ontology/'\
+            'go/terms/graph?startIds=%s,relations=%s',
+        'terms': 'https://www.ebi.ac.uk/QuickGO/services/ontology/'\
+            'go/terms?page=%u',
+        'annot': 'https://www.ebi.ac.uk/QuickGO/services/annotation/'\
+            'downloadSearch?'\
+            'includeFields=goName&'\
+            'includeFields=taxonName&'\
+            'includeFields=name&'\
+            'aspect=%s&'\
+            'goUsageRelationships=%s&'\
+            'taxonId=%u&'\
+            'limit=100&'\
+            'page=%u',
+        'desc': 'https://www.ebi.ac.uk/QuickGO/services/ontology/'\
+            'go/terms/%s/descendants%s',
+    },
     'quickgo_desc': {
         'label': 'UniProt GO annotations from QuickGO',
         'url': 'https://www.ebi.ac.uk/QuickGO/services/annotation/'\
@@ -451,6 +470,10 @@ urls = {
         'label': 'Legacy MySQL query interface of AmiGO',
         'url': 'http://amigo.geneontology.org/goose?query=%s'\
             '&mirror=bbop&limit=0&format=text',
+    },
+    'golr': {
+        'label': 'AmiGO Solr service URL',
+        'url': 'http://golr.berkeleybop.org/select%s'
     },
     'goslim_gen': {
         'label': 'Generic GOSlim from GO Consortium',

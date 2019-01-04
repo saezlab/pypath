@@ -1158,3 +1158,15 @@ class silent(object): # XXX: Never used
 
         sys.stdout.close()
         sys.stdout = self.aux
+
+
+def paginate(lst, size = 10):
+    """
+    Yields sections of length ``size`` from list ``lst``.
+    The last section might be shorter than ``size``.
+    Following https://stackoverflow.com/a/3744502/854988.
+    """
+    
+    for i in xrange((len(lst) // size) + 1):
+        
+        yield lst[size * i:size * (i + 1)]

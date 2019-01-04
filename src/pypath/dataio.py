@@ -3592,7 +3592,11 @@ def get_pathwaycommons(sources=None, types=None, sources_separated=True):
     return interactions
 
 
-def get_go(organism=9606, swissprot='yes'):
+def go_annotations_uniprot(organism=9606, swissprot='yes'):
+    """
+    Deprecated, should be removed soon.
+    """
+    
     rev = '' if swissprot is None \
         else ' AND reviewed:%s' % swissprot
     query = 'organism:%u%s' % (int(organism), rev)
@@ -3605,39 +3609,44 @@ def get_go(organism=9606, swissprot='yes'):
                  if len(x) > 1])
 
 
-def get_go_goa(organism='human'):
+def go_annotations_goa(organism = 'human'):
     """
     Downloads GO annotation from UniProt GOA.
     """
+    
+    organism = (
+        common.taxids[organism]
+            if isinstance(organism, int) else
+        organism
+    )
+    
+    annot = dict(
+        (asp, collections.defaultdict(set))
+        for asp in ('C', 'P', 'F')
+    )
+    
+    url = urls.urls['goa']['ebi_url'] % (organism.upper(), organism)
+    c = curl.Curl(url, silent = False, large = True)
 
-    def add_annot(a, result):
-        if a[1] not in result[a[8]]:
-            result[a[8]][a[1]] = []
-        result[a[8]][a[1]].append(a[4])
+    for line in c.result:
+        
+        line = line.decode('ascii')
+        
+        if not line or line[0] == '!':
+            continue
+        
+        line = line.strip().split('\t')
+        
+        annot[line[8]][line[1]].add(line[4])
+    
+    terms = go_terms_quickgo()
+    
+    return terms, annot
 
-    result = {'P': {}, 'C': {}, 'F': {}}
 
-    url = urls.urls['goa']['url'] % (organism.upper(), organism)
-    c = curl.Curl(url, silent=False, large = True)
+# synonym for the default method
+go_annotations = go_annotations_goa
 
-    _ = \
-        list(
-            map(
-                lambda l:
-                    add_annot(l.strip().split('\t'), result),
-                filter(
-                    lambda l:
-                        l[0] != '!' and len(l),
-                    map(
-                        lambda l:
-                            l.decode('ascii'),
-                        c.result
-                    )
-                )
-            )
-        )
-
-    return result
 
 def go_ancestors_goose(aspects=('C','F','P')):
     """
@@ -3692,10 +3701,65 @@ def go_ancestors_goose(aspects=('C','F','P')):
 
     return ancestors
 
-def go_descendants_goose(aspects=('C','F','P')):
+
+def go_ancestors_quickgo(aspects = ('C', 'F', 'P')):
+    """
+    Queries the ancestors of GO terms by QuickGO REST API.
+
+    Returns dict of sets where keys are GO accessions and values are sets
+    of their ancestors.
+
+    :param tuple aspects:
+        GO aspects: `C`, `F` and `P` for cellular_component,
+        molecular_function and biological_process, respectively.
+    """
+    
+    desc = go_descendants_quickgo(aspects = aspects)
+    
+    return go_descendants_to_ancestors(desc)
+
+
+# synonym for the default method
+go_ancestors = go_ancestors_quickgo
+
+
+def go_descendants_to_ancestors(desc):
+    """
+    Turns a dict of descendants to dict of ancestors by swapping the
+    relationships. This way descendants will be the keys and their ancestors
+    will be the values.
+    """
+    
+    ancestors = {}
+    
+    for asp, dct in iteritems(desc):
+        
+        ancestors[asp] = collections.defaultdict(set)
+        
+        for anc_term, des in iteritems(dct):
+            
+            for des_term, rel in des:
+                
+                ancestors[asp][des_term].add((anc_term, rel))
+    
+    return ancestors
+
+
+def go_descendants_goose(aspects = ('C','F','P')):
     """
     Queries descendants of GO terms by AmiGO goose.
-
+    
+    IMPORTANT:
+    This is not the preferred method any more to get descendants.
+    Recently the preferred method to access GO annotations is
+    ``pypath.dataio.go_descendants_quickgo()``.
+    The data in GO MySQL instances has not been updated since Dec 2016.
+    Unfortunately the providers ceased to support MySQL, the most flexible
+    and highest performance access to GO data. The replacement is Solr
+    which is far from providing the same features as MySQL, for example
+    it is unable to provide GO graph relationships. Other service is QuickGO
+    which is up to date and has nice ways to query the ontology.
+    
     Returns dict of sets where keys are GO accessions and values are sets
     of their descendants.
 
@@ -3712,14 +3776,228 @@ def go_descendants_goose(aspects=('C','F','P')):
 
         for terma in ancs:
             
-            if len(terma) == 1:
-                print(terma)
-
             desc[terma].add(term)
 
     return desc
 
-def go_terms_goose(aspects=('C','F','P')):
+
+def go_descendants_quickgo(
+        aspects = ('C', 'F', 'P'),
+        terms = None,
+        relations = None,
+    ):
+    """
+    Queries descendants of GO terms by QuickGO REST API.
+    
+    Returns dict of sets where keys are GO accessions and values are sets
+    of their descendants.
+
+    :param tuple aspects:
+        GO aspects: `C`, `F` and `P` for cellular_component,
+        molecular_function and biological_process, respectively.
+    :param dict terms:
+        Result from ``go_terms_solr``. If ``None`` the method will be called.
+    """
+    
+    desc = dict((a, collections.defaultdict(set)) for a in aspects)
+    
+    terms = terms or go_terms_quickgo(aspects = aspects)
+    relations = relations or ('is_a', 'part_of', 'occurs_in', 'regulates',)
+    
+    req_headers = ['Accept:application/json']
+    
+    relations_part = ','.join(relations)
+    
+    for asp in aspects:
+        
+        paginator = common.paginate(list(terms[asp].keys()), size = 500)
+        
+        for terms_part in paginator:
+            
+            url = urls.urls['quickgo_rest']['desc'] % (
+                ','.join(terms_part),
+                '?relations=%s' % relations_part,
+            )
+            
+            c = curl.Curl(
+                url,
+                req_headers = req_headers,
+                silent = True,
+                large = True,
+            )
+            
+            result = json.load(c.fileobj)
+            
+            for res in result['results']:
+                
+                if 'children' not in res:
+                    
+                    continue
+                
+                desc[asp][res['id']].update(
+                    set(
+                        (child['id'], child['relation'])
+                        for child in res['children']
+                    )
+                )
+    
+    return desc
+
+
+# synonym for the default method
+go_descendants = go_descendants_quickgo
+
+
+def go_terms_solr(aspects = ('C', 'F', 'P')):
+    """
+    Queries GO terms by AmiGO Solr.
+    
+    Returns dict of dicts where upper level keys are one letter codes of the
+    aspects `C`, `F` and `P` for cellular_component, molecular_function and
+    biological_process, respectively. Lower level keys are GO accessions
+    and values are names of the terms.
+
+    :param tuple aspects:
+        GO aspects: `C`, `F` and `P` for cellular_component,
+        molecular_function and biological_process, respectively.
+    """
+    
+    reamp = re.compile(r'[\s\n\r]+([&\?])')
+    relin = re.compile(r'[\s\n\r]+')
+    
+    ontologies = {
+        'C': 'cellular_component',
+        'F': 'molecular_function',
+        'P': 'biological_process',
+    }
+    ontol_short = dict(reversed(i) for i in ontologies.items())
+    
+    terms = dict((a, {}) for a in aspects)
+    
+    query = '''
+        ?q=document_category:"ontology_class" AND
+            idspace:GO AND
+            is_obsolete:0
+        &rows=9999999
+        &start=0
+        &fl=annotation_class,annotation_class_label,source
+    '''
+    
+    query = relin.sub(' ', reamp.sub(r'\1', query.strip()))
+    
+    # downloading data
+    url = urls.urls['golr']['url'] % query
+    
+    c = curl.Curl(url, silent = False, large = True)
+    
+    # parsing XML by lxml.etree.iterparse
+    parser = etree.iterparse(c.fileobj, events = ('start', 'end'))
+    root = next(parser)
+    used_elements = []
+    
+    for ev, elem in parser:
+        
+        if ev == 'end' and elem.tag == 'doc':
+            
+            asp  = elem.find('.//str[@name="source"]').text
+            asp  = ontol_short[asp]
+            
+            if asp not in aspects:
+                
+                continue
+            
+            term = elem.find('.//str[@name="annotation_class"]').text
+            name = elem.find('.//str[@name="annotation_class_label"]').text
+            
+            terms[asp][term] = name
+        
+        used_elements.append(elem)
+        
+        # removing used elements to keep memory low
+        if len(used_elements) > 1000:
+            
+            for _ in xrange(500):
+                
+                e = used_elements.pop(0)
+                e.clear()
+    
+    # closing the XML
+    c.fileobj.close()
+    del c
+    
+    return terms
+
+
+def go_terms_quickgo(aspects = ('C','F','P')):
+    """
+    Queries GO terms by the QuickGO REST API.
+
+    Return dict of dicts where upper level keys are one letter codes of the
+    aspects `C`, `F` and `P` for cellular_component, molecular_function and
+    biological_process, respectively. Lower level keys are GO accessions
+    and values are names of the terms.
+
+    :param tuple aspects:
+        GO aspects: `C`, `F` and `P` for cellular_component,
+        molecular_function and biological_process, respectively.
+    """
+    
+    ontologies = {
+        'C': 'cellular_component',
+        'F': 'molecular_function',
+        'P': 'biological_process',
+    }
+    ontol_short = dict(reversed(i) for i in ontologies.items())
+    
+    result = dict((a, {}) for a in aspects)
+    url = urls.urls['quickgo_rest']['terms']
+    last_page = 9999999
+    this_page = 1
+    prg = progress.Progress(
+        name = 'Downloading data from QuickGO',
+        interval = 1,
+    )
+    
+    while this_page <= last_page:
+        
+        page_url = url % this_page
+        
+        c = curl.Curl(page_url, silent = True)
+        
+        this_result = json.loads(c.result)
+        last_page = this_result['pageInfo']['total']
+        
+        
+        for res in this_result['results']:
+            
+            if 'aspect' not in res:
+                
+                continue
+            
+            asp = ontol_short[res['aspect']]
+            
+            if res['isObsolete'] or asp not in aspects:
+                
+                continue
+            
+            result[asp][res['id']] = res['name']
+        
+        if prg.total is None:
+            
+            prg.set_total(last_page)
+        
+        prg.step()
+        
+        this_page += 1
+    
+    return result
+
+
+# synonym for the default method
+go_terms = go_terms_quickgo
+
+
+def go_terms_goose(aspects = ('C','F','P')):
     """
     Queries GO terms by AmiGO goose.
 
@@ -3781,12 +4059,220 @@ def go_terms_goose(aspects=('C','F','P')):
 
     return terms
 
+
+def go_annotations_quickgo(
+        organism = 9606,
+        aspects = ('C','F','P'),
+        relations = ('is_a', 'part_of'),
+    ):
+    """
+    Queries GO annotations by QuickGO REST API.
+    
+    IMPORTANT:
+    Recently the preferred method to access GO annotations is
+    ``pypath.dataio.go_annotations_goa()``.
+    Contrary to its name QuickGO is super slow, otherwise it should yield
+    up to date data, identical to the GOA file.
+    
+    Returns terms in dict of dicts and annotations in dict of dicts of sets.
+    In both dicts the keys are aspects by their one letter codes.
+    In the term dicts keys are GO accessions and values are their names.
+    In the annotation dicts keys are UniProt IDs and values are sets
+    of GO accessions.
+
+    :param int organism:
+        NCBI Taxonomy ID of one organism. Default is human (9606).
+    :param tuple aspects:
+        GO aspects: `C`, `F` and `P` for cellular_component,
+        molecular_function and biological_process, respectively.
+    :param list uniprots:
+        Optionally a list of UniProt IDs. If `None`, results for all proteins
+        returned.
+    """
+    
+    terms = dict((a, {}) for a in aspects)
+    annot = dict((a, collections.defaultdict(set)) for a in aspects)
+    
+    ontologies = {
+        'C': 'cellular_component',
+        'F': 'molecular_function',
+        'P': 'biological_process',
+    }
+    ontol_short = dict(reversed(i) for i in ontologies.items())
+    
+    url = urls.urls['quickgo_rest']['annot']
+    
+    aspects_part = ','.join(ontologies[a] for a in aspects)
+    relations_part = ','.join(relations)
+    
+    req_headers = ['Accept:text/tsv']
+    
+    page = 1
+    
+    while True:
+        
+        this_url = url % (
+            aspects_part, # aspect
+            relations_part, # goUsageRelationships
+            organism, # taxonId
+            page,
+        )
+        
+        c = curl.Curl(
+            url = this_url,
+            req_headers = req_headers,
+            silent = False,
+            large = True
+        )
+        
+        _ = next(c.result) # the header row
+        
+        for line in c.result:
+            
+            line = line.decode('utf-8').strip().split('\t')
+            
+            if line[3] not in relations:
+                
+                continue
+            
+            annot[line[5]][line[1]].add(line[4])
+        
+        page += 1
+    
+    return terms, annot
+
+
+def go_annotations_solr(
+        organism = 9606,
+        aspects = ('C', 'F', 'P'),
+        references = False,
+    ):
+    """
+    Queries GO annotations by AmiGO Solr.
+
+    Before other methods have been provided to access GO.
+    Now this is the preferred method to get annotations.
+    Returns terms in dict of dicts and annotations in dict of dicts of sets.
+    In both dicts the keys are aspects by their one letter codes.
+    In the term dicts keys are GO accessions and values are their names.
+    In the annotation dicts keys are UniProt IDs and values are sets
+    of GO accessions.
+
+    :param int organism:
+        NCBI Taxonomy ID of one organism. Default is human (9606).
+    :param tuple aspects:
+        GO aspects: `C`, `F` and `P` for cellular_component,
+        molecular_function and biological_process, respectively.
+    :param bool references:
+        Retrieve the references (PubMed IDs) for the annotations.
+        Currently not implemented.
+    """
+    
+    reamp = re.compile(r'[\s\n\r]+([&\?])')
+    relin = re.compile(r'[\s\n\r]+')
+    
+    annot = dict((a, collections.defaultdict(set)) for a in aspects)
+    
+    ontologies = {
+        'C': 'cellular_component',
+        'F': 'molecular_function',
+        'P': 'biological_process',
+    }
+    ontol_short = dict(reversed(i) for i in ontologies.items())
+    
+    # assembling the query
+    
+    if len(aspects) < 3:
+        
+        aspects_part = ' AND (%s)' % (
+            ' OR '.join('aspect:%s' % a for a in aspects)
+        )
+        
+    else:
+        
+        aspects_part = ''
+    
+    refs_part = ',reference' if references else ''
+    
+    query = '''
+        ?q=taxon:"NCBITaxon:%u" AND
+            type:protein AND
+            document_category:annotation AND
+            source:UniProtKB%s
+        &rows=9999999
+        &start=0
+        &fl=bioentity,annotation_class,aspect%s
+    ''' % (
+        organism,
+        aspects_part,
+        refs_part
+    )
+    
+    query = relin.sub(' ', reamp.sub(r'\1', query.strip()))
+    
+    # downloading data
+    url = urls.urls['golr']['url'] % query
+    c = curl.Curl(url, silent = False, large = True)
+    
+    # parsing XML by lxml.etree.iterparse
+    parser = etree.iterparse(c.fileobj, events=('start', 'end'))
+    root = next(parser)
+    used_elements = []
+    
+    for ev, elem in parser:
+        
+        if ev == 'end' and elem.tag == 'doc':
+            
+            id_ = elem.find('.//str[@name="bioentity"]').text
+            
+            if not id_.startswith('UniProtKB:'):
+                
+                continue
+            
+            asp  = elem.find('.//str[@name="aspect"]').text
+            
+            if asp not in aspects:
+                
+                continue
+            
+            term = elem.find('.//str[@name="annotation_class"]').text
+            id_  = id_[10:] # removing the `UniProtKB:` prefix
+            
+            # adding the term to the annotation dict
+            annot[asp][id_].add(term)
+        
+        used_elements.append(elem)
+        
+        # removing used elements to keep memory low
+        if len(used_elements) > 1000:
+            
+            for _ in xrange(500):
+                
+                e = used_elements.pop(0)
+                e.clear()
+    
+    # closing the XML
+    c.fileobj.close()
+    del c
+    
+    terms = go_terms_quickgo(aspects = aspects)
+    
+    return terms, annot
+
+
 def go_annotations_goose(organism=9606, aspects=('C','F','P'), uniprots=None):
     """
     Queries GO annotations by AmiGO goose.
-
-    Before other methods have been provided to access GO.
-    Now this is the preferred method to get terms and annotations.
+    
+    IMPORTANT:
+    This is not the preferred method any more to get terms and annotations.
+    Recently the preferred method to access GO annotations is
+    ``pypath.dataio.go_annotations_solr()``.
+    The data in GO MySQL instances has not been updated since Dec 2016.
+    Unfortunately the providers ceased to support MySQL, the most flexible
+    and highest performance access to GO data. The replacement is Solr
+    which is far from providing the same features as MySQL.
+    
     Returns terms in dict of dicts and annotations in dict of dicts of sets.
     In both dicts the keys are aspects by their one letter codes.
     In the term dicts keys are GO accessions and values are their names.
@@ -3860,7 +4346,11 @@ def go_annotations_goose(organism=9606, aspects=('C','F','P'), uniprots=None):
 
     return terms, annot
 
+
 def get_go_desc(go_ids, organism=9606):
+    """
+    Deprecated, should be removed soon.
+    """
 
     go_ids = (
         ','.join(sorted(go_ids))
@@ -3869,19 +4359,24 @@ def get_go_desc(go_ids, organism=9606):
     )
 
     url = urls.urls['quickgo_desc']['url'] % (organism, go_ids)
-    print(url)
 
-    c = curl.Curl(url, silent=False, large=True, req_headers = {'Accept': 'text/tsv'})
+    c = curl.Curl(
+        url, silent=False, large=True, req_headers = {'Accept': 'text/tsv'}
+    )
     _ = c.result.readline()
-
-    for l in c.result:
-
-        print(l.decode('utf-8').split('\t'))
 
     return set(l.decode('utf-8').split('\t')[1] for l in c.result)
 
-def get_go_quick(organism=9606, slim=False, names_only=False, aspects = ('C', 'F', 'P')):
+
+def get_go_quick(
+        organism=9606,
+        slim=False,
+        names_only=False,
+        aspects = ('C', 'F', 'P'),
+    ):
     """
+    Deprecated, should be removed soon.
+    
     Loads GO terms and annotations from QuickGO.
     Returns 2 dicts: `names` are GO terms by their IDs,
     `terms` are proteins GO IDs by UniProt IDs.
@@ -3906,7 +4401,6 @@ def get_go_quick(organism=9606, slim=False, names_only=False, aspects = ('C', 'F
         '&goUsage=slim' if slim else '',
     )
 
-    print(url)
     c = curl.Curl(url, silent=False, large=True)
     _ = c.result.readline()
 
@@ -3919,6 +4413,7 @@ def get_go_quick(organism=9606, slim=False, names_only=False, aspects = ('C', 'F
             terms[l[5]][l[1]].add(l[4])
 
     return {'terms': terms, 'names': names}
+
 
 def get_goslim(url=None):
     rego = re.compile(r'GO:[0-9]{7}')

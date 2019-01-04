@@ -35,7 +35,8 @@ class GOAnnotation(object):
     
     def __init__(self, organism=9606):
         
-        terms, annot = dataio.go_annotations_goose(organism=organism)
+        terms, annot = dataio.go_annotations_solr(organism = organism)
+        
         self.c = annot['C']
         self.f = annot['F']
         self.p = annot['P']
