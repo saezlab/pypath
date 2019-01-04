@@ -24,6 +24,7 @@ from past.builtins import xrange, range
 import sys
 import imp
 from collections import Counter, OrderedDict
+import numpy as np
 
 import pypath.dataio as dataio
 import pypath.progress as progress
@@ -252,6 +253,9 @@ class GOAnnotation(object):
         Accepts a list of UniProt IDs and one or more gene ontology terms
         and returns a set of indices of those UniProts which are annotated
         with any of the terms.
+        
+        :param str,set term:
+            A single GO term or set of terms.
         """
         
         method = self.has_any_term if isinstance(term, set) else self.has_term
@@ -260,6 +264,21 @@ class GOAnnotation(object):
             i
             for i, uniprot in enumerate(uniprots)
             if method(uniprot, term)
+        )
+    
+    def select_by_term(self, uniprots, term):
+        """
+        Accepts a list of UniProt IDs and one or more gene ontology terms
+        and returns the UniProts which are annotated with any of the terms.
+        
+        :param str,set term:
+            A single GO term or set of terms.
+        """
+        
+        return set(
+            numpy.array(uniprots)[
+                list(self.i_select_by_term(uniprots, term))
+            ]
         )
 
 

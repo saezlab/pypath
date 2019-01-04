@@ -247,15 +247,6 @@ class Direction(object):
 
         return s
 
-    def reload(self):
-        """Reloads the object from the module level."""
-
-        modname = self.__class__.__module__
-        mod = __import__(modname, fromlist=[modname.split('.')[0]])
-        imp.reload(mod)
-        new = getattr(mod, self.__class__.__name__)
-        setattr(self, '__class__', new)
-
     def check_nodes(self, nodes):
         """Checks if *nodes* is contained in the edge.
 
@@ -9585,123 +9576,31 @@ class PyPath(object):
                                 disrupted[e.index]['disr'] += 1
 
         return toDel, disrupted
-
-    def select_by_go_old(
-            self,
-            go_terms,
-            go_desc=None,
-            aspects=('C', 'F', 'P'),
-            method='ANY',
-        ):
-        """
-        Selects the nodes annotated by certain GO terms.
-
-        Returns set of vertex IDs.
-
-        :param str method:
-            If `ANY` nodes annotated with any of the terms returned.
-            If `ALL` nodes annotated with all the terms returned.
-        """
-        
-        if method == 'ALL':
-            
-            def _method(s1, s2):
-                
-                return s2.difference(s1)
-            
-        else:
-            
-            def _method(s1, s2):
-                
-                return s1.intersection(s2)
-
-        if go_desc is None:
-            go_desc = dataio.go_descendants_quickgo(aspects = aspects)
-
-        go_terms = (
-            set(go_terms)
-            if type(go_terms) in {set, list, tuple} else
-            {go_terms}
-        )
-        all_desc = set.union(
-            *(go_desc[term] for term in go_terms if term in go_desc)
-        )
-
-        if 'go' not in self.graph.vs.attributes():
-            self.go_annotate(aspects = aspects)
-
-        vids = set(
-            i for i, v in enumerate(self.graph.vs)
-            if any(
-                _method(v['go'][a], all_desc)
-                for a in aspects
-            )
-        )
-
-        return vids
     
-    def select_by_go(
-            self,
-            go_terms,
-            go_desc=None,
-            aspects=('C', 'F', 'P'),
-            method='ANY',
-        ):
+    def select_by_go_all(self, go_terms):
         """
-        Selects the nodes annotated by certain GO terms.
-
+        Selects the nodes annotated by all GO terms in ``go_terms``.
+        
         Returns set of vertex IDs.
-
-        :param str method:
-            If `ANY` nodes annotated with any of the terms returned.
-            If `ALL` nodes annotated with all the terms returned.
+        
+        :param list go_terms:
+            List, set or tuple of GO terms.
         """
         
-        _method = 'union' if method == 'ANY' else 'intersection'
-        
-        if isinstance(go_terms, common.basestring):
-            
-            go_terms = (go_terms,)
-        
-        if go_desc is None:
-            
-            go_desc = dataio.go_descendants_quickgo(aspects = aspects)
-        
-        return getattr(set, _method)(
-            *[self.select_by_go_single(
-                term = term,
-                go_desc = go_desc,
-                aspects = aspects,
-            )
+        return set.intersection(*[
+            self.select_by_go(term)
             for term in go_terms
         ])
     
-    def select_by_go_single(
-            self,
-            term,
-            go_desc = None,
-            aspects = ('C', 'F', 'P'),
-        ):
+    def select_by_go(self, go_terms):
         """
-        Retrieves the vertex IDs of all vertices annotated with a Gene
-        Ontology term or its descendants.
-        
-        The method is not aware which aspect the term belongs to, it checks
-        in all aspects, but providing the ``aspects`` argument you can
-        avoid loading all data from GO and also checking unnecessarily in
-        all.
+        Retrieves the vertex IDs of all vertices annotated with one or more
+        Gene Ontology terms or their descendants.
         """
         
-        if go_desc is None:
-            
-            go_desc = dataio.go_descendants_quickgo(aspects = aspects)
+        annot = self.get_go()
         
-        if 'go' not in self.graph.vs.attributes():
-            
-            self.go_annotate(aspects = aspects)
-        
-        all_terms = go_desc[term]
-        all_terms.add(term)
+        return annot.select_by_term(self.graph.vs['name'], go_terms)
         
         return set(
             v.index
@@ -10046,7 +9945,7 @@ class PyPath(object):
 
         self.graph.vs[attr] = [i in vids for i in xrange(self.graph.vcount())]
 
-    def go_annotate(self, aspects=('C', 'F', 'P')):
+    def go_annotate_graph(self, aspects = ('C', 'F', 'P')):
         """
         Annotates protein nodes with GO terms. In the ``go`` vertex
         attribute each node is annotated by a dict of sets where keys are
@@ -10055,10 +9954,7 @@ class PyPath(object):
 
         go.annotate(self.graph, aspects = aspects)
 
-    # old name as synonym
-    load_go = go_annotate
-
-    def go_dict(self, organism=9606):
+    def load_go(self, organism = None):
         """
         Creates a ``pypath.go.GOAnnotation`` object for one organism in the
         dict under ``go`` attribute.
@@ -10066,15 +9962,33 @@ class PyPath(object):
         :param int organism:
             NCBI Taxonomy ID of the organism.
         """
-
+        
+        organism = organism or self.ncbi_tax_id
+        
         if not hasattr(self, 'go'):
             self.go = {}
-
+        
         self.go[organism] = go.GOAnnotation(organism)
-
+    
+    def get_go(self, organism = None):
+        """
+        Returns the ``GOAnnotation`` object for the organism requested
+        (or the default one).
+        """
+        
+        organism = organism or self.ncbi_tax_id
+        
+        if not hasattr(self, 'go') or organism not in self.go:
+            
+            self.load_go(organism = organism)
+        
+        return self.go[organism]
+    
     def go_enrichment(self, proteins=None, aspect='P', alpha=0.05,
                       correction_method='hommel', all_proteins=None):
         """
+        Does not work at the moment because cfisher module should be
+        replaced with scipy.
         """
 
         if not hasattr(self, 'go') or self.ncbi_tax_id not in self.go:
@@ -10113,6 +10027,8 @@ class PyPath(object):
 
     def init_gsea(self, user):
         """
+        Initializes a ``pypath.gsea.GSEA`` object and shows the list of the
+        collections in MSigDB.
         """
 
         self.gsea = gsea.GSEA(user=user, mapper=self.mapper)
@@ -10134,6 +10050,8 @@ class PyPath(object):
     def geneset_enrichment(self, proteins, all_proteins=None, geneset_ids=None,
                            alpha=0.05, correction_method='hommel'):
         """
+        Does not work at the moment because cfisher module should be
+        replaced with scipy.
         """
 
         all_proteins = self.graph.vs['name'] \
@@ -12858,23 +12776,24 @@ class PyPath(object):
         return p
 
     def reload(self):
-        """
-        """
+        """Reloads the object from the module level."""
 
         modname = self.__class__.__module__
-        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
 
     def _disclaimer(self):
         """
+        Prints a disclaimer about respecting data licences.
         """
 
         sys.stdout.write(self.disclaimer)
 
     def licence(self):
         """
+        Prints information about data licences.
         """
 
         self._disclaimer()
