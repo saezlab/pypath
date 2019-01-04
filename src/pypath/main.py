@@ -9588,25 +9588,38 @@ class PyPath(object):
         """
         
         return set.intersection(*[
-            self.select_by_go(term)
+            self._select_by_go(term)
             for term in go_terms
         ])
     
-    def select_by_go(self, go_terms):
+    def _select_by_go(self, go_terms):
         """
-        Retrieves the vertex IDs of all vertices annotated with one or more
+        Retrieves the vertex IDs of all vertices annotated with any of the
         Gene Ontology terms or their descendants.
         """
         
         annot = self.get_go()
         
         return annot.select_by_term(self.graph.vs['name'], go_terms)
+    
+    def select_by_go(self, go_terms):
+        """
+        Retrieves the vertex IDs of all vertices annotated with any
+        Gene Ontology terms or their descendants, or evaluates string
+        expression (see ``select_by_go_expr``).
         
-        return set(
-            v.index
-            for v in self.graph.vs
-            if any(v['go'][a] & all_terms for a in aspects)
-        )
+        :param str,set go_terms:
+            A single GO term, a set of GO terms or an expression with
+            GO terms.
+        """
+        
+        if isinstance(go_terms, common.basestring) and len(go_terms) > 10:
+            
+            return self.select_by_go_expr(go_terms)
+            
+        else:
+            
+            return self._select_by_go(go_terms)
     
     def select_by_go_expr(self, go_expr):
         """
@@ -9616,8 +9629,7 @@ class PyPath(object):
         :param str go_expr:
             An expression of Gene Ontology terms. E.g.
             ``'(GO:0005576 and not GO:0070062) or GO:0005887'``. Parentheses
-            and usual Python keywords like ``and``, ``or`` and ``not``
-            can be used.
+            and operators ``and``, ``or`` and ``not`` can be used.
         """
         
         ops = {
@@ -9682,7 +9694,7 @@ class PyPath(object):
                 
                 # token is a GO term
                 # get the vertex selection by the single term method
-                this_set = self.select_by_go(it)
+                this_set = self._select_by_go(it)
                 
                 if negate:
                     
