@@ -9888,6 +9888,7 @@ class PyPath(object):
                 edges = self.edges_between(
                     selections[label1],
                     selections[label2],
+                    directed = False,
                 )
                 
                 self.label_edges(label, edges)
