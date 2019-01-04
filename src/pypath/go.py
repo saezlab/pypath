@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2018
+#  2014-2019
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -33,15 +33,17 @@ from pypath.common import *
 
 class GOAnnotation(object):
     
-    def __init__(self, organism=9606):
+    def __init__(self, organism = 9606):
         
-        terms, annot = dataio.go_annotations_solr(organism = organism)
+        terms = dataio.go_terms_quickgo()
+        self.ancestors = dataio.go_ancestors_quickgo()
+        annot = dataio.go_annotations_goa(organism = organism)
         
         self.c = annot['C']
         self.f = annot['F']
         self.p = annot['P']
-        self.name = dict(v for vv in terms.values() for v in iteritems(vv))
-        self.term = dict([(v, k) for k, v in iteritems(self.name)])
+        self.name = dict(i for ii in terms.values() for i in iteritems(ii))
+        self.term = dict(reversed(i) for i in iteritems(self.name))
 
     def get_name(self, term):
         return None if term not in self.name else self.name[term]
@@ -55,12 +57,12 @@ class GOAnnotation(object):
 
     def get_annots(self, uniprot):
         result = {}
-        for asp in ['C', 'F', 'P']:
+        for asp in ('C', 'F', 'P'):
             result[asp.upper()] = self.get_annot(uniprot, asp)
         return result
 
 
-def annotate(graph, aspects = ('C', 'F', 'P')):
+def annotate(graph, organism = 9606, aspects = ('C', 'F', 'P')):
     """
     Adds Gene Ontology annotations to the nodes of a graph.
     
@@ -76,7 +78,7 @@ def annotate(graph, aspects = ('C', 'F', 'P')):
         for _ in xrange(graph.vcount())
     ]
     
-    terms, annot = dataio.go_annotations_goose(aspects = aspects)
+    terms, annot = dataio.go_annotations_goa(organism = organism)
     
     prg = progress.Progress(graph.vcount(), 'Loading GO annotations', 9)
     

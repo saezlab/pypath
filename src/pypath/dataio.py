@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2018
+#  2014-2019
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -3639,9 +3639,7 @@ def go_annotations_goa(organism = 'human'):
         
         annot[line[8]][line[1]].add(line[4])
     
-    terms = go_terms_quickgo()
-    
-    return terms, annot
+    return annot
 
 
 # synonym for the default method
@@ -4090,7 +4088,6 @@ def go_annotations_quickgo(
         returned.
     """
     
-    terms = dict((a, {}) for a in aspects)
     annot = dict((a, collections.defaultdict(set)) for a in aspects)
     
     ontologies = {
@@ -4139,7 +4136,7 @@ def go_annotations_quickgo(
         
         page += 1
     
-    return terms, annot
+    return annot
 
 
 def go_annotations_solr(
@@ -4254,8 +4251,6 @@ def go_annotations_solr(
     # closing the XML
     c.fileobj.close()
     del c
-    
-    terms = go_terms_quickgo(aspects = aspects)
     
     return terms, annot
 
