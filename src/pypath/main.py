@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2018
+#  2014-2019
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -2653,11 +2653,12 @@ class PyPath(object):
         terms.
         """
 
-        goannot = dataio.go_annotations_goose()
+        terms   = dataio.go_terms_quickgo()
+        goannot = dataio.go_annotations_goa()
 
         gosig = set([])
 
-        for term, name in iteritems(goannot[0]['P']):
+        for term, name in iteritems(terms['P']):
 
             if 'signal' in name or 'regulat' in name:
                 gosig.add(term)
@@ -2667,7 +2668,7 @@ class PyPath(object):
         if 'proteome' not in self.lists:
             self.proteome_list()
 
-        for up, term in iteritems(goannot[1]['P']):
+        for up, term in iteritems(goannot['P']):
 
             if len(term & gosig):
                 upsig.add(up)
@@ -9615,7 +9616,7 @@ class PyPath(object):
                 return s1.intersection(s2)
 
         if go_desc is None:
-            go_desc = dataio.go_descendants_goose(aspects = aspects)
+            go_desc = dataio.go_descendants_quickgo(aspects = aspects)
 
         go_terms = (
             set(go_terms)
@@ -9664,7 +9665,7 @@ class PyPath(object):
         
         if go_desc is None:
             
-            go_desc = dataio.go_descendants_goose(aspects = aspects)
+            go_desc = dataio.go_descendants_quickgo(aspects = aspects)
         
         return getattr(set, _method)(
             *[self.select_by_go_single(
@@ -9693,7 +9694,7 @@ class PyPath(object):
         
         if go_desc is None:
             
-            go_desc = dataio.go_descendants_goose(aspects = aspects)
+            go_desc = dataio.go_descendants_quickgo(aspects = aspects)
         
         if 'go' not in self.graph.vs.attributes():
             
@@ -9731,7 +9732,7 @@ class PyPath(object):
         
         if go_desc is None:
             
-            go_desc = dataio.go_descendants_goose(aspects = aspects)
+            go_desc = dataio.go_descendants_quickgo(aspects = aspects)
         
         if isinstance(go_expr, common.basestring):
             
@@ -9900,7 +9901,7 @@ class PyPath(object):
 
         if inference_from_go:
             
-            go_desc = dataio.go_descendants_goose(aspects = ('C', 'F'))
+            go_desc = dataio.go_descendants_quickgo(aspects = ('C', 'F'))
             self.init_network(sources)
 
             if 'go' not in self.graph.vs.attributes():
