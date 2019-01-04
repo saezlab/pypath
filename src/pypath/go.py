@@ -25,7 +25,6 @@ import sys
 import imp
 from collections import Counter, OrderedDict
 
-# from this package:
 import pypath.dataio as dataio
 import pypath.progress as progress
 from pypath.common import *
@@ -57,7 +56,7 @@ class GeneOntology(object):
     
     def reload(self):
         """Reloads the object from the module level."""
-
+        
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist=[modname.split('.')[0]])
         imp.reload(mod)
@@ -137,10 +136,12 @@ class GeneOntology(object):
 
 class GOAnnotation(object):
     
+    aspects = ('C', 'F', 'P')
+    
     def __init__(self, organism = 9606, ontology = None):
         """
         For one organism loads Gene Ontology annotations, in addition it
-        accepts or creates a ``GeneOntology`` object. It 
+        accepts or creates a ``GeneOntology`` object.
         """
         
         self.ontology = ontology or GeneOntology()
@@ -149,21 +150,49 @@ class GOAnnotation(object):
         self.c = annot['C']
         self.f = annot['F']
         self.p = annot['P']
-
+        
+        self._ancestors_annotate()
+    
+    def reload(self):
+        """Reloads the object from the module level."""
+        
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    def _ancestors_annotate(self):
+        
+        for asp in self.aspects:
+            
+            setattr(
+                self,
+                '%s_full' % asp.lower(),
+                dict(
+                    (
+                        uniprot,
+                        self.ontology.all_ancestors(annot)
+                    )
+                    for uniprot, annot in
+                    iteritems(getattr(self, asp.lower()))
+                )
+            )
+    
     def get_name(self, term):
         """
         For a GO accession number returns the name of the term.
         """
         
         return self.ontology.get_name(term)
-
+    
     def get_term(self, name):
         """
         For a GO term name returns its GO accession number.
         """
         
         return self.ontology.get_term(name)
-
+    
     def get_annot(self, uniprot, aspect):
         """
         For a UniProt ID returns its direct annotations from one aspect
@@ -173,7 +202,7 @@ class GOAnnotation(object):
         
         annot = getattr(self, aspect.lower())
         return set() if uniprot not in annot else annot[uniprot]
-
+    
     def get_annots(self, uniprot):
         """
         For a UniProt ID returns its direct annotations from all aspects
@@ -183,12 +212,55 @@ class GOAnnotation(object):
         
         return set.union(
             self.get_annot(uniprot, asp)
-            for asp in ('C', 'F', 'P')
+            for asp in self.aspects
         )
     
-    def select_by_go(self):
+    def _has_term(self, uniprot, term, aspect):
         
-        pass
+        annot = getattr(self, '%s_full' % aspect.lower())
+        
+        return uniprot in annot and term in annot[uniprot]
+    
+    def _has_any_term(self, uniprot, terms, aspect):
+        
+        annot = getattr(self, '%s_full' % aspect.lower())
+        
+        return uniprot in annot and terms & annot[uniprot]
+    
+    def has_term(self, uniprot, term):
+        """
+        Tells if an UniProt ID is annotated with a GO term.
+        """
+        
+        return any(
+            self._has_term(uniprot, term, aspect)
+            for asp in self.aspects
+        )
+    
+    def has_any_term(self, uniprot, terms):
+        """
+        Tells if an UniProt ID is annotated with any of a set of GO terms.
+        """
+        
+        return any(
+            self._has_any_term(uniprot, terms, aspect)
+            for asp in self.aspects
+        )
+    
+    def i_select_by_term(self, uniprots, term):
+        """
+        Accepts a list of UniProt IDs and one or more gene ontology terms
+        and returns a set of indices of those UniProts which are annotated
+        with any of the terms.
+        """
+        
+        method = self.has_any_term if isinstance(term, set) else self.has_term
+        
+        return set(
+            i
+            for i, uniprot in enumerate(uniprots)
+            if method(uniprot, term)
+        )
 
 
 def annotate(graph, organism = 9606, aspects = ('C', 'F', 'P')):
