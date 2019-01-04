@@ -9608,14 +9608,10 @@ class PyPath(object):
             if any(v['go'][a] & all_terms for a in aspects)
         )
     
-    def select_by_go_expr(
-            self,
-            go_expr,
-            go_desc = None,
-            aspects = ('C', 'F', 'P'),
-        ):
+    def select_by_go_expr(self, go_expr):
         """
         Selects vertices based on an expression of Gene Ontology terms.
+        Operator precedence not considered, please use parentheses.
         
         :param str go_expr:
             An expression of Gene Ontology terms. E.g.
@@ -9629,13 +9625,12 @@ class PyPath(object):
             'or':  'union',
         }
         
-        if go_desc is None:
-            
-            go_desc = dataio.go_descendants_quickgo(aspects = aspects)
+        annot = self.get_go()
         
         if isinstance(go_expr, common.basestring):
             
             # tokenizing expression if it is a string
+            # (method is recursive)
             go_expr = _rego.findall(go_expr)
         
         # initial values
@@ -9650,17 +9645,15 @@ class PyPath(object):
             
             # processing expression by tokens
             
+            # we are in a sub-selection part
             if sub:
                 
                 if it == ')':
                     
                     # token is a closing parenthesis
                     # execute sub-selection
-                    this_set = self.select_by_go_expr(
-                        go_expr = stack,
-                        go_desc = go_desc,
-                        aspects = aspects,
-                    )
+                    this_set = self.select_by_go_expr(go_expr = stack)
+                    # empty stack
                     stack = []
                 
                 else:
@@ -9669,6 +9662,7 @@ class PyPath(object):
                     # add to sub-selection stack
                     stack.append(it)
                 
+            # we do actual processing of the expression
             elif it == 'not':
                 
                 # token is negation
@@ -9676,6 +9670,7 @@ class PyPath(object):
                 negate = True
                 continue
                 
+            # open a sub-selection part
             elif it == '(':
                 
                 # token is a parenthesis
@@ -9687,11 +9682,14 @@ class PyPath(object):
                 
                 # token is a GO term
                 # get the vertex selection by the single term method
-                this_set = self.select_by_go_single(
-                    it,
-                    go_desc = go_desc,
-                    aspects = aspects,
-                )
+                this_set = self.select_by_go(it)
+                
+                if negate:
+                    
+                    # take the inverse of the current set
+                    this_set = set(xrange(self.graph.vcount())) - this_set
+                    # set negation again to False
+                    negate = False
                 
             elif it in ops:
                 
@@ -9699,12 +9697,15 @@ class PyPath(object):
                 # set it for use at the next operation
                 op = ops[it]
             
+            # we found a set
             if this_set is not None:
                 
+                # and an operator
                 if op is not None:
                     
                     result = getattr(result, op)(this_set)
                 
+                # this normally happens only at the first set
                 else:
                     
                     result = this_set
