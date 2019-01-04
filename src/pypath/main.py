@@ -9714,14 +9714,19 @@ class PyPath(object):
         
         return result
 
-    def label_by_go(self, label, go_terms, **kwargs):
+    def label_by_go(self, label, go_terms, method = 'ANY'):
         """
         Assigns a boolean vertex attribute to nodes which tells whether
-        the node is annotated by all or any (see ``method`` parameter of
-        ``select_by_go``) the GO terms.
+        the node is annotated by all or any of the GO terms.
         """
-
-        vids = self.select_by_go(go_terms, **kwargs)
+        
+        _method = (
+            self.select_by_go_all
+                if method.upper() == 'ALL'
+            else self.select_by_go
+        )
+        
+        vids = _method(go_terms)
         self.graph.vs[label] = [False for _ in xrange(self.graph.vcount())]
 
         for vid in vids:
