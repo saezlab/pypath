@@ -9821,6 +9821,7 @@ class PyPath(object):
             include = None,
             exclude = None,
             directed = False,
+            keep_undirected = False,
             prefix  = 'GO',
             delete  = True,
             vertex_attrs = True,
@@ -9848,10 +9849,14 @@ class PyPath(object):
         :param bool directed:
             If True ``include`` and ``exclude`` relations will be processed
             with directed (source, target) else direction won't be considered.
+        :param bool keep_undirected:
+            If True the interactions without direction information will be
+            kept even if ``directed`` is True. Passed to ``edges_between``
+            as ``strict`` argument.
         :param str prefix:
             Prefix for all vertex and edge attributes created in this
             operation. E.g. if you have a category label 'bar' and prefix
-            is 'foo' then you will have a new vertex attribute 'foo_bar'.
+            is 'foo' then you will have a new vertex attribute 'foo__bar'.
         :param bool delete:
             Delete the vertices and edges which don't belong to any of the
             categories.
@@ -9865,7 +9870,11 @@ class PyPath(object):
             
             self.init_network(network_sources)
         
-        selections = dict(
+        if self.graph.vcount() == 0:
+            
+            self.load_omnipath()
+        
+        vselections = dict(
             (
                 label,
                 self.select_by_go(definition)
@@ -9873,29 +9882,56 @@ class PyPath(object):
             for label, definition in iteritems(node_categories)
         )
         
-        categories = tuple(selections.keys())
+        categories = tuple(vselections.keys())
+        
+        eselections = {}
+        
+        for label in itertools.product(categories, categories):
+            
+            if include and label not in include:
+                
+                continue
+                
+            elif exclude and label in exclude:
+                
+                continue
+            
+            eselections[label] = self.edges_between(
+                    vselections[label[1]],
+                    vselections[label[2]],
+                    directed = directed,
+                    strict = keep_undirected,
+            )
         
         if vertex_attrs:
             
-            for label, vertices in iteritems(selections):
+            for label, vertices in iteritems(vselections):
                 
-                self.label_vertices(label, vertices)
+                self.label_vertices('%s__%s' % (prefix, label), vertices)
         
         if edge_attrs:
             
-            for label1, label2 in itertools.product(categories, categories):
+            for (label1, label2), edges in iteritems(eselections):
                 
-                edges = self.edges_between(
-                    selections[label1],
-                    selections[label2],
-                    directed = False,
+                self.label_edges(
+                    '%s__%s__%s' % (prefix, label1, label2),
+                    edges,
                 )
-                
-                self.label_edges(label, edges)
         
-        if include:
+        if delete:
             
+            edges_to_delete = (
+                set(xrange(self.graph.ecount())) -
+                set.union(*eselections.values())
+            )
             
+            self.graph.delete_edges(edges_to_delete)
+            
+            self.graph.delete_vertices(
+                np.where(np.array(self.graph.degree()) == 0)
+            )
+            
+            self.update_vname()
 
     def load_ligand_receptor_network(self, lig_rec_resources=True,
                                      inference_from_go=True,
