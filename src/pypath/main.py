@@ -1569,8 +1569,15 @@ class PyPath(object):
             The instance to be copied from.
         """
 
-        self.__dict__ = other.__dict__
+        self.__dict__ = copy.deepcopy(other.__dict__)
+        self.update_vname()
         self.ownlog.msg(1, "Reinitialized", 'INFO')
+    
+    def __copy__(self):
+        
+        new = PyPath(copy = self)
+        
+        return new
 
     def init_network(self, lst=None, exclude=[], cache_files={},
                      pfile=False, save=False, reread=False, redownload=False,
@@ -9879,6 +9886,10 @@ class PyPath(object):
             
             self.load_omnipath()
         
+        if copy:
+            
+            graph_original = modcopy.deepcopy(self.graph)
+        
         vselections = dict(
             (
                 label,
@@ -9937,6 +9948,13 @@ class PyPath(object):
             )
             
             self.update_vname()
+        
+        if copy:
+            
+            pypath_new = PyPath(copy = self)
+            self.graph = graph_original
+            self.update_vname()
+            return pypath_new
 
     def load_ligand_receptor_network(self, lig_rec_resources=True,
                                      inference_from_go=True,
