@@ -44,7 +44,7 @@ import igraph
 import codecs
 import random # XXX: This and other Python built-in modules shoud be up
 import textwrap
-import copy
+import copy as modcopy
 import json
 import operator
 import locale
@@ -1843,7 +1843,7 @@ class PyPath(object):
         """
 
         g = graph if graph is not None else self.graph
-        gg = g if replace else copy.deepcopy(g)
+        gg = g if replace else modcopy.deepcopy(g)
 
         cl = gg.components(mode='WEAK')
         cl_sizes = cl.sizes()
@@ -4941,8 +4941,8 @@ class PyPath(object):
                 random_pathlen = []
 
                 for i in xrange(0, 100):
-                    f.vs[groupA_random] = copy.copy(f.vs[groupA])
-                    f.vs[groupB_random] = copy.copy(f.vs[groupB])
+                    f.vs[groupA_random] = modcopy.copy(f.vs[groupA])
+                    f.vs[groupB_random] = modcopy.copy(f.vs[groupB])
                     random.shuffle(f.vs[groupA_random])
                     random.shuffle(f.vs[groupB_random])
                     paths = []
@@ -5382,7 +5382,7 @@ class PyPath(object):
         >>> pa.load_tfregulons(levels = {'A'})
         """
 
-        settings = copy.deepcopy(data_formats.transcription['tfregulons'])
+        settings = modcopy.deepcopy(data_formats.transcription['tfregulons'])
         settings.inputArgs = {
             'levels': levels,
             'only_curated': only_curated
@@ -9824,6 +9824,7 @@ class PyPath(object):
             keep_undirected = False,
             prefix  = 'GO',
             delete  = True,
+            copy = False,
             vertex_attrs = True,
             edge_attrs = True,
         ):
@@ -9860,6 +9861,10 @@ class PyPath(object):
         :param bool delete:
             Delete the vertices and edges which don't belong to any of the
             categories.
+        :param bool copy:
+            Return a copy of the entire ``PyPath`` object with the graph
+            filtered by GO terms. By default the object is modified in place
+            and ``None`` is returned.
         :param bool vertex_attrs:
             Create vertex attributes.
         :param bool edge_attrs:
@@ -10088,7 +10093,7 @@ class PyPath(object):
         self.update_sources()
 
         if lig_rec_resources:
-            datasets = copy.deepcopy(data_formats.ligand_receptor)
+            datasets = modcopy.deepcopy(data_formats.ligand_receptor)
             datasets['cellphonedb'].inputArgs = {
                 'ligand_ligand':     keep_lig_lig,
                 'receptor_receptor': keep_rec_rec,
@@ -11589,7 +11594,7 @@ class PyPath(object):
         # XXX: According to the alias above omnipath = data_formats.omnipath already
 
         if old_omnipath_resources:
-            omnipath = copy.deepcopy(data_formats.omnipath)
+            omnipath = modcopy.deepcopy(data_formats.omnipath)
             omnipath['biogrid'] = data_formats.interaction['biogrid']
             omnipath['alz'] = data_formats.interaction['alz']
             omnipath['netpath'] = data_formats.interaction['netpath']
@@ -12776,7 +12781,7 @@ class PyPath(object):
                         for eattr in e.attributes():
 
                             if eattr != 'dirs' and eattr != 'refs_by_dir':
-                                eenew[eattr] = copy.deepcopy(e[eattr])
+                                eenew[eattr] = modcopy.deepcopy(e[eattr])
 
         prg.terminate()
         # id_new > current index
@@ -12797,7 +12802,7 @@ class PyPath(object):
                 for vattr in v0.attributes():
 
                     if vattr != 'name':
-                        v[vattr] = copy.deepcopy(v0[vattr])
+                        v[vattr] = modcopy.deepcopy(v0[vattr])
 
         # removing temporary edge attributes
         del self.graph.es['id_old']
@@ -12888,7 +12893,7 @@ class PyPath(object):
         # vector of probabilities;
         # this will be subject of iteration
         # and its final state will be the result
-        _p = copy.copy(_q)
+        _p = modcopy.copy(_q)
 
         # transition matrix
         __A = np.array(list(graph.get_adjacency()), dtype=np.float64).T
