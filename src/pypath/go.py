@@ -43,17 +43,7 @@ class GeneOntology(object):
         Loads data about Gene Ontology terms and their relations.
         """
         
-        terms = dataio.go_terms_quickgo()
-        
-        self.ancestors = self._merge_aspects(
-            dataio.go_ancestors_quickgo()
-        )
-        self.descendants = self._merge_aspects(
-            dataio.go_descendants_quickgo()
-        )
-        
-        self.name = dict(i for ii in terms.values() for i in iteritems(ii))
-        self.term = dict(reversed(i) for i in iteritems(self.name))
+        self._load()
     
     def reload(self):
         """Reloads the object from the module level."""
@@ -63,6 +53,52 @@ class GeneOntology(object):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
+    
+    def _load(self):
+        
+        self._load_terms()
+        self._load_tree()
+        self._set_aspect()
+        self._set_name()
+        self._set_term()
+        
+        delattr(self, '_terms')
+    
+    def _load_terms(self):
+        
+        self._terms = dataio.go_terms_quickgo()
+    
+    def _load_tree(self):
+        
+        self.ancestors = self._merge_aspects(
+            dataio.go_ancestors_quickgo()
+        )
+        self.descendants = self._merge_aspects(
+            dataio.go_descendants_quickgo()
+        )
+    
+    def _set_aspect(self):
+        
+        self.aspect = dict(
+            (term, asp)
+            for asp, terms in iteritems(self._terms)
+            for term in terms.keys()
+        )
+    
+    def _set_name(self):
+        
+        self.name = dict(
+            i
+            for ii in self._terms.values()
+            for i in iteritems(ii)
+        )
+    
+    def _set_term(self):
+        
+        self.term = dict(
+            reversed(i)
+            for i in iteritems(self.name)
+        )
     
     def get_name(self, term):
         """
@@ -120,19 +156,29 @@ class GeneOntology(object):
         
         return subgraph
     
-    def all_ancestors(self, terms, relations = None):
+    def get_all_ancestors(self, terms, relations = None):
         """
         Returns a set of all ancestors of a single term or a set of terms.
         """
         
         return self.subgraph_nodes('ancestors', terms, relations)
     
-    def all_descendants(self, terms, relations = None):
+    def get_all_descendants(self, terms, relations = None):
         """
         Returns a set of all descendants of a single term or a set of terms.
         """
         
         return self.subgraph_nodes('descendants', terms, relations)
+    
+    def get_aspect(self, term):
+        """
+        For a GO term tells which aspect does it belong to.
+        Returns `None` if the term is not in the ontology.
+        """
+        
+        if term in self.aspect:
+            
+            return self.aspect[term]
 
 
 class GOAnnotation(object):
@@ -198,7 +244,7 @@ class GOAnnotation(object):
         """
         For a UniProt ID returns its direct annotations from one aspect
         of Gene Ontology.
-        Returns set.
+        returns set.
         """
         
         annot = getattr(self, aspect.lower())
