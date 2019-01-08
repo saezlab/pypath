@@ -23,12 +23,17 @@ from past.builtins import xrange, range
 
 import sys
 import imp
+import re
 from collections import Counter, OrderedDict
 import numpy as np
 
 import pypath.dataio as dataio
 import pypath.progress as progress
 from pypath.common import *
+
+
+# this is for GO terms parsing:
+_rego = re.compile(r'and|or|not|\(|\)|GO:[0-9]{7}')
 
 
 class GeneOntology(object):
@@ -179,6 +184,17 @@ class GeneOntology(object):
         if term in self.aspect:
             
             return self.aspect[term]
+    
+    def all_from_aspect(self, aspect):
+        """
+        Returns the set of all GO terms of one aspect.
+        """
+        
+        return set(
+            term
+            for term, asp in iteritems(self.aspect)
+            if asp == aspect
+        )
 
 
 class GOAnnotation(object):
@@ -219,7 +235,7 @@ class GOAnnotation(object):
                 dict(
                     (
                         uniprot,
-                        self.ontology.all_ancestors(annot)
+                        self.ontology.get_all_ancestors(annot)
                     )
                     for uniprot, annot in
                     iteritems(getattr(self, asp.lower()))
@@ -294,15 +310,28 @@ class GOAnnotation(object):
             for asp in self.aspects
         )
     
-    def i_select_by_term(self, uniprots, term):
+    def all_uniprots(self):
+        """
+        Returns all UniProt IDs having annotations.
+        """
+        
+        return set.union(*(
+            set(getattr(self, asp.lower()).keys())
+            for asp in self.aspects
+        ))
+    
+    def i_select_by_term(self, term, uniprots = None):
         """
         Accepts a list of UniProt IDs and one or more gene ontology terms
         and returns a set of indices of those UniProts which are annotated
         with any of the terms.
+        If no UniProts given all annotated UniProts considered.
         
         :param str,set term:
             A single GO term or set of terms.
         """
+        
+        uniprots = uniprots or sorted(self.all_uniprots())
         
         method = self.has_any_term if isinstance(term, set) else self.has_term
         
@@ -312,20 +341,150 @@ class GOAnnotation(object):
             if method(uniprot, term)
         )
     
-    def select_by_term(self, uniprots, term):
+    def select_by_term(self, term, uniprots = None):
         """
         Accepts a list of UniProt IDs and one or more gene ontology terms
         and returns the UniProts which are annotated with any of the terms.
+        If no UniProts given all annotated UniProts returned.
         
         :param str,set term:
             A single GO term or set of terms.
         """
+        
+        uniprots = uniprots or sorted(self.all_uniprots())
         
         return set(
             numpy.array(uniprots)[
                 list(self.i_select_by_term(uniprots, term))
             ]
         )
+    
+    def select_by_expr(
+            self,
+            expr,
+            uniprots = None,
+            return_uniprots = False,
+        ):
+        
+        """
+        Selects UniProts based on an expression of Gene Ontology terms.
+        Operator precedence not considered, please use parentheses.
+        Return indices of the selected elements in the ``uniprots`` list
+        or the set of selected UniProt IDs.
+        
+        :param str go_expr:
+            An expression of Gene Ontology terms. E.g.
+            ``'(GO:0005576 and not GO:0070062) or GO:0005887'``. Parentheses
+            and operators ``and``, ``or`` and ``not`` can be used.
+        :param bool return_uniprots:
+            By default returns list of indices; if ``True`` returns a set of
+            the selected UniProt IDs.
+        """
+        
+        ops = {
+            'and': 'intersection',
+            'or':  'union',
+        }
+        
+        # if no UniProts provided does not make sense to return indices
+        return_uniprots = return_uniprots or uniprots is None
+        
+        uniprots = uniprots or sorted(self.all_uniprots())
+        
+        if isinstance(expr, basestring):
+            
+            # tokenizing expression if it is a string
+            # (method is recursive)
+            expr = _rego.findall(expr)
+        
+        # initial values
+        result   = set()
+        stack    = []
+        sub      = False
+        negate   = False
+        op       = None
+        this_set = None
+        
+        for it in expr:
+            
+            # processing expression by tokens
+            
+            # we are in a sub-selection part
+            if sub:
+                
+                if it == ')':
+                    
+                    # token is a closing parenthesis
+                    # execute sub-selection
+                    this_set = self.select_by_expr(
+                        expr = stack,
+                        uniprots = uniprots,
+                    )
+                    # empty stack
+                    stack = []
+                
+                else:
+                    
+                    # token is something else
+                    # add to sub-selection stack
+                    stack.append(it)
+                
+            # we do actual processing of the expression
+            elif it == 'not':
+                
+                # token is negation
+                # turn on negation for the next set
+                negate = True
+                continue
+                
+            # open a sub-selection part
+            elif it == '(':
+                
+                # token is a parenthesis
+                # start a new sub-selection
+                sub = True
+                continue
+                
+            elif it[:3] == 'GO:':
+                
+                # token is a GO term
+                # get the vertex selection by the single term method
+                this_set = self._select_by_go(it)
+                
+                if negate:
+                    
+                    # take the inverse of the current set
+                    this_set = set(xrange(len(uniprots)) - this_set
+                    # set negation again to False
+                    negate = False
+                
+            elif it in ops:
+                
+                # token is an operator
+                # set it for use at the next operation
+                op = ops[it]
+            
+            # we found a set
+            if this_set is not None:
+                
+                # and an operator
+                if op is not None:
+                    
+                    result = getattr(result, op)(this_set)
+                
+                # this normally happens only at the first set
+                else:
+                    
+                    result = this_set
+                
+                this_set = None
+                op       = None
+        
+        if return_uniprots:
+            
+            return set(np.array(uniprots)[list(result)])
+        
+        return result
 
 
 def annotate(graph, organism = 9606, aspects = ('C', 'F', 'P')):

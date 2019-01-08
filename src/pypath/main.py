@@ -114,9 +114,6 @@ import pypath.settings as settings
 # to make it accessible directly from the module
 omnipath = data_formats.omnipath
 
-# this is for GO terms parsing:
-_rego = re.compile(r'and|or|not|\(|\)|GO:[0-9]{7}')
-
 # XXX: The following aliases are already defined in common.py
 if 'long' not in __builtins__:
     long = int
@@ -9710,100 +9707,12 @@ class PyPath(object):
             and operators ``and``, ``or`` and ``not`` can be used.
         """
         
-        ops = {
-            'and': 'intersection',
-            'or':  'union',
-        }
-        
         annot = self.get_go()
         
-        if isinstance(go_expr, common.basestring):
-            
-            # tokenizing expression if it is a string
-            # (method is recursive)
-            go_expr = _rego.findall(go_expr)
-        
-        # initial values
-        result   = set()
-        stack    = []
-        sub      = False
-        negate   = False
-        op       = None
-        this_set = None
-        
-        for it in go_expr:
-            
-            # processing expression by tokens
-            
-            # we are in a sub-selection part
-            if sub:
-                
-                if it == ')':
-                    
-                    # token is a closing parenthesis
-                    # execute sub-selection
-                    this_set = self.select_by_go_expr(go_expr = stack)
-                    # empty stack
-                    stack = []
-                
-                else:
-                    
-                    # token is something else
-                    # add to sub-selection stack
-                    stack.append(it)
-                
-            # we do actual processing of the expression
-            elif it == 'not':
-                
-                # token is negation
-                # turn on negation for the next set
-                negate = True
-                continue
-                
-            # open a sub-selection part
-            elif it == '(':
-                
-                # token is a parenthesis
-                # start a new sub-selection
-                sub = True
-                continue
-                
-            elif it[:3] == 'GO:':
-                
-                # token is a GO term
-                # get the vertex selection by the single term method
-                this_set = self._select_by_go(it)
-                
-                if negate:
-                    
-                    # take the inverse of the current set
-                    this_set = set(xrange(self.graph.vcount())) - this_set
-                    # set negation again to False
-                    negate = False
-                
-            elif it in ops:
-                
-                # token is an operator
-                # set it for use at the next operation
-                op = ops[it]
-            
-            # we found a set
-            if this_set is not None:
-                
-                # and an operator
-                if op is not None:
-                    
-                    result = getattr(result, op)(this_set)
-                
-                # this normally happens only at the first set
-                else:
-                    
-                    result = this_set
-                
-                this_set = None
-                op       = None
-        
-        return result
+        return annot.select_by_expr(
+            expr = go_expr,
+            uniprots = self.graph.vs['name'],
+        )
 
     def label_by_go(self, label, go_terms, method = 'ANY'):
         """

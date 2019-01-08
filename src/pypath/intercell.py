@@ -19,6 +19,11 @@
 #
 
 
+from future.utils import iteritems
+from past.builtins import xrange, range
+
+import imp
+
 import pypath.go as go
 import pypath.dataio as dataio
 
@@ -27,29 +32,43 @@ import pypath.dataio as dataio
 Gene Ontology annotations to select categories relevant in intercellular
 signaling.
 """
-go_annot = {
+
+intercell_categories = {
+    'junction': {
+        'C': {'cell_junction'},
+    },
+}
+
+intercell_go_terms = {
     
     # cellular component
     'C': {
-        'cell junction',
-        'extracellular region',
-        'extracellular region part',
-        
-        'complex of collagen trimers',
-        'collagen network',
-        'banded collagen fibril',
-        'collagen beaded filament',
-        'elastic fiber',
-        'fibronectin fibril',
+        'junction': {
+            'cell junction',
+        },
+        'extracellular': {
+            'extracellular region',
+            'extracellular region part',
+        },
+        'extracellular_matrix': {
+            'extracellular matrix',
+            'complex of collagen trimers',
+            'collagen network',
+            'banded collagen fibril',
+            'collagen beaded filament',
+            'elastic fiber',
+            'fibronectin fibril',
+        },
+        'exosome': {
+            # could not find sub-term for their membrane or lumen
+            'extracellular vesicle',
+        },
+        'cell_surface': {
+            # only plasma membrane components facing outside
+            'cell surface',
+            'external side of plasma membrane',
+        },
         ''
-        
-        # could not find sub-term for their membrane or lumen
-        'extracellular vesicle',
-        
-        # only plasma membrane components facing outside
-        'cell surface',
-        'external side of plasma membrane',
-        
         # these contains also intracellular components
         'plasma membrane',
         'extrinsic component of plasma membrane',
@@ -60,7 +79,6 @@ go_annot = {
         
         'clathrin-coated pit',
         'plasma membrane raft',
-        'external encapsulating structure',
         
         'presynaptic membrane',
         'presynaptic endocytic zone',
@@ -281,3 +299,45 @@ go_annot = {
     },
     
 }
+
+
+class Intercell(object):
+    
+    def __init__(
+            self,
+            pa = None,
+            annot = None,
+            categories = None,
+        ):
+        
+        self.pa = pa
+        self.annot = (
+            annot
+                if annot else
+            pa.go[pa.ncbi_tax_id]
+                if hasattr(pa, 'go') else
+            go.GOAnnotation()
+        )
+        
+        self.names = categories or categories_default
+    
+    def reload(self):
+        """
+        Reloads the object from the module level.
+        """
+        
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    def get_go_ids(self):
+        
+        self.terms = dict(
+            (
+                domain,
+                set(self.annot.ontology.get_term(name) for name in names)
+            )
+            for domain, names in iteritems(self.names)
+        )
