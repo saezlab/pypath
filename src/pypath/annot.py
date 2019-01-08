@@ -40,7 +40,6 @@ class AnnotationBase(object):
             mapper = None,
             ncbi_tax_id = 9606,
             input_method = None,
-            process_method = None,
             input_args = None,
         ):
         """
@@ -62,7 +61,6 @@ class AnnotationBase(object):
         
         self.name = name
         self._input_method = input_method
-        self.process_method = process_method or self._default_process_method
         self.input_args = input_args or {}
         self.ncbi_tax_id = ncbi_tax_id
         self.mapper = mapper
@@ -76,7 +74,6 @@ class AnnotationBase(object):
         """
         
         self.set_mapper()
-        self.load_uniprots()
         self.load_data()
         self.process()
     
@@ -119,7 +116,7 @@ class AnnotationBase(object):
         Does nothing, derived classes might override.
         """
         
-        self.annot = self.process_method(self.annot, self.mapper)
+        self._process_method()
     
     
     def load_uniprots(self):
@@ -131,9 +128,9 @@ class AnnotationBase(object):
         self.uniprots = set(dataio.all_uniprots(organism = self.ncbi_tax_id))
     
     
-    def _default_process_method(annot, mapper):
+    def _process_method(*args, **kwargs):
         
-        return annot
+        pass
     
     
     def __contains__(self, uniprot):
@@ -157,20 +154,23 @@ class Membranome(AnnotationBase):
             self,
             name = 'Membranome',
             input_method = 'get_membranome',
-            process_method = self._process_method,
         )
     
     
-    @staticmethod
-    def _process_method(annot, mapper):
+    def _process_method(self):
+        
+        record = collections.namedtuple(
+            'MembranomeAnnotation',
+            ['membrane', 'side'],
+        )
         
         _annot = collections.defaultdict(set)
         
-        for a in annot:
+        for a in self.annot:
             
-            _annot[a[0]].add(a[1:])
+            _annot[a[0]].add(record(a[1], a[2]))
         
-        return dict(_annot)
+        self.annot = dict(_annot)
 
 
 class Exocarta(AnnotationBase):
@@ -191,26 +191,33 @@ class Exocarta(AnnotationBase):
             name = kwargs['database'].capitalize(),
             ncbi_tax_id = ncbi_tax_id,
             input_method = '_get_exocarta_vesiclepedia',
-            process_method = self._process_method,
             mapper = mapper,
             input_args = kwargs,
         )
     
     
-    @staticmethod
-    def _process_method(annot, mapper):
+    def _process_method(self):
+        
+        record = collections.namedtuple(
+            '%sAnnotation' % self.name,
+            ['pmid', 'tissue', 'vesicle'],
+        )
         
         _annot = collections.defaultdict(set)
         
-        for a in annot:
+        for a in self.annot:
             
             uniprots = self.mapper.map_name(a[1], 'genesymbol', 'uniprot')
             
             for u in uniprots:
                 
-                _annot[u].add(a[3])
+                for vesicle in (
+                    a[3][3] if self.name == 'Vesiclepedia' else ('Exosomes',)
+                ):
+                
+                    _annot[u].add(record(a[3][0], a[3][2], vesicle))
         
-        return dict(_annot)
+        self.annot = dict(_annot)
 
 
 class Vesiclepedia(Exocarta):
@@ -219,6 +226,7 @@ class Vesiclepedia(Exocarta):
     def __init__(self, ncbi_tax_id = 9606, mapper = None, **kwargs):
         
         Exocarta.__init__(
+            self,
             ncbi_tax_id = ncbi_tax_id,
             database = 'vesiclepedia',
             mapper = mapper,
@@ -243,6 +251,22 @@ class Matrisome(AnnotationBase):
             input_args = kwargs,
             mapper = mapper,
         )
+    
+    
+    def _process_method(self):
+        
+        _annot = collections.defaultdict(set)
+        
+        record = collections.namedtuple(
+            'MatrisomeAnnotation',
+            ['mainclass', 'subclass', 'subsubclass'],
+        )
+        
+        for uniprot, a in iteritems(self.annot):
+            
+            _annot[uniprot].add(record(*a))
+        
+        self.annot = dict(_annot)
 
 
 class Surfaceome(AnnotationBase):
@@ -256,6 +280,29 @@ class Surfaceome(AnnotationBase):
             input_method = 'get_surfaceome',
             mapper = mapper,
         )
+    
+    
+    def _process_method(self):
+        
+        _annot = collections.defaultdict(set)
+        
+        record = collections.namedtuple(
+            'SurfaceomeAnnotation',
+            ['score', 'mainclass', 'subclasses']
+        )
+        record.__defaults__ = (None, None)
+        
+        for uniprot, a in iteritems(self.annot):
+            
+            _annot[uniprot].add(
+                record(
+                    a[0],
+                    a[1],
+                    tuple(sorted(a[2])) if a[2] else None,
+                )
+            )
+        
+        self.annot = dict(_annot)
 
 
 class CellSurfaceProteinAtlas(AnnotationBase):
@@ -275,7 +322,7 @@ class CellSurfaceProteinAtlas(AnnotationBase):
             name = 'CSPA',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'get_cspa',
-            process_method = self.process_method,
+            process_method = self._process_method,
             input_args = kwargs,
             mapper = mapper,
         )
@@ -284,7 +331,7 @@ class CellSurfaceProteinAtlas(AnnotationBase):
     @staticmethod
     def _process_method(annot, mapper):
         
-        return dict((u, None) for u in annot)
+        return dict((u, set()) for u in annot)
 
 
 class HumanPlasmaMembraneReceptome(AnnotationBase):
@@ -299,16 +346,15 @@ class HumanPlasmaMembraneReceptome(AnnotationBase):
             self,
             name = 'HPMR',
             input_method = 'get_hpmr',
-            process_method = self.process_method,
+            process_method = self._process_method,
             mapper = mapper,
         )
     
     
-    @staticmethod
-    def _process_method(annot, mapper):
+    def process_method(self):
         
         return dict(
-            (uniprot, None)
+            (uniprot, set())
             for genesymbol in annot
             for uniprot in mapper.map_name(
                 genesymbol, 'genesymbol', 'uniprot'

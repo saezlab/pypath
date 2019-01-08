@@ -8652,7 +8652,7 @@ def get_surfaceome():
             r[1], # uniprot
             (
                 float(r[13]), # score
-                set(r[18].split(';')) if r[18] else set(), # class
+                r[18] if r[18] else None, # class
                 set(r[19].split(';')) if r[19] else set(), # subclass
             )
         )
