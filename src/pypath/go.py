@@ -545,6 +545,27 @@ class GOAnnotation(object):
         return self._uniprot_return(result, uniprots, return_uniprots)
     
     
+    def select_by_all(self, terms, uniprots = None, return_uniprots = False):
+        """
+        Selects the nodes annotated by all GO terms in ``terms``.
+        
+        Returns indices of the selected elements in the ``uniprots`` list
+        or the set of selected UniProt IDs.
+        
+        :param list terms:
+            List, set or tuple of GO terms.
+        :param bool return_uniprots:
+            By default returns list of indices; if ``True`` returns a set of
+            the selected UniProt IDs.
+        """
+        
+        uniprots = uniprots or sorted(self.all_uniprots())
+        
+        idx = set.intersection(*[self.select_by_term(term) for term in terms])
+        
+        return self._uniprot_return(result, uniprots, return_uniprots)
+    
+    
     def _uniprot_return(self, idx, uniprots, return_uniprots):
         
         if return_uniprots:
