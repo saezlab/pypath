@@ -4677,10 +4677,14 @@ def get_hpmr():
     html = c.result
     soup = bs4.BeautifulSoup(html, 'html.parser')
     gnames = [
-        row[1].text for row in (
+        row[1].text
+        for row in (
             tr.find_all('td')
-            for tr in soup.find('table', {'class': 'gridtable'}).find_all('tr')
-        ) if len(row) > 1 and not row[1].text.lower().startswith('similar')
+            for tr in soup.find(
+                'table', {'class': 'gridtable'}
+            ).find_all('tr')
+        )
+        if len(row) > 1 and not row[1].text.lower().startswith('similar')
     ]
     return common.uniqList(gnames)
 

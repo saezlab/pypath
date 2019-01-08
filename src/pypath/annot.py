@@ -62,7 +62,7 @@ class AnnotationBase(object):
         
         self.name = name
         self._input_method = input_method
-        self._process_method = process_method or lambda x: x
+        self.process_method = process_method or self._default_process_method
         self.input_args = input_args or {}
         self.ncbi_tax_id = ncbi_tax_id
         self.mapper = mapper
@@ -119,7 +119,7 @@ class AnnotationBase(object):
         Does nothing, derived classes might override.
         """
         
-        self.annot = self.process_method(self.annot)
+        self.annot = self.process_method(self.annot, self.mapper)
     
     
     def load_uniprots(self):
@@ -128,7 +128,12 @@ class AnnotationBase(object):
         proteome.
         """
         
-        self.uniprots = set(datio.all_uniprots(organism = self.ncbi_tax_id))
+        self.uniprots = set(dataio.all_uniprots(organism = self.ncbi_tax_id))
+    
+    
+    def _default_process_method(annot, mapper):
+        
+        return annot
     
     
     def __contains__(self, uniprot):
@@ -146,24 +151,18 @@ class AnnotationBase(object):
 class Membranome(AnnotationBase):
     
     
-    def __init__(self, ncbi_tax_id = 9606, **kwargs):
-        
-        if 'organism' not in kwargs:
-            
-            kwargs['organism'] = ncbi_tax_id
+    def __init__(self):
         
         AnnotationBase.__init__(
             self,
             name = 'Membranome',
-            ncbi_tax_id = ncbi_tax_id,
             input_method = 'get_membranome',
             process_method = self._process_method,
-            input_args = kwargs,
         )
     
     
     @staticmethod
-    def _process_method(annot):
+    def _process_method(annot, mapper):
         
         _annot = collections.defaultdict(set)
         
@@ -177,7 +176,7 @@ class Membranome(AnnotationBase):
 class Exocarta(AnnotationBase):
     
     
-    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+    def __init__(self, ncbi_tax_id = 9606, mapper = None, **kwargs):
         
         if 'organism' not in kwargs:
             
@@ -193,12 +192,13 @@ class Exocarta(AnnotationBase):
             ncbi_tax_id = ncbi_tax_id,
             input_method = '_get_exocarta_vesiclepedia',
             process_method = self._process_method,
+            mapper = mapper,
             input_args = kwargs,
         )
     
     
     @staticmethod
-    def _process_method(annot):
+    def _process_method(annot, mapper):
         
         _annot = collections.defaultdict(set)
         
@@ -216,11 +216,12 @@ class Exocarta(AnnotationBase):
 class Vesiclepedia(Exocarta):
     
     
-    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+    def __init__(self, ncbi_tax_id = 9606, mapper = None, **kwargs):
         
         Exocarta.__init__(
             ncbi_tax_id = ncbi_tax_id,
             database = 'vesiclepedia',
+            mapper = mapper,
             **kwargs,
         )
 
@@ -228,7 +229,7 @@ class Vesiclepedia(Exocarta):
 class Matrisome(AnnotationBase):
     
     
-    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+    def __init__(self, ncbi_tax_id = 9606, mapper = None, **kwargs):
         
         if 'organism' not in kwargs:
             
@@ -240,13 +241,30 @@ class Matrisome(AnnotationBase):
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'get_matrisome',
             input_args = kwargs,
+            mapper = mapper,
         )
 
 
-class Surfaceome(AnntationBase):
+class Surfaceome(AnnotationBase):
     
     
-    def __init__(self):
+    def __init__(self, mapper = None):
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'Surfaceome',
+            input_method = 'get_surfaceome',
+            mapper = mapper,
+        )
+
+
+class CellSurfaceProteinAtlas(AnnotationBase):
+    
+    
+    def __init__(self, ncbi_tax_id = 9606, mapper = None, **kwargs):
+        """
+        The name of this resource abbreviated as `CSPA`.
+        """
         
         if 'organism' not in kwargs:
             
@@ -254,7 +272,45 @@ class Surfaceome(AnntationBase):
         
         AnnotationBase.__init__(
             self,
-            name = 'Surfaceome',
+            name = 'CSPA',
             ncbi_tax_id = ncbi_tax_id,
-            input_method = 'get_surfaceome',
+            input_method = 'get_cspa',
+            process_method = self.process_method,
+            input_args = kwargs,
+            mapper = mapper,
+        )
+    
+    
+    @staticmethod
+    def _process_method(annot, mapper):
+        
+        return dict((u, None) for u in annot)
+
+
+class HumanPlasmaMembraneReceptome(AnnotationBase):
+    
+    
+    def __init__(self, mapper = None):
+        """
+        The name of this resource abbreviated as `HPMR`.
+        """
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'HPMR',
+            input_method = 'get_hpmr',
+            process_method = self.process_method,
+            mapper = mapper,
+        )
+    
+    
+    @staticmethod
+    def _process_method(annot, mapper):
+        
+        return dict(
+            (uniprot, None)
+            for genesymbol in annot
+            for uniprot in mapper.map_name(
+                genesymbol, 'genesymbol', 'uniprot'
+            )
         )
