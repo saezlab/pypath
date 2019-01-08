@@ -286,13 +286,14 @@ class GOAnnotation(object):
         self.p = annot['P']
         
         self._ancestors_annotate()
+        self._merge_annotations()
     
     
     def reload(self):
         """Reloads the object from the module level."""
         
         modname = self.__class__.__module__
-        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
@@ -316,6 +317,33 @@ class GOAnnotation(object):
             )
     
     
+    def _merge_annotations(self):
+        
+        uniprots = self.all_uniprots()
+        
+        self.all = dict(
+            (
+                uniprot,
+                set.union(*(
+                    self.get_annot(uniprot, asp)
+                    for asp in self.aspects
+                ))
+            )
+            for uniprot in uniprots
+        )
+        
+        self.all_full = dict(
+            (
+                uniprot,
+                set.union(*(
+                    self.get_annots(uniprot)
+                    for asp in self.aspects
+                ))
+            )
+            for uniprot in uniprots
+        )
+    
+    
     def get_name(self, term):
         """
         For a GO accession number returns the name of the term.
@@ -336,11 +364,11 @@ class GOAnnotation(object):
         """
         For a UniProt ID returns its direct annotations from one aspect
         of Gene Ontology.
-        returns set.
+        Returns set.
         """
         
         annot = getattr(self, aspect.lower())
-        return set() if uniprot not in annot else annot[uniprot]
+        return annot[uniprot] if uniprot in annot else set()
     
     
     def get_annots(self, uniprot):
@@ -350,24 +378,28 @@ class GOAnnotation(object):
         Returns set.
         """
         
-        return set.union(
-            self.get_annot(uniprot, asp)
-            for asp in self.aspects
-        )
+        return self.all[uniprot] if uniprot in self.all else set()
     
     
-    def _has_term(self, uniprot, term, aspect):
+    def get_annot_ancestors(self, uniprot, aspect):
+        """
+        For a UniProt ID returns its annotations including lowest level
+        terms and their ancestors from one aspect of Gene Ontology.
+        Returns set.
+        """
         
         annot = getattr(self, '%s_full' % aspect.lower())
-        
-        return uniprot in annot and term in annot[uniprot]
+        return annot[uniprot] if uniprot in annot else set()
     
     
-    def _has_any_term(self, uniprot, terms, aspect):
+    def get_annots_ancestors(self, uniprot):
+        """
+        For a UniProt ID returns its annotations including lowest level
+        terms and their ancestors from all aspects of Gene Ontology.
+        Returns set.
+        """
         
-        annot = getattr(self, '%s_full' % aspect.lower())
-        
-        return uniprot in annot and terms & annot[uniprot]
+        return self.all_full[uniprot] if uniprot in self.all_full else set()
     
     
     def has_term(self, uniprot, term):
@@ -375,10 +407,7 @@ class GOAnnotation(object):
         Tells if an UniProt ID is annotated with a GO term.
         """
         
-        return any(
-            self._has_term(uniprot, term, aspect)
-            for asp in self.aspects
-        )
+        return uniprot in self.all_full and term in self.all_full[uniprot]
     
     
     def has_any_term(self, uniprot, terms):
@@ -386,10 +415,7 @@ class GOAnnotation(object):
         Tells if an UniProt ID is annotated with any of a set of GO terms.
         """
         
-        return any(
-            self._has_any_term(uniprot, terms, aspect)
-            for asp in self.aspects
-        )
+        return uniprot in self.all_full and term & self.all_full[uniprot]
     
     
     def all_uniprots(self):
@@ -449,7 +475,7 @@ class GOAnnotation(object):
         return self.select(
             term,
             uniprots = uniprots,
-            return_uniprots = return_uniprots
+            return_uniprots = return_uniprots,
         )
     
     
@@ -612,6 +638,8 @@ class GOAnnotation(object):
             the selected UniProt IDs.
         """
         
+        return_uniprots = return_uniprots or uniprots is None
+        
         uniprots = uniprots or sorted(self.all_uniprots())
         
         # this is not an individual term but an expression
@@ -640,6 +668,8 @@ class GOAnnotation(object):
             By default returns list of indices; if ``True`` returns a set of
             the selected UniProt IDs.
         """
+        
+        return_uniprots = return_uniprots or uniprots is None
         
         uniprots = uniprots or sorted(self.all_uniprots())
         
