@@ -265,6 +265,28 @@ class GeneOntology(object):
             for term, asp in iteritems(self.aspect)
             if asp == aspect
         )
+    
+    
+    def is_root(self, term):
+        """
+        Tells if a term is the root of the graph i.e. it has no ancestors.
+        """
+        
+        return term in self.ancestors and bool(self.ancestors[term])
+    
+    
+    def is_leaf(self, term):
+        """
+        Tells if a term is a leaf of the graph i.e. it has no descendants.
+        """
+        
+        return (
+            (
+                term in self.ancestors and
+                term not in self.descendants
+            ) or
+            bool(self.descendants[term])
+        )
 
 
 class GOAnnotation(object):
@@ -290,7 +312,9 @@ class GOAnnotation(object):
     
     
     def reload(self):
-        """Reloads the object from the module level."""
+        """
+        Reloads the object from the module level.
+        """
         
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
