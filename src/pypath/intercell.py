@@ -35,7 +35,7 @@ signaling.
 
 intercell_categories = {
     'junction': {
-        'C': {'cell_junction'},
+        'C': {'cell junction'},
         'P': {
             'cell junction assembly',
             'cell junction organization',

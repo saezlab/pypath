@@ -8677,15 +8677,15 @@ def get_matrisome(organism = 9606):
     
     return dict(
         (
-            genesymbol,
+            uniprot,
             (
-                r[0],  # class
-                r[1],  # subclass
-                r[10], # notes
+                r[0].strip(),  # class
+                r[1].strip(),  # subclass
+                r[10].strip() or None, # notes
             )
         )
         for r in raw
-        for genesymbol in r[7].split(':')
+        for uniprot in r[7].split(':')
     )
 
 def __get_matrisome_2():
