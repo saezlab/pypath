@@ -130,6 +130,60 @@ class GeneOntology(object):
         return None if name not in self.term else self.term[name]
     
     
+    def terms_to_names(self, terms):
+        """
+        For a list of GO names returns a list of tuples with the terms
+        and their names.
+        """
+        
+        return [(term, self.get_name(name)) for term in terms]
+    
+    
+    def terms_to_names_aspects(self, terms):
+        """
+        For a list of GO terms returns a list of tuples with the terms,
+        their names and the ontology aspect.
+        """
+        
+        return [
+            (term, self.get_name(name), self.get_aspect(term))
+            for term in terms
+        ]
+    
+    
+    def names_to_terms(self, names):
+        """
+        For a list of GO terms returns a list of tuples with the terms
+        and their names.
+        """
+        
+        return [(self.get_term(name), name) for name in names]
+    
+    
+    def names_to_terms_aspects(self, names):
+        """
+        For a list of GO namess returns a list of tuples with the terms,
+        their names and ontology aspects.
+        """
+        
+        return [
+            (self.get_term(name), name, self.aspect_from_name(name))
+            for name in names
+        ]
+    
+    
+    def aspect_from_name(self, name):
+        """
+        Tells about a Gene Ontology term name which aspect does it belong to.
+        """
+        
+        term = self.get_term(name)
+        
+        if term:
+            
+            return self.get_aspect(term)
+    
+    
     @staticmethod
     def _merge_aspects(dct):
         
