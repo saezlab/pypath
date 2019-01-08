@@ -36,6 +36,12 @@ signaling.
 intercell_categories = {
     'junction': {
         'C': {'cell_junction'},
+        'P': {
+            'cell junction assembly',
+            'cell junction organization',
+            'intercellular bridge organization',
+            'gap junction-mediated intercellular transport',
+        },
     },
 }
 

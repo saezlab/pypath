@@ -425,6 +425,34 @@ class GOAnnotation(object):
         )
     
     
+    def select_by_name(self, name, uniprots = None, return_uniprots = False):
+        """
+        Accepts a list of UniProt IDs and one or more gene ontology names
+        and returns the UniProts which are annotated with any of the names.
+        If no UniProts given all annotated UniProts returned.
+        
+        :param str,set name:
+            A single GO term name or set of names.
+        :param bool return_uniprots:
+            By default returns list of indices; if ``True`` returns a set of
+            the selected UniProt IDs.
+        """
+        
+        if isinstance(name, basestring):
+            
+            term = self.ontology.get_term(name)
+            
+        else:
+            
+            term = set(i[0] for i in self.ontology.names_to_terms(name))
+        
+        return self.select(
+            term,
+            uniprots = uniprots,
+            return_uniprots = return_uniprots
+        )
+    
+    
     def select_by_term(self, term, uniprots = None):
         """
         Accepts a list of UniProt IDs and one or more gene ontology terms
