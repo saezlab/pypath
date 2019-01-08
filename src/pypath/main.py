@@ -9675,7 +9675,10 @@ class PyPath(object):
         
         annot = self.get_go()
         
-        return annot.select_by_term(self.graph.vs['name'], go_terms)
+        return annot.select_by_term(
+            terms = go_terms,
+            uniprots = self.graph.vs['name'],
+        )
     
     def select_by_go(self, go_terms):
         """
@@ -9688,13 +9691,12 @@ class PyPath(object):
             GO terms.
         """
         
-        if isinstance(go_terms, common.basestring) and len(go_terms) > 10:
-            
-            return self.select_by_go_expr(go_terms)
-            
-        else:
-            
-            return self._select_by_go(go_terms)
+        annot = self.get_go()
+        
+        return annot.select(
+            terms = go_terms,
+            uniprots = self.graph.vs['name'],
+        )
     
     def select_by_go_expr(self, go_expr):
         """

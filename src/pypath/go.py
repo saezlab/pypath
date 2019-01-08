@@ -43,12 +43,14 @@ class GeneOntology(object):
         'positively_regulates', 'negatively_regulates',
     }
     
+    
     def __init__(self):
         """
         Loads data about Gene Ontology terms and their relations.
         """
         
         self._load()
+    
     
     def reload(self):
         """Reloads the object from the module level."""
@@ -58,6 +60,7 @@ class GeneOntology(object):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
+    
     
     def _load(self):
         
@@ -69,9 +72,11 @@ class GeneOntology(object):
         
         delattr(self, '_terms')
     
+    
     def _load_terms(self):
         
         self._terms = dataio.go_terms_quickgo()
+    
     
     def _load_tree(self):
         
@@ -82,6 +87,7 @@ class GeneOntology(object):
             dataio.go_descendants_quickgo()
         )
     
+    
     def _set_aspect(self):
         
         self.aspect = dict(
@@ -89,6 +95,7 @@ class GeneOntology(object):
             for asp, terms in iteritems(self._terms)
             for term in terms.keys()
         )
+    
     
     def _set_name(self):
         
@@ -98,6 +105,7 @@ class GeneOntology(object):
             for i in iteritems(ii)
         )
     
+    
     def _set_term(self):
         
         self.term = dict(
@@ -105,13 +113,15 @@ class GeneOntology(object):
             for i in iteritems(self.name)
         )
     
+    
     def get_name(self, term):
         """
         For a GO accession number returns the name of the term.
         """
         
         return None if term not in self.name else self.name[term]
-
+    
+    
     def get_term(self, name):
         """
         For a GO term name returns its GO accession number.
@@ -119,12 +129,14 @@ class GeneOntology(object):
         
         return None if name not in self.term else self.term[name]
     
+    
     @staticmethod
     def _merge_aspects(dct):
         
         dct['P'].update(dct['C'])
         dct['P'].update(dct['F'])
         return dct['P']
+    
     
     def subgraph_nodes(self, direction, terms, relations = None):
         """
@@ -161,6 +173,7 @@ class GeneOntology(object):
         
         return subgraph
     
+    
     def get_all_ancestors(self, terms, relations = None):
         """
         Returns a set of all ancestors of a single term or a set of terms.
@@ -168,12 +181,14 @@ class GeneOntology(object):
         
         return self.subgraph_nodes('ancestors', terms, relations)
     
+    
     def get_all_descendants(self, terms, relations = None):
         """
         Returns a set of all descendants of a single term or a set of terms.
         """
         
         return self.subgraph_nodes('descendants', terms, relations)
+    
     
     def get_aspect(self, term):
         """
@@ -184,6 +199,7 @@ class GeneOntology(object):
         if term in self.aspect:
             
             return self.aspect[term]
+    
     
     def all_from_aspect(self, aspect):
         """
@@ -201,6 +217,7 @@ class GOAnnotation(object):
     
     aspects = ('C', 'F', 'P')
     
+    
     def __init__(self, organism = 9606, ontology = None):
         """
         For one organism loads Gene Ontology annotations, in addition it
@@ -216,6 +233,7 @@ class GOAnnotation(object):
         
         self._ancestors_annotate()
     
+    
     def reload(self):
         """Reloads the object from the module level."""
         
@@ -224,6 +242,7 @@ class GOAnnotation(object):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
+    
     
     def _ancestors_annotate(self):
         
@@ -242,6 +261,7 @@ class GOAnnotation(object):
                 )
             )
     
+    
     def get_name(self, term):
         """
         For a GO accession number returns the name of the term.
@@ -249,12 +269,14 @@ class GOAnnotation(object):
         
         return self.ontology.get_name(term)
     
+    
     def get_term(self, name):
         """
         For a GO term name returns its GO accession number.
         """
         
         return self.ontology.get_term(name)
+    
     
     def get_annot(self, uniprot, aspect):
         """
@@ -265,6 +287,7 @@ class GOAnnotation(object):
         
         annot = getattr(self, aspect.lower())
         return set() if uniprot not in annot else annot[uniprot]
+    
     
     def get_annots(self, uniprot):
         """
@@ -278,17 +301,20 @@ class GOAnnotation(object):
             for asp in self.aspects
         )
     
+    
     def _has_term(self, uniprot, term, aspect):
         
         annot = getattr(self, '%s_full' % aspect.lower())
         
         return uniprot in annot and term in annot[uniprot]
     
+    
     def _has_any_term(self, uniprot, terms, aspect):
         
         annot = getattr(self, '%s_full' % aspect.lower())
         
         return uniprot in annot and terms & annot[uniprot]
+    
     
     def has_term(self, uniprot, term):
         """
@@ -300,6 +326,7 @@ class GOAnnotation(object):
             for asp in self.aspects
         )
     
+    
     def has_any_term(self, uniprot, terms):
         """
         Tells if an UniProt ID is annotated with any of a set of GO terms.
@@ -310,6 +337,7 @@ class GOAnnotation(object):
             for asp in self.aspects
         )
     
+    
     def all_uniprots(self):
         """
         Returns all UniProt IDs having annotations.
@@ -319,6 +347,7 @@ class GOAnnotation(object):
             set(getattr(self, asp.lower()).keys())
             for asp in self.aspects
         ))
+    
     
     def i_select_by_term(self, term, uniprots = None):
         """
@@ -341,6 +370,7 @@ class GOAnnotation(object):
             if method(uniprot, term)
         )
     
+    
     def select_by_term(self, term, uniprots = None):
         """
         Accepts a list of UniProt IDs and one or more gene ontology terms
@@ -359,6 +389,7 @@ class GOAnnotation(object):
             ]
         )
     
+    
     def select_by_expr(
             self,
             expr,
@@ -372,7 +403,7 @@ class GOAnnotation(object):
         Return indices of the selected elements in the ``uniprots`` list
         or the set of selected UniProt IDs.
         
-        :param str go_expr:
+        :param str expr:
             An expression of Gene Ontology terms. E.g.
             ``'(GO:0005576 and not GO:0070062) or GO:0005887'``. Parentheses
             and operators ``and``, ``or`` and ``not`` can be used.
@@ -454,7 +485,7 @@ class GOAnnotation(object):
                 if negate:
                     
                     # take the inverse of the current set
-                    this_set = set(xrange(len(uniprots)) - this_set
+                    this_set = set(xrange(len(uniprots))) - this_set
                     # set negation again to False
                     negate = False
                 
@@ -480,11 +511,47 @@ class GOAnnotation(object):
                 this_set = None
                 op       = None
         
+        return self._uniprot_return(result, uniprots, return_uniprots)
+    
+    
+    def select(self, terms, uniprots = None, return_uniprots = False):
+        """
+        Retrieves the UniProt IDs annotated with any Gene Ontology terms or
+        their descendants, or evaluates string expression
+        (see ``select_by_expr``).
+        Returns indices of the selected elements in the ``uniprots`` list
+        or the set of selected UniProt IDs.
+        
+        :param str,set terms:
+            A single GO term, a set of GO terms or an expression with
+            GO terms.
+        :param bool return_uniprots:
+            By default returns list of indices; if ``True`` returns a set of
+            the selected UniProt IDs.
+        """
+        
+        uniprots = uniprots or sorted(self.all_uniprots())
+        
+        # this is not an individual term but an expression
+        if isinstance(terms, basestring) and len(terms) > 10:
+            
+            result = self.select_by_expr(terms, uniprots = uniprots)
+            
+        # either one term or a set of terms
+        else:
+            
+            result = self.i_select_by_term(terms, uniprots = uniprots)
+        
+        return self._uniprot_return(result, uniprots, return_uniprots)
+    
+    
+    def _uniprot_return(self, idx, uniprots, return_uniprots):
+        
         if return_uniprots:
             
-            return set(np.array(uniprots)[list(result)])
+            return set(np.array(uniprots)[list(idx)])
         
-        return result
+        return idx
 
 
 def annotate(graph, organism = 9606, aspects = ('C', 'F', 'P')):
