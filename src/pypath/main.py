@@ -9662,10 +9662,12 @@ class PyPath(object):
             List, set or tuple of GO terms.
         """
         
-        return set.intersection(*[
-            self._select_by_go(term)
-            for term in go_terms
-        ])
+        annot = self.get_go()
+        
+        return annot.select_by_all(
+            terms = go_terms,
+            uniprots = self.graph.vs['name'],
+        )
     
     def _select_by_go(self, go_terms):
         """
