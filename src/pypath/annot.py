@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2018
+#  2014-2019
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -113,7 +113,7 @@ class AnnotationBase(object):
     
     def process(self):
         """
-        Does nothing, derived classes might override.
+        Calls the ``_process_method``.
         """
         
         self._process_method()
@@ -129,8 +129,80 @@ class AnnotationBase(object):
     
     
     def _process_method(*args, **kwargs):
+        """
+        Derived classes might override.
+        """
         
         pass
+    
+    
+    def get_subset(self, **kwargs):
+        """
+        Retrieves a subset by filtering based on ``kwargs``.
+        Each argument should be a name and a value or set of values.
+        Elements having the provided values in the annotation will be
+        returned.
+        Returns a set of UniProt IDs.
+        """
+        
+        result = set()
+        
+        for uniprot, annot in iteritems(self.annot):
+            
+            for name, value in iteritems(kwargs):
+                
+                if not (
+                    getattr(annot, name) == value or
+                    getattr(annot, name) in value
+                ):
+                    
+                    break
+                
+                result.add(uniprot)
+        
+        return result
+    
+    
+    def to_set(self):
+        
+        return set(self.annot.keys())
+    
+    
+    def coverage(self, universe):
+        
+        return len(self & universe) / len(self)
+    
+    
+    def subset_intersection(self, universe, **kwargs):
+        
+        subset = self.get_subset(**kwargs)
+        
+        return len(subset & universe) / len(subset)
+    
+    
+    def get_values(self, name, exclude_none = True):
+        
+        values =  set(getattr(a, name) for a in self.annot.values())
+        
+        if exclude_none:
+            
+            values.discard(None)
+        
+        return values
+    
+    
+    def get_names(self):
+        
+        names = ()
+        
+        for val in self.annot.values():
+            
+            if val:
+                
+                names = val._fields
+                break
+        
+        return names
     
     
     def __contains__(self, uniprot):
@@ -143,6 +215,26 @@ class AnnotationBase(object):
         if uniprot in self:
             
             return self.annot[uniprot]
+    
+    
+    def __and__(self, other):
+        
+        return other & self.to_set()
+    
+    
+    def __or__(self, other):
+        
+        return other | self.to_set()
+    
+    
+    def __sub__(self, other):
+        
+        return self.to_set() - other
+    
+    
+    def __len__(self):
+        
+        return len(self.annot)
 
 
 class Membranome(AnnotationBase):
