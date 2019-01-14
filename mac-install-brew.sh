@@ -116,7 +116,7 @@ fi
 export PATH="$LOCALBIN:$PATH"
 
 
-function update_python_path{
+function update_python_path {
     
     PYVER=$(
     [[ `$PYTHONNAME --version` =~ (3\.[0-9])\.[0-9] ]] &&
@@ -128,7 +128,7 @@ function update_python_path{
 }
 
 
-function rc_contents{
+function rc_contents {
     
     PYTHONRCCONTENT=''\
     'import readline# pypath added\n'\
@@ -143,7 +143,7 @@ function rc_contents{
 }
 
 
-function write_rc{
+function write_rc {
     
     rc_contents
     
@@ -203,7 +203,7 @@ then
     fi
     # optionally install graphviz:
     if [[ "$IGRAPHVIZ" == "true" ]];
-        then brew install homebrew/science/igraph graphviz;
+        then brew install igraph graphviz;
     fi
     
     # maybe we just installed new python, update the python/pip version
