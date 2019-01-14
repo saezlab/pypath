@@ -26,7 +26,7 @@ USAGE="Usage:\n\t$0\n\t\t[-h (show help and exit)]\n\t\t[-p <2|3> (Python versio
 "[-c (do not install cairo)]\n\t\t[-g (do not install graphviz)]\n\t\t"\
 "[-t (run tests only)]\n\t\t[-u (uninstall everything)]\n\t\t[-f (do not ask confirmation at uninstall)]\n\t\t"\
 "[-m (uninstall Python modules)]\n\t\t[-b (uninstall HomeBrew and formulas)]\n\t\t[-e (remove environment changes)]\n"
-PYMAINVER="2"
+PYMAINVER="3"
 INSTALL=true
 TESTS=true
 ICAIRO=true
