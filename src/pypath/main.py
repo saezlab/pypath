@@ -12871,6 +12871,21 @@ class PyPath(object):
                         current = random.choice(successors)
 
         return p
+    
+    def nodes_by_resource(self, resource):
+        
+        return set(
+            v['name']
+            for v in self.graph.vs
+            if resource in v['sources']
+        )
+    
+    def nodes_by_resources(self):
+        
+        return dict(
+            (resource, self.nodes_by_resource(resource))
+            for resource in self.sources
+        )
 
     def reload(self):
         """Reloads the object from the module level."""

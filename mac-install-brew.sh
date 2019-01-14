@@ -91,7 +91,7 @@ done
 
 if [[ $PYMAINVER == "3" ]];
     then
-        PYVER="3.5";
+        PYVER="3.7";
         PYCAIRONAME="py3cairo";
         PYTHONNAME="python3";
         PYFABRIC="fabric3";
@@ -100,7 +100,7 @@ if [[ $PYMAINVER == "3" ]];
         PYMAINVER="2";
         PYCAIRONAME="py2cairo";
         PYTHONNAME="python";
-        PYFABRIC="fabric"
+        PYFABRIC="fabric";
 fi
 
 USER=`whoami`
@@ -180,6 +180,13 @@ then
     if [[ "$IGRAPHVIZ" == "true" ]];
         then brew install homebrew/science/igraph graphviz;
     fi
+    
+    # maybe we just installed new python, update the python/pip version
+    PYVER=$(
+        [[ `$PYTHONNAME --version` =~ (3\.[0-9])\.[0-9] ]] &&
+        echo ${BASH_REMATCH[1]}
+    )
+    LOCALPIP="$LOCALBIN/pip$PYVER"
     
     # installing another python modules by pip
     $LOCALPIP install --upgrade pip
@@ -298,6 +305,14 @@ bmsg="$(echo -en "\n===>[ Do you want to remove HomeBrew? ]<===\n\n [ y/N ] ")"
 # uninstalling python modules:
 if [[ "$UNINSTM" == "true" ]];
 then
+
+# make sure python/pip version is correct
+PYVER=$(
+    [[ `$PYTHONNAME --version` =~ (3\.[0-9])\.[0-9] ]] &&
+    echo ${BASH_REMATCH[1]}
+)
+LOCALPIP="$LOCALBIN/pip$PYVER"
+
     if [[ "$UCONFIRM" == "true" ]];
     then
         ifs_default=$IFS

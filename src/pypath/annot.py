@@ -151,9 +151,17 @@ class AnnotationBase(object):
             
             for name, value in iteritems(kwargs):
                 
-                if not (
-                    getattr(annot, name) == value or
-                    getattr(annot, name) in value
+                if not any(
+                    (
+                        getattr(a, name) == value or (
+                            isinstance(
+                                getattr(a, name),
+                                (common.basestring, tuple)
+                            ) and
+                            getattr(a, name) in value
+                        )
+                    )
+                    for a in annot
                 ):
                     
                     break
@@ -168,9 +176,14 @@ class AnnotationBase(object):
         return set(self.annot.keys())
     
     
-    def coverage(self, universe):
+    def coverage(self, other):
         
-        return len(self & universe) / len(self)
+        return len(self & other) / len(self)
+    
+    
+    def proportion(self, other):
+        
+        return len(self & other) / len(other)
     
     
     def subset_intersection(self, universe, **kwargs):
@@ -182,7 +195,11 @@ class AnnotationBase(object):
     
     def get_values(self, name, exclude_none = True):
         
-        values =  set(getattr(a, name) for a in self.annot.values())
+        values =  set(
+            getattr(a, name)
+            for aset in self.annot.values()
+            for a in aset
+        )
         
         if exclude_none:
             
@@ -414,16 +431,14 @@ class CellSurfaceProteinAtlas(AnnotationBase):
             name = 'CSPA',
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'get_cspa',
-            process_method = self._process_method,
             input_args = kwargs,
             mapper = mapper,
         )
     
     
-    @staticmethod
-    def _process_method(annot, mapper):
+    def _process_method(self):
         
-        return dict((u, set()) for u in annot)
+        self.annot = dict((u, set()) for u in self.annot)
 
 
 class HumanPlasmaMembraneReceptome(AnnotationBase):
@@ -438,17 +453,16 @@ class HumanPlasmaMembraneReceptome(AnnotationBase):
             self,
             name = 'HPMR',
             input_method = 'get_hpmr',
-            process_method = self._process_method,
             mapper = mapper,
         )
     
     
-    def process_method(self):
+    def _process_method(self):
         
-        return dict(
+        self.annot = dict(
             (uniprot, set())
-            for genesymbol in annot
-            for uniprot in mapper.map_name(
+            for genesymbol in self.annot
+            for uniprot in self.mapper.map_name(
                 genesymbol, 'genesymbol', 'uniprot'
             )
         )
