@@ -22,7 +22,7 @@
 This module provides classes to represent and handle
 structural details of protein interactions
 i.e. residues, post-translational modifications,
-short motifs, domains, domain-motif ands
+short motifs, domains, domain-motifs and
 domain-motif interactions, binding interfaces.
 """
 
@@ -46,7 +46,7 @@ if 'unicode' not in __builtins__:
 
 
 class Residue(object):
-    
+
     def __init__(self,
                  number,
                  name,
@@ -101,7 +101,7 @@ class Residue(object):
 
 
 class Mutation(object):
-    
+
     def __init__(self, original, mutated, sample, properties={}):
         if original.protein == mutated.protein and \
                 original.number == mutated.number:
@@ -155,7 +155,7 @@ class Mutation(object):
 
 
 class Ptm(object):
-    
+
     def __init__(self,
                  protein,
                  id_type='uniprot',
@@ -230,7 +230,7 @@ class Ptm(object):
                 return True
         else:
             return False
-    
+
     def __deepcopy__(self, memo):
         new = type(self)(self.protein,
                          id_type = self.id_type,
@@ -312,7 +312,7 @@ class Ptm(object):
 
 
 class Motif(object):
-    
+
     def __init__(self,
                  protein,
                  start,
@@ -431,7 +431,7 @@ class Motif(object):
 
 
 class Domain(object):
-    
+
     def __init__(self,
                  protein,
                  id_type='uniprot',
@@ -550,7 +550,7 @@ class Domain(object):
 
 
 class DomainDomain(object):
-    
+
     def __init__(self,
                  domain_a,
                  domain_b,
@@ -565,7 +565,7 @@ class DomainDomain(object):
         self.add_sources(sources)
         self.add_refs(refs)
         self.add_pdbs(pdbs)
-        '''This can be found from 3DComplexes; floating point 
+        '''This can be found from 3DComplexes; floating point
         numbers show the number of residues in contact. Other
         two numbers in the tuple are the length of domain sequences.'''
         self.contact_residues = contact_residues
@@ -623,7 +623,7 @@ class DomainDomain(object):
 
 
 class DomainMotif(object):
-    
+
     def __init__(self, domain, ptm, sources=None, refs=None, pdbs=None):
         self.ptm = ptm
         self.domain = domain
@@ -659,7 +659,7 @@ class DomainMotif(object):
 
     def __ne__(self, other):
         return not self.__eq__(other)
-    
+
     def __contains__(self, other):
         if other == self.domain or other == self.ptm:
             return True
@@ -710,7 +710,7 @@ class DomainMotif(object):
             self.add_refs(other.refs)
             self.add_pdbs(other.pdbs)
             self.pnetw_score = self.pnetw_score or other.pnetw_score
-    
+
     def get_line(self):
         return [
             self.domain.protein,
@@ -823,7 +823,7 @@ class Interface(object):
                  isoform_a=1,
                  isoform_b=1):
         '''
-        This class is to store residue level information of 
+        This class is to store residue level information of
         protein-protein interfaces.
         '''
         self.source = source
@@ -845,8 +845,8 @@ class Interface(object):
 
     def add_residues(self, res_a, res_b, typ='undefined'):
         '''
-        Adds one pair of residues of type `typ`, 
-        where `res_a` and `res_b` are tuples of 
+        Adds one pair of residues of type `typ`,
+        where `res_a` and `res_b` are tuples of
         residue number in sequence and residue type,
         e.g. (124, 'S') -- (means Serine #124)
         `typ` can be undefined, hbonds, sbridges, ssbonds or covbonds
@@ -885,9 +885,9 @@ class Interface(object):
 
     def get_bonds(self, typ=None, mode=None):
         '''
-        Gives a generator to iterate throught bonds in 
-        this interface. If no type given, bonds of all types 
-        returned. 
+        Gives a generator to iterate throught bonds in
+        this interface. If no type given, bonds of all types
+        returned.
         '''
         if typ is None:
             typ = self.types

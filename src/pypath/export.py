@@ -39,42 +39,35 @@ simple_types = {bool, int, float, type(None)}
 
 
 class Export(object):
-    
-    default_header_uniquepairs = [
-        'UniProt_A', 'GeneSymbol_A', 'UniProt_B', 'GeneSymbol_B',
-        'Databases', 'PubMed_IDs', 'Undirected', 'Direction_A-B',
-        'Direction_B-A', 'Stimulatory_A-B', 'Inhibitory_A-B',
-        'Stimulatory_B-A', 'Inhibitory_B-A', 'Category'
-    ]
-    
-    default_header_bydirs = [
-        'source', 'target', 'source_genesymbol', 'target_genesymbol',
-        'is_directed', 'is_stimulation', 'is_inhibition', 'sources',
-        'references', 'dip_url'
-    ]
-    
-    def __init__(
-            self,
-            pa,
-            only_sources = None,
-            extra_node_attrs = None,
-            extra_edge_attrs = None,
-            outfile = None,
-            default_vertex_attr_processor = None,
-            default_edge_attr_processor   = None,
-        ):
-        
+
+    default_header_uniquepairs = ['UniProt_A', 'GeneSymbol_A', 'UniProt_B',
+                                  'GeneSymbol_B', 'Databases', 'PubMed_IDs',
+                                  'Undirected', 'Direction_A-B',
+                                  'Direction_B-A', 'Stimulatory_A-B',
+                                  'Inhibitory_A-B', 'Stimulatory_B-A',
+                                  'Inhibitory_B-A', 'Category']
+
+    default_header_bydirs = ['source', 'target', 'source_genesymbol',
+                             'target_genesymbol', 'is_directed',
+                             'is_stimulation', 'is_inhibition', 'sources',
+                             'references', 'dip_url']
+
+    def __init__(self, pa, only_sources=None, extra_node_attrs=None,
+                 extra_edge_attrs=None, outfile=None,
+                 default_vertex_attr_processor=None,
+                 default_edge_attr_processor=None):
+
         self.extra_node_attrs = extra_node_attrs or {}
         self.extra_edge_attrs = extra_edge_attrs or {}
         self.outfile = outfile
         self.pa    = pa
         self.graph = pa._get_undirected()
         self.only_sources = only_sources
-        
+
         if isinstance(self.only_sources, list):
-            
+
             self.only_sources = set(self.only_sources)
-        
+
         self.default_vertex_attr_processor = (
             default_vertex_attr_processor or
             self.default_vertex_attr_processor
@@ -83,28 +76,24 @@ class Export(object):
             default_edge_attr_processor or
             self.default_edge_attr_processor
         )
-    
+
     def reload(self):
-        
+
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist=[modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-    
-    def make_df(
-            self,
-            unique_pairs = True,
-            extra_node_attrs = None,
-            extra_edge_attrs = None,
-        ):
+
+    def make_df(self, unique_pairs=True, extra_node_attrs=None,
+                extra_edge_attrs=None):
         """
         Creates a data frame from the network.
-        
+
         By default UniProt IDs, Gene Symbols, source databases, literature
         references, directionality and sign information and interaction type
         are included.
-        
+
         Args:
         -----
         :param bool unique_pairs:
@@ -130,17 +119,17 @@ class Export(object):
             Name of the output file. If `None` a file name
             "netrowk-<session id>.tab" is used.
         """
-        
+
         result = []
-        
+
         self.pa.genesymbol_labels()
-        
+
         self.extra_node_attrs = extra_node_attrs or self.extra_node_attrs
         self.extra_edge_attrs = extra_edge_attrs or self.extra_edge_attrs
-        
+
         suffix_a = 'A' if unique_pairs else 'source'
         suffix_b = 'B' if unique_pairs else 'target'
-        
+
         header = copy.copy(
             self.default_header_uniquepairs
             if unique_pairs else
@@ -155,49 +144,49 @@ class Export(object):
             '%s_%s' % (x, suffix_b)
             for x in self.extra_node_attrs.keys()
         ]
-        
+
         prg = progress.Progress(
             total = self.graph.ecount(),
             name = 'Creating table',
             interval=31
         )
-        
+
         for e in self.graph.es:
-            
+
             # adding default fields
             lines = (
                 self.process_edge_uniquepairs(e)
                 if unique_pairs else
                 self.process_edge_bydirection(e)
             )
-            
+
             result.extend(lines)
-            
+
             prg.step()
-        
+
         prg.terminate()
-        
+
         self.df = pd.DataFrame(result, columns = header)
-    
+
     def process_edge_uniquepairs(self, e):
         """
         Returns a table row representing a network edge with covering all
         annotations in a single row: directionality represented by fields
         like `Direction_A-B` and `Direction_B-A` effect sign a similar way.
-        
+
         Args:
         -----
         :param igraph.Edge e:
             An edge from a pypath igraph object.
         """
-        
+
         if self.only_sources and not e['sources'] & self.only_sources:
-            
+
             return []
-        
+
         name_a = self.graph.vs[e.source]['name']
         name_b = self.graph.vs[e.target]['name']
-        
+
         return [
             list(itertools.chain(
                 (
@@ -231,7 +220,7 @@ class Export(object):
                 )
             ))
         ]
-    
+
     def process_edge_bydirection(self, e):
         """
         Returns one or more table rows representing a network edge a way
@@ -239,21 +228,21 @@ class Export(object):
         Directionality and sign information covered in 3 columns:
         `is_directed`, `is_inhibition` and `is_stimulation`.
         This is the row format used in the webservice.
-        
+
         Args:
         -----
         :param igraph.Edge e:
             An edge from a pypath igraph object.
         """
-        
+
         lines = []
-        
+
         for d in ['straight', 'reverse']:
-            
+
             uniprots = getattr(e['dirs'], d)
-            
+
             if e['dirs'].dirs[uniprots]:
-                
+
                 this_edge = [
                     uniprots[0],
                     uniprots[1],
@@ -263,16 +252,16 @@ class Export(object):
                     int(e['dirs'].is_stimulation(uniprots)),
                     int(e['dirs'].is_inhibition(uniprots))
                 ]
-                
+
                 dsources = (
                     e['dirs'].get_dir(uniprots, sources=True) |
                     e['dirs'].get_dir('undirected', sources=True)
                 )
-                
+
                 if self.only_sources and not dsources & self.only_sources:
-                    
+
                     continue
-                
+
                 this_edge.extend([
                     ';'.join(sorted(dsources)),
                     ';'.join(
@@ -283,15 +272,15 @@ class Export(object):
                         ))
                     )
                 ])
-                
+
                 this_edge.append(self._dip_urls(e))
-                
+
                 this_edge = self.add_extra_fields(e, this_edge, uniprots)
-                
+
                 lines.append(this_edge)
-        
+
         if not e['dirs'].is_directed():
-            
+
             this_edge = [
                 e['dirs'].nodes[0],
                 e['dirs'].nodes[1],
@@ -304,21 +293,21 @@ class Export(object):
                 ';'.join([r.pmid for r in e['references']]),
                 self._dip_urls(e)
             ]
-            
+
             this_edge = self.add_extra_fields(e, this_edge, 'undirected')
-            
+
             lines.append(this_edge)
-        
+
         return lines
-    
+
     def add_extra_fields(self, e, line, dr = None):
         """
         Takes one table row and using the `igraph.Edge` object and the
         direction provided adds the extra node and edge attribute fields
         as they are defined in `extra_node_attrs` and `extra_edge_attrs`.
-        
+
         Returns the row with extra fields added.
-        
+
         Args:
         -----
         :param igraph.Edge e:
@@ -329,10 +318,10 @@ class Export(object):
             Direction key. A tuple of names (most often UniProt IDs) or
             `undirected`.
         """
-        
+
         # extra edge attributes on demand of the user
         for k, v in iteritems(self.extra_edge_attrs):
-            
+
             line.append(
                 self.generic_attr_processor(v, e, dr)
                 if hasattr(v, '__call__') else
@@ -342,12 +331,12 @@ class Export(object):
                     None
                 )
             )
-        
+
         # extra vertex attributes
         for vertex in (self.graph.vs[e.source], self.graph.vs[e.target]):
-            
+
             for k, v in iteritems(self.extra_node_attrs):
-                
+
                 line.append(
                     self.generic_attr_processor(v, vertex, dr)
                     if hasattr(v, '__call__') else
@@ -357,12 +346,12 @@ class Export(object):
                         None
                     )
                 )
-        
+
         return line
-    
+
     @staticmethod
     def default_vertex_attr_processor(vattr):
-            
+
             return (
                 vattr if type(vattr) in simple_types else
                 ';'.join([
@@ -375,10 +364,10 @@ class Export(object):
                         )).split(',')
                 ])
             )
-    
+
     @staticmethod
     def default_edge_attr_processor(eattr):
-        
+
         return (
             eattr if type(eattr) in simple_types else
             ';'.join([
@@ -386,51 +375,51 @@ class Export(object):
                 for x in strip_json.sub('', json.dumps(eattr)).split(',')
             ])
         )
-    
+
     @staticmethod
     def generic_attr_processor(proc, obj, dr = None):
         """
         Wraps the attribute processor to handle unknown number of arguments.
-        
+
         Not knowing if the attribute processor expects one or two arguments,
         have no better way than try: if calling with 2 arguments fails with
         `TypeError` we call with one argument.
         """
-        
+
         try:
-            
+
             return proc(obj, dr)
-            
+
         except TypeError:
-            
+
             return proc(obj)
-    
+
     def write_tab(self, outfile = None, **kwargs):
         """
         Writes the data frame into a tab separated file.
-        
+
         Args:
         -----
         :param **kwargs:
             Forwarded to `make_df()`.
         """
-        
+
         if not hasattr(self, 'df'):
-            
+
             self.make_df(**kwargs)
-        
+
         self.write(outfile = outfile)
-    
+
     def write(self, outfile = None):
-        
+
         outfile = outfile or self.outfile or os.path.join(
             self.pa.outdir, 'network-%s.tab' % self.pa.session
         )
-        
+
         self.df.to_csv(outfile, sep = '\t', index = False)
-    
+
     def _dip_urls(self, e):
-        
+
         result = []
         if 'dip_id' in e.attributes():
             for dip_id in e['dip_id']:
@@ -438,13 +427,13 @@ class Export(object):
                     result.append(urls.urls['dip']['ik'] %
                         int(dip_id.split('-')[1][:-1]))
                 except:
-                    
+
                     sys.stdout.write('Could not find DIP ID: %s\n' % dip_id)
-        
+
         return ';'.join(result)
-    
+
     def webservice_interactions_df(self):
-        
+
         sources_omnipath = set(
             f.name for f in data_formats.omnipath.values()
         )
@@ -454,7 +443,7 @@ class Export(object):
         sources_mirna = set(
             f.name for f in data_formats.mirna_target.values()
         )
-        
+
         self.make_df(
             unique_pairs = False,
             extra_node_attrs = {
@@ -493,7 +482,7 @@ class Export(object):
                 'type': lambda e: e['type'][0]
             }
         )
-    
+
     @classmethod
     def sources_table(
             cls,
@@ -511,7 +500,7 @@ class Export(object):
         with binary values showing presence-absence of interactions across
         resources.
         """
-        
+
         new = cls(
             pa = pa,
             only_sources = only_sources,
@@ -521,29 +510,29 @@ class Export(object):
             default_vertex_attr_processor = default_vertex_attr_processor,
             default_edge_attr_processor   = default_edge_attr_processor,
         )
-        
+
         new.make_df(unique_pairs = unique_pairs)
-        
+
         src_attr = 'Databases' if unique_pairs else 'sources'
-        
+
         src_all = sorted(only_sources or pa.sources)
-        
+
         src_cols = dict((src, []) for src in src_all)
-        
+
         for i, row in new.df.iterrows():
-            
+
             this_row_src = set(row[src_attr].split(';'))
-            
+
             for src in src_all:
-                
+
                 src_cols[src].append(int(src in this_row_src))
-        
+
         for src in src_all:
-            
+
             new.df.insert(
                 loc = new.df.columns.get_loc(src_attr),
                 column = src,
                 value = src_cols[src]
             )
-        
+
         return new
