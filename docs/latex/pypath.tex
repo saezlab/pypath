@@ -56,8 +56,8 @@
 
 
 \title{pypath Documentation}
-\date{Dec 11, 2018}
-\release{0.7.117}
+\date{Jan 15, 2019}
+\release{0.7.120}
 \author{Dénes Türei}
 \newcommand{\sphinxlogo}{\vbox{}}
 \renewcommand{\releasename}{Release}
@@ -1604,6 +1604,30 @@ the edge {[}str{]}.
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.edges_3d}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{edges\_3d}}}{\emph{methods={[}'dataio.get\_instruct', 'dataio.get\_i3d'{]}}}{}
 \end{fulllineitems}
 
+\index{edges\_between() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.edges_between}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{edges\_between}}}{\emph{group1}, \emph{group2}, \emph{directed=True}, \emph{strict=False}}{}
+Selects edges between two groups of vertex IDs.
+Returns set of edge IDs.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{group1}}\sphinxstyleliteralstrong{\sphinxupquote{,}}\sphinxstyleliteralstrong{\sphinxupquote{group2}} (\sphinxstyleliteralemphasis{\sphinxupquote{set}}) \textendash{} List, set or tuple of vertex IDs.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{directed}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Only edges with direction \sphinxtitleref{group1 -\textgreater{} group2} selected.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{strict}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Edges with no direction information still selected even if
+\sphinxcode{\sphinxupquote{directed}} is \sphinxtitleref{False}.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
 \index{edges\_expression() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -2044,6 +2068,9 @@ null hypothesis is true.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.geneset_enrichment}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{geneset\_enrichment}}}{\emph{proteins}, \emph{all\_proteins=None}, \emph{geneset\_ids=None}, \emph{alpha=0.05}, \emph{correction\_method='hommel'}}{}
+Does not work at the moment because cfisher module should be
+replaced with scipy.
+
 \end{fulllineitems}
 
 \index{genesymbol() (pypath.main.PyPath method)}
@@ -2240,6 +2267,15 @@ the giant component graph.
 
 \end{fulllineitems}
 
+\index{get\_go() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.get_go}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_go}}}{\emph{organism=None}}{}
+Returns the \sphinxcode{\sphinxupquote{GOAnnotation}} object for the organism requested
+(or the default one).
+
+\end{fulllineitems}
+
 \index{get\_max() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
@@ -2415,27 +2451,13 @@ subnetwork.
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.get_taxon}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_taxon}}}{\emph{tax\_dict}, \emph{fields}}{}
 \end{fulllineitems}
 
-\index{go\_annotate() (pypath.main.PyPath method)}
+\index{go\_annotate\_graph() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.go_annotate}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{go\_annotate}}}{\emph{aspects=('C'}, \emph{'F'}, \emph{'P')}}{}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.go_annotate_graph}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{go\_annotate\_graph}}}{\emph{aspects=('C'}, \emph{'F'}, \emph{'P')}}{}
 Annotates protein nodes with GO terms. In the \sphinxcode{\sphinxupquote{go}} vertex
 attribute each node is annotated by a dict of sets where keys are
 one letter codes of GO aspects and values are sets of GO accessions.
-
-\end{fulllineitems}
-
-\index{go\_dict() (pypath.main.PyPath method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.go_dict}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{go\_dict}}}{\emph{organism=9606}}{}
-Creates a \sphinxcode{\sphinxupquote{pypath.go.GOAnnotation}} object for one organism in the
-dict under \sphinxcode{\sphinxupquote{go}} attribute.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{organism}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} NCBI Taxonomy ID of the organism.
-
-\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -2443,6 +2465,9 @@ dict under \sphinxcode{\sphinxupquote{go}} attribute.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.go_enrichment}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{go\_enrichment}}}{\emph{proteins=None}, \emph{aspect='P'}, \emph{alpha=0.05}, \emph{correction\_method='hommel'}, \emph{all\_proteins=None}}{}
+Does not work at the moment because cfisher module should be
+replaced with scipy.
+
 \end{fulllineitems}
 
 \index{gs() (pypath.main.PyPath method)}
@@ -2759,6 +2784,9 @@ registered as {[}list{]}.
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.init_gsea}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{init\_gsea}}}{\emph{user}}{}
+Initializes a \sphinxcode{\sphinxupquote{pypath.gsea.GSEA}} object and shows the list of the
+collections in MSigDB.
+
 \end{fulllineitems}
 
 \index{init\_network() (pypath.main.PyPath method)}
@@ -2932,13 +2960,39 @@ kinase.com. This resource is human only.
 
 \end{fulllineitems}
 
+\index{label() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.label}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{label}}}{\emph{label}, \emph{idx}, \emph{what='vertices'}}{}
+Creates a boolean attribute \sphinxcode{\sphinxupquote{label}} True for the
+vertex or edge IDs in the set \sphinxcode{\sphinxupquote{idx}}.
+
+\end{fulllineitems}
+
 \index{label\_by\_go() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.label_by_go}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{label\_by\_go}}}{\emph{label}, \emph{go\_terms}, \emph{**kwargs}}{}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.label_by_go}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{label\_by\_go}}}{\emph{label}, \emph{go\_terms}, \emph{method='ANY'}}{}
 Assigns a boolean vertex attribute to nodes which tells whether
-the node is annotated by all or any (see \sphinxcode{\sphinxupquote{method}} parameter of
-\sphinxcode{\sphinxupquote{select\_by\_go}}) the GO terms.
+the node is annotated by all or any of the GO terms.
+
+\end{fulllineitems}
+
+\index{label\_edges() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.label_edges}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{label\_edges}}}{\emph{label}, \emph{edges}}{}
+Creates a boolean edge attribute \sphinxcode{\sphinxupquote{label}} True for the
+edge IDs in the set \sphinxcode{\sphinxupquote{edges}}.
+
+\end{fulllineitems}
+
+\index{label\_vertices() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.label_vertices}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{label\_vertices}}}{\emph{label}, \emph{vertices}}{}
+Creates a boolean vertex attribute \sphinxcode{\sphinxupquote{label}} True for the
+vertex IDs in the set \sphinxcode{\sphinxupquote{vertices}}.
 
 \end{fulllineitems}
 
@@ -2958,6 +3012,8 @@ the node is annotated by all or any (see \sphinxcode{\sphinxupquote{method}} par
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.licence}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{licence}}}{}{}
+Prints information about data licences.
+
 \end{fulllineitems}
 
 \index{list\_resources() (pypath.main.PyPath method)}
@@ -3148,10 +3204,14 @@ ways to process and use these huge matrices.
 \index{load\_go() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_go}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_go}}}{\emph{aspects=('C'}, \emph{'F'}, \emph{'P')}}{}
-Annotates protein nodes with GO terms. In the \sphinxcode{\sphinxupquote{go}} vertex
-attribute each node is annotated by a dict of sets where keys are
-one letter codes of GO aspects and values are sets of GO accessions.
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.load_go}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load\_go}}}{\emph{organism=None}}{}
+Creates a \sphinxcode{\sphinxupquote{pypath.go.GOAnnotation}} object for one organism in the
+dict under \sphinxcode{\sphinxupquote{go}} attribute.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{organism}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} NCBI Taxonomy ID of the organism.
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -3967,7 +4027,7 @@ contain at least a negative reference.
 \index{network\_by\_go() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.network_by_go}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{network\_by\_go}}}{\emph{node\_categories}, \emph{network\_sources=None}, \emph{include=None}, \emph{exclude=None}, \emph{prefix='GO'}, \emph{delete=True}, \emph{vertex\_attrs=True}, \emph{edge\_attrs=True}}{}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.network_by_go}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{network\_by\_go}}}{\emph{node\_categories}, \emph{network\_sources=None}, \emph{include=None}, \emph{exclude=None}, \emph{directed=False}, \emph{keep\_undirected=False}, \emph{prefix='GO'}, \emph{delete=True}, \emph{copy=False}, \emph{vertex\_attrs=True}, \emph{edge\_attrs=True}}{}
 Creates or filters a network based on Gene Ontology annotations.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{itemize}
@@ -3997,13 +4057,27 @@ category pairs defined here will be kept and all others deleted.
 in \sphinxcode{\sphinxupquote{exclude}} will be deleted.
 
 \item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{directed}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} If True \sphinxcode{\sphinxupquote{include}} and \sphinxcode{\sphinxupquote{exclude}} relations will be processed
+with directed (source, target) else direction won’t be considered.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{keep\_undirected}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} If True the interactions without direction information will be
+kept even if \sphinxcode{\sphinxupquote{directed}} is True. Passed to \sphinxcode{\sphinxupquote{edges\_between}}
+as \sphinxcode{\sphinxupquote{strict}} argument.
+
+\item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{prefix}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} Prefix for all vertex and edge attributes created in this
 operation. E.g. if you have a category label ‘bar’ and prefix
-is ‘foo’ then you will have a new vertex attribute ‘foo\_bar’.
+is ‘foo’ then you will have a new vertex attribute ‘foo\_\_bar’.
 
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{delete}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Delete the vertices and edges which don’t belong to any of the
 categories.
+
+\item {} 
+\sphinxstyleliteralstrong{\sphinxupquote{copy}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Return a copy of the entire \sphinxcode{\sphinxupquote{PyPath}} object with the graph
+filtered by GO terms. By default the object is modified in place
+and \sphinxcode{\sphinxupquote{None}} is returned.
 
 \item {} 
 \sphinxstyleliteralstrong{\sphinxupquote{vertex\_attrs}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}) \textendash{} Create vertex attributes.
@@ -4608,6 +4682,8 @@ by default) with the name \sphinxcode{\sphinxupquote{'\textless{}session\_id\tex
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{main:pypath.main.PyPath.reload}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{reload}}}{}{}
+Reloads the object from the module level.
+
 \end{fulllineitems}
 
 \index{remove\_htp() (pypath.main.PyPath method)}
@@ -4746,14 +4822,29 @@ queried node (including the first ones if specified).
 \index{select\_by\_go() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.select_by_go}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{select\_by\_go}}}{\emph{go\_terms}, \emph{go\_desc=None}, \emph{aspects=('C'}, \emph{'F'}, \emph{'P')}, \emph{method='ANY'}}{}
-Selects the nodes annotated by certain GO terms.
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.select_by_go}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{select\_by\_go}}}{\emph{go\_terms}}{}
+Retrieves the vertex IDs of all vertices annotated with any
+Gene Ontology terms or their descendants, or evaluates string
+expression (see \sphinxcode{\sphinxupquote{select\_by\_go\_expr}}).
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\sphinxstyleliteralstrong{\sphinxupquote{go\_terms}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{,}}\sphinxstyleliteralemphasis{\sphinxupquote{set}}) \textendash{} A single GO term, a set of GO terms or an expression with
+GO terms.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{select\_by\_go\_all() (pypath.main.PyPath method)}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.select_by_go_all}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{select\_by\_go\_all}}}{\emph{go\_terms}}{}
+Selects the nodes annotated by all GO terms in \sphinxcode{\sphinxupquote{go\_terms}}.
 
 Returns set of vertex IDs.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{method}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} If \sphinxtitleref{ANY} nodes annotated with any of the terms returned.
-If \sphinxtitleref{ALL} nodes annotated with all the terms returned.
+\sphinxstyleliteralstrong{\sphinxupquote{go\_terms}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} List, set or tuple of GO terms.
 
 \end{description}\end{quote}
 
@@ -4762,46 +4853,16 @@ If \sphinxtitleref{ALL} nodes annotated with all the terms returned.
 \index{select\_by\_go\_expr() (pypath.main.PyPath method)}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.select_by_go_expr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{select\_by\_go\_expr}}}{\emph{go\_expr}, \emph{go\_desc=None}, \emph{aspects=('C'}, \emph{'F'}, \emph{'P')}}{}
+\phantomsection\label{\detokenize{main:pypath.main.PyPath.select_by_go_expr}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{select\_by\_go\_expr}}}{\emph{go\_expr}}{}
 Selects vertices based on an expression of Gene Ontology terms.
+Operator precedence not considered, please use parentheses.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode
 \sphinxstyleliteralstrong{\sphinxupquote{go\_expr}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} An expression of Gene Ontology terms. E.g.
 \sphinxcode{\sphinxupquote{'(GO:0005576 and not GO:0070062) or GO:0005887'}}. Parentheses
-and usual Python keywords like \sphinxcode{\sphinxupquote{and}}, \sphinxcode{\sphinxupquote{or}} and \sphinxcode{\sphinxupquote{not}}
-can be used.
+and operators \sphinxcode{\sphinxupquote{and}}, \sphinxcode{\sphinxupquote{or}} and \sphinxcode{\sphinxupquote{not}} can be used.
 
 \end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{select\_by\_go\_old() (pypath.main.PyPath method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.select_by_go_old}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{select\_by\_go\_old}}}{\emph{go\_terms}, \emph{go\_desc=None}, \emph{aspects=('C'}, \emph{'F'}, \emph{'P')}, \emph{method='ANY'}}{}
-Selects the nodes annotated by certain GO terms.
-
-Returns set of vertex IDs.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\sphinxstyleliteralstrong{\sphinxupquote{method}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} If \sphinxtitleref{ANY} nodes annotated with any of the terms returned.
-If \sphinxtitleref{ALL} nodes annotated with all the terms returned.
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{select\_by\_go\_single() (pypath.main.PyPath method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.PyPath.select_by_go_single}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{select\_by\_go\_single}}}{\emph{term}, \emph{go\_desc=None}, \emph{aspects=('C'}, \emph{'F'}, \emph{'P')}}{}
-Retrieves the vertex IDs of all vertices annotated with a Gene
-Ontology term or its descendants.
-
-The method is not aware which aspect the term belongs to, it checks
-in all aspects, but providing the \sphinxcode{\sphinxupquote{aspects}} argument you can
-avoid loading all data from GO and also checking unnecessarily in
-all.
 
 \end{fulllineitems}
 
@@ -6204,14 +6265,6 @@ the \sphinxcode{\sphinxupquote{straight}} direction of the edge as activation.
 \sphinxcode{\sphinxupquote{False}} otherwise.
 
 \end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{reload() (pypath.main.Direction method)}
-
-\begin{fulllineitems}
-\phantomsection\label{\detokenize{main:pypath.main.Direction.reload}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{reload}}}{}{}
-Reloads the object from the module level.
 
 \end{fulllineitems}
 

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Reference &#8212; pypath 0.7.117 documentation</title>
+    <title>Reference &#8212; pypath 0.7.120 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -34,7 +34,7 @@
         <li class="right" >
           <a href="installation.html" title="Installation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">pypath 0.7.117 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">pypath 0.7.120 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -1124,6 +1124,27 @@ the edge [str].</td>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.edges_between">
+<code class="descname">edges_between</code><span class="sig-paren">(</span><em>group1</em>, <em>group2</em>, <em>directed=True</em>, <em>strict=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.edges_between"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.edges_between" title="Permalink to this definition">¶</a></dt>
+<dd><p>Selects edges between two groups of vertex IDs.
+Returns set of edge IDs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>group1</strong><strong>,</strong><strong>group2</strong> (<em>set</em>) – List, set or tuple of vertex IDs.</li>
+<li><strong>directed</strong> (<em>bool</em>) – Only edges with direction <cite>group1 -&gt; group2</cite> selected.</li>
+<li><strong>strict</strong> (<em>bool</em>) – Edges with no direction information still selected even if
+<code class="docutils literal notranslate"><span class="pre">directed</span></code> is <cite>False</cite>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.edges_expression">
 <code class="descname">edges_expression</code><span class="sig-paren">(</span><em>func=&lt;function &lt;lambda&gt;&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.edges_expression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.edges_expression" title="Permalink to this definition">¶</a></dt>
 <dd><p>Executes function <cite>func</cite> for each pairs of connected proteins in the
@@ -1513,7 +1534,9 @@ null hypothesis is true.</li>
 <dl class="method">
 <dt id="pypath.main.PyPath.geneset_enrichment">
 <code class="descname">geneset_enrichment</code><span class="sig-paren">(</span><em>proteins</em>, <em>all_proteins=None</em>, <em>geneset_ids=None</em>, <em>alpha=0.05</em>, <em>correction_method='hommel'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.geneset_enrichment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.geneset_enrichment" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Does not work at the moment because cfisher module should be
+replaced with scipy.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.genesymbol">
@@ -1690,6 +1713,13 @@ the giant component graph.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.get_go">
+<code class="descname">get_go</code><span class="sig-paren">(</span><em>organism=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_go"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_go" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the <code class="docutils literal notranslate"><span class="pre">GOAnnotation</span></code> object for the organism requested
+(or the default one).</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.get_max">
 <code class="descname">get_max</code><span class="sig-paren">(</span><em>attrList</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.get_max"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.get_max" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1844,32 +1874,19 @@ subnetwork.</p>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="pypath.main.PyPath.go_annotate">
-<code class="descname">go_annotate</code><span class="sig-paren">(</span><em>aspects=('C'</em>, <em>'F'</em>, <em>'P')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.go_annotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.go_annotate" title="Permalink to this definition">¶</a></dt>
+<dt id="pypath.main.PyPath.go_annotate_graph">
+<code class="descname">go_annotate_graph</code><span class="sig-paren">(</span><em>aspects=('C'</em>, <em>'F'</em>, <em>'P')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.go_annotate_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.go_annotate_graph" title="Permalink to this definition">¶</a></dt>
 <dd><p>Annotates protein nodes with GO terms. In the <code class="docutils literal notranslate"><span class="pre">go</span></code> vertex
 attribute each node is annotated by a dict of sets where keys are
 one letter codes of GO aspects and values are sets of GO accessions.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pypath.main.PyPath.go_dict">
-<code class="descname">go_dict</code><span class="sig-paren">(</span><em>organism=9606</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.go_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.go_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a <code class="docutils literal notranslate"><span class="pre">pypath.go.GOAnnotation</span></code> object for one organism in the
-dict under <code class="docutils literal notranslate"><span class="pre">go</span></code> attribute.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>organism</strong> (<em>int</em>) – NCBI Taxonomy ID of the organism.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="pypath.main.PyPath.go_enrichment">
 <code class="descname">go_enrichment</code><span class="sig-paren">(</span><em>proteins=None</em>, <em>aspect='P'</em>, <em>alpha=0.05</em>, <em>correction_method='hommel'</em>, <em>all_proteins=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.go_enrichment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.go_enrichment" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Does not work at the moment because cfisher module should be
+replaced with scipy.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.gs">
@@ -2150,7 +2167,9 @@ registered as [list].</p>
 <dl class="method">
 <dt id="pypath.main.PyPath.init_gsea">
 <code class="descname">init_gsea</code><span class="sig-paren">(</span><em>user</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.init_gsea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.init_gsea" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Initializes a <code class="docutils literal notranslate"><span class="pre">pypath.gsea.GSEA</span></code> object and shows the list of the
+collections in MSigDB.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.init_network">
@@ -2306,11 +2325,31 @@ kinase.com. This resource is human only.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pypath.main.PyPath.label">
+<code class="descname">label</code><span class="sig-paren">(</span><em>label</em>, <em>idx</em>, <em>what='vertices'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.label"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a boolean attribute <code class="docutils literal notranslate"><span class="pre">label</span></code> True for the
+vertex or edge IDs in the set <code class="docutils literal notranslate"><span class="pre">idx</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="pypath.main.PyPath.label_by_go">
-<code class="descname">label_by_go</code><span class="sig-paren">(</span><em>label</em>, <em>go_terms</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.label_by_go"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.label_by_go" title="Permalink to this definition">¶</a></dt>
+<code class="descname">label_by_go</code><span class="sig-paren">(</span><em>label</em>, <em>go_terms</em>, <em>method='ANY'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.label_by_go"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.label_by_go" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assigns a boolean vertex attribute to nodes which tells whether
-the node is annotated by all or any (see <code class="docutils literal notranslate"><span class="pre">method</span></code> parameter of
-<code class="docutils literal notranslate"><span class="pre">select_by_go</span></code>) the GO terms.</p>
+the node is annotated by all or any of the GO terms.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.label_edges">
+<code class="descname">label_edges</code><span class="sig-paren">(</span><em>label</em>, <em>edges</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.label_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.label_edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a boolean edge attribute <code class="docutils literal notranslate"><span class="pre">label</span></code> True for the
+edge IDs in the set <code class="docutils literal notranslate"><span class="pre">edges</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.label_vertices">
+<code class="descname">label_vertices</code><span class="sig-paren">(</span><em>label</em>, <em>vertices</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.label_vertices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.label_vertices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a boolean vertex attribute <code class="docutils literal notranslate"><span class="pre">label</span></code> True for the
+vertex IDs in the set <code class="docutils literal notranslate"><span class="pre">vertices</span></code>.</p>
 </dd></dl>
 
 <dl class="method">
@@ -2326,7 +2365,8 @@ the node is annotated by all or any (see <code class="docutils literal notransla
 <dl class="method">
 <dt id="pypath.main.PyPath.licence">
 <code class="descname">licence</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.licence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.licence" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Prints information about data licences.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.list_resources">
@@ -2483,10 +2523,17 @@ ways to process and use these huge matrices.</p>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.load_go">
-<code class="descname">load_go</code><span class="sig-paren">(</span><em>aspects=('C'</em>, <em>'F'</em>, <em>'P')</em><span class="sig-paren">)</span><a class="headerlink" href="#pypath.main.PyPath.load_go" title="Permalink to this definition">¶</a></dt>
-<dd><p>Annotates protein nodes with GO terms. In the <code class="docutils literal notranslate"><span class="pre">go</span></code> vertex
-attribute each node is annotated by a dict of sets where keys are
-one letter codes of GO aspects and values are sets of GO accessions.</p>
+<code class="descname">load_go</code><span class="sig-paren">(</span><em>organism=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.load_go"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.load_go" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a <code class="docutils literal notranslate"><span class="pre">pypath.go.GOAnnotation</span></code> object for one organism in the
+dict under <code class="docutils literal notranslate"><span class="pre">go</span></code> attribute.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>organism</strong> (<em>int</em>) – NCBI Taxonomy ID of the organism.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -3210,7 +3257,7 @@ contain at least a negative reference.</p>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.network_by_go">
-<code class="descname">network_by_go</code><span class="sig-paren">(</span><em>node_categories</em>, <em>network_sources=None</em>, <em>include=None</em>, <em>exclude=None</em>, <em>prefix='GO'</em>, <em>delete=True</em>, <em>vertex_attrs=True</em>, <em>edge_attrs=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.network_by_go"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.network_by_go" title="Permalink to this definition">¶</a></dt>
+<code class="descname">network_by_go</code><span class="sig-paren">(</span><em>node_categories</em>, <em>network_sources=None</em>, <em>include=None</em>, <em>exclude=None</em>, <em>directed=False</em>, <em>keep_undirected=False</em>, <em>prefix='GO'</em>, <em>delete=True</em>, <em>copy=False</em>, <em>vertex_attrs=True</em>, <em>edge_attrs=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.network_by_go"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.network_by_go" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates or filters a network based on Gene Ontology annotations.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -3231,11 +3278,19 @@ categories. If <code class="docutils literal notranslate"><span class="pre">incl
 category pairs defined here will be kept and all others deleted.</li>
 <li><strong>exclude</strong> (<em>list</em>) – Similarly to include, all edges will be kept but the ones listed
 in <code class="docutils literal notranslate"><span class="pre">exclude</span></code> will be deleted.</li>
+<li><strong>directed</strong> (<em>bool</em>) – If True <code class="docutils literal notranslate"><span class="pre">include</span></code> and <code class="docutils literal notranslate"><span class="pre">exclude</span></code> relations will be processed
+with directed (source, target) else direction won’t be considered.</li>
+<li><strong>keep_undirected</strong> (<em>bool</em>) – If True the interactions without direction information will be
+kept even if <code class="docutils literal notranslate"><span class="pre">directed</span></code> is True. Passed to <code class="docutils literal notranslate"><span class="pre">edges_between</span></code>
+as <code class="docutils literal notranslate"><span class="pre">strict</span></code> argument.</li>
 <li><strong>prefix</strong> (<em>str</em>) – Prefix for all vertex and edge attributes created in this
 operation. E.g. if you have a category label ‘bar’ and prefix
-is ‘foo’ then you will have a new vertex attribute ‘foo_bar’.</li>
+is ‘foo’ then you will have a new vertex attribute ‘foo__bar’.</li>
 <li><strong>delete</strong> (<em>bool</em>) – Delete the vertices and edges which don’t belong to any of the
 categories.</li>
+<li><strong>copy</strong> (<em>bool</em>) – Return a copy of the entire <code class="docutils literal notranslate"><span class="pre">PyPath</span></code> object with the graph
+filtered by GO terms. By default the object is modified in place
+and <code class="docutils literal notranslate"><span class="pre">None</span></code> is returned.</li>
 <li><strong>vertex_attrs</strong> (<em>bool</em>) – Create vertex attributes.</li>
 <li><strong>edge_attrs</strong> (<em>bool</em>) – Create edge attributes.</li>
 </ul>
@@ -3790,7 +3845,8 @@ by default) with the name <code class="docutils literal notranslate"><span class
 <dl class="method">
 <dt id="pypath.main.PyPath.reload">
 <code class="descname">reload</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.reload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.reload" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Reloads the object from the module level.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.remove_htp">
@@ -3917,15 +3973,31 @@ queried node (including the first ones if specified).</p>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.select_by_go">
-<code class="descname">select_by_go</code><span class="sig-paren">(</span><em>go_terms</em>, <em>go_desc=None</em>, <em>aspects=('C'</em>, <em>'F'</em>, <em>'P')</em>, <em>method='ANY'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.select_by_go"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.select_by_go" title="Permalink to this definition">¶</a></dt>
-<dd><p>Selects the nodes annotated by certain GO terms.</p>
+<code class="descname">select_by_go</code><span class="sig-paren">(</span><em>go_terms</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.select_by_go"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.select_by_go" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the vertex IDs of all vertices annotated with any
+Gene Ontology terms or their descendants, or evaluates string
+expression (see <code class="docutils literal notranslate"><span class="pre">select_by_go_expr</span></code>).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>go_terms</strong> (<em>str</em><em>,</em><em>set</em>) – A single GO term, a set of GO terms or an expression with
+GO terms.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypath.main.PyPath.select_by_go_all">
+<code class="descname">select_by_go_all</code><span class="sig-paren">(</span><em>go_terms</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.select_by_go_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.select_by_go_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Selects the nodes annotated by all GO terms in <code class="docutils literal notranslate"><span class="pre">go_terms</span></code>.</p>
 <p>Returns set of vertex IDs.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>method</strong> (<em>str</em>) – If <cite>ANY</cite> nodes annotated with any of the terms returned.
-If <cite>ALL</cite> nodes annotated with all the terms returned.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>go_terms</strong> (<em>list</em>) – List, set or tuple of GO terms.</td>
 </tr>
 </tbody>
 </table>
@@ -3933,46 +4005,19 @@ If <cite>ALL</cite> nodes annotated with all the terms returned.</td>
 
 <dl class="method">
 <dt id="pypath.main.PyPath.select_by_go_expr">
-<code class="descname">select_by_go_expr</code><span class="sig-paren">(</span><em>go_expr</em>, <em>go_desc=None</em>, <em>aspects=('C'</em>, <em>'F'</em>, <em>'P')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.select_by_go_expr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.select_by_go_expr" title="Permalink to this definition">¶</a></dt>
-<dd><p>Selects vertices based on an expression of Gene Ontology terms.</p>
+<code class="descname">select_by_go_expr</code><span class="sig-paren">(</span><em>go_expr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.select_by_go_expr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.select_by_go_expr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Selects vertices based on an expression of Gene Ontology terms.
+Operator precedence not considered, please use parentheses.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>go_expr</strong> (<em>str</em>) – An expression of Gene Ontology terms. E.g.
 <code class="docutils literal notranslate"><span class="pre">'(GO:0005576</span> <span class="pre">and</span> <span class="pre">not</span> <span class="pre">GO:0070062)</span> <span class="pre">or</span> <span class="pre">GO:0005887'</span></code>. Parentheses
-and usual Python keywords like <code class="docutils literal notranslate"><span class="pre">and</span></code>, <code class="docutils literal notranslate"><span class="pre">or</span></code> and <code class="docutils literal notranslate"><span class="pre">not</span></code>
-can be used.</td>
+and operators <code class="docutils literal notranslate"><span class="pre">and</span></code>, <code class="docutils literal notranslate"><span class="pre">or</span></code> and <code class="docutils literal notranslate"><span class="pre">not</span></code> can be used.</td>
 </tr>
 </tbody>
 </table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pypath.main.PyPath.select_by_go_old">
-<code class="descname">select_by_go_old</code><span class="sig-paren">(</span><em>go_terms</em>, <em>go_desc=None</em>, <em>aspects=('C'</em>, <em>'F'</em>, <em>'P')</em>, <em>method='ANY'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.select_by_go_old"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.select_by_go_old" title="Permalink to this definition">¶</a></dt>
-<dd><p>Selects the nodes annotated by certain GO terms.</p>
-<p>Returns set of vertex IDs.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>method</strong> (<em>str</em>) – If <cite>ANY</cite> nodes annotated with any of the terms returned.
-If <cite>ALL</cite> nodes annotated with all the terms returned.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pypath.main.PyPath.select_by_go_single">
-<code class="descname">select_by_go_single</code><span class="sig-paren">(</span><em>term</em>, <em>go_desc=None</em>, <em>aspects=('C'</em>, <em>'F'</em>, <em>'P')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#PyPath.select_by_go_single"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.PyPath.select_by_go_single" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves the vertex IDs of all vertices annotated with a Gene
-Ontology term or its descendants.</p>
-<p>The method is not aware which aspect the term belongs to, it checks
-in all aspects, but providing the <code class="docutils literal notranslate"><span class="pre">aspects</span></code> argument you can
-avoid loading all data from GO and also checking unnecessarily in
-all.</p>
 </dd></dl>
 
 <dl class="method">
@@ -5238,12 +5283,6 @@ the <code class="xref py py-attr docutils literal notranslate"><span class="pre"
 </dd></dl>
 
 <dl class="method">
-<dt id="pypath.main.Direction.reload">
-<code class="descname">reload</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.reload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.reload" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reloads the object from the module level.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="pypath.main.Direction.set_dir">
 <code class="descname">set_dir</code><span class="sig-paren">(</span><em>direction</em>, <em>source</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypath/main.html#Direction.set_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypath.main.Direction.set_dir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds directionality information with the corresponding data
@@ -5614,11 +5653,11 @@ their attribute <code class="xref py py-attr docutils literal notranslate"><span
         <li class="right" >
           <a href="installation.html" title="Installation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">pypath 0.7.117 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">pypath 0.7.120 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, Dénes Türei.
+        &#169; Copyright 2019, Dénes Türei.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
     </div>
   </body>
