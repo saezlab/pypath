@@ -927,7 +927,10 @@ class Curl(FileOpener):
     def set_req_headers(self):
         if self.override_post:
             self.req_headers.append('X-HTTP-Method-Override: GET')
-        self.curl.setopt(self.curl.HTTPHEADER, [h.encode('ascii') for h in self.req_headers])
+        self.curl.setopt(
+            self.curl.HTTPHEADER,
+            [h.encode('ascii') for h in self.req_headers]
+        )
 
     def set_resp_headers(self):
         self.resp_headers = []

@@ -1209,30 +1209,20 @@ class Workflow(object):
             )
         
         # colors of the bars
-        self.labcol = \
-            list(
-                map(
-                    lambda lab:
-                        # for resources
-                        self.ccolors[data_formats.categories[lab]]
-                        if lab in data_formats.categories
-                        else self.ccolors[lab[1]], # for resource categories
-                    self.data_protein_counts[0]
-                )
-            )
+        self.labcol = [
+            self.ccolors[data_formats.categories[lab]]
+                if lab in data_formats.categories else
+            self.ccolors[lab[1]] # for resource categories
+            for lab in self.data_protein_counts[0]
+        ]
         
         # colors of the shaded parts
-        self.labcol2 = \
-            list(
-                map(
-                    lambda lab:
-                        # for resources
-                        self.ccolors2[data_formats.categories[lab]]
-                        if lab in data_formats.categories
-                        else self.ccolors2[lab[1]], # for resource categories
-                    self.data_protein_counts[0]
-                )
-            )
+        self.labcol2 = [
+            self.ccolors2[data_formats.categories[lab]]
+                if lab in data_formats.categories else
+            self.ccolors2[lab[1]] # for resource categories
+            for lab in self.data_protein_counts[0]
+        ]
 
     def make_coverage_groups_plot(self):
         """
@@ -1611,9 +1601,11 @@ class Workflow(object):
             )
 
     def make_refs_by_db(self):
+        
         self.console('Plotting references by database')
-        bydb_ordr = reversed(self.pubmeds.database.value_counts().sort_values()
-                             .index)
+        bydb_ordr = reversed(
+            self.pubmeds.database.value_counts().sort_values().index
+        )
         bydb_ordr = ['All'] + list(bydb_ordr)
 
         self.refs_by_db = \
@@ -1625,7 +1617,10 @@ class Workflow(object):
                 order=bydb_ordr,
                 xlab='Resources',
                 ylab='Number of PubMed IDs',
-                title='Number of references by resources in %s databases' % self.name.capitalize(),
+                title = (
+                    'Number of references by resources '
+                    'in %s databases' % self.title.capitalize()
+                ),
                 color=['#44AA99'] + ['#88CCEE'] *
                 len(self.pubmeds.database.unique()),
                 figsize=(12, 9),
@@ -1633,6 +1628,7 @@ class Workflow(object):
             )
 
     def make_refs_by_year(self):
+        
         self.console('Plotting references by year')
         counts = dict(self.pubmeds.year.value_counts())
         ecounts = dict(self.pubmeds_earliest.year.value_counts())
@@ -1653,7 +1649,10 @@ class Workflow(object):
                 grouped=True,
                 xlab='Years',
                 ylab='Number of PubMed IDs',
-                title='Number of references by year in %s databases' % self.name,
+                title= (
+                    'Number of references by year '
+                    'in %s databases' % self.title
+                ),
                 legend_font={'size': 'x-large'},
                 color=['#77AADD', '#88CCAA'],
                 figsize=(8, 5),
@@ -1668,11 +1667,15 @@ class Workflow(object):
 
         for i in [50, 100]:
             byj_ordr = list(
-                reversed(self.pubmeds.journal.value_counts().sort_values()
-                         .index))[:i]
+                reversed(
+                    self.pubmeds.journal.value_counts().sort_values().index
+                )
+            )[:i]
             byj_vals = list(
-                reversed(self.pubmeds.journal.value_counts().sort_values()))[:
-                                                                             i]
+                reversed(
+                    self.pubmeds.journal.value_counts().sort_values()
+                )
+            )[:i]
 
             size = 7 if i == 100 else 'small'
 
@@ -1685,8 +1688,10 @@ class Workflow(object):
                     order=byj_ordr,
                     xlab='Journals',
                     ylab='Number of PubMed IDs',
-                    title='Number of references by journals in %s databases' %
-                    self.name.capitalize(),
+                    title = (
+                        'Number of references by journals '
+                        'in %s databases' % self.title.capitalize()
+                    ),
                     color='#4477AA',
                     figsize=(9, 6.75),
                     xticklabel_font={'size': size},
@@ -1753,9 +1758,11 @@ class Workflow(object):
                 xlab='Resources',
                 title='Interactions with direction or sign',
                 order=ordr,
-                fname=self.get_path(self.dirs_stacked_fname %
-                                    ('all'
-                                     if include_all else 'wo-all', self.name)),
+                fname = self.get_path(
+                    self.dirs_stacked_fname % (
+                        'all' if include_all else 'wo-all', self.name
+                    )
+                ),
                 desc=False))
 
     def make_curation_plot(self):

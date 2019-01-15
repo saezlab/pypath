@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2018
+#  2014-2019
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -44,7 +44,7 @@ import igraph
 import codecs
 import random # XXX: This and other Python built-in modules shoud be up
 import textwrap
-import copy
+import copy as modcopy
 import json
 import operator
 import locale
@@ -119,9 +119,6 @@ import pypath.settings as settings
 
 # to make it accessible directly from the module
 omnipath = data_formats.omnipath
-
-# this is for GO terms parsing:
-_rego = re.compile(r'and|or|not|\(|\)|GO:[0-9]{7}')
 
 # XXX: The following aliases are already defined in common.py
 if 'long' not in __builtins__:
@@ -252,15 +249,6 @@ class Direction(object):
                 ', '.join(self.negative_sources[self.reverse]))
 
         return s
-
-    def reload(self):
-        """Reloads the object from the module level."""
-
-        modname = self.__class__.__module__
-        mod = __import__(modname, fromlist=[modname.split('.')[0]])
-        imp.reload(mod)
-        new = getattr(mod, self.__class__.__name__)
-        setattr(self, '__class__', new)
 
     def check_nodes(self, nodes):
         """Checks if *nodes* is contained in the edge.
@@ -1591,8 +1579,15 @@ class PyPath(object):
             The instance to be copied from.
         """
 
-        self.__dict__ = other.__dict__
+        self.__dict__ = copy.deepcopy(other.__dict__)
+        self.update_vname()
         self.ownlog.msg(1, "Reinitialized", 'INFO')
+
+    def __copy__(self):
+
+        new = PyPath(copy = self)
+
+        return new
 
     def init_network(self, lst=None, exclude=[], cache_files={},
                      pfile=False, save=False, reread=False, redownload=False,
@@ -1866,7 +1861,7 @@ class PyPath(object):
         """
 
         g = graph if graph is not None else self.graph
-        gg = g if replace else copy.deepcopy(g)
+        gg = g if replace else modcopy.deepcopy(g)
 
         cl = gg.components(mode='WEAK')
         cl_sizes = cl.sizes()
@@ -2667,11 +2662,12 @@ class PyPath(object):
         terms.
         """
 
-        goannot = dataio.go_annotations_goose()
+        terms   = dataio.go_terms_quickgo()
+        goannot = dataio.go_annotations_goa()
 
         gosig = set([])
 
-        for term, name in iteritems(goannot[0]['P']):
+        for term, name in iteritems(terms['P']):
 
             if 'signal' in name or 'regulat' in name:
                 gosig.add(term)
@@ -2681,7 +2677,7 @@ class PyPath(object):
         if 'proteome' not in self.lists:
             self.proteome_list()
 
-        for up, term in iteritems(goannot[1]['P']):
+        for up, term in iteritems(goannot['P']):
 
             if len(term & gosig):
                 upsig.add(up)
@@ -5372,8 +5368,8 @@ class PyPath(object):
                 random_pathlen = []
 
                 for i in xrange(0, 100):
-                    f.vs[groupA_random] = copy.copy(f.vs[groupA])
-                    f.vs[groupB_random] = copy.copy(f.vs[groupB])
+                    f.vs[groupA_random] = modcopy.copy(f.vs[groupA])
+                    f.vs[groupB_random] = modcopy.copy(f.vs[groupB])
                     random.shuffle(f.vs[groupA_random])
                     random.shuffle(f.vs[groupB_random])
                     paths = []
@@ -5941,8 +5937,11 @@ class PyPath(object):
             literature curated interactions or not.
         """
 
-        settings = copy.deepcopy(data_formats.transcription['tfregulons'])
-        settings.inputArgs = {'levels': levels, 'only_curated': only_curated}
+        settings = modcopy.deepcopy(data_formats.transcription['tfregulons'])
+        settings.inputArgs = {
+            'levels': levels,
+            'only_curated': only_curated
+        }
 
         self.load_resources({'tfregulons': settings})
 
@@ -10476,247 +10475,158 @@ class PyPath(object):
 
         return toDel, disrupted
 
-    def select_by_go_old(
-            self,
-            go_terms,
-            go_desc=None,
-            aspects=('C', 'F', 'P'),
-            method='ANY',
-        ):
+    def edges_between(self, group1, group2, directed = True, strict = False):
         """
-        Selects the nodes annotated by certain GO terms.
+        Selects edges between two groups of vertex IDs.
+        Returns set of edge IDs.
+
+        :param set group1,group2:
+            List, set or tuple of vertex IDs.
+        :param bool directed:
+            Only edges with direction `group1 -> group2` selected.
+        :param bool strict:
+            Edges with no direction information still selected even if
+            ``directed`` is `False`.
+        """
+
+        edges = set()
+
+        for e in self.graph.es:
+
+            if (
+                (e.source in group1 and e.target in group2) or
+                (e.target in group1 and e.target in group2)
+            ):
+
+                if not directed or (not e['dirs'].is_directed and not strict):
+
+                    edges.add(e.index)
+                    continue
+
+                up1 = self.up(e.source)
+                up2 = self.up(e.target)
+
+                if (
+                    (e.source in group1 and e['dirs'].get_dir((up1, up2))) or
+                    (e.target in group1 and e['dirs'].get_dir((up2, up1)))
+                ):
+
+                    edges.add(e.index)
+
+        return edges
+
+    def label(self, label, idx, what = 'vertices'):
+        """
+        Creates a boolean attribute ``label`` True for the
+        vertex or edge IDs in the set ``idx``.
+        """
+
+        seq = self.graph.es if what == 'edges' else self.graph.vs
+        cnt = self.graph.ecount() if what == 'edges' else self.graph.vcount()
+
+        seq[label] = [False for _ in xrange(cnt)]
+
+        for i in idx:
+
+            seq[i][label] = True
+
+    def label_vertices(self, label, vertices):
+        """
+        Creates a boolean vertex attribute ``label`` True for the
+        vertex IDs in the set ``vertices``.
+        """
+
+        self.label(label, vertices)
+
+    def label_edges(self, label, edges):
+        """
+        Creates a boolean edge attribute ``label`` True for the
+        edge IDs in the set ``edges``.
+        """
+
+        self.label(label, edges, 'edges')
+
+    def select_by_go_all(self, go_terms):
+        """
+        Selects the nodes annotated by all GO terms in ``go_terms``.
 
         Returns set of vertex IDs.
 
-        :param str method:
-            If `ANY` nodes annotated with any of the terms returned.
-            If `ALL` nodes annotated with all the terms returned.
+        :param list go_terms:
+            List, set or tuple of GO terms.
         """
 
-        if method == 'ALL':
+        annot = self.get_go()
 
-            def _method(s1, s2):
-
-                return s2.difference(s1)
-
-        else:
-
-            def _method(s1, s2):
-
-                return s1.intersection(s2)
-
-        if go_desc is None:
-            go_desc = dataio.go_descendants_goose(aspects = aspects)
-
-        go_terms = (
-            set(go_terms)
-            if type(go_terms) in {set, list, tuple} else
-            {go_terms}
-        )
-        all_desc = set.union(
-            *(go_desc[term] for term in go_terms if term in go_desc)
+        return annot.select_by_all(
+            terms = go_terms,
+            uniprots = self.graph.vs['name'],
         )
 
-        if 'go' not in self.graph.vs.attributes():
-            self.go_annotate(aspects = aspects)
+    def _select_by_go(self, go_terms):
+        """
+        Retrieves the vertex IDs of all vertices annotated with any of the
+        Gene Ontology terms or their descendants.
+        """
 
-        vids = set(
-            i for i, v in enumerate(self.graph.vs)
-            if any(
-                _method(v['go'][a], all_desc)
-                for a in aspects
-            )
+        annot = self.get_go()
+
+        return annot.select_by_term(
+            terms = go_terms,
+            uniprots = self.graph.vs['name'],
         )
 
-        return vids
-
-    def select_by_go(
-            self,
-            go_terms,
-            go_desc=None,
-            aspects=('C', 'F', 'P'),
-            method='ANY',
-        ):
+    def select_by_go(self, go_terms):
         """
-        Selects the nodes annotated by certain GO terms.
+        Retrieves the vertex IDs of all vertices annotated with any
+        Gene Ontology terms or their descendants, or evaluates string
+        expression (see ``select_by_go_expr``).
 
-        Returns set of vertex IDs.
-
-        :param str method:
-            If `ANY` nodes annotated with any of the terms returned.
-            If `ALL` nodes annotated with all the terms returned.
+        :param str,set go_terms:
+            A single GO term, a set of GO terms or an expression with
+            GO terms.
         """
 
-        _method = 'union' if method == 'ANY' else 'intersection'
+        annot = self.get_go()
 
-        if isinstance(go_terms, common.basestring):
-
-            go_terms = (go_terms,)
-
-        if go_desc is None:
-
-            go_desc = dataio.go_descendants_goose(aspects = aspects)
-
-        return getattr(set, _method)(
-            *[self.select_by_go_single(
-                term = term,
-                go_desc = go_desc,
-                aspects = aspects,
-            )
-            for term in go_terms
-        ])
-
-    def select_by_go_single(
-            self,
-            term,
-            go_desc = None,
-            aspects = ('C', 'F', 'P'),
-        ):
-        """
-        Retrieves the vertex IDs of all vertices annotated with a Gene
-        Ontology term or its descendants.
-
-        The method is not aware which aspect the term belongs to, it checks
-        in all aspects, but providing the ``aspects`` argument you can
-        avoid loading all data from GO and also checking unnecessarily in
-        all.
-        """
-
-        if go_desc is None:
-
-            go_desc = dataio.go_descendants_goose(aspects = aspects)
-
-        if 'go' not in self.graph.vs.attributes():
-
-            self.go_annotate(aspects = aspects)
-
-        all_terms = go_desc[term]
-        all_terms.add(term)
-
-        return set(
-            v.index
-            for v in self.graph.vs
-            if any(v['go'][a] & all_terms for a in aspects)
+        return annot.select(
+            terms = go_terms,
+            uniprots = self.graph.vs['name'],
         )
 
-    def select_by_go_expr(
-            self,
-            go_expr,
-            go_desc = None,
-            aspects = ('C', 'F', 'P'),
-        ):
+    def select_by_go_expr(self, go_expr):
         """
         Selects vertices based on an expression of Gene Ontology terms.
+        Operator precedence not considered, please use parentheses.
 
         :param str go_expr:
             An expression of Gene Ontology terms. E.g.
             ``'(GO:0005576 and not GO:0070062) or GO:0005887'``. Parentheses
-            and usual Python keywords like ``and``, ``or`` and ``not``
-            can be used.
+            and operators ``and``, ``or`` and ``not`` can be used.
         """
 
-        ops = {
-            'and': 'intersection',
-            'or':  'union',
-        }
+        annot = self.get_go()
 
-        if go_desc is None:
+        return annot.select_by_expr(
+            expr = go_expr,
+            uniprots = self.graph.vs['name'],
+        )
 
-            go_desc = dataio.go_descendants_goose(aspects = aspects)
-
-        if isinstance(go_expr, common.basestring):
-
-            # tokenizing expression if it is a string
-            go_expr = _rego.findall(go_expr)
-
-        # initial values
-        result   = set()
-        stack    = []
-        sub      = False
-        negate   = False
-        op       = None
-        this_set = None
-
-        for it in go_expr:
-
-            # processing expression by tokens
-
-            if sub:
-
-                if it == ')':
-
-                    # token is a closing parenthesis
-                    # execute sub-selection
-                    this_set = self.select_by_go_expr(
-                        go_expr = stack,
-                        go_desc = go_desc,
-                        aspects = aspects,
-                    )
-                    stack = []
-
-                else:
-
-                    # token is something else
-                    # add to sub-selection stack
-                    stack.append(it)
-
-            elif it == 'not':
-
-                # token is negation
-                # turn on negation for the next set
-                negate = True
-                continue
-
-            elif it == '(':
-
-                # token is a parenthesis
-                # start a new sub-selection
-                sub = True
-                continue
-
-            elif it[:3] == 'GO:':
-
-                # token is a GO term
-                # get the vertex selection by the single term method
-                this_set = self.select_by_go_single(
-                    it,
-                    go_desc = go_desc,
-                    aspects = aspects,
-                )
-
-            elif it in ops:
-
-                # token is an operator
-                # set it for use at the next operation
-                op = ops[it]
-
-            if this_set is not None:
-
-                if op is not None:
-
-                    result = getattr(result, op)(this_set)
-
-                else:
-
-                    result = this_set
-
-                this_set = None
-                op       = None
-
-        return result
-
-    def label_by_go(self, label, go_terms, **kwargs):
+    def label_by_go(self, label, go_terms, method = 'ANY'):
         """
         Assigns a boolean vertex attribute to nodes which tells whether
-        the node is annotated by all or any (see ``method`` parameter of
-        ``select_by_go``) the GO terms.
+        the node is annotated by all or any of the GO terms.
         """
 
-        vids = self.select_by_go(go_terms, **kwargs)
-        self.graph.vs[label] = [False for _ in xrange(self.graph.vcount())]
+        _method = (
+            self.select_by_go_all
+                if method.upper() == 'ALL'
+            else self.select_by_go
+        )
 
-        for vid in vids:
-            self.graph.vs[vid][label] = True
+        vids = _method(go_terms)
+
+        self.label_vertices(label, vids)
 
     def network_by_go(
             self,
@@ -10724,8 +10634,11 @@ class PyPath(object):
             network_sources = None,
             include = None,
             exclude = None,
+            directed = False,
+            keep_undirected = False,
             prefix  = 'GO',
             delete  = True,
+            copy = False,
             vertex_attrs = True,
             edge_attrs = True,
         ):
@@ -10748,20 +10661,107 @@ class PyPath(object):
         :param list exclude:
             Similarly to include, all edges will be kept but the ones listed
             in ``exclude`` will be deleted.
+        :param bool directed:
+            If True ``include`` and ``exclude`` relations will be processed
+            with directed (source, target) else direction won't be considered.
+        :param bool keep_undirected:
+            If True the interactions without direction information will be
+            kept even if ``directed`` is True. Passed to ``edges_between``
+            as ``strict`` argument.
         :param str prefix:
             Prefix for all vertex and edge attributes created in this
             operation. E.g. if you have a category label 'bar' and prefix
-            is 'foo' then you will have a new vertex attribute 'foo_bar'.
+            is 'foo' then you will have a new vertex attribute 'foo__bar'.
         :param bool delete:
             Delete the vertices and edges which don't belong to any of the
             categories.
+        :param bool copy:
+            Return a copy of the entire ``PyPath`` object with the graph
+            filtered by GO terms. By default the object is modified in place
+            and ``None`` is returned.
         :param bool vertex_attrs:
             Create vertex attributes.
         :param bool edge_attrs:
             Create edge attributes.
         """
 
-        pass
+        if network_sources:
+
+            self.init_network(network_sources)
+
+        if self.graph.vcount() == 0:
+
+            self.load_omnipath()
+
+        if copy:
+
+            graph_original = modcopy.deepcopy(self.graph)
+
+        vselections = dict(
+            (
+                label,
+                self.select_by_go(definition)
+            )
+            for label, definition in iteritems(node_categories)
+        )
+
+        categories = tuple(vselections.keys())
+
+        eselections = {}
+
+        for label in itertools.product(categories, categories):
+
+            if include and label not in include:
+
+                continue
+
+            elif exclude and label in exclude:
+
+                continue
+
+            eselections[label] = self.edges_between(
+                    vselections[label[1]],
+                    vselections[label[2]],
+                    directed = directed,
+                    strict = keep_undirected,
+            )
+
+        if vertex_attrs:
+
+            for label, vertices in iteritems(vselections):
+
+                self.label_vertices('%s__%s' % (prefix, label), vertices)
+
+        if edge_attrs:
+
+            for (label1, label2), edges in iteritems(eselections):
+
+                self.label_edges(
+                    '%s__%s__%s' % (prefix, label1, label2),
+                    edges,
+                )
+
+        if delete:
+
+            edges_to_delete = (
+                set(xrange(self.graph.ecount())) -
+                set.union(*eselections.values())
+            )
+
+            self.graph.delete_edges(edges_to_delete)
+
+            self.graph.delete_vertices(
+                np.where(np.array(self.graph.degree()) == 0)
+            )
+
+            self.update_vname()
+
+        if copy:
+
+            pypath_new = PyPath(copy = self)
+            self.graph = graph_original
+            self.update_vname()
+            return pypath_new
 
     def load_ligand_receptor_network(self, lig_rec_resources=True,
                                      inference_from_go=True,
@@ -10776,18 +10776,22 @@ class PyPath(object):
         if sources is None:
             sources = data_formats.pathway
 
-        CC_EXTRACELL   = 'GO:0005576' # select all extracellular
-        CC_EXOSOME     = 'GO:0070062' # remove exosome localized proteins
-        CC_PLASMAMEM   = 'GO:0005887' # select plasma membrane proteins
-        MF_RECBINDING  = 'GO:0005102' # select ligands
-        MF_RECACTIVITY = 'GO:0038023' # select receptors
-        MF_ECM_STRUCT  = 'GO:0005201' # select matrix structure proteins
-                                      # e.g. collagene
-        MF_CATALYTIC   = 'GO:0003824' # select enzymes, e.g. MMPs
+        CC_EXTRACELL    = 'GO:0005576' # select all extracellular
+        CC_EXOSOME      = 'GO:0070062' # remove exosome localized proteins
+        CC_PLASMAMEM    = 'GO:0005887' # select plasma membrane proteins
+        MF_RECBINDING   = 'GO:0005102' # select ligands
+        MF_RECACTIVITY  = 'GO:0038023' # select receptors
+        MF_ECM_STRUCT   = 'GO:0005201' # select matrix structure proteins
+                                       # e.g. collagene
+        MF_CATALYTIC    = 'GO:0003824' # select enzymes, e.g. MMPs
+
+        BP_SURF_REC_SIG = 'GO:0007166' # cell surface receptor signaling pw.
+        CC_ECM_COMP     = 'GO:0044420' # ECM component
+
 
         if inference_from_go:
 
-            go_desc = dataio.go_descendants_goose(aspects = ('C', 'F'))
+            go_desc = dataio.go_descendants_quickgo(aspects = ('C', 'F'))
             self.init_network(sources)
 
             if 'go' not in self.graph.vs.attributes():
@@ -10914,7 +10918,7 @@ class PyPath(object):
         self.update_sources()
 
         if lig_rec_resources:
-            datasets = copy.deepcopy(data_formats.ligand_receptor)
+            datasets = modcopy.deepcopy(data_formats.ligand_receptor)
             datasets['cellphonedb'].inputArgs = {
                 'ligand_ligand':     keep_lig_lig,
                 'receptor_receptor': keep_rec_rec,
@@ -10932,7 +10936,7 @@ class PyPath(object):
 
         self.graph.vs[attr] = [i in vids for i in xrange(self.graph.vcount())]
 
-    def go_annotate(self, aspects=('C', 'F', 'P')):
+    def go_annotate_graph(self, aspects = ('C', 'F', 'P')):
         """
         Annotates protein nodes with GO terms. In the ``go`` vertex
         attribute each node is annotated by a dict of sets where keys are
@@ -10941,10 +10945,7 @@ class PyPath(object):
 
         go.annotate(self.graph, aspects = aspects)
 
-    # old name as synonym
-    load_go = go_annotate
-
-    def go_dict(self, organism=9606):
+    def load_go(self, organism = None):
         """
         Creates a ``pypath.go.GOAnnotation`` object for one organism in the
         dict under ``go`` attribute.
@@ -10953,14 +10954,32 @@ class PyPath(object):
             NCBI Taxonomy ID of the organism.
         """
 
+        organism = organism or self.ncbi_tax_id
+
         if not hasattr(self, 'go'):
             self.go = {}
 
         self.go[organism] = go.GOAnnotation(organism)
 
+    def get_go(self, organism = None):
+        """
+        Returns the ``GOAnnotation`` object for the organism requested
+        (or the default one).
+        """
+
+        organism = organism or self.ncbi_tax_id
+
+        if not hasattr(self, 'go') or organism not in self.go:
+
+            self.load_go(organism = organism)
+
+        return self.go[organism]
+
     def go_enrichment(self, proteins=None, aspect='P', alpha=0.05,
                       correction_method='hommel', all_proteins=None):
         """
+        Does not work at the moment because cfisher module should be
+        replaced with scipy.
         """
 
         if not hasattr(self, 'go') or self.ncbi_tax_id not in self.go:
@@ -10999,6 +11018,8 @@ class PyPath(object):
 
     def init_gsea(self, user):
         """
+        Initializes a ``pypath.gsea.GSEA`` object and shows the list of the
+        collections in MSigDB.
         """
 
         self.gsea = gsea.GSEA(user=user, mapper=self.mapper)
@@ -11020,6 +11041,8 @@ class PyPath(object):
     def geneset_enrichment(self, proteins, all_proteins=None, geneset_ids=None,
                            alpha=0.05, correction_method='hommel'):
         """
+        Does not work at the moment because cfisher module should be
+        replaced with scipy.
         """
 
         all_proteins = self.graph.vs['name'] \
@@ -12397,7 +12420,7 @@ class PyPath(object):
         # XXX: According to the alias above omnipath = data_formats.omnipath already
 
         if old_omnipath_resources:
-            omnipath = copy.deepcopy(data_formats.omnipath)
+            omnipath = modcopy.deepcopy(data_formats.omnipath)
             omnipath['biogrid'] = data_formats.interaction['biogrid']
             omnipath['alz'] = data_formats.interaction['alz']
             omnipath['netpath'] = data_formats.interaction['netpath']
@@ -13584,7 +13607,7 @@ class PyPath(object):
                         for eattr in e.attributes():
 
                             if eattr != 'dirs' and eattr != 'refs_by_dir':
-                                eenew[eattr] = copy.deepcopy(e[eattr])
+                                eenew[eattr] = modcopy.deepcopy(e[eattr])
 
         prg.terminate()
         # id_new > current index
@@ -13605,7 +13628,7 @@ class PyPath(object):
                 for vattr in v0.attributes():
 
                     if vattr != 'name':
-                        v[vattr] = copy.deepcopy(v0[vattr])
+                        v[vattr] = modcopy.deepcopy(v0[vattr])
 
         # removing temporary edge attributes
         del self.graph.es['id_old']
@@ -13696,7 +13719,7 @@ class PyPath(object):
         # vector of probabilities;
         # this will be subject of iteration
         # and its final state will be the result
-        _p = copy.copy(_q)
+        _p = modcopy.copy(_q)
 
         # transition matrix
         __A = np.array(list(graph.get_adjacency()), dtype=np.float64).T
@@ -13744,24 +13767,40 @@ class PyPath(object):
 
         return p
 
+    def nodes_by_resource(self, resource):
+
+        return set(
+            v['name']
+            for v in self.graph.vs
+            if resource in v['sources']
+        )
+
+    def nodes_by_resources(self):
+
+        return dict(
+            (resource, self.nodes_by_resource(resource))
+            for resource in self.sources
+        )
+
     def reload(self):
-        """
-        """
+        """Reloads the object from the module level."""
 
         modname = self.__class__.__module__
-        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
 
     def _disclaimer(self):
         """
+        Prints a disclaimer about respecting data licences.
         """
 
         sys.stdout.write(self.disclaimer)
 
     def licence(self):
         """
+        Prints information about data licences.
         """
 
         self._disclaimer()

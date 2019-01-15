@@ -26,7 +26,7 @@ USAGE="Usage:\n\t$0\n\t\t[-h (show help and exit)]\n\t\t[-p <2|3> (Python versio
 "[-c (do not install cairo)]\n\t\t[-g (do not install graphviz)]\n\t\t"\
 "[-t (run tests only)]\n\t\t[-u (uninstall everything)]\n\t\t[-f (do not ask confirmation at uninstall)]\n\t\t"\
 "[-m (uninstall Python modules)]\n\t\t[-b (uninstall HomeBrew and formulas)]\n\t\t[-e (remove environment changes)]\n"
-PYMAINVER="2"
+PYMAINVER="3"
 INSTALL=true
 TESTS=true
 ICAIRO=true
@@ -91,7 +91,7 @@ done
 
 if [[ $PYMAINVER == "3" ]];
     then
-        PYVER="3.5";
+        PYVER="3.7";
         PYCAIRONAME="py3cairo";
         PYTHONNAME="python3";
         PYFABRIC="fabric3";
@@ -100,11 +100,11 @@ if [[ $PYMAINVER == "3" ]];
         PYMAINVER="2";
         PYCAIRONAME="py2cairo";
         PYTHONNAME="python";
-        PYFABRIC="fabric"
+        PYFABRIC="fabric";
 fi
 
 USER=`whoami`
-LOCAL="$HOME/local"
+LOCAL="/usr/local/Cellar"
 LOCALBIN="$LOCAL/bin"
 LOCALPIP="$LOCALBIN/pip$PYVER"
 PYPATHURL="http://pypath.omnipathdb.org/releases/latest/pypath-latest.tar.gz"
@@ -115,42 +115,67 @@ fi
 
 export PATH="$LOCALBIN:$PATH"
 
+
+function update_python_path {
+
+    PYVER=$(
+    [[ `$PYTHONNAME --version` =~ (3\.[0-9])\.[0-9] ]] &&
+        echo ${BASH_REMATCH[1]}
+    )
+    LOCALBIN=`brew info python3 | tr -d '\n\r' | pcregrep -o1 -i 'has been installed as[ ]+(.*?)python[23]'`
+    LOCALPIP="$LOCALBIN/pip$PYVER"
+
+}
+
+
+function rc_contents {
+
+    PYTHONRCCONTENT=$(printf %s ''\
+    'import readline# pypath added\n'\
+    'import rlcompleter# pypath added\n'\
+    'if "libedit" in readline.__doc__:# pypath added\n'\
+    '    readline.parse_and_bind("bind ^I rl_complete")# pypath added\n'\
+    'else:# pypath added\n'\
+    '    readline.parse_and_bind("tab: complete")# pypath added\n')
+    BASHPROFPYRC='export PYTHONSTARTUP=~/.pythonrc # pypath added\n'
+    BASHPROFLOCP='export PATH="'$LOCALBIN':$PATH" # pypath added\n'
+
+}
+
+
+function write_rc {
+
+    rc_contents
+
+    if [[ ! -f ~/.pythonrc || "$(grep 'tab:[[:space:]]\?complete' ~/.pythonrc)" == "" ]];
+    then
+        # autocompletion is highly useful
+        # we add it to the .pyhthonrc
+        # feel free to remove later if u don't like
+        echo -en "$PYTHONRCCONTENT" >> ~/.pythonrc
+    fi
+
+    if [[ ! -f ~/.bash_profile || "$(grep '.pythonrc' ~/.bash_profile)" == "" ]];
+    then
+        # adding this to .bash_profile to use .pythonrc
+        echo -en "$BASHPROFPYRC" >> ~/.bash_profile
+    fi
+    if [[ ! -f ~/.bash_profile || "$(grep $LOCALBIN ~/.bash_profile)" == "" ]];
+    then
+        # adding this to .bash_profile to have local in path
+        echo -en "$BASHPROFLOCP" >> ~/.bash_profile
+    fi
+
+}
+
+
 # beginning part `INSTALL`
-
-PYTHONRCCONTENT=''\
-'import readline# pypath added\n'\
-'import rlcompleter# pypath added\n'\
-'if "libedit" in readline.__doc__:# pypath added\n'\
-'    readline.parse_and_bind("bind ^I rl_complete")# pypath added\n'\
-'else:# pypath added\n'\
-'    readline.parse_and_bind("tab: complete")# pypath added'
-BASHPROFPYRC='export PYTHONSTARTUP=~/.pythonrc # pypath added'
-BASHPROFLOCP='export PATH="'$LOCALBIN':$PATH" # pypath added'
-
 if [[ "$INSTALL" = "true" ]];
 then
     echo -en "\n\n===[ Attempting to install pypath and all its dependencies with the help of HomeBrew. ]===\n\n"
     echo -en "\t Note: this method works on most of the Mac computers.\n"\
 "\t Watch out for errors, and the test results post installation.\n"\
 "\t This will last at least 10 mins. Now relax, and hope the best.\n\n"
-    if [[ ! -f .pythonrc || "$(grep 'tab:[[:space:]]\?complete' .pythonrc)" == "" ]];
-    then
-        # autocompletion is highly useful
-        # we add it to the .pyhthonrc
-        # feel free to remove later if u don't like
-        echo -en "$PYTHONRCCONTENT" >> .pythonrc
-    fi
-
-    if [[ ! -f .bash_profile || "$(grep '.pythonrc' .bash_profile)" == "" ]];
-    then
-        # adding this to .bash_profile to use .pythonrc
-        echo -en "$BASHPROFPYRC" >> .bash_profile
-    fi
-    if [[ ! -f .bash_profile || "$(grep $LOCALBIN .bash_profile)" == "" ]];
-    then
-        # adding this to .bash_profile to have local in path
-        echo -en "$BASHPROFLOCP" >> .bash_profile
-    fi
 
     # downloading and extracting homebrew:
     type brew >/dev/null 2>&1
@@ -160,7 +185,7 @@ then
         curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1
         cd ~
     fi
-    
+
     # update repositories
     brew update
     # installing curl and openssl
@@ -178,21 +203,25 @@ then
     fi
     # optionally install graphviz:
     if [[ "$IGRAPHVIZ" == "true" ]];
-        then brew install homebrew/science/igraph graphviz;
+        then brew install igraph graphviz;
     fi
-    
+
+    # maybe we just installed new python, update the python/pip version
+    update_python_path
+    write_rc
+
     # installing another python modules by pip
     $LOCALPIP install --upgrade pip
     if [[ `$LOCALPIP show pycurl` ]];
-        then $LOCALPIP uninstall pycurl
+        then $LOCALPIP uninstall -y pycurl
     fi
     if [[ `$LOCALPIP show lxml` ]];
-        then $LOCALPIP uninstall lxml
+        then $LOCALPIP uninstall -y lxml
     fi
     export LD_LIBRARY_PATH=/usr/local/opt/curl/lib
     export CPATH=/usr/local/opt/openssl/include
     export LIBRARY_PATH=/usr/local/opt/openssl/lib
-    $LOCALPIP --no-cache-dir install pycurl
+    PYCURL_SSL_LIBRARY=openssl LDFLAGS="-L/usr/local/opt/openssl/lib" CPPFLAGS="-I/usr/local/opt/openssl/include" $LOCALPIP --no-cache-dir install pycurl
     STATIC_DEPS=true $LOCALPIP --no-cache-dir install lxml
     $LOCALPIP install python-igraph
     $LOCALPIP install pysftp
@@ -217,9 +246,9 @@ then
 EOF
 
     # with Py3 this will be necessary:
-    if [[ $PYMAINVER == "3" ]];
-        then $LOCALPIP install git+https://github.com/brentp/fishers_exact_test.git;
-    fi
+    #if [[ $PYMAINVER == "3" ]];
+    #    then $LOCALPIP install git+https://github.com/brentp/fishers_exact_test.git;
+    #fi
 
 # end of part `INSTALL`
 fi
@@ -241,7 +270,7 @@ then
         echo -en "\t [ OK ] HomeBrew is available.\n"
     fi
 
-    declare -a formulas=(curl openssl $PYTHONNAME $PYCAIRONAME homebrew/science/igraph graphviz)
+    declare -a formulas=(curl openssl $PYTHONNAME $PYCAIRONAME igraph graphviz)
 
     for frm in "${formulas[@]}"
     do
@@ -254,7 +283,7 @@ then
     fi
     done
 
-    declare -a modules=(cairo igraph future numpy scipy pandas suds bioservices pymysql pygraphviz fisher pysftp fabric tqdm pypath)
+    declare -a modules=(cairo igraph future numpy scipy pandas suds bioservices pymysql pygraphviz pycurl pysftp fabric tqdm pypath)
 
     for mod in "${modules[@]}"
     do
@@ -288,16 +317,24 @@ mcols="$(for i in $(seq 0 $((${#modules[@]} - 1))); do echo "($i) ${modules[$i]}
 mcols="$(echo $mcols | column)"
 mmsg="$(echo -en "\n===>[ Remove the following Python $PYVER modules? ]<===\n\n$mcols\n[Answer e.g. \"1,2,3\" or \"a\"] ")"
 
-declare -a formulas=(graphviz homebrew/science/igraph $PYCAIRONAME $PYTHONNAME)
+declare -a formulas=(graphviz igraph $PYCAIRONAME $PYTHONNAME)
 fcols="$(for i in $(seq 0 $((${#formulas[@]} - 1))); do echo "($i) ${formulas[$i]}"; done; echo "(a) all"; echo "() none")"
 fcols="$(echo $fcols | column)"
 fmsg="$(echo -en "\n===>[ Remove the following HomeBrew formulas? ]<===\n\n$fcols\n[Answer e.g. \"1,2,3\" or \"a\"] ")"
 
 bmsg="$(echo -en "\n===>[ Do you want to remove HomeBrew? ]<===\n\n [ y/N ] ")"
 
+# update this now to be able to remove later RC file rc_contents
+update_python_path
+rc_contents
+
 # uninstalling python modules:
 if [[ "$UNINSTM" == "true" ]];
 then
+
+# make sure python/pip version is correct
+
+
     if [[ "$UCONFIRM" == "true" ]];
     then
         ifs_default=$IFS
@@ -373,6 +410,9 @@ fi
 
 if [[ "$UNINSTE" == "true" ]];
 then
+
+    rc_contents
+
     echo -en "\n\n===[ Restoring environment (~/.pythonrc, ~/.bash_profile) ]===\n\n"
     if [ -f .pythonrc ];
     then
