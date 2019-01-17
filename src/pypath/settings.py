@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2018
+#  2014-2019
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -108,11 +108,13 @@ def reset_all():
     
     globals()['settings'] = settings
 
+
 def setup(**kwargs):
     
     for param, value in iteritems(kwargs):
         
         setattr(settings, param, value)
+
 
 def get(param):
     
@@ -120,15 +122,18 @@ def get(param):
         
         return getattr(settings, param)
 
+
 def get_default(param):
     
     if hasattr(defaults, param):
         
         return getattr(defaults, param)
 
+
 def reset(param):
     
     setup(param, get_default(param))
+
 
 defaults = common._const()
 

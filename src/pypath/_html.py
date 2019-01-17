@@ -5,7 +5,7 @@
 #  This file is part of the `pypath` python module
 #
 #  Copyright
-#  2014-2018
+#  2014-2019
 #  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
 #
 #  File author(s): Dénes Türei (turei.denes@gmail.com)
@@ -1690,7 +1690,7 @@ _header = u'''<!DOCTYPE html>
 
 _footer = u'''
         <br>
-        <p> <a href="http://www.ebi.ac.uk/~denes">Dénes Türei</a>,
+        <p> <a href="http://denes.omnipathdb.org/">Dénes Türei</a>,
             <a href="http://saezlab.org/person/nicolas-palacio/">
                 Nicolàs Palacio</a>,
             <a href="http://saezlab.org/">Saez Lab</a> 2016-2018. 
