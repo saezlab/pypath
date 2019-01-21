@@ -546,11 +546,21 @@ class MatrixdbECM(MatrixdbBase):
 class Locate(AnnotationBase):
     
     
-    def __init__(self, ncbi_tax_id = 9606, mapper = None):
+    def __init__(
+            self,
+            ncbi_tax_id = 9606,
+            mapper = None,
+            literature = True,
+            external = True,
+            predictions = False,
+        ):
         
         input_args = {
             'organism': ncbi_tax_id or 9606,
             'mapper': mapper,
+            'literature': literature,
+            'external': external,
+            'predictions': predictions,
         }
         
         AnnotationBase.__init__(

@@ -8912,10 +8912,16 @@ def matrixdb_ecm_proteins(organism = 9606):
     return _matrixdb_protein_list('ecm', organism = organism)
 
 
-def get_locate_localizations(organism = 9606, mapper = None):
+def get_locate_localizations(
+        organism = 9606,
+        literature = True,
+        external = True,
+        predictions = False,
+        mapper = None,
+    ):
     
     record = collections.namedtuple(
-        'LocateLocation',
+        'LocateAnnotation',
         ('source', 'location', 'cls', 'pmid', 'score'),
     )
     record.__new__.__defaults__ = (None, None, None)
@@ -9009,97 +9015,112 @@ def get_locate_localizations(organism = 9606, mapper = None):
                 
                 continue
             
-            # External database annotations
-            extannot = elem.find('externalannot')
-            
-            if extannot is not None:
+            if external:
                 
-                for extannotref in extannot.findall('reference'):
+                # External database annotations
+                extannot = elem.find('externalannot')
+                
+                if extannot is not None:
                     
-                    sources = []
-                    
-                    for src in extannotref.findall('source'):
+                    for extannotref in extannot.findall('reference'):
                         
-                        src_name = src.find('source_name')
+                        sources = []
                         
-                        if src_name is not None:
+                        for src in extannotref.findall('source'):
                             
-                            sources.append(src_name.text)
-                    
-                    sources = ';'.join(sources) if sources else None
-                    
-                    locations =  extannotref.find('locations')
-                    
-                    if locations is not None:
-                        
-                        for location in locations.findall('location'):
+                            src_name = src.find('source_name')
                             
-                            for loc in location.iterchildren():
+                            if src_name is not None:
                                 
-                                if loc.tag[:4] == 'tier':
+                                sources.append(src_name.text)
+                        
+                        sources = ';'.join(sources) if sources else None
+                        
+                        locations =  extannotref.find('locations')
+                        
+                        if locations is not None:
+                            
+                            for location in locations.findall('location'):
+                                
+                                for loc in location.iterchildren():
                                     
-                                    this_loc = loc.text.lower()
-                                    
-                                    for uniprot in this_uniprots:
+                                    if loc.tag[:4] == 'tier':
                                         
-                                        result[uniprot].add(record(
-                                            source = sources,
-                                            location = this_loc,
-                                            cls = this_class,
-                                            score = None,
-                                        ))
+                                        this_loc = loc.text.lower()
+                                        
+                                        for uniprot in this_uniprots:
+                                            
+                                            result[uniprot].add(record(
+                                                source = sources,
+                                                location = this_loc,
+                                                cls = this_class,
+                                                score = None,
+                                            ))
             
-            # Predictions
-            sclpred = elem.find('scl_prediction')
-            
-            if sclpred is not None:
+            if predictions:
                 
-                for sclpred_src in sclpred.findall('source'):
-                    
-                    this_src = sclpred_src.find('method').text
-                    this_loc = sclpred_src.find('location').text.lower()
-                    score    = float(sclpred_src.find('evaluation').text)
-                    
-                    for uniprot in this_uniprots:
-                        
-                        result[uniprot].add(record(
-                            source = this_src,
-                            location = this_loc,
-                            cls = this_class,
-                            score = score,
-                        ))
-            
-            # Literature curation
-            literature = elem.find('literature')
-            
-            if literature is not None:
+                # Predictions
+                sclpred = elem.find('scl_prediction')
                 
-                for litref in literature.findall('reference'):
+                if sclpred is not None:
                     
-                    locs = set()
-                    
-                    for lloc in litref.find('locations').findall('location'):
+                    for sclpred_src in sclpred.findall('source'):
                         
-                        for loc in lloc.iterchildren():
+                        score = float(sclpred_src.find('evaluation').text)
+                        
+                        if score == 0.0:
                             
-                            if loc.tag[:4] == 'tier':
-                                
-                                locs.add(loc.text.lower())
-                    
-                    pmid = litref.find('source')
-                    pmid = None if pmid is None else pmid.find('accn').text
-                    
-                    for loc in locs:
+                            continue
+                        
+                        this_src = sclpred_src.find('method').text
+                        this_loc = sclpred_src.find('location').text.lower()
+                        
+                        if this_loc == 'no prediction':
+                            
+                            continue
                         
                         for uniprot in this_uniprots:
                             
                             result[uniprot].add(record(
-                                source = 'literature',
-                                location = loc,
-                                pmid = pmid,
+                                source = this_src,
+                                location = this_loc,
                                 cls = this_class,
-                                score = None,
+                                score = score,
                             ))
+            
+            if literature:
+                
+                # Literature curation
+                lit = elem.find('literature')
+                
+                if lit is not None:
+                    
+                    for litref in lit.findall('reference'):
+                        
+                        locs = set()
+                        
+                        for lloc in litref.find('locations').findall('location'):
+                            
+                            for loc in lloc.iterchildren():
+                                
+                                if loc.tag[:4] == 'tier':
+                                    
+                                    locs.add(loc.text.lower())
+                        
+                        pmid = litref.find('source')
+                        pmid = None if pmid is None else pmid.find('accn').text
+                        
+                        for loc in locs:
+                            
+                            for uniprot in this_uniprots:
+                                
+                                result[uniprot].add(record(
+                                    source = 'literature',
+                                    location = loc,
+                                    pmid = pmid,
+                                    cls = this_class,
+                                    score = None,
+                                ))
         
         used_elements.append(elem)
         
