@@ -711,7 +711,13 @@ urls = {
     'matrixdb': {
         'label': 'MatrixDB in house curated interactions, PSI-MI tab format',
         'old_url': 'http://matrixdb.ibcp.fr/download/matrixdb_CORE.tab.gz',
-        'url': 'http://matrixdb.univ-lyon1.fr/download/matrixdb_CORE.tab.gz'
+        'url': 'http://matrixdb.univ-lyon1.fr/download/matrixdb_CORE.tab.gz',
+        'ecm_proteins': 'http://matrixdb.univ-lyon1.fr/'\
+            'download//proteins_ECM.csv',
+        'secreted_proteins': 'http://matrixdb.univ-lyon1.fr/'
+            'download//proteins_Secreted.csv',
+        'membrane_proteins': 'http://matrixdb.univ-lyon1.fr/'
+            'download//proteins_Membrane.csv',
     },
     'innatedb': {
         'label': 'InnateDB PSI-MI tab',
