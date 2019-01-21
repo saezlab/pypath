@@ -8910,3 +8910,125 @@ def matrixdb_ecm_proteins(organism = 9606):
     """
     
     return _matrixdb_protein_list('ecm', organism = organism)
+
+
+def get_locate_localizations(organism = 9606):
+    
+    record = collections.namedtuple(
+        'LocateLocation',
+        ('uniprot', 'entrez', 'source', 'location', 'pmid', 'score'),
+    )
+    record.__new__.__defaults__ = (None, None)
+    
+    organism_str = common.taxids[organism]
+    url = urls.urls['locate']['url'] % organism_str
+    fname = url.split('/')[-1][:-4]
+    
+    c = curl.Curl(url, large = True, silent = False, files_needed = [fname])
+    c.result[fname]
+    
+    parser = etree.iterparse(c.result[fname], events = ('start', 'end'))
+    
+    result = []
+    root = next(parser)
+    used_elements = []
+    
+    for ev, elem in parser:
+        
+        if ev == 'end' and elem.tag == 'LOCATE_protein':
+            
+            tag_protein = elem.find('protein')
+            this_uniprot = None
+            this_entrez  = None
+            this_organism = (
+                tag_protein.find('organism').text
+                    if tag_protein is not None else
+                None
+            )
+            
+            xrefs = elem.find('xrefs')
+            
+            if xrefs is None:
+                
+                continue
+            
+            for xref in xrefs.findall('xref'):
+                
+                src = xref.find('source')
+                
+                if src.find('source_name').text == 'UniProtKB-SwissProt':
+                    
+                    this_uniprot = src.find('accn').text
+                
+                if src.find('source_name').text == 'Entrez Gene':
+                    
+                    this_entrez = src.find('accn').text
+            
+            extannot = elem.find('externalannot')
+            
+            if extannot is not None:
+                
+                for extannotref in extannot.findall('reference'):
+                    
+                    pmid = extannotref.find('pmid')
+                    pmid = None if pmid is None else pmid.text
+                    pmid = None if pmid == '0' else pmid
+                    src_name = extannotref.find('source_name')
+                    src_name = None if src_name is None else src_name.text
+                    
+                    locations =  extannotref.find('locations')
+                    
+                    if locations is not None:
+                        
+                        for location in locations.findall('location'):
+                            
+                            this_loc = location.find('tier1')
+                            
+                            if this_loc is None:
+                                
+                                continue
+                            
+                            this_loc = this_loc.text.lower()
+                            
+                            result.append(record(
+                                uniprot = this_uniprot,
+                                entrez = this_entrez,
+                                source = src_name,
+                                location = this_loc,
+                                pmid = pmid,
+                                score = None,
+                            ))
+            
+            sclpred = elem.find('scl_prediction')
+            
+            if sclpred is not None:
+                
+                for sclpred_src in sclpred.findall('source'):
+                    
+                    this_src = sclpred_src.find('method').text
+                    this_loc = sclpred_src.find('location').text.lower()
+                    score    = float(sclpred_src.find('evaluation').text)
+                    
+                    result.append(record(
+                        uniprot = this_uniprot,
+                        entrez = this_entrez,
+                        source = this_src,
+                        location = this_loc,
+                        score = score,
+                    ))
+        
+        used_elements.append(elem)
+        
+        # removing used elements to keep memory low
+        if len(used_elements) > 1000:
+            
+            for _ in xrange(500):
+                
+                e = used_elements.pop(0)
+                e.clear()
+    
+    # closing the XML
+    c.fileobj.close()
+    del c
+    
+    return result

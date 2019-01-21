@@ -916,6 +916,11 @@ urls = {
             'VESICLEPEDIA_PROTEIN_MRNA_DETAILS_4.1.txt',
         'url_study': 'http://microvesicles.org/Archive/'\
             'VESICLEPEDIA_EXPERIMENT_DETAILS_4.1.txt',
+    },
+    'locate': {
+        'label': 'Locate protein localization database',
+        'url': 'http://locate.imb.uq.edu.au/info_files/'\
+            'LOCATE_%s_v6_20081121.xml.zip',
     }
 }
 
