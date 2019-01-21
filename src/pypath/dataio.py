@@ -8850,3 +8850,56 @@ def _get_exocarta_vesiclepedia(
             taxid_rev[s[4]], # NCBI Taxonomy ID
             studies[int(s[5])], # study reference
         )
+
+
+def _matrixdb_protein_list(category):
+    """
+    Returns a set of proteins annotated by MatrixDB.
+    
+    :arg str category:
+        The protein annotation category. Possible values: `ecm`, `membrane`
+        or `secreted`.
+    """
+    
+    url = urls.urls['matrixdb']['%s_proteins']
+    c = curl.Curl(url, silent = False, large = True)
+    
+    proteins = set()
+    
+    for l in c.result:
+        
+        if not l:
+            
+            continue
+        
+        _ = next(l)
+        proteins.add(
+            l.strip().replace('"', '').split('\t')[0]
+        )
+    
+    return proteins
+
+
+def matrixdb_membrane_proteins():
+    """
+    Returns a set of membrane protein UniProt IDs retrieved from MatrixDB.
+    """
+    
+    return _matrixdb_protein_list('membrane')
+
+
+def matrixdb_sectreted_proteins():
+    """
+    Returns a set of secreted protein UniProt IDs retrieved from MatrixDB.
+    """
+    
+    return _matrixdb_protein_list('secreted')
+
+
+def matrixdb_ecm_proteins():
+    """
+    Returns a set of ECM (extracellular matrix) protein UniProt IDs
+    retrieved from MatrixDB.
+    """
+    
+    return _matrixdb_protein_list('ecm')
