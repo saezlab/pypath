@@ -8861,10 +8861,13 @@ def _matrixdb_protein_list(category):
         or `secreted`.
     """
     
-    url = urls.urls['matrixdb']['%s_proteins']
+    url = urls.urls['matrixdb']['%s_proteins' % category]
     c = curl.Curl(url, silent = False, large = True)
     
     proteins = set()
+    
+    # header row
+    _ = next(c.result)
     
     for l in c.result:
         
@@ -8872,9 +8875,8 @@ def _matrixdb_protein_list(category):
             
             continue
         
-        _ = next(l)
         proteins.add(
-            l.strip().replace('"', '').split('\t')[0]
+            l.decode('utf-8').strip().replace('"', '').split('\t')[0]
         )
     
     return proteins
@@ -8888,7 +8890,7 @@ def matrixdb_membrane_proteins():
     return _matrixdb_protein_list('membrane')
 
 
-def matrixdb_sectreted_proteins():
+def matrixdb_secreted_proteins():
     """
     Returns a set of secreted protein UniProt IDs retrieved from MatrixDB.
     """
