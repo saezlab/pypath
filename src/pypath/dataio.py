@@ -8852,7 +8852,7 @@ def _get_exocarta_vesiclepedia(
         )
 
 
-def _matrixdb_protein_list(category):
+def _matrixdb_protein_list(category, organism = 9606):
     """
     Returns a set of proteins annotated by MatrixDB.
     
@@ -8879,29 +8879,34 @@ def _matrixdb_protein_list(category):
             l.decode('utf-8').strip().replace('"', '').split('\t')[0]
         )
     
+    if organism:
+        
+        uniprots = all_uniprots(organism = organism, swissprot = True)
+        proteins = proteins & set(uniprots)
+    
     return proteins
 
 
-def matrixdb_membrane_proteins():
+def matrixdb_membrane_proteins(organism = 9606):
     """
     Returns a set of membrane protein UniProt IDs retrieved from MatrixDB.
     """
     
-    return _matrixdb_protein_list('membrane')
+    return _matrixdb_protein_list('membrane', organism = organism)
 
 
-def matrixdb_secreted_proteins():
+def matrixdb_secreted_proteins(organism = 9606):
     """
     Returns a set of secreted protein UniProt IDs retrieved from MatrixDB.
     """
     
-    return _matrixdb_protein_list('secreted')
+    return _matrixdb_protein_list('secreted', organism = organism)
 
 
-def matrixdb_ecm_proteins():
+def matrixdb_ecm_proteins(organism = 9606):
     """
     Returns a set of ECM (extracellular matrix) protein UniProt IDs
     retrieved from MatrixDB.
     """
     
-    return _matrixdb_protein_list('ecm')
+    return _matrixdb_protein_list('ecm', organism = organism)

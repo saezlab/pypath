@@ -128,12 +128,14 @@ class AnnotationBase(object):
         self.uniprots = set(dataio.all_uniprots(organism = self.ncbi_tax_id))
     
     
-    def _process_method(*args, **kwargs):
+    def _process_method(self, *args, **kwargs):
         """
+        By default it converts a set to dict of empty sets in order to make
+        it compatible with other methods.
         Derived classes might override.
         """
         
-        pass
+        self.annot = dict((u, set()) for u in self.annot)
     
     
     def get_subset(self, **kwargs):
@@ -178,10 +180,14 @@ class AnnotationBase(object):
     
     def coverage(self, other):
         
+        other = other if isinstance(other, set) else set(other)
+        
         return len(self & other) / len(self)
     
     
     def proportion(self, other):
+        
+        other = other if isinstance(other, set) else set(other)
         
         return len(self & other) / len(other)
     
@@ -434,11 +440,6 @@ class CellSurfaceProteinAtlas(AnnotationBase):
             input_args = kwargs,
             mapper = mapper,
         )
-    
-    
-    def _process_method(self):
-        
-        self.annot = dict((u, set()) for u in self.annot)
 
 
 class HumanPlasmaMembraneReceptome(AnnotationBase):
@@ -465,4 +466,78 @@ class HumanPlasmaMembraneReceptome(AnnotationBase):
             for uniprot in self.mapper.map_name(
                 genesymbol, 'genesymbol', 'uniprot'
             )
+        )
+
+
+class MatrixdbAnnotation(AnnotationBase):
+    
+    
+    def __init__(self, category, ncbi_tax_id = 9606):
+        """
+        Protein annotations from MatrixDB.
+        
+        :arg str category:
+            The protein annotation category. Possible values: `ecm`, `membrane`
+            or `secreted`.
+        """
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'MatrixDB_%s' % category,
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'matrixdb_%s_proteins' % category.lower(),
+        )
+
+
+class MatrixdbSecreted(MatrixdbAnnotation):
+    
+    
+    def __init__(self, ncbi_tax_id = 9606):
+        """
+        Secreted proteins annotations from MatrixDB.
+        
+        :arg int ncbi_tax_id:
+            NCBI Taxonomy ID of the organism.
+        """
+        
+        MatrixdbAnnotation.__init__(
+            self,
+            category = 'Secreted',
+            ncbi_tax_id = ncbi_tax_id,
+        )
+
+
+class MatrixdbMembrane(MatrixdbAnnotation):
+    
+    
+    def __init__(self, ncbi_tax_id = 9606):
+        """
+        Membrane proteins annotations from MatrixDB.
+        
+        :arg int ncbi_tax_id:
+            NCBI Taxonomy ID of the organism.
+        """
+        
+        MatrixdbAnnotation.__init__(
+            self,
+            category = 'Membrane',
+            ncbi_tax_id = ncbi_tax_id,
+        )
+
+
+class MatrixdbECM(MatrixdbAnnotation):
+    
+    
+    def __init__(self, ncbi_tax_id = 9606):
+        """
+        ECM proteins annotations from MatrixDB.
+        
+        :arg int ncbi_tax_id:
+            NCBI Taxonomy ID of the organism.
+        """
+        
+        MatrixdbAnnotation.__init__(
+            self,
+            category = 'ECM',
+            ncbi_tax_id = ncbi_tax_id,
         )

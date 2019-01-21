@@ -42,6 +42,12 @@ ROOT = os.path.abspath(os.path.dirname(__file__))
 DATA = os.path.join(ROOT, 'data')
 
 
+try:
+    basestring
+except NameError:
+    basestring = str
+
+
 class _const:
 
     class ConstError(TypeError):
