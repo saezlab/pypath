@@ -8912,13 +8912,18 @@ def matrixdb_ecm_proteins(organism = 9606):
     return _matrixdb_protein_list('ecm', organism = organism)
 
 
-def get_locate_localizations(organism = 9606):
+def get_locate_localizations(organism = 9606, mapper = None):
     
     record = collections.namedtuple(
         'LocateLocation',
-        ('uniprot', 'entrez', 'source', 'location', 'pmid', 'score'),
+        ('uniprot', 'source', 'location', 'cls', 'pmid', 'score'),
     )
-    record.__new__.__defaults__ = (None, None)
+    record.__new__.__defaults__ = (None, None, None)
+    
+    mapper = mapper or mapping.Mapper(ncbi_tax_id = organism)
+    organism_uniprots = set(
+        all_uniprots(organism = organism, swissprot = True)
+    )
     
     organism_str = common.taxids[organism]
     url = urls.urls['locate']['url'] % organism_str
@@ -8945,6 +8950,11 @@ def get_locate_localizations(organism = 9606):
                     if tag_protein is not None else
                 None
             )
+            this_class = (
+                tag_protein.find('class').text
+                    if tag_protein is not None else
+                None
+            )
             
             xrefs = elem.find('xrefs')
             
@@ -8955,26 +8965,68 @@ def get_locate_localizations(organism = 9606):
             for xref in xrefs.findall('xref'):
                 
                 src = xref.find('source')
+                src_name = src.find('source_name').text
                 
-                if src.find('source_name').text == 'UniProtKB-SwissProt':
+                if src_name == 'UniProtKB-SwissProt':
                     
                     this_uniprot = src.find('accn').text
                 
-                if src.find('source_name').text == 'Entrez Gene':
+                if src_name == 'Entrez Gene':
                     
                     this_entrez = src.find('accn').text
+                
+                if src_name == 'UniProt/SPTrEMBL' and this_uniprot is None:
+                    
+                    this_uniprot = src.find('accn').text
             
+            # if we don't know what it is, does not make sense to proceed
+            if this_uniprot is None and this_entrez is None:
+                
+                continue
+            
+            if this_uniprot:
+                
+                this_uniprots = mapper.map_name(
+                    this_uniprot,
+                    'uniprot',
+                    'uniprot',
+                    ncbi_tax_id = organism,
+                )
+                
+            if not this_uniprots and this_entrez:
+                
+                this_uniprots = mapper.map_name(
+                    this_entrez,
+                    'entrez',
+                    'uniprot',
+                    ncbi_tax_id = organism,
+                )
+            
+            this_uniprots = set(this_uniprots) & organism_uniprots
+            
+            # if we don't know what it is, does not make sense to proceed
+            if not this_uniprots:
+                
+                continue
+            
+            # External database annotations
             extannot = elem.find('externalannot')
             
             if extannot is not None:
                 
                 for extannotref in extannot.findall('reference'):
                     
-                    pmid = extannotref.find('pmid')
-                    pmid = None if pmid is None else pmid.text
-                    pmid = None if pmid == '0' else pmid
-                    src_name = extannotref.find('source_name')
-                    src_name = None if src_name is None else src_name.text
+                    sources = []
+                    
+                    for src in extannotref.findall('source'):
+                        
+                        src_name = src.find('source_name')
+                        
+                        if src_name is not None:
+                            
+                            sources.append(src_name.text)
+                    
+                    sources = ';'.join(sources) if sources else None
                     
                     locations =  extannotref.find('locations')
                     
@@ -8982,23 +9034,23 @@ def get_locate_localizations(organism = 9606):
                         
                         for location in locations.findall('location'):
                             
-                            this_loc = location.find('tier1')
-                            
-                            if this_loc is None:
+                            for loc in location.iterchildren():
                                 
-                                continue
-                            
-                            this_loc = this_loc.text.lower()
-                            
-                            result.append(record(
-                                uniprot = this_uniprot,
-                                entrez = this_entrez,
-                                source = src_name,
-                                location = this_loc,
-                                pmid = pmid,
-                                score = None,
-                            ))
+                                if loc.tag[:4] == 'tier':
+                                    
+                                    this_loc = loc.text.lower()
+                                    
+                                    for uniprot in this_uniprots:
+                                        
+                                        result.append(record(
+                                            uniprot = uniprot,
+                                            source = sources,
+                                            location = this_loc,
+                                            cls = this_class,
+                                            score = None,
+                                        ))
             
+            # Predictions
             sclpred = elem.find('scl_prediction')
             
             if sclpred is not None:
@@ -9009,13 +9061,48 @@ def get_locate_localizations(organism = 9606):
                     this_loc = sclpred_src.find('location').text.lower()
                     score    = float(sclpred_src.find('evaluation').text)
                     
-                    result.append(record(
-                        uniprot = this_uniprot,
-                        entrez = this_entrez,
-                        source = this_src,
-                        location = this_loc,
-                        score = score,
-                    ))
+                    for uniprot in this_uniprots:
+                        
+                        result.append(record(
+                            uniprot = uniprot,
+                            source = this_src,
+                            location = this_loc,
+                            cls = this_class,
+                            score = score,
+                        ))
+            
+            # Literature curation
+            literature = elem.find('literature')
+            
+            if literature is not None:
+                
+                for litref in literature.findall('reference'):
+                    
+                    locs = set()
+                    
+                    for lloc in litref.find('locations').findall('location'):
+                        
+                        for loc in lloc.iterchildren():
+                            
+                            if loc.tag[:4] == 'tier':
+                                
+                                locs.add(loc.text.lower())
+                    
+                    pmid = litref.find('source')
+                    pmid = None if pmid is None else pmid.find('accn').text
+                    
+                    for loc in locs:
+                        
+                        for uniprot in this_uniprots:
+                            
+                            result.append(record(
+                                uniprot = uniprot,
+                                source = 'literature',
+                                location = loc,
+                                pmid = pmid,
+                                cls = this_class,
+                                score = None,
+                            ))
         
         used_elements.append(elem)
         
