@@ -8916,7 +8916,7 @@ def get_locate_localizations(organism = 9606, mapper = None):
     
     record = collections.namedtuple(
         'LocateLocation',
-        ('uniprot', 'source', 'location', 'cls', 'pmid', 'score'),
+        ('source', 'location', 'cls', 'pmid', 'score'),
     )
     record.__new__.__defaults__ = (None, None, None)
     
@@ -8934,7 +8934,7 @@ def get_locate_localizations(organism = 9606, mapper = None):
     
     parser = etree.iterparse(c.result[fname], events = ('start', 'end'))
     
-    result = []
+    result = collections.defaultdict(set)
     root = next(parser)
     used_elements = []
     
@@ -9042,8 +9042,7 @@ def get_locate_localizations(organism = 9606, mapper = None):
                                     
                                     for uniprot in this_uniprots:
                                         
-                                        result.append(record(
-                                            uniprot = uniprot,
+                                        result[uniprot].add(record(
                                             source = sources,
                                             location = this_loc,
                                             cls = this_class,
@@ -9063,8 +9062,7 @@ def get_locate_localizations(organism = 9606, mapper = None):
                     
                     for uniprot in this_uniprots:
                         
-                        result.append(record(
-                            uniprot = uniprot,
+                        result[uniprot].add(record(
                             source = this_src,
                             location = this_loc,
                             cls = this_class,
@@ -9095,8 +9093,7 @@ def get_locate_localizations(organism = 9606, mapper = None):
                         
                         for uniprot in this_uniprots:
                             
-                            result.append(record(
-                                uniprot = uniprot,
+                            result[uniprot].add(record(
                                 source = 'literature',
                                 location = loc,
                                 pmid = pmid,

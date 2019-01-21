@@ -469,7 +469,7 @@ class HumanPlasmaMembraneReceptome(AnnotationBase):
         )
 
 
-class MatrixdbAnnotation(AnnotationBase):
+class MatrixdbBase(AnnotationBase):
     
     
     def __init__(self, category, ncbi_tax_id = 9606):
@@ -489,7 +489,7 @@ class MatrixdbAnnotation(AnnotationBase):
         )
 
 
-class MatrixdbSecreted(MatrixdbAnnotation):
+class MatrixdbSecreted(MatrixdbBase):
     
     
     def __init__(self, ncbi_tax_id = 9606):
@@ -507,7 +507,7 @@ class MatrixdbSecreted(MatrixdbAnnotation):
         )
 
 
-class MatrixdbMembrane(MatrixdbAnnotation):
+class MatrixdbMembrane(MatrixdbBase):
     
     
     def __init__(self, ncbi_tax_id = 9606):
@@ -525,7 +525,7 @@ class MatrixdbMembrane(MatrixdbAnnotation):
         )
 
 
-class MatrixdbECM(MatrixdbAnnotation):
+class MatrixdbECM(MatrixdbBase):
     
     
     def __init__(self, ncbi_tax_id = 9606):
@@ -541,3 +541,27 @@ class MatrixdbECM(MatrixdbAnnotation):
             category = 'ECM',
             ncbi_tax_id = ncbi_tax_id,
         )
+
+
+class Locate(AnnotationBase):
+    
+    
+    def __init__(self, ncbi_tax_id = 9606, mapper = None):
+        
+        input_args = {
+            'organism': ncbi_tax_id or 9606,
+            'mapper': mapper,
+        }
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'Locate',
+            input_method = 'get_locate_localizations',
+            ncbi_tax_id = ncbi_tax_id,
+            input_args = input_args,
+        )
+    
+    
+    def _process_method(self, *args, **kwargs):
+        
+        pass
