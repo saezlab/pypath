@@ -598,6 +598,7 @@ class GOCustomIntercell(go.GOCustomAnnotation):
         categories = categories or intercell_annot.intercell_categories
         
         go.GOCustomAnnotation.__init__(
+            self,
             categories = categories,
             go_annot = go_annot,
             ncbi_tax_id = ncbi_tax_id,
@@ -622,6 +623,7 @@ class GOIntercell(AnnotationBase):
         self.go_annot = go_annot
         
         AnnotationBase.__init__(
+            self,
             name = 'GO_Intercell',
             ncbi_tax_id = ncbi_tax_id,
         )

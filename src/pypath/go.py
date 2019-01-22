@@ -131,7 +131,7 @@ class GeneOntology(object):
         return term in self.name
     
     
-    def is_term(self, name):
+    def is_name(self, name):
         """
         Tells if ``name`` is a GO term name.
         """
@@ -839,13 +839,7 @@ class GOCustomAnnotation(object):
             A :class:``pypath.go.GOAnnotation`` object.
         """
         
-        self.annot = (
-            go_annot
-                if annot else
-            pa.go[pa.ncbi_tax_id]
-                if hasattr(pa, 'go') else
-            go.GOAnnotation(organism = ncbi_tax_id)
-        )
+        self.go_annot = go_annot or GOAnnotation(organism = ncbi_tax_id)
         
         self._categories = categories
         self.process_categories()
@@ -912,8 +906,6 @@ class GOCustomAnnotation(object):
             A set or list of UniProt IDs. If ``None``, annotations based on
             all UniProts in GO annotation will be returned.
         """
-        
-        self.go_annot.select()
         
         return self.go_annot.select(
             self.categories[category],

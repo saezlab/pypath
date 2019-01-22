@@ -241,7 +241,7 @@ intercell_categories = {
     'membrane docking':
         """
         membrane docking AND
-        ((extracellular region OR
+        (extracellular region OR
         cell surface OR
         external side of plasma membrane)
         """
