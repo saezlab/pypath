@@ -33,48 +33,250 @@ Gene Ontology annotations to select categories relevant in intercellular
 signaling.
 """
 
+
+
 intercell_categories = {
-    'junction': {
-        'C': {'cell junction'},
-        'P': {
-            'cell junction assembly',
-            'cell junction organization',
-            'intercellular bridge organization',
-            'gap junction-mediated intercellular transport',
-        },
-    },
+    'junction':
+        """
+        cell junction OR
+        cell junction assembly OR
+        cell junction organization OR
+        intercellular bridge organization OR
+        gap junction-mediated intercellular transport
+        """,
+    'extracellular':
+        """
+        extracellular region OR
+        extracellular region part
+        """,
+    'cell_surface':
+        """
+        cell surface OR
+        external side of plasma membrane
+        """,
+    'ecm':
+        """
+        extracellular matrix OR
+        complex of collagen trimers OR
+        collagen network OR
+        banded collagen fibril OR
+        collagen beaded filament OR
+        elastic fiber OR
+        fibronectin fibril
+        """,
+    'extracell enzyme':
+        """
+        catalytic activity AND
+        extracellular region
+        """,
+    'extracell peptidase':
+        """
+        peptidase activity AND
+        extracellular region
+        """,
+    'receptor regulation':
+        """
+        (receptor regulator activity OR
+        regulation of receptor recycling OR
+        receptor clustering OR
+        receptor diffusion trapping OR
+        membrane raft localization) AND
+        (extracellular region OR
+        cell surface OR
+        external side of plasma membrane OR
+        intrinsic component of plasma membrane)
+        """,
+    'receptor inhibition':
+        """
+        receptor inhibitor activity AND
+        (extracellular region OR
+        cell surface OR
+        external side of plasma membrane OR
+        intrinsic component of plasma membrane)
+        """,
+    'receptor activation':
+        """
+        receptor activator activity AND
+        (extracellular region OR
+        cell surface OR
+        external side of plasma membrane OR
+        intrinsic component of plasma membrane)
+        """,
+    'ligands':
+        """
+        receptor ligand activity AND
+        (extracellular region OR
+        cell surface OR
+        external side of plasma membrane)
+        """,
+    'receptors':
+        """
+        signaling receptor activity AND
+        (cell surface OR
+        external side of plasma membrane)
+        """,
+    'membrane ligands':
+        """
+        receptor ligand activity AND
+        (cell surface OR
+        external side of plasma membrane)
+        """,
+    'hormone receptors':
+        """
+        hormone binding AND
+        (cell surface OR
+        external side of plasma membrane)
+        """,
+    'ecm structure':
+        """
+        (extracellular region OR
+        extracellular matrix) AND
+        (structural molecule activity OR
+        extracellular matrix structural constituent OR
+        structural constituent of bone)
+        """,
+    'ecm production':
+        """
+        extracellular matrix assembly OR
+        extracellular matrix organization OR
+        extracellular matrix constituent secretion OR
+        collagen metabolic process
+        """,
+    'endocytosis':
+        """
+        endocytic adaptor activity
+        """,
+    'adhesion to matrix':
+        """
+        cell adhesion mediator activity OR
+        extracellular matrix binding OR
+        hydroxyapatite binding OR
+        cell-substrate adhesion
+        """,
+    'response to adhesion':
+        """
+        cellular response to cell-matrix adhesion OR
+        contact inhibition OR
+        establishment or maintenance of cell polarity OR
+        extracellular matrix-cell signaling
+        """,
+    'adhesion to other cells':
+        """
+        cell-cell adhesion
+        """,
+    'adhesion':
+        """
+        cell adhesion mediator activity OR
+        extracellular matrix binding OR
+        hydroxyapatite binding OR
+        cell adhesion OR
+        cell-cell adhesion OR
+        cell-substrate adhesion OR
+        cell adhesion molecule production OR
+        cell-cell adhesion in response to extracellular stimulus OR
+        cellular response to cell-matrix adhesion OR
+        contact inhibition OR
+        establishment or maintenance of cell polarity
+        """,
+    'cell-cell signaling':
+        """
+        cell-cell signaling
+        """,
+    'transport':
+        """
+        intrinsic component of plasma membrane AND
+        transmembrane transporter activity
+        """,
+    'regulation of transport':
+        """
+        (cell surface OR
+        external side of plasma membrane OR
+        extracellular region) AND
+        (regulation of transmembrane transporter activity OR
+        channel regulator activity)
+        """,
+    'ion channels':
+        """
+        (ion channel activity OR
+        ion transmembrane transporter activity) AND
+        intrinsic component of plasma membrane
+        """,
+    'regulation of ion channels':
+        """
+        (cell surface OR
+        external side of plasma membrane OR
+        extracellular region) AND
+        (ion channel regulator activity OR
+        regulation of ion transmembrane transporter activity OR
+        channel regulator activity)
+        """,
+    'autocrine signaling':
+        """
+        autocrine signaling
+        """,
+    'paracrine signaling':
+        """
+        paracrine signaling
+        """,
+    'signal release':
+        """
+        signal release OR
+        hormone secretion OR
+        hormone metabolic process OR
+        cytokine production OR
+        cytokine secretion
+        """,
+    'secretion':
+        """
+        exocytic process OR
+        secretion by cell
+        """,
+    'communication by exosomes':
+        """
+        extracellular vesicle biogenesis OR
+        extracellular exosome assembly OR
+        vesicle-mediated intercellular transport OR
+        cell-cell signaling via exosome
+        """,
+    'membrane docking':
+        """
+        membrane docking AND
+        ((extracellular region OR
+        cell surface OR
+        external side of plasma membrane)
+        """
 }
+
 
 intercell_go_terms = {
     
     # cellular component
     'C': {
-        'junction': {
-            'cell junction',
-        },
-        'extracellular': {
-            'extracellular region',
-            'extracellular region part',
-        },
-        'extracellular_matrix': {
-            'extracellular matrix',
-            'complex of collagen trimers',
-            'collagen network',
-            'banded collagen fibril',
-            'collagen beaded filament',
-            'elastic fiber',
-            'fibronectin fibril',
-        },
-        'exosome': {
-            # could not find sub-term for their membrane or lumen
-            'extracellular vesicle',
-        },
-        'cell_surface': {
-            # only plasma membrane components facing outside
-            'cell surface',
-            'external side of plasma membrane',
-        },
-        ''
+        # junction
+        'cell junction',
+        
+        # extracellular
+        'extracellular region',
+        'extracellular region part',
+        
+        # extracellular_matrix
+        'extracellular matrix',
+        'complex of collagen trimers',
+        'collagen network',
+        'banded collagen fibril',
+        'collagen beaded filament',
+        'elastic fiber',
+        'fibronectin fibril',
+        
+        # exosome
+        # could not find sub-term for their membrane or lumen
+        'extracellular vesicle',
+        
+        # cell_surface
+        # only plasma membrane components facing outside
+        'cell surface',
+        'external side of plasma membrane',
+        
         # these contains also intracellular components
         'plasma membrane',
         'extrinsic component of plasma membrane',
@@ -307,25 +509,25 @@ intercell_go_terms = {
 }
 
 
-class Intercell(object):
+class IntercellAnnotation(object):
     
     def __init__(
             self,
-            pa = None,
-            annot = None,
+            go_annot = None,
             categories = None,
         ):
         
-        self.pa = pa
         self.annot = (
-            annot
+            go_annot
                 if annot else
             pa.go[pa.ncbi_tax_id]
                 if hasattr(pa, 'go') else
             go.GOAnnotation()
         )
         
-        self.names = categories or categories_default
+        self.names = categories or intercell_go_terms
+        self.names_to_terms()
+    
     
     def reload(self):
         """
@@ -333,10 +535,31 @@ class Intercell(object):
         """
         
         modname = self.__class__.__module__
-        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
+    
+    
+    def names_to_terms(self):
+        """
+        Translates GO term names listed in categories to GO terms ACs.
+        """
+        
+        self.terms = dict(
+            (
+                asp,
+                set(
+                    self.go_annot.get_term(name) for name in names
+                )
+            )
+            for asp, names in iteritems(self.names)
+        )
+    
+    
+    
+        
+    
     
     def get_go_ids(self):
         
