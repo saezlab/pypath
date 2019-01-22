@@ -574,4 +574,5 @@ class Locate(AnnotationBase):
     
     def _process_method(self, *args, **kwargs):
         
+        #  already the appropriate format, no processing needed
         pass

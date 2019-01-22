@@ -26,6 +26,7 @@ import imp
 import re
 from collections import Counter, OrderedDict
 import numpy as np
+import itertools
 
 import pypath.dataio as dataio
 import pypath.progress as progress
@@ -35,7 +36,13 @@ from pypath.common import *
 
 # this is for GO terms parsing:
 _reexprterm = re.compile(r'and|or|not|\(|\)|GO:[0-9]{7}')
-_reexprname = re.compile(r'AND|OR|NOT|\(|\)|[-a-z0-9 ]+')
+_reexprname = re.compile(
+    r'(?!\s)' # no space at the beginning
+    r'(?:AND|OR|NOT|\(|\)|' # either AND, OR, NOT or parentheses
+       r'(?:(?!OR|AND|NOT|\s{2:})(?:[-\w: ]))+)' # or something else
+                                                 # (words with spaces)
+    r'(?<!\s)' # no space at the end
+)
 
 
 class GeneOntology(object):
@@ -58,7 +65,7 @@ class GeneOntology(object):
         """Reloads the object from the module level."""
         
         modname = self.__class__.__module__
-        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
@@ -116,20 +123,50 @@ class GeneOntology(object):
         )
     
     
+    def is_term(self, term):
+        """
+        Tells if ``term`` is a GO accession number.
+        """
+        
+        return term in self.name
+    
+    
+    def is_term(self, name):
+        """
+        Tells if ``name`` is a GO term name.
+        """
+        
+        return name in self.term
+    
+    
     def get_name(self, term):
         """
         For a GO accession number returns the name of the term.
+        If ``term`` is already a GO term name returns it unchanged.
         """
         
-        return None if term not in self.name else self.name[term]
+        return (
+            term
+                if self.is_name(term) else
+            None
+                if term not in self.name else
+            self.name[term]
+        )
     
     
     def get_term(self, name):
         """
         For a GO term name returns its GO accession number.
+        If ``name`` is a GO accession returns it unchanged.
         """
         
-        return None if name not in self.term else self.term[name]
+        return (
+            name
+                if self.is_term(name) else
+            None
+                if name not in self.term else
+            self.term[name]
+        )
     
     
     def terms_to_names(self, terms):
@@ -548,9 +585,13 @@ class GOAnnotation(object):
                     
                     continue
                 
-                tokens_terms.append(
-                    t.lower() if t in not_name else self.get_term(t)
-                )
+                tokens_terms.append((
+                    t
+                        if t[:3] == 'GO:' else
+                    t.lower()
+                        if t in not_name else
+                    self.get_term(t)
+                ))
         
         return tokens_terms
     
@@ -561,7 +602,38 @@ class GOAnnotation(object):
             uniprots = None,
             return_uniprots = False,
         ):
+        """
+        Selects UniProts based on an expression of Gene Ontology terms.
+        Operator precedence not considered, please use parentheses.
+        Return indices of the selected elements in the ``uniprots`` list
+        or the set of selected UniProt IDs.
         
+        :param str expr:
+            An expression of Gene Ontology terms and names. E.g.
+            ``'(GO:0005576 and not GO:0070062) or GO:0005887'``. Parentheses
+            and operators ``and``, ``or`` and ``not`` can be used.
+            Another example:
+            ``hormone binding AND (cell surface OR GO:0009897)``.
+        :param bool return_uniprots:
+            By default returns list of indices; if ``True`` returns a set of
+            the selected UniProt IDs.
+        """
+        
+        expr = self.expr_names_to_terms(expr)
+        
+        return self.select_by_expr_terms(
+            expr = expr,
+            uniprots = uniprots,
+            return_uniprots = return_uniprots,
+        )
+    
+    
+    def select_by_expr_terms(
+            self,
+            expr,
+            uniprots = None,
+            return_uniprots = False,
+        ):
         """
         Selects UniProts based on an expression of Gene Ontology terms.
         Operator precedence not considered, please use parentheses.
@@ -603,8 +675,6 @@ class GOAnnotation(object):
         
         for it in expr:
             
-            print('new token: `%s`' % it)
-            
             # processing expression by tokens
             
             # we are in a sub-selection part
@@ -614,7 +684,7 @@ class GOAnnotation(object):
                     
                     # token is a closing parenthesis
                     # execute sub-selection
-                    this_set = self.select_by_expr(
+                    this_set = self.select_by_expr_terms(
                         expr = stack,
                         uniprots = uniprots,
                     )
@@ -639,7 +709,6 @@ class GOAnnotation(object):
             # open a sub-selection part
             elif it == '(':
                 
-                print('starting new subexpr')
                 # token is a parenthesis
                 # start a new sub-selection
                 sub = True
@@ -650,8 +719,6 @@ class GOAnnotation(object):
                 # token is a GO term
                 # get the vertex selection by the single term method
                 this_set = self.i_select_by_term(it, uniprots = uniprots)
-                print('term: %s' % it)
-                print('this_set: %u' % len(this_set))
                 
                 if negate:
                     
@@ -672,11 +739,7 @@ class GOAnnotation(object):
                 # and an operator
                 if op is not None:
                     
-                    print('applying operator %s' % op)
-                    print('current result size: %u' % len(result))
-                    print('recent set size: %u' % len(this_set))
                     result = getattr(result, op)(this_set)
-                    print('resulted %u' % len(result))
                 
                 # this normally happens only at the first set
                 else:
@@ -752,6 +815,100 @@ class GOAnnotation(object):
             return set(np.array(uniprots)[list(idx)])
         
         return idx
+
+
+class GOCustomAnnotation(object):
+    
+    
+    def __init__(
+            self,
+            categories,
+            go_annot = None,
+        ):
+        """
+        Provides annotations by a custom set of GO terms or expressions
+        built from multiple terms.
+        
+        :arg dict categories:
+            A dict with custom category labels as keys and single GO terms
+            or names or complex expressions as values.
+            Alternatively a set of GO terms, in this case the term names will
+            be used as labels.
+        :arg pypath.go.GOAnnotation go_annot:
+            A :class:``pypath.go.GOAnnotation`` object.
+            
+        """
+        
+        self.annot = (
+            go_annot
+                if annot else
+            pa.go[pa.ncbi_tax_id]
+                if hasattr(pa, 'go') else
+            go.GOAnnotation()
+        )
+        
+        self._categories = categories
+        self.process_categories()
+    
+    
+    def reload(self):
+        """
+        Reloads the object from the module level.
+        """
+        
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    
+    def process_categories(self):
+        """
+        Translates GO term names listed in categories to GO terms ACs.
+        """
+        
+        # if the categories are grouped by aspects
+        if (
+            isinstance(self._categories, dict) and
+            not set(self._categories.keys()) - set(self.go_annot.aspects)
+        ):
+            
+            if isinstance(list(self._categories.values())[0], set):
+                
+                self._categories = set.union(self._categories.values())
+                
+            elif isinstance(list(self._categories.values())[0], dict):
+                
+                self._categories = dict(
+                    itertools.chain(
+                        *(d.items() for d in self._categories.values())
+                    )
+                )
+        
+        # if a set provided we use names as keys
+        # and accessions as values
+        if isinstance(self._categories, set):
+            
+            self._categories = dict(
+                (
+                    self.go_annot.get_name(cat),
+                    self.go_annot.get_term(cat)
+                )
+                for cat in self._categories
+            )
+    
+    
+    def get_go_ids(self):
+        
+        self.terms = dict(
+            (
+                domain,
+                set(self.annot.ontology.get_term(name) for name in names)
+            )
+            for domain, names in iteritems(self.names)
+        )
+
 
 
 def annotate(graph, organism = 9606, aspects = ('C', 'F', 'P')):
