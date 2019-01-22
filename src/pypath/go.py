@@ -824,6 +824,7 @@ class GOCustomAnnotation(object):
             self,
             categories,
             go_annot = None,
+            ncbi_tax_id = 9606,
         ):
         """
         Provides annotations by a custom set of GO terms or expressions
@@ -836,7 +837,6 @@ class GOCustomAnnotation(object):
             be used as labels.
         :arg pypath.go.GOAnnotation go_annot:
             A :class:``pypath.go.GOAnnotation`` object.
-            
         """
         
         self.annot = (
@@ -844,7 +844,7 @@ class GOCustomAnnotation(object):
                 if annot else
             pa.go[pa.ncbi_tax_id]
                 if hasattr(pa, 'go') else
-            go.GOAnnotation()
+            go.GOAnnotation(organism = ncbi_tax_id)
         )
         
         self._categories = categories

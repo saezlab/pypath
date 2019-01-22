@@ -29,6 +29,8 @@ import collections
 import pypath.dataio as dataio
 import pypath.common as common
 import pypath.mapping as mapping
+import pypath.go as go
+import pypath.intercell_annot as intercell_annot
 
 
 class AnnotationBase(object):
@@ -575,4 +577,82 @@ class Locate(AnnotationBase):
     def _process_method(self, *args, **kwargs):
         
         #  already the appropriate format, no processing needed
+        pass
+
+
+class GOCustomIntercell(go.GOCustomAnnotation):
+    
+    
+    def __init__(
+            self,
+            categories = None,
+            go_annot = None,
+            ncbi_tax_id = 9606,
+        ):
+        """
+        Same as :class:``pypath.go.GOCustomAnnotation``
+        initialized with the categories defined in
+        ``pypath.intercell_annot.intercell_categories``.
+        """
+        
+        categories = categories or intercell_annot.intercell_categories
+        
+        go.GOCustomAnnotation.__init__(
+            categories = categories,
+            go_annot = go_annot,
+            ncbi_tax_id = ncbi_tax_id,
+        )
+
+
+class GOIntercell(AnnotationBase):
+    
+    
+    def __init__(
+            self,
+            categories = None,
+            go_annot = None,
+            ncbi_tax_id = 9606,
+        ):
+        """
+        Annotation of proteins based on their roles in intercellular
+        communication from Gene Ontology.
+        """
+        
+        self.categories = categories
+        self.go_annot = go_annot
+        
+        AnnotationBase.__init__(
+            name = 'GO_Intercell',
+            ncbi_tax_id = ncbi_tax_id,
+        )
+    
+    
+    def load(self):
+        
+        record = collections.namedtuple(
+            'GOIntercellAnnotation',
+            ('mainclass',),
+        )
+        
+        annot = GOCustomIntercell(
+            categories = self.categories,
+            go_annot = self.go_annot,
+            ncbi_tax_id = self.ncbi_tax_id,
+        )
+        
+        annot_uniprots = annot.get_annotations()
+        
+        _annot = collections.defaultdict(set)
+        
+        for mainclass, uniprots in iteritems(annot_uniprots):
+            
+            for uniprot in uniprots:
+                
+                _annot[uniprot].add(record(mainclass = mainclass))
+        
+        self.annot = dict(_annot)
+    
+    
+    def _process_method(self, *args, **kwargs):
+        
         pass
