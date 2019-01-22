@@ -29,11 +29,13 @@ import numpy as np
 
 import pypath.dataio as dataio
 import pypath.progress as progress
+import pypath.common as common
 from pypath.common import *
 
 
 # this is for GO terms parsing:
-_rego = re.compile(r'and|or|not|\(|\)|GO:[0-9]{7}')
+_reexprterm = re.compile(r'and|or|not|\(|\)|GO:[0-9]{7}')
+_reexprname = re.compile(r'AND|OR|NOT|\(|\)|[-a-z0-9 ]+')
 
 
 class GeneOntology(object):
@@ -203,7 +205,7 @@ class GeneOntology(object):
         
         relations = relations or self.all_relations
         
-        if isinstance(terms, basestring):
+        if isinstance(terms, common.basestring):
             
             terms = {terms}
         
@@ -360,7 +362,7 @@ class GOAnnotation(object):
             (
                 uniprot,
                 set.union(*(
-                    self.get_annots(uniprot)
+                    self.get_annot_ancestors(uniprot, asp)
                     for asp in self.aspects
                 ))
             )
@@ -488,7 +490,7 @@ class GOAnnotation(object):
             the selected UniProt IDs.
         """
         
-        if isinstance(name, basestring):
+        if isinstance(name, common.basestring):
             
             term = self.ontology.get_term(name)
             
@@ -516,10 +518,41 @@ class GOAnnotation(object):
         uniprots = uniprots or sorted(self.all_uniprots())
         
         return set(
-            numpy.array(uniprots)[
-                list(self.i_select_by_term(uniprots, term))
+            np.array(uniprots)[
+                list(self.i_select_by_term(term, uniprots))
             ]
         )
+    
+    
+    def expr_names_to_terms(self, expr):
+        """
+        Processes an expression built by names to expressions of terms.
+        
+        :arg str expr:
+            An expression using Gene Ontology names, parentheses and logical
+            operators.
+        """
+        
+        not_name = {'(', ')', 'AND', 'OR', 'NOT'}
+        
+        tokens_names = _reexprname.findall(expr)
+        tokens_terms = []
+        
+        if tokens_names:
+            
+            for t in tokens_names:
+                
+                t = t.strip()
+                
+                if not t:
+                    
+                    continue
+                
+                tokens_terms.append(
+                    t if t in not_name else self.get_term(t)
+                )
+        
+        return tokens_terms
     
     
     def select_by_expr(
@@ -554,11 +587,11 @@ class GOAnnotation(object):
         
         uniprots = uniprots or sorted(self.all_uniprots())
         
-        if isinstance(expr, basestring):
+        if isinstance(expr, common.basestring):
             
             # tokenizing expression if it is a string
             # (method is recursive)
-            expr = _rego.findall(expr)
+            expr = _reexprterm.findall(expr)
         
         # initial values
         result   = set()
@@ -612,7 +645,7 @@ class GOAnnotation(object):
                 
                 # token is a GO term
                 # get the vertex selection by the single term method
-                this_set = self._select_by_go(it)
+                this_set = self.i_select_by_term(it, uniprots = uniprots)
                 
                 if negate:
                     
@@ -667,7 +700,7 @@ class GOAnnotation(object):
         uniprots = uniprots or sorted(self.all_uniprots())
         
         # this is not an individual term but an expression
-        if isinstance(terms, basestring) and len(terms) > 10:
+        if isinstance(terms, common.basestring) and len(terms) > 10:
             
             result = self.select_by_expr(terms, uniprots = uniprots)
             
@@ -699,7 +732,7 @@ class GOAnnotation(object):
         
         idx = set.intersection(*[self.select_by_term(term) for term in terms])
         
-        return self._uniprot_return(result, uniprots, return_uniprots)
+        return self._uniprot_return(idx, uniprots, return_uniprots)
     
     
     def _uniprot_return(self, idx, uniprots, return_uniprots):
