@@ -897,18 +897,47 @@ class GOCustomAnnotation(object):
                 )
                 for cat in self._categories
             )
-    
-    
-    def get_go_ids(self):
         
-        self.terms = dict(
-            (
-                domain,
-                set(self.annot.ontology.get_term(name) for name in names)
-            )
-            for domain, names in iteritems(self.names)
+        self.categories = self._categories
+    
+    
+    def get_annotation(self, category, uniprots = None):
+        """
+        For a category name returns a set of UniProt IDs annotated with
+        the corresponding Gene Ontology terms or expression.
+        
+        :arg str category:
+            The category name, should be a key in the ``categories`` dict.
+        :arg set uniprots:
+            A set or list of UniProt IDs. If ``None``, annotations based on
+            all UniProts in GO annotation will be returned.
+        """
+        
+        self.go_annot.select()
+        
+        return self.go_annot.select(
+            self.categories[category],
+            uniprots = uniprots,
+            return_uniprots = True,
         )
-
+    
+    
+    def get_annotations(self, uniprots = None):
+        """
+        Returns a dict with set of UniProt IDs for each category.
+        
+        :arg set uniprots:
+            A set or list of UniProt IDs. If ``None``, annotations based on
+            all UniProts in GO annotation will be returned.
+        """
+        
+        return dict(
+            (
+                category,
+                self.get_annotation(category, uniprots = uniprots)
+            )
+            for category in self.categories.keys()
+        )
 
 
 def annotate(graph, organism = 9606, aspects = ('C', 'F', 'P')):
