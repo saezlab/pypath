@@ -220,12 +220,16 @@ class AnnotationBase(object):
         
         names = ()
         
-        for val in self.annot.values():
+        for values in self.annot.values():
             
-            if val:
+            if values:
                 
-                names = val._fields
-                break
+                for val in values:
+                    
+                    names = val._fields
+                    break
+            
+            break
         
         return names
     
