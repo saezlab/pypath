@@ -549,7 +549,7 @@ class GOAnnotation(object):
                     continue
                 
                 tokens_terms.append(
-                    t if t in not_name else self.get_term(t)
+                    t.lower() if t in not_name else self.get_term(t)
                 )
         
         return tokens_terms
@@ -603,6 +603,8 @@ class GOAnnotation(object):
         
         for it in expr:
             
+            print('new token: `%s`' % it)
+            
             # processing expression by tokens
             
             # we are in a sub-selection part
@@ -618,6 +620,7 @@ class GOAnnotation(object):
                     )
                     # empty stack
                     stack = []
+                    sub = False
                 
                 else:
                     
@@ -626,7 +629,7 @@ class GOAnnotation(object):
                     stack.append(it)
                 
             # we do actual processing of the expression
-            elif it == 'not':
+            elif it.lower() == 'not':
                 
                 # token is negation
                 # turn on negation for the next set
@@ -636,6 +639,7 @@ class GOAnnotation(object):
             # open a sub-selection part
             elif it == '(':
                 
+                print('starting new subexpr')
                 # token is a parenthesis
                 # start a new sub-selection
                 sub = True
@@ -646,6 +650,8 @@ class GOAnnotation(object):
                 # token is a GO term
                 # get the vertex selection by the single term method
                 this_set = self.i_select_by_term(it, uniprots = uniprots)
+                print('term: %s' % it)
+                print('this_set: %u' % len(this_set))
                 
                 if negate:
                     
@@ -654,11 +660,11 @@ class GOAnnotation(object):
                     # set negation again to False
                     negate = False
                 
-            elif it in ops:
+            elif it.lower() in ops:
                 
                 # token is an operator
                 # set it for use at the next operation
-                op = ops[it]
+                op = ops[it.lower()]
             
             # we found a set
             if this_set is not None:
@@ -666,7 +672,11 @@ class GOAnnotation(object):
                 # and an operator
                 if op is not None:
                     
+                    print('applying operator %s' % op)
+                    print('current result size: %u' % len(result))
+                    print('recent set size: %u' % len(this_set))
                     result = getattr(result, op)(this_set)
+                    print('resulted %u' % len(result))
                 
                 # this normally happens only at the first set
                 else:
