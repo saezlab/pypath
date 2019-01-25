@@ -248,6 +248,51 @@ intercell_categories = {
 }
 
 
+intercell_annotation_categories = [
+    ('MatrixDB_Secreted',),
+    ('MatrixDB_ECM',),
+    ('Surfaceome',),
+    ('GO_Intercell', 'adhesion'),
+    ('GO_Intercell', 'cell_surface'),
+    ('GO_Intercell', 'ecm'),
+    ('GO_Intercell', 'ecm structure'),
+    ('GO_Intercell', 'extracell enzyme'),
+    ('GO_Intercell', 'extracell peptidase'),
+    ('GO_Intercell', 'extracellular'),
+    ('GO_Intercell', 'hormone receptors'),
+    ('GO_Intercell', 'ion channels'),
+    ('GO_Intercell', 'junction'),
+    ('GO_Intercell', 'ligands'),
+    ('GO_Intercell', 'receptors'),
+    ('MatrixDB_Membrane',),
+    ('Membranome', 'Plasma membrane', 'extracellular side'),
+    ('CSPA',),
+    ('Locate', 'extracellular'),
+    ('Locate', 'extracellular region'),
+    ('Locate', 'plasma membrane'),
+    ('Matrisome', 'Core matrisome'),
+    ('Matrisome', 'Matrisome-associated'),
+    ('Matrisome', 'Core matrisome', 'Collagens'),
+    ('Matrisome', 'Core matrisome', 'ECM Glycoproteins'),
+    ('Matrisome', 'Core matrisome', 'Proteoglycans'),
+    ('Matrisome', 'Matrisome-associated', 'ECM Regulators'),
+    ('Matrisome', 'Matrisome-associated', 'ECM-affiliated Proteins'),
+    ('Matrisome', 'Matrisome-associated', 'Secreted Factors'),
+]
+
+[
+    ('GO_Intercell', 'adhesion'),
+    ('GO_Intercell', 'cell_surface'),
+    ('GO_Intercell', 'ecm structure'),
+    ('GO_Intercell', 'extracell enzyme'),
+    ('GO_Intercell', 'extracell peptidase'),
+    ('GO_Intercell', 'ion channels'),
+    ('GO_Intercell', 'junction'),
+    ('GO_Intercell', 'ligands'),
+    ('GO_Intercell', 'receptors'),
+]
+
+
 intercell_go_terms = {
     
     # cellular component

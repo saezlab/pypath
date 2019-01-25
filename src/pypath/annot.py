@@ -22,8 +22,12 @@ from future.utils import iteritems
 from past.builtins import xrange, range, reduce
 
 
+import sys
 import imp
 import collections
+import itertools
+import numpy as np
+import pandas as pd
 
 
 import pypath.dataio as dataio
@@ -31,6 +35,29 @@ import pypath.common as common
 import pypath.mapping as mapping
 import pypath.go as go
 import pypath.intercell_annot as intercell_annot
+
+
+annotation_sources = {
+    'Membranome',
+    'Exocarta',
+    'Vesiclepedia',
+    'Matrisome',
+    'Surfaceome',
+    'CellSurfaceProteinAtlas',
+    'HumanPlasmaMembraneReceptome',
+    'MatrixdbSecreted',
+    'MatrixdbMembrane',
+    'MatrixdbECM',
+    'Locate',
+    'GOIntercell',
+}
+
+default_fields = {
+    'Matrisome': ('mainclass', 'subclass'),
+    'Locate': ('location',),
+    'Vesiclepedia': ('vesicle',),
+    'Exocarta': ('vesicle',),
+}
 
 
 class AnnotationBase(object):
@@ -43,6 +70,7 @@ class AnnotationBase(object):
             ncbi_tax_id = 9606,
             input_method = None,
             input_args = None,
+            **kwargs,
         ):
         """
         Represents annotations for a set of proteins.
@@ -68,6 +96,18 @@ class AnnotationBase(object):
         self.mapper = mapper
         
         self.load()
+    
+    
+    def reload(self):
+        """
+        Reloads the object from the module level.
+        """
+        
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
     
     
     def load(self):
@@ -153,9 +193,9 @@ class AnnotationBase(object):
         
         for uniprot, annot in iteritems(self.annot):
             
-            for name, value in iteritems(kwargs):
+            for a in annot:
                 
-                if not any(
+                if all(
                     (
                         getattr(a, name) == value or (
                             isinstance(
@@ -165,19 +205,97 @@ class AnnotationBase(object):
                             getattr(a, name) in value
                         )
                     )
-                    for a in annot
+                    for name, value in iteritems(kwargs)
                 ):
                     
+                    result.add(uniprot)
                     break
-                
-                result.add(uniprot)
         
         return result
+    
+    
+    def get_subset_bool_array(self, uniprots, **kwargs):
+        
+        subset = self.get_subset(**kwargs)
+        
+        return np.array([
+            uniprot in subset
+            for uniprot in uniprots
+        ])
+    
+    
+    def to_bool_array(self, uniprots):
+        
+        total = self.to_set()
+        
+        return np.array([
+            uniprot in total
+            for uniprot in uniprots
+        ])
     
     
     def to_set(self):
         
         return set(self.annot.keys())
+    
+    
+    def all_uniprots(self):
+        
+        return sorted(self.annot.keys())
+    
+    
+    def to_array(self, uniprots = None, use_fields = None):
+        
+        uniprots = uniprots or self.all_uniprots()
+        all_fields = self.get_names()
+        fields = use_fields or all_fields
+        ifields = tuple(
+            i for i, field in enumerate(all_fields) if field in fields
+        )
+        result = [
+            (
+                (self.name,),
+                self.to_bool_array(uniprots = uniprots)
+            )
+        ]
+        
+        for i in xrange(len(fields)):
+            
+            this_ifields = ifields[:i+1]
+            this_fields  =  fields[:i+1]
+            
+            value_combinations = set(
+                tuple(annot[j] for j in this_ifields)
+                for annots in self.annot.values()
+                for annot in annots
+            )
+            value_combinations = sorted(
+                values
+                for values in value_combinations
+                if not any(v is None for v in values) and
+                not any(isinstance(v, float) for v in values)
+            )
+            
+            for values in value_combinations:
+                
+                this_values = dict(zip(this_fields, values))
+                
+                this_array = self.get_subset_bool_array(
+                    uniprots = uniprots,
+                    **this_values,
+                )
+                
+                result.append(
+                    (
+                        (self.name,) + values,
+                        this_array,
+                    )
+                )
+        
+        return (
+            tuple(r[0] for r in result),
+            np.vstack(r[1] for r in result).T
+        )
     
     
     def coverage(self, other):
@@ -269,12 +387,13 @@ class AnnotationBase(object):
 class Membranome(AnnotationBase):
     
     
-    def __init__(self):
+    def __init__(self, **kwargs):
         
         AnnotationBase.__init__(
             self,
             name = 'Membranome',
             input_method = 'get_membranome',
+            **kwargs,
         )
     
     
@@ -393,13 +512,14 @@ class Matrisome(AnnotationBase):
 class Surfaceome(AnnotationBase):
     
     
-    def __init__(self, mapper = None):
+    def __init__(self, mapper = None, **kwargs):
         
         AnnotationBase.__init__(
             self,
             name = 'Surfaceome',
             input_method = 'get_surfaceome',
             mapper = mapper,
+            **kwargs,
         )
     
     
@@ -451,7 +571,7 @@ class CellSurfaceProteinAtlas(AnnotationBase):
 class HumanPlasmaMembraneReceptome(AnnotationBase):
     
     
-    def __init__(self, mapper = None):
+    def __init__(self, mapper = None, **kwargs):
         """
         The name of this resource abbreviated as `HPMR`.
         """
@@ -461,6 +581,7 @@ class HumanPlasmaMembraneReceptome(AnnotationBase):
             name = 'HPMR',
             input_method = 'get_hpmr',
             mapper = mapper,
+            **kwargs,
         )
     
     
@@ -506,7 +627,7 @@ class MatrixdbSecreted(MatrixdbBase):
             NCBI Taxonomy ID of the organism.
         """
         
-        MatrixdbAnnotation.__init__(
+        MatrixdbBase.__init__(
             self,
             category = 'Secreted',
             ncbi_tax_id = ncbi_tax_id,
@@ -524,7 +645,7 @@ class MatrixdbMembrane(MatrixdbBase):
             NCBI Taxonomy ID of the organism.
         """
         
-        MatrixdbAnnotation.__init__(
+        MatrixdbBase.__init__(
             self,
             category = 'Membrane',
             ncbi_tax_id = ncbi_tax_id,
@@ -542,7 +663,7 @@ class MatrixdbECM(MatrixdbBase):
             NCBI Taxonomy ID of the organism.
         """
         
-        MatrixdbAnnotation.__init__(
+        MatrixdbBase.__init__(
             self,
             category = 'ECM',
             ncbi_tax_id = ncbi_tax_id,
@@ -662,3 +783,200 @@ class GOIntercell(AnnotationBase):
     def _process_method(self, *args, **kwargs):
         
         pass
+
+
+class AnnotationTable(object):
+    
+    
+    def __init__(
+            self,
+            uniprots = None,
+            use_sources = None,
+            use_fields = None,
+            ncbi_tax_id = 9606,
+            swissprot_only = True,
+            keep_annotators = False,
+        ):
+        """
+        Sorry Nico I don't write docs because lab meeting tomorrow!
+        """
+        
+        self._module = sys.modules[self.__module__]
+        self.use_sources = use_sources or annotation_sources
+        self.use_fields = use_fields or default_fields
+        self.ncbi_tax_id = ncbi_tax_id
+        self.keep_annotators = keep_annotators
+        self.uniprots = (
+            uniprots or
+            sorted(
+                dataio.all_uniprots(
+                    organism = ncbi_tax_id,
+                    swissprot = swissprot_only,
+                )
+            )
+        )
+        self.rows = dict(
+            reversed(i)
+            for i in enumerate(self.uniprots)
+        )
+    
+    
+    def reload(self):
+        """
+        Reloads the object from the module level.
+        """
+        
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    
+    def load(self):
+        
+        annots = {}
+        names  = []
+        arrays = []
+        
+        for cls in self.use_sources:
+            
+            annot = getattr(self._module, cls)(
+                ncbi_tax_id = self.ncbi_tax_id
+            )
+            
+            use_fields = (
+                self.use_fields[cls] if cls in self.use_fields else None
+            )
+            
+            this_names, this_array = annot.to_array(
+                uniprots = self.uniprots,
+                use_fields = use_fields
+            )
+            
+            names.extend(this_names)
+            arrays.append(this_array)
+            
+            if self.keep_annotators:
+                
+                annots[annot.name] = annot
+        
+        self.annots = annots
+        self.names = np.array(list(itertools.chain(names)))
+        self.data = np.hstack(arrays)
+        self.set_cols()
+        self.uniprots = np.array(self.uniprots)
+    
+    
+    def set_cols(self):
+        
+        self.cols = dict((name, i) for i, name in enumerate(self.names))
+    
+    
+    def keep(self, keep):
+        
+        ikeep = np.array([
+            i for i, name in enumerate(self.names) if name in keep
+        ])
+        
+        self.names = self.names[ikeep]
+        self.data  = self.data[:,ikeep]
+        self.set_cols()
+    
+    
+    def make_sets(self):
+        
+        self.sets = dict(
+            (
+                name,
+                set(self.uniprots[self.data[:,i]])
+            )
+            for i, name in enumerate(self.names)
+        )
+    
+    
+    def annotate_network(self, pa):
+        
+        nodes = pa.graph.vs['name']
+        edges = [
+            (
+                nodes[e.source],
+                nodes[e.target]
+            )
+            for e in pa.graph.es
+        ]
+        
+        nodeannot = []
+        edgeannot = []
+        
+        for i, uniprot in enumerate(nodes):
+            
+            for name, uniprots in iteritems(self.sets):
+                
+                if uniprot in uniprots:
+                    
+                    nodeannot.append((name, i))
+        
+        for i, (uniprot1, uniprot2) in enumerate(edges):
+            
+            for name1, uniprots1 in iteritems(self.sets):
+                
+                for name2, uniprots2 in iteritems(self.sets):
+                    
+                    if uniprot1 in uniprots1 and uniprot2 in uniprots2:
+                        
+                        edgeannot.append((name1, name2, i))
+        
+        return nodeannot, edgeannot
+    
+    
+    def network_stats(self, pa):
+        
+        nodeannot, edgeannot = self.annotate_network(pa)
+        
+        nodestats = collections.Counter('__'.join(n[0]) for n in nodeannot)
+        
+        edgestats = collections.Counter(
+            tuple(sorted(('__'.join(e[0]), '__'.join(e[1]))))
+            for e in edgeannot
+        )
+        
+        return nodestats, edgestats
+    
+    
+    def export_network_stats(self, pa):
+        
+        nodestats, edgestats = self.network_stats(pa)
+        
+        with open('annot_edgestats2.tsv', 'w') as fp:
+            
+            _ = fp.write('\t'.join(('name1', 'name2', 'count')))
+            _ = fp.write('\n')
+            
+            _ = fp.write('\n'.join(
+                '%s\t%s\t%u' % (name1, name2, cnt)
+                for (name1, name2), cnt in iteritems(edgestats)
+            ))
+        
+        with open('annot_nodestats2.tsv', 'w') as fp:
+            
+            _ = fp.write('\t'.join(('name', 'count')))
+            _ = fp.write('\n')
+            
+            _ = fp.write('\n'.join(
+                '%s\t%u' % (name, cnt)
+                for name, cnt in iteritems(nodestats)
+            ))
+    
+    
+    def to_dataframe(self):
+        
+        colnames = ['__'.join(name) for name in self.names]
+        
+        df = pd.DataFrame(
+            data = self.data,
+            index = self.uniprots,
+            columns = colnames,
+        )
+        
+        return df
