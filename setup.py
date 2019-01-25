@@ -94,6 +94,7 @@ setup(
         'httplib2',
         'future',
         'tqdm',
+        'fabric3',
     ],
     extras_require = {
         'tests': [
