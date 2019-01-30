@@ -229,9 +229,12 @@ def get_pdb():
     return u_pdb, pdb_u
 
 
-def get_pfam(uniprots=None, organism=None):
-    if uniprots is None and organism is None:
-        return None, None
+def get_pfam(uniprots = None, organism = 9606):
+    
+    if uniprots is None:
+        
+        uniprots = all_uniprots(organism = organism, swissprot = True)
+    
     u_pfam = {}
     pfam_u = {}
     if uniprots is not None:

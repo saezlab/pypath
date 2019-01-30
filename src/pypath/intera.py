@@ -788,11 +788,13 @@ class Regulation(object):
             self.add_refs(other.refs)
 
 
-class Complex(object):
-    def __init__(self, proteins, name, long_name, sources):
-        self.synonyms = set([])
+class ComplexOld(object):
+    
+    def __init__(self, proteins, name, long_name, sources = None):
+        
+        self.synonyms = set()
         sources = sources if type(sources) is list else [sources]
-        sources = set(sources)
+        sources = set(sources) if sources else set()
         proteins = proteins if type(proteins) is list else list(proteins)
         for key, val in iteritems(locals()):
             setattr(self, key, val)
@@ -800,16 +802,150 @@ class Complex(object):
         self.constitution = Counter(proteins)
 
     def __hash__(self):
+        
         return hash(tuple(sorted(self.proteins)))
 
     def __contains__(self, item):
+        
         return item in self.proteins
 
     def __eq__(self, other):
+        
         return self.proteins == other.proteins
 
 
+class Complex(object):
+    
+    
+    def __init__(
+            self,
+            components,
+            name = None,
+            synonyms = None,
+            sources = None,
+            interactions = None,
+            proteins = None,
+            long_name = None,
+        ):
+        """
+        Represents a molecular complex.
+        
+        components : list,dict
+            Either a list of identifiers or a dict with identifiers as keys
+            and stoichiometric coefficients as values.
+        name : str
+            A custom name or identifier of the complex.
+        synonyms : dict
+            Alternative names, with type of the name is key and name as
+            value in the dict.
+        sources : set
+            Databases the complex has been defined in.
+        interactions : list,dict
+            Interactions between the components of the complex. Either
+            a list of tuples of component IDs or a dict with tuples as
+            keys and custom interaction properties as values.
+        proteins : list,dict
+            Synonym for `components`, kept for compatibility.
+        long_name : str
+            More verbose name, kept for compatibility, will be added to
+            `synonyms`.
+        """
+        
+        components = components or proteins
+        
+        if not isinstance(components, dict):
+            
+            self.components = {}
+            for comp in components:
+                
+                self.components[comp] = 1
+            
+        else:
+            
+            self.components = components
+        
+        self.proteins = self.components
+        self.name = name
+        self.synonyms = synonyms
+        self.sources = common.to_set(sources)
+        
+        if long_name:
+            
+            self.add_synonym('long_name', synonym)
+        
+        self.interactions = interactions
+    
+    
+    def __str__(self):
+        
+        return '-'.join(sorted(self.components.keys()))
+    
+    
+    def __repr__(self):
+        
+        return 'Complex%s: %s' % (
+            ' %s' % self.name if self.name else '',
+            self.__str__(),
+        )
+    
+    
+    def __hash__(self):
+        
+        return hash(self.__str__())
+    
+    
+    def __contains__(self, other):
+        
+        return other in self.components
+    
+    
+    def __eq__(self):
+        
+        self.__hash__() == other.__hash__()
+    
+    
+    def get_synonym(self, typ):
+        
+        if self.synonyms and typ in self.synonyms:
+            
+            return self.synonyms[typ]
+    
+    
+    def set_synonym(self, typ, synonym):
+        
+        self.synonyms = self.synonyms or {}
+        self.synonyms[typ] = synonym
+    
+    
+    def get_interaction(self, component1, component2):
+        
+        if self.has_interaction(component1, component2):
+            
+            return self.interactions[(component1, component2)]
+    
+    
+    def set_interaction(self, component1, component2, interaction):
+        
+        key = (component1, component2)
+        
+        self.interactions = self.interactions or {}
+        self.interactions[key] = interaction
+    
+    
+    def has_interaction(self, component1, component2):
+        
+        key = (component1, component2)
+        
+        return self.interactions and key in self.interactions
+    
+    
+    def add_source(self, source):
+        
+        self.sources.add(source)
+
+
 class Interface(object):
+    
     def __init__(self,
                  id_a,
                  id_b,

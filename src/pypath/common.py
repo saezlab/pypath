@@ -35,7 +35,7 @@ __all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes',
            'delEmpty', 'get_args', 'something', 'rotate', 'cleanDict',
            'igraph_graphics_attrs', 'md5', 'mod_keywords', 'Namespace', 'fun',
            'taxids', 'taxa', 'phosphoelm_taxids', 'dbptm_taxids',
-           'uniqOrdList', 'dict_diff']
+           'uniqOrdList', 'dict_diff', 'to_set', 'to_list']
 
 # get the location
 ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -182,6 +182,49 @@ aaletters = dict(zip(aacodes.values(), aacodes.keys()))
 simpleTypes = set([int, long, float, str, unicode, bytes, bool, type(None)])
 numTypes = set([int, long, float])
 charTypes = set([str, unicode, bytes])
+
+
+def to_set(var):
+    """
+    Makes sure the object `var` is a set, if it is a list converts it to set,
+    otherwise it creates a single element set out of it.
+    If `var` is None returns empty set.
+    """
+    
+    elif isinstance(var, set):
+        
+        return var
+        
+    elif var is None:
+        
+        return set()
+        
+    elif isinstance(var, list):
+        
+        return set(var)
+        
+    else:
+        
+        return set([var])
+
+
+def to_list(var):
+    """
+    Makes sure `var` is a list otherwise creates a single element list
+    out of it. If `var` is None returns empty list.
+    """
+    
+    if isinstance(var, list):
+        
+        return var
+        
+    elif var is None:
+        
+        return []
+        
+    else:
+        
+        return [var]
 
 
 # From http://www.peterbe.com/plog/uniqifiers-benchmark

@@ -96,6 +96,7 @@ part of their content can be used when processing along
 strict conditions to have only binary interactions with
 references.
 '''
+
 reaction = {
     'Reaction resources': input_formats.ReadSettings(
         name="reaction resources",
