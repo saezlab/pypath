@@ -209,7 +209,8 @@ class ReadSettings:
                  curlArgs=None,
                  must_have_references=True,
                  huge=False,
-                 resource=None):
+                 resource=None,
+                 unique_fields = None):
         """
         :param str mark_source:
             Creates a boolean vertex attribute and sets it True for the
@@ -247,6 +248,7 @@ class ReadSettings:
         self.resource = self.name if resource is None else resource
         self.mark_source = mark_source
         self.mark_target = mark_target
+        self.unique_fields = unique_fields or set()
 
 
 class ReadList:

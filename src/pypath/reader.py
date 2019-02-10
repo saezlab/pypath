@@ -1,9 +1,37 @@
 import os
-
+import itertools
+import pandas as pd
 import pypath.common as common
 import pypath.dataio as dataio
-import curl
+import pypath.curl as curl
 
+
+
+
+
+
+FIELDS = {
+    'nameColA',
+    'nameColB',
+    'nameTypeA',
+    'nameTypeB',
+    'typeA',
+    'typeB',
+    'isDirected',
+    'sign',
+    'references',
+    'taxonA',
+    'taxonB',
+    'ncbiTaxId',
+    'interactionType',
+    'resource'
+    }
+
+
+UNIQUE_FIELDS = {
+    'nameColA',
+    'nameColB'
+}
 
 class ReaderBase(object):
 
@@ -71,8 +99,51 @@ class Reader(ReaderBase):
             yield Row(row)
 
 
+    def __iter__(self):
+        for row in self.iter_rows():
+            self.new_row(row)
+            for values in itertools.product(*self.field_processors):
+                yield values
+
+
+    def iter_dicts(self):
+        for values in self:
+            yield dict(zip(self.fields, values))
+
+
+    def get_dataframe(self):
+        return pd.DataFrame(list(self), columns=self.fields)
+
+    
+    def new_row(self, row):
+        for fp in self.field_processors:
+            fp.new_row(row)
+    
+
+    def setup_fields(self):
+        self.fields = FIELDS
+        self.fields = self.fields & set(self.settings.extraEdgeAttrs.keys())
+        self.fields = self.fields & set(self.settings.extraNodeAttrsA.keys())
+        self.fields = self.fields & set(self.settings.extraNodeAttrsB.keys())
+        self.fields = sorted(self.fields)
+        self.unique_fields = UNIQUE_FIELDS
+        self.unique_fields = (
+            self.unique_fields & set(self.settings.unique_fields)
+        )
+
+
+    def setup_field_processors(self):
+        self.field_processors = [
+
+            FieldProcessor(getattr(self.settings, field),
+                           field in self.unique_fields)
+
+            for field in self.fields
+        ]
+
+
 class FieldProcessor(object):
-    def __init__(self, field, method = None):
+    def __init__(self, field, is_unique = False):
         """
         :arg field:
             Field processing definition
@@ -81,7 +152,7 @@ class FieldProcessor(object):
             the processed field value
         """
         self.field = field
-        self.method = method
+        self.single_value = is_unique
         self.failed = False
         self.setup_method()
 
@@ -90,8 +161,12 @@ class FieldProcessor(object):
         fields = self.process()
         if isinstance(fields, common.simpleTypes):
             fields = (fields,)
-        for field in self.process():
-            yield field
+        if self.single_value:
+            for field in self.process():
+                yield field
+        
+        else:
+            yield set(fields)
 
 
 
@@ -100,8 +175,8 @@ class FieldProcessor(object):
         if isinstance(self._method, common.basestring):
             self._method = self.str_method
 
-        elif callable(self.method):
-            self._method = self.method
+        elif callable(self.field):
+            self._method = self.field
 
         elif isinstance(self.field, int):
             self.i = self.field
@@ -149,8 +224,6 @@ class FieldProcessor(object):
 
     def new_row(self, row):
         self.row = row
-
-
 
 
     def process(self):
