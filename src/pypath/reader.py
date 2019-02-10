@@ -13,6 +13,17 @@ class ReaderBase(object):
 
 
     def __iter__(self):
+        for i, row in enumerate(self.resource):
+            if i < self.settings.header or not row:
+                continue
+
+            if isinstance(row, common.basestring):
+                if row[0] == "#":
+                    continue
+
+                row = row.strip('\n\r ').split(self.settings.separator)
+
+            yield row
 
 
     def setup_resource(self):
@@ -31,6 +42,13 @@ class ReaderBase(object):
                 curl.is_url(self.input)
             ):
                 c = curl.Curl(self.input, **self.settings.curlArgs)
+                self.resource = c.result
+
+        elif hasattr(self.input, '__iter__'):
+            self.resource = self.input
+
+        else:
+            self.resource = []
 
 
 
