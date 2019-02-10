@@ -66,7 +66,7 @@ class Reader(ReaderBase):
         ReaderBase.__init__(self, settings)
 
 
-    def __iter__(self):
+    def iter_rows(self):
         for row in ReaderBase.__iter__(self):
             yield Row(row)
 
@@ -87,18 +87,78 @@ class FieldProcessor(object):
 
 
     def __iter__(self):
+        fields = self.process()
+        if isinstance(fields, common.simpleTypes):
+            fields = (fields,)
+        for field in self.process():
+            yield field
 
-        pass
 
 
     def setup_method(self):
-        if callable(self.method):
+
+        if isinstance(self._method, common.basestring):
+            self._method = self.str_method
+
+        elif callable(self.method):
             self._method = self.method
 
+        elif isinstance(self.field, int):
+            self.i = self.field
+            self._method = self.index_method
+
+        elif isinstance(self.field, (tuple,list)):
+            self._method = self.tuple_method
+
+        elif isinstance(self.field, dict):
+            self._method = self.dict_method
+
+
+    def str_method(self, row = None):
+        return self.field
+
+
+    def index_method(self, row = None):
+        return self.row[self.i]
+
+
+    def tuple_method(self, row = None):
+        self.i = self.field[0]
+        value = self.index_method()
+
+        if isinstance(self.field[1], common.basestring) and value:
+            value = value.split(self.field[1])
+
         else:
+            value = ()
+
+        if len(self.field) > 2:
+            value = bool(set(value) & set(self.field[2]))
+
+        return value
 
 
-    def process_commom(self):
+    def dict_method(self):
+        self.i = self.field['col']
+        value = self.index_method()
+        mapping = self.field['dict']
+
+        return mapping[value] if value in mapping else None
+
+
+
+    def new_row(self, row):
+        self.row = row
+
+
+
+
+    def process(self):
+        self.process_common()
+        return self._method(self.row)
+
+
+    def process_common(self):
         pass
 
 

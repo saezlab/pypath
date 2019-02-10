@@ -173,9 +173,9 @@ if 'unicode' not in __builtins__:
 aaletters = dict(zip(aacodes.values(), aacodes.keys()))
 
 # Type definitions
-simpleTypes = set([int, long, float, str, unicode, bytes, bool, type(None)])
-numTypes = set([int, long, float])
-charTypes = set([str, unicode, bytes])
+simpleTypes = (int, long, float, str, unicode, bytes, bool, type(None))
+numTypes = (int, long, float)
+charTypes = (str, unicode, bytes)
 
 
 # From http://www.peterbe.com/plog/uniqifiers-benchmark
