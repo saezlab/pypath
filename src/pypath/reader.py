@@ -29,7 +29,7 @@ class ReaderBase(object):
                 os.path.exists(self.input) or
                 self.input.startswith('http://') or
                 self.input.startswith('ftp://')
-            )
+            ):
 
 
 class Reader(ReaderBase):

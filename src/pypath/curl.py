@@ -84,6 +84,8 @@ import gzip
 import zipfile
 import tarfile
 import hashlib
+import re
+
 
 try:
     from fabric.network import connect, HostConnectionCache
@@ -123,6 +125,13 @@ DEBUG = False
 LASTCURL = None
 
 show_cache = False
+
+_re_url = re.compile(r'^(?:http|https|ftp)://')
+
+
+def is_url(url):
+    return bool(_re_url.match(url))
+
 
 
 class _global_context(object):
