@@ -2,6 +2,7 @@ import os
 
 import pypath.common as common
 import pypath.dataio as dataio
+import curl
 
 
 class ReaderBase(object):
@@ -27,9 +28,11 @@ class ReaderBase(object):
                 )
             elif (
                 os.path.exists(self.input) or
-                self.input.startswith('http://') or
-                self.input.startswith('ftp://')
+                curl.is_url(self.input)
             ):
+                c = curl.Curl(self.input, **self.settings.curlArgs)
+
+
 
 
 class Reader(ReaderBase):
