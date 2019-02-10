@@ -63,7 +63,12 @@ class Reader(ReaderBase):
         :arg input_formats.ReadSettings settings:
             ReadSettings instance
         """
-        self.settings = settings
+        ReaderBase.__init__(self, settings)
+
+
+    def __iter__(self):
+        for row in ReaderBase.__iter__(self):
+            yield Row(row)
 
 
 class FieldProcessor(object):
@@ -100,7 +105,7 @@ class FieldProcessor(object):
 
 
 class Row(object):
-
+    __slots__ = ["row", "failed"]
 
     def __init__(self, row):
         self.row = row
