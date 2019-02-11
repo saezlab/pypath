@@ -78,6 +78,7 @@ import time
 import copy
 import struct
 import json
+import csv
 import pycurl
 import webbrowser
 import requests
@@ -4998,6 +4999,17 @@ def cellphonedb_interactions(
                 'ligand',
                 'ligand',
             )
+
+
+def cellphonedb_complexes():
+    
+    url = urls.urls['cellphonedb']['heterodimers']
+    
+    c = curl.Curl(url, silent = False, large = True)
+    return c
+    tab = list(csv.reader(c.result))
+    
+    return tab
 
 
 def open_pubmed(pmid):

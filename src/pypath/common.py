@@ -191,7 +191,7 @@ def to_set(var):
     If `var` is None returns empty set.
     """
     
-    elif isinstance(var, set):
+    if isinstance(var, set):
         
         return var
         

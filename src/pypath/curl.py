@@ -558,7 +558,8 @@ class FileOpener(object):
 
     def open(self):
         if self.fileobj is None and os.path.exists(self.fname):
-            self.fileobj = open(self.fname, 'rb')
+            mode = 'r' if self.encoding else 'rb'
+            self.fileobj = open(self.fname, mode, encoding = self.encoding)
 
     def extract(self):
         getattr(self, 'open_%s' % self.type)()
@@ -1062,14 +1063,22 @@ class Curl(FileOpener):
             self.resp_headers_dict[name] = value
 
     def guess_encoding(self):
+        
         if self.encoding is None:
+            
             if not self.use_cache:
+                
                 if 'content-type' in self.resp_headers:
+                    
                     content_type = self.resp_headers['content-type'].lower()
                     match = re.search(r'charset=(\S+)', content_type)
                     if match:
                         self.encoding = match.group(1)
-
+        
+        if self.encoding is None:
+            
+            self.encoding = 'utf-8'
+    
     def get_type(self):
         self.multifile = False
         if self.filename[-3:].lower() == 'zip' or self.compr == 'zip':
@@ -1215,6 +1224,7 @@ class Curl(FileOpener):
             self.outfile = self.cache_file_name
 
     def process_file(self):
+        self.guess_encoding()
         self.get_type()
         self.copy_file()
         self.open_file()
