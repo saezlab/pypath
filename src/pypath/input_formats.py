@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+k#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 #
@@ -193,22 +193,24 @@ class ReadSettings:
                  sign=False,
                  inFile=None,
                  references=False,
-                 extraEdgeAttrs={},
-                 extraNodeAttrsA={},
-                 extraNodeAttrsB={},
+                 extraEdgeAttrs=None,
+                 extraNodeAttrsA=None,
+                 extraNodeAttrsB=None,
                  header=False,
                  taxonA=9606,
                  taxonB=9606,
                  ncbiTaxId=False,
                  interactionType='PPI',
-                 positiveFilters=[],
-                 negativeFilters=[],
+                 positiveFilters=None,
+                 negativeFilters=None,
                  mark_source = None,
                  mark_target = None,
-                 inputArgs={},
+                 inputArgs=None,
+                 curlArgs=None,
                  must_have_references=True,
                  huge=False,
-                 resource=None):
+                 resource=None,
+                 unique_fields = None):
         """
         :param str mark_source:
             Creates a boolean vertex attribute and sets it True for the
@@ -225,9 +227,9 @@ class ReadSettings:
         self.nameTypeB = nameTypeB
         self.isDirected = isDirected
         self.inFile = inFile
-        self.extraEdgeAttrs = extraEdgeAttrs
-        self.extraNodeAttrsA = extraNodeAttrsA
-        self.extraNodeAttrsB = extraNodeAttrsB
+        self.extraEdgeAttrs = extraEdgeAttrs or {}
+        self.extraNodeAttrsA = extraNodeAttrsA or {}
+        self.extraNodeAttrsB = extraNodeAttrsB or {}
         self.name = name
         self.separator = separator
         self.header = header
@@ -237,14 +239,16 @@ class ReadSettings:
         self.taxonB = taxonB
         self.ncbiTaxId = ncbiTaxId
         self.intType = interactionType
-        self.positiveFilters = positiveFilters
-        self.negativeFilters = negativeFilters
-        self.inputArgs = inputArgs
+        self.positiveFilters = positiveFilters or []
+        self.negativeFilters = negativeFilters or []
+        self.inputArgs = inputArgs or {}
+        self.curlArgs = curlArgs or {}
         self.must_have_references = must_have_references and bool(references)
         self.huge = huge
         self.resource = self.name if resource is None else resource
         self.mark_source = mark_source
         self.mark_target = mark_target
+        self.unique_fields = unique_fields or set()
 
 
 class ReadList:
