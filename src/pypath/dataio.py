@@ -5006,7 +5006,7 @@ def cellphonedb_complexes():
     url = urls.urls['cellphonedb']['heterodimers']
     
     c = curl.Curl(url, silent = False, large = True)
-    return c
+    
     tab = list(csv.reader(c.result))
     
     return tab

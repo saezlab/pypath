@@ -716,11 +716,20 @@ class Curl(FileOpener):
         self.silent = silent
         self.debug = debug or DEBUG
         self.url = url
+        self.local_file = os.path.exists(self.url)
         self.get = get
         self.force_quote = force_quote
-        self.process_url()
-        self.url_fix()
-        self.set_get()
+        
+        if not self.local_file:
+            
+            self.process_url()
+            self.url_fix()
+            self.set_get()
+            
+        else:
+            
+            self.filename = os.path.split(self.url)[-1]
+        
         self.compr = compr
         # self.get_type()
         self.progress = None
@@ -740,6 +749,12 @@ class Curl(FileOpener):
         self.cache_dir = cache_dir
         self.cache = cache
         self.init_cache()
+        
+        if self.local_file:
+            
+            self.cache_file_name = self.url
+            self.use_cache = True
+        
         self.write_cache = write_cache
         self.outfile = outf
 
@@ -772,9 +787,22 @@ class Curl(FileOpener):
                     self.curl_setup()
                 if call:
                     self.curl_call()
+            
         elif not self.silent:
-            sys.stdout.write('\t:: Loading data from cache '
-                             'previously downloaded from %s\n' % self.domain)
+            
+            if self.local_file:
+                
+                sys.stdout.write(
+                    '\t :: Loading data from local file `%s`' % self.url
+                )
+                
+            else:
+                
+                sys.stdout.write(
+                    '\t:: Loading data from cache '
+                    'previously downloaded from %s\n' % self.domain
+                )
+            
             sys.stdout.flush()
         if process and not self.download_failed and not DRYRUN:
             self.process_file()
