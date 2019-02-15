@@ -18,3 +18,26 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import pypath.dataio as dataio
+import pypath.intera as intera
+
+
+class AbstractComplexResource(object):
+    """
+    A resource which provides information about molecular complexes.
+    """
+    
+    
+    def __init__(self, name, input_method):
+        """
+        name : str
+            Custom name for the resource.
+        input_method : callable
+            Method providing the input data.
+        process_method : callable
+            Method processing the data and yielding ``intera.Complex``
+            instances.
+        """
+        
+        self.name = name
+        self.input_method = input_method

@@ -1112,9 +1112,9 @@ class Curl(FileOpener):
                     if match:
                         self.encoding = match.group(1)
         
-        if self.encoding is None:
+        #if self.encoding is None:
             
-            self.encoding = 'utf-8'
+            #self.encoding = 'utf-8'
     
     def get_type(self):
         self.multifile = False
