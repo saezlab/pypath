@@ -63,3 +63,12 @@ class TestDataio(object):
         result = method(**args)
         
         assert len(result)
+    
+    
+    def test_signor_interactions(self):
+        
+        s = list(dataio.signor_interactions())
+        
+        assert len(s) > 18000
+        assert 'phosphorylation' in set(i[9] for i in s)
+        

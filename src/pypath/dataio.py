@@ -2056,10 +2056,10 @@ def ptm_orthology():
         data = c.result
 
         for _ in xrange(4):
-            null = data.readline()
+            
+            __ = next(data)
 
         for r in data:
-
 
             r = r.decode('utf-8').split('\t')
 
@@ -5918,7 +5918,7 @@ def signor_interactions(organism=9606):
 
     _ = next(c.result)
     sep = '@#@#@'
-    lines = ''.join(l.decode('utf-8') for l in c.result)
+    lines = ''.join(l for l in c.result)
     lines = csv_sep_change(lines, '\t', sep).split('\n')
 
     result = filter(lambda l: len(l) > 1, map(lambda l: l.split(sep), lines))

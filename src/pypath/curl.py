@@ -566,14 +566,32 @@ class FileOpener(object):
             self.extract()
 
     def open(self):
+        """
+        Opens the file if exists.
+        """
+        
         if self.fileobj is None and os.path.exists(self.fname):
-            mode = 'r' if self.encoding else 'rb'
-            self.fileobj = open(self.fname, mode, encoding = self.encoding)
+            
+            if self.encoding and self.type == 'plain':
+                
+                self.fileobj = open(self.fname, 'r', encoding = self.encoding)
+                
+            else:
+                
+                self.fileobj = open(self.fname, 'rb')
 
     def extract(self):
+        """
+        Calls the extracting method for compressed files.
+        """
+        
         getattr(self, 'open_%s' % self.type)()
 
     def open_tgz(self):
+        """
+        Extracts files from tar gz.
+        """
+        
         self.files_multipart = {}
         self.sizes = {}
         self.tarfile = tarfile.open(fileobj=self.fileobj, mode='r:gz')
@@ -1044,23 +1062,21 @@ class Curl(FileOpener):
                 self.curl.setopt(pycurl.PROGRESSFUNCTION, self.update_progress)
 
     def bytes2unicode(self, string, encoding=None):
+        
         if type(string) is unicode:
             return string
         if encoding is not None:
             return string.decode(encoding)
         else:
             try:
-                return string.decode('ascii')
+                return string.decode('utf-8')
+                
             except UnicodeDecodeError:
                 try:
-                    return string.decode('utf-8')
-                
-                except UnicodeDecodeError:
-                    try:
-                        return string.decode('iso-8859-1')
-                    except:
-                        self.print_debug_info('ERROR', 'String decoding error')
-                        return u''
+                    return string.decode('iso-8859-1')
+                except:
+                    self.print_debug_info('ERROR', 'String decoding error')
+                    return u''
 
     def unicode2bytes(self, string, encoding=None):
         if type(string) is bytes:
@@ -1112,9 +1128,9 @@ class Curl(FileOpener):
                     if match:
                         self.encoding = match.group(1)
         
-        #if self.encoding is None:
+        if self.encoding is None:
             
-            #self.encoding = 'utf-8'
+            self.encoding = 'utf-8'
     
     def get_type(self):
         self.multifile = False
