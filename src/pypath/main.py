@@ -2304,8 +2304,13 @@ class PyPath(object):
                     curl.CACHE = _store_cache
 
                 elif os.path.isfile(settings.inFile):
-                    infile = codecs.open(
-                        settings.inFile, encoding='utf-8', mode='r')
+                    infile = curl.Curl(
+                        settings.inFile,
+                        large = True,
+                        silent = False
+                    ).result
+                    #infile = codecs.open(
+                    #settings.inFile, encoding='utf-8', mode='r')
                     self.ownlog.msg(2, "%s opened..." % settings.inFile)
 
                 if infile is None:
@@ -2375,7 +2380,7 @@ class PyPath(object):
 
                     if hasattr(line, 'decode'):
                         line = line.decode('utf-8')
-
+                    
                     # XXX: Maybe str.strip() instead of two str.replace()?
                     line = line.replace('\n', '').replace('\r', '').\
                         split(settings.separator)
@@ -2862,7 +2867,9 @@ class PyPath(object):
         mapTbl = ''.join([originalNameType, "_", defaultNameType])
 
         if type(_input) in common.charTypes and os.path.isfile(_input):
-            _input = codecs.open(_input, encoding='utf-8', mode='r')
+            _input = curl.Curl(_input).result
+            
+            #codecs.open(_input, encoding='utf-8', mode='r')
 
         if _input is None:
             self.ownlog.msg(2, ("""Could not find '\

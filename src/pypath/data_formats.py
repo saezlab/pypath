@@ -785,7 +785,7 @@ ptm = {
                 }
             }
         },
-        inFile='get_domino_interactions',
+        inFile='domino_interactions',
         references=(5, ';'),
         header=False,
         extraEdgeAttrs={'domino_methods': (4, ';')},

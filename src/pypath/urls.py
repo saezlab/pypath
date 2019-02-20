@@ -220,7 +220,12 @@ urls = {
     'domino': {
         'label': 'Domino PPI and domain-motif database in MI-TAB format',
         'url': 'ftp://mint.bio.uniroma2.it/pub/domino/release/mitab/'
-        '2009-10-22/2009-10-22-domino-full-binary.mitab26'
+        '2009-10-22/2009-10-22-domino-full-binary.mitab26',
+        'module_data': os.path.join(
+            common.ROOT,
+            'data',
+            'domino_2009-10-22-full-binary.mitab26.gz',
+        ),
     },
     'hprd_all': {
         'label': 'HPRD all data in flat files',

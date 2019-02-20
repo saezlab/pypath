@@ -722,7 +722,8 @@ def get_3dcomplexes():
     return compl_dict
 
 
-def get_domino_interactions():
+def domino_interactions():
+    
     domino = get_domino()
     inter = []
     for l in domino:
@@ -2776,7 +2777,7 @@ def get_domino(none_values=False, outfile=None):
         r'.*sequence:[\s]*[0-9]+-[0-9]+[\s]*:[\s]*([A-Z]{10,}).*')
     ptmty = re.compile(r'[0-9]*;MI:[0-9]*\((.*)\);.*;.*')
     refrs = re.compile(r'(pubmed|doi):["]*([-0-9a-zA-Z\.\(\)/]*)["]*')
-    url = urls.urls['domino']['url']
+    url = urls.urls['domino']['module_data']
     c = curl.Curl(url, silent=False)
     data = c.result
     data = data.split('\n')
