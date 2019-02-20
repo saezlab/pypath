@@ -53,7 +53,7 @@ def get_uniprot_sec(organism=9606):
             len(line) == 2 and (organism is None or line[1] in proteome),
             map(
                 lambda i:
-                    i[1].decode('utf-8').split(),
+                    i[1].split(),
                 filter(
                     lambda i: i[0] >= 30,
                     enumerate(c.result)

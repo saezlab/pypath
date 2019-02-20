@@ -3468,30 +3468,29 @@ def get_oreganno(organism=9606):
     url = urls.urls['oreganno']['url']
     c = curl.Curl(url, silent=False, large=True)
     data = c.result
-    null = data.readline()
-    del null
+    _ = next(data)
 
     for l in data:
 
-        l = l.decode('utf-8')
+        if not l:
+            
+            continue
 
-        if len(l):
+        l = [x.strip() for x in l.split('\t')]
 
-            l = [x.strip() for x in l.split('\t')]
+        if (l[1] == organism and
+            l[3] == 'TRANSCRIPTION FACTOR BINDING SITE' and
+            l[2] == 'POSITIVE OUTCOME' and
+            l[4] != 'N/A' and
+            l[7] != 'N/A'):
 
-            if (l[1] == organism and
-                l[3] == 'TRANSCRIPTION FACTOR BINDING SITE' and
-                l[2] == 'POSITIVE OUTCOME' and
-                l[4] != 'N/A' and
-                l[7] != 'N/A'):
-
-                yield (
-                    l[7]
-                    if len(l[7]) < 3 else nrem.sub('',
-                                                   nsep.findall(l[7])[0]), l[4]
-                    if len(l[4]) < 3 else nrem.sub('', nsep.findall(l[4])[0]),
-                    l[11] if l[11] != 'N/A' else ''
-                )
+            yield (
+                l[7]
+                if len(l[7]) < 3 else nrem.sub('',
+                                                nsep.findall(l[7])[0]), l[4]
+                if len(l[4]) < 3 else nrem.sub('', nsep.findall(l[4])[0]),
+                l[11] if l[11] != 'N/A' else ''
+            )
 
 def get_cpdb_ltp():
     return get_cpdb(
@@ -3697,7 +3696,7 @@ def go_ancestors_goose(aspects=('C','F','P')):
 
     for l in c.result:
 
-        l = l.decode('utf-8').strip().split('\t')
+        l = l.strip().split('\t')
 
         ancestors[l[0]].add(l[1])
 
@@ -4049,7 +4048,7 @@ def go_terms_goose(aspects = ('C','F','P')):
 
     for l in c.result:
 
-        l = l.decode('utf-8').strip().split('\t')
+        l = l.strip().split('\t')
 
         if l[1] not in ontol_short:
 
@@ -4130,7 +4129,7 @@ def go_annotations_quickgo(
         
         for line in c.result:
             
-            line = line.decode('utf-8').strip().split('\t')
+            line = line.strip().split('\t')
             
             if line[3] not in relations:
                 
@@ -4336,7 +4335,7 @@ def go_annotations_goose(organism=9606, aspects=('C','F','P'), uniprots=None):
 
     for l in c.result:
 
-        l = l.decode('utf-8').strip().split('\t')
+        l = l.strip().split('\t')
 
         aspect = ontol_short[l[1]]
 
@@ -4364,7 +4363,7 @@ def get_go_desc(go_ids, organism=9606):
     )
     _ = c.result.readline()
 
-    return set(l.decode('utf-8').split('\t')[1] for l in c.result)
+    return set(l.split('\t')[1] for l in c.result)
 
 
 def get_go_quick(
@@ -4401,7 +4400,7 @@ def get_go_quick(
     )
 
     c = curl.Curl(url, silent=False, large=True)
-    _ = c.result.readline()
+    _ = next(c.result)
 
     for l in result:
 
@@ -4808,13 +4807,15 @@ def get_tfcensus(classes=['a', 'b', 'other']):
     url = urls.urls['vaquerizas2009']['url']
     c = curl.Curl(url, silent=False, large=True)
     f = c.result
+    
     for l in f:
-        l = l.decode('utf-8')
+        
         if len(l) > 0 and l.split('\t')[0] in classes:
             ensg += reensg.findall(l)
             h = l.split('\t')[5].strip()
             if len(h) > 0:
                 hgnc.append(h)
+    
     return {'ensg': ensg, 'hgnc': hgnc}
 
 
@@ -4899,7 +4900,7 @@ def cellphonedb_interactions(
 
     for l in c.result:
 
-        l = l.decode('utf-8').strip().split(',')
+        l = l.strip().split(',')
 
         if l[2] == 'True' or l[4] == 'True':
 
@@ -4917,7 +4918,7 @@ def cellphonedb_interactions(
 
     for l in c.result:
 
-        l = l.decode('utf-8').strip().split(',')
+        l = l.strip().split(',')
 
         if l[2][:6] != 'simple' or l[3][:6] != 'simple':
 
@@ -4971,7 +4972,7 @@ def cellphonedb_interactions(
 
     for l in c.result:
 
-        l = l.decode('utf-8').strip().split(',')
+        l = l.strip().split(',')
 
         uniprot1 = l[11]
         uniprot2 = l[16]
@@ -5119,12 +5120,17 @@ def hprd_interactions(in_vivo=True):
 
 
 def hprd_htp():
+    
     url = urls.urls['hprd_all']['url']
     fname = urls.urls['hprd_all']['int_file']
     c = curl.Curl(url, silent=False, large=True, files_needed=[fname])
+    
     return list(
-        map(lambda l: l.split('\t'), c.result[fname].read().decode('ascii')
-            .split('\n')))
+        map(
+            lambda l: l.split('\t'),
+            c.result[fname].read().decode('ascii').split('\n')
+        )
+    )
 
 
 def get_hprd_ptms(in_vivo=True):
@@ -5957,7 +5963,7 @@ def vidal_hi_iii(fname):
         list(
             map(
                 lambda l:
-                    l.decode('ascii').strip().split('\t'),
+                    l.strip().split('\t'),
                 f.result
             )
         )[1:]
@@ -7426,7 +7432,7 @@ def get_cgc(user=None, passwd=None):
     
     for line in data:
         
-        next_line = line.decode('utf-8')
+        # next_line = line.decode('utf-8')
         fields = []
         field = ''
         in_quotes = False
@@ -7443,6 +7449,7 @@ def get_cgc(user=None, passwd=None):
 
 
 def get_matrixdb(organism=9606):
+    
     url = urls.urls['matrixdb']['url']
     c = curl.Curl(url, silent=False, large=True)
     f = c.result
@@ -7452,7 +7459,7 @@ def get_matrixdb(organism=9606):
         if lnum == 0:
             lnum += 1
             continue
-        l = l.decode('utf-8')
+        l = l.decode('utf-8').replace('"', '')
         l = l.replace('\n', '').replace('\r', '')
         l = l.split('\t')
         specA = 0 if l[9] == '-' else int(l[9].split(':')[1].split('(')[0])
@@ -7485,6 +7492,7 @@ def get_matrixdb(organism=9606):
 
 
 def get_innatedb(organism=9606):
+    
     url = urls.urls['innatedb']['url']
     c = curl.Curl(url, silent=False, large=True)
     f = c.result
@@ -7560,7 +7568,6 @@ def get_dip(url=None,
         if lnum == 0:
             lnum += 1
             continue
-        l = l.decode('utf-8')
         l = l.replace('\n', '').replace('\r', '')
         l = l.split('\t')
         specA = int(l[9].split(':')[1].split('(')[0])
@@ -7791,17 +7798,19 @@ def mppi_interactions(organism=9606):
 
 
 def depod_interactions(organism=9606):
+    
     url = urls.urls['depod']['urls'][1]
-    c = curl.Curl(url, silent=False, large=True)
+    c = curl.Curl(url, silent=False, large=True, encoding = 'iso-8859-1')
     data = c.result
     result = []
     i = []
     lnum = 0
+    
     for l in data:
+        
         if lnum == 0:
             lnum += 1
             continue
-        l = l.decode('iso-8859-1')
         l = l.replace('\n', '').replace('\r', '')
         l = l.split('\t')
         specA = int(l[9].split(':')[1].split('(')[0])
@@ -7825,6 +7834,7 @@ def depod_interactions(organism=9606):
             if len(interaction[0]) > 1 and len(interaction[1]) > 1:
                 i.append(interaction)
         lnum += 1
+    
     return i
 
 
@@ -7889,6 +7899,7 @@ def macrophage_interactions():
 
 
 def intact_interactions(miscore=0.6, organism=9606, complex_expansion=False):
+    
     result = {}
     url = urls.urls['intact']['mitab']
     if type(organism) is int:
@@ -7899,6 +7910,7 @@ def intact_interactions(miscore=0.6, organism=9606, complex_expansion=False):
     size = c.sizes['intact.txt']
     lnum = 0
     prg = progress.Progress(size, 'Reading IntAct MI-tab file', 99)
+    
     for l in f:
         prg.step(len(l))
         if lnum == 0:
@@ -7939,17 +7951,25 @@ def intact_interactions(miscore=0.6, organism=9606, complex_expansion=False):
                                            .split('|'))))))
                     list(
                         map(result[uniprots][1].add,
-                            map(lambda m: m.split('(')[1].replace(')', '').replace('"', ''),
-                                l[6].split('|'))))
+                            map(
+                                lambda m:
+                                    m.split('(')[1].replace(
+                                        ')', '').replace('"', ''),
+                                l[6].split('|')
+                            )
+                        )
+                    )
                     if l[15] != '-':
                         result[uniprots][2].add(l[15].split('(')[1].replace(
                             ')', ''))
+    
     result = map(lambda d:
                  [d[0][0], d[0][1], ';'.join(list(d[1][0])), ';'.join(
                      list(d[1][1])), ';'.join(list(d[1][2]))],
                  iteritems(result)
                  )
     prg.terminate()
+    
     return list(result)
 
 
@@ -8005,6 +8025,7 @@ def get_string_effects(ncbi_tax_id=9606,
                        inhibition=['inhibition'],
                        exclude=['expression'],
                        score_threshold=0):
+    
     effects = []
     if type(stimulation) is list:
         stimulation = set(stimulation)
@@ -8014,8 +8035,10 @@ def get_string_effects(ncbi_tax_id=9606,
         exclude = set(exclude)
     url = urls.urls['string']['actions'] % ncbi_tax_id
     c = curl.Curl(url, silent=False, large=True)
-    null = c.result.readline()
+    _ = next(c.result)
+    
     for l in c.result:
+        
         l = l.decode('ascii').split('\t')
         if len(l) and l[4] == '1' \
                 and int(l[5]) >= score_threshold:
@@ -8025,6 +8048,7 @@ def get_string_effects(ncbi_tax_id=9606,
                 else None
             if eff is not None:
                 effects.append([l[0][5:], l[1][5:], eff])
+    
     return effects
 
 
@@ -8094,7 +8118,7 @@ def homologene_dict(source, target, id_type):
 
     for l in hg:
 
-        l = l.decode('ascii').strip().split('\t')
+        l = l.strip().split('\t')
         this_hgroup = l[0].strip()
 
         if this_hgroup != hgroup:
@@ -8178,10 +8202,10 @@ def homologene_uniprot_dict(source, target, only_swissprot = True, mapper = None
 def mir2disease_interactions():
 
     url = urls.urls['mir2dis']['url']
-    c = curl.Curl(url, silent = True, large = True)
+    c = curl.Curl(url, silent = True, large = True, encoding = 'iso-8859-1')
 
     return [
-        l.decode('iso-8859-1').strip().split('\t')
+        l.strip().split('\t')
         for l in itertools.islice(c.result, 3, None)
     ]
 
@@ -8194,7 +8218,7 @@ def mirdeathdb_interactions():
 
     for l in c.result:
 
-        l = l.decode('utf-8').strip().split('\t')
+        l = l.strip().split('\t')
 
         if len(l) < 11:
             continue
@@ -8207,7 +8231,7 @@ def mirdeathdb_interactions():
 
         for mirna in mirnas:
 
-            yield (mirna, geneid, organism, pubmed, function)
+            yield (mirna.strip(), geneid, organism, pubmed, function)
 
 def mirecords_interactions():
 
@@ -8286,7 +8310,7 @@ def transmir_interactions():
 
     url = urls.urls['transmir']['url']
     c = curl.Curl(url, silent = False, large = True,
-                  encoding = 'utf-8')
+                  encoding = 'iso-8859-1')
 
     _ = next(c.result)
 
@@ -8297,7 +8321,7 @@ def transmir_interactions():
 
     for l in c.result:
 
-        l = l.decode('iso-8859-1').strip().split('\t')
+        l = l.strip().split('\t')
 
         if len(l) < 9:
             print(l)
@@ -8520,7 +8544,7 @@ def get_tfregulons_old(
     )
 
     c = curl.Curl(url, silent = False, large = True)
-    _ = c.result.readline()
+    _ = next(c.result)
 
     return (
         list(
@@ -8533,7 +8557,7 @@ def get_tfregulons_old(
             )
         )
         for ll in (
-            l.decode('utf-8').strip('\n\r').split('\t') for l in c.result
+            l.strip('\n\r').split('\t') for l in c.result
         ) if (
             ll[3] in levels and
             not only_curated or ll[4] == 'TRUE'
@@ -8613,7 +8637,7 @@ def stitch_interactions(threshold = None):
     
     _ = next(c.result)
     
-    sep = re.compile(r'[m\.]')
+    sep = re.compile(r'[sm\.]')
     
     for l in c.result:
         
@@ -8625,12 +8649,20 @@ def stitch_interactions(threshold = None):
             
             continue
         
-        a = sep.split(l[0])[1]
-        b = sep.split(l[1])[1]
+        try:
+            
+            a = sep.split(l[0])[1]
+            b = sep.split(l[1])[1]
+            
+        except IndexError:
+            
+            print(l[1])
         
         if l[4] == 'f':
             
             a, b = b, a
+        
+        yield a, b, l[2], l[3], int(l[5])
 
 def get_cspa(organism = 9606):
     
@@ -8718,13 +8750,13 @@ def __get_matrisome_2():
     
     _ = next(c.result)
     
-    return set(r.decode('utf-8').split(',')[1] for r in c.result)
+    return set(r.split(',')[1] for r in c.result)
 
 def get_membranome():
     
     membr_url = urls.urls['membranome']['baseurl'] % ('membranes', '')
     c = curl.Curl(membr_url, large = True, silent = False)
-    membr_data = json.loads(c.fileobj.read().decode('utf-8'))
+    membr_data = json.loads(c.fileobj.read())
     del c
     
     membr = dict((m['id'], m) for m in membr_data['objects'])
@@ -8743,7 +8775,7 @@ def get_membranome():
             '?pageSize=1000&pageNum=%u' % page,
         )
         c = curl.Curl(prot_url, large = True, silent = True)
-        prot = json.loads(c.fileobj.read().decode('utf-8'))
+        prot = json.loads(c.fileobj.read())
         
         prot_all.extend(prot['objects'])
         
@@ -8818,7 +8850,7 @@ def _get_exocarta_vesiclepedia(
     
     for s in c.result:
         
-        s = s.decode('utf-8').split('\t')
+        s = s.split('\t')
         
         organisms = tuple(
             taxid_rev[t.strip()]
@@ -8853,7 +8885,7 @@ def _get_exocarta_vesiclepedia(
     
     for s in c.result:
         
-        s = s.decode('utf-8').split('\t')
+        s = s.split('\t')
         
         if s[4] != organism or s[1] not in types:
             

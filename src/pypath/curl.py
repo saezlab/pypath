@@ -1305,28 +1305,49 @@ class Curl(FileOpener):
             self.print_status('Extracting %s data' % self.type)
         self.extract()
     
+    
     def decode_result(self):
+        
         if self.progress is not None:
-            self.print_status('Decoding %s encoded data' %
-                              (self.encoding or 'utf-8'))
+            
+            self.print_status(
+                'Decoding %s encoded data' % (self.encoding or 'utf-8')
+            )
     
         def _decode_result(content):
+            
             try:
-                return content.decode(self.encoding or 'utf-8')
+                if isinstance(content, common.basestring):
+                    
+                    return content
+                    
+                else:
+                    
+                    return content.decode(self.encoding or 'utf-8')
+                
             except:
-                self.print_debug_info('WARNING',
+                
+                self.print_debug_info(
+                    'WARNING',
                     'Failed '
                     'decoding downloaded bytes content with encoding %s. '
                     'Result might be of type bytes' %
-                    (self.encoding or 'utf-8'))
+                    (self.encoding or 'utf-8')
+                )
                 return content
     
         if not self.large:
+            
             if type(self.result) is dict:
+                
                 for name, content in iteritems(self.result):
+                    
                     self.result[name] = _decode_result(content)
+                
             else:
+                
                 self.result = _decode_result(self.result)
+    
     
     def get_result_type(self):
         if type(self.result) is dict:
