@@ -2371,7 +2371,7 @@ class PyPath(object):
                     # or header row
                     continue
 
-                if type(line) not in listLike:
+                if not isinstance(line, (list, tuple)):
 
                     if hasattr(line, 'decode'):
                         line = line.decode('utf-8')
@@ -2411,13 +2411,20 @@ class PyPath(object):
                                                              dirVal, dirSep)
 
                     refs = []
-
                     if refCol is not None:
-                        refs = common.delEmpty(
-                            list(set(line[refCol].split(refSep))))
-
+                        
+                        if not isinstance(line[refCol], (list, set, tuple)):
+                            
+                            refs = line[refCol].split(refSep)
+                            
+                        else:
+                            
+                            refs = line[refCol]
+                        
+                        refs = common.delEmpty(list(set(refs)))
+                    
                     refs = dataio.only_pmids([r.strip() for r in refs])
-
+                    
                     if len(refs) == 0 and settings.must_have_references:
                         rFiltered += 1
                         continue
@@ -2541,7 +2548,8 @@ class PyPath(object):
                 "%u lines filtered because lack of references;\n\t\t"
                 "%u lines filtered by taxon filters." %
                 (lnum - 1, settings.inFile, len(edgeListMapped), lFiltered,
-                 rFiltered, tFiltered))
+                 rFiltered, tFiltered)
+            )
 
             if reread or redownload:
                 pickle.dump(edgeListMapped, open(edges_cache, 'wb'), -1)

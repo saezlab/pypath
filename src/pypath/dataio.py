@@ -4958,7 +4958,7 @@ def get_guide2pharma(organism = 'human', endogenous = True):
                     d['ligand_context'].strip().lower() or None,
                     d['receptor_site'].strip().lower() or None,
                     d['endogenous'].strip() == 't',
-                    d['pubmed_id'].split('|')
+                    d['pubmed_id'].split('|') if d['pubmed_id'] else []
                 )
             )
 
@@ -5108,7 +5108,7 @@ def open_pubmed(pmid):
 
 def only_pmids(idList, strict=True):
     """
-    Return elements unchanged which compy to PubMed ID format,
+    Return elements unchanged which comply with the PubMed ID format,
     and attempts to translate the DOIs and PMC IDs using NCBI
     E-utils.
     Returns list containing only PMIDs.
@@ -5126,9 +5126,7 @@ def only_pmids(idList, strict=True):
     dois = [i for i in idList if '/' in i]
     manuscids = [i for i in idList if i.startswith('NIHMS')]
     if not strict:
-        non_pmids = set(idList) - (set(pmids) | set(dois) | set(pmcids) |
-                                   set(manuscids))
-        pmids = pmids | non_pmids
+        pmids = set(pmids) | set(dois) | set(pmcids) | set(manuscids)
     if len(pmcids) > 0:
         pmids = pmids | set(pmids_list(pmcids))
     if len(dois) > 0:
