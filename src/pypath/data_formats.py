@@ -338,7 +338,7 @@ pathway = {
         typeB="protein",
         isDirected=True,
         sign=(2, 1, -1),
-        inFile='guide2pharma',
+        inFile='get_guide2pharma',
         references=(3, "|"),
         ncbiTaxId=9606,
         extraEdgeAttrs={},
@@ -1699,7 +1699,8 @@ ligand_receptor = {
         must_have_references=False,
         inputArgs={
             'putative': False
-        }),
+        },
+    ),
     'kirouac2010': input_formats.ReadSettings(
         name="Kirouac2010",
         separator=None,
@@ -1719,7 +1720,8 @@ ligand_receptor = {
         extraNodeAttrsA={},
         extraNodeAttrsB={},
         mark_source = 'kirouac_ligand',
-        mark_target = 'kirouac_receptor'),
+        mark_target = 'kirouac_receptor',
+    ),
     'hpmr': input_formats.ReadSettings(
         name="HPMR",
         separator=None,
@@ -1741,7 +1743,8 @@ ligand_receptor = {
         extraNodeAttrsB={},
         mark_source = 'hpmr_ligand',
         mark_target = 'hpmr_receptor',
-        positiveFilters=[(1, 'Ligand')]),
+        positiveFilters=[(1, 'Ligand')],
+    ),
     'cellphonedb': input_formats.ReadSettings(
         name="CellPhoneDB",
         separator=None,
@@ -1762,7 +1765,8 @@ ligand_receptor = {
         extraEdgeAttrs={'cellphonedb_type': 4},
         extraNodeAttrsA={'cellphonedb_type': 5},
         extraNodeAttrsB={'cellphonedb_type': 6},
-        positiveFilters=[]),
+        positiveFilters=[],
+    ),
 }
 
 small_molecule_protein = {

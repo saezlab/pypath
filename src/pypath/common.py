@@ -1079,32 +1079,59 @@ def fun(): # XXX: Best name for a function. Not 100% sure if used anywhere...
 
 # XXX: Shouldn't we keep all functions and variables separated
 #      (together among them)?
-taxids = {9606: 'human',
-          10090: 'mouse',
-          10116: 'rat',
-          9031: 'chicken',
-          9913: 'cow',
-          9986: 'rabbit',
-          9940: 'sheep',
-          10141: 'guinea pig',
-          10036: 'hamster',
-          7227: 'fruit fly',
-          9615: 'dog',
-          9823: 'pig',
-          8355: 'frog',
-          9091: 'quail',
-          9796: 'horse',
-          9925: 'goat',
-          89462: 'water buffalo',
-          9598: 'monkey',
-          9103: 'turkey',
-          9685: 'cat',
-          7604: 'starfish',
-          1213717: 'torpedo',
-          9669: 'ferret',
-          8839: 'duck'}
+taxids = {
+    9606: 'human',
+    10090: 'mouse',
+    10116: 'rat',
+    9031: 'chicken',
+    9913: 'cow',
+    9986: 'rabbit',
+    9940: 'sheep',
+    10141: 'guinea pig',
+    10036: 'hamster',
+    7227: 'fruit fly',
+    9615: 'dog',
+    9823: 'pig',
+    8355: 'frog',
+    9091: 'quail',
+    9796: 'horse',
+    9925: 'goat',
+    89462: 'water buffalo',
+    9598: 'monkey',
+    9103: 'turkey',
+    9685: 'cat',
+    7604: 'starfish',
+    7609: 'spiny starfish',
+    1213717: 'torpedo',
+    9669: 'ferret',
+    8839: 'duck',
+    9593: 'gorilla',
+    7460: 'honeybee',
+    8407: 'european common frog',
+    9544: 'rhesus macaque',
+}
 
 taxa = dict(map(lambda i: (i[1], i[0]), taxids.items()))
+
+taxa_synonyms = {
+    'bovine': 'cow',
+}
+
+
+def taxid_from_common_name(taxon_name):
+    
+    taxon_name = taxon_name.lower().strip()
+    
+    if not taxon_name or taxon_name in {'none', 'unknown'}:
+        
+        return None
+    
+    if taxon_name in taxa_synonyms:
+        
+        taxon_name = taxa_synonyms[taxon_name]
+    
+    return taxa[taxon_name]
+
 
 phosphoelm_taxids = {9606: 'Homo sapiens',
                      10090: 'Mus musculus',

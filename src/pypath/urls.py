@@ -536,7 +536,10 @@ urls = {
     },
     'tfcensus': {
         'label': 'A census of human transcription factors (Vaquerizas 2009)',
-        'url': 'http://www.nature.com/nrg/journal/v10/n4/extref/nrg2538-s3.txt'
+        'url': (
+            'http://www.nature.com/nrg/journal/'
+            'v10/n4/extref/nrg2538-s3.txt'
+        )
     },
     'tfcheckp': {
         'label': 'A comprehensive list of transcription factors',
@@ -545,7 +548,7 @@ urls = {
     },
     'gtp': {
         'label': 'Guide to Pharmacology: ligand-receptor interactions',
-        'url': 'http://www.guidetopharmacology.org/DATA/interactions.csv'
+        'url': 'http://www.guidetopharmacology.org/DATA/interactions.csv',
     },
     'giant': {
         'label': 'JSON network from GIANT by gene based query',
