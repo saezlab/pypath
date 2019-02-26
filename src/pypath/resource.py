@@ -20,6 +20,7 @@
 
 import pypath.dataio as dataio
 import pypath.mapping as mapping
+import pypath.common as common
 
 
 class AbstractResource(object):

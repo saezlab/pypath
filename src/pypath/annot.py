@@ -126,6 +126,13 @@ class AnnotationBase(resource.AbstractResource):
         setattr(self, '__class__', new)
     
     
+    def _process_method(self):
+        
+        self.annot = self.data
+        
+        delattr(self, 'data')
+    
+    
     def load_uniprots(self):
         """
         Retrieves a set of all UniProt IDs to have a base set of the entire

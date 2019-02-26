@@ -18,6 +18,8 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import collections
+
 import pypath.dataio as dataio
 import pypath.intera as intera
 import pypath.resource as resource
@@ -68,6 +70,13 @@ class AbstractComplexResource(resource.AbstractResource):
         self.update_index()
     
     
+    def _process_method(self):
+        
+        self.complexes = self.data
+        
+        delattr(self, 'data')
+    
+    
     def __iter__(self):
         
         for cplex in self.complexes.values():
@@ -88,4 +97,36 @@ class AbstractComplexResource(resource.AbstractResource):
             
             for db in cplex.sources:
                 
-                self.resources.add(cplex)
+                self.resources[protein].add(cplex)
+    
+    
+    def __contains__(self, other):
+        
+        if isinstance(other, intera.Complex):
+            
+            other = other.__str__()
+        
+        if isinstance(other, common.basestring):
+            
+            if len(other) <= 10:
+                
+                return other in self.proteins
+                
+            else:
+                
+                return other in self.complexes
+        
+        return False
+
+
+class CellPhoneDB(AbstractComplexResource):
+    
+    
+    def __init__(self, mapper = None, **kwargs):
+        
+        AbstractComplexResource.__init__(
+            self,
+            name = 'CellPhoneDB',
+            mapper = mapper,
+            input_method = 'cellphonedb_complexes',
+        )
