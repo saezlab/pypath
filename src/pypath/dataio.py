@@ -5190,15 +5190,60 @@ def cellphonedb_interactions(
             )
 
 
-def cellphonedb_complexes():
+def cellphonedb_complexes(mapper = None):
+    
+    mapper = mapper or mapping.Mapper()
+    
+    
+    def get_uniprots(rec):
+        
+        return tuple(
+            uniprot
+            for uniprot in
+            (rec['uniprot_%u' % i] for i in xrange(1, 5))
+            if uniprot
+        )
+    
+    
+    def get_stoichiometry(rec):
+        
+        if not rec['stoichiometry']:
+            
+            return get_uniprots(rec)
+        
+        return tuple(
+            mapper.map_name(genesymbol, 'genesymbol', 'uniprot')[0]
+            for genesymbol in
+            rec['stoichiometry'].split(';')
+        )
+    
     
     url = urls.urls['cellphonedb_git']['complexes']
-    
     c = curl.Curl(url, silent = False, large = True)
+    tab = list(csv.DictReader(c.result))
     
-    tab = list(csv.reader(c.result))
+    annot = cellphonedb_complex_annotations()
     
-    return tab
+    complexes = {}
+    
+    for rec in tab:
+        
+        comp = get_stoichiometry(rec)
+        
+        cplex = intera.Complex(
+            components = comp,
+            sources = 'CellPhoneDB',
+        )
+        
+        key = cplex.__str__()
+        
+        if key in annot:
+            
+            cplex.add_attr('CellPhoneDB', annot[key])
+        
+        complexes[key] = cplex
+    
+    return complexes
 
 
 def open_pubmed(pmid):

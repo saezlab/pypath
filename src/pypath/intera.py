@@ -31,6 +31,7 @@ from past.builtins import xrange, range, reduce
 
 import re
 import sys
+import collections
 from collections import Counter
 
 # from pypath:
@@ -857,7 +858,7 @@ class Complex(object):
         
         if not isinstance(components, dict):
             
-            self.components[comp] = dict(collections.Counter(components))
+            self.components = dict(collections.Counter(components))
             
         else:
             
@@ -954,7 +955,7 @@ class Complex(object):
     __iter__ = iter_proteins
     
     
-    def add_attrs(self, source, attr):
+    def add_attr(self, source, attr):
         """
         Attributes can store annotations for complexes.
         """
