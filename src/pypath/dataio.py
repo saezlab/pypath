@@ -726,16 +726,26 @@ def domino_interactions():
     
     domino = get_domino()
     inter = []
+    
     for l in domino:
-        if len(l[0]) > 0 and len(l[1]) > 0 and len(''.join(l[5])) > 0 and \
-                len(''.join([l[i] for i in
-                             range(10, 12) + range(14, 22) + range(24, 26)])) != 0 and \
-                l[28] != '1':
+        
+        if (
+            l[0] and
+            l[1] and
+            ''.join(l[5]) and
+            ''.join([
+                l[i]
+                for i in range(10, 12) + range(14, 22) + range(24, 26)
+            ]) and
+            l[28] != '1'
+        ):
             inter.append(l)
+    
     return inter
 
 
 def get_domino_ddi():
+    
     domi = get_domino_ptms()
     return domi['ddi']
 
@@ -4963,14 +4973,13 @@ def get_guide2pharma(organism = 'human', endogenous = True):
                 )
             )
 
-def cellphonedb_interactions(
-        ligand_receptor = True,
-        receptor_receptor = True,
-        ligand_ligand = True,
-    ):
 
-    repmid = re.compile(r'PMID: ([0-9]+)')
-
+def cellphonedb_ligands_receptors():
+    """
+    Retrieves the set of ligands and receptors from CellPhoneDB.
+    Returns tuple of sets.
+    """
+    
     receptors = set()
     ligands   = set()
 
@@ -4991,6 +5000,19 @@ def cellphonedb_interactions(
         if l[3] == 'True':
 
             ligands.add(l[0])
+    
+    return ligands, receptors
+
+
+def cellphonedb_interactions(
+        ligand_receptor = True,
+        receptor_receptor = True,
+        ligand_ligand = True,
+    ):
+
+    repmid = re.compile(r'PMID: ([0-9]+)')
+
+    
 
     url = urls.urls['cellphonedb']['interactions']
 

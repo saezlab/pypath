@@ -832,7 +832,9 @@ class Complex(object):
         
         components : list,dict
             Either a list of identifiers or a dict with identifiers as keys
-            and stoichiometric coefficients as values.
+            and stoichiometric coefficients as values. List of identifiers
+            also assumed to represent stoichiometry by repetition
+            of identifiers.
         name : str
             A custom name or identifier of the complex.
         synonyms : dict
@@ -855,10 +857,7 @@ class Complex(object):
         
         if not isinstance(components, dict):
             
-            self.components = {}
-            for comp in components:
-                
-                self.components[comp] = 1
+            self.components[comp] = dict(collections.Counter(components))
             
         else:
             
