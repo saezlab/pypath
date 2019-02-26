@@ -240,6 +240,9 @@ class AnnotationBase(object):
     
     
     def all_uniprots(self):
+        """
+        All UniProt IDs annotated in this resource.
+        """
         
         return sorted(self.annot.keys())
     
@@ -793,16 +796,17 @@ class CellPhoneDB(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'CellPhoneDB',
-            input_method = 'cellphonedb_ligands_receptors',
+            input_method = 'cellphonedb_annotations',
             ncbi_tax_id = 9606,
         )
     
     
     def _process_method(self, *args, **kwargs):
         
-        record = collections.namedtuple(
-            'CellPhoneDBAnnotation',
-            ('ligand', 'receptor',)
+        self.annot = dict(
+            (uniprot, {annot,})
+            for uniprot, annot in
+            iteritems(self.annot)
         )
 
 
