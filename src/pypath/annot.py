@@ -785,6 +785,27 @@ class GOIntercell(AnnotationBase):
         pass
 
 
+class CellPhoneDB(AnnotationBase):
+    
+    
+    def __init__(self, **kwargs):
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'CellPhoneDB',
+            input_method = 'cellphonedb_ligands_receptors',
+            ncbi_tax_id = 9606,
+        )
+    
+    
+    def _process_method(self, *args, **kwargs):
+        
+        record = collections.namedtuple(
+            'CellPhoneDBAnnotation',
+            ('ligand', 'receptor',)
+        )
+
+
 class AnnotationTable(object):
     
     
