@@ -34,6 +34,7 @@ import pypath.uniprot_input as uniprot_input
 import pypath.intera as intera
 import pypath.progress as progress
 
+
 class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
     
     methods = {

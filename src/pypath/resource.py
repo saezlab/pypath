@@ -57,6 +57,10 @@ class AbstractResource(object):
         self.set_method()
         self.load_data()
         self.process()
+        
+        if hasattr(self, 'data'):
+            
+            delattr(self, 'data')
     
     
     def set_method(self):
@@ -86,7 +90,7 @@ class AbstractResource(object):
         
         if hasattr(self, 'input_method'):
             
-            self.annot = self.input_method(**self.input_args)
+            self.data = self.input_method(**self.input_args)
     
     
     def process(self):

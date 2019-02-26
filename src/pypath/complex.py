@@ -48,6 +48,8 @@ class AbstractComplexResource(resource.AbstractResource):
             instances.
         """
         
+        self.complexes = 
+        
         resource.AbstractResource.__init__(
             self,
             name = name,
@@ -58,3 +60,16 @@ class AbstractComplexResource(resource.AbstractResource):
         )
         
         self.load()
+    
+    
+    def load(self):
+        
+        resource.AbstractResource.load(self)
+        self.make_index()
+    
+    
+    def make_index(self):
+        
+        
+
+

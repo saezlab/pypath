@@ -130,7 +130,7 @@ class AnnotationBase(resource.AbstractResource):
         Derived classes might override.
         """
         
-        self.annot = dict((u, set()) for u in self.annot)
+        self.annot = dict((u, set()) for u in self.data)
     
     
     def get_subset(self, **kwargs):
@@ -362,7 +362,7 @@ class Membranome(AnnotationBase):
         
         _annot = collections.defaultdict(set)
         
-        for a in self.annot:
+        for a in self.data:
             
             _annot[a[0]].add(record(a[1], a[2]))
         
@@ -401,7 +401,7 @@ class Exocarta(AnnotationBase):
         
         _annot = collections.defaultdict(set)
         
-        for a in self.annot:
+        for a in self.data:
             
             uniprots = self.mapper.map_name(a[1], 'genesymbol', 'uniprot')
             
@@ -458,7 +458,7 @@ class Matrisome(AnnotationBase):
             ['mainclass', 'subclass', 'subsubclass'],
         )
         
-        for uniprot, a in iteritems(self.annot):
+        for uniprot, a in iteritems(self.data):
             
             _annot[uniprot].add(record(*a))
         
@@ -489,7 +489,7 @@ class Surfaceome(AnnotationBase):
         )
         record.__defaults__ = (None, None)
         
-        for uniprot, a in iteritems(self.annot):
+        for uniprot, a in iteritems(self.data):
             
             _annot[uniprot].add(
                 record(
@@ -545,7 +545,7 @@ class HumanPlasmaMembraneReceptome(AnnotationBase):
         
         self.annot = dict(
             (uniprot, set())
-            for genesymbol in self.annot
+            for genesymbol in self.data
             for uniprot in self.mapper.map_name(
                 genesymbol, 'genesymbol', 'uniprot'
             )
@@ -759,7 +759,7 @@ class CellPhoneDB(AnnotationBase):
         self.annot = dict(
             (uniprot, {annot,})
             for uniprot, annot in
-            iteritems(self.annot)
+            iteritems(self.data)
         )
 
 
