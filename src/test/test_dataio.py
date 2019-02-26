@@ -379,3 +379,12 @@ class TestDataio(object):
         v = list(dataio.get_vesiclepedia())
         
         assert example in v
+    
+    
+    def test_cellphonedb_annotations(self):
+        
+        example = (None, True, False, False, False, None, False, True, False)
+        
+        c = dataio.cellphonedb_annotations()
+        
+        assert c['P17302'] == example
