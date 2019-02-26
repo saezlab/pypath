@@ -5004,6 +5004,64 @@ def cellphonedb_ligands_receptors():
     return ligands, receptors
 
 
+def cellphonedb_annotations():
+    
+    
+    def get_bool(rec, attr):
+        
+        return rec[attr] == 'True'
+    
+    
+    def get_desc(rec, attr):
+        
+        return (
+            None if (
+                attr in rec and rec[attr] == 'False' or
+                attr not in rec and not rec['%s_desc' % attr]
+            ) else
+            rec['%s_desc' % attr] if rec['%s_desc' % attr] else
+            attr.capitalize()
+        )
+    
+    record = collections.namedtuple(
+        'CellPhoneDBAnnotation',
+        (
+            'receptor',
+            'adhesion',
+            'cytoplasm',
+            'peripheral',
+            'secretion',
+            'secreted',
+            'transporter',
+            'transmembrane',
+            'extracellular',
+        )
+    )
+    
+    annot = {}
+    
+    url = urls.urls['cellphonedb']['proteins']
+    c = curl.Curl(url, large = True)
+    tab = list(csv.DictReader(c.result))
+    return tab
+    
+    for rec in tab:
+        
+        annot[rec['uniprot']] = record(
+            receptor = get_desc(rec, 'receptor'),
+            adhesion = get_bool(rec, 'adhesion'),
+            cytoplasm = get_bool(rec, 'cytoplasm'),
+            peripheral = get_bool(rec, 'peripheral'),
+            secretion = get_bool(rec, 'secretion'),
+            secreted = get_desc(rec, 'secreted'),
+            transporter = get_bool(rec, 'transporter'),
+            transmembrane = get_bool(rec, 'transmembrane'),
+            extracellular = get_bool(rec, 'extracellular'),
+        )
+    
+    return annot
+
+
 def cellphonedb_interactions(
         ligand_receptor = True,
         receptor_receptor = True,
