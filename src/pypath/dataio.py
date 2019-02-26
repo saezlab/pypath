@@ -5167,7 +5167,7 @@ def cellphonedb_interactions(
 
 def cellphonedb_complexes():
     
-    url = urls.urls['cellphonedb']['heterodimers']
+    url = urls.urls['cellphonedb_git']['complexes']
     
     c = curl.Curl(url, silent = False, large = True)
     

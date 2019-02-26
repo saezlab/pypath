@@ -20,15 +20,24 @@
 
 import pypath.dataio as dataio
 import pypath.intera as intera
+import pypath.resource as resource
 
 
-class AbstractComplexResource(object):
+class AbstractComplexResource(resource.AbstractResource):
     """
     A resource which provides information about molecular complexes.
     """
     
     
-    def __init__(self, name, input_method):
+    def __init__(
+            self,
+            name,
+            mapper = None,
+            ncbi_tax_id = 9606,
+            input_method = None,
+            input_args = None,
+            **kwargs,
+        ):
         """
         name : str
             Custom name for the resource.
@@ -39,5 +48,13 @@ class AbstractComplexResource(object):
             instances.
         """
         
-        self.name = name
-        self.input_method = input_method
+        resource.AbstractResource.__init__(
+            self,
+            name = name,
+            mapper = mapper,
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = input_method,
+            input_args = input_args,
+        )
+        
+        self.load()

@@ -889,6 +889,12 @@ urls = {
             'cellphonedb/master/cellphonedb/src/core/data/complex.csv',
         'interactions': 'https://raw.githubusercontent.com/Teichlab/'\
             'cellphonedb/master/cellphonedb/src/core/data/interaction.csv',
+        'curated': 'https://raw.githubusercontent.com/Teichlab/'\
+            'cellphonedb/master/cellphonedb/src/tools/data/'\
+            'interaction_curated_20180729.csv',
+        'negative': 'https://raw.githubusercontent.com/Teichlab/'\
+            'cellphonedb/master/cellphonedb/src/tools/data/'\
+            'remove_interactions_20180330.csv',
     },
     'stitch': {
         'label': 'The STITCH small molecule-protein interaction database',

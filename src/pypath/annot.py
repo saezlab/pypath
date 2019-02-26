@@ -33,6 +33,7 @@ import pandas as pd
 import pypath.dataio as dataio
 import pypath.common as common
 import pypath.mapping as mapping
+import pypath.resource as resource
 import pypath.go as go
 import pypath.intercell_annot as intercell_annot
 
@@ -60,7 +61,7 @@ default_fields = {
 }
 
 
-class AnnotationBase(object):
+class AnnotationBase(resource.AbstractResource):
     
     
     def __init__(
@@ -89,11 +90,14 @@ class AnnotationBase(object):
             Arguments for the ``input_method``.
         """
         
-        self.name = name
-        self._input_method = input_method
-        self.input_args = input_args or {}
-        self.ncbi_tax_id = ncbi_tax_id
-        self.mapper = mapper
+        resource.AbstractResource.__init__(
+            self,
+            name = name,
+            mapper = mapper,
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = input_method,
+            input_args = input_args,
+        )
         
         self.load()
     
@@ -108,57 +112,6 @@ class AnnotationBase(object):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-    
-    
-    def load(self):
-        """
-        Loads and preprocesses annotation data.
-        """
-        
-        self.set_mapper()
-        self.load_data()
-        self.process()
-    
-    
-    def set_mapper(self):
-        
-        if self.mapper is None:
-            
-            self.mapper = mapping.Mapper(ncbi_tax_id = self.ncbi_tax_id)
-    
-    
-    def set_method(self):
-        """
-        Sets the data input method by looking up in ``dataio`` module if
-        necessary.
-        """
-        
-        if (
-            isinstance(self._input_method, common.basestring) and
-            hasattr(dataio, self._input_method)
-        ):
-            
-            self.input_method = getattr(dataio, self._input_method)
-    
-    
-    def load_data(self):
-        """
-        Loads the data by calling ``input_method``.
-        """
-        
-        self.set_method()
-        
-        if hasattr(self, 'input_method'):
-            
-            self.annot = self.input_method(**self.input_args)
-    
-    
-    def process(self):
-        """
-        Calls the ``_process_method``.
-        """
-        
-        self._process_method()
     
     
     def load_uniprots(self):
