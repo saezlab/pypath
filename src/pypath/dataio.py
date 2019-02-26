@@ -5043,10 +5043,8 @@ def cellphonedb_annotations():
     annot = {}
     
     url = urls.urls['cellphonedb_git']['proteins']
-    c = curl.Curl(url, large = True)
+    c = curl.Curl(url, large = True, silent = False)
     tab = list(csv.DictReader(c.result))
-    
-    return tab
     
     for rec in tab:
         
