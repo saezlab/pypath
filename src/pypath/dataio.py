@@ -5014,12 +5014,14 @@ def cellphonedb_annotations():
     
     def get_desc(rec, attr):
         
+        desc = '%s_desc' % attr
+        
         return (
             None if (
                 attr in rec and rec[attr] == 'False' or
-                attr not in rec and not rec['%s_desc' % attr]
+                attr not in rec and not rec[desc]
             ) else
-            rec['%s_desc' % attr] if rec['%s_desc' % attr] else
+            rec[desc] if rec[desc] else
             attr.capitalize()
         )
     
@@ -5040,9 +5042,10 @@ def cellphonedb_annotations():
     
     annot = {}
     
-    url = urls.urls['cellphonedb']['proteins']
+    url = urls.urls['cellphonedb_git']['proteins']
     c = curl.Curl(url, large = True)
     tab = list(csv.DictReader(c.result))
+    
     return tab
     
     for rec in tab:

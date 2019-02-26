@@ -883,13 +883,13 @@ urls = {
     },
     'cellphonedb_git': {
         'label': 'Intercellular communication database from Teichmann lab',
-        'proteins': 'https://github.com/Teichlab/cellphonedb/blob/'\
-            'master/cellphonedb/src/core/data/protein.csv',
-        'complexes': 'https://github.com/Teichlab/cellphonedb/blob/'\
-            'master/cellphonedb/src/core/data/complex.csv',
-        'interactions': 'https://github.com/Teichlab/cellphonedb/blob/'\
-            'master/cellphonedb/src/core/data/interaction.csv',
-    }
+        'proteins': 'https://raw.githubusercontent.com/Teichlab/'\
+            'cellphonedb/master/cellphonedb/src/core/data/protein.csv',
+        'complexes': 'https://raw.githubusercontent.com/Teichlab/'\
+            'cellphonedb/master/cellphonedb/src/core/data/complex.csv',
+        'interactions': 'https://raw.githubusercontent.com/Teichlab/'\
+            'cellphonedb/master/cellphonedb/src/core/data/interaction.csv',
+    },
     'stitch': {
         'label': 'The STITCH small molecule-protein interaction database',
         'actions': 'http://stitch.embl.de/download/actions.v5.0/'\
