@@ -941,6 +941,16 @@ class Complex(object):
     def add_source(self, source):
         
         self.sources.add(source)
+    
+    
+    def iter_proteins(self):
+        
+        for protein in self.proteins.keys():
+            
+            yield protein
+    
+    
+    __iter__ = iter_proteins
 
 
 class Interface(object):

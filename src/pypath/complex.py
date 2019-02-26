@@ -48,7 +48,7 @@ class AbstractComplexResource(resource.AbstractResource):
             instances.
         """
         
-        self.complexes = 
+        self.complexes = {}
         
         resource.AbstractResource.__init__(
             self,
@@ -65,11 +65,29 @@ class AbstractComplexResource(resource.AbstractResource):
     def load(self):
         
         resource.AbstractResource.load(self)
-        self.make_index()
+        self.update_index()
     
     
-    def make_index(self):
+    def __iter__(self):
         
+        for cplex in self.complexes.values():
+            
+            yield cplex
+    
+    
+    def update_index(self):
         
+        self.proteins = collections.defaultdict(set)
+        self.resources = collections.defaultdict(set)
+        
+        for cplex in self:
+            
+            for protein in cplex:
+                
+                self.proteins[protein].add(cplex)
+            
+            for db in cplex.sources:
+                
+                self.resources.add(cplex)
 
 
