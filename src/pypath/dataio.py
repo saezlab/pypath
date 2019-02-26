@@ -5004,7 +5004,7 @@ def cellphonedb_ligands_receptors():
     return ligands, receptors
 
 
-def cellphonedb_annotations():
+def _cellphonedb_annotations(url, name_method):
     
     
     def get_bool(rec, attr):
@@ -5042,13 +5042,12 @@ def cellphonedb_annotations():
     
     annot = {}
     
-    url = urls.urls['cellphonedb_git']['proteins']
     c = curl.Curl(url, large = True, silent = False)
     tab = list(csv.DictReader(c.result))
     
     for rec in tab:
         
-        annot[rec['uniprot']] = record(
+        annot[name_method(rec)] = record(
             receptor = get_desc(rec, 'receptor'),
             adhesion = get_bool(rec, 'adhesion'),
             cytoplasm = get_bool(rec, 'cytoplasm'),
@@ -5061,6 +5060,32 @@ def cellphonedb_annotations():
         )
     
     return annot
+
+
+def cellphonedb_protein_annotations():
+    
+    return _cellphonedb_annotations(
+        url = urls.urls['cellphonedb_git']['proteins'],
+        name_method = lambda rec: rec['uniprot'],
+    )
+
+
+def cellphonedb_complex_annotations():
+    
+    def name_method(rec):
+        
+        return '-'.join(sorted(
+            uniprot
+            for uniprot in
+            (rec['uniprot_%u' % i] for i in xrange(1, 5))
+            if uniprot
+        ))
+    
+    
+    return _cellphonedb_annotations(
+        url = urls.urls['cellphonedb_git']['complexes'],
+        name_method = name_method,
+    )
 
 
 def cellphonedb_interactions(

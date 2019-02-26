@@ -381,10 +381,10 @@ class TestDataio(object):
         assert example in v
     
     
-    def test_cellphonedb_annotations(self):
+    def test_cellphonedb_protein_annotations(self):
         
         example = (None, True, False, False, False, None, False, True, False)
         
-        c = dataio.cellphonedb_annotations()
+        c = dataio.cellphonedb_protein_annotations()
         
         assert c['P17302'] == example

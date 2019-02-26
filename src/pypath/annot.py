@@ -51,6 +51,7 @@ annotation_sources = {
     'MatrixdbECM',
     'Locate',
     'GOIntercell',
+    'CellPhoneDB',
 }
 
 default_fields = {
@@ -58,6 +59,17 @@ default_fields = {
     'Locate': ('location',),
     'Vesiclepedia': ('vesicle',),
     'Exocarta': ('vesicle',),
+    'CellPhoneDB': (
+        'receptor',
+        'adhesion',
+        'cytoplasm',
+        'peripheral',
+        'secretion',
+        'secreted',
+        'transporter',
+        'transmembrane',
+        'extracellular',
+    )
 }
 
 
@@ -749,7 +761,7 @@ class CellPhoneDB(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'CellPhoneDB',
-            input_method = 'cellphonedb_annotations',
+            input_method = 'cellphonedb_protein_annotations',
             ncbi_tax_id = 9606,
         )
     

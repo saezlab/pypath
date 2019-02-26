@@ -89,5 +89,3 @@ class AbstractComplexResource(resource.AbstractResource):
             for db in cplex.sources:
                 
                 self.resources.add(cplex)
-
-

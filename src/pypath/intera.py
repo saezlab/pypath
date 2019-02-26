@@ -867,6 +867,7 @@ class Complex(object):
         self.name = name
         self.synonyms = synonyms
         self.sources = common.to_set(sources)
+        self.attrs = {}
         
         if long_name:
             
@@ -951,6 +952,14 @@ class Complex(object):
     
     
     __iter__ = iter_proteins
+    
+    
+    def add_attrs(self, source, attr):
+        """
+        Attributes can store annotations for complexes.
+        """
+        
+        self.attrs[source] = attr
 
 
 class Interface(object):
