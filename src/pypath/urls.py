@@ -887,7 +887,7 @@ urls = {
             'master/cellphonedb/src/core/data/protein.csv',
         'complexes': 'https://github.com/Teichlab/cellphonedb/blob/'\
             'master/cellphonedb/src/core/data/complex.csv',
-        'interactions': 'https://github.com/Teichlab/cellphonedb/blob/'
+        'interactions': 'https://github.com/Teichlab/cellphonedb/blob/'\
             'master/cellphonedb/src/core/data/interaction.csv',
     }
     'stitch': {
