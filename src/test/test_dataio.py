@@ -383,7 +383,10 @@ class TestDataio(object):
     
     def test_cellphonedb_protein_annotations(self):
         
-        example = (None, True, False, False, False, None, False, True, False)
+        example = (
+            None, True, False, False, False,
+            None, False, True, False, False,
+        )
         
         c = dataio.cellphonedb_protein_annotations()
         

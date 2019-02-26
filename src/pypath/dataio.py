@@ -5037,6 +5037,7 @@ def _cellphonedb_annotations(url, name_method):
             'transporter',
             'transmembrane',
             'extracellular',
+            'integrin',
         )
     )
     
@@ -5057,6 +5058,7 @@ def _cellphonedb_annotations(url, name_method):
             transporter = get_bool(rec, 'transporter'),
             transmembrane = get_bool(rec, 'transmembrane'),
             extracellular = get_bool(rec, 'extracellular'),
+            integrin = get_bool(rec, 'integrin_interaction'),
         )
     
     return annot
