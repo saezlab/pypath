@@ -24,6 +24,7 @@ from past.builtins import xrange, range
 import imp
 import collections
 
+
 try:
     
     import pybel
@@ -32,11 +33,12 @@ try:
         
         sys.stdout.write(
             'pypath.bel: You have the `openbabel` module installed '
-            'instead of pybel.\n'
+            'instead of `pybel`.\n'
             'To be able to use `pybel`, create a virtual env and install '
             'it by `pip install pybel`.\n'
         )
         
+        # unimport openbabel
         del sys.modules['pybel']
         pybel = None
     
@@ -59,24 +61,29 @@ Relationship = collections.namedtuple(
 class Bel(object):
     """
     Converts pypath objects to BEL format.
+    
+    Parameters
+    ----------
+    resource : object
+        Object to be converted.
+        E.g. ``pypath.main.PyPath`` or
+        ``pypath.ptm.PtmAggregator`` or
+        ``pypath.complex.ComplexAggregator`` or
+        ``pypath.network.NetworkResource``.
+    only_sources : set
+        Process data only from these original resources.
     """
     
     def __init__(
             self,
             resource,
+            only_sources = None,
         ):
-        """
-        resource :
-            Object to be converted.
-            E.g. ``pypath.main.PyPath`` or
-            ``pypath.ptm.PtmAggregator`` or
-            ``pypath.complex.ComplexAggregator`` or
-            ``pypath.network.NetworkResource``.
-        """
         
-        self.relationships = None
+        self.relationships = []
         self.bel = None
         self.resource = resource
+        self.only_sources = only_sources
     
     
     def reload(self):
@@ -95,6 +102,9 @@ class Bel(object):
     
     
     def resource_to_relationships(self):
+        """
+        Converts the resource object to list of BEL relationships.
+        """
         
         if hasattr(self.resource, 'graph'):
             # PyPath object
@@ -118,8 +128,97 @@ class Bel(object):
     
     
     def resource_to_relationships_graph(self):
+        """
+        Converts a PyPath igraph object into list of BEL relationships.
+        """
         
-        pass
+        for edge in self.resource.graph.es:
+            
+            for direction in ['straight', 'reverse']:
+                
+                uniprots = getattr(edge['dirs'], direction)
+                
+                if not edge['dirs'].dirs[uniprots]:
+                    # this direction does not exist
+                    
+                    continue
+                
+                dir_sources = edge['dirs'].get_dir(uniprots, sources = True)
+                
+                if self.only_sources and not dir_sources & self.only_sources:
+                    # this direction not provided
+                    # in the currently enabled set of sources
+                    
+                    continue
+                
+                predicates = set()
+                
+                activation, inhibition = (
+                    edge['dirs'].get_sign(direction, sources = True)
+                )
+                
+                if self._check_sign(activation):
+                    
+                    predicates.add('directlyIncreases')
+                
+                if self._check_sign(inhibition):
+                    
+                    predicates.add('directlyDecreases')
+                
+                if not predicates:
+                    # use `regulates` if sign is unknown
+                    
+                    predicates.add('regulates')
+                
+                for predicate in predicates:
+                    
+                    rel = Relationship(
+                        subject = uniprots[0],
+                        predicate = predicate,
+                        object = uniprots[1],
+                    )
+                    
+                    self.relationships.append(rel)
+        
+        if not self._has_direction(edge['dirs']):
+            # add an undirected relationship
+            # if no direction available
+            
+            rel = Relationship(
+                subject = edge['dirs'].nodes[0],
+                predicate = 'association',
+                object = edge['dirs'].nodes[1],
+            )
+            
+            self.relationships.append(rel)
+    
+    
+    def _check_sign(self, this_sign_sources):
+        
+        return (
+            this_sign_sources and
+            (
+                not self.only_sources or
+                this_sign_sources & self.only_sources
+            )
+        )
+    
+    
+    def _has_direction(self, directions):
+        
+        if self.only_sources:
+            
+            return directions.is_directed()
+            
+        else:
+            
+            return (
+                (
+                    directions.sources_straight() |
+                    directions.sources_reverse()
+                ) &
+                self.only_sources
+            )
     
     
     def resource_to_relationships_enzyme_substrate(self):
