@@ -631,25 +631,84 @@ def havugimana_complexes():
     return complexes
 
 
-def get_compleat():
+def compleat_complexes(mapper = None, predicted = True):
+    """
+    Retrieves complexes from the Compleat database.
+    """
+    
+    mapper = mapping.Mapper()
     url = urls.urls['compleat']['url']
-    c = curl.Curl(url, silent=False)
-    data = c.result
-    data = data.replace('\r', '').split('\n')
-    complexes = []
-    for l in data:
-        l = l.split('\t')
-        if len(l) > 11:
-            complexes.append({
-                'source': l[6],
-                'spec': [s.strip() for s in l[9].split('&')],
-                'pubmeds': l[10].split(','),
-                'entrez': [
-                    ee for ee in [e.strip() for e in l[11].split(' ')]
-                    if len(ee) > 0
-                ],
-                'functions': l[4]
-            })
+    c = curl.Curl(url, large = True, silent = False)
+    tab = list(csv.DictReader(
+        c.result,
+        delimiter = '\t',
+        fieldnames = (
+            'compleat_id',
+            'member_count',
+            'predicted',
+            'functions',
+            'functions2',
+            'nothing',
+            'sources',
+            'name',
+            'method',
+            'organisms',
+            'pubmeds',
+            'members',
+        )
+    ))
+    
+    complexes = {}
+    
+    for rec in tab:
+        
+        is_predicted = (
+            rec['predicted'] and
+            rec['predicted'].strip() == 'Predicted'
+        )
+        
+        if is_predicted and not predicted:
+            
+            continue
+        
+        if not rec['members']:
+            
+            continue
+        
+        uniprots = []
+        
+        for entrez in rec['members'].split():
+            
+            uniprot = mapper.map_name(entrez.strip(), 'entrez', 'uniprot')
+            
+            if uniprot:
+                
+                uniprots.append(uniprot[0])
+        
+        if not uniprots:
+            
+            continue
+        
+        name = rec['name']
+        references = rec['pubmeds'].split(',') if rec['pubmeds'] else None
+        sources = set(rec['sources'].split(',')) if is_predicted else set()
+        sources.add('Compleat')
+        
+        cplex = intera.Complex(
+            components = uniprots,
+            sources = sources,
+            references = references,
+            name = name,
+        )
+        
+        if cplex.__str__() in complexes:
+            
+            complexes[cplex.__str__()] += cplex
+            
+        else:
+            
+            complexes[cplex.__str__()] = cplex
+    
     return complexes
 
 
