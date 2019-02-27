@@ -102,10 +102,13 @@ class AbstractComplexResource(resource.AbstractResource):
     
     def __contains__(self, other):
         
+        # a Complex instance
         if isinstance(other, intera.Complex):
             
             other = other.__str__()
         
+        # either a UniProt ID or
+        # a complex string representation
         if isinstance(other, common.basestring):
             
             if len(other) <= 10:
@@ -142,4 +145,17 @@ class Corum(AbstractComplexResource):
             name = 'CORUM',
             mapper = mapper,
             input_method = 'corum_complexes',
+        )
+
+
+class Havugimana(AbstractComplexResource):
+    
+    
+    def __init__(self, mapper = None, **kwargs):
+        
+        AbstractComplexResource.__init__(
+            self,
+            name = 'Havugimana2012',
+            mapper = mapper,
+            input_method = 'havugimana_complexes',
         )
