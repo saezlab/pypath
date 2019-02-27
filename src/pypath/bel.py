@@ -54,7 +54,7 @@ except ModuleNotFoundError:
 
 Relationship = collections.namedtuple(
     'Relationship',
-    ('subject', 'predicate', 'object'),
+    ('subject', 'predicate', 'object', 'references'),
 )
 
 
@@ -72,6 +72,16 @@ class Bel(object):
         ``pypath.network.NetworkResource``.
     only_sources : set
         Process data only from these original resources.
+    
+    Examples
+    --------
+    >>> from pypath import main, data_formats, bel
+    >>> pa = main.PyPath()
+    >>> pa.init_network(data_formats.pathway)
+    >>> be = bel.Bel(resource = pa)
+    >>> be.resource_to_relationships()
+    >>> be.relationships_to_bel()
+    >>> be.export_bel(fname = 'omnipath_pathways.bel')
     """
     
     def __init__(
@@ -134,16 +144,16 @@ class Bel(object):
         
         for edge in self.resource.graph.es:
             
-            for direction in ['straight', 'reverse']:
+            directions = edge['dirs']
+            
+            for direction in (directions.straight, directions.reverse):
                 
-                uniprots = getattr(edge['dirs'], direction)
-                
-                if not edge['dirs'].dirs[uniprots]:
+                if not directions.dirs[direction]:
                     # this direction does not exist
                     
                     continue
                 
-                dir_sources = edge['dirs'].get_dir(uniprots, sources = True)
+                dir_sources = directions.get_dir(direction, sources = True)
                 
                 if self.only_sources and not dir_sources & self.only_sources:
                     # this direction not provided
@@ -154,7 +164,7 @@ class Bel(object):
                 predicates = set()
                 
                 activation, inhibition = (
-                    edge['dirs'].get_sign(direction, sources = True)
+                    directions.get_sign(direction, sources = True)
                 )
                 
                 if self._check_sign(activation):
@@ -170,27 +180,55 @@ class Bel(object):
                     
                     predicates.add('regulates')
                 
+                references = self._references(edge, direction)
+                
                 for predicate in predicates:
                     
                     rel = Relationship(
-                        subject = uniprots[0],
-                        predicate = predicate,
-                        object = uniprots[1],
+                        subject    = self._protein(direction[0]),
+                        predicate  = predicate,
+                        object     = self._protein(direction[1]),
+                        references = references,
                     )
                     
                     self.relationships.append(rel)
         
-        if not self._has_direction(edge['dirs']):
+        if not self._has_direction(directions):
             # add an undirected relationship
             # if no direction available
             
+            references = self._references(edge, 'undirected')
+            
             rel = Relationship(
-                subject = edge['dirs'].nodes[0],
-                predicate = 'association',
-                object = edge['dirs'].nodes[1],
+                subject    = self._protein(directions.nodes[0]),
+                predicate  = 'association',
+                object     = self._protein(directions.nodes[1]),
+                references = references,
             )
             
             self.relationships.append(rel)
+    
+    
+    def _references(self, edge, direction):
+        
+        by_dir = edge['refs_by_dir']
+        references = by_dir[direction] if direction in by_dir else set()
+        
+        if self.only_sources:
+            
+            references = (
+                references &
+                set.union(
+                    *(
+                        edge['refs_by_source'][src]
+                        for src in (self.only_sources & edge['sources'])
+                    )
+                )
+            )
+        
+        references = set(ref.pmid for ref in references)
+        
+        return references
     
     
     def _check_sign(self, this_sign_sources):
@@ -206,7 +244,7 @@ class Bel(object):
     
     def _has_direction(self, directions):
         
-        if self.only_sources:
+        if not self.only_sources:
             
             return directions.is_directed()
             
@@ -219,6 +257,12 @@ class Bel(object):
                 ) &
                 self.only_sources
             )
+    
+    
+    @staticmethod
+    def _protein(identifier, id_type = 'uniprot'):
+        
+        return 'p(%s:%s)' % (id_type.upper(), identifier)
     
     
     def resource_to_relationships_enzyme_substrate(self):
@@ -237,8 +281,32 @@ class Bel(object):
     
     
     def relationships_to_bel(self):
+        """
+        Converts the relationships into a ``pybel.BELGraph`` object.
+        """
         
-        pass
+        self.bel = pybel.BELGraph()
+        bel_parser = pybel.parser.BELParser(self.bel)
+        
+        for rel in self.relationships:
+            
+            for pubmed in rel.references or ('0',):
+                
+                bel_parser.control_parser.clear()
+                bel_parser.citation = {
+                    pybel.constants.CITATION_REFERENCE: pubmed,
+                    pybel.constants.CITATION_TYPE:
+                        pybel.constants.CITATION_TYPE_PUBMED,
+                }
+                #TODO: what to add here?
+                bel_parser.control_parser.evidence = 'PubMed:%s' % pubmed
+                
+                
+                bel_string = ' '.join(rel[:3])
+                print(bel_string)
+                bel_parser.control_parser.parseString(bel_string)
+        
+        #TODO: add other types of objects to this graph
     
     
     def export_relationships(self, fname):
@@ -269,4 +337,6 @@ class Bel(object):
             Filename.
         """
         
-        pass
+        with open(fname, 'w') as fp:
+            
+            pybel.to_bel(self.bel, file = fp)
