@@ -123,7 +123,7 @@ class Bel(object):
             
             self.resource_to_relationships_graph()
             
-        elif hasattr(self.resource, ''):
+        elif hasattr(self.resource, 'enz_sub'):
             # PtmAggregator object
             
             self.resource_to_relationships_enzyme_substrate()

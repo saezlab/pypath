@@ -562,7 +562,7 @@ class PtmAggregator(object):
     
     def __iter__(self):
         
-        for ptm in itertools.chain(*self.full_list.values()):
+        for ptm in itertools.chain(*self.enz_sub.values()):
             
             yield ptm
     
@@ -594,13 +594,13 @@ class PtmAggregator(object):
                 
                 key = (ptm.domain.protein, ptm.ptm.protein)
                 
-                if key not in self.full_list:
+                if key not in self.enz_sub:
                     
-                    self.full_list[key] = []
+                    self.enz_sub[key] = []
                 
-                self.full_list[key].append(ptm)
+                self.enz_sub[key].append(ptm)
         
-        self.full_list = {}
+        self.enz_sub = {}
         
         for input_method in self.input_methods:
             
@@ -648,9 +648,9 @@ class PtmAggregator(object):
         
         self.unique_list = set([])
         
-        for key, ptms in iteritems(self.full_list):
+        for key, ptms in iteritems(self.enz_sub):
             
-            self.full_list[key] = self.uniq_ptms(ptms)
+            self.enz_sub[key] = self.uniq_ptms(ptms)
     
     @staticmethod
     def uniq_ptms(ptms):
@@ -725,7 +725,7 @@ class PtmAggregator(object):
         if 'ptm' not in pa.graph.es.attributes():
             pa.graph.es['ptm'] = [[] for _ in pa.graph.es]
         
-        for key, ptms in iteritems(self.full_list):
+        for key, ptms in iteritems(self.enz_sub):
             
             nodes = pa.get_node_pair(key[0], key[1],
                     directed = pa.graph.is_directed())
