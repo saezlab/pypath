@@ -1111,27 +1111,11 @@ taxids = {
     9544: 'rhesus macaque',
 }
 
-taxa = dict(map(lambda i: (i[1], i[0]), taxids.items()))
+taxa = swap_dict(taxids)
 
 taxa_synonyms = {
     'bovine': 'cow',
 }
-
-
-def taxid_from_common_name(taxon_name):
-    
-    taxon_name = taxon_name.lower().strip()
-    
-    if not taxon_name or taxon_name in {'none', 'unknown'}:
-        
-        return None
-    
-    if taxon_name in taxa_synonyms:
-        
-        taxon_name = taxa_synonyms[taxon_name]
-    
-    return taxa[taxon_name]
-
 
 phosphoelm_taxids = {9606: 'Homo sapiens',
                      10090: 'Mus musculus',
@@ -1179,6 +1163,58 @@ dbptm_taxids = {9606: 'HUMAN',
                 8455: 'XENLA',
                 83333: 'ECOLI',
                 1891767: 'SV40'}
+
+
+dbptm_to_ncbi_tax_id = swap_dict(dbptm_taxids)
+latin_name_to_ncbi_tax_id = swap_dict(phosphoelm_taxids)
+
+def taxid_from_common_name(taxon_name):
+    
+    taxon_name = taxon_name.lower().strip()
+    
+    if not taxon_name or taxon_name in {'none', 'unknown'}:
+        
+        return None
+    
+    if taxon_name in taxa_synonyms:
+        
+        taxon_name = taxa_synonyms[taxon_name]
+    
+    if taxon_name in taxa:
+        
+        return taxa[taxon_name]
+
+
+def taxid_from_latin_name(taxon_name):
+    
+    if taxon_name in latin_name_to_ncbi_tax_id:
+        
+        return latin_name_to_ncbi_tax_id[taxon_name]
+
+
+def taxid_from_dbptm_taxon_name(taxon_name):
+    
+    if taxon_name in dbptm_to_ncbi_tax_id:
+        
+        return dbptm_to_ncbi_tax_id[taxon_name]
+
+
+def ensure_ncbi_tax_id(taxon_id):
+    
+    if isinstance(taxon_id, int):
+        
+        return taxon_id
+        
+    else:
+        
+        return (
+            taxid_from_common_name(taxon_id) or
+            taxid_from_latin_name(taxon_id) or
+            taxid_from_dbptm_taxon_name(taxon_id)
+        )
+
+
+
 
 psite_mod_types = [('p', 'phosphorylation'),
                    ('ac', 'acetylation'),
