@@ -21,6 +21,15 @@
 from future.utils import iteritems
 from past.builtins import xrange, range
 
+import imp
+import collections
+
+
+Relationship = collections.namedtuple(
+    'Relationship',
+    (),
+)
+
 
 class Bel(object):
     """
@@ -45,6 +54,15 @@ class Bel(object):
         self.resource = resource
     
     
+    def reload(self):
+        
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    
     def main(self):
         
         self.resource_to_relationships()
@@ -53,7 +71,45 @@ class Bel(object):
     
     def resource_to_relationships(self):
         
+        if hasattr(self.resource, 'graph'):
+            # PyPath object
+            
+            self.resource_to_relationships_graph()
+            
+        elif hasattr(self.resource, ''):
+            # PtmAggregator object
+            
+            self.resource_to_relationships_enzyme_substrate()
+            
+        elif hasattr(self.resource, 'complexes'):
+            # ComplexAggregator object
+            
+            self.resource_to_relationships_complex()
+            
+        elif hasattr(self.resource, 'network'):
+            # NetworkResource object
+            
+            self.resource_to_relationships_network()
+    
+    
+    def resource_to_relationships_graph(self):
+        
         pass
+    
+    
+    def resource_to_relationships_enzyme_substrate(self):
+        
+        pass
+    
+    
+    def resource_to_relationships_complex(self):
+        
+        raise NotImplementedError
+    
+    
+    def resource_to_relationships_network(self):
+        
+        raise NotImplementedError
     
     
     def relationships_to_bel(self):
@@ -61,7 +117,18 @@ class Bel(object):
         pass
     
     
-    def export(self, fname):
+    def export_relationships(self, fname):
+        """
+        Exports relationships into 3 columns table.
+        
+        fname : str
+            Filename.
+        """
+        
+        pass
+    
+    
+    def export_bel(self, fname):
         """
         Exports the BEL model into file.
         
