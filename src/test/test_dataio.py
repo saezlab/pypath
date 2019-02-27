@@ -400,3 +400,9 @@ class TestDataio(object):
         assert 'O95251-Q8WYH8-Q9HAF1-Q9NQC1' in c
         assert '16387653' in c['O95251-Q8WYH8-Q9HAF1-Q9NQC1'].references
     
+    
+    def test_havugimana_complexes(self):
+        
+        h = dataio.havugimana_complexes()
+        
+        assert 'Q8TF72-Q96ER3-Q96PV0-Q9Y6N9' in h
