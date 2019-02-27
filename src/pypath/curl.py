@@ -32,6 +32,7 @@ from past.builtins import xrange, range
 import imp
 import sys
 import os
+import io
 import shutil
 import struct
 
@@ -626,6 +627,7 @@ class FileOpener(object):
         #    self.print_status('Error at extracting gzip file')
 
     def open_zip(self):
+        
         self.files_multipart = {}
         self.sizes = {}
         self.fileobj.seek(0)
@@ -636,7 +638,11 @@ class FileOpener(object):
             if self.files_needed is None or m in self.files_needed:
                 this_file = self.zipfile.open(m)
                 if self.large:
-                    self.files_multipart[m] = this_file
+                    self.files_multipart[m] = io.TextIOWrapper(
+                        io.BytesIO(
+                            this_file.read()
+                        )
+                    )
                 else:
                     self.files_multipart[m] = this_file.read()
                     this_file.close()

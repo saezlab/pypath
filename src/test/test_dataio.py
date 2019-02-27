@@ -393,9 +393,9 @@ class TestDataio(object):
         assert c['P17302'] == example
     
     
-    def test_get_corum(self):
+    def test_corum_complexes(self):
         
-        c = dataio.get_corum()
+        c = dataio.corum_complexes()
         
         assert 'O95251-Q8WYH8-Q9HAF1-Q9NQC1' in c
         assert '16387653' in c['O95251-Q8WYH8-Q9HAF1-Q9NQC1'].references

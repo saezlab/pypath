@@ -417,7 +417,7 @@ def get_pfam_pdb():
     return pdb_pfam, pfam_pdb
 
 
-def get_corum(organism = 9606):
+def corum_complexes(organism = 9606):
     
     annots = (
         'mithocondr',
