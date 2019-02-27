@@ -902,7 +902,7 @@ class Complex(object):
         return other in self.components
     
     
-    def __eq__(self):
+    def __eq__(self, other):
         
         self.__hash__() == other.__hash__()
     
@@ -910,6 +910,8 @@ class Complex(object):
     def __iadd__(self, other):
         
         self.merge(other)
+        
+        return self
     
     
     def merge(self, other):
