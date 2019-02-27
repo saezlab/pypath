@@ -168,10 +168,30 @@ class Compleat(AbstractComplexResource):
     
     def __init__(self, mapper = None, input_args = None, **kwargs):
         
+        input_args = input_args or {}
+        
+        if 'mapper' not in input_args:
+            
+            input_args['mapper'] = mapper
+        
         AbstractComplexResource.__init__(
             self,
-            name = 'Havugimana2012',
+            name = 'Compleat',
             mapper = mapper,
-            input_method = 'havugimana_complexes',
+            input_method = 'compleat_complexes',
+            input_args = input_args,
+        )
+
+
+class ComplexPortal(AbstractComplexResource):
+    
+    
+    def __init__(self, mapper = None, input_args = None, **kwargs):
+        
+        AbstractComplexResource.__init__(
+            self,
+            name = 'ComplexPortal',
+            mapper = mapper,
+            input_method = 'complexportal_complexes',
             input_args = input_args or {},
         )
