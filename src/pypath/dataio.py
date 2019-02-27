@@ -500,6 +500,7 @@ def get_complexportal(species=9606, zipped=True):
     http://www.ebi.ac.uk/intact/complex/
     http://nar.oxfordjournals.org/content/early/2014/10/13/nar.gku975.full.pdf
     """
+    
     spec = {9606: 'Homo_sapiens'}
     species = species if type(species) is not int else spec[species]
     if zipped:
@@ -599,21 +600,35 @@ def get_havugimana():
     Supplement Table S3/1 from Havugimana 2012
     Cell. 150(5): 1068–1081.
     """
+    
     url = urls.urls['havugimana']['url']
     c = curl.Curl(url, silent=False, large=True)
-    data = c.result
-    fname = data.name
-    data.close()
+    fname = c.fileobj.name
+    del c
     table = read_xls(fname)
+    
     return table[3:]
 
 
-def read_complexes_havugimana():
+def havugimana_complexes():
     """
+    Retrieves complexes from
     Supplement Table S3/1 from Havugimana 2012
     Cell. 150(5): 1068–1081.
     """
-    return map(lambda l: l[2].split(','), get_havugimana())
+    
+    complexes = {}
+    
+    for rec in get_havugimana():
+        
+        cplex = intera.Complex(
+            components = rec[2].split(','),
+            sources = 'Havugimana2012',
+        )
+        
+        complexes[cplex.__str__()] = cplex
+    
+    return complexes
 
 
 def get_compleat():
