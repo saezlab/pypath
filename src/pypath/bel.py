@@ -24,10 +24,35 @@ from past.builtins import xrange, range
 import imp
 import collections
 
+try:
+    
+    import pybel
+    
+    if hasattr(pybel, 'ob'):
+        
+        sys.stdout.write(
+            'pypath.bel: You have the `openbabel` module installed '
+            'instead of pybel.\n'
+            'To be able to use `pybel`, create a virtual env and install '
+            'it by `pip install pybel`.\n'
+        )
+        
+        del sys.modules['pybel']
+        pybel = None
+    
+except ModuleNotFoundError:
+    
+    sys.stdout.write(
+        'pypath.bel: module `pybel` not available.\n'
+        'You won\'t be able to read or write BEL models.\n'
+    )
+    
+    pybel = None
+
 
 Relationship = collections.namedtuple(
     'Relationship',
-    (),
+    ('subject', 'predicate', 'object'),
 )
 
 
@@ -125,7 +150,16 @@ class Bel(object):
             Filename.
         """
         
-        pass
+        with open(fname, 'w') as fp:
+            
+            _ = fp.write('Subject\tPredicate\tObject\n')
+            
+            _ = fp.write(
+                '\n'.join(
+                    '\t'.join(rel)
+                    for rel in self.relationships
+                )
+            )
     
     
     def export_bel(self, fname):
