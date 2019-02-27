@@ -406,3 +406,11 @@ class TestDataio(object):
         h = dataio.havugimana_complexes()
         
         assert 'Q8TF72-Q96ER3-Q96PV0-Q9Y6N9' in h
+    
+    
+    def test_compleat_complexes(self):
+        
+        c = dataio.compleat_complexes()
+        
+        assert 'Q9HCE7-Q9NPB6' in c
+        assert '15761148' in c['Q9HCE7-Q9NPB6'].references
