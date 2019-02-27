@@ -493,7 +493,7 @@ def corum_complexes(organism = 9606):
     return complexes
 
 
-def get_complexportal(species=9606, zipped=True):
+def complexportal_complexes(organism = 9606, return_details = False):
     """
     Complex dataset from IntAct.
     See more:
@@ -502,80 +502,107 @@ def get_complexportal(species=9606, zipped=True):
     """
     
     spec = {9606: 'Homo_sapiens'}
-    species = species if type(species) is not int else spec[species]
-    if zipped:
-        zipurl = '/'.join(
-            [urls.urls['complex_portal']['url'], species + '.zip'])
-        c = curl.Curl(zipurl, silent=False)
-        files = c.result
-        if files is None:
-            return None
-    else:
-        url = '/'.join([urls.urls['complex_portal']['url'], species, ''])
-        c = curl.Curl(url, silent=False)
-        lst = c.result
-        if lst is None:
-            return None
-    if zipped:
-        lst = files.keys()
-    else:
-        lst = [
-            w for l in [l.split(' ') for l in lst.split('\n')] for w in l
-            if w.endswith('xml')
-        ]
-    prg = progress.Progress(len(lst), 'Downloading complex data', 1)
+    
+    zipurl = '%s/%s.zip' % (
+        urls.urls['complex_portal']['url'],
+        spec[organism],
+    )
+    c = curl.Curl(zipurl, large = True, silent = False)
+    files = c.result
+    
     errors = []
-    complexes = []
-    for xmlname in lst:
-        if zipped:
-            xml = files[xmlname]
-        else:
-            url = '/'.join(
-                [urls.urls['complex_portal']['url'], species, xmlname])
-            c = curl.Curl(url)
-            xml = c.result
-        if xml is None:
-            msg = 'Could not get file: \n\t\t%s' % url
-            errors.append(msg)
-            continue
+    complexes = {}
+    details = []
+    name_key = 'complex recommended name'
+    
+    for xmlname, xml in iteritems(c.result):
+        
         soup = bs4.BeautifulSoup(xml, 'html.parser')
         interactors_xml = soup.find_all('interactor')
         interactors = {}
         interactions = {}
+        
         for i in interactors_xml:
+            
             if i.find('primaryref').attrs['db'] == 'uniprotkb':
+                
                 interactors[i.attrs['id']] = i.find('primaryref').attrs['id']
-            #'tax_id': i.find('organism').attrs['ncbitaxid']
+        
         interactions_xml = soup.find_all('interaction')
+        
         for i in interactions_xml:
+            
             description = ''
             pubmeds = []
             fullname = ''
             names = {}
             pdbs = []
             uniprots = []
+            
             for a in i.find_all('attribute'):
+                
                 if a.attrs['name'] == 'curated-complex':
                     description = a.text
+            
             for sr in i.find_all('secondaryref'):
+                
                 if sr.attrs['db'] == 'pubmed':
                     pubmeds.append(sr.attrs['id'])
+                
                 if sr.attrs['db'] == 'wwpdb':
                     pdbs.append(sr.attrs['id'])
+            
             for pr in i.find_all('primaryref'):
+                
                 if pr.attrs['db'] in ['wwpdb', 'rcsb pdb', 'pdbe']:
                     pdbs.append(pr.attrs['id'])
+            
             pubmeds = list(set(pubmeds))
             pdbs = list(set(pdbs))
-            fullname = '' if i.find('fullname') is None else i.find(
-                'fullname').text
+            fullname = (
+                None
+                    if i.find('fullname') is None else
+                i.find('fullname').text
+            )
+            
             for a in i.find_all('alias'):
+                
                 names[a.attrs['type']] = a.text
+            
             for intref in i.find_all('interactorref'):
+                
                 int_id = intref.text
+                
                 if int_id in interactors:
-                    uniprots.append(interactors[int_id])
-            complexes.append({
+                    
+                    uniprot = interactors[int_id]
+                    
+                    if uniprot.startswith('PRO'):
+                        
+                        continue
+                    
+                    uniprot = uniprot.split('-')[0]
+                    
+                    uniprots.append(uniprot)
+            
+            if uniprots:
+                
+                cplex = intera.Complex(
+                    components = uniprots,
+                    name = names[name_key] if name_key in names else None,
+                    references = set(pubmeds),
+                    sources = 'ComplexPortal',
+                )
+                
+                if cplex.__str__() in complexes:
+                    
+                    complexes[cplex.__str__()] += cplex
+                    
+                else:
+                    
+                    complexes[cplex.__str__()] = cplex
+            
+            details.append({
                 'uniprots': uniprots,
                 'pdbs': pdbs,
                 'pubmeds': pubmeds,
@@ -583,15 +610,14 @@ def get_complexportal(species=9606, zipped=True):
                 'names': names,
                 'description': description
             })
-        prg.step()
-    prg.terminate()
-    if len(errors) > 0:
-        sys.stdout.write('\t:: Failed to download %u files of total %u:\n\n' %
-                         (len(e), len(lst)))
-        for e in errors:
-            sys.stdout.write('\t' + e + '\n')
-        sys.stdout.flush()
-    return complexes
+    
+    if return_details:
+        
+        return complexes, details
+        
+    else:
+        
+        return complexes
 
 
 def get_havugimana():
