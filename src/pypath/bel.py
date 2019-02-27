@@ -325,7 +325,7 @@ class Bel(object):
             
             _ = fp.write(
                 '\n'.join(
-                    '\t'.join(rel)
+                    '\t'.join(rel[:3])
                     for rel in self.relationships
                 )
             )
