@@ -138,24 +138,40 @@ class CellPhoneDB(AbstractComplexResource):
 class Corum(AbstractComplexResource):
     
     
-    def __init__(self, mapper = None, **kwargs):
+    def __init__(self, mapper = None, input_args = None, **kwargs):
         
         AbstractComplexResource.__init__(
             self,
             name = 'CORUM',
             mapper = mapper,
             input_method = 'corum_complexes',
+            input_args = input_args or {},
         )
 
 
 class Havugimana(AbstractComplexResource):
     
     
-    def __init__(self, mapper = None, **kwargs):
+    def __init__(self, mapper = None, input_args = None, **kwargs):
         
         AbstractComplexResource.__init__(
             self,
             name = 'Havugimana2012',
             mapper = mapper,
             input_method = 'havugimana_complexes',
+            input_args = input_args or {},
+        )
+
+
+class Compleat(AbstractComplexResource):
+    
+    
+    def __init__(self, mapper = None, input_args = None, **kwargs):
+        
+        AbstractComplexResource.__init__(
+            self,
+            name = 'Havugimana2012',
+            mapper = mapper,
+            input_method = 'havugimana_complexes',
+            input_args = input_args or {},
         )
