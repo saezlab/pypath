@@ -825,6 +825,7 @@ class Complex(object):
             synonyms = None,
             sources = None,
             interactions = None,
+            references = None,
             proteins = None,
             long_name = None,
         ):
@@ -868,6 +869,7 @@ class Complex(object):
         self.name = name
         self.synonyms = synonyms
         self.sources = common.to_set(sources)
+        self.references = common.to_set(references)
         self.attrs = {}
         
         if long_name:
@@ -903,6 +905,27 @@ class Complex(object):
     def __eq__(self):
         
         self.__hash__() == other.__hash__()
+    
+    
+    def __iadd__(self, other):
+        
+        self.merge(other)
+    
+    
+    def merge(self, other):
+        """
+        Adds the annotations (sources, references, attrs) of the other
+        ``Complex`` instance to this one. If the other ``Complex`` has
+        different components it does nothing.
+        """
+        
+        if self != other:
+            
+            return
+        
+        self.sources.update(other.sources)
+        self.references.update(other.references)
+        self.attrs.update(other.attrs)
     
     
     def get_synonym(self, typ):
