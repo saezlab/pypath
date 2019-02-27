@@ -417,44 +417,80 @@ def get_pfam_pdb():
     return pdb_pfam, pfam_pdb
 
 
-def get_corum():
-
+def get_corum(organism = 9606):
+    
+    annots = (
+        'mithocondr',
+        'nucleus',
+        'endoplasmic reticulum',
+        'cytoplasm',
+        'transcriptional control',
+        'vesicle docking',
+        'extracellular matrix component',
+        'cell-matrix adhesion',
+        'cytokines',
+        'cell death',
+        'integrin receptor signalling pathway',
+        'eukaryotic plasma membrane',
+        'nuclear membrane',
+        'cellular export and secretion',
+        'cell-substrate adherens junction',
+        'cytoskeleton',
+        'receptor binding',
+        'nucleolus',
+        'transmembrane signal transduction',
+        'transcription',
+        'modification by phosphorylation',
+        'cell-cell adhesion',
+        'intercellular junction',
+        'ion transport',
+        'cell adhesion',
+        'cell junction',
+        'endocytosis',
+    )
+    
+    organism = common.ensure_ncbi_tax_id(organism)
+    
     complexes = {}
-    members = {}
-    c = curl.Curl(urls.urls['corum']['url'], silent=False)
-    data = c.result
-
-    if data is None:
-        return None, None
-
-    data = data.split('\n')[1:]
-    prg = progress.Progress(len(data), 'Processing data', 9)
-
-    for l in data:
-
-        l = l.replace('\n', '').replace('\r', '').split('\t')
-
-        if len(l) < 10:
+    
+    c = curl.Curl(
+        urls.urls['corum']['url'],
+        silent = False,
+        large = True,
+        files_needed = ['allComplexes.txt'],
+    )
+    
+    tab = csv.DictReader(c.result['allComplexes.txt'], delimiter = '\t')
+    
+    for rec in tab:
+        
+        cplex_organism = rec['Organism']
+        
+        if common.ensure_ncbi_tax_id(cplex_organism) != organism:
+            
             continue
-
-        uniprots = l[5].split(';')
-        name = l[1]
-        shortName = l[1].split('(')[0].replace('complex', '').strip()
-        pubmeds = l[12].split(';')
-        spec = l[2]
-        func = l[11].replace('"', '')
-        dise = l[16].replace('"', '')
-        complexes[name] = (uniprots, shortName, pubmeds, spec, func, dise)
-
-        for u in uniprots:
-            if u not in members:
-                members[u] = []
-            members[u].append((name, shortName, pubmeds, spec, func, dise))
-
-        prg.step()
-
-    prg.terminate()
-    return complexes, members
+        
+        uniprots = rec['subunits(UniProt IDs)'].split(';')
+        
+        pubmeds  = rec['PubMed ID'].split(';')
+        name     = rec['ComplexName']
+        
+        cplex = intera.Complex(
+            name = name,
+            components = uniprots,
+            sources = 'CORUM',
+            references = pubmeds,
+        )
+        
+        if cplex.__str__() in complexes:
+            
+            complexes[cplex.__str__()].references.update(set(pubmeds))
+            
+        else:
+            
+            complexes[cplex.__str__()] = cplex
+    
+    return complexes
 
 
 def get_complexportal(species=9606, zipped=True):
