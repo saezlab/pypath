@@ -130,3 +130,16 @@ class CellPhoneDB(AbstractComplexResource):
             mapper = mapper,
             input_method = 'cellphonedb_complexes',
         )
+
+
+class Corum(AbstractComplexResource):
+    
+    
+    def __init__(self, mapper = None, **kwargs):
+        
+        AbstractComplexResource.__init__(
+            self,
+            name = 'CORUM',
+            mapper = mapper,
+            input_method = 'corum_complexes',
+        )
