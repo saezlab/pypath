@@ -414,3 +414,10 @@ class TestDataio(object):
         
         assert 'Q9HCE7-Q9NPB6' in c
         assert '15761148' in c['Q9HCE7-Q9NPB6'].references
+    
+    
+    def test_complexportal_complexes(self):
+        
+        c = dataio.complexportal_complexes()
+        
+        assert 'Q9NS61-Q9NZV8' in c
