@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""Convert OmniPath components to PyBEL."""
+
 #
 #  This file is part of the `pypath` python module
 #
@@ -19,7 +21,6 @@
 #
 
 
-import collections
 import imp
 import itertools as itt
 import sys
@@ -29,7 +30,6 @@ import pybel.constants as pc
 from pybel.dsl import Protein
 
 try:
-
     import pybel
 
     if hasattr(pybel, 'ob'):
@@ -45,23 +45,15 @@ try:
         pybel = None
 
 except ModuleNotFoundError:
-
     sys.stdout.write(
         'pypath.bel: module `pybel` not available.\n'
         'You won\'t be able to read or write BEL models.\n'
     )
-
     pybel = None
 
-Relationship = collections.namedtuple(
-    'Relationship',
-    ('subject', 'predicate', 'object', 'references'),
-)
 
-
-class Bel(object):
-    """
-    Converts pypath objects to BEL format.
+class Bel:
+    """Converts pypath objects to BEL format.
     
     Parameters
     ----------
@@ -88,8 +80,8 @@ class Bel(object):
             self,
             resource,
             only_sources=None,
-    ):
-        self.bel_graph: pybel.BELGraph = pybel.BELGraph()
+    ) -> None:
+        self.bel_graph = pybel.BELGraph()
         self.resource = resource
         self.only_sources = only_sources
 
