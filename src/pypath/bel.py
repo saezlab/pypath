@@ -155,21 +155,21 @@ class Bel:
                         evidence='From OmniPath',
                     )
 
-        if not self._has_direction(directions):
-            # add an undirected relationship
-            # if no direction available
+            if not self._has_direction(directions):
+                # add an undirected relationship
+                # if no direction available
 
-            citations = self._references(edge, 'undirected')
-            source = self._protein(directions.nodes[0])
-            target = self._protein(directions.nodes[1])
+                citations = self._references(edge, 'undirected')
+                source = self._protein(directions.nodes[0])
+                target = self._protein(directions.nodes[1])
 
-            for citation in citations:
-                self.bel_graph.add_qualified_edge(
-                    source, target,
-                    relation='association',
-                    citation=citation,
-                    evidence='From OmniPath',
-                )
+                for citation in citations:
+                    self.bel_graph.add_qualified_edge(
+                        source, target,
+                        relation='association',
+                        citation=citation,
+                        evidence='From OmniPath',
+                    )
 
     def _references(self, edge, direction) -> Set[str]:
         by_dir = edge['refs_by_dir']
