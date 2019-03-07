@@ -102,6 +102,9 @@ setup(
         ],
         'docs': [
             'sphinx',
-        ]
+        ],
+        'bel': [
+            'pybel',
+        ],
     }
 )
