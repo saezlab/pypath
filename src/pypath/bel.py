@@ -94,25 +94,21 @@ class Bel:
 
     def main(self):
         """Convert the resource object to list of BEL relationships."""
-        if hasattr(self.resource, 'graph'):
-            # PyPath object
-            self.resource_to_relationships_graph()
+        if hasattr(self.resource, 'graph'):  # PyPath object
+            self.resource_to_relationships_graph(self.resource.graph)
 
-        elif hasattr(self.resource, 'enz_sub'):
-            # PtmAggregator object
-            self.resource_to_relationships_enzyme_substrate()
+        elif hasattr(self.resource, 'enz_sub'):  # PtmAggregator object
+            self.resource_to_relationships_enzyme_substrate(self.resource.enz_sub)
 
-        elif hasattr(self.resource, 'complexes'):
-            # ComplexAggregator object
-            self.resource_to_relationships_complex()
+        elif hasattr(self.resource, 'complexes'):  # ComplexAggregator object
+            self.resource_to_relationships_complexes(self.resource.complexes)
 
-        elif hasattr(self.resource, 'network'):
-            # NetworkResource object
-            self.resource_to_relationships_network()
+        elif hasattr(self.resource, 'network'):  # NetworkResource object
+            self.resource_to_relationships_network(self.resource.network)
 
-    def resource_to_relationships_graph(self):
+    def resource_to_relationships_graph(self, graph):
         """Convert a PyPath igraph object into list of BEL relationships."""
-        for edge in self.resource.graph.es:
+        for edge in graph.es:
             directions = edge['dirs']
 
             for direction in (directions.straight, directions.reverse):
@@ -212,13 +208,13 @@ class Bel:
     def _protein(identifier, id_type='uniprot') -> Protein:
         return Protein(namespace=id_type.upper(), name=identifier)
 
-    def resource_to_relationships_enzyme_substrate(self):
+    def resource_to_relationships_enzyme_substrate(self, enz_sub):
         pass
 
-    def resource_to_relationships_complex(self):
+    def resource_to_relationships_complexes(self, complexes):
         raise NotImplementedError
 
-    def resource_to_relationships_network(self):
+    def resource_to_relationships_network(self, network):
         raise NotImplementedError
 
     def export_relationships(self, fname):
