@@ -714,6 +714,7 @@ class TableServer(BaseServer):
         # or by default only the 'omnipath' dataset
         # which belongs to the 'PPI' type
         if not args['types'] or args['datasets']:
+            
             args['types'].update(set(
                 self.dataset2type[ds] for ds in args['datasets']
             ))
@@ -831,6 +832,7 @@ class TableServer(BaseServer):
         tbl = tbl.loc[:,hdr]
         
         return self._serve_dataframe(tbl, req)
+    
     
     def ptms(
             self,

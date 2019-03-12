@@ -8839,7 +8839,7 @@ def get_proteinatlas(normal = True, pathology = True,
 
     def line(l):
 
-        return l.decode('utf-8').split('\t')
+        return l.split('\t')
 
     if normal:
 
