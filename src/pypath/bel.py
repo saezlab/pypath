@@ -21,10 +21,11 @@
 #
 
 
-import imp
 import itertools as itt
 import sys
 from typing import Set
+
+from tqdm import tqdm
 
 import pybel.constants as pc
 from pybel.dsl import Protein
@@ -71,23 +72,28 @@ class Bel:
     >>> from pypath import main, data_formats, bel
     >>> pa = main.PyPath()
     >>> pa.init_network(data_formats.pathway)
-    >>> be = bel.Bel(resource = pa)
-    >>> be.resource_to_relationships()
-    >>> be.export_bel(fname = 'omnipath_pathways.bel')
+    >>> be = bel.Bel(resource=pa)
+    >>> be.main()
+    >>> be.to_bel_json(os.path.join(os.path.expanduser('~'), 'Desktop', 'omnipath.bel.json'))
     """
 
     def __init__(
             self,
             resource,
             only_sources=None,
+            init=False,
     ) -> None:
         self.bel_graph = pybel.BELGraph()
         self.resource = resource
         self.only_sources = only_sources
 
+        if init:
+            self.main()
+
     def reload(self):
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        import imp
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
@@ -106,9 +112,14 @@ class Bel:
         elif hasattr(self.resource, 'network'):  # NetworkResource object
             self.resource_to_relationships_network(self.resource.network)
 
-    def resource_to_relationships_graph(self, graph):
+        return self
+
+    def resource_to_relationships_graph(self, graph, use_tqdm: bool = False) -> None:
         """Convert a PyPath igraph object into list of BEL relationships."""
-        for edge in graph.es:
+        edges = graph.es
+        if use_tqdm:
+            edges = tqdm(edges)
+        for edge in edges:
             directions = edge['dirs']
 
             for direction in (directions.straight, directions.reverse):
@@ -217,23 +228,36 @@ class Bel:
     def resource_to_relationships_network(self, network):
         raise NotImplementedError
 
-    def export_relationships(self, fname):
-        """
-        Exports relationships into 3 columns table.
+    def export_relationships(self, path: str) -> None:
+        """Export relationships into 3 columns table.
         
         fname : str
             Filename.
         """
-        with open(fname, 'w') as fp:
+        with open(path, 'w') as fp:
             print('Subject\tPredicate\tObject', file=fp)
             for u, v, d in self.bel_graph.edges(data=True):
                 print('\t'.join((u.name, d[pc.RELATION, v.name])), file=fp)
 
-    def export_bel(self, fname, **kwargs):
-        """
-        Exports the BEL model into file.
+    def to_bel_path(self, path: str, **kwargs):
+        """Export the BEL model as a BEL script.
         
-        fname : str
-            Filename.
+        path : str
+            Path to the output file.
         """
-        pybel.to_bel_path(self.bel_graph, fname, **kwargs)
+        pybel.to_bel_path(self.bel_graph, path, **kwargs)
+
+    def to_bel_json(self, path: str, **kwargs):
+        """Export the BEL model as a node-link JSON file."""
+        pybel.to_json_path(self.bel_graph, path, **kwargs)
+
+
+if __name__ == '__main__':
+    from pypath import main, data_formats
+    import os
+
+    pa = main.PyPath()
+    pa.init_network(data_formats.pathway)
+    be = Bel(resource=pa)
+    be.main()
+    be.to_bel_json(os.path.join(os.path.expanduser('~'), 'Desktop', 'omnipath.bel.json'))
