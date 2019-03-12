@@ -231,13 +231,13 @@ class Bel:
     def export_relationships(self, path: str) -> None:
         """Export relationships into 3 columns table.
         
-        fname : str
+        path : str
             Filename.
         """
         with open(path, 'w') as fp:
             print('Subject\tPredicate\tObject', file=fp)
             for u, v, d in self.bel_graph.edges(data=True):
-                print('\t'.join((u.name, d[pc.RELATION, v.name])), file=fp)
+                print('\t'.join((u.name, d[pc.RELATION], v.name)), file=fp)
 
     def to_bel_path(self, path: str, **kwargs):
         """Export the BEL model as a BEL script.
