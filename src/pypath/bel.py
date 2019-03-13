@@ -98,6 +98,11 @@ class Bel(BELManagerMixin):
         if init:
             self.main()
 
+    @property
+    def initialized(self) -> bool:
+        """Check if the BEL graph has been initialized."""
+        return 0 < self.bel_graph.number_of_nodes()
+
     def reload(self):
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist=[modname.split('.')[0]])
@@ -248,6 +253,8 @@ class Bel(BELManagerMixin):
 
     def to_bel(self) -> pybel.BELGraph:
         """Export the BEL graph."""
+        if not self.initialized:
+            self.main()
         return self.bel_graph
 
     def to_bel_path(self, path: str, **kwargs):
