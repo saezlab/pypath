@@ -272,19 +272,19 @@ class Bel(BELManagerMixin):
         @click.group()
         @click.option('--dataset')
         @click.pass_context
-        def main(ctx: click.Context, dataset: str):
+        def _main(ctx: click.Context, dataset: str):
             """Bio2BEL OmniPath CLI."""
             resource = get_resource(dataset)
             ctx.obj = cls(resource=resource)
 
-        @main.group()
+        @_main.group()
         def bel():
             """BEL utilities."""
 
         cls._cli_add_to_bel(bel)
         cls._cli_add_upload_bel(bel)
 
-        return main
+        return _main
 
 
 main = Bel.get_cli()
