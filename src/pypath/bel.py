@@ -25,6 +25,7 @@ import itertools as itt
 import sys
 from typing import Set
 
+import click
 from tqdm import tqdm
 
 try:
@@ -52,7 +53,6 @@ except ModuleNotFoundError:
 import pybel.constants as pc
 import pybel.dsl
 from bio2bel.manager.bel_manager import BELManagerMixin
-from bio2bel.manager.cli_manager import CliMixin
 
 __all__ = [
     'Bel',
@@ -60,7 +60,7 @@ __all__ = [
 ]
 
 
-class Bel(BELManagerMixin, CliMixin):
+class Bel(BELManagerMixin):
     """Converts pypath objects to BEL format.
     
     Parameters
@@ -261,6 +261,30 @@ class Bel(BELManagerMixin, CliMixin):
     def to_bel_json(self, path: str, **kwargs):
         """Export the BEL model as a node-link JSON file."""
         pybel.to_json_path(self.to_bel(), path, **kwargs)
+
+    @classmethod
+    def get_cli(cls) -> click.Group:
+        """Get the command line interface main group."""
+
+        def get_resource(dataset):
+            raise NotImplementedError  # TODO @deeenes
+
+        @click.group()
+        @click.option('--dataset')
+        @click.pass_context
+        def main(ctx: click.Context, dataset: str):
+            """Bio2BEL OmniPath CLI."""
+            resource = get_resource(dataset)
+            ctx.obj = cls(resource=resource)
+
+        @main.group()
+        def bel():
+            """BEL utilities."""
+
+        cls._cli_add_to_bel(bel)
+        cls._cli_add_upload_bel(bel)
+
+        return main
 
 
 main = Bel.get_cli()
