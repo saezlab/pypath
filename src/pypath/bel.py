@@ -47,6 +47,7 @@ except ModuleNotFoundError:
     pybel = None
 
 import pybel.constants as pc
+import pybel.dsl
 from bio2bel.manager.bel_manager import BELManagerMixin
 from bio2bel.manager.cli_manager import CliMixin
 
@@ -72,6 +73,7 @@ class Bel(BELManagerMixin, CliMixin):
     
     Examples
     --------
+    >>> import os
     >>> from pypath import main, data_formats, bel
     >>> pa = main.PyPath()
     >>> pa.init_network(data_formats.pathway)
@@ -174,9 +176,8 @@ class Bel(BELManagerMixin, CliMixin):
                 target = self._protein(directions.nodes[1])
 
                 for citation in citations:
-                    self.bel_graph.add_qualified_edge(
+                    self.bel_graph.add_association(
                         source, target,
-                        relation='association',
                         citation=citation,
                         evidence='From OmniPath',
                     )
