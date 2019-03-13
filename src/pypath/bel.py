@@ -28,6 +28,7 @@ from typing import Optional, Set, Union
 import click
 from tqdm import tqdm
 
+from pypath import data_formats
 from pypath.complex import AbstractComplexResource
 from pypath.main import PyPath
 from pypath.ptm import PtmAggregator
@@ -275,15 +276,19 @@ class Bel(BELManagerMixin):
     def get_cli(cls) -> click.Group:
         """Get the command line interface main group."""
 
-        def get_resource(dataset):
-            raise NotImplementedError  # TODO @deeenes
+        def get_resource(dataset: str):
+            if dataset == 'PyPath':
+                pa = PyPath()
+                pa.init_network(data_formats.pathway)
+                return pa
+            # TODO add more options
 
         @click.group()
-        @click.option('--dataset')
+        @click.option('-r', '--resource-name', type=click.Choice(['PyPath']), default='PyPath')
         @click.pass_context
-        def _main(ctx: click.Context, dataset: str):
+        def _main(ctx: click.Context, resource_name: str):
             """Bio2BEL OmniPath CLI."""
-            resource = get_resource(dataset)
+            resource = get_resource(resource_name)
             ctx.obj = cls(resource=resource)
 
         @_main.group()
