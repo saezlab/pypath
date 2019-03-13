@@ -24,9 +24,6 @@ from typing import Set
 
 from tqdm import tqdm
 
-import pybel.constants as pc
-from pybel.dsl import Protein
-
 try:
     import pybel
 
@@ -49,8 +46,14 @@ except ModuleNotFoundError:
     )
     pybel = None
 
+import pybel.constants as pc
 from bio2bel.manager.bel_manager import BELManagerMixin
 from bio2bel.manager.cli_manager import CliMixin
+
+__all__ = [
+    'Bel',
+    'main',
+]
 
 
 class Bel(BELManagerMixin, CliMixin):
@@ -216,8 +219,8 @@ class Bel(BELManagerMixin, CliMixin):
         )
 
     @staticmethod
-    def _protein(identifier, id_type='uniprot') -> Protein:
-        return Protein(namespace=id_type.upper(), name=identifier)
+    def _protein(identifier, id_type='uniprot') -> pybel.dsl.Protein:
+        return pybel.dsl.Protein(namespace=id_type.upper(), name=identifier)
 
     def resource_to_relationships_enzyme_substrate(self, enz_sub):
         pass
@@ -249,11 +252,12 @@ class Bel(BELManagerMixin, CliMixin):
         path : str
             Path to the output file.
         """
-        pybel.to_bel_path(self.bel_graph, path, **kwargs)
+        pybel.to_bel_path(self.to_bel(), path, **kwargs)
 
     def to_bel_json(self, path: str, **kwargs):
         """Export the BEL model as a node-link JSON file."""
-        pybel.to_json_path(self.bel_graph, path, **kwargs)
+        pybel.to_json_path(self.to_bel(), path, **kwargs)
+
 
 main = Bel.get_cli()
 
