@@ -37,7 +37,6 @@ import numpy as np
 from numpy.random import randn
 import matplotlib as mpl
 import scipy.cluster.hierarchy as hc
-import cairo
 import igraph
 
 try:
@@ -2546,6 +2545,7 @@ class SimilarityGraph(object):
             v2['name'] = ''
 
     def init_pdf(self):
+        import cairo
         self.surface = cairo.PDFSurface(self.fname, self.width, self.height)
         self.bbox = igraph.drawing.utils.BoundingBox(self.margin, self.margin,
                                                      self.width - self.margin,
