@@ -114,6 +114,7 @@ setup(
         'bel': [
             'pybel',
             'bio2bel',
+            'click',
         ],
     },
     entry_points=ENTRY_POINTS,
