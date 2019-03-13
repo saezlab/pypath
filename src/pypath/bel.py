@@ -23,10 +23,14 @@ Website: http://pypath.omnipathdb.org/
 
 import itertools as itt
 import sys
-from typing import Set
+from typing import Optional, Set, Union
 
 import click
 from tqdm import tqdm
+
+from pypath.complex import AbstractComplexResource
+from pypath.main import PyPath
+from pypath.ptm import PtmAggregator
 
 try:
     import pybel
@@ -59,26 +63,22 @@ __all__ = [
     'main',
 ]
 
+Resource = Union[PyPath, PtmAggregator, AbstractComplexResource]
+
 
 class Bel(BELManagerMixin):
     """Converts pypath objects to BEL format.
     
     Parameters
     ----------
-    resource : object
-        Object to be converted.
-        E.g. ``pypath.main.PyPath`` or
-        ``pypath.ptm.PtmAggregator`` or
-        ``pypath.complex.ComplexAggregator`` or
-        ``pypath.network.NetworkResource``.
-    only_sources : set
+    only_sources :
         Process data only from these original resources.
     
     Examples
     --------
     >>> import os
-    >>> from pypath import main, data_formats, bel
-    >>> pa = main.PyPath()
+    >>> from pypath import PyPath, data_formats, bel
+    >>> pa = PyPath()
     >>> pa.init_network(data_formats.pathway)
     >>> be = bel.Bel(resource=pa)
     >>> be.main()
@@ -87,9 +87,9 @@ class Bel(BELManagerMixin):
 
     def __init__(
             self,
-            resource,
-            only_sources=None,
-            init=False,
+            resource: Resource,
+            only_sources: Optional[Set[str]] = None,
+            init: bool = False,
     ) -> None:
         self.bel_graph = pybel.BELGraph()
         self.resource = resource
@@ -113,15 +113,17 @@ class Bel(BELManagerMixin):
 
     def main(self):
         """Convert the resource object to list of BEL relationships."""
-        if hasattr(self.resource, 'graph'):  # PyPath object
+
+        if isinstance(self.resource, PyPath):
             self.resource_to_relationships_graph(self.resource.graph)
 
-        elif hasattr(self.resource, 'enz_sub'):  # PtmAggregator object
+        elif isinstance(self.resource, PtmAggregator):
             self.resource_to_relationships_enzyme_substrate(self.resource.enz_sub)
 
-        elif hasattr(self.resource, 'complexes'):  # ComplexAggregator object
+        elif isinstance(self.resource, AbstractComplexResource):
             self.resource_to_relationships_complexes(self.resource.complexes)
 
+        # FIXME NetworkResource does not exist...
         elif hasattr(self.resource, 'network'):  # NetworkResource object
             self.resource_to_relationships_network(self.resource.network)
 
