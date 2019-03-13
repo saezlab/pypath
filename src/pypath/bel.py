@@ -255,13 +255,7 @@ class Bel(BELManagerMixin, CliMixin):
         """Export the BEL model as a node-link JSON file."""
         pybel.to_json_path(self.bel_graph, path, **kwargs)
 
+main = Bel.get_cli()
 
 if __name__ == '__main__':
-    from pypath import main, data_formats
-    import os
-
-    pa = main.PyPath()
-    pa.init_network(data_formats.pathway)
-    be = Bel(resource=pa)
-    be.main()
-    be.to_bel_json(os.path.join(os.path.expanduser('~'), 'Desktop', 'omnipath.bel.json'))
+    main()
