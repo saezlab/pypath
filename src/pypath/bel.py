@@ -49,8 +49,11 @@ except ModuleNotFoundError:
     )
     pybel = None
 
+from bio2bel.manager.bel_manager import BELManagerMixin
+from bio2bel.manager.cli_manager import CliMixin
 
-class Bel:
+
+class Bel(BELManagerMixin, CliMixin):
     """Converts pypath objects to BEL format.
     
     Parameters
@@ -235,6 +238,10 @@ class Bel:
             print('Subject\tPredicate\tObject', file=fp)
             for u, v, d in self.bel_graph.edges(data=True):
                 print('\t'.join((u.name, d[pc.RELATION], v.name)), file=fp)
+
+    def to_bel(self) -> pybel.BELGraph:
+        """Export the BEL graph."""
+        return self.bel_graph
 
     def to_bel_path(self, path: str, **kwargs):
         """Export the BEL model as a BEL script.
