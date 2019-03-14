@@ -194,23 +194,15 @@ class MapReader(object):
             
         elif source == "file":
             
-            self.read_mapping_file(self.param, self.ncbi_tax_id)
-            
-        elif source == "pickle":
-            
-            self.read_mapping_pickle(self.param, self.ncbi_tax_id)
+            self.read_mapping_file()
             
         elif source == "uniprot":
             
-            self.read_mapping_uniprot(self.param, self.ncbi_tax_id)
+            self.read_mapping_uniprot()
             
         elif source == "uniprotlist":
             
-            self.read_mapping_uniprot_list(
-                param,
-                uniprots = uniprots,
-                ncbi_tax_id = ncbi_tax_id
-            )
+            self.read_mapping_uniprot_list()
     
     
     def setup_cache(self):
