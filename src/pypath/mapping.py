@@ -289,7 +289,8 @@ class MapReader(object):
     
     def read_mapping_uniprot_list(self):
         """
-        Builds a mapping table from 
+        Builds a mapping table by downloading data from UniProt's
+        upload lists service.
         """
         
         a_to_b = collections.defaultdict(list)
@@ -305,10 +306,7 @@ class MapReader(object):
             
             _ = next(u_target)
             
-            ac_list = [
-                l.split('\t')[1].strip(),
-                u_target
-            ]
+            ac_list = [l.split('\t')[1].strip() for l in u_target]
             
         else:
             
