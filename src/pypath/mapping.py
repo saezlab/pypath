@@ -65,6 +65,10 @@ from UniProt, file, mysql or pickle.
 class MapReader(object):
     """
     Reads ID translation data and creates ``MappingTable`` instances.
+    When initializing ID conversion tables for the first time
+    data is downloaded from UniProt and read into dictionaries.
+    It takes a couple of seconds. Data is saved to pickle
+    dumps, this way later the tables load much faster.
     """
     
     def __init__(
@@ -202,7 +206,7 @@ class MapReader(object):
         self.cachefile = os.path.join(self.cachedir, self.mapping_id)
     
     
-    def read_mapping_file(self, param, ncbi_tax_id = None):
+    def read_mapping_file(self):
 
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
 
@@ -435,33 +439,24 @@ class MapReader(object):
 
 
 class MappingTable(object):
-
+    """
+    This is the class directly handling ID translation data.
+    It does not care about loading it or what kind of IDs these
+    only accepts the translation dictionary.
+    
+    lifetime : int
+        If this table has not been used for longer than this preiod it is
+        to be removed at next cleanup. Time in seconds.
+    """
+    
     def __init__(
             self,
-            one,
-            two,
-            typ,
-            source,
-            param,
-            ncbi_tax_id,
-            mysql = None,
-            log = None,
-            cache = False,
-            cachedir = None,
-            uniprots = None,
+            data,
             lifetime = 30,
         ):
-        """
-        When initializing ID conversion tables for the first time
-        data is downloaded from UniProt and read into dictionaries.
-        It takes a couple of seconds. Data is saved to pickle
-        dumps, this way later the tables load much faster.
         
-        lifetime : int
-            If this table has not been used for longer than this preiod it is
-            to be removed at next cleanup. Time in seconds.
-        """
-        
+        self.data = data
+        self.lifetime = lifetime
         self.param = param
         self.one = one
         self.two = two
