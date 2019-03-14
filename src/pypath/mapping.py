@@ -470,17 +470,6 @@ class MapReader(object):
         return [x.strip() for x in names]
     
     
-    def id_max_len(self):
-        
-        if self.maxlOne is None:
-            self.maxlOne = max(
-                len(i) for i in flatList(self.mapping["to"].values()))
-        if self.maxlTwo is None:
-            self.maxlTwo = max(
-                len(i) for i in flatList(self.mapping["from"].values()))
-        return {"one": self.maxlOne, "two": self.maxlTwo}
-    
-    
     @staticmethod
     def unique(dct):
         
