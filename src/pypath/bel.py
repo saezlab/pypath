@@ -1,344 +1,307 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#
-#  This file is part of the `pypath` python module
-#
-#  Copyright
-#  2014-2019
-#  EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
-#
-#  File author(s): Dénes Türei (turei.denes@gmail.com)
-#                  Nicolàs Palacio
-#
-#  Distributed under the GPLv3 License.
-#  See accompanying file LICENSE.txt or copy at
-#      http://www.gnu.org/licenses/gpl-3.0.html
-#
-#  Website: http://pypath.omnipathdb.org/
-#
+"""Convert OmniPath components to PyBEL.
 
-from future.utils import iteritems
-from past.builtins import xrange, range
+This module also installs a command line interface that can either be acccessed
+via: ``python -m pypath.bel`` or directly as ``bio2bel_omnipath``.
 
+This file is part of the `pypath` python module
 
+Copyright
+2014-2019
+EMBL, EMBL-EBI, Uniklinik RWTH Aachen, Heidelberg University
+
+File author(s): Dénes Türei (turei.denes@gmail.com)
+                 Nicolàs Palacio
+
+Distributed under the GPLv3 License.
+See accompanying file LICENSE.txt or copy at
+     http://www.gnu.org/licenses/gpl-3.0.html
+
+Website: http://pypath.omnipathdb.org/
+"""
+
+import itertools as itt
 import sys
-import imp
-import collections
+from typing import Optional, Set, Union
 
+import click
+from tqdm import tqdm
+
+from pypath import data_formats
+from pypath.complex import AbstractComplexResource
+from pypath.main import PyPath
+from pypath.ptm import PtmAggregator
 
 try:
-    
     import pybel
-    
+
     if hasattr(pybel, 'ob'):
-        
         sys.stdout.write(
             'pypath.bel: You have the `openbabel` module installed '
             'instead of `pybel`.\n'
             'To be able to use `pybel`, create a virtual env and install '
             'it by `pip install pybel`.\n'
         )
-        
+
         # unimport openbabel
         del sys.modules['pybel']
         pybel = None
-    
+
 except ModuleNotFoundError:
-    
     sys.stdout.write(
         'pypath.bel: module `pybel` not available.\n'
         'You won\'t be able to read or write BEL models.\n'
     )
-    
     pybel = None
 
+import pybel.constants as pc
+import pybel.dsl
+from bio2bel.manager.bel_manager import BELManagerMixin
 
-Relationship = collections.namedtuple(
-    'Relationship',
-    ('subject', 'predicate', 'object', 'references'),
-)
+__all__ = [
+    'Bel',
+    'main',
+]
+
+Resource = Union[PyPath, PtmAggregator, AbstractComplexResource]
 
 
-class Bel(object):
-    """
-    Converts pypath objects to BEL format.
+class Bel(BELManagerMixin):
+    """Converts pypath objects to BEL format.
     
     Parameters
     ----------
-    resource : object
-        Object to be converted.
-        E.g. ``pypath.main.PyPath`` or
-        ``pypath.ptm.PtmAggregator`` or
-        ``pypath.complex.ComplexAggregator`` or
-        ``pypath.network.NetworkResource``.
-    only_sources : set
+    only_sources :
         Process data only from these original resources.
     
     Examples
     --------
-    >>> from pypath import main, data_formats, bel
-    >>> pa = main.PyPath()
+    >>> import os
+    >>> from pypath import PyPath, data_formats, bel
+    >>> pa = PyPath()
     >>> pa.init_network(data_formats.pathway)
-    >>> be = bel.Bel(resource = pa)
-    >>> be.resource_to_relationships()
-    >>> be.relationships_to_bel()
-    >>> be.export_bel(fname = 'omnipath_pathways.bel')
+    >>> be = bel.Bel(resource=pa)
+    >>> be.main()
+    >>> be.to_bel_json(os.path.join(os.path.expanduser('~'), 'Desktop', 'omnipath.bel.json'))
     """
-    
+
     def __init__(
             self,
-            resource,
-            only_sources = None,
-        ):
-        
-        self.relationships = []
-        self.bel = None
+            resource: Resource,
+            only_sources: Optional[Set[str]] = None,
+            init: bool = False,
+    ) -> None:
+        self.bel_graph = pybel.BELGraph()
         self.resource = resource
         self.only_sources = only_sources
-    
-    
+
+        if init:
+            self.main()
+
+    @property
+    def initialized(self) -> bool:
+        """Check if the BEL graph has been initialized."""
+        return 0 < self.bel_graph.number_of_nodes()
+
     def reload(self):
-        
         modname = self.__class__.__module__
-        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        import imp
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-    
-    
+
     def main(self):
-        
-        self.resource_to_relationships()
-        self.relationships_to_bel()
-    
-    
-    def resource_to_relationships(self):
-        """
-        Converts the resource object to list of BEL relationships.
-        """
-        
-        if hasattr(self.resource, 'graph'):
-            # PyPath object
-            
-            self.resource_to_relationships_graph()
-            
-        elif hasattr(self.resource, 'enz_sub'):
-            # PtmAggregator object
-            
-            self.resource_to_relationships_enzyme_substrate()
-            
-        elif hasattr(self.resource, 'complexes'):
-            # ComplexAggregator object
-            
-            self.resource_to_relationships_complex()
-            
-        elif hasattr(self.resource, 'network'):
-            # NetworkResource object
-            
-            self.resource_to_relationships_network()
-    
-    
-    def resource_to_relationships_graph(self):
-        """
-        Converts a PyPath igraph object into list of BEL relationships.
-        """
-        
-        for edge in self.resource.graph.es:
-            
+        """Convert the resource object to list of BEL relationships."""
+
+        if isinstance(self.resource, PyPath):
+            self.resource_to_relationships_graph(self.resource.graph)
+
+        elif isinstance(self.resource, PtmAggregator):
+            self.resource_to_relationships_enzyme_substrate(self.resource.enz_sub)
+
+        elif isinstance(self.resource, AbstractComplexResource):
+            self.resource_to_relationships_complexes(self.resource.complexes)
+
+        # FIXME NetworkResource does not exist...
+        elif hasattr(self.resource, 'network'):  # NetworkResource object
+            self.resource_to_relationships_network(self.resource.network)
+
+        return self
+
+    def resource_to_relationships_graph(self, graph, use_tqdm: bool = False) -> None:
+        """Convert a PyPath igraph object into list of BEL relationships."""
+        edges = graph.es
+        if use_tqdm:
+            edges = tqdm(edges)
+        for edge in edges:
             directions = edge['dirs']
-            
+
             for direction in (directions.straight, directions.reverse):
-                
                 if not directions.dirs[direction]:
                     # this direction does not exist
-                    
                     continue
-                
-                dir_sources = directions.get_dir(direction, sources = True)
-                
+
+                dir_sources = directions.get_dir(direction, sources=True)
+
                 if self.only_sources and not dir_sources & self.only_sources:
                     # this direction not provided
                     # in the currently enabled set of sources
-                    
                     continue
-                
+
                 predicates = set()
-                
+
                 activation, inhibition = (
-                    directions.get_sign(direction, sources = True)
+                    directions.get_sign(direction, sources=True)
                 )
-                
+
                 if self._check_sign(activation):
-                    
-                    predicates.add('directlyIncreases')
-                
+                    predicates.add(pc.DIRECTLY_INCREASES)
+
                 if self._check_sign(inhibition):
-                    
-                    predicates.add('directlyDecreases')
-                
+                    predicates.add(pc.DIRECTLY_DECREASES)
+
                 if not predicates:
                     # use `regulates` if sign is unknown
-                    
-                    predicates.add('regulates')
-                
-                references = self._references(edge, direction)
-                
-                for predicate in predicates:
-                    
-                    rel = Relationship(
-                        subject    = self._protein(direction[0]),
-                        predicate  = predicate,
-                        object     = self._protein(direction[1]),
-                        references = references,
+                    predicates.add(pc.REGULATES)
+
+                source = self._protein(direction[0])
+                target = self._protein(direction[1])
+                citations = self._references(edge, direction)
+
+                for predicate, citation in itt.product(predicates, citations):
+                    self.bel_graph.add_qualified_edge(
+                        source, target,
+                        relation=predicate,
+                        citation=citation,
+                        evidence='From OmniPath',
                     )
-                    
-                    self.relationships.append(rel)
-        
-        if not self._has_direction(directions):
-            # add an undirected relationship
-            # if no direction available
-            
-            references = self._references(edge, 'undirected')
-            
-            rel = Relationship(
-                subject    = self._protein(directions.nodes[0]),
-                predicate  = 'association',
-                object     = self._protein(directions.nodes[1]),
-                references = references,
-            )
-            
-            self.relationships.append(rel)
-    
-    
-    def _references(self, edge, direction):
-        
+
+            if not self._has_direction(directions):
+                # add an undirected relationship
+                # if no direction available
+
+                citations = self._references(edge, 'undirected')
+                source = self._protein(directions.nodes[0])
+                target = self._protein(directions.nodes[1])
+
+                for citation in citations:
+                    self.bel_graph.add_association(
+                        source, target,
+                        citation=citation,
+                        evidence='From OmniPath',
+                    )
+
+    def _references(self, edge, direction) -> Set[str]:
         by_dir = edge['refs_by_dir']
         references = by_dir[direction] if direction in by_dir else set()
-        
+
         if self.only_sources:
-            
             references = (
-                references &
-                set.union(
-                    *(
-                        edge['refs_by_source'][src]
-                        for src in (self.only_sources & edge['sources'])
+                    references &
+                    set.union(
+                        *(
+                            edge['refs_by_source'][src]
+                            for src in (self.only_sources & edge['sources'])
+                        )
                     )
-                )
             )
-        
-        references = set(ref.pmid for ref in references)
-        
-        return references
-    
-    
+
+        return {str(ref.pmid) for ref in references}
+
     def _check_sign(self, this_sign_sources):
-        
         return (
-            this_sign_sources and
-            (
-                not self.only_sources or
-                this_sign_sources & self.only_sources
-            )
-        )
-    
-    
-    def _has_direction(self, directions):
-        
-        if not self.only_sources:
-            
-            return directions.is_directed()
-            
-        else:
-            
-            return (
+                this_sign_sources and
                 (
-                    directions.sources_straight() |
-                    directions.sources_reverse()
-                ) &
-                self.only_sources
-            )
-    
-    
-    @staticmethod
-    def _protein(identifier, id_type = 'uniprot'):
-        
-        return 'p(%s:%s)' % (id_type.upper(), identifier)
-    
-    
-    def resource_to_relationships_enzyme_substrate(self):
-        
-        pass
-    
-    
-    def resource_to_relationships_complex(self):
-        
-        raise NotImplementedError
-    
-    
-    def resource_to_relationships_network(self):
-        
-        raise NotImplementedError
-    
-    
-    def relationships_to_bel(self):
-        """
-        Converts the relationships into a ``pybel.BELGraph`` object.
-        """
-        
-        self.bel = pybel.BELGraph()
-        bel_parser = pybel.parser.BELParser(self.bel)
-        
-        for rel in self.relationships:
-            
-            for pubmed in rel.references or ('0',):
-                
-                bel_parser.control_parser.clear()
-                bel_parser.citation = {
-                    pybel.constants.CITATION_REFERENCE: pubmed,
-                    pybel.constants.CITATION_TYPE:
-                        pybel.constants.CITATION_TYPE_PUBMED,
-                }
-                #TODO: what to add here?
-                bel_parser.control_parser.evidence = 'PubMed:%s' % pubmed
-                
-                
-                bel_string = ' '.join(rel[:3])
-                print(bel_string)
-                bel_parser.control_parser.parseString(bel_string)
-        
-        #TODO: add other types of objects to this graph
-    
-    
-    def export_relationships(self, fname):
-        """
-        Exports relationships into 3 columns table.
-        
-        fname : str
-            Filename.
-        """
-        
-        with open(fname, 'w') as fp:
-            
-            _ = fp.write('Subject\tPredicate\tObject\n')
-            
-            _ = fp.write(
-                '\n'.join(
-                    '\t'.join(rel[:3])
-                    for rel in self.relationships
+                        not self.only_sources or
+                        this_sign_sources & self.only_sources
                 )
-            )
-    
-    
-    def export_bel(self, fname):
-        """
-        Exports the BEL model into file.
+        )
+
+    def _has_direction(self, directions):
+        if not self.only_sources:
+            return directions.is_directed()
+
+        return (
+                (
+                        directions.sources_straight() |
+                        directions.sources_reverse()
+                ) & self.only_sources
+        )
+
+    @staticmethod
+    def _protein(identifier, id_type='uniprot') -> pybel.dsl.Protein:
+        return pybel.dsl.Protein(namespace=id_type.upper(), name=identifier)
+
+    def resource_to_relationships_enzyme_substrate(self, enz_sub):
+        pass
+
+    def resource_to_relationships_complexes(self, complexes):
+        raise NotImplementedError
+
+    def resource_to_relationships_network(self, network):
+        raise NotImplementedError
+
+    def export_relationships(self, path: str) -> None:
+        """Export relationships into 3 columns table.
         
-        fname : str
+        path : str
             Filename.
         """
+        with open(path, 'w') as fp:
+            print('Subject\tPredicate\tObject', file=fp)
+            for u, v, d in self.bel_graph.edges(data=True):
+                print('\t'.join((u.name, d[pc.RELATION], v.name)), file=fp)
+
+    def to_bel(self) -> pybel.BELGraph:
+        """Export the BEL graph."""
+        if not self.initialized:
+            self.main()
+        return self.bel_graph
+
+    def to_bel_path(self, path: str, **kwargs):
+        """Export the BEL model as a BEL script.
         
-        with open(fname, 'w') as fp:
-            
-            pybel.to_bel(self.bel, file = fp)
+        path : str
+            Path to the output file.
+        """
+        pybel.to_bel_path(self.to_bel(), path, **kwargs)
+
+    def to_bel_json(self, path: str, **kwargs):
+        """Export the BEL model as a node-link JSON file."""
+        pybel.to_json_path(self.to_bel(), path, **kwargs)
+
+    @classmethod
+    def get_cli(cls) -> click.Group:
+        """Get the command line interface main group."""
+
+        def get_resource(dataset: str):
+            if dataset == 'PyPath':
+                pa = PyPath()
+                pa.init_network(data_formats.pathway)
+                return pa
+            # TODO add more options
+
+        @click.group()
+        @click.option('-r', '--resource-name', type=click.Choice(['PyPath']), default='PyPath')
+        @click.pass_context
+        def _main(ctx: click.Context, resource_name: str):
+            """Bio2BEL OmniPath CLI."""
+            resource = get_resource(resource_name)
+            ctx.obj = cls(resource=resource)
+
+        @_main.group()
+        def bel():
+            """BEL utilities."""
+
+        cls._cli_add_to_bel(bel)
+        cls._cli_add_upload_bel(bel)
+
+        return _main
+
+
+main = Bel.get_cli()
+
+if __name__ == '__main__':
+    main()

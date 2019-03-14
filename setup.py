@@ -38,6 +38,14 @@ with open('README.rst') as f:
 with open('HISTORY.rst') as f:
     history = f.read()
 
+ENTRY_POINTS = {
+    'console_scripts': [
+        'bio2bel_omnipath = pypath.bel:main',
+    ],
+    'bio2bel': [
+        'omnipath = pypath.bel',
+    ],
+}
 
 setup(
     name = 'pypath',
@@ -102,6 +110,12 @@ setup(
         ],
         'docs': [
             'sphinx',
-        ]
-    }
+        ],
+        'bel': [
+            'pybel',
+            'bio2bel',
+            'click',
+        ],
+    },
+    entry_points=ENTRY_POINTS,
 )
