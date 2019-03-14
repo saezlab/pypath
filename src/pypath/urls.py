@@ -508,7 +508,7 @@ urls = {
             'healthy human tissues',
         'url':
         'http://www.humanproteomemap.org/Download_HPM/HPM_protein_level_'
-        'expression_matrix_Kim_et_al_052914.csv'
+            'expression_matrix_Kim_et_al_052914.csv'
     },
     'proteinatlas': {
         'label': 'Human Protein Atlas: Immuncytochemistry expression data in '
@@ -524,7 +524,7 @@ urls = {
         'label':
         'List of small molecules in LINCS with synonyms and PubChem IDs',
         'url': 'http://lincs.hms.harvard.edu/db/datasets/20000/smallmolecules'
-        '?search=&output_type=.csv'
+            '?search=&output_type=.csv'
     },
     'pubmed-eutils': {
         'label': 'Retrieving summary of PubMed records',
@@ -541,7 +541,7 @@ urls = {
     'hpmr': {
         'label': 'Human Plasma Membrane Receptome',
         'url':
-        'http://www.receptome.org/SearchDB/findGenes.asp?textName='
+            'http://www.receptome.org/SearchDB/findGenes.asp?textName='
     },
     'tfcensus': {
         'label': 'A census of human transcription factors (Vaquerizas 2009)',
