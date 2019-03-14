@@ -79,7 +79,8 @@ class MapReader(object):
             entity_type,
             source,
             param,
-            ncbi_tax_id,
+            ncbi_tax_id = None,
+            uniprots = None,
             lifetime = 30,
         ):
         """
@@ -97,6 +98,12 @@ class MapReader(object):
         self.lifetime = lifetime
         self.a_to_b = None
         self.b_to_a = None
+        self.ncbi_tax_id = (
+            ncbi_tax_id or
+            param.ncbi_tax_id or
+            settings.get('default_organism')
+        )
+        self.uniprots = uniprots
     
     
     def reload(self):
@@ -134,58 +141,58 @@ class MapReader(object):
             ):
                 
                 self.write_cache()
+    
+    
+    def write_cache(self):
+        """
+        Exports the ID translation data into a pickle file.
+        """
         
+        pickle.dump(
+            (
+                self.a_to_b,
+                self.b_to_a,
+            ),
+            open(self.cachefile, 'wb')
+        )
+    
+    
+    def read_cache(self):
+        """
+        Reads the ID translation data from a previously saved pickle file.
+        """
         
-        def write_cache(self):
-            """
-            Exports the ID translation data into a pickle file.
-            """
+        self.a_to_b, self.b_to_a = pickle.load(open(self.cachefile, 'rb'))
+    
+    
+    def read(self):
+        """
+        Reads the ID translation data from the original source.
+        """
+        
+        if os.path.exists(self.cachefile):
             
-            pickle.dump(
-                (
-                    self.a_to_b,
-                    self.b_to_a,
-                ),
-                open(self.cachefile, 'wb')
+            os.remove(self.cachefile)
+            
+        elif source == "file":
+            
+            self.read_mapping_file(self.param, self.ncbi_tax_id)
+            
+        elif source == "pickle":
+            
+            self.read_mapping_pickle(self.param, self.ncbi_tax_id)
+            
+        elif source == "uniprot":
+            
+            self.read_mapping_uniprot(self.param, self.ncbi_tax_id)
+            
+        elif source == "uniprotlist":
+            
+            self.read_mapping_uniprot_list(
+                param,
+                uniprots = uniprots,
+                ncbi_tax_id = ncbi_tax_id
             )
-        
-        
-        def read_cache(self):
-            """
-            Reads the ID translation data from a previously saved pickle file.
-            """
-            
-            self.a_to_b, self.b_to_a = pickle.load(open(self.cachefile, 'rb'))
-        
-        
-        def read(self):
-            """
-            Reads the ID translation data from the original source.
-            """
-            
-            if os.path.exists(self.cachefile):
-                
-                os.remove(self.cachefile)
-                
-            elif source == "file":
-                
-                self.read_mapping_file(self.param, self.ncbi_tax_id)
-                
-            elif source == "pickle":
-                
-                self.read_mapping_pickle(self.param, self.ncbi_tax_id)
-                
-            elif source == "uniprot":
-                
-                self.read_mapping_uniprot(self.param, self.ncbi_tax_id)
-                
-            elif source == "uniprotlist":
-                
-                self.read_mapping_uniprot_list(
-                    param,
-                    uniprots = uniprots,
-                    ncbi_tax_id = ncbi_tax_id
-                )
     
     
     def setup_cache(self):
@@ -205,6 +212,17 @@ class MapReader(object):
             )
         )
         self.cachefile = os.path.join(self.cachedir, self.mapping_id)
+    
+    
+    def set_uniprot_space(self):
+        """
+        Sets up a search space of UniProt IDs.
+        """
+        
+        self.uniprots = uniprot_input.all_uniprots(
+            self.ncbi_tax_id,
+            swissprot = param.swissprot,
+        )
     
     
     def read_mapping_file(self):
@@ -265,98 +283,92 @@ class MapReader(object):
         a_to_b = self.unique(a_to_b)
         b_to_a = self.unique(b_to_a)
         
-        return a_to_b, b_to_a if self.param.bi_directional else None
+        self.a_to_b = a_to_b
+        self.b_to_a = b_to_a if self.param.bi_directional else None
     
     
-    def read_mapping_uniprot_list(self, param, uniprots = None,
-                                  ncbi_tax_id = None):
-
-        a_to_b = {}
-        b_to_a = {}
-
-        ncbi_tax_id = param.ncbi_tax_id \
-            if ncbi_tax_id is None else ncbi_tax_id
-
-        if uniprots is None:
-            uniprots = uniprot_input.all_uniprots(ncbi_tax_id,
-                                                  swissprot = param.swissprot)
-
-        if param.targetNameType != 'uniprot':
-            utarget = self._read_mapping_uniprot_list('ACC',
-                                                      param.target_ac_name,
-                                                      uniprots)
-
-            _ = next(utarget)
+    def read_mapping_uniprot_list(self):
+        
+        a_to_b = collections.defaultdict(list)
+        b_to_a = collections.defaultdict(list)
+        
+        if not self.uniprots:
+            
+            self.set_uniprot_space()
+        
+        if param.target_name_type != 'uniprot':
+            
+            u_target = self._read_mapping_uniprot_list('ACC')
+            
+            _ = next(u_target)
+            
             ac_list = list(map(lambda l:
                                    l.decode('ascii').split('\t')[1].strip(),
                                    utarget))
         else:
             ac_list = uniprots
-
-        udata = self._read_mapping_uniprot_list(param.target_ac_name,
-                                   param.ac_name,
-                                   ac_list)
-
-        _ = next(udata)
-
-        for l in udata:
+        
+        uniprot_data = self._read_mapping_uniprot_list()
+        
+        _ = next(uniprot_data)
+        
+        for l in uniprot_data:
             
             if not l:
                 
                 continue
-
-            l = l.decode('ascii').strip().split('\t')
-
-            if l[1] not in a_to_b:
-                a_to_b[l[1]] = []
-
+            
+            l = l.strip().split('\t')
+            
             a_to_b[l[1]].append(l[0])
 
-            if param.bi:
-
-                if l[0] not in b_to_a:
-                    b_to_a[l[0]] = []
-
+            if param.bi_directional:
+                
                 b_to_a[l[0]].append(l[1])
-
-        self.mapping["to"] = a_to_b
-        self.cleanDict(self.mapping["to"])
-        if param.bi:
-            self.mapping["from"] = mapping_i
-            self.cleanDict(self.mapping["from"])
+        
+        self.a_to_b = self.unique(a_to_b)
+        self.b_to_a = self.unique(b_to_a) if self.bi_directional else None
     
     
-    def _read_mapping_uniprot_list(self, source, target, ac_list):
+    def _read_mapping_uniprot_list(self, id_type_a = None):
         """
         Reads a mapping table from UniProt "upload lists" service.
         """
         
+        id_type_a = param.target_ac_name
+        id_type_b = param.ac_name
+        
         url = urls.urls['uniprot_basic']['lists']
         post = {
-            'from': source,
+            'from': id_type_a,
             'format': 'tab',
-            'to': target,
-            'uploadQuery': ' '.join(ac_list)
+            'to': id_type_b,
+            'uploadQuery': ' '.join(sorted(self.uniprots)),
         }
         
-        c = curl.Curl(url, post=post, large=True, silent = False)
+        c = curl.Curl(url, post = post, large = True, silent = False)
         
         if c.result is None:
             
             for i in xrange(3):
                 
-                c = curl.Curl(url, post=post, large=True,
-                              silent = False, cache = False)
+                c = curl.Curl(
+                    url,
+                    post = post,
+                    large = True,
+                    silent = False,
+                    cache = False,
+                )
                 
                 if c.result is not None:
                     
                     break
         
-        if c.result is None or c.fileobj.read(5) == b'<!DOC':
+        if c.result is None or c.fileobj.read(5) == '<!DOC':
             
             sys.stdout.write('\t:: Error at downloading from UniProt.\n')
             
-            c.result = b''
+            c.result = ''
         
         c.fileobj.seek(0)
     
@@ -562,19 +574,19 @@ class Mapper(object):
         self.mysql = mysql.MysqlRunner(self.mysql_conf, log=self.ownlog)
     
     
-    def which_table(self, nameType, targetNameType,
+    def which_table(self, nameType, target_name_type,
                     load=True, ncbi_tax_id = None):
         """
         Returns the table which is suitable to convert an ID of
-        nameType to targetNameType. If no such table have been loaded
+        nameType to target_name_type. If no such table have been loaded
         yet, it attempts to load from UniProt. If all attempts failed
         returns `None`.
         """
         
         tbl = None
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
-        tblName = (nameType, targetNameType)
-        tblNameRev = (targetNameType, nameType)
+        tblName = (nameType, target_name_type)
+        tblNameRev = (target_name_type, nameType)
         
         if ncbi_tax_id not in self.tables:
             self.tables[ncbi_tax_id] = {}
@@ -598,7 +610,7 @@ class Mapper(object):
                     self.load_mappings(maplst={tblName: frm[tblName]},
                                        ncbi_tax_id=ncbi_tax_id)
                     tbl = self.which_table(
-                        nameType, targetNameType, load=False,
+                        nameType, target_name_type, load=False,
                         ncbi_tax_id = ncbi_tax_id)
                     break
 
@@ -607,7 +619,7 @@ class Mapper(object):
                     self.load_mappings(maplst={tblNameRev: frm[tblNameRev]},
                                        ncbi_tax_id=ncbi_tax_id)
                     tbl = self.which_table(
-                        nameType, targetNameType, load=False,
+                        nameType, target_name_type, load=False,
                         ncbi_tax_id = ncbi_tax_id)
                     break
 
@@ -621,13 +633,13 @@ class Mapper(object):
                     # we create here the mapping params
                     this_param = input_formats.UniprotListMapping(
                         nameType = nameType,
-                        targetNameType = targetNameType,
+                        target_name_type = target_name_type,
                         ncbi_tax_id = ncbi_tax_id
                     )
 
                     tables[tblName] = MappingTable(
                         nameType,
-                        targetNameType,
+                        target_name_type,
                         this_param.typ,
                         this_param.__class__.__name__\
                             .replace('Mapping', '').lower(),
@@ -639,7 +651,7 @@ class Mapper(object):
                     )
 
                 tbl = self.which_table(
-                        nameType, targetNameType, load=False,
+                        nameType, target_name_type, load=False,
                         ncbi_tax_id = ncbi_tax_id)
 
             if tbl is None:
@@ -648,7 +660,7 @@ class Mapper(object):
                     self.load_uniprot_mappings([nameType])
 
                     tbl = self.which_table(
-                            nameType, targetNameType, load=False,
+                            nameType, target_name_type, load=False,
                             ncbi_tax_id = ncbi_tax_id)
         return tbl
     
@@ -671,7 +683,7 @@ class Mapper(object):
             strict = False,
             silent = True,
             nameType = None,
-            targetNameType = None,
+            target_name_type = None,
         ):
         """
         This function should be used to convert individual IDs.
@@ -710,7 +722,7 @@ class Mapper(object):
         """
         
         name_type = name_type or nameType
-        target_name_type = target_name_type or targetNameType
+        target_name_type = target_name_type or target_name_type
         
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
         if type(name_type) is list:
@@ -790,7 +802,7 @@ class Mapper(object):
             strict = False,
             silent = True,
             nameType = None,
-            targetNameType = None,
+            target_name_type = None,
         ):
         """
         Same as ``map_name`` with multiple IDs.
@@ -803,53 +815,53 @@ class Mapper(object):
             self.map_name(
                 name = name,
                 #nameType = name_type,
-                targetNameType = targetNameType,
+                target_name_type = target_name_type,
                 ncbi_tax_id = ncbi_tax_id,
                 strict = strict,
                 silent = silent,
                 nameType = nameType,
-                targetNameType = targetNameType,
+                target_name_type = target_name_type,
             )
         ]
     
     
-    def map_refseq(self, refseq, nameType, targetNameType,
+    def map_refseq(self, refseq, nameType, target_name_type,
                    ncbi_tax_id, strict=False):
         mappedNames = []
         if '.' in refseq:
             mappedNames += self._map_name(refseq,
                                           nameType,
-                                          targetNameType,
+                                          target_name_type,
                                           ncbi_tax_id)
             if not len(mappedNames) and not strict:
                 mappedNames += self._map_name(refseq.split('.')[0],
                                               nameType,
-                                              targetNameType,
+                                              target_name_type,
                                               ncbi_tax_id)
         if not len(mappedNames) and not strict:
             rstem = refseq.split('.')[0]
             for n in xrange(49):
                 mappedNames += self._map_name('%s.%u' % (rstem, n),
                                               nameType,
-                                              targetNameType,
+                                              target_name_type,
                                               ncbi_tax_id)
         return mappedNames
 
-    def _map_name(self, name, nameType, targetNameType, ncbi_tax_id):
+    def _map_name(self, name, nameType, target_name_type, ncbi_tax_id):
         """
         Once we have defined the name type and the target name type,
         this function looks it up in the most suitable dictionary.
         """
         
-        nameTypes = (nameType, targetNameType)
-        nameTypRe = (targetNameType, nameType)
-        tbl = self.which_table(nameType, targetNameType,
+        nameTypes = (nameType, target_name_type)
+        nameTypRe = (target_name_type, nameType)
+        tbl = self.which_table(nameType, target_name_type,
                                ncbi_tax_id = ncbi_tax_id)
         if tbl is None or name not in tbl:
             result = []
         elif name in tbl:
             result = tbl[name]
-        # self.trace.append({'name': name, 'from': nameType, 'to': targetNameType,
+        # self.trace.append({'name': name, 'from': nameType, 'to': target_name_type,
         #    'result': result})
         
         return result
@@ -1191,7 +1203,7 @@ def map_names(
         strict = False,
         silent = True,
         nameType = None,
-        targetNameType = None,
+        target_name_type = None,
     ):
     
     mapper = get_mapper()
@@ -1204,5 +1216,5 @@ def map_names(
         strict = strict,
         silent = silent,
         nameType = nameType,
-        targetNameType = targetNameType,
+        target_name_type = target_name_type,
     )
