@@ -18,20 +18,14 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-from __future__ import print_function
-
-import sys
 import time
 import os
 import imp
-import shlex
-import struct
-import platform
-import subprocess
 
 import tqdm
 
-__all__ = ['Progress', 'OldProgress']
+__all__ = ['Progress']
+
 
 class Progress(object):
     
@@ -143,4 +137,3 @@ class Progress(object):
                              self.name,
                              ' -- ' if len(self.name) else '',
                              self.status)
-
