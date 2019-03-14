@@ -55,6 +55,7 @@ _defaults = {
     'cachedir': None,
     'pubmed_cache': 'pubmed.pickle',
     'mapping_use_cache': True,
+    'default_organism': 9606,
 }
 
 in_datadir = {
