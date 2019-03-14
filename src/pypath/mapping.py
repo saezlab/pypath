@@ -115,6 +115,22 @@ class MapReader(object):
         setattr(self, '__class__', new)
     
     
+    def get_mapping_tables(self):
+        """
+        Returns ``MappingTable`` instances created from the already
+        loaded data.
+        """
+        
+        a_to_b = MappingTable(data = self.a_to_b, lifetime = self.lifetime)
+        b_to_a = (
+            MappingTable(data = self.b_to_a, lifetime = self.lifetime)
+                if self.param.bi_directional else
+            None
+        )
+        
+        return a_to_b, b_to_a
+    
+    
     def load(self):
         
         self.use_cache = settings.get('mapping_use_cache')
@@ -131,8 +147,10 @@ class MapReader(object):
             )
         ):
             
+            # read from the original source
             self.read()
             
+            # write cache only at successful loading
             if (
                 self.a_to_b and (
                     not self.param.bi_directional or
@@ -494,15 +512,6 @@ class MappingTable(object):
         ):
         
         self.data = data
-        self.lifetime = lifetime
-        self.param = param
-        self.one = one
-        self.two = two
-        self.typ = typ
-        self.maxlOne = None
-        self.maxlTwo = None
-        self.mysql = mysql
-        self.cache = cache
         self.lifetime = lifetime
     
     
