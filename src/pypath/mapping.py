@@ -380,73 +380,93 @@ class MapReader(object):
         return c.result
     
     
-    def read_mapping_uniprot(self, param, ncbi_tax_id = None):
+    def read_mapping_uniprot(self):
         """
         Downloads ID mappings directly from UniProt.
         See the names of possible identifiers here:
         http://www.uniprot.org/help/programmatic_access
-        
-        :param UniprotMapping param: UniprotMapping instance
-        :param int ncbi_tax_id: Organism NCBI Taxonomy ID.
         """
         
-        ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
         resep = re.compile(r'[\s;]')
-        if param.__class__.__name__ != "UniprotMapping":
-            self.ownlog.msg(2, "Invalid parameter for read_mapping_uniprot()",
-                            'ERROR')
-            return {}
-        a_to_b = {}
-        b_to_a = {}
-        scolend = re.compile(r'$;')
-        rev = '' if not param.swissprot \
-            else ' AND reviewed:%s' % param.swissprot
-        query = 'organism:%u%s' % (int(ncbi_tax_id), rev)
-        self.url = urls.urls['uniprot_basic']['url']
-        self.post = {
+        recolend = re.compile(r'$;')
+        
+        a_to_b = collections.defaultdict(list)
+        b_to_a = collections.defaultdict(list)
+        
+        
+        rev = (
+            ''
+                if not param.swissprot else
+            ' AND reviewed:%s' % param.swissprot
+        )
+        query = 'organism:%u%s' % (int(self.ncbi_tax_id), rev)
+        
+        url = urls.urls['uniprot_basic']['url']
+        post = {
             'query': query,
             'format': 'tab',
-            'columns': 'id,%s%s' % (param.field, '' if param.subfield is None
-                                    else '(%s)' % param.subfield)
+            'columns': 'id,%s%s' % (
+                param.field,
+                '' if param.subfield is None else '(%s)' % param.subfield
+            ),
         }
-        self.url = '%s?%s' % (self.url, urllib.urlencode(self.post))
-        c = curl.Curl(self.url, silent=False)
+        
+        url = '%s?%s' % (url, urllib.urlencode(post))
+        c = curl.Curl(url, silent = False)
         data = c.result
-        self.data = data
-        data = [[[xx] if param.field == 'protein names' else [
-            xxx for xxx in resep.split(scolend.sub('', xx.strip()))
-            if len(xxx) > 0
-        ] for xx in x.split('\t') if len(xx.strip()) > 0]
-                for x in data.split('\n') if len(x.strip()) > 0]
-        if len(data) > 0:
+        
+        data = [
+            [
+                [xx]
+                    if param.field == 'protein names' else
+                [
+                    xxx for xxx in resep.split(recolend.sub('', xx.strip()))
+                    if len(xxx) > 0
+                ]
+                for xx in x.split('\t') if len(xx.strip()) > 0
+            ]
+            for x in data.split('\n') if len(x.strip()) > 0
+        ]
+        
+        if data:
+            
             del data[0]
+            
             for l in data:
-                if len(l) > 1:
-                    l[1] = self.process_protein_name(l[1][0]) \
-                        if param.field == 'protein names' else l[1]
+                
+                if l:
+                    
+                    l[1] = (
+                        self.process_protein_name(l[1][0])
+                            if param.field == 'protein names' else
+                        l[1]
+                    )
+                    
                     for other in l[1]:
-                        if other not in a_to_b:
-                            a_to_b[other] = []
+                        
                         a_to_b[other].append(l[0][0])
-                        if param.bi:
-                            if l[0][0] not in b_to_a:
-                                b_to_a[l[0][0]] = []
+                        
+                        if param.bi_directional:
+                            
                             b_to_a[l[0][0]].append(other)
-        self.mapping['to'] = a_to_b
-        if param.bi:
-            self.mapping['from'] = mapping_i
+        
+        self.a_to_b = self.unique(a_to_b)
+        self.b_to_a = self.unique(b_to_a) if self.bi_directional else None
     
     
-    def process_protein_name(self, name):
+    @staticmethod
+    def process_protein_name(name):
         
         rebr = re.compile(r'\(([^\)]{3,})\)')
         resq = re.compile(r'\[([^\]]{3,})\]')
+        
         names = [name.split('(')[0]]
         names += rebr.findall(name)
         others = flatList([x.split(';') for x in resq.findall(name)])
         others = [x.split(':')[1] if ':' in x else x for x in others]
         others = [x.split('(')[1] if '(' in x else x for x in others]
         names += others
+        
         return [x.strip() for x in names]
     
     
