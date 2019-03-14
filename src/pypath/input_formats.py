@@ -25,37 +25,6 @@ __all__ = [
 ]
 
 
-class MysqlMapping(object):
-    
-    def __init__(
-            self,
-            tableName,
-            fieldOne,
-            fieldTwo,
-            db = None,
-            ncbi_tax_id = None,
-            bi_directional  =  False,
-            mysql = None,
-            typ = 'protein',
-        ):
-        
-        self.tableName = tableName
-        self.fieldOne = fieldOne
-        self.fieldTwo = fieldTwo
-        self.ncbi_tax_id = ncbi_tax_id
-        self.db = db
-        self.bi_directional = bi_directional
-        self.mysql = mysql
-        self.typ = typ
-    
-    
-    def set_organism(self, ncbi_tax_id):
-        
-        other_organism = copy.deepcopy(self)
-        other_organism.ncbi_tax_id = ncbi_tax_id
-        return other_organism
-
-
 class FileMapping(object):
     
     def __init__(

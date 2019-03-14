@@ -132,9 +132,9 @@ class MapReader(object):
         ):
             
             if os.path.exists(self.cachefile):
+                
                 os.remove(self.cachefile)
-            if source == "mysql":
-                self.read_mapping_mysql(param, ncbi_tax_id)
+                
             elif source == "file":
                 self.read_mapping_file(param, ncbi_tax_id)
             elif source == "pickle":
