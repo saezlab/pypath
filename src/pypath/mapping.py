@@ -200,106 +200,6 @@ class MapReader(object):
             )
         )
         self.cachefile = os.path.join(self.cachedir, self.mapping_id)
-
-
-class MappingTable(object):
-
-    def __init__(
-            self,
-            one,
-            two,
-            typ,
-            source,
-            param,
-            ncbi_tax_id,
-            mysql = None,
-            log = None,
-            cache = False,
-            cachedir = None,
-            uniprots = None,
-            lifetime = 30,
-        ):
-        """
-        When initializing ID conversion tables for the first time
-        data is downloaded from UniProt and read into dictionaries.
-        It takes a couple of seconds. Data is saved to pickle
-        dumps, this way later the tables load much faster.
-        
-        lifetime : int
-            If this table has not been used for longer than this preiod it is
-            to be removed at next cleanup. Time in seconds.
-        """
-        
-        self.param = param
-        self.one = one
-        self.two = two
-        self.typ = typ
-        self.maxlOne = None
-        self.maxlTwo = None
-        self.mysql = mysql
-        self.cache = cache
-        self.lifetime = lifetime
-        
-        self.cachedir = cachedir or settings.get('cachedir')
-        
-        if not os.path.exists(self.cachedir):
-            
-            os.makedirs(self.cachedir)
-        
-        self.mapping = {"to": {}, "from": {}}
-
-        if log.__class__.__name__ != 'logw':
-            self.session = common.gen_session_id()
-            self.ownlog = logn.logw(self.session, 'INFO')
-        else:
-            self.ownlog = log
-
-        if param is not None:
-
-            self.mid = common.md5((one, two, self.param.bi, ncbi_tax_id))
-            md5param = common.md5(json.dumps(self.param.__dict__))
-            self.cachefile = os.path.join(self.cachedir, md5param)
-
-            if self.cache and os.path.isfile(self.cachefile):
-                self.mapping = pickle.load(open(self.cachefile, 'rb'))
-
-            elif len(self.mapping['to']) == 0 or (
-                    param.bi and len(self.mapping['from']) == 0):
-
-                if os.path.exists(self.cachefile):
-                    os.remove(self.cachefile)
-                if source == "mysql":
-                    self.read_mapping_mysql(param, ncbi_tax_id)
-                elif source == "file":
-                    self.read_mapping_file(param, ncbi_tax_id)
-                elif source == "pickle":
-                    self.read_mapping_pickle(param, ncbi_tax_id)
-                elif source == "uniprot":
-                    self.read_mapping_uniprot(param, ncbi_tax_id)
-                elif source == "uniprotlist":
-                    self.read_mapping_uniprot_list(param,
-                                                   uniprots = uniprots,
-                                                   ncbi_tax_id = ncbi_tax_id)
-
-                if len(self.mapping['to']) and (
-                        not param.bi or len(self.mapping['from'])):
-                    pickle.dump(self.mapping, open(self.cachefile, 'wb'))
-    
-    
-    def reload(self):
-        
-        modname = self.__class__.__module__
-        mod = __import__(modname, fromlist=[modname.split('.')[0]])
-        imp.reload(mod)
-        new = getattr(mod, self.__class__.__name__)
-        setattr(self, '__class__', new)
-    
-    
-    def cleanDict(self, mapping):
-        
-        for key, value in iteritems(mapping):
-            mapping[key] = common.uniqList(value)
-        return mapping
     
     
     def read_mapping_file(self, param, ncbi_tax_id = None):
@@ -532,6 +432,106 @@ class MappingTable(object):
         self.mapping['to'] = mapping_o
         if param.bi:
             self.mapping['from'] = mapping_i
+
+
+class MappingTable(object):
+
+    def __init__(
+            self,
+            one,
+            two,
+            typ,
+            source,
+            param,
+            ncbi_tax_id,
+            mysql = None,
+            log = None,
+            cache = False,
+            cachedir = None,
+            uniprots = None,
+            lifetime = 30,
+        ):
+        """
+        When initializing ID conversion tables for the first time
+        data is downloaded from UniProt and read into dictionaries.
+        It takes a couple of seconds. Data is saved to pickle
+        dumps, this way later the tables load much faster.
+        
+        lifetime : int
+            If this table has not been used for longer than this preiod it is
+            to be removed at next cleanup. Time in seconds.
+        """
+        
+        self.param = param
+        self.one = one
+        self.two = two
+        self.typ = typ
+        self.maxlOne = None
+        self.maxlTwo = None
+        self.mysql = mysql
+        self.cache = cache
+        self.lifetime = lifetime
+        
+        self.cachedir = cachedir or settings.get('cachedir')
+        
+        if not os.path.exists(self.cachedir):
+            
+            os.makedirs(self.cachedir)
+        
+        self.mapping = {"to": {}, "from": {}}
+
+        if log.__class__.__name__ != 'logw':
+            self.session = common.gen_session_id()
+            self.ownlog = logn.logw(self.session, 'INFO')
+        else:
+            self.ownlog = log
+
+        if param is not None:
+
+            self.mid = common.md5((one, two, self.param.bi, ncbi_tax_id))
+            md5param = common.md5(json.dumps(self.param.__dict__))
+            self.cachefile = os.path.join(self.cachedir, md5param)
+
+            if self.cache and os.path.isfile(self.cachefile):
+                self.mapping = pickle.load(open(self.cachefile, 'rb'))
+
+            elif len(self.mapping['to']) == 0 or (
+                    param.bi and len(self.mapping['from']) == 0):
+
+                if os.path.exists(self.cachefile):
+                    os.remove(self.cachefile)
+                if source == "mysql":
+                    self.read_mapping_mysql(param, ncbi_tax_id)
+                elif source == "file":
+                    self.read_mapping_file(param, ncbi_tax_id)
+                elif source == "pickle":
+                    self.read_mapping_pickle(param, ncbi_tax_id)
+                elif source == "uniprot":
+                    self.read_mapping_uniprot(param, ncbi_tax_id)
+                elif source == "uniprotlist":
+                    self.read_mapping_uniprot_list(param,
+                                                   uniprots = uniprots,
+                                                   ncbi_tax_id = ncbi_tax_id)
+
+                if len(self.mapping['to']) and (
+                        not param.bi or len(self.mapping['from'])):
+                    pickle.dump(self.mapping, open(self.cachefile, 'wb'))
+    
+    
+    def reload(self):
+        
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    
+    def cleanDict(self, mapping):
+        
+        for key, value in iteritems(mapping):
+            mapping[key] = common.uniqList(value)
+        return mapping
     
     
     def read_mapping_pickle(self, param, ncbi_tax_id = None):
