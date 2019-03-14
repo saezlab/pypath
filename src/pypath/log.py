@@ -22,9 +22,12 @@ import os
 import sys
 import textwrap
 import time
-import timedelta
+import datetime
 
 import timeloop
+# we use this for simple little tasks only
+# and don't want engage another logger
+timeloop.app.logging.disable(level = 9999)
 
 import pypath.settings as settings
 
@@ -94,7 +97,17 @@ class Logger(object):
             logfile but also to the console.
         """
         
-        self.last_flush = time.time()
+        @_log_flush_timeloop.job(
+            interval = datetime.timedelta(
+                seconds = settings.get('log_flush_interval')
+            )
+        )
+        def _flush():
+            
+            self.flush()
+        
+        _log_flush_timeloop.start(block = False)
+        
         self.wrapper = textwrap.TextWrapper(
             width = max_width,
             subsequent_indent = ' ' * 22,
@@ -207,9 +220,6 @@ class Logger(object):
             self.fp.close()
     
     
-    @_log_flush_timeloop.job(
-        interval = timedelta(seconds = settings.get('log_flush_interval'))
-    )
     def flush(self):
         """
         Flushes the log file.
@@ -218,4 +228,3 @@ class Logger(object):
         if hasattr(self, 'fp') and not self.fp.closed:
             
             self.fp.flush()
-            self.last_flush = time.time()
