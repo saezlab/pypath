@@ -288,6 +288,9 @@ class MapReader(object):
     
     
     def read_mapping_uniprot_list(self):
+        """
+        Builds a mapping table from 
+        """
         
         a_to_b = collections.defaultdict(list)
         b_to_a = collections.defaultdict(list)
@@ -302,13 +305,16 @@ class MapReader(object):
             
             _ = next(u_target)
             
-            ac_list = list(map(lambda l:
-                                   l.decode('ascii').split('\t')[1].strip(),
-                                   utarget))
+            ac_list = [
+                l.split('\t')[1].strip(),
+                u_target
+            ]
+            
         else:
-            ac_list = uniprots
+            
+            ac_list = self.uniprots
         
-        uniprot_data = self._read_mapping_uniprot_list()
+        uniprot_data = self._read_mapping_uniprot_list(ac_list = ac_list)
         
         _ = next(uniprot_data)
         
@@ -330,20 +336,21 @@ class MapReader(object):
         self.b_to_a = self.unique(b_to_a) if self.bi_directional else None
     
     
-    def _read_mapping_uniprot_list(self, id_type_a = None):
+    def _read_mapping_uniprot_list(self, id_type_a = None, ac_list = None):
         """
         Reads a mapping table from UniProt "upload lists" service.
         """
         
         id_type_a = param.target_ac_name
         id_type_b = param.ac_name
+        ac_list = ac_list or self.uniprots
         
         url = urls.urls['uniprot_basic']['lists']
         post = {
             'from': id_type_a,
             'format': 'tab',
             'to': id_type_b,
-            'uploadQuery': ' '.join(sorted(self.uniprots)),
+            'uploadQuery': ' '.join(sorted(ac_list)),
         }
         
         c = curl.Curl(url, post = post, large = True, silent = False)
