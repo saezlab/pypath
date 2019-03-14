@@ -109,38 +109,6 @@ mapList = [
             ";",
             header=0)
     },
-    {
-        "one": "hgnc",
-        "two": "uniprot",
-        "typ": "protein",
-        "src": "mysql",
-        "par": input_formats.MysqlMapping(
-            "hgnc_new", "gsy", "u", "mapping", None, bi_directional = True)
-    },
-    {
-        "one": "uniprot",
-        "two": "hgncapprov",
-        "typ": "protein",
-        "src": "mysql",
-        "par": input_formats.MysqlMapping(
-            "hgnc_prim", "u", "gsy", "mapping", None, bi_directional = True)
-    },
-    {
-        "one": "uniprot",
-        "two": "hgnc",
-        "typ": "protein",
-        "src": "mysql",
-        "par":
-        input_formats.MysqlMapping("hgnc_names", "u", "gsy", "mapping", None)
-    }
-    #,
-    #{
-    #"one": "uniprot",
-    #"two": "hgnc",
-    #"typ": "protein",
-    #"src": "mysql",
-    #"par": input_formats.UniprotMapping("hgnc_names","u","gsy","mapping",None)
-    #}
 ]
 
 mapListUniprot = {
@@ -186,56 +154,51 @@ mapListBasic = {
 
 # this is all what is needed for corrections of unirpot ids
 # i.e. to get primary swissprot id for all proteins
-mapListUniprotOld = [{
-    "one": "uniprot-sec",
-    "two": "uniprot-pri",
-    "typ": "protein",
-    "src": "file",
-    "par": input_formats.FileMapping(
-        os.path.join(common.ROOT, 'data', 'sec_ac.txt'), 0, 1, None, header=0)
-}, {
-    "one": "trembl",
-    "two": "genesymbol",
-    "typ": "protein",
-    "src": "file",
-    "par": input_formats.FileMapping(
-        os.path.join(common.ROOT, 'data', 'trembl3.tab'), 0, 1, "\t", header=0)
-}, {
-    "one": "genesymbol",
-    "two": "swissprot",
-    "typ": "protein",
-    "src": "file",
-    "par": input_formats.FileMapping(
-        os.path.join(common.ROOT, 'data', 'swissprot3.tab'),
-        1,
-        0,
-        "\t",
-        header=0)
-}, {
-    "one": "genesymbol-fallback",
-    "two": "uniprot",
-    "typ": "protein",
-    "src": "file",
-    "par": input_formats.FileMapping(
-        os.path.join(common.ROOT, 'data', 'human-genesymbol-all.tab'),
-        1,
-        0,
-        "\t",
-        header=0)
-}]
-
-otherMappings = [{
-    "one": "entrez",
-    "two": "uniprot",
-    "typ": "protein",
-    "src": "mysql",
-    "par":
-    input_formats.MysqlMapping("geneid", "geneid", "u", "mapping", "ncbi")
-}, {
-    "one": "uniprot",
-    "two": "genesymbol",
-    "typ": "protein",
-    "src": "mysql",
-    "par":
-    input_formats.MysqlMapping("uniprot_gs", "u", "gs", "mapping", "ncbi")
-}]
+mapListUniprotOld = [
+    {
+        "one": "uniprot-sec",
+        "two": "uniprot-pri",
+        "typ": "protein",
+        "src": "file",
+        "par": input_formats.FileMapping(
+            os.path.join(common.ROOT, 'data', 'sec_ac.txt'),
+            0, 1, None, header = 0
+        )
+    },
+    {
+        "one": "trembl",
+        "two": "genesymbol",
+        "typ": "protein",
+        "src": "file",
+        "par": input_formats.FileMapping(
+            os.path.join(common.ROOT, 'data', 'trembl3.tab'),
+            0, 1, "\t", header = 0
+        )
+    },
+    {
+        "one": "genesymbol",
+        "two": "swissprot",
+        "typ": "protein",
+        "src": "file",
+        "par": input_formats.FileMapping(
+            os.path.join(common.ROOT, 'data', 'swissprot3.tab'),
+            1,
+            0,
+            "\t",
+            header = 0
+        )
+    },
+    {
+        "one": "genesymbol-fallback",
+        "two": "uniprot",
+        "typ": "protein",
+        "src": "file",
+        "par": input_formats.FileMapping(
+            os.path.join(common.ROOT, 'data', 'human-genesymbol-all.tab'),
+            1,
+            0,
+            "\t",
+            header = 0
+        ),
+    }
+]

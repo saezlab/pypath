@@ -20,8 +20,8 @@ import sys
 import copy
 
 __all__ = [
-    'MysqlMapping', 'FileMapping', 'PickleMapping', 'ReadSettings', 'ReadList',
-    'Reference', 'UniprotListMapping'
+    'FileMapping', 'PickleMapping', 'ReadSettings', 'ReadList',
+    'Reference', 'UniprotListMapping',
 ]
 
 
@@ -112,6 +112,7 @@ class UniprotMapping(object):
         other_organism = copy.deepcopy(self)
         other_organism.ncbi_tax_id = ncbi_tax_id
         return other_organism
+
 
 class UniprotListMapping(object):
 
