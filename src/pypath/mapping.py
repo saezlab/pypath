@@ -534,68 +534,6 @@ class MappingTable(object):
         return mapping
     
     
-    def read_mapping_pickle(self, param, ncbi_tax_id = None):
-        ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
-        if param.__class__.__name__ != "PickleMapping":
-            self.ownlog.msg(2, "Invalid parameter for read_mapping_pickle()",
-                            'ERROR')
-            return False
-        mapping = pickle.load(open(param.pickleFile, "rb"))
-        if mapping.__class__.__name__ == "MappingTable":
-            self = mapping
-            return True
-        else:
-            return False
-    
-    
-    def save_mapping_pickle(self, param):
-        
-        if param.__class__.__name__ != "PickleMapping":
-            self.ownlog.msg(2, "Invalid parameter for save_mapping_pickle()",
-                            'ERROR')
-            return 1
-        pickle.dump(self, open(param.pickleFile + ".pickle", "wb"))
-        return 0
-    
-    
-    def read_mapping_mysql(self, param):
-        
-        if param.mysql is None:
-            self.ownlog.msg(2, 'No MySQL parameters given.', 'ERROR')
-            return {"o": {}, "i": {}}
-        tax_filter = ("" if param.ncbi_tax_id is None else
-                      "AND %s = %u" % (param.ncbi_tax_id, self.ncbi_tax_id))
-        query = """
-            SELECT %s AS one,%s AS two FROM %s
-            WHERE %s IS NOT NULL AND %s IS NOT NULL %s""" % (
-            param.fieldOne, param.fieldTwo, param.tableName, param.fieldOne,
-            param.fieldTwo, tax_filter)
-        try:
-            param.mysql.run_query(query)
-        except _mysql.Error as e:
-            self.ownlog.msg(2, "MySQL error: %s\nFAILED QUERY: %s" %
-                            (e, query), 'ERROR')
-            return {"o": {}, "i": {}}
-        total = len(param.mysql.result) + 1
-        prg = progress.Progress(
-            total=total, name="Processing data", interval=42)
-        mapping_o = {}
-        mapping_i = {}
-        for rr in param.mysql.result:
-            if rr["one"] not in mapping_o:
-                mapping_o[rr["one"]] = []
-            if rr["two"] not in mapping_i:
-                mapping_i[rr["two"]] = []
-            mapping_o[rr["one"]].append(rr["two"])
-            mapping_i[rr["two"]].append(rr["one"])
-            prg.step()
-        self.mapping["to"] = mapping_o
-        self.cleanDict(self.mapping["to"])
-        if param.bi:
-            self.mapping["from"] = mapping_i
-            self.cleanDict(self.mapping["from"])
-        prg.terminate()
-
     def process_protein_name(self, name):
         
         rebr = re.compile(r'\(([^\)]{3,})\)')
