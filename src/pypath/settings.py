@@ -38,7 +38,12 @@ _defaults = {
     'basedir': os.getcwd(),
     # If None will be the same as ``basedir``.
     'progessbars': True,
+    # verbosity for messages printed to console
     'console_verbosity': -1,
+    # verbosity for messages written to log
+    'log_verbosity': 0,
+    # log flush time interval in seconds
+    'log_flush_interval': 2,
     'data_basedir': None,
     'acsn_names': 'acsn_names.gmt',
     'alzpw_ppi': 'alzpw-ppi.csv',

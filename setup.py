@@ -103,6 +103,7 @@ setup(
         'future',
         'tqdm',
         'fabric3',
+        'timeloop',
     ],
     extras_require = {
         'tests': [

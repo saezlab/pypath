@@ -27,12 +27,14 @@ import pyath.log as log
 
 class Session(object):
     
+    
     def __init__(self, label = None, log_verbosity = 0):
         
         self.label = label or self.gen_session_id()
         self.log_verbosity = log_verbosity
         self.start_logger()
         self.log.msg('Session `%s` started.' % self.label)
+    
     
     @staticmethod
     def gen_session_id(length = 5):
@@ -43,6 +45,7 @@ class Session(object):
         abc = '0123456789abcdefghijklmnopqrstuvwxyz'
         return ''.join(random.choice(abc) for i in range(length))
     
+    
     def start_logger(self):
         """
         Creates a logger for this session which will be served to
@@ -51,6 +54,7 @@ class Session(object):
         
         self.logfile = 'pypath-%s.log' % self.label
         self.log = log.Logger(self.logfile, verbosity = self.log_verbosity)
+    
     
     def __del__(self):
         

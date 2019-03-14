@@ -18,15 +18,24 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-import time
 import os
 import sys
 import textwrap
+import time
+import timedelta
+
+import timeloop
 
 import pypath.settings as settings
 
 
-def new_logger(name = None, logdir = None, verbosity = 0):
+__all__ = ['new_logger', 'Logger']
+
+
+_log_flush_timeloop = timeloop.Timeloop()
+
+
+def new_logger(name = None, logdir = None, verbosity = None, **kwargs):
     """
     Returns a new logger with default settings (can be customized).
 
@@ -55,6 +64,7 @@ def new_logger(name = None, logdir = None, verbosity = 0):
         ),
         verbosity = 0,
         logdir = logdir,
+        **kwargs,
     )
 
 
@@ -66,10 +76,9 @@ class Logger(object):
     def __init__(
             self,
             fname,
-            verbosity = 0,
-            console_level = -1,
+            verbosity = None,
+            console_level = None,
             logdir = None,
-            max_flush_interval = 2,
             max_width = 79,
         ):
         """
@@ -91,12 +100,21 @@ class Logger(object):
             subsequent_indent = ' ' * 22,
             break_long_words = False,
         )
-        self.max_flush_interval = max_flush_interval
         self.logdir = self.get_logdir(logdir)
         self.fname  = os.path.join(self.logdir, fname)
-        self.verbosity = verbosity
-        self.console_level = console_level
+        self.verbosity = (
+            verbosity
+                if verbosity is not None else
+            settings.get('log_verbosity')
+        )
+        self.console_level = (
+            console_level
+                if console_level is not None else
+            settings.get('console_verbosity')
+        )
         self.open_logfile()
+        
+        # sending some greetings
         self.msg('Welcome!')
         self.msg('Logger started, logging into `%s`.' % self.fname)
     
@@ -118,7 +136,6 @@ class Logger(object):
             msg = self.wrapper.fill(msg)
             msg = self.timestamp_message(msg)
             self.fp.write(msg)
-            self.flush_hook()
         
         if level <= self.console_level:
             
@@ -190,13 +207,9 @@ class Logger(object):
             self.fp.close()
     
     
-    def flush_hook(self):
-        
-        if time.time() - self.last_flush > self.max_flush_interval:
-            
-            self.flush()
-    
-    
+    @_log_flush_timeloop.job(
+        interval = timedelta(seconds = settings.get('log_flush_interval'))
+    )
     def flush(self):
         """
         Flushes the log file.
