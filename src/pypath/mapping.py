@@ -436,6 +436,30 @@ class MapReader(object):
         self.mapping['to'] = mapping_o
         if param.bi:
             self.mapping['from'] = mapping_i
+    
+    
+    def process_protein_name(self, name):
+        
+        rebr = re.compile(r'\(([^\)]{3,})\)')
+        resq = re.compile(r'\[([^\]]{3,})\]')
+        names = [name.split('(')[0]]
+        names += rebr.findall(name)
+        others = flatList([x.split(';') for x in resq.findall(name)])
+        others = [x.split(':')[1] if ':' in x else x for x in others]
+        others = [x.split('(')[1] if '(' in x else x for x in others]
+        names += others
+        return [x.strip() for x in names]
+    
+    
+    def id_max_len(self):
+        
+        if self.maxlOne is None:
+            self.maxlOne = max(
+                len(i) for i in flatList(self.mapping["to"].values()))
+        if self.maxlTwo is None:
+            self.maxlTwo = max(
+                len(i) for i in flatList(self.mapping["from"].values()))
+        return {"one": self.maxlOne, "two": self.maxlTwo}
 
 
 class MappingTable(object):
@@ -466,51 +490,6 @@ class MappingTable(object):
         self.mysql = mysql
         self.cache = cache
         self.lifetime = lifetime
-        
-        self.cachedir = cachedir or settings.get('cachedir')
-        
-        if not os.path.exists(self.cachedir):
-            
-            os.makedirs(self.cachedir)
-        
-        self.mapping = {"to": {}, "from": {}}
-
-        if log.__class__.__name__ != 'logw':
-            self.session = common.gen_session_id()
-            self.ownlog = logn.logw(self.session, 'INFO')
-        else:
-            self.ownlog = log
-
-        if param is not None:
-
-            self.mid = common.md5((one, two, self.param.bi, ncbi_tax_id))
-            md5param = common.md5(json.dumps(self.param.__dict__))
-            self.cachefile = os.path.join(self.cachedir, md5param)
-
-            if self.cache and os.path.isfile(self.cachefile):
-                self.mapping = pickle.load(open(self.cachefile, 'rb'))
-
-            elif len(self.mapping['to']) == 0 or (
-                    param.bi and len(self.mapping['from']) == 0):
-
-                if os.path.exists(self.cachefile):
-                    os.remove(self.cachefile)
-                if source == "mysql":
-                    self.read_mapping_mysql(param, ncbi_tax_id)
-                elif source == "file":
-                    self.read_mapping_file(param, ncbi_tax_id)
-                elif source == "pickle":
-                    self.read_mapping_pickle(param, ncbi_tax_id)
-                elif source == "uniprot":
-                    self.read_mapping_uniprot(param, ncbi_tax_id)
-                elif source == "uniprotlist":
-                    self.read_mapping_uniprot_list(param,
-                                                   uniprots = uniprots,
-                                                   ncbi_tax_id = ncbi_tax_id)
-
-                if len(self.mapping['to']) and (
-                        not param.bi or len(self.mapping['from'])):
-                    pickle.dump(self.mapping, open(self.cachefile, 'wb'))
     
     
     def reload(self):
@@ -529,28 +508,6 @@ class MappingTable(object):
         return mapping
     
     
-    def process_protein_name(self, name):
-        
-        rebr = re.compile(r'\(([^\)]{3,})\)')
-        resq = re.compile(r'\[([^\]]{3,})\]')
-        names = [name.split('(')[0]]
-        names += rebr.findall(name)
-        others = flatList([x.split(';') for x in resq.findall(name)])
-        others = [x.split(':')[1] if ':' in x else x for x in others]
-        others = [x.split('(')[1] if '(' in x else x for x in others]
-        names += others
-        return [x.strip() for x in names]
-
-    def id_max_len(self):
-        
-        if self.maxlOne is None:
-            self.maxlOne = max(
-                len(i) for i in flatList(self.mapping["to"].values()))
-        if self.maxlTwo is None:
-            self.maxlTwo = max(
-                len(i) for i in flatList(self.mapping["from"].values()))
-        return {"one": self.maxlOne, "two": self.maxlTwo}
-
     def get_tax_id(self, ncbi_tax_id):
         return (
             ncbi_tax_id
