@@ -24,6 +24,8 @@ import imp
 
 import tqdm
 
+import pypath.settings as settings
+
 __all__ = ['Progress']
 
 
@@ -35,9 +37,26 @@ class Progress(object):
     Old implementation moved to `OldProgress` class.
     """
     
-    def __init__(self, total = None, name = "Progress",
-             interval = None, percent = True, status = 'initializing',
-             done = 0, init = True, unit = 'it'):
+    def __init__(
+            self,
+            total = None,
+            name = "Progress",
+            interval = None,
+            percent = True,
+            status = 'initializing',
+            done = 0,
+            init = True,
+            unit = 'it',
+            off = None,
+        ):
+        
+        if off is None:
+            
+            self.off = not settings.get('progressbars')
+            
+        else:
+            
+            self.off = off
         
         self.name = name
         self.interval = (
@@ -51,8 +70,10 @@ class Progress(object):
         self.min_update_interval = 0.1
         self.last_printed_value = 0
         
-        if init:
+        if init and not self.off:
+            
             self.init_tqdm()
+    
     
     def reload(self):
         
@@ -62,12 +83,18 @@ class Progress(object):
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
     
+    
     def init_tqdm(self):
+        """
+        Creates a tqdm instance.
+        """
+        
         self.tqdm = tqdm.tqdm(total = self.total,
                               desc = '%s: %s' % (self.name, self.status),
                               unit_scale = True,
                               unit = self.unit)
         self.last_updated = time.time()
+    
     
     def step(self, step = 1, msg = None, status = 'busy', force = False):
         """
@@ -76,6 +103,10 @@ class Progress(object):
         :param int step: Number of steps or items.
         """
         self.done += step
+        
+        if self.off:
+            
+            return
         
         if force or (self.done % self.interval < 1.0 and \
             time.time() - self.last_updated > self.min_update_interval):
@@ -93,10 +124,16 @@ class Progress(object):
             self.last_printed_value = self.done
             self.last_updated = time.time()
     
+    
     def terminate(self, status = 'finished'):
         """
         Terminates the progressbar and destroys the tqdm object.
         """
+        
+        if self.off:
+            
+            return
+        
         self.step(self.total - self.done, force = True, status = status)
         self.tqdm.close()
     
@@ -104,6 +141,11 @@ class Progress(object):
         """
         Changes the total value of the progress bar.
         """
+        
+        if self.off:
+            
+            return
+        
         self.total = total
         self.tqdm.total = total
         self.step(0)
@@ -112,6 +154,11 @@ class Progress(object):
         """
         Sets the position of the progress bar.
         """
+        
+        if self.off:
+            
+            return
+        
         self.done = done
         self.tqdm.n = self.done
         self.tqdm.last_print_n = self.done
@@ -121,7 +168,9 @@ class Progress(object):
         """
         Changes the prefix of the progressbar.
         """
-        if status != self.status:
+        
+        if not self.off and status != self.status:
+            
             self.status = status
             self.tqdm.set_description(self.get_desc())
             self.tqdm.refresh()
@@ -133,7 +182,10 @@ class Progress(object):
         within the life of the progressbar, while the status is there
         to give information about the current stage of the task.
         """
-        return '%s%s%s%s' % (' ' * 8,
-                             self.name,
-                             ' -- ' if len(self.name) else '',
-                             self.status)
+        
+        return '%s%s%s%s' % (
+            ' ' * 8,
+            self.name,
+            ' -- ' if len(self.name) else '',
+            self.status,
+        )
