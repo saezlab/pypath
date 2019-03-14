@@ -106,6 +106,87 @@ class MapReader(object):
     def load(self):
         
         self.use_cache = settings.get('mapping_use_cache')
+        self.setup_cache()
+        
+        if self.use_cache and os.path.isfile(self.cachefile):
+            
+            self.read_cache()
+        
+        if (
+            not self.a_to_b or (
+                self.param.bi_directional and
+                not self.b_to_a
+            )
+        ):
+            
+            self.read()
+            
+            if (
+                self.a_to_b and (
+                    not self.param.bi_directional or
+                    self.b_to_a
+                )
+            ):
+                
+                self.write_cache()
+        
+        
+        def write_cache(self):
+            """
+            Exports the ID translation data into a pickle file.
+            """
+            
+            pickle.dump(
+                (
+                    self.a_to_b,
+                    self.b_to_a,
+                ),
+                open(self.cachefile, 'wb')
+            )
+        
+        
+        def read_cache(self):
+            """
+            Reads the ID translation data from a previously saved pickle file.
+            """
+            
+            self.a_to_b, self.b_to_a = pickle.load(open(self.cachefile, 'rb'))
+        
+        
+        def read(self):
+            """
+            Reads the ID translation data from the original source.
+            """
+            
+            if os.path.exists(self.cachefile):
+                
+                os.remove(self.cachefile)
+                
+            elif source == "file":
+                
+                self.read_mapping_file(self.param, self.ncbi_tax_id)
+                
+            elif source == "pickle":
+                
+                self.read_mapping_pickle(self.param, self.ncbi_tax_id)
+                
+            elif source == "uniprot":
+                
+                self.read_mapping_uniprot(self.param, self.ncbi_tax_id)
+                
+            elif source == "uniprotlist":
+                
+                self.read_mapping_uniprot_list(
+                    param,
+                    uniprots = uniprots,
+                    ncbi_tax_id = ncbi_tax_id
+                )
+    
+    
+    def setup_cache(self):
+        """
+        Constructs the cache file path as md5 hash of the parameters.
+        """
         
         self.mapping_id = common.md5(
             json.dumps(
@@ -119,36 +200,6 @@ class MapReader(object):
             )
         )
         self.cachefile = os.path.join(self.cachedir, self.mapping_id)
-        
-        if self.use_cache and os.path.isfile(self.cachefile):
-            
-            self.a_to_b, self.b_to_a = pickle.load(open(self.cachefile, 'rb'))
-            
-        if (
-            not self.a_to_b or (
-                self.param.bi_directional and
-                not self.b_to_a
-            )
-        ):
-            
-            if os.path.exists(self.cachefile):
-                
-                os.remove(self.cachefile)
-                
-            elif source == "file":
-                self.read_mapping_file(param, ncbi_tax_id)
-            elif source == "pickle":
-                self.read_mapping_pickle(param, ncbi_tax_id)
-            elif source == "uniprot":
-                self.read_mapping_uniprot(param, ncbi_tax_id)
-            elif source == "uniprotlist":
-                self.read_mapping_uniprot_list(param,
-                                                uniprots = uniprots,
-                                                ncbi_tax_id = ncbi_tax_id)
-            
-            if len(self.mapping['to']) and (
-                    not param.bi or len(self.mapping['from'])):
-                pickle.dump(self.mapping, open(self.cachefile, 'wb'))
 
 
 class MappingTable(object):
