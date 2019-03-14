@@ -4,3 +4,5 @@ dist/
 *.egg-info/
 cache/
 log/
+.idea
+pip-wheel-metadata/*
