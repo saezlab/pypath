@@ -71,7 +71,7 @@ mapList = [
             0,
             "\t",
             header=0,
-            bi=True)
+            bi_directional = True)
     },
     {
         "one": "genesymbol-fallback",
@@ -115,7 +115,7 @@ mapList = [
         "typ": "protein",
         "src": "mysql",
         "par": input_formats.MysqlMapping(
-            "hgnc_new", "gsy", "u", "mapping", None, bi=True)
+            "hgnc_new", "gsy", "u", "mapping", None, bi_directional = True)
     },
     {
         "one": "uniprot",
@@ -123,7 +123,7 @@ mapList = [
         "typ": "protein",
         "src": "mysql",
         "par": input_formats.MysqlMapping(
-            "hgnc_prim", "u", "gsy", "mapping", None, bi=True)
+            "hgnc_prim", "u", "gsy", "mapping", None, bi_directional = True)
     },
     {
         "one": "uniprot",
@@ -146,7 +146,7 @@ mapList = [
 mapListUniprot = {
     ('embl', 'uniprot'): input_formats.UniprotMapping('embl'),
     ('genesymbol', 'uniprot'): input_formats.UniprotMapping(
-        'genesymbol', bi=True),
+        'genesymbol', bi_directional = True),
     ('genesymbol-syn', 'uniprot'):
     input_formats.UniprotMapping('genesymbol-syn'),
     ('entrez', 'uniprot'): input_formats.UniprotMapping('entrez'),
@@ -176,12 +176,12 @@ mapListBasic = {
     ('uniprot-sec', 'uniprot-pri'): input_formats.FileMapping(
         'get_uniprot_sec', 0, 1, None, header=0, ncbi_tax_id = 0),
     ('genesymbol', 'trembl'): input_formats.UniprotMapping(
-        'genesymbol', swissprot='no', bi=True),
+        'genesymbol', swissprot='no', bi_directional = True),
     ('genesymbol', 'swissprot'): input_formats.UniprotMapping('genesymbol'),
     ('genesymbol-syn', 'swissprot'):
     input_formats.UniprotMapping('genesymbol-syn'),
     ('genesymbol', 'uniprot'): input_formats.UniprotMapping(
-        'genesymbol', bi=True, swissprot=None)
+        'genesymbol', bi_directional = True, swissprot=None)
 }
 
 # this is all what is needed for corrections of unirpot ids

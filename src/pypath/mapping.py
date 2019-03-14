@@ -62,6 +62,95 @@ from UniProt, file, mysql or pickle.
 """
 
 
+class MapReader(object):
+    """
+    Reads ID translation data and creates ``MappingTable`` instances.
+    """
+    
+    def __init__(
+            self,
+            id_type_a,
+            id_type_b,
+            entity_type,
+            source,
+            param,
+            ncbi_tax_id,
+            lifetime = 30,
+        ):
+        """
+        lifetime : int
+            If this table has not been used for longer than this preiod it is
+            to be removed at next cleanup. Time in seconds. Passed to
+            ``MappingTable``.
+        """
+        
+        self.id_type_a = id_type_a
+        self.id_type_b = id_type_b
+        self.entity_type = entity_type
+        self.source = source
+        self.param = param
+        self.lifetime = lifetime
+        self.a_to_b = None
+        self.b_to_a = None
+    
+    
+    def reload(self):
+        
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    
+    def load(self):
+        
+        self.use_cache = settings.get('mapping_use_cache')
+        
+        self.mapping_id = common.md5(
+            json.dumps(
+                (
+                    one,
+                    two,
+                    self.param.bi,
+                    ncbi_tax_id,
+                    sorted(self.param.__dict__.items())
+                )
+            )
+        )
+        self.cachefile = os.path.join(self.cachedir, self.mapping_id)
+        
+        if self.use_cache and os.path.isfile(self.cachefile):
+            
+            self.a_to_b, self.b_to_a = pickle.load(open(self.cachefile, 'rb'))
+            
+        if (
+            not self.a_to_b or (
+                self.param.bi_directional and
+                not self.b_to_a
+            )
+        ):
+            
+            if os.path.exists(self.cachefile):
+                os.remove(self.cachefile)
+            if source == "mysql":
+                self.read_mapping_mysql(param, ncbi_tax_id)
+            elif source == "file":
+                self.read_mapping_file(param, ncbi_tax_id)
+            elif source == "pickle":
+                self.read_mapping_pickle(param, ncbi_tax_id)
+            elif source == "uniprot":
+                self.read_mapping_uniprot(param, ncbi_tax_id)
+            elif source == "uniprotlist":
+                self.read_mapping_uniprot_list(param,
+                                                uniprots = uniprots,
+                                                ncbi_tax_id = ncbi_tax_id)
+            
+            if len(self.mapping['to']) and (
+                    not param.bi or len(self.mapping['from'])):
+                pickle.dump(self.mapping, open(self.cachefile, 'wb'))
+
+
 class MappingTable(object):
 
     def __init__(
@@ -72,17 +161,22 @@ class MappingTable(object):
             source,
             param,
             ncbi_tax_id,
-            mysql=None,
-            log=None,
-            cache=False,
-            cachedir=None,
-            uniprots = None
+            mysql = None,
+            log = None,
+            cache = False,
+            cachedir = None,
+            uniprots = None,
+            lifetime = 30,
         ):
         """
         When initializing ID conversion tables for the first time
         data is downloaded from UniProt and read into dictionaries.
         It takes a couple of seconds. Data is saved to pickle
         dumps, this way later the tables load much faster.
+        
+        lifetime : int
+            If this table has not been used for longer than this preiod it is
+            to be removed at next cleanup. Time in seconds.
         """
         
         self.param = param
@@ -93,6 +187,7 @@ class MappingTable(object):
         self.maxlTwo = None
         self.mysql = mysql
         self.cache = cache
+        self.lifetime = lifetime
         
         self.cachedir = cachedir or settings.get('cachedir')
         
@@ -306,9 +401,9 @@ class MappingTable(object):
             'to': target,
             'uploadQuery': ' '.join(ac_list)
         }
-
+        
         c = curl.Curl(url, post=post, large=True, silent = False)
-
+        
         if c.result is None:
             
             for i in xrange(3):
@@ -327,19 +422,20 @@ class MappingTable(object):
             c.result = b''
         
         c.fileobj.seek(0)
-
+    
         return c.result
-
+    
+    
     def read_mapping_uniprot(self, param, ncbi_tax_id = None):
         """
         Downloads ID mappings directly from UniProt.
         See the names of possible identifiers here:
         http://www.uniprot.org/help/programmatic_access
-
+        
         :param UniprotMapping param: UniprotMapping instance
         :param int ncbi_tax_id: Organism NCBI Taxonomy ID.
         """
-
+        
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
         resep = re.compile(r'[\s;]')
         if param.__class__.__name__ != "UniprotMapping":
@@ -385,7 +481,8 @@ class MappingTable(object):
         self.mapping['to'] = mapping_o
         if param.bi:
             self.mapping['from'] = mapping_i
-
+    
+    
     def read_mapping_pickle(self, param, ncbi_tax_id = None):
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
         if param.__class__.__name__ != "PickleMapping":
@@ -487,7 +584,17 @@ class Mapper(object):
             log = None,
             cache = True,
             cachedir = None,
+            cleanup_period = 30,
+            lifetime = 30,
         ):
+        """
+        cleanup_period : int
+            Periodically check and remove unused mapping data.
+            Time in seconds. If `None` tables kept forever.
+        lifetime : int
+            If a table has not been used for longer than this preiod it is
+            to be removed at next cleanup.
+        """
         
         self.reuniprot = re.compile(
             r'[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]'
@@ -527,17 +634,20 @@ class Mapper(object):
         }
         self.types_name = dict(
             zip(self.name_types.values(), self.name_types.keys()))
-
+    
+    
     def reload(self):
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist=[modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-
+    
+    
     def init_mysql(self):
         self.mysql = mysql.MysqlRunner(self.mysql_conf, log=self.ownlog)
-
+    
+    
     def which_table(self, nameType, targetNameType,
                     load=True, ncbi_tax_id = None):
         """
@@ -546,24 +656,24 @@ class Mapper(object):
         yet, it attempts to load from UniProt. If all attempts failed
         returns `None`.
         """
-
+        
         tbl = None
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
         tblName = (nameType, targetNameType)
         tblNameRev = (targetNameType, nameType)
-
+        
         if ncbi_tax_id not in self.tables:
             self.tables[ncbi_tax_id] = {}
-
+        
         tables = self.tables[ncbi_tax_id]
-
+        
         if tblName in tables:
             tbl = tables[tblName].mapping['to']
-
+        
         elif tblNameRev in tables and \
                 len(tables[tblNameRev].mapping['from']) > 0:
             tbl = tables[tblNameRev].mapping['from']
-
+        
         elif load:
 
             for form in ['mapListUniprot', 'mapListBasic', 'mapListMirbase']:

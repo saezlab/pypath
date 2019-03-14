@@ -54,6 +54,7 @@ _defaults = {
     'slk01human': 'slk01human.csv',
     'cachedir': None,
     'pubmed_cache': 'pubmed.pickle',
+    'mapping_use_cache': True,
 }
 
 in_datadir = {

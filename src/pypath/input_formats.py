@@ -26,88 +26,90 @@ __all__ = [
 
 
 class MysqlMapping(object):
-    def __init__(self,
-                 tableName,
-                 fieldOne,
-                 fieldTwo,
-                 db=None,
-                 ncbi_tax_id=None,
-                 bi=False,
-                 mysql=None,
-                 typ='protein'):
+    
+    def __init__(
+            self,
+            tableName,
+            fieldOne,
+            fieldTwo,
+            db = None,
+            ncbi_tax_id = None,
+            bi_directional  =  False,
+            mysql = None,
+            typ = 'protein',
+        ):
+        
         self.tableName = tableName
         self.fieldOne = fieldOne
         self.fieldTwo = fieldTwo
         self.ncbi_tax_id = ncbi_tax_id
         self.db = db
-        self.bi = bi
+        self.bi_directional = bi_directional
         self.mysql = mysql
         self.typ = typ
-
+    
+    
     def set_organism(self, ncbi_tax_id):
+        
         other_organism = copy.deepcopy(self)
         other_organism.ncbi_tax_id = ncbi_tax_id
         return other_organism
 
 
 class FileMapping(object):
-    def __init__(self,
-                 input,
-                 oneCol,
-                 twoCol,
-                 separator=None,
-                 header=0,
-                 bi=False,
-                 ncbi_tax_id=9606,
-                 typ='protein'):
-
+    
+    def __init__(
+            self,
+            input,
+            col_a,
+            col_b,
+            separator = None,
+            header = 0,
+            bi_directional  =  False,
+            ncbi_tax_id = 9606,
+            entity_type = 'protein',
+        ):
+        
         self.input = input
-        self.oneCol = oneCol
-        self.twoCol = twoCol
+        self.col_a = col_a
+        self.col_b = col_b
         self.separator = separator
         self.header = header
-        self.typ = typ
-        self.bi = bi
+        self.entity_type = entity_type
+        self.bi_directional = bi_directional
         self.ncbi_tax_id = ncbi_tax_id
-        self.inputArgs = {'organism': ncbi_tax_id}
-
+        self.input_args = {'organism': ncbi_tax_id}
+    
+    
     def set_organism(self, ncbi_tax_id):
+        
         other_organism = copy.deepcopy(self)
         other_organism.ncbi_tax_id = ncbi_tax_id
-
-        if 'organism' in other_organism.inputArgs:
-            other_organism.inputArgs['organism'] = ncbi_tax_id
-
+        
+        if 'organism' in other_organism.input_args:
+            
+            other_organism.input_args['organism'] = ncbi_tax_id
+        
         return other_organism
-
-# class UniprotMapping(object):
-
-# def __init__(self, ac_type, field = None,
-# bi = False, tax = 9606, swissprot = 'yes', subfield = None):
-#self.bi = bi
-#self.tax = int(tax)
-#self.ac_type = ac_type
-#self.typ = 'protein'
-# if field is not None:
-#self.field = field
-#self.subfield = subfield
-# elif self.ac_type in ac_types:
-#self.field = ac_types[self.ac_type][0]
-#self.subfield = ac_types[self.ac_type][1]
-#self.swissprot = swissprot
 
 
 class UniprotMapping(object):
 
-    def __init__(self, nameType, bi=False, ncbi_tax_id=9606, swissprot='yes'):
+    def __init__(
+            self,
+            name_type,
+            bi_directional = False,
+            ncbi_tax_id = 9606,
+            swissprot = 'yes',
+        ):
         '''
         Defines an ID conversion table to retrieve from UniProt.
 
-        @nameType : str
+        @name_type : str
             Type of accession numbers you would like to translate.
-        @targetNameType : str
+        @target_name_type : str
             Type of accession numbers you would like to translate to.
-        @bi : bool
+        @bi_directional : bool
             Build the mapping table only from original AC to target AC,
             or if bi = True, the reverse table is also generated (from
             target to original).
@@ -124,29 +126,36 @@ class UniprotMapping(object):
             capabilities. Some IDs can be obtained from the former, some
             from the latter.
         '''
-        self.bi = bi
+        self.bi_directional = bi_directional
         self.ncbi_tax_id = int(ncbi_tax_id)
         self.typ = 'protein'
         self.swissprot = swissprot
-        self.nameType = nameType
-        self.targetNameType = 'uniprot'
-        self.field = None if nameType not in ac_query \
-            else ac_query[nameType][0]
-        self.subfield = None if nameType not in ac_query \
-            else ac_query[nameType][1]
-
+        self.name_type = name_type
+        self.target_name_type = 'uniprot'
+        self.field = None if name_type not in ac_query \
+            else ac_query[name_type][0]
+        self.subfield = None if name_type not in ac_query \
+            else ac_query[name_type][1]
+    
+    
     def set_organism(self, ncbi_tax_id):
+        
         other_organism = copy.deepcopy(self)
         other_organism.ncbi_tax_id = ncbi_tax_id
         return other_organism
 
 class UniprotListMapping(object):
 
-    def __init__(self, nameType, ac_name = None,
-                 targetNameType = None, target_ac_name = None,
-                 bi = False,
-                 ncbi_tax_id = 9606,
-                 swissprot = True):
+    def __init__(
+            self,
+            name_type,
+            ac_name = None,
+            target_name_type = None,
+            target_ac_name = None,
+            bi_directional = False,
+            ncbi_tax_id = 9606,
+            swissprot = True,
+        ):
         """
         Provides parameters for downloading mapping table from UniProt
         `Upload Lists` webservice.
@@ -156,61 +165,73 @@ class UniprotListMapping(object):
         self.bi = bi
         self.ncbi_tax_id = ncbi_tax_id
         self.typ = 'protein'
-        self.nameType, self.ac_name = self.get_ac_type(nameType, ac_name)
-        self.targetNameType, self.target_ac_name = \
-            self.get_ac_type(targetNameType, target_ac_name)
-
-    def get_ac_type(self, nameType, ac_name):
-        nameType = nameType if nameType is not None else \
+        self.name_type, self.ac_name = self.get_ac_type(name_type, ac_name)
+        self.target_name_type, self.target_ac_name = \
+            self.get_ac_type(target_name_type, target_ac_name)
+    
+    
+    def get_ac_type(self, name_type, ac_name):
+        
+        name_type = name_type if name_type is not None else \
             ac_name if ac_name is not None else 'uniprot'
-        if nameType not in self.ac_mapping and ac_name is None:
-            sys.stdout.write('\t:: Unknown ID type: `%s`.\n' % nameType)
+        if name_type not in self.ac_mapping and ac_name is None:
+            sys.stdout.write('\t:: Unknown ID type: `%s`.\n' % name_type)
         else:
-            ac_name = self.ac_mapping[nameType] if ac_name is None else ac_name
-        return nameType, ac_name
-
+            ac_name = (
+                self.ac_mapping[name_type] if ac_name is None else ac_name
+            )
+        return name_type, ac_name
+    
+    
     def set_organism(self, ncbi_tax_id):
+        
         other_organism = copy.deepcopy(self)
         other_organism.ncbi_tax_id = ncbi_tax_id
         return other_organism
 
+
 class PickleMapping(object):
+    
     def __init__(self, pickleFile):
+        
         self.pickleFile = pickleFile
 
 
 class ReadSettings:
-    def __init__(self,
-                 name="unknown",
-                 separator=None,
-                 nameColA=0,
-                 nameColB=1,
-                 nameTypeA="uniprot",
-                 nameTypeB="uniprot",
-                 typeA="protein",
-                 typeB="protein",
-                 isDirected=False,
-                 sign=False,
-                 inFile=None,
-                 references=False,
-                 extraEdgeAttrs=None,
-                 extraNodeAttrsA=None,
-                 extraNodeAttrsB=None,
-                 header=False,
-                 taxonA=9606,
-                 taxonB=9606,
-                 ncbiTaxId=False,
-                 interactionType='PPI',
-                 positiveFilters=None,
-                 negativeFilters=None,
-                 mark_source = None,
-                 mark_target = None,
-                 inputArgs=None,
-                 curlArgs=None,
-                 must_have_references=True,
-                 huge=False,
-                 resource=None,
-                 unique_fields = None):
+    
+    def __init__(
+            self,
+            name = "unknown",
+            separator = None,
+            nameColA = 0,
+            nameColB = 1,
+            name_typeA = "uniprot",
+            name_typeB = "uniprot",
+            typeA = "protein",
+            typeB = "protein",
+            isDirected = False,
+            sign = False,
+            inFile = None,
+            references = False,
+            extraEdgeAttrs = None,
+            extraNodeAttrsA = None,
+            extraNodeAttrsB = None,
+            header = False,
+            taxonA = 9606,
+            taxonB = 9606,
+            ncbiTaxId = False,
+            interactionType = 'PPI',
+            positiveFilters = None,
+            negativeFilters = None,
+            mark_source  =  None,
+            mark_target  =  None,
+            inputArgs = None,
+            curlArgs = None,
+            must_have_references = True,
+            huge = False,
+            resource = None,
+            unique_fields = None
+        ):
         """
         :param str mark_source:
             Creates a boolean vertex attribute and sets it True for the
@@ -223,8 +244,8 @@ class ReadSettings:
         self.typeB = typeB
         self.nameColA = nameColA
         self.nameColB = nameColB
-        self.nameTypeA = nameTypeA
-        self.nameTypeB = nameTypeB
+        self.name_typeA = name_typeA
+        self.name_typeB = name_typeB
         self.isDirected = isDirected
         self.inFile = inFile
         self.extraEdgeAttrs = extraEdgeAttrs or {}
@@ -256,14 +277,14 @@ class ReadList:
                  name="unknown",
                  separator=None,
                  nameCol=0,
-                 nameType="uniprot",
+                 name_type="uniprot",
                  typ="protein",
                  inFile=None,
                  extraAttrs={},
                  header=False):
         self.typ = typ
         self.nameCol = nameCol
-        self.nameType = nameType
+        self.name_type = name_type
         self.inFile = inFile
         self.extraAttrs = extraAttrs
         self.name = name
