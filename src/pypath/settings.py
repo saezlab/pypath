@@ -29,12 +29,16 @@ import pypath.common as common
 
 
 _defaults = {
+    # name of the module
+    'module_name': 'pypath',
     # The absolute root directory.
     # This should not be necessary, why is it here?
     'path_root': '/',
     # The basedir for every files and directories in the followings.
     'basedir': os.getcwd(),
     # If None will be the same as ``basedir``.
+    'progessbars': True,
+    'console_verbosity': -1,
     'data_basedir': None,
     'acsn_names': 'acsn_names.gmt',
     'alzpw_ppi': 'alzpw-ppi.csv',

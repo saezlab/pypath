@@ -46,8 +46,8 @@ except:
 import pypath.progress as progress
 import pypath.logn as logn
 import pypath.common as common
+import pypath.cache as cache_mod
 import pypath.maps as maps
-import pypath.mysql as mysql
 import pypath.urls as urls
 import pypath.curl as curl
 import pypath.mapping_input as mapping_input
@@ -520,11 +520,7 @@ class Mapper(object):
 
     def __init__(
             self,
-            ncbi_tax_id = 9606,
-            mysql_conf = (None, 'mapping'),
-            log = None,
-            cache = True,
-            cachedir = None,
+            ncbi_tax_id = None,
             cleanup_period = 30,
             lifetime = 30,
         ):
@@ -541,23 +537,13 @@ class Mapper(object):
             r'[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]'
             r'([A-Z][A-Z0-9]{2}[0-9]){1,2}'
         )
-        self.cache = cache
-        self.cachedir = cachedir or settings.get('cachedir')
-        if self.cache and not os.path.exists(self.cachedir):
-            os.makedirs(self.cachedir)
+        self.cachedir = cache_mod.get_cachedir()
+        self.ncbi_tax_id = ncbi_tax_id or settings.get('default_organism')
+        
         self.unmapped = []
-        self.ownlog = log
-        self.default_ncbi_tax_id = ncbi_tax_id
         self.tables = {}
         self.tables[self.default_ncbi_tax_id] = {}
         self.uniprot_mapped = []
-        if log.__class__.__name__ != 'logw':
-            self.session = common.gen_session_id()
-            self.ownlog = logn.logw(self.session, 'INFO')
-        else:
-            self.ownlog = log
-        self.mysql_conf = mysql_conf
-        self.mysql = None
         self.trace = []
         self.name_types = {
             'uniprot_id': 'UniProtKB-ID',
@@ -573,8 +559,7 @@ class Mapper(object):
             'enst': 'ENSEMBL_TRS',
             'hgnc': 'HGNC'
         }
-        self.types_name = dict(
-            zip(self.name_types.values(), self.name_types.keys()))
+        self.types_name = common.swap_dict_simple(self.name_types)
     
     
     def reload(self):
@@ -583,10 +568,6 @@ class Mapper(object):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-    
-    
-    def init_mysql(self):
-        self.mysql = mysql.MysqlRunner(self.mysql_conf, log=self.ownlog)
     
     
     def which_table(self, nameType, target_name_type,

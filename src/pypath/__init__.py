@@ -18,18 +18,17 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-# XXX: Missing module docstring
+"""
+``pypath`` is a module primarily for building molecular interaction networks
+but also with several submodules for accessing, preprocessing and serving
+data from various resources.
+"""
 
-# try:
-#import __main__ as ext
-from __future__ import print_function
-
-import pypath.main as main
-import pypath._version as _version
-#import descriptions
-#import pypath.common as common
+import pypath._version as _version_mod
+import pypath.session as _session_mod
 
 __version__ = _version.__version__
 __author__ = _version.__author__
 
-PyPath = main.PyPath # This is an alias
+_session_mod.new_session()
+session = _session_mod.get_session()

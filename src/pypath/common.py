@@ -967,8 +967,9 @@ def swap_dict(d):
     return _d
 
 
-def swap_dict_simple(d): # XXX: Not used
-    """Swaps a dictionary.
+def swap_dict_simple(d):
+    """
+    Swaps a dictionary.
 
     Interchanges the keys and values of a dictionary. Assumes the values
     are unique and hashable, otherwise overwrites duplicates or raises
