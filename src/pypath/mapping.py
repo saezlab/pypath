@@ -28,6 +28,7 @@ import re
 import imp
 import copy
 import itertools
+import collections
 
 import urllib
 
@@ -54,7 +55,7 @@ import pypath.uniprot_input as uniprot_input
 import pypath.input_formats as input_formats
 import pypath.settings as settings
 
-__all__ = ['MappingTable', 'Mapper']
+__all__ = ['MapReader', 'MappingTable', 'Mapper']
 
 """
 Classes for reading and use serving ID mapping data
@@ -207,90 +208,71 @@ class MapReader(object):
     
     
     def read_mapping_file(self):
-
-        ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
-
-        if param.__class__.__name__ != "FileMapping":
-            self.ownlog.msg(2, "Invalid parameter for read_mapping_file()",
-                            'ERROR')
+        
+        if (
+            not os.path.exists(param.input) and
+            not hasattr(mapping_input, param.input)
+        ):
+            
             return {}
-
-        if (not os.path.exists(param.input) and
-            not hasattr(mapping_input, param.input)):
-
-            return {}
-
+        
         if hasattr(mapping_input, param.input):
-
-            toCall = getattr(mapping_input, param.input)
-            inputArgs = param.inputArgs if hasattr(param, 'inputArgs') else {}
-            infile = list(toCall(**inputArgs))
-
-            total = sum([sys.getsizeof(i) for i in infile])
-
+        
+            to_call = getattr(mapping_input, param.input)
+            input_args = (
+                param.input_args if hasattr(param, 'input_args') else {}
+            )
+            infile = to_call(**input_args)
+        
         else:
-            infile = codecs.open(param.input, encoding='utf-8', mode='r')
+            
+            infile = open(param.input, encoding = 'utf-8', mode = 'r')
             total = os.path.getsize(param.input)
-
-        prg = progress.Progress(
-            total=total, name="Reading from file", interval=18)
-
-        lnum = 0
-        lsum = 0
-        mapping_o = {}
-        mapping_i = {}
-
-        for line in infile:
-
-            if len(line) == 0:
+        
+        a_to_b = collections.defaultdict(list)
+        b_to_a = collections.defaultdict(list)
+        
+        for i, line in enumerate(infile):
+            
+            if param.header and i < param.header:
+                
                 continue
-
-            if lnum == 0 and param.header != 0:
-                lnum += 1
-                continue
-
-            if type(line is list):
-                prg.step(sys.getsizeof(line))
-
-            else:
+            
+            if hasattr(line, 'decode'):
+                
                 line = line.decode('utf-8')
-                prg.step(len(line))
+            
+            if hasattr(line, 'rstrip'):
+                
                 line = line.rstrip().split(param.separator)
-
-            if len(line) > max([param.oneCol, param.twoCol]):
-
-                if line[param.oneCol] not in mapping_o:
-
-                    mapping_o[line[param.oneCol]] = []
-                mapping_o[line[param.oneCol]].append(line[param.twoCol])
-
-                if param.bi:
-
-                    if line[param.twoCol] not in mapping_i:
-
-                        mapping_i[line[param.twoCol]] = []
-                    mapping_i[line[param.twoCol]].append(line[param.oneCol])
-
-            lnum += 1
-
+            
+            if len(line) < max(param.col_a, param.col_b):
+                
+                continue
+            
+            id_a = line[param.col_a]
+            id_b = line[param.col_b]
+            a_to_b[id_a].append(id_b)
+            
+            if param.bi_directional:
+                
+                b_to_a[id_b].append(id_a)
+        
         if hasattr(infile, 'close'):
+            
             infile.close()
-
-        self.mapping["to"] = mapping_o
-        self.cleanDict(self.mapping["to"])
-
-        if param.bi:
-            self.mapping["from"] = mapping_i
-            self.cleanDict(self.mapping["from"])
-
-        prg.terminate()
+        
+        a_to_b = self.unique(a_to_b)
+        b_to_a = self.unique(b_to_a)
+        
+        return a_to_b, b_to_a if self.param.bi_directional else None
     
     
     def read_mapping_uniprot_list(self, param, uniprots = None,
                                   ncbi_tax_id = None):
 
-        mapping_o = {}
-        mapping_i = {}
+        a_to_b = {}
+        b_to_a = {}
 
         ncbi_tax_id = param.ncbi_tax_id \
             if ncbi_tax_id is None else ncbi_tax_id
@@ -325,19 +307,19 @@ class MapReader(object):
 
             l = l.decode('ascii').strip().split('\t')
 
-            if l[1] not in mapping_o:
-                mapping_o[l[1]] = []
+            if l[1] not in a_to_b:
+                a_to_b[l[1]] = []
 
-            mapping_o[l[1]].append(l[0])
+            a_to_b[l[1]].append(l[0])
 
             if param.bi:
 
-                if l[0] not in mapping_i:
-                    mapping_i[l[0]] = []
+                if l[0] not in b_to_a:
+                    b_to_a[l[0]] = []
 
-                mapping_i[l[0]].append(l[1])
+                b_to_a[l[0]].append(l[1])
 
-        self.mapping["to"] = mapping_o
+        self.mapping["to"] = a_to_b
         self.cleanDict(self.mapping["to"])
         if param.bi:
             self.mapping["from"] = mapping_i
@@ -397,8 +379,8 @@ class MapReader(object):
             self.ownlog.msg(2, "Invalid parameter for read_mapping_uniprot()",
                             'ERROR')
             return {}
-        mapping_o = {}
-        mapping_i = {}
+        a_to_b = {}
+        b_to_a = {}
         scolend = re.compile(r'$;')
         rev = '' if not param.swissprot \
             else ' AND reviewed:%s' % param.swissprot
@@ -426,14 +408,14 @@ class MapReader(object):
                     l[1] = self.process_protein_name(l[1][0]) \
                         if param.field == 'protein names' else l[1]
                     for other in l[1]:
-                        if other not in mapping_o:
-                            mapping_o[other] = []
-                        mapping_o[other].append(l[0][0])
+                        if other not in a_to_b:
+                            a_to_b[other] = []
+                        a_to_b[other].append(l[0][0])
                         if param.bi:
-                            if l[0][0] not in mapping_i:
-                                mapping_i[l[0][0]] = []
-                            mapping_i[l[0][0]].append(other)
-        self.mapping['to'] = mapping_o
+                            if l[0][0] not in b_to_a:
+                                b_to_a[l[0][0]] = []
+                            b_to_a[l[0][0]].append(other)
+        self.mapping['to'] = a_to_b
         if param.bi:
             self.mapping['from'] = mapping_i
     
@@ -460,6 +442,12 @@ class MapReader(object):
             self.maxlTwo = max(
                 len(i) for i in flatList(self.mapping["from"].values()))
         return {"one": self.maxlOne, "two": self.maxlTwo}
+    
+    
+    @staticmethod
+    def unique(dct):
+        
+        return dict((k, common.unique_list(v)) for k, v in iteritems(dct))
 
 
 class MappingTable(object):
@@ -499,21 +487,6 @@ class MappingTable(object):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-    
-    
-    def cleanDict(self, mapping):
-        
-        for key, value in iteritems(mapping):
-            mapping[key] = common.uniqList(value)
-        return mapping
-    
-    
-    def get_tax_id(self, ncbi_tax_id):
-        return (
-            ncbi_tax_id
-                if ncbi_tax_id is not None else
-            self.param.ncbi_tax_id
-        )
 
 
 class Mapper(object):

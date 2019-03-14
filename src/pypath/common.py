@@ -28,14 +28,17 @@ import random
 import textwrap
 import hashlib
 
-__all__ = ['ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes',
-           'uniqList', 'addToList', 'addToSet', 'gen_session_id',
-           'sorensen_index', 'simpson_index', 'simpson_index_counts',
-           'jaccard_index', 'console', 'wcl', 'flatList', 'charTypes',
-           'delEmpty', 'get_args', 'something', 'rotate', 'cleanDict',
-           'igraph_graphics_attrs', 'md5', 'mod_keywords', 'Namespace', 'fun',
-           'taxids', 'taxa', 'phosphoelm_taxids', 'dbptm_taxids',
-           'uniqOrdList', 'dict_diff', 'to_set', 'to_list']
+__all__ = [
+    'ROOT', 'aacodes', 'aaletters', 'simpleTypes', 'numTypes',
+    'uniqList', 'addToList', 'addToSet', 'gen_session_id',
+    'sorensen_index', 'simpson_index', 'simpson_index_counts',
+    'jaccard_index', 'console', 'wcl', 'flatList', 'charTypes',
+    'delEmpty', 'get_args', 'something', 'rotate', 'cleanDict',
+    'igraph_graphics_attrs', 'md5', 'mod_keywords', 'Namespace', 'fun',
+    'taxids', 'taxa', 'phosphoelm_taxids', 'dbptm_taxids',
+    'uniqOrdList', 'dict_diff', 'to_set', 'to_list',
+    'unique_list',
+]
 
 # get the location
 ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -228,7 +231,7 @@ def to_list(var):
 
 
 # From http://www.peterbe.com/plog/uniqifiers-benchmark
-def uniqList(seq):
+def unique_list(seq):
     """Reduces a list to its unique elements.
 
     Takes any iterable and returns a list of unique elements on it. If
@@ -249,6 +252,10 @@ def uniqList(seq):
     """
 
     return list({}.fromkeys(seq).keys())
+
+
+# old ugly name
+uniqList = unique_list
 
 
 def uniqList1(seq): # XXX: Not used
