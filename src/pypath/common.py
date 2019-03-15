@@ -952,16 +952,18 @@ def swap_dict(d):
     _d = {}
 
     for key, vals in iteritems(d):
+        
         vals = [vals] if type(vals) in simpleTypes else vals
-
+        
         for val in vals:
-
+            
             if val not in _d:
                 _d[val] = set([])
-
+            
             _d[val].add(key)
 
     if all(len(v) <= 1 for v in _d.values()):
+        
         _d = dict((k, list(v)[0]) for k, v in iteritems(_d) if len(v))
 
     return _d

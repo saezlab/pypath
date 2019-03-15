@@ -100,6 +100,7 @@ def get_mirbase_aliases(organism = 9606):
     
     return mat, mir
 
+
 def mirbase_mature(organism = 9606):
     
     mat, mir = get_mirbase_aliases(organism)
@@ -112,6 +113,7 @@ def mirbase_mature(organism = 9606):
             
             yield mimat, mmat
 
+
 def mirbase_precursor(organism = 9606):
     
     mat, mir = get_mirbase_aliases(organism)
@@ -123,6 +125,7 @@ def mirbase_precursor(organism = 9606):
         for mpre in mpres:
             
             yield mi, mpre
+
 
 def mirbase_precursor_to_mature(organism = 9606):
     
@@ -150,11 +153,13 @@ def mirbase_precursor_to_mature(organism = 9606):
                     
                     yield prename, mmat
 
+
 def mirbase_ids(organism = 9606):
     
     reprename = re.compile(r'([-A-z]*[-]?\d+[a-z]*)(-\d*)')
     
     def get_pre_name(mat_name):
+        
         return mat_name.replace(
             '*', '').replace(
             '-3p', '').replace(

@@ -42,9 +42,10 @@ try:
 except:
     import pickle
 
+import timeloop
+
 # from pypath:
 import pypath.progress as progress
-import pypath.logn as logn
 import pypath.common as common
 import pypath.cache as cache_mod
 import pypath.maps as maps
@@ -54,6 +55,8 @@ import pypath.mapping_input as mapping_input
 import pypath.uniprot_input as uniprot_input
 import pypath.input_formats as input_formats
 import pypath.settings as settings
+import pypath.session as session
+_logger = session.get_logger()
 
 __all__ = ['MapReader', 'MappingTable', 'Mapper']
 
@@ -63,6 +66,18 @@ from UniProt, file, mysql or pickle.
 """
 
 
+MappingTableKey = collections.namedtuple(
+    'MappingTableKey',
+    [
+        'name_type',
+        'target_name_type',
+        'entity_type',
+        'ncbi_tax_id'
+    ],
+)
+MappingTableKey.__new__.__defaults__ = ('protein', 9606)
+
+
 class MapReader(object):
     """
     Reads ID translation data and creates ``MappingTable`` instances.
@@ -70,6 +85,9 @@ class MapReader(object):
     data is downloaded from UniProt and read into dictionaries.
     It takes a couple of seconds. Data is saved to pickle
     dumps, this way later the tables load much faster.
+    
+    :arg source_type str:
+        Type of the resource, either `file`, `uniprot` or `unprotlist`.
     """
     
     def __init__(
@@ -77,11 +95,11 @@ class MapReader(object):
             id_type_a,
             id_type_b,
             entity_type,
-            source,
+            source_type,
             param,
             ncbi_tax_id = None,
             uniprots = None,
-            lifetime = 30,
+            lifetime = 300,
         ):
         """
         lifetime : int
@@ -93,7 +111,7 @@ class MapReader(object):
         self.id_type_a = id_type_a
         self.id_type_b = id_type_b
         self.entity_type = entity_type
-        self.source = source
+        self.source_type = source_type
         self.param = param
         self.lifetime = lifetime
         self.a_to_b = None
@@ -190,17 +208,20 @@ class MapReader(object):
         
         if os.path.exists(self.cachefile):
             
+            _logger.msg(
+                'Removing mapping table cache file `%s`.' % self.cachefile
+            )
             os.remove(self.cachefile)
-            
-        elif source == "file":
+        
+        if source_type == "file":
             
             self.read_mapping_file()
             
-        elif source == "uniprot":
+        elif source_type == "uniprot":
             
             self.read_mapping_uniprot()
             
-        elif source == "uniprotlist":
+        elif source_type == "uniprotlist":
             
             self.read_mapping_uniprot_list()
     
@@ -381,7 +402,9 @@ class MapReader(object):
         
         if c.result is None or c.fileobj.read(5) == '<!DOC':
             
-            sys.stdout.write('\t:: Error at downloading from UniProt.\n')
+            _logger.console(
+                'Error at downloading ID mapping data from UniProt.', -9
+            )
             
             c.result = ''
         
@@ -541,11 +564,10 @@ class Mapper(object):
         self.ncbi_tax_id = ncbi_tax_id or settings.get('default_organism')
         
         self.unmapped = []
-        self.tables = {}
-        self.tables[self.default_ncbi_tax_id] = {}
+        self.data = {}
         self.uniprot_mapped = []
         self.trace = []
-        self.name_types = {
+        self.uniprot_list_names = {
             'uniprot_id': 'UniProtKB-ID',
             'embl': 'EMBL-CDS',
             'embl_id': 'EMBL',
@@ -557,117 +579,196 @@ class Mapper(object):
             'ensg': 'ENSEMBL',
             'ensp': 'ENSEMBL_PRO_ID',
             'enst': 'ENSEMBL_TRS',
-            'hgnc': 'HGNC'
+            'hgnc': 'HGNC',
         }
-        self.types_name = common.swap_dict_simple(self.name_types)
+        self.names_uniprot_list = (
+            common.swap_dict_simple(self.uniprot_list_names)
+        )
     
     
     def reload(self):
+        
         modname = self.__class__.__module__
-        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
     
     
-    def which_table(self, nameType, target_name_type,
-                    load=True, ncbi_tax_id = None):
+    def get_table_key(
+            self,
+            name_type,
+            target_name_type,
+            entity_type = 'protein',
+            ncbi_tax_id = None,
+        ):
+        """
+        Returns a tuple unambigously identifying a mapping table.
+        """
+        
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+        
+        return MappingTableKey(
+            name_type = name_type,
+            target_name_type = target_name_type,
+            entity_type = entity_type,
+            ncbi_tax_id = ncbi_tax_id,
+        )
+    
+    
+    def which_table(
+            self,
+            name_type,
+            target_name_type,
+            entity_type = 'protein',
+            load = True,
+            ncbi_tax_id = None,
+        ):
         """
         Returns the table which is suitable to convert an ID of
-        nameType to target_name_type. If no such table have been loaded
+        name_type to target_name_type. If no such table have been loaded
         yet, it attempts to load from UniProt. If all attempts failed
         returns `None`.
         """
         
         tbl = None
-        ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
-        tblName = (nameType, target_name_type)
-        tblNameRev = (target_name_type, nameType)
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
         
-        if ncbi_tax_id not in self.tables:
-            self.tables[ncbi_tax_id] = {}
+        tbl_key = self.get_table_key(
+            name_type = name_type,
+            target_name_type = target_name_type,
+            entity_type = entity_type,
+            ncbi_tax_id = ncbi_tax_id,
+        )
         
-        tables = self.tables[ncbi_tax_id]
+        tbl_key_rev = self.get_table_key(
+            target_name_type = target_name_type,
+            name_type = name_type,
+            entity_type = entity_type,
+            ncbi_tax_id = ncbi_tax_id,
+        )
         
-        if tblName in tables:
-            tbl = tables[tblName].mapping['to']
+        if tbl_key in self.tables:
+            
+            tbl = self.tables[tbl_key]
         
-        elif tblNameRev in tables and \
-                len(tables[tblNameRev].mapping['from']) > 0:
-            tbl = tables[tblNameRev].mapping['from']
-        
+        elif tbl_name_rev in tables:
+            
+            self.create_reverse(tbl_key)
+            tbl = self.tables[tbl_key]
+            
         elif load:
-
-            for form in ['mapListUniprot', 'mapListBasic', 'mapListMirbase']:
-
-                frm = getattr(maps, form)
-
-                if tblName in frm:
-                    self.load_mappings(maplst={tblName: frm[tblName]},
-                                       ncbi_tax_id=ncbi_tax_id)
+            
+            name_types = (name_type, target_name_type)
+            name_types_rev = tuple(reversed(name_types))
+            resource = None
+            
+            for resource_attr in ['uniprot', 'misc', 'mirbase']:
+                
+                resources = getattr(maps, resource_attr)
+                
+                if name_types in resources:
+                    
+                    resource = resources[name_types]
+                    
+                elif name_types_rev in resources:
+                    
+                    resource = copy.deepcopy(resources[name_types_rev])
+                    resource.bi_directional = True
+                
+                if resource:
+                    
+                    self.load_mappings(
+                        maplst = {name_types: resources[name_types]},
+                        ncbi_tax_id = ncbi_tax_id,
+                    )
                     tbl = self.which_table(
-                        nameType, target_name_type, load=False,
-                        ncbi_tax_id = ncbi_tax_id)
+                        name_type,
+                        target_name_type,
+                        load = False,
+                        ncbi_tax_id = ncbi_tax_id,
+                    )
                     break
-
-                if tblNameRev in frm:
-                    frm[tblNameRev].bi = True
-                    self.load_mappings(maplst={tblNameRev: frm[tblNameRev]},
-                                       ncbi_tax_id=ncbi_tax_id)
-                    tbl = self.which_table(
-                        nameType, target_name_type, load=False,
-                        ncbi_tax_id = ncbi_tax_id)
-                    break
-
+                
                 if tbl is not None:
+                    
                     break
-
+            
             if tbl is None:
-
-                if nameType in self.name_types:
+                
+                if name_type in self.uniprot_list_names:
+                    
                     # for uniprot/uploadlists
                     # we create here the mapping params
                     this_param = input_formats.UniprotListMapping(
-                        nameType = nameType,
+                        name_type = name_type,
                         target_name_type = target_name_type,
-                        ncbi_tax_id = ncbi_tax_id
+                        ncbi_tax_id = ncbi_tax_id,
+                        entity_type = entity_type,
                     )
-
-                    tables[tblName] = MappingTable(
-                        nameType,
-                        target_name_type,
-                        this_param.typ,
-                        this_param.__class__.__name__\
-                            .replace('Mapping', '').lower(),
-                        this_param,
-                        ncbi_tax_id,
-                        log=self.ownlog,
-                        cache=self.cache,
-                        cachedir=self.cachedir
+                    
+                    reader = MapReader(
+                        id_type_a,
+                        id_type_b,
+                        entity_type = entity_type,
+                        source_type = 'uniprotlist',
+                        param = this_param,
+                        ncbi_tax_id = ncbi_tax_id,
+                        uniprots = None,
+                        lifetime = 300,
                     )
-
+                    
+                    self.tables[tbl_key] = reader.
+                
                 tbl = self.which_table(
-                        nameType, target_name_type, load=False,
-                        ncbi_tax_id = ncbi_tax_id)
-
+                    name_type = name_type,
+                    target_name_type = target_name_type,
+                    load = False,
+                    ncbi_tax_id = ncbi_tax_id,
+                )
+            
             if tbl is None:
-
-                if nameType in self.name_types:
-                    self.load_uniprot_mappings([nameType])
-
+                
+                if name_type in self.uniprot_list_names:
+                    
+                    self.load_uniprot_mappings([name_type])
+                    
                     tbl = self.which_table(
-                            nameType, target_name_type, load=False,
-                            ncbi_tax_id = ncbi_tax_id)
+                        name_type = name_type,
+                        target_name_type = target_name_type,
+                        load = False,
+                        ncbi_tax_id = ncbi_tax_id,
+                    )
+        
         return tbl
     
     
-    def get_tax_id(self, ncbi_tax_id):
+    @staticmethod
+    def reverse_mapping(mapping_table):
         
-        return (
-            self.default_ncbi_tax_id
-                if ncbi_tax_id is None else
-            ncbi_tax_id
+        rev_data = common.swap_dict(mapping_table.data)
+        
+        return MappingTable(
+            data = rev_data,
+            lifetime = mapping_table.lifetime,
         )
+    
+    
+    def create_reverse(self, key):
+        """
+        Creates a mapping table with ``name_type`` and ``target_name_type``
+        (i.e. direction of the ID translation) swapped.
+        """
+        
+        table = self.mappings[key]
+        rev_key = self.get_table_key(
+            name_type = key.target_name_type,
+            target_name_type = key.name_type,
+            entity_type = key.entity_type,
+            ncbi_tax_id = key.ncbi_tax_id,
+        )
+        
+        self.tables[rev_key] = self.reverse_mapping(table)
     
     
     def map_name(
@@ -678,7 +779,7 @@ class Mapper(object):
             ncbi_tax_id = None,
             strict = False,
             silent = True,
-            nameType = None,
+            name_type = None,
             target_name_type = None,
         ):
         """
@@ -717,7 +818,7 @@ class Mapper(object):
             and load the table before calling :py:func:Mapper.map_name().
         """
         
-        name_type = name_type or nameType
+        name_type = name_type or name_type
         target_name_type = target_name_type or target_name_type
         
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
@@ -797,7 +898,7 @@ class Mapper(object):
             ncbi_tax_id = None,
             strict = False,
             silent = True,
-            nameType = None,
+            name_type = None,
             target_name_type = None,
         ):
         """
@@ -810,54 +911,54 @@ class Mapper(object):
             for target_name in
             self.map_name(
                 name = name,
-                #nameType = name_type,
+                #name_type = name_type,
                 target_name_type = target_name_type,
                 ncbi_tax_id = ncbi_tax_id,
                 strict = strict,
                 silent = silent,
-                nameType = nameType,
+                name_type = name_type,
                 target_name_type = target_name_type,
             )
         ]
     
     
-    def map_refseq(self, refseq, nameType, target_name_type,
+    def map_refseq(self, refseq, name_type, target_name_type,
                    ncbi_tax_id, strict=False):
         mappedNames = []
         if '.' in refseq:
             mappedNames += self._map_name(refseq,
-                                          nameType,
+                                          name_type,
                                           target_name_type,
                                           ncbi_tax_id)
             if not len(mappedNames) and not strict:
                 mappedNames += self._map_name(refseq.split('.')[0],
-                                              nameType,
+                                              name_type,
                                               target_name_type,
                                               ncbi_tax_id)
         if not len(mappedNames) and not strict:
             rstem = refseq.split('.')[0]
             for n in xrange(49):
                 mappedNames += self._map_name('%s.%u' % (rstem, n),
-                                              nameType,
+                                              name_type,
                                               target_name_type,
                                               ncbi_tax_id)
         return mappedNames
 
-    def _map_name(self, name, nameType, target_name_type, ncbi_tax_id):
+    def _map_name(self, name, name_type, target_name_type, ncbi_tax_id):
         """
         Once we have defined the name type and the target name type,
         this function looks it up in the most suitable dictionary.
         """
         
-        nameTypes = (nameType, target_name_type)
-        nameTypRe = (target_name_type, nameType)
-        tbl = self.which_table(nameType, target_name_type,
+        name_types = (name_type, target_name_type)
+        nameTypRe = (target_name_type, name_type)
+        tbl = self.which_table(name_type, target_name_type,
                                ncbi_tax_id = ncbi_tax_id)
         if tbl is None or name not in tbl:
             result = []
         elif name in tbl:
             result = tbl[name]
-        # self.trace.append({'name': name, 'from': nameType, 'to': target_name_type,
+        # self.trace.append({'name': name, 'from': name_type, 'to': target_name_type,
         #    'result': result})
         
         return result
@@ -900,12 +1001,12 @@ class Mapper(object):
         return sws
     
     
-    def has_mapping_table(self, nameTypeA, nameTypeB, ncbi_tax_id = None):
+    def has_mapping_table(self, name_typeA, name_typeB, ncbi_tax_id = None):
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
-        if (nameTypeA, nameTypeB) not in self.tables[ncbi_tax_id] and \
-            ((nameTypeB, nameTypeA) not in self.tables[ncbi_tax_id] or
-                len(self.tables[ncbi_tax_id][(nameTypeB, nameTypeA)].mapping['form']) == 0):
-            self.map_table_error(nameTypeA, nameTypeB, ncbi_tax_id)
+        if (name_typeA, name_typeB) not in self.tables[ncbi_tax_id] and \
+            ((name_typeB, name_typeA) not in self.tables[ncbi_tax_id] or
+                len(self.tables[ncbi_tax_id][(name_typeB, name_typeA)].mapping['form']) == 0):
+            self.map_table_error(name_typeA, name_typeB, ncbi_tax_id)
             return False
         else:
             return True
@@ -930,13 +1031,8 @@ class Mapper(object):
 
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
 
-        if maplst is None:
-            try:
-                maplst = maps.mapList
-            except:
-                self.ownlog.msg(1, 'load_mappings(): No input defined',
-                                'ERROR')
-                return None
+         maplst = maplst or maps.misc
+        
         self.ownlog.msg(1, "Loading mapping tables...")
 
         for mapName, param in iteritems(maplst):
@@ -1198,7 +1294,7 @@ def map_names(
         ncbi_tax_id = None,
         strict = False,
         silent = True,
-        nameType = None,
+        name_type = None,
         target_name_type = None,
     ):
     
@@ -1211,6 +1307,6 @@ def map_names(
         ncbi_tax_id = ncbi_tax_id,
         strict = strict,
         silent = silent,
-        nameType = nameType,
+        name_type = name_type,
         target_name_type = target_name_type,
     )

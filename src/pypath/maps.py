@@ -23,7 +23,10 @@ import os
 import pypath.common as common
 import pypath.input_formats as input_formats
 
-mapList = [
+__all__ = ['misc', 'uniprot', 'mirbase', 'basic', 'uniprot_old']
+
+
+misc = [
     {
         "one": "uniprot-sec",
         "two": "uniprot-pri",
@@ -111,7 +114,7 @@ mapList = [
     },
 ]
 
-mapListUniprot = {
+uniprot = {
     ('embl', 'uniprot'): input_formats.UniprotMapping('embl'),
     ('genesymbol', 'uniprot'): input_formats.UniprotMapping(
         'genesymbol', bi_directional = True),
@@ -128,7 +131,7 @@ mapListUniprot = {
         'protein-name', swissprot=None)
 }
 
-mapListMirbase = {
+mirbase = {
     ('mir-mat-name', 'mirbase'): input_formats.FileMapping(
         'mirbase_mature', 1, 0, None, header = 0),
     ('mir-name', 'mir-pre'): input_formats.FileMapping(
@@ -140,7 +143,7 @@ mapListMirbase = {
         1, 0, None, header = 0),
 }
 
-mapListBasic = {
+basic = {
     ('uniprot-sec', 'uniprot-pri'): input_formats.FileMapping(
         'get_uniprot_sec', 0, 1, None, header=0, ncbi_tax_id = 0),
     ('genesymbol', 'trembl'): input_formats.UniprotMapping(
@@ -154,7 +157,7 @@ mapListBasic = {
 
 # this is all what is needed for corrections of unirpot ids
 # i.e. to get primary swissprot id for all proteins
-mapListUniprotOld = [
+uniprot_old = [
     {
         "one": "uniprot-sec",
         "two": "uniprot-pri",
