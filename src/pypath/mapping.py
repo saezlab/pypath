@@ -1227,14 +1227,11 @@ class Mapper(session.Logger):
             ncbi_tax_id = ncbi_tax_id,
         )
         
+        if key in self.tables:
+            
+            self.tables[key]._used()
+        
         return key in self.tables
-    
-    
-    def map_table_error(self, a, b, ncbi_tax_id):
-        msg = ("Missing mapping table: from `%s` to `%s` at organism `%u` "\
-            "mapping needed." % (a, b, ncbi_tax_id))
-        sys.stdout.write(''.join(['\tERROR: ', msg, '\n']))
-        self._msg(2, msg, 'ERROR')
     
     
     def load_mappings(self, maplst=None, ncbi_tax_id = None):
@@ -1246,9 +1243,9 @@ class Mapper(session.Logger):
         "src": "mysql", "par": "mysql_param/file_param")
         by default those are loaded from pickle files
         """
-
+        
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
-
+        
          maplst = maplst or maps.misc
         
         self._msg(1, "Loading mapping tables...")
@@ -1317,14 +1314,29 @@ class Mapper(session.Logger):
                             (str(mapName), param.__class__.__name__))
     
     
-    def swissprots(self, lst):
-        swprots = {}
-        for u in lst:
-            swprots[u] = self.map_name(u, 'uniprot', 'uniprot')
-        return swprots
+    def swissprots(self, uniprots, ncbi_tax_id = None):
+        """
+        Creates a dict translating a set of potentially secondary and
+        non-reviewed UniProt IDs to primary SwissProt IDs (whenever
+        is possible).
+        """
+        
+        swissprots = {}
+        
+        for uniprot in uniprots:
+            
+            swissprots[uniprot] = self.map_name(
+                name = uniprot,
+                name_type = 'uniprot',
+                target_name_type = 'uniprot',
+                ncbi_tax_id = ncbi_tax_id,
+            )
+        
+        return swissprots
     
     
     def genesymbol5(self, ncbi_tax_id = None):
+        
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
         tables = self.tables[ncbi_tax_id]
         tables[('genesymbol5', 'uniprot')] = MappingTable(
