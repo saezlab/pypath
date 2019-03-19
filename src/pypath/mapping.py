@@ -804,19 +804,24 @@ class Mapper(session.Logger):
             self,
             name,
             name_type = None,
-            target_name_type,
+            target_name_type = None,
             ncbi_tax_id = None,
             strict = False,
             silent = True,
-            name_type = None,
-            target_name_type = None,
+            nameType = None,
+            targetNameType = None,
         ):
         """
+        Translates one instance of one ID type to a different one.
+        Returns set of the target ID type.
+        
         This function should be used to convert individual IDs.
-        It takes care about everything, you don't need to think
-        on the details. How does it work: looks up dictionaries
-        between the original and target ID type, if doesn't
-        find, attempts to load from the predefined inputs.
+        It takes care about everything and ideally you don't need to think
+        on the details.
+        
+        How does it work: looks up dictionaries between the original
+        and target ID type, if doesn't find, attempts to load from
+        the predefined inputs.
         If the original name is genesymbol, first it looks up
         among the preferred gene names from UniProt, if not
         found, it takes an attempt with the alternative gene
@@ -827,7 +832,7 @@ class Mapper(session.Logger):
         Then, for the Trembl IDs it looks up the preferred gene
         names, and find Swissprot IDs with the same preferred
         gene name.
-
+        
         name : str
             The original name to be converted.
         name_type : str
@@ -845,78 +850,192 @@ class Mapper(session.Logger):
             - embl_id (DDBJ/EMBL/GeneBank accession)
             To use other IDs, you need to define the input method
             and load the table before calling :py:func:Mapper.map_name().
+        target_name_type : str
+            The name type to translate to, more or less the same values
+            are available as for ``name_type``.
+        nameType : str
+            Deprecated. Synonym for ``name_type`` for backwards compatibility.
+        targetNameType : str
+            Deprecated. Synonym for ``target_name_type``
+            for backwards compatibility.
         """
         
-        name_type = name_type or name_type
-        target_name_type = target_name_type or target_name_type
+        name_type = name_type or nameType
+        target_name_type = target_name_type or targetNameType
         
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
-        if type(name_type) is list:
-            mappedNames = []
-            for nt in name_type:
-                mappedNames += self.map_name(
-                    name, nt, target_name_type, strict = strict,
-                    silent = silent, ncbi_tax_id = ncbi_tax_id,
+        
+        # we support translating from more name types
+        # at the same time
+        if isinstance(name_type, (list, set, tuple)):
+            
+            mapped_names = []
+            
+            for this_name_type in name_type:
+                
+                mapped_names += self.map_name(
+                    name = name,
+                    name_type = this_name_type,
+                    target_name_type = target_name_type,
+                    strict = strict,
+                    silent = silent,
+                    ncbi_tax_id = ncbi_tax_id,
                 )
-            return common.uniqList(mappedNames)
+            
+            return common.uniqList(mapped_names)
+        
+        # translating from an ID type to the same ID type?
         if name_type == target_name_type:
+            
             if target_name_type != 'uniprot':
+                
+                # no need for translation
                 return [name]
+            
             else:
-                mappedNames = [name]
+                
+                # we still try to search the primary UniProt
+                mapped_names = [name]
+            
+        # actual translation comes here
         elif name_type.startswith('refseq'):
-            mappedNames = self.map_refseq(name,
-                                          name_type,
-                                          target_name_type,
-                                          ncbi_tax_id = ncbi_tax_id,
-                                          strict=strict)
+            
+            # RefSeq is special
+            mapped_names = self.map_refseq(
+                name = name,
+                name_type = name_type,
+                target_name_type = target_name_type,
+                ncbi_tax_id = ncbi_tax_id,
+                strict = strict,
+            )
+            
         else:
-            mappedNames = self._map_name(name,
-                                         name_type,
-                                         target_name_type,
-                                         ncbi_tax_id)
-        if not len(mappedNames):
-            mappedNames = self._map_name(name.upper(),
-                                         name_type,
-                                         target_name_type,
-                                         ncbi_tax_id)
-        if not len(mappedNames) and \
-            name_type not in set(['uniprot', 'trembl', 'uniprot-sec']):
-            mappedNames = self._map_name(name.lower(),
-                                         name_type,
-                                         target_name_type,
-                                         ncbi_tax_id)
-        if not len(mappedNames) and name_type == 'genesymbol':
-            mappedNames = self._map_name(name,
-                                         'genesymbol-syn',
-                                         target_name_type,
-                                         ncbi_tax_id)
-            if not strict and not len(mappedNames):
-                mappedNames = self._map_name('%s1' % name,
-                                             'genesymbol',
-                                             target_name_type,
-                                             ncbi_tax_id)
-                if not len(mappedNames):
-                    mappedNames = self._map_name(name,
-                                                 'genesymbol5',
-                                                 target_name_type,
-                                                 ncbi_tax_id)
-
-        if not len(mappedNames) and name_type == 'mir-mat-name':
-
-            mappedNames = self._map_name(name,
-                                         'mir-name',
-                                         target_name_type,
-                                         ncbi_tax_id)
-
+            
+            # all the other ID types
+            mapped_names = self._map_name(
+                name = name,
+                name_type = name_type,
+                target_name_type = target_name_type,
+                ncbi_tax_id = ncbi_tax_id,
+                strict = strict,
+                name,
+            )
+        
+        # further attempts to set it right if
+        # first attempt was not successful
+        if not mapped_names:
+            
+            # maybe it's all uppercase (e.g. human gene symbols)?
+            mapped_names = self._map_name(
+                name = name.upper(),
+                name_type = name_type,
+                target_name_type = target_name_type,
+                ncbi_tax_id = ncbi_tax_id,
+            )
+        
+        if (
+            not mapped_names and
+            name_type not in {'uniprot', 'trembl', 'uniprot-sec'}
+        ):
+            
+            # maybe it's capitalized (e.g. rodent gene symbols)?
+            mapped_names = self._map_name(
+                name = name.capitalize(),
+                name_type = name_type,
+                target_name_type = target_name_type,
+                ncbi_tax_id = ncbi_tax_id,
+            )
+        
+        if (
+            not mapped_names and
+            name_type not in {'uniprot', 'trembl', 'uniprot-sec'}
+        ):
+            
+            # maybe it's all lowercase?
+            mapped_names = self._map_name(
+                name = name.lower(),
+                name_type = name_type,
+                target_name_type = target_name_type,
+                ncbi_tax_id = ncbi_tax_id,
+            )
+        
+        # if a gene symbol could not be translated by the default
+        # conversion table, containing only the primary gene symbols
+        # in next step we try the secondary (synonym) gene symbols
+        if (
+            not mapped_names and
+            name_type == 'genesymbol'
+        ):
+            
+            mapped_names = self._map_name(
+                name = name,
+                name_type = 'genesymbol-syn',
+                target_name_type = target_name_type,
+                ncbi_tax_id = ncbi_tax_id,
+            )
+            
+            # for gene symbols we might try one more thing,
+            # sometimes the source gene symbol missing some isoform
+            # information or number because it refers to the first
+            # or all isoforms or subtypes; or the opposite: the
+            # original resource contains a gene symbol with a number
+            # appended which is not part of the official primary
+            # gene symbol
+            #
+            # here we try to translate by adding a number `1` or
+            # by matching only the first few letters;
+            # obviously we can not exclude mistranslation here
+            #
+            # by setting `strict = True` this step is disabled
+            if not strict and not mapped_names:
+                
+                mapped_names = self._map_name(
+                    name = '%s1' % name,
+                    name_type = 'genesymbol',
+                    target_name_type = target_name_type,
+                    ncbi_tax_id = ncbi_tax_id,
+                )
+                
+                if not mapped_names:
+                    
+                    mapped_names = self._map_name(
+                        name = name,
+                        name_type = 'genesymbol5',
+                        target_name_type = target_name_type,
+                        ncbi_tax_id = ncbi_tax_id,
+                    )
+        
+        # for miRNAs if the translation from mature miRNA name failed
+        # we still try if maybe it is a hairpin name
+        if not mapped_names and name_type == 'mir-mat-name':
+            
+            mapped_names = self._map_name(
+                name = name,
+                name_type = 'mir-name',
+                target_name_type = target_name_type,
+                ncbi_tax_id = ncbi_tax_id,
+            )
+        
+        # for UniProt IDs we do one more step:
+        # try to find out the primary SwissProt ID
         if target_name_type == 'uniprot':
-            orig = mappedNames
-            mappedNames = self.primary_uniprot(mappedNames)
-            mappedNames = self.trembl_swissprot(mappedNames, ncbi_tax_id)
-            if len(set(orig) - set(mappedNames)) > 0:
-                self.uniprot_mapped.append((orig, mappedNames))
-            mappedNames = [u for u in mappedNames if self.reuniprot.match(u)]
-        return common.uniqList(mappedNames)
+            
+            orig = mapped_names
+            mapped_names = self.primary_uniprot(mapped_names)
+            mapped_names = self.trembl_swissprot(mapped_names, ncbi_tax_id)
+            
+            # what is this? is it necessary?
+            # probably should be removed
+            if len(set(orig) - set(mapped_names)) > 0:
+                
+                self.uniprot_mapped.append((orig, mapped_names))
+            
+            # why? we have no chance to have anything else here than
+            # UniProt IDs
+            # probably this line should be removed
+            mapped_names = [u for u in mapped_names if self.reuniprot.match(u)]
+        
+        return set(mapped_names)
     
     
     def map_names(
@@ -927,51 +1046,51 @@ class Mapper(session.Logger):
             ncbi_tax_id = None,
             strict = False,
             silent = True,
-            name_type = None,
-            target_name_type = None,
+            nameType = None,
+            targetNameType = None,
         ):
         """
         Same as ``map_name`` with multiple IDs.
         """
         
-        return [
+        return set(
             target_name
             for name in names
             for target_name in
             self.map_name(
                 name = name,
-                #name_type = name_type,
+                name_type = name_type,
                 target_name_type = target_name_type,
                 ncbi_tax_id = ncbi_tax_id,
                 strict = strict,
                 silent = silent,
-                name_type = name_type,
-                target_name_type = target_name_type,
+                nameType = nameType,
+                targetNameType = targetNameType,
             )
-        ]
+        )
     
     
     def map_refseq(self, refseq, name_type, target_name_type,
                    ncbi_tax_id, strict=False):
-        mappedNames = []
+        mapped_names = []
         if '.' in refseq:
-            mappedNames += self._map_name(refseq,
+            mapped_names += self._map_name(refseq,
                                           name_type,
                                           target_name_type,
                                           ncbi_tax_id)
-            if not len(mappedNames) and not strict:
-                mappedNames += self._map_name(refseq.split('.')[0],
+            if not len(mapped_names) and not strict:
+                mapped_names += self._map_name(refseq.split('.')[0],
                                               name_type,
                                               target_name_type,
                                               ncbi_tax_id)
-        if not len(mappedNames) and not strict:
+        if not len(mapped_names) and not strict:
             rstem = refseq.split('.')[0]
             for n in xrange(49):
-                mappedNames += self._map_name('%s.%u' % (rstem, n),
+                mapped_names += self._map_name('%s.%u' % (rstem, n),
                                               name_type,
                                               target_name_type,
                                               ncbi_tax_id)
-        return mappedNames
+        return mapped_names
     
     
     def _map_name(self, name, name_type, target_name_type, ncbi_tax_id):
