@@ -71,7 +71,6 @@ MappingTableKey = collections.namedtuple(
     [
         'name_type',
         'target_name_type',
-        'entity_type',
         'ncbi_tax_id'
     ],
 )
@@ -94,14 +93,26 @@ class MapReader(session.Logger):
             self,
             id_type_a,
             id_type_b,
-            entity_type,
             source_type,
             param,
             ncbi_tax_id = None,
+            entity_type = None,
             uniprots = None,
             lifetime = 300,
         ):
         """
+        entity_type : str
+            An optional, custom string showing the type of the entities,
+            e.g. `protein`. This is not mandatory for the identification
+            of mapping tables, hence the same name types can't be used
+            for different entities. E.g. if both proteins and miRNAs have
+            Entrez gene IDs then these should be different ID types (e.g.
+            `entrez_protein` and `entrez_mirna`) or both protein and miRNA
+            IDs can be loaded into one mapping table and simply called
+            `entrez`.
+        uniprots : set
+            UniProt IDs to query in case the source of the mapping table
+            is the UniProt web service.
         lifetime : int
             If this table has not been used for longer than this preiod it is
             to be removed at next cleanup. Time in seconds. Passed to
@@ -532,6 +543,7 @@ class MappingTable(session.Logger):
         
         self.data = data
         self.lifetime = lifetime
+        self._used()
     
     
     def reload(self):
@@ -554,7 +566,12 @@ class MappingTable(session.Logger):
     
     def _used(self):
         
-        self.last_used = time.time()
+        self._last_used = time.time()
+    
+    
+    def _expired(self):
+        
+        return time.time() - self._last_used > self.lifetime
 
 
 class Mapper(session.Logger):
@@ -619,7 +636,6 @@ class Mapper(session.Logger):
             self,
             name_type,
             target_name_type,
-            entity_type = 'protein',
             ncbi_tax_id = None,
         ):
         """
@@ -631,7 +647,6 @@ class Mapper(session.Logger):
         return MappingTableKey(
             name_type = name_type,
             target_name_type = target_name_type,
-            entity_type = entity_type,
             ncbi_tax_id = ncbi_tax_id,
         )
     
@@ -640,7 +655,6 @@ class Mapper(session.Logger):
             self,
             name_type,
             target_name_type,
-            entity_type = 'protein',
             load = True,
             ncbi_tax_id = None,
         ):
@@ -657,14 +671,12 @@ class Mapper(session.Logger):
         tbl_key = self.get_table_key(
             name_type = name_type,
             target_name_type = target_name_type,
-            entity_type = entity_type,
             ncbi_tax_id = ncbi_tax_id,
         )
         
         tbl_key_rev = self.get_table_key(
             target_name_type = target_name_type,
             name_type = name_type,
-            entity_type = entity_type,
             ncbi_tax_id = ncbi_tax_id,
         )
         
@@ -724,13 +736,11 @@ class Mapper(session.Logger):
                         name_type = name_type,
                         target_name_type = target_name_type,
                         ncbi_tax_id = ncbi_tax_id,
-                        entity_type = entity_type,
                     )
                     
                     reader = MapReader(
                         id_type_a,
                         id_type_b,
-                        entity_type = entity_type,
                         source_type = 'uniprotlist',
                         param = this_param,
                         ncbi_tax_id = ncbi_tax_id,
@@ -784,7 +794,6 @@ class Mapper(session.Logger):
         rev_key = self.get_table_key(
             name_type = key.target_name_type,
             target_name_type = key.name_type,
-            entity_type = key.entity_type,
             ncbi_tax_id = key.ncbi_tax_id,
         )
         
