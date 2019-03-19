@@ -61,6 +61,31 @@ class Session(object):
         self.log.msg('Session `%s` finished.' % self.label)
 
 
+class Logger(object):
+    
+    
+    def __init__(self, name = None):
+        
+        self._log_name = name or self.__class__.__name__
+        self._logger = get_log()
+    
+    
+    def _log(self, msg = '', level = 0):
+        """
+        Writes a message into the logfile.
+        """
+        
+        self._logger.msg(msg = msg, label = self._log_name, level = level)
+    
+    
+    def _console(self, msg = ''):
+        """
+        Writes a message to the console and also to the logfile.
+        """
+        
+        self._logger.console(msg = msg, label = self._log_name)
+
+
 def get_session():
     """
     Creates new session or returns the one already created.
