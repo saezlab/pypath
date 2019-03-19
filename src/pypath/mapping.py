@@ -1070,26 +1070,56 @@ class Mapper(session.Logger):
         )
     
     
-    def map_refseq(self, refseq, name_type, target_name_type,
-                   ncbi_tax_id, strict=False):
+    def map_refseq(
+            self,
+            refseq,
+            name_type,
+            target_name_type,
+            ncbi_tax_id,
+            strict = False,
+        ):
+        """
+        ID translation adapted to the specialities of RefSeq IDs.
+        """
+        
         mapped_names = []
-        if '.' in refseq:
-            mapped_names += self._map_name(refseq,
-                                          name_type,
-                                          target_name_type,
-                                          ncbi_tax_id)
-            if not len(mapped_names) and not strict:
-                mapped_names += self._map_name(refseq.split('.')[0],
-                                              name_type,
-                                              target_name_type,
-                                              ncbi_tax_id)
-        if not len(mapped_names) and not strict:
+        
+        # try first as it is
+        mapped_names = self._map_name(
+            refseq = refseq,
+            name_type = name_type,
+            target_name_type = target_name_type,
+            ncbi_tax_id = ncbi_tax_id,
+        )
+        
+        # then with the number at the end removed
+        # this is disabled if `strict = True`
+        if not mapped_names and not strict:
+            
+            mapped_names = self._map_name(
+                name = refseq.split('.')[0],
+                name_type = name_type,
+                target_name_type = target_name_type,
+                ncbi_tax_id = ncbi_tax_id,
+            )
+        
+        if not mapped_names and not strict:
+            
             rstem = refseq.split('.')[0]
+            
+            # try some other numbers
+            # this risky and is disabled if `strict = True`
             for n in xrange(49):
-                mapped_names += self._map_name('%s.%u' % (rstem, n),
-                                              name_type,
-                                              target_name_type,
-                                              ncbi_tax_id)
+                
+                mapped_names.extend(
+                    self._map_name(
+                        name = '%s.%u' % (rstem, n),
+                        name_type = name_type,
+                        target_name_type = target_name_type,
+                        ncbi_tax_id = ncbi_tax_id,
+                    )
+                )
+        
         return mapped_names
     
     
