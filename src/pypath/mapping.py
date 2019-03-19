@@ -1214,20 +1214,20 @@ class Mapper(session.Logger):
     
     def has_mapping_table(
             self,
-            name_typeA,
-            name_typeB,
+            name_type,
+            target_name_type,
             ncbi_tax_id = None,
         ):
         
-        ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
         
-        if (name_typeA, name_typeB) not in self.tables[ncbi_tax_id] and \
-            ((name_typeB, name_typeA) not in self.tables[ncbi_tax_id] or
-                len(self.tables[ncbi_tax_id][(name_typeB, name_typeA)].mapping['form']) == 0):
-            self.map_table_error(name_typeA, name_typeB, ncbi_tax_id)
-            return False
-        else:
-            return True
+        key = self.get_table_key(
+            name_type = name_type,
+            target_name_type = target_name_type,
+            ncbi_tax_id = ncbi_tax_id,
+        )
+        
+        return key in self.tables
     
     
     def map_table_error(self, a, b, ncbi_tax_id):
