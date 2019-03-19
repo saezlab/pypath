@@ -132,7 +132,7 @@ class Logger(object):
         self.msg('Logger started, logging into `%s`.' % self.fname)
     
     
-    def msg(self, msg = '', level = 0):
+    def msg(self, msg = '', label = None, level = 0):
         """
         Writes a message into the log file.
 
@@ -146,30 +146,49 @@ class Logger(object):
         
         if level <= self.verbosity:
             
+            msg = self.label_message(msg, label = label)
             msg = self.wrapper.fill(msg)
             msg = self.timestamp_message(msg)
             self.fp.write(msg)
         
         if level <= self.console_level:
             
-            self.console(msg)
+            self._console(msg)
+    
+    
+    def label_message(self, label = None):
+        """
+        Adds a label in front of the message.
+        """
+        
+        label = '[%s] ' % label if label else ''
+        
+        return '%s%s' % (label, msg)
     
     
     def timestamp_message(self, msg):
+        """
+        Adds a timestamp in front of the message.
+        """
         
         return '[%s] %s\n' % (self.timestamp(), msg)
     
     
-    def console(self, msg = ''):
+    def _console(self, msg):
+        
+        sys.stdout.write('%s\n' % msg)
+        sys.stdout.flush()
+    
+    
+    def console(self, msg = '', label = None):
         """
-        Prints a message to the console.
+        Prints a message to the console and also to the logfile.
         
         msg : str
             Text of the message.
         """
         
-        sys.stdout.write('[%s] %s\n' % (self.timestamp(), msg))
-        sys.stdout.flush()
+        self.msg(msg = msg, label = label, level = self.console_level)
     
     
     @classmethod
