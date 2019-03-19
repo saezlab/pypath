@@ -291,8 +291,8 @@ class MapReader(session.Logger):
             infile = open(param.input, encoding = 'utf-8', mode = 'r')
             total = os.path.getsize(param.input)
         
-        a_to_b = collections.defaultdict(list)
-        b_to_a = collections.defaultdict(list)
+        a_to_b = collections.defaultdict(set)
+        b_to_a = collections.defaultdict(set)
         
         for i, line in enumerate(infile):
             
@@ -314,18 +314,15 @@ class MapReader(session.Logger):
             
             id_a = line[param.col_a]
             id_b = line[param.col_b]
-            a_to_b[id_a].append(id_b)
+            a_to_b[id_a].add(id_b)
             
             if param.bi_directional:
                 
-                b_to_a[id_b].append(id_a)
+                b_to_a[id_b].add(id_a)
         
         if hasattr(infile, 'close'):
             
             infile.close()
-        
-        a_to_b = self.unique(a_to_b)
-        b_to_a = self.unique(b_to_a)
         
         self.a_to_b = a_to_b
         self.b_to_a = b_to_a if self.param.bi_directional else None
@@ -337,8 +334,8 @@ class MapReader(session.Logger):
         upload lists service.
         """
         
-        a_to_b = collections.defaultdict(list)
-        b_to_a = collections.defaultdict(list)
+        a_to_b = collections.defaultdict(set)
+        b_to_a = collections.defaultdict(set)
         
         if not self.uniprots:
             
@@ -368,14 +365,14 @@ class MapReader(session.Logger):
             
             l = l.strip().split('\t')
             
-            a_to_b[l[1]].append(l[0])
+            a_to_b[l[1]].add(l[0])
 
             if param.bi_directional:
                 
-                b_to_a[l[0]].append(l[1])
+                b_to_a[l[0]].add(l[1])
         
-        self.a_to_b = self.unique(a_to_b)
-        self.b_to_a = self.unique(b_to_a) if self.bi_directional else None
+        self.a_to_b = a_to_b
+        self.b_to_a = b_to_a if self.bi_directional else None
     
     
     def _read_mapping_uniprot_list(self, id_type_a = None, ac_list = None):
@@ -436,8 +433,8 @@ class MapReader(session.Logger):
         resep = re.compile(r'[\s;]')
         recolend = re.compile(r'$;')
         
-        a_to_b = collections.defaultdict(list)
-        b_to_a = collections.defaultdict(list)
+        a_to_b = collections.defaultdict(set)
+        b_to_a = collections.defaultdict(set)
         
         
         rev = (
@@ -490,14 +487,14 @@ class MapReader(session.Logger):
                     
                     for other in l[1]:
                         
-                        a_to_b[other].append(l[0][0])
+                        a_to_b[other].add(l[0][0])
                         
                         if param.bi_directional:
                             
-                            b_to_a[l[0][0]].append(other)
+                            b_to_a[l[0][0]].add(other)
         
-        self.a_to_b = self.unique(a_to_b)
-        self.b_to_a = self.unique(b_to_a) if self.bi_directional else None
+        self.a_to_b = a_to_b
+        self.b_to_a = b_to_a if self.bi_directional else None
     
     
     @staticmethod
@@ -514,12 +511,6 @@ class MapReader(session.Logger):
         names += others
         
         return [x.strip() for x in names]
-    
-    
-    @staticmethod
-    def unique(dct):
-        
-        return dict((k, common.unique_list(v)) for k, v in iteritems(dct))
 
 
 class MappingTable(session.Logger):
@@ -549,7 +540,7 @@ class MappingTable(session.Logger):
     def reload(self):
         
         modname = self.__class__.__module__
-        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
@@ -562,6 +553,8 @@ class MappingTable(session.Logger):
         if key in self.data:
             
             return data[key]
+        
+        return set()
     
     
     def _used(self):
