@@ -78,7 +78,7 @@ MappingTableKey = collections.namedtuple(
 MappingTableKey.__new__.__defaults__ = ('protein', 9606)
 
 
-class MapReader(object):
+class MapReader(session.Logger):
     """
     Reads ID translation data and creates ``MappingTable`` instances.
     When initializing ID conversion tables for the first time
@@ -107,6 +107,8 @@ class MapReader(object):
             to be removed at next cleanup. Time in seconds. Passed to
             ``MappingTable``.
         """
+        
+        session.Logger.__init__(self, name = 'mapping')
         
         self.id_type_a = id_type_a
         self.id_type_b = id_type_b
@@ -208,7 +210,7 @@ class MapReader(object):
         
         if os.path.exists(self.cachefile):
             
-            _logger.msg(
+            self._msg(
                 'Removing mapping table cache file `%s`.' % self.cachefile
             )
             os.remove(self.cachefile)
@@ -509,7 +511,7 @@ class MapReader(object):
         return dict((k, common.unique_list(v)) for k, v in iteritems(dct))
 
 
-class MappingTable(object):
+class MappingTable(session.Logger):
     """
     This is the class directly handling ID translation data.
     It does not care about loading it or what kind of IDs these
@@ -526,6 +528,8 @@ class MappingTable(object):
             lifetime = 30,
         ):
         
+        session.Logger.__init__(self, name = 'mapping')
+        
         self.data = data
         self.lifetime = lifetime
     
@@ -537,9 +541,23 @@ class MappingTable(object):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
+    
+    
+    def __getitem__(self, key):
+        
+        self._used()
+        
+        if key in self.data:
+            
+            return data[key]
+    
+    
+    def _used(self):
+        
+        self.last_used = time.time()
 
 
-class Mapper(object):
+class Mapper(session.Logger):
 
     def __init__(
             self,
@@ -555,6 +573,8 @@ class Mapper(object):
             If a table has not been used for longer than this preiod it is
             to be removed at next cleanup.
         """
+        
+        session.Logger.__init__(self, name = 'mapping')
         
         self.reuniprot = re.compile(
             r'[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]'
@@ -943,7 +963,8 @@ class Mapper(object):
                                               target_name_type,
                                               ncbi_tax_id)
         return mappedNames
-
+    
+    
     def _map_name(self, name, name_type, target_name_type, ncbi_tax_id):
         """
         Once we have defined the name type and the target name type,
@@ -968,6 +989,7 @@ class Mapper(object):
         """
         For a list of UniProt IDs returns the list of primary ids.
         """
+        
         pri = []
         for u in lst:
             pr = self.map_name(u, 'uniprot-sec', 'uniprot-pri', ncbi_tax_id = 0)
@@ -984,9 +1006,12 @@ class Mapper(object):
         only Swissprot, mapping from Trembl to gene names, and
         then back to Swissprot.
         """
+        
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
         sws = []
+        
         for tr in lst:
+            
             sw = []
             gn = self.map_name(tr, 'trembl', 'genesymbol',
                                ncbi_tax_id = ncbi_tax_id)
@@ -997,12 +1022,20 @@ class Mapper(object):
                 sws.append(tr)
             else:
                 sws += sw
+        
         sws = list(set(sws))
         return sws
     
     
-    def has_mapping_table(self, name_typeA, name_typeB, ncbi_tax_id = None):
+    def has_mapping_table(
+            self,
+            name_typeA,
+            name_typeB,
+            ncbi_tax_id = None,
+        ):
+        
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
+        
         if (name_typeA, name_typeB) not in self.tables[ncbi_tax_id] and \
             ((name_typeB, name_typeA) not in self.tables[ncbi_tax_id] or
                 len(self.tables[ncbi_tax_id][(name_typeB, name_typeA)].mapping['form']) == 0):
@@ -1016,7 +1049,7 @@ class Mapper(object):
         msg = ("Missing mapping table: from `%s` to `%s` at organism `%u` "\
             "mapping needed." % (a, b, ncbi_tax_id))
         sys.stdout.write(''.join(['\tERROR: ', msg, '\n']))
-        self.ownlog.msg(2, msg, 'ERROR')
+        self._msg(2, msg, 'ERROR')
     
     
     def load_mappings(self, maplst=None, ncbi_tax_id = None):
@@ -1033,15 +1066,15 @@ class Mapper(object):
 
          maplst = maplst or maps.misc
         
-        self.ownlog.msg(1, "Loading mapping tables...")
-
+        self._msg(1, "Loading mapping tables...")
+        
         for mapName, param in iteritems(maplst):
 
             tables = self.tables[ncbi_tax_id]
 
             param = param.set_organism(ncbi_tax_id)
 
-            self.ownlog.msg(2, "Loading table %s ..." % str(mapName))
+            self._msg(2, "Loading table %s ..." % str(mapName))
             sys.stdout.write("\t:: Loading '%s' to '%s' mapping table\n" %
                              (mapName[0], mapName[1]))
 
@@ -1050,19 +1083,19 @@ class Mapper(object):
             if typ == 'FileMapping' and \
                     not os.path.isfile(param.input) and \
                     not hasattr(mapping_input, param.input):
-                self.ownlog.msg(2, "Error: no such file: %s" % param.input,
+                self._msg(2, "Error: no such file: %s" % param.input,
                                 "ERROR")
                 continue
 
             if typ == 'PickleMapping' and \
                     not os.path.isfile(param.pickleFile):
-                self.ownlog.msg(2, "Error: no such file: %s" %
+                self._msg(2, "Error: no such file: %s" %
                                 m["par"].pickleFile, "ERROR")
                 continue
 
             if typ == 'MysqlMapping':
                 if not self.mysql:
-                    self.ownlog.msg(2, "Error: no mysql server known.",
+                    self._msg(2, "Error: no mysql server known.",
                                     "ERROR")
                     continue
                 else:
@@ -1095,7 +1128,7 @@ class Mapper(object):
                 and ('genesymbol-syn', 'swissprot') in tables \
                 and ('genesymbol5', 'uniprot') not in tables:
                 self.genesymbol5(param.ncbi_tax_id)
-            self.ownlog.msg(2, "Table %s loaded from %s." %
+            self._msg(2, "Table %s loaded from %s." %
                             (str(mapName), param.__class__.__name__))
     
     
@@ -1197,13 +1230,14 @@ class Mapper(object):
     
     
     def save_all_mappings(self):
-        self.ownlog.msg(1, "Saving all mapping tables...")
+        
+        self._msg(1, "Saving all mapping tables...")
         for ncbi_tax_id in self.tables:
             for table in self.tables[ncbi_tax_id]:
-                self.ownlog.msg(2, "Saving table %s ..." % table[0])
+                self._msg(2, "Saving table %s ..." % table[0])
                 param = mapping.pickleMapping(table)
                 self.tables[m].save_mapping_pickle(param)
-                self.ownlog.msg(2, "Table %s has been written to %s.pickle." %
+                self._msg(2, "Table %s has been written to %s.pickle." %
                                 (m, param.pickleFile))
     
     
@@ -1222,11 +1256,11 @@ class Mapper(object):
     
     def read_mapping_uniprot_mysql(self, filename, ncbi_tax_id, log, bi=False):
         if not os.path.isfile(filename):
-            self.ownlog.msg(2, "No such file %s in read_mapping_uniprot()" %
+            self._msg(2, "No such file %s in read_mapping_uniprot()" %
                             (param, 'ERROR'))
         infile = codecs.open(filename, encoding='utf-8', mode='r')
         umap = {}
-        self.ownlog.msg(2, "Loading UniProt mapping table from file %s" %
+        self._msg(2, "Loading UniProt mapping table from file %s" %
                         filename)
         for line in infile:
             if len(line) == 0:
@@ -1247,7 +1281,7 @@ class Mapper(object):
                 if uniprot not in umap[mapTableName].mapping["from"]:
                     umap[mapTableName].mapping["from"][uniprot] = []
                 umap[mapTableName].mapping["from"][uniprot].append(other)
-        self.ownlog.msg(2, "%u mapping tables from UniProt has been loaded" %
+        self._msg(2, "%u mapping tables from UniProt has been loaded" %
                         len(umap))
         return umap
 
