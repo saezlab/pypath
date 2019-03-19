@@ -557,6 +557,13 @@ class MappingTable(session.Logger):
         return set()
     
     
+    def __contains__(self, key):
+        
+        self._used()
+        
+        return key in self.data
+    
+    
     def _used(self):
         
         self._last_used = time.time()
@@ -1137,19 +1144,31 @@ class Mapper(session.Logger):
         return tbl[name] if tbl else set()
     
     
-    def primary_uniprot(self, lst):
+    def primary_uniprot(self, uniprots):
         """
         For a list of UniProt IDs returns the list of primary ids.
         """
         
-        pri = []
-        for u in lst:
-            pr = self.map_name(u, 'uniprot-sec', 'uniprot-pri', ncbi_tax_id = 0)
-            if len(pr) > 0:
-                pri += pr
+        primaries = set()
+        
+        for uniprot in uniprots:
+            
+            primary = self.map_name(
+                name = uniprot,
+                name_type = 'uniprot-sec',
+                target_name_type = 'uniprot-pri',
+                ncbi_tax_id = 0,
+            )
+            
+            if primary:
+                
+                primaries.update(primary)
+                
             else:
-                pri.append(u)
-        return list(set(pri))
+                
+                primaries.add(uniprot)
+        
+        return primaries
     
     
     def trembl_swissprot(self, lst, ncbi_tax_id = None):
