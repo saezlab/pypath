@@ -856,7 +856,7 @@ class Mapper(session.Logger):
         name_type = name_type or nameType
         target_name_type = target_name_type or targetNameType
         
-        ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
         
         # we support translating from more name types
         # at the same time
@@ -891,7 +891,7 @@ class Mapper(session.Logger):
         elif name_type.startswith('refseq'):
             
             # RefSeq is special
-            mapped_names = self.map_refseq(
+            mapped_names = self._map_refseq(
                 name = name,
                 name_type = name_type,
                 target_name_type = target_name_type,
@@ -1016,7 +1016,7 @@ class Mapper(session.Logger):
             
             # what is this? is it necessary?
             # probably should be removed
-            if len(set(orig) - set(mapped_names)) > 0:
+            if orig - mapped_names > 0:
                 
                 self.uniprot_mapped.append((orig, mapped_names))
             
@@ -1024,8 +1024,7 @@ class Mapper(session.Logger):
             # UniProt IDs
             # probably should be removed
             mapped_names = {
-                u for u in mapped_names
-                if self.reuniprot.match(u)
+                u for u in mapped_names if self.reuniprot.match(u)
             }
         
         return mapped_names
@@ -1061,12 +1060,12 @@ class Mapper(session.Logger):
         )
     
     
-    def map_refseq(
+    def _map_refseq(
             self,
             refseq,
             name_type,
             target_name_type,
-            ncbi_tax_id,
+            ncbi_tax_id = None,
             strict = False,
         ):
         """
@@ -1074,6 +1073,7 @@ class Mapper(session.Logger):
         """
         
         mapped_names = set()
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
         
         # try first as it is
         mapped_names = self._map_name(
@@ -1114,24 +1114,27 @@ class Mapper(session.Logger):
         return mapped_names
     
     
-    def _map_name(self, name, name_type, target_name_type, ncbi_tax_id):
+    def _map_name(
+            self,
+            name,
+            name_type,
+            target_name_type,
+            ncbi_tax_id = None,
+        ):
         """
         Once we have defined the name type and the target name type,
         this function looks it up in the most suitable dictionary.
         """
         
-        name_types = (name_type, target_name_type)
-        nameTypRe = (target_name_type, name_type)
-        tbl = self.which_table(name_type, target_name_type,
-                               ncbi_tax_id = ncbi_tax_id)
-        if tbl is None or name not in tbl:
-            result = []
-        elif name in tbl:
-            result = tbl[name]
-        # self.trace.append({'name': name, 'from': name_type, 'to': target_name_type,
-        #    'result': result})
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
         
-        return result
+        tbl = self.which_table(
+            name_type,
+            target_name_type,
+            ncbi_tax_id = ncbi_tax_id
+        )
+        
+        return tbl[name] if tbl else set()
     
     
     def primary_uniprot(self, lst):
