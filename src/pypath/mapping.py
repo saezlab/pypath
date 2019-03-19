@@ -1166,36 +1166,50 @@ class Mapper(session.Logger):
                 
             else:
                 
+                # most probably this UniProt is already primary
                 primaries.add(uniprot)
         
         return primaries
     
     
-    def trembl_swissprot(self, lst, ncbi_tax_id = None):
+    def trembl_swissprot(self, uniprots, ncbi_tax_id = None):
         """
-        For a list of Trembl and Swissprot IDs, returns possibly
-        only Swissprot, mapping from Trembl to gene names, and
-        then back to Swissprot.
+        For a list of Trembl and SwissProt IDs, returns possibly
+        only Swissprot, mapping from Trembl to gene symbols, and
+        then back to SwissProt.
         """
         
-        ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
-        sws = []
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+        swissprots = set()
         
-        for tr in lst:
+        for uniprot in lst:
             
-            sw = []
-            gn = self.map_name(tr, 'trembl', 'genesymbol',
-                               ncbi_tax_id = ncbi_tax_id)
-            for g in gn:
-                sw = self.map_name(g, 'genesymbol', 'swissprot',
-                                   ncbi_tax_id = ncbi_tax_id)
-            if len(sw) == 0:
-                sws.append(tr)
+            swissprot = []
+            genesymbols = self.map_name(
+                name = uniprot,
+                name_type = 'trembl',
+                target_name_type = 'genesymbol',
+                ncbi_tax_id = ncbi_tax_id
+            )
+            
+            for genesymbol in genesymbols:
+                
+                swissprot = self.map_name(
+                    name = genesymbol,
+                    name_type = 'genesymbol',
+                    target_name_type = 'swissprotissprot',
+                    ncbi_tax_id = ncbi_tax_id
+                )
+            
+            if not swissprot:
+                
+                swissprots.append(uniprot)
+                
             else:
-                sws += sw
+                
+                swissprots.update(swissprot)
         
-        sws = list(set(sws))
-        return sws
+        return swissprots
     
     
     def has_mapping_table(
