@@ -510,7 +510,7 @@ class MapReader(session.Logger):
         others = [x.split('(')[1] if '(' in x else x for x in others]
         names += others
         
-        return [x.strip() for x in names]
+        return {x.strip() for x in names}
 
 
 class MappingTable(session.Logger):
@@ -862,11 +862,8 @@ class Mapper(session.Logger):
         # at the same time
         if isinstance(name_type, (list, set, tuple)):
             
-            mapped_names = []
-            
-            for this_name_type in name_type:
-                
-                mapped_names += self.map_name(
+            return set.union(
+                self.map_name(
                     name = name,
                     name_type = this_name_type,
                     target_name_type = target_name_type,
@@ -874,8 +871,8 @@ class Mapper(session.Logger):
                     silent = silent,
                     ncbi_tax_id = ncbi_tax_id,
                 )
-            
-            return common.uniqList(mapped_names)
+                for this_name_type in name_type
+            )
         
         # translating from an ID type to the same ID type?
         if name_type == target_name_type:
@@ -883,12 +880,12 @@ class Mapper(session.Logger):
             if target_name_type != 'uniprot':
                 
                 # no need for translation
-                return [name]
+                return {name}
             
             else:
                 
                 # we still try to search the primary UniProt
-                mapped_names = [name]
+                mapped_names = {name}
             
         # actual translation comes here
         elif name_type.startswith('refseq'):
@@ -1025,10 +1022,13 @@ class Mapper(session.Logger):
             
             # why? we have no chance to have anything else here than
             # UniProt IDs
-            # probably this line should be removed
-            mapped_names = [u for u in mapped_names if self.reuniprot.match(u)]
+            # probably should be removed
+            mapped_names = {
+                u for u in mapped_names
+                if self.reuniprot.match(u)
+            }
         
-        return set(mapped_names)
+        return mapped_names
     
     
     def map_names(
@@ -1046,10 +1046,7 @@ class Mapper(session.Logger):
         Same as ``map_name`` with multiple IDs.
         """
         
-        return set(
-            target_name
-            for name in names
-            for target_name in
+        return set.union(
             self.map_name(
                 name = name,
                 name_type = name_type,
@@ -1060,6 +1057,7 @@ class Mapper(session.Logger):
                 nameType = nameType,
                 targetNameType = targetNameType,
             )
+            for name in names
         )
     
     
@@ -1075,7 +1073,7 @@ class Mapper(session.Logger):
         ID translation adapted to the specialities of RefSeq IDs.
         """
         
-        mapped_names = []
+        mapped_names = set()
         
         # try first as it is
         mapped_names = self._map_name(
@@ -1104,7 +1102,7 @@ class Mapper(session.Logger):
             # this risky and is disabled if `strict = True`
             for n in xrange(49):
                 
-                mapped_names.extend(
+                mapped_names.update(
                     self._map_name(
                         name = '%s.%u' % (rstem, n),
                         name_type = name_type,
