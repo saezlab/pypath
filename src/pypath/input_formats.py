@@ -19,35 +19,63 @@ import codecs
 import sys
 import copy
 
+import pypath.settings as settings
+
 __all__ = [
     'FileMapping', 'PickleMapping', 'ReadSettings', 'ReadList',
     'Reference', 'UniprotListMapping',
 ]
 
 
-class FileMapping(object):
+class MappingInput(objet):
+    
     
     def __init__(
             self,
-            input,
+            type_,
+            name_type_a,
+            name_type_b,
+            ncbi_tax_id = None,
+        ):
+        
+        self.type = type_
+        self.name_type_a = name_type_a
+        self.name_type_b = name_type_b
+        self.ncbi_tax_id = ncbi_tax_id or settings.get('default_organism')
+
+
+class FileMapping(MappingInput):
+    
+    def __init__(
+            self,
+            name_type_a,
+            name_type_b,
+            fname,
             col_a,
             col_b,
             separator = None,
             header = 0,
             bi_directional  =  False,
-            ncbi_tax_id = 9606,
+            ncbi_tax_id = None,
             entity_type = 'protein',
         ):
         
-        self.input = input
+        MappingInput.__init__(
+            self,
+            type_ = 'file',
+            name_type_a = name_type_a,
+            name_type_b = name_type_b,
+            ncbi_tax_id = ncbi_tax_id,
+        )
+        
+        self.fname = fname
         self.col_a = col_a
         self.col_b = col_b
         self.separator = separator
         self.header = header
         self.entity_type = entity_type
         self.bi_directional = bi_directional
-        self.ncbi_tax_id = ncbi_tax_id
-        self.input_args = {'organism': ncbi_tax_id}
+        self.input_args = {'organism': self.ncbi_tax_id}
     
     
     def set_organism(self, ncbi_tax_id):
@@ -62,7 +90,7 @@ class FileMapping(object):
         return other_organism
 
 
-class UniprotMapping(object):
+class UniprotMapping(MappingInput):
 
     def __init__(
             self,
@@ -95,6 +123,17 @@ class UniprotMapping(object):
             capabilities. Some IDs can be obtained from the former, some
             from the latter.
         '''
+        
+        self.type = 'uniprot'
+        
+        MappingInput.__init__(
+            self,
+            type_ = 'file',
+            name_type_a = name_type_a,
+            name_type_b = name_type_b,
+            ncbi_tax_id = ncbi_tax_id,
+        )
+        
         self.bi_directional = bi_directional
         self.ncbi_tax_id = int(ncbi_tax_id)
         self.typ = 'protein'
@@ -114,43 +153,54 @@ class UniprotMapping(object):
         return other_organism
 
 
-class UniprotListMapping(object):
+class UniprotListMapping(MappingInput):
 
     def __init__(
             self,
-            name_type,
-            ac_name = None,
-            target_name_type = None,
-            target_ac_name = None,
-            bi_directional = False,
+            name_type_a,
+            name_type_b,
+            uniprot_name_type_a = None,
+            uniprot_name_type_b = None,
             ncbi_tax_id = 9606,
             swissprot = True,
         ):
         """
         Provides parameters for downloading mapping table from UniProt
         `Upload Lists` webservice.
+        
+        :arg str name_type_a:
+            Custom name for one of the ID types.
+        :arg str name_type_a:
+            Custom name for the other ID type.
+        :arg str uniprot_name_type_a:
+            This is the symbol the UniProt webservice uses for the first
+            name type. These are included in the module and set
+            automatically, the argument only gives a way to override this.
+        :arg str uniprot_name_type_b:
+            Same as above just for the other ID type.
+        :arg bool swissprot:
+            DOwnload data only for SwissProt IDs.
         """
+        
+        MappingInput.__init__(
+            self,
+            type_ = 'uniprot_list',
+            name_type_a = name_type_a,
+            name_type_b = name_type_b,
+            ncbi_tax_id = ncbi_tax_id,
+        )
+        
         self.swissprot = swissprot
         self.ac_mapping = ac_mapping
-        self.bi = bi
-        self.ncbi_tax_id = ncbi_tax_id
-        self.typ = 'protein'
-        self.name_type, self.ac_name = self.get_ac_type(name_type, ac_name)
-        self.target_name_type, self.target_ac_name = \
-            self.get_ac_type(target_name_type, target_ac_name)
-    
-    
-    def get_ac_type(self, name_type, ac_name):
         
-        name_type = name_type if name_type is not None else \
-            ac_name if ac_name is not None else 'uniprot'
-        if name_type not in self.ac_mapping and ac_name is None:
-            sys.stdout.write('\t:: Unknown ID type: `%s`.\n' % name_type)
-        else:
-            ac_name = (
-                self.ac_mapping[name_type] if ac_name is None else ac_name
-            )
-        return name_type, ac_name
+        self.uniprot_name_type_a = (
+            self.uniprot_name_type_a or self.ac_mapping[self.name_type_a]
+        )
+        self.uniprot_name_type_b = (
+            self.uniprot_name_type_b or self.ac_mapping[self.name_type_b]
+        )
+        
+        self.entity_type = 'protein'
     
     
     def set_organism(self, ncbi_tax_id):
@@ -160,14 +210,30 @@ class UniprotListMapping(object):
         return other_organism
 
 
-class PickleMapping(object):
+class PickleMapping(MappingInput):
     
-    def __init__(self, pickleFile):
+    
+    def __init__(
+            self,
+            name_type_a,
+            name_type_b,
+            fname,
+            ncbi_tax_id = None,
+        ):
         
-        self.pickleFile = pickleFile
+        MappingInput.__init__(
+            self,
+            type_ = 'pickle',
+            name_type_a = name_type_a,
+            name_type_b = name_type_b,
+            ncbi_tax_id = ncbi_tax_id,
+        )
+        
+        self.fname = fname
 
 
 class ReadSettings:
+    
     
     def __init__(
             self,
@@ -210,6 +276,7 @@ class ReadSettings:
         :param str mark_target:
             Same as ``mark_source`` but for target vertices.
         """
+        
         self.typeA = typeA
         self.typeB = typeB
         self.nameColA = nameColA
@@ -243,19 +310,24 @@ class ReadSettings:
 
 
 class ReadList:
-    def __init__(self,
-                 name="unknown",
-                 separator=None,
-                 nameCol=0,
-                 name_type="uniprot",
-                 typ="protein",
-                 inFile=None,
-                 extraAttrs={},
-                 header=False):
-        self.typ = typ
-        self.nameCol = nameCol
+    
+    
+    def __init__(
+            self,
+            name = 'unknown',
+            separator = None,
+            name_col = 0,
+            name_type = 'uniprot',
+            entity_type = 'protein',
+            fname = None,
+            extraAttrs = {},
+            header = False,
+        ):
+        
+        self.enity_type = entity_type
+        self.name_col = name_col
         self.name_type = name_type
-        self.inFile = inFile
+        self.fname = fname
         self.extraAttrs = extraAttrs
         self.name = name
         self.separator = separator
