@@ -93,7 +93,6 @@ class MapReader(session.Logger):
             self,
             id_type_a,
             id_type_b,
-            source_type,
             param,
             ncbi_tax_id = None,
             entity_type = None,
@@ -124,7 +123,7 @@ class MapReader(session.Logger):
         self.id_type_a = id_type_a
         self.id_type_b = id_type_b
         self.entity_type = entity_type
-        self.source_type = source_type
+        self.source_type = param.type
         self.param = param
         self.lifetime = lifetime
         self.a_to_b = None
@@ -234,7 +233,7 @@ class MapReader(session.Logger):
             
             self.read_mapping_uniprot()
             
-        elif source_type == "uniprotlist":
+        elif source_type == "uniprot_list":
             
             self.read_mapping_uniprot_list()
     
@@ -710,13 +709,13 @@ class Mapper(session.Logger):
                 
                 if resource:
                     
-                    self.load_mappings(
+                    self.load_mapping(
                         maplst = {name_types: resources[name_types]},
                         ncbi_tax_id = ncbi_tax_id,
                     )
                     tbl = self.which_table(
-                        name_type,
-                        target_name_type,
+                        name_type = name_type,
+                        target_name_type = target_name_type,
                         load = False,
                         ncbi_tax_id = ncbi_tax_id,
                     )
@@ -784,6 +783,15 @@ class Mapper(session.Logger):
         )
     
     
+    def reverse_key(self, key):
+        
+        self.get_table_key(
+            name_type = key.target_name_type,
+            target_name_type = key.name_type,
+            ncbi_tax_id = key.ncbi_tax_id,
+        )
+    
+    
     def create_reverse(self, key):
         """
         Creates a mapping table with ``name_type`` and ``target_name_type``
@@ -791,11 +799,7 @@ class Mapper(session.Logger):
         """
         
         table = self.mappings[key]
-        rev_key = self.get_table_key(
-            name_type = key.target_name_type,
-            target_name_type = key.name_type,
-            ncbi_tax_id = key.ncbi_tax_id,
-        )
+        rev_key = self.reverse_key(key)
         
         self.tables[rev_key] = self.reverse_mapping(table)
     
@@ -1234,68 +1238,34 @@ class Mapper(session.Logger):
         return key in self.tables
     
     
-    def load_mappings(self, maplst=None, ncbi_tax_id = None):
+    def load_mappings(
+            self,
+            inputs = None,
+            ncbi_tax_id = None,
+        ):
         """
-        mapList is a list of mappings to load;
-        elements of mapList are dicts containing the
-        id names, molecule type, and preferred source
-        e.g. ("one": "uniprot", "two": "refseq", "typ": "protein",
-        "src": "mysql", "par": "mysql_param/file_param")
-        by default those are loaded from pickle files
+        :arg inputs:
+            A list of mapping input defeinitions. Elements of `inputs`
+            are dicts containing the ID names, molecule type, and
+            preferred source e.g. ``{"one": "uniprot", "two": "refseq",
+            "typ": "protein", "src": "mysql",
+            "par": "mysql_param/file_param"}``.
+            By default loaded from pickle files.
         """
         
-        ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
         
-         maplst = maplst or maps.misc
+        inputs = inputs or maps.misc
         
-        self._msg(1, "Loading mapping tables...")
+        self._msg('Loading mapping tables')
         
-        for mapName, param in iteritems(maplst):
+        for map_name, param in iteritems(inputs):
+            
 
-            tables = self.tables[ncbi_tax_id]
-
-            param = param.set_organism(ncbi_tax_id)
-
-            self._msg(2, "Loading table %s ..." % str(mapName))
-            sys.stdout.write("\t:: Loading '%s' to '%s' mapping table\n" %
-                             (mapName[0], mapName[1]))
-
-            typ = param.__class__.__name__
-
-            if typ == 'FileMapping' and \
-                    not os.path.isfile(param.input) and \
-                    not hasattr(mapping_input, param.input):
-                self._msg(2, "Error: no such file: %s" % param.input,
-                                "ERROR")
-                continue
-
-            if typ == 'PickleMapping' and \
-                    not os.path.isfile(param.pickleFile):
-                self._msg(2, "Error: no such file: %s" %
-                                m["par"].pickleFile, "ERROR")
-                continue
-
-            if typ == 'MysqlMapping':
-                if not self.mysql:
-                    self._msg(2, "Error: no mysql server known.",
-                                    "ERROR")
-                    continue
-                else:
-                    if self.mysql is None:
-                        self.init_mysql()
-                    param.mysql = self.mysql
-
-            if param.ncbi_tax_id != ncbi_tax_id:
-                if typ == 'FileMapping':
-                    sys.stdout.write('\t:: No translation table for organism `%u`. '\
-                                     'Available for `%u` in file `%s`.\n' % \
-                                     (ncbi_tax_id, param.ncbi_tax_id, param.input))
-                    return None
-
-            tables[mapName] = \
+            tables[map_name] = \
                 MappingTable(
-                    mapName[0],
-                    mapName[1],
+                    map_name[0],
+                    map_name[1],
                     param.typ,
                     typ.replace('Mapping', '').lower(),
                     param,
@@ -1311,7 +1281,48 @@ class Mapper(session.Logger):
                 and ('genesymbol5', 'uniprot') not in tables:
                 self.genesymbol5(param.ncbi_tax_id)
             self._msg(2, "Table %s loaded from %s." %
-                            (str(mapName), param.__class__.__name__))
+                            (str(map_name), param.__class__.__name__))
+    
+    
+    
+    def load_mapping(self, key, param, **kwargs):
+        """
+        Loads a single mapping table based on input definition in ``param``.
+        ``**kwargs`` passed to ``MapReader``.
+        """
+        
+        if ncbi_tax_id:
+            
+            # this returns a copy with different organism
+            param = param.set_organism(ncbi_tax_id)
+        
+        if (
+            param.type in {'file', 'pickle'} and
+            not (
+                os.path.exists(param.fname) or
+                hasattr(mapping_input, param.fname)
+        ):
+            
+            self._msg(
+                'Could not load mapping: no such '
+                'file or function: `%s`.' % param.fname
+            )
+            return
+        
+        self._msg(
+            'Loading `%s` to `%s` mapping table for organism `%u`.' % key
+        )
+        
+        reader = MapReader(
+            id_type_a = key[0],
+            id_type_b = key[1],
+            param = param,
+            **kwargs,
+        )
+        
+        a_to_b, b_to_a = reader.get_mapping_tables()
+        
+        self.tables[key] = a_to_b
     
     
     def swissprots(self, uniprots, ncbi_tax_id = None):
