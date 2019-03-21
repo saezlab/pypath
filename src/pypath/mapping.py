@@ -77,6 +77,14 @@ MappingTableKey = collections.namedtuple(
 MappingTableKey.__new__.__defaults__ = ('protein', 9606)
 
 
+class DummySet():
+    
+    
+    def add(self, somehing):
+        
+        pass
+
+
 class MapReader(session.Logger):
     """
     Reads ID translation data and creates ``MappingTable`` instances.
@@ -91,8 +99,6 @@ class MapReader(session.Logger):
     
     def __init__(
             self,
-            id_type_a,
-            id_type_b,
             param,
             ncbi_tax_id = None,
             entity_type = None,
@@ -526,11 +532,17 @@ class MappingTable(session.Logger):
     def __init__(
             self,
             data,
+            name_type,
+            target_name_type,
+            ncbi_tax_id,
             lifetime = 30,
         ):
         
         session.Logger.__init__(self, name = 'mapping')
         
+        self.name_type = name_type
+        self.target_name_type = target_name_type
+        self.ncbi_tax_id = ncbi_tax_id
         self.data = data
         self.lifetime = lifetime
         self._used()
@@ -571,6 +583,16 @@ class MappingTable(session.Logger):
     def _expired(self):
         
         return time.time() - self._last_used > self.lifetime
+    
+    
+    @property
+    def key(self):
+        
+        return MappingTableKey(
+            name_type = self.name_type,
+            target_name_type = self.target_name_type,
+            ncbi_tax_id = self.ncbi_tax_id,
+        )
 
 
 class Mapper(session.Logger):
