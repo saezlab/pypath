@@ -77,14 +77,6 @@ MappingTableKey = collections.namedtuple(
 MappingTableKey.__new__.__defaults__ = ('protein', 9606)
 
 
-class DummySet():
-    
-    
-    def add(self, somehing):
-        
-        pass
-
-
 class MapReader(session.Logger):
     """
     Reads ID translation data and creates ``MappingTable`` instances.
@@ -102,6 +94,8 @@ class MapReader(session.Logger):
             param,
             ncbi_tax_id = None,
             entity_type = None,
+            load_a_to_b = True,
+            load_b_to_a = False,
             uniprots = None,
             lifetime = 300,
         ):
@@ -126,8 +120,10 @@ class MapReader(session.Logger):
         
         session.Logger.__init__(self, name = 'mapping')
         
-        self.id_type_a = id_type_a
-        self.id_type_b = id_type_b
+        self.id_type_a = param.id_type_a
+        self.id_type_b = param.id_type_b
+        self.load_a_to_b = load_a_to_b
+        self.load_b_to_a = load_b_to_a
         self.entity_type = entity_type
         self.source_type = param.type
         self.param = param
@@ -151,64 +147,90 @@ class MapReader(session.Logger):
         setattr(self, '__class__', new)
     
     
-    def get_mapping_tables(self):
+    @property
+    def mapping_table_a_to_b(self):
         """
-        Returns ``MappingTable`` instances created from the already
+        Returns a ``MappingTable`` instance created from the already
         loaded data.
         """
         
-        a_to_b = MappingTable(data = self.a_to_b, lifetime = self.lifetime)
-        b_to_a = (
-            MappingTable(data = self.b_to_a, lifetime = self.lifetime)
-                if self.param.bi_directional else
-            None
-        )
+        return self._get_mapping_table(self.a_to_b)
+    
+    
+    @property
+    def mapping_table_b_to_a(self):
+        """
+        Returns a ``MappingTable`` instance created from the already
+        loaded data.
+        """
         
-        return a_to_b, b_to_a
+        return self._get_mapping_table(self.b_to_a)
+    
+    
+    def _get_mapping_table(self, data):
+        
+        if data:
+            
+            return MappingTable(data = data, lifetime = self.lifetime)
     
     
     def load(self):
+        """
+        The complete process of loading mapping tables. First sets up the
+        paths of the cache files, then loads the tables from the cache files
+        or the original sources if necessary. Upon successful loading from an
+        original source writes the results to cache files.
+        """
         
         self.use_cache = settings.get('mapping_use_cache')
         self.setup_cache()
         
-        if self.use_cache and os.path.isfile(self.cachefile):
+        if self.use_cache:
             
             self.read_cache()
         
-        if (
-            not self.a_to_b or (
-                self.param.bi_directional and
-                not self.b_to_a
-            )
-        ):
+        if not self.tables_loaded():
             
             # read from the original source
             self.read()
             
-            # write cache only at successful loading
-            if (
-                self.a_to_b and (
-                    not self.param.bi_directional or
-                    self.b_to_a
-                )
-            ):
+            if self.tables_loaded():
                 
+                # write cache only at successful loading
                 self.write_cache()
+    
+    
+    def tables_loaded(self):
+        """
+        Tells if the requested tables have been created.
+        """
+        
+        return (
+            (self.a_to_b or not self.load_a_to_b) and
+            (self.b_to_a or not self.load_b_to_a)
+        )
     
     
     def write_cache(self):
         """
-        Exports the ID translation data into a pickle file.
+        Exports the ID translation data into pickle files.
         """
         
-        pickle.dump(
-            (
-                self.a_to_b,
-                self.b_to_a,
-            ),
-            open(self.cachefile, 'wb')
-        )
+        self._write_cache('a', 'b')
+        self._write_cache('b', 'a')
+    
+    
+    def _write_cache(self, *args):
+        
+        data = getattr(self, '%s_to_%s' % args)
+        
+        if self._to_be_loaded(*args) and data:
+            
+            cachefile = self._attr('cachefile', *args)
+            
+            self._remove_cache_file(*args)
+            
+            pickle.dump(data, open(cachefile, 'wb'))
     
     
     def read_cache(self):
@@ -216,20 +238,45 @@ class MapReader(session.Logger):
         Reads the ID translation data from a previously saved pickle file.
         """
         
-        self.a_to_b, self.b_to_a = pickle.load(open(self.cachefile, 'rb'))
+        self._read_cache('a', 'b')
+        self._read_cache('b', 'a')
+    
+    
+    def _read_cache(self, *args):
+        
+        if self._to_be_loaded(*args):
+            
+            cachefile = self._attr('cachefile', *args)
+            
+            if os.path.exists(cachefile):
+                
+                setattr(
+                    self,
+                    '%s_to_%s' % args,
+                    pickle.load(open(cachefile, 'rb')),
+                )
+    
+    
+    def _to_be_loaded(self, *args):
+        
+        return self._attr('load', *args)
+    
+    
+    def _attr(self, attr, *args):
+        
+        return getattr(self, self._attr_name(attr, *args))
+    
+    
+    @staticmethod
+    def _attr_name(attr, *args):
+        
+        return '%s_%s_to_%s' % ((attr,) + args)
     
     
     def read(self):
         """
         Reads the ID translation data from the original source.
         """
-        
-        if os.path.exists(self.cachefile):
-            
-            self._msg(
-                'Removing mapping table cache file `%s`.' % self.cachefile
-            )
-            os.remove(self.cachefile)
         
         if source_type == "file":
             
@@ -249,29 +296,77 @@ class MapReader(session.Logger):
         Constructs the cache file path as md5 hash of the parameters.
         """
         
-        self.mapping_id = common.md5(
+        self._setup_cache('a', 'b')
+        self._setup_cache('b', 'a')
+    
+    
+    def _setup_cache(self, *args):
+        
+        mapping_id_attr = self._attr_name('mapping_id', *args)
+        cachefile_attr  = self._attr_name('cachefile', *args)
+        
+        setattr(
+            self,
+            mapping_id_attr,
+            self._get_mapping_id(*args),
+        )
+        
+        setattr(
+            self,
+            cachefile_attr,
+            os.path.join(self.cachedir, getattr(self, mapping_id_attr)),
+        )
+    
+    
+    def _get_mapping_id(self, *args):
+        """
+        Returns an md5 checksum unambigously identifying the mapping table
+        by the identifiers, the direction of translation, the organism
+        and other parameters like, for example, the source URL.
+        """
+        
+        return common.md5(
             json.dumps(
                 (
-                    one,
-                    two,
-                    self.param.bi,
-                    ncbi_tax_id,
+                    getattr(self, 'id_type_%s' % args[0]),
+                    getattr(self, 'id_type_%s' % args[1]),
+                    self.ncbi_tax_id,
                     sorted(self.param.__dict__.items())
                 )
             )
         )
-        self.cachefile = os.path.join(self.cachedir, self.mapping_id)
     
     
-    def set_uniprot_space(self):
+    def _cache_files_exist(self):
         """
-        Sets up a search space of UniProt IDs.
+        Checks if both cache files are either not necessary or exist.
         """
         
-        self.uniprots = uniprot_input.all_uniprots(
-            self.ncbi_tax_id,
-            swissprot = param.swissprot,
+        return (
+            self.cache_file_exists('a', 'b') and
+            self.cache_file_exists('b', 'a')
         )
+    
+    
+    def _cache_file_exists(self, *args):
+        """
+        Checks if a cache file is either not necessary or exists.
+        """
+        
+        return (
+            not self._attr('load', *args) or
+            os.path.isfile(self._attr('cachefile', *args))
+        )
+    
+    
+    def _remove_cache_file(self, *args):
+        
+        cachefile = self._attr('cachefile', *args)
+        
+        if os.path.exists(cachefile):
+            
+            self._msg('Removing mapping table cache file `%s`.' % cachefile)
+            os.remove(cachefile)
     
     
     def read_mapping_file(self):
@@ -319,9 +414,12 @@ class MapReader(session.Logger):
             
             id_a = line[param.col_a]
             id_b = line[param.col_b]
-            a_to_b[id_a].add(id_b)
             
-            if param.bi_directional:
+            if self.load_a_to_b:
+                
+                a_to_b[id_a].add(id_b)
+            
+            if self.load_b_to_a:
                 
                 b_to_a[id_b].add(id_a)
         
@@ -329,8 +427,8 @@ class MapReader(session.Logger):
             
             infile.close()
         
-        self.a_to_b = a_to_b
-        self.b_to_a = b_to_a if self.param.bi_directional else None
+        self.a_to_b = a_to_b if self.load_a_to_b else None
+        self.b_to_a = b_to_a if self.load_b_to_a else None
     
     
     def read_mapping_uniprot_list(self):
@@ -370,14 +468,27 @@ class MapReader(session.Logger):
             
             l = l.strip().split('\t')
             
-            a_to_b[l[1]].add(l[0])
+            if self.load_a_to_b:
+                
+                a_to_b[l[1]].add(l[0])
 
-            if param.bi_directional:
+            if self.load_b_to_a:
                 
                 b_to_a[l[0]].add(l[1])
         
-        self.a_to_b = a_to_b
-        self.b_to_a = b_to_a if self.bi_directional else None
+        self.a_to_b = a_to_b if self.load_a_to_b else None
+        self.b_to_a = b_to_a if self.load_b_to_a else None
+    
+    
+    def set_uniprot_space(self):
+        """
+        Sets up a search space of UniProt IDs.
+        """
+        
+        self.uniprots = uniprot_input.all_uniprots(
+            self.ncbi_tax_id,
+            swissprot = param.swissprot,
+        )
     
     
     def _read_mapping_uniprot_list(self, id_type_a = None, ac_list = None):
@@ -485,25 +596,27 @@ class MapReader(session.Logger):
                 if l:
                     
                     l[1] = (
-                        self.process_protein_name(l[1][0])
+                        self._process_protein_name(l[1][0])
                             if param.field == 'protein names' else
                         l[1]
                     )
                     
                     for other in l[1]:
                         
-                        a_to_b[other].add(l[0][0])
+                        if self.load_a_to_b:
+                            
+                            a_to_b[other].add(l[0][0])
                         
-                        if param.bi_directional:
+                        if self.load_b_to_a:
                             
                             b_to_a[l[0][0]].add(other)
         
-        self.a_to_b = a_to_b
-        self.b_to_a = b_to_a if self.bi_directional else None
+        self.a_to_b = a_to_b if self.load_a_to_b else None
+        self.b_to_a = b_to_a if self.load_b_to_a else None
     
     
     @staticmethod
-    def process_protein_name(name):
+    def _process_protein_name(name):
         
         rebr = re.compile(r'\(([^\)]{3,})\)')
         resq = re.compile(r'\[([^\]]{3,})\]')

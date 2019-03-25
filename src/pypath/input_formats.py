@@ -33,14 +33,14 @@ class MappingInput(objet):
     def __init__(
             self,
             type_,
-            name_type_a,
-            name_type_b,
+            id_type_a,
+            id_type_b,
             ncbi_tax_id = None,
         ):
         
         self.type = type_
-        self.name_type_a = name_type_a
-        self.name_type_b = name_type_b
+        self.id_type_a = id_type_a
+        self.id_type_b = id_type_b
         self.ncbi_tax_id = ncbi_tax_id or settings.get('default_organism')
 
 
@@ -48,8 +48,8 @@ class FileMapping(MappingInput):
     
     def __init__(
             self,
-            name_type_a,
-            name_type_b,
+            id_type_a,
+            id_type_b,
             fname,
             col_a,
             col_b,
@@ -63,8 +63,8 @@ class FileMapping(MappingInput):
         MappingInput.__init__(
             self,
             type_ = 'file',
-            name_type_a = name_type_a,
-            name_type_b = name_type_b,
+            id_type_a = id_type_a,
+            id_type_b = id_type_b,
             ncbi_tax_id = ncbi_tax_id,
         )
         
@@ -94,7 +94,7 @@ class UniprotMapping(MappingInput):
 
     def __init__(
             self,
-            name_type,
+            id_type,
             bi_directional = False,
             ncbi_tax_id = 9606,
             swissprot = 'yes',
@@ -102,9 +102,9 @@ class UniprotMapping(MappingInput):
         '''
         Defines an ID conversion table to retrieve from UniProt.
 
-        @name_type : str
+        @id_type : str
             Type of accession numbers you would like to translate.
-        @target_name_type : str
+        @target_id_type : str
             Type of accession numbers you would like to translate to.
         @bi_directional : bool
             Build the mapping table only from original AC to target AC,
@@ -129,8 +129,8 @@ class UniprotMapping(MappingInput):
         MappingInput.__init__(
             self,
             type_ = 'file',
-            name_type_a = name_type_a,
-            name_type_b = name_type_b,
+            id_type_a = id_type_a,
+            id_type_b = id_type_b,
             ncbi_tax_id = ncbi_tax_id,
         )
         
@@ -138,12 +138,12 @@ class UniprotMapping(MappingInput):
         self.ncbi_tax_id = int(ncbi_tax_id)
         self.typ = 'protein'
         self.swissprot = swissprot
-        self.name_type = name_type
-        self.target_name_type = 'uniprot'
-        self.field = None if name_type not in ac_query \
-            else ac_query[name_type][0]
-        self.subfield = None if name_type not in ac_query \
-            else ac_query[name_type][1]
+        self.id_type = id_type
+        self.target_id_type = 'uniprot'
+        self.field = None if id_type not in ac_query \
+            else ac_query[id_type][0]
+        self.subfield = None if id_type not in ac_query \
+            else ac_query[id_type][1]
     
     
     def set_organism(self, ncbi_tax_id):
@@ -157,10 +157,10 @@ class UniprotListMapping(MappingInput):
 
     def __init__(
             self,
-            name_type_a,
-            name_type_b,
-            uniprot_name_type_a = None,
-            uniprot_name_type_b = None,
+            id_type_a,
+            id_type_b,
+            uniprot_id_type_a = None,
+            uniprot_id_type_b = None,
             ncbi_tax_id = 9606,
             swissprot = True,
         ):
@@ -168,15 +168,15 @@ class UniprotListMapping(MappingInput):
         Provides parameters for downloading mapping table from UniProt
         `Upload Lists` webservice.
         
-        :arg str name_type_a:
+        :arg str id_type_a:
             Custom name for one of the ID types.
-        :arg str name_type_a:
+        :arg str id_type_a:
             Custom name for the other ID type.
-        :arg str uniprot_name_type_a:
+        :arg str uniprot_id_type_a:
             This is the symbol the UniProt webservice uses for the first
             name type. These are included in the module and set
             automatically, the argument only gives a way to override this.
-        :arg str uniprot_name_type_b:
+        :arg str uniprot_id_type_b:
             Same as above just for the other ID type.
         :arg bool swissprot:
             DOwnload data only for SwissProt IDs.
@@ -185,19 +185,19 @@ class UniprotListMapping(MappingInput):
         MappingInput.__init__(
             self,
             type_ = 'uniprot_list',
-            name_type_a = name_type_a,
-            name_type_b = name_type_b,
+            id_type_a = id_type_a,
+            id_type_b = id_type_b,
             ncbi_tax_id = ncbi_tax_id,
         )
         
         self.swissprot = swissprot
         self.ac_mapping = ac_mapping
         
-        self.uniprot_name_type_a = (
-            self.uniprot_name_type_a or self.ac_mapping[self.name_type_a]
+        self.uniprot_id_type_a = (
+            self.uniprot_id_type_a or self.ac_mapping[self.id_type_a]
         )
-        self.uniprot_name_type_b = (
-            self.uniprot_name_type_b or self.ac_mapping[self.name_type_b]
+        self.uniprot_id_type_b = (
+            self.uniprot_id_type_b or self.ac_mapping[self.id_type_b]
         )
         
         self.entity_type = 'protein'
@@ -215,8 +215,8 @@ class PickleMapping(MappingInput):
     
     def __init__(
             self,
-            name_type_a,
-            name_type_b,
+            id_type_a,
+            id_type_b,
             fname,
             ncbi_tax_id = None,
         ):
@@ -224,8 +224,8 @@ class PickleMapping(MappingInput):
         MappingInput.__init__(
             self,
             type_ = 'pickle',
-            name_type_a = name_type_a,
-            name_type_b = name_type_b,
+            id_type_a = id_type_a,
+            id_type_b = id_type_b,
             ncbi_tax_id = ncbi_tax_id,
         )
         
@@ -241,8 +241,8 @@ class ReadSettings:
             separator = None,
             nameColA = 0,
             nameColB = 1,
-            name_typeA = "uniprot",
-            name_typeB = "uniprot",
+            id_typeA = "uniprot",
+            id_typeB = "uniprot",
             typeA = "protein",
             typeB = "protein",
             isDirected = False,
@@ -281,8 +281,8 @@ class ReadSettings:
         self.typeB = typeB
         self.nameColA = nameColA
         self.nameColB = nameColB
-        self.name_typeA = name_typeA
-        self.name_typeB = name_typeB
+        self.id_typeA = id_typeA
+        self.id_typeB = id_typeB
         self.isDirected = isDirected
         self.inFile = inFile
         self.extraEdgeAttrs = extraEdgeAttrs or {}
@@ -317,7 +317,7 @@ class ReadList:
             name = 'unknown',
             separator = None,
             name_col = 0,
-            name_type = 'uniprot',
+            id_type = 'uniprot',
             entity_type = 'protein',
             fname = None,
             extraAttrs = {},
@@ -326,7 +326,7 @@ class ReadList:
         
         self.enity_type = entity_type
         self.name_col = name_col
-        self.name_type = name_type
+        self.id_type = id_type
         self.fname = fname
         self.extraAttrs = extraAttrs
         self.name = name
