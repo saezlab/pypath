@@ -71,7 +71,7 @@ MappingTableKey = collections.namedtuple(
     [
         'id_type',
         'target_id_type',
-        'ncbi_tax_id'
+        'ncbi_tax_id',
     ],
 )
 MappingTableKey.__new__.__defaults__ = ('protein', 9606)
@@ -154,7 +154,7 @@ class MapReader(session.Logger):
         loaded data.
         """
         
-        return self._get_mapping_table(self.a_to_b)
+        return self._get_mapping_table('a', 'b')
     
     
     @property
@@ -164,14 +164,24 @@ class MapReader(session.Logger):
         loaded data.
         """
         
-        return self._get_mapping_table(self.b_to_a)
+        return self._get_mapping_table('b', 'a')
     
     
-    def _get_mapping_table(self, data):
+    def _get_mapping_table(self, *args):
+        
+        data = getattr(self, '%s_to_%s' % args)
+        id_type = getattr(self, 'id_type_%s' % args[0])
+        target_id_type = getattr(self, 'id_type_%s' % args[1])
         
         if data:
             
-            return MappingTable(data = data, lifetime = self.lifetime)
+            return MappingTable(
+                data = data,
+                id_type = id_type,
+                target_id_type = target_id_type,
+                ncbi_tax_id = self.ncbi_tax_id,
+                lifetime = self.lifetime,
+            )
     
     
     def load(self):
@@ -648,7 +658,7 @@ class MappingTable(session.Logger):
             id_type,
             target_id_type,
             ncbi_tax_id,
-            lifetime = 30,
+            lifetime = 300,
         ):
         
         session.Logger.__init__(self, name = 'mapping')
@@ -696,6 +706,15 @@ class MappingTable(session.Logger):
     def _expired(self):
         
         return time.time() - self._last_used > self.lifetime
+    
+    
+    def get_key(self):
+        
+        return MappingTableKey(
+            id_type = self.id_type,
+            target_id_type = self.target_id_type,
+            ncbi_tax_id = self.ncbi_tax_id,
+        )
     
     
     @property
@@ -837,24 +856,31 @@ class Mapper(session.Logger):
                 if id_types in resources:
                     
                     resource = resources[id_types]
+                    load_a_to_b = True
+                    load_b_to_a = False
                     
                 elif id_types_rev in resources:
                     
-                    resource = copy.deepcopy(resources[id_types_rev])
-                    resource.bi_directional = True
+                    resource = resources[id_types_rev]
+                    load_a_to_b = False
+                    load_b_to_a = True
                 
                 if resource:
                     
                     self.load_mapping(
-                        maplst = {id_types: resources[id_types]},
+                        resource = resource,
+                        load_a_to_b = load_a_to_b,
+                        load_b_to_a = load_b_to_a,
                         ncbi_tax_id = ncbi_tax_id,
                     )
+                    
                     tbl = self.which_table(
                         id_type = id_type,
                         target_id_type = target_id_type,
                         load = False,
                         ncbi_tax_id = ncbi_tax_id,
                     )
+                    
                     break
                 
                 if tbl is not None:
@@ -863,7 +889,10 @@ class Mapper(session.Logger):
             
             if tbl is None:
                 
-                if id_type in self.uniprot_list_names:
+                if (
+                    id_type in input_formats.ac_mapping and
+                    target_id_type in input_formats.ac_mapping
+                ):
                     
                     # for uniprot/uploadlists
                     # we create here the mapping params
@@ -874,16 +903,14 @@ class Mapper(session.Logger):
                     )
                     
                     reader = MapReader(
-                        id_type_a,
-                        id_type_b,
-                        source_type = 'uniprotlist',
                         param = this_param,
+                        source_type = 'uniprotlist',
                         ncbi_tax_id = ncbi_tax_id,
                         uniprots = None,
                         lifetime = 300,
                     )
                     
-                    self.tables[tbl_key] = reader.
+                    self.tables[tbl_key] = reader.mapping_table_a_to_b
                 
                 tbl = self.which_table(
                     id_type = id_type,
@@ -904,6 +931,10 @@ class Mapper(session.Logger):
                         load = False,
                         ncbi_tax_id = ncbi_tax_id,
                     )
+        
+        if hasattr(tbl, '_used'):
+            
+            tbl._used()
         
         return tbl
     
@@ -1420,23 +1451,22 @@ class Mapper(session.Logger):
                             (str(map_name), param.__class__.__name__))
     
     
-    
-    def load_mapping(self, key, param, **kwargs):
+    def load_mapping(
+            self,
+            param,
+            **kwargs,
+        ):
         """
         Loads a single mapping table based on input definition in ``param``.
         ``**kwargs`` passed to ``MapReader``.
         """
-        
-        if ncbi_tax_id:
-            
-            # this returns a copy with different organism
-            param = param.set_organism(ncbi_tax_id)
         
         if (
             param.type in {'file', 'pickle'} and
             not (
                 os.path.exists(param.fname) or
                 hasattr(mapping_input, param.fname)
+            )
         ):
             
             self._msg(
@@ -1445,20 +1475,36 @@ class Mapper(session.Logger):
             )
             return
         
-        self._msg(
-            'Loading `%s` to `%s` mapping table for organism `%u`.' % key
-        )
+
         
-        reader = MapReader(
-            id_type_a = key[0],
-            id_type_b = key[1],
-            param = param,
-            **kwargs,
-        )
+        reader = MapReader(param = param, **kwargs)
         
-        a_to_b, b_to_a = reader.get_mapping_tables()
+        a_to_b = reader.mapping_table_a_to_b
+        b_to_a = reader.mapping_table_b_to_a
         
-        self.tables[key] = a_to_b
+        if a_to_b:
+            
+            self._msg(
+                '`%s` to `%s` mapping table for organism `%s` '
+                'successfully loaded.' % (
+                    param.id_type_a,
+                    param.id_type_b,
+                    str(param.ncbi_tax_id),
+                )
+            )
+            self.tables[a_to_b.get_key()] = a_to_b
+        
+        if b_to_a:
+            
+            self._msg(
+                '`%s` to `%s` mapping table for organism `%s` '
+                'successfully loaded.' % (
+                    param.id_type_b,
+                    param.id_type_a,
+                    str(param.ncbi_tax_id),
+                )
+            )
+            self.tables[b_to_a.get_key()] = b_to_a
     
     
     def swissprots(self, uniprots, ncbi_tax_id = None):
@@ -1482,32 +1528,43 @@ class Mapper(session.Logger):
         return swissprots
     
     
-    def genesymbol5(self, ncbi_tax_id = None):
+    def load_genesymbol5(self, ncbi_tax_id = None):
         
-        ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+        
         tables = self.tables[ncbi_tax_id]
-        tables[('genesymbol5', 'uniprot')] = MappingTable(
-            'genesymbol5',
-            'uniprot',
-            'protein',
-            'genesymbol5',
-            None,
-            ncbi_tax_id,
-            None,
-            log=self.ownlog)
-        tbl_gs5 = tables[('genesymbol5', 'uniprot')].mapping['to']
-        tbls = [
-            tables[('genesymbol', 'uniprot')].mapping['to'],
-            tables[('genesymbol-syn', 'swissprot')].mapping['to']
-        ]
-        for tbl in tbls:
-            for gs, u in iteritems(tbl):
-                if len(gs) >= 5:
-                    gs5 = gs[:5]
-                    if gs5 not in tbl_gs5:
-                        tbl_gs5[gs5] = []
-                    tbl_gs5[gs5] += u
-        tables[('genesymbol5', 'uniprot')].mapping['to'] = tbl_gs5
+        
+        genesymbol_table = self.which_table(
+            id_type = 'genesymbol',
+            target_id_type = 'uniprot',
+            ncbi_tax_id = ncbi_tax_id,
+        )
+        genesymbol_syn_table = self.which_table(
+            id_type = 'genesymbol-syn',
+            target_id_type = 'uniprot',
+            ncbi_tax_id = ncbi_tax_id,
+        )
+        
+        genesymbol5_data = collections.defaultdict(set)
+        
+        for table in (genesymbol_table, genesymbol_syn_table):
+            
+            for genesymbol, uniprots in iteritems(table.data):
+                
+                if len(genesymbol) >= 5:
+                    
+                    genesymbol5 = genesymbol[:5]
+                    
+                    genesymbol5_data[genesymbol5].update(uniprots)
+        
+        mapping_table = MappingTable(
+            id_type = 'genesymbol5',
+            target_id_type = 'uniprot',
+            ncbi_tax_id = ncbi_tax_id,
+            data = genesymbol5_data,
+        )
+        
+        self.tables[mapping_table.get_key()] = mapping_table
     
     
     def load_uniprot_mappings(self, ac_types=None, bi=False,
