@@ -69,8 +69,8 @@ from UniProt, file, mysql or pickle.
 MappingTableKey = collections.namedtuple(
     'MappingTableKey',
     [
-        'name_type',
-        'target_name_type',
+        'id_type',
+        'target_id_type',
         'ncbi_tax_id'
     ],
 )
@@ -444,7 +444,7 @@ class MapReader(session.Logger):
             
             self.set_uniprot_space()
         
-        if param.target_name_type != 'uniprot':
+        if param.target_id_type != 'uniprot':
             
             u_target = self._read_mapping_uniprot_list('ACC')
             
@@ -645,16 +645,16 @@ class MappingTable(session.Logger):
     def __init__(
             self,
             data,
-            name_type,
-            target_name_type,
+            id_type,
+            target_id_type,
             ncbi_tax_id,
             lifetime = 30,
         ):
         
         session.Logger.__init__(self, name = 'mapping')
         
-        self.name_type = name_type
-        self.target_name_type = target_name_type
+        self.id_type = id_type
+        self.target_id_type = target_id_type
         self.ncbi_tax_id = ncbi_tax_id
         self.data = data
         self.lifetime = lifetime
@@ -702,14 +702,15 @@ class MappingTable(session.Logger):
     def key(self):
         
         return MappingTableKey(
-            name_type = self.name_type,
-            target_name_type = self.target_name_type,
+            id_type = self.id_type,
+            target_id_type = self.target_id_type,
             ncbi_tax_id = self.ncbi_tax_id,
         )
 
 
 class Mapper(session.Logger):
-
+    
+    
     def __init__(
             self,
             ncbi_tax_id = None,
@@ -768,8 +769,8 @@ class Mapper(session.Logger):
     
     def get_table_key(
             self,
-            name_type,
-            target_name_type,
+            id_type,
+            target_id_type,
             ncbi_tax_id = None,
         ):
         """
@@ -779,22 +780,22 @@ class Mapper(session.Logger):
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
         
         return MappingTableKey(
-            name_type = name_type,
-            target_name_type = target_name_type,
+            id_type = id_type,
+            target_id_type = target_id_type,
             ncbi_tax_id = ncbi_tax_id,
         )
     
     
     def which_table(
             self,
-            name_type,
-            target_name_type,
+            id_type,
+            target_id_type,
             load = True,
             ncbi_tax_id = None,
         ):
         """
         Returns the table which is suitable to convert an ID of
-        name_type to target_name_type. If no such table have been loaded
+        id_type to target_id_type. If no such table have been loaded
         yet, it attempts to load from UniProt. If all attempts failed
         returns `None`.
         """
@@ -803,14 +804,14 @@ class Mapper(session.Logger):
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
         
         tbl_key = self.get_table_key(
-            name_type = name_type,
-            target_name_type = target_name_type,
+            id_type = id_type,
+            target_id_type = target_id_type,
             ncbi_tax_id = ncbi_tax_id,
         )
         
         tbl_key_rev = self.get_table_key(
-            target_name_type = target_name_type,
-            name_type = name_type,
+            target_id_type = target_id_type,
+            id_type = id_type,
             ncbi_tax_id = ncbi_tax_id,
         )
         
@@ -825,32 +826,32 @@ class Mapper(session.Logger):
             
         elif load:
             
-            name_types = (name_type, target_name_type)
-            name_types_rev = tuple(reversed(name_types))
+            id_types = (id_type, target_id_type)
+            id_types_rev = tuple(reversed(id_types))
             resource = None
             
             for resource_attr in ['uniprot', 'misc', 'mirbase']:
                 
                 resources = getattr(maps, resource_attr)
                 
-                if name_types in resources:
+                if id_types in resources:
                     
-                    resource = resources[name_types]
+                    resource = resources[id_types]
                     
-                elif name_types_rev in resources:
+                elif id_types_rev in resources:
                     
-                    resource = copy.deepcopy(resources[name_types_rev])
+                    resource = copy.deepcopy(resources[id_types_rev])
                     resource.bi_directional = True
                 
                 if resource:
                     
                     self.load_mapping(
-                        maplst = {name_types: resources[name_types]},
+                        maplst = {id_types: resources[id_types]},
                         ncbi_tax_id = ncbi_tax_id,
                     )
                     tbl = self.which_table(
-                        name_type = name_type,
-                        target_name_type = target_name_type,
+                        id_type = id_type,
+                        target_id_type = target_id_type,
                         load = False,
                         ncbi_tax_id = ncbi_tax_id,
                     )
@@ -862,13 +863,13 @@ class Mapper(session.Logger):
             
             if tbl is None:
                 
-                if name_type in self.uniprot_list_names:
+                if id_type in self.uniprot_list_names:
                     
                     # for uniprot/uploadlists
                     # we create here the mapping params
                     this_param = input_formats.UniprotListMapping(
-                        name_type = name_type,
-                        target_name_type = target_name_type,
+                        id_type = id_type,
+                        target_id_type = target_id_type,
                         ncbi_tax_id = ncbi_tax_id,
                     )
                     
@@ -885,21 +886,21 @@ class Mapper(session.Logger):
                     self.tables[tbl_key] = reader.
                 
                 tbl = self.which_table(
-                    name_type = name_type,
-                    target_name_type = target_name_type,
+                    id_type = id_type,
+                    target_id_type = target_id_type,
                     load = False,
                     ncbi_tax_id = ncbi_tax_id,
                 )
             
             if tbl is None:
                 
-                if name_type in self.uniprot_list_names:
+                if id_type in self.uniprot_list_names:
                     
-                    self.load_uniprot_mappings([name_type])
+                    self.load_uniprot_mappings([id_type])
                     
                     tbl = self.which_table(
-                        name_type = name_type,
-                        target_name_type = target_name_type,
+                        id_type = id_type,
+                        target_id_type = target_id_type,
                         load = False,
                         ncbi_tax_id = ncbi_tax_id,
                     )
@@ -921,15 +922,15 @@ class Mapper(session.Logger):
     def reverse_key(self, key):
         
         self.get_table_key(
-            name_type = key.target_name_type,
-            target_name_type = key.name_type,
+            id_type = key.target_id_type,
+            target_id_type = key.id_type,
             ncbi_tax_id = key.ncbi_tax_id,
         )
     
     
     def create_reverse(self, key):
         """
-        Creates a mapping table with ``name_type`` and ``target_name_type``
+        Creates a mapping table with ``id_type`` and ``target_id_type``
         (i.e. direction of the ID translation) swapped.
         """
         
@@ -942,8 +943,8 @@ class Mapper(session.Logger):
     def map_name(
             self,
             name,
-            name_type = None,
-            target_name_type = None,
+            id_type = None,
+            target_id_type = None,
             ncbi_tax_id = None,
             strict = False,
             silent = True,
@@ -974,7 +975,7 @@ class Mapper(session.Logger):
         
         name : str
             The original name to be converted.
-        name_type : str
+        id_type : str
             The type of the name.
             Available by default:
             - genesymbol (gene name)
@@ -989,41 +990,41 @@ class Mapper(session.Logger):
             - embl_id (DDBJ/EMBL/GeneBank accession)
             To use other IDs, you need to define the input method
             and load the table before calling :py:func:Mapper.map_name().
-        target_name_type : str
+        target_id_type : str
             The name type to translate to, more or less the same values
-            are available as for ``name_type``.
+            are available as for ``id_type``.
         nameType : str
-            Deprecated. Synonym for ``name_type`` for backwards compatibility.
+            Deprecated. Synonym for ``id_type`` for backwards compatibility.
         targetNameType : str
-            Deprecated. Synonym for ``target_name_type``
+            Deprecated. Synonym for ``target_id_type``
             for backwards compatibility.
         """
         
-        name_type = name_type or nameType
-        target_name_type = target_name_type or targetNameType
+        id_type = id_type or nameType
+        target_id_type = target_id_type or targetNameType
         
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
         
         # we support translating from more name types
         # at the same time
-        if isinstance(name_type, (list, set, tuple)):
+        if isinstance(id_type, (list, set, tuple)):
             
             return set.union(
                 self.map_name(
                     name = name,
-                    name_type = this_name_type,
-                    target_name_type = target_name_type,
+                    id_type = this_id_type,
+                    target_id_type = target_id_type,
                     strict = strict,
                     silent = silent,
                     ncbi_tax_id = ncbi_tax_id,
                 )
-                for this_name_type in name_type
+                for this_id_type in id_type
             )
         
         # translating from an ID type to the same ID type?
-        if name_type == target_name_type:
+        if id_type == target_id_type:
             
-            if target_name_type != 'uniprot':
+            if target_id_type != 'uniprot':
                 
                 # no need for translation
                 return {name}
@@ -1034,13 +1035,13 @@ class Mapper(session.Logger):
                 mapped_names = {name}
             
         # actual translation comes here
-        elif name_type.startswith('refseq'):
+        elif id_type.startswith('refseq'):
             
             # RefSeq is special
             mapped_names = self._map_refseq(
                 name = name,
-                name_type = name_type,
-                target_name_type = target_name_type,
+                id_type = id_type,
+                target_id_type = target_id_type,
                 ncbi_tax_id = ncbi_tax_id,
                 strict = strict,
             )
@@ -1050,8 +1051,8 @@ class Mapper(session.Logger):
             # all the other ID types
             mapped_names = self._map_name(
                 name = name,
-                name_type = name_type,
-                target_name_type = target_name_type,
+                id_type = id_type,
+                target_id_type = target_id_type,
                 ncbi_tax_id = ncbi_tax_id,
                 strict = strict,
                 name,
@@ -1064,34 +1065,34 @@ class Mapper(session.Logger):
             # maybe it's all uppercase (e.g. human gene symbols)?
             mapped_names = self._map_name(
                 name = name.upper(),
-                name_type = name_type,
-                target_name_type = target_name_type,
+                id_type = id_type,
+                target_id_type = target_id_type,
                 ncbi_tax_id = ncbi_tax_id,
             )
         
         if (
             not mapped_names and
-            name_type not in {'uniprot', 'trembl', 'uniprot-sec'}
+            id_type not in {'uniprot', 'trembl', 'uniprot-sec'}
         ):
             
             # maybe it's capitalized (e.g. rodent gene symbols)?
             mapped_names = self._map_name(
                 name = name.capitalize(),
-                name_type = name_type,
-                target_name_type = target_name_type,
+                id_type = id_type,
+                target_id_type = target_id_type,
                 ncbi_tax_id = ncbi_tax_id,
             )
         
         if (
             not mapped_names and
-            name_type not in {'uniprot', 'trembl', 'uniprot-sec'}
+            id_type not in {'uniprot', 'trembl', 'uniprot-sec'}
         ):
             
             # maybe it's all lowercase?
             mapped_names = self._map_name(
                 name = name.lower(),
-                name_type = name_type,
-                target_name_type = target_name_type,
+                id_type = id_type,
+                target_id_type = target_id_type,
                 ncbi_tax_id = ncbi_tax_id,
             )
         
@@ -1100,13 +1101,13 @@ class Mapper(session.Logger):
         # in next step we try the secondary (synonym) gene symbols
         if (
             not mapped_names and
-            name_type == 'genesymbol'
+            id_type == 'genesymbol'
         ):
             
             mapped_names = self._map_name(
                 name = name,
-                name_type = 'genesymbol-syn',
-                target_name_type = target_name_type,
+                id_type = 'genesymbol-syn',
+                target_id_type = target_id_type,
                 ncbi_tax_id = ncbi_tax_id,
             )
             
@@ -1127,8 +1128,8 @@ class Mapper(session.Logger):
                 
                 mapped_names = self._map_name(
                     name = '%s1' % name,
-                    name_type = 'genesymbol',
-                    target_name_type = target_name_type,
+                    id_type = 'genesymbol',
+                    target_id_type = target_id_type,
                     ncbi_tax_id = ncbi_tax_id,
                 )
                 
@@ -1136,25 +1137,25 @@ class Mapper(session.Logger):
                     
                     mapped_names = self._map_name(
                         name = name,
-                        name_type = 'genesymbol5',
-                        target_name_type = target_name_type,
+                        id_type = 'genesymbol5',
+                        target_id_type = target_id_type,
                         ncbi_tax_id = ncbi_tax_id,
                     )
         
         # for miRNAs if the translation from mature miRNA name failed
         # we still try if maybe it is a hairpin name
-        if not mapped_names and name_type == 'mir-mat-name':
+        if not mapped_names and id_type == 'mir-mat-name':
             
             mapped_names = self._map_name(
                 name = name,
-                name_type = 'mir-name',
-                target_name_type = target_name_type,
+                id_type = 'mir-name',
+                target_id_type = target_id_type,
                 ncbi_tax_id = ncbi_tax_id,
             )
         
         # for UniProt IDs we do one more step:
         # try to find out the primary SwissProt ID
-        if target_name_type == 'uniprot':
+        if target_id_type == 'uniprot':
             
             orig = mapped_names
             mapped_names = self.primary_uniprot(mapped_names)
@@ -1179,8 +1180,8 @@ class Mapper(session.Logger):
     def map_names(
             self,
             names,
-            name_type = None,
-            target_name_type = None,
+            id_type = None,
+            target_id_type = None,
             ncbi_tax_id = None,
             strict = False,
             silent = True,
@@ -1194,8 +1195,8 @@ class Mapper(session.Logger):
         return set.union(
             self.map_name(
                 name = name,
-                name_type = name_type,
-                target_name_type = target_name_type,
+                id_type = id_type,
+                target_id_type = target_id_type,
                 ncbi_tax_id = ncbi_tax_id,
                 strict = strict,
                 silent = silent,
@@ -1209,8 +1210,8 @@ class Mapper(session.Logger):
     def _map_refseq(
             self,
             refseq,
-            name_type,
-            target_name_type,
+            id_type,
+            target_id_type,
             ncbi_tax_id = None,
             strict = False,
         ):
@@ -1224,8 +1225,8 @@ class Mapper(session.Logger):
         # try first as it is
         mapped_names = self._map_name(
             refseq = refseq,
-            name_type = name_type,
-            target_name_type = target_name_type,
+            id_type = id_type,
+            target_id_type = target_id_type,
             ncbi_tax_id = ncbi_tax_id,
         )
         
@@ -1235,8 +1236,8 @@ class Mapper(session.Logger):
             
             mapped_names = self._map_name(
                 name = refseq.split('.')[0],
-                name_type = name_type,
-                target_name_type = target_name_type,
+                id_type = id_type,
+                target_id_type = target_id_type,
                 ncbi_tax_id = ncbi_tax_id,
             )
         
@@ -1251,8 +1252,8 @@ class Mapper(session.Logger):
                 mapped_names.update(
                     self._map_name(
                         name = '%s.%u' % (rstem, n),
-                        name_type = name_type,
-                        target_name_type = target_name_type,
+                        id_type = id_type,
+                        target_id_type = target_id_type,
                         ncbi_tax_id = ncbi_tax_id,
                     )
                 )
@@ -1263,8 +1264,8 @@ class Mapper(session.Logger):
     def _map_name(
             self,
             name,
-            name_type,
-            target_name_type,
+            id_type,
+            target_id_type,
             ncbi_tax_id = None,
         ):
         """
@@ -1275,8 +1276,8 @@ class Mapper(session.Logger):
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
         
         tbl = self.which_table(
-            name_type,
-            target_name_type,
+            id_type,
+            target_id_type,
             ncbi_tax_id = ncbi_tax_id
         )
         
@@ -1294,8 +1295,8 @@ class Mapper(session.Logger):
             
             primary = self.map_name(
                 name = uniprot,
-                name_type = 'uniprot-sec',
-                target_name_type = 'uniprot-pri',
+                id_type = 'uniprot-sec',
+                target_id_type = 'uniprot-pri',
                 ncbi_tax_id = 0,
             )
             
@@ -1326,8 +1327,8 @@ class Mapper(session.Logger):
             swissprot = []
             genesymbols = self.map_name(
                 name = uniprot,
-                name_type = 'trembl',
-                target_name_type = 'genesymbol',
+                id_type = 'trembl',
+                target_id_type = 'genesymbol',
                 ncbi_tax_id = ncbi_tax_id
             )
             
@@ -1335,8 +1336,8 @@ class Mapper(session.Logger):
                 
                 swissprot = self.map_name(
                     name = genesymbol,
-                    name_type = 'genesymbol',
-                    target_name_type = 'swissprotissprot',
+                    id_type = 'genesymbol',
+                    target_id_type = 'swissprotissprot',
                     ncbi_tax_id = ncbi_tax_id
                 )
             
@@ -1353,16 +1354,16 @@ class Mapper(session.Logger):
     
     def has_mapping_table(
             self,
-            name_type,
-            target_name_type,
+            id_type,
+            target_id_type,
             ncbi_tax_id = None,
         ):
         
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
         
         key = self.get_table_key(
-            name_type = name_type,
-            target_name_type = target_name_type,
+            id_type = id_type,
+            target_id_type = target_id_type,
             ncbi_tax_id = ncbi_tax_id,
         )
         
@@ -1473,8 +1474,8 @@ class Mapper(session.Logger):
             
             swissprots[uniprot] = self.map_name(
                 name = uniprot,
-                name_type = 'uniprot',
-                target_name_type = 'uniprot',
+                id_type = 'uniprot',
+                target_id_type = 'uniprot',
                 ncbi_tax_id = ncbi_tax_id,
             )
         
@@ -1514,7 +1515,7 @@ class Mapper(session.Logger):
 
         ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
         tables = self.tables[ncbi_tax_id]
-        ac_types = ac_types if ac_types is not None else self.name_types.keys()
+        ac_types = ac_types if ac_types is not None else self.id_types.keys()
         # creating empty MappingTable objects:
         for ac_typ in ac_types:
             tables[(ac_typ, 'uniprot')] = MappingTable(
@@ -1547,7 +1548,7 @@ class Mapper(session.Logger):
                 prg.step(len(l))
                 l = l.decode('ascii').strip().split('\t')
                 for ac_typ in ac_types:
-                    if len(l) > 2 and self.name_types[ac_typ] == l[1]:
+                    if len(l) > 2 and self.id_types[ac_typ] == l[1]:
                         other = l[2].split('.')[0]
                         if l[2] not in tables[(ac_typ, 'uniprot'
                                                     )].mapping['to']:
@@ -1636,8 +1637,8 @@ def init():
 
 def map_name(
         name,
-        name_type,
-        target_name_type,
+        id_type,
+        target_id_type,
         ncbi_tax_id = None,
         strict = False,
         silent = True
@@ -1647,8 +1648,8 @@ def map_name(
     
     return mapper.map_name(
         name = name,
-        name_type = name_type,
-        target_name_type = target_name_type,
+        id_type = id_type,
+        target_id_type = target_id_type,
         ncbi_tax_id = ncbi_tax_id,
         strict = strict,
         silent = silent,
@@ -1666,24 +1667,24 @@ def get_mapper():
 
 def map_names(
         names,
-        name_type = None,
-        target_name_type = None,
+        id_type = None,
+        target_id_type = None,
         ncbi_tax_id = None,
         strict = False,
         silent = True,
-        name_type = None,
-        target_name_type = None,
+        id_type = None,
+        target_id_type = None,
     ):
     
     mapper = get_mapper()
     
     return mapper.map_names(
         names = names,
-        name_type = name_type,
-        target_name_type = target_name_type,
+        id_type = id_type,
+        target_id_type = target_id_type,
         ncbi_tax_id = ncbi_tax_id,
         strict = strict,
         silent = silent,
-        name_type = name_type,
-        target_name_type = target_name_type,
+        id_type = id_type,
+        target_id_type = target_id_type,
     )
