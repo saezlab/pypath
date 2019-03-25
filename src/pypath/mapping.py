@@ -1424,52 +1424,6 @@ class Mapper(session.Logger):
         return key in self.tables
     
     
-    def load_mapp ings(
-            self,
-            inputs = None,
-            ncbi_tax_id = None,
-        ):
-        """
-        :arg inputs:
-            A list of mapping input defeinitions. Elements of `inputs`
-            are dicts containing the ID names, molecule type, and
-            preferred source e.g. ``{"one": "uniprot", "two": "refseq",
-            "typ": "protein", "src": "mysql",
-            "par": "mysql_param/file_param"}``.
-            By default loaded from pickle files.
-        """
-        
-        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
-        
-        inputs = inputs or maps.misc
-        
-        self._msg('Loading mapping tables')
-        
-        for map_name, param in iteritems(inputs):
-            
-
-            tables[map_name] = \
-                MappingTable(
-                    map_name[0],
-                    map_name[1],
-                    param.typ,
-                    typ.replace('Mapping', '').lower(),
-                    param,
-                    ncbi_tax_id,
-                    mysql=self.mysql,
-                    log=self.ownlog,
-                    cache=self.cache,
-                    cachedir=self.cachedir
-                )
-
-            if ('genesymbol', 'uniprot') in tables \
-                and ('genesymbol-syn', 'swissprot') in tables \
-                and ('genesymbol5', 'uniprot') not in tables:
-                self.genesymbol5(param.ncbi_tax_id)
-            self._msg(2, "Table %s loaded from %s." %
-                            (str(map_name), param.__class__.__name__))
-    
-    
     def load_mapping(
             self,
             param,
