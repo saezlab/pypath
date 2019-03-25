@@ -44,6 +44,9 @@ _defaults = {
     'log_verbosity': 0,
     # log flush time interval in seconds
     'log_flush_interval': 2,
+    # check for expired mapping tables and delete them
+    # (period in seconds)
+    'mapper_cleanup_interval': 60,
     'data_basedir': None,
     'acsn_names': 'acsn_names.gmt',
     'alzpw_ppi': 'alzpw-ppi.csv',

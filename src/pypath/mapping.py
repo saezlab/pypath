@@ -61,12 +61,16 @@ import pypath.settings as settings
 import pypath.session as session
 _logger = session.get_logger()
 
+
 __all__ = ['MapReader', 'MappingTable', 'Mapper']
 
 """
 Classes for reading and use serving ID mapping data
 from UniProt, file, mysql or pickle.
 """
+
+
+_mapper_cleanup_timeloop = timeloop.Timeloop()
 
 
 MappingTableKey = collections.namedtuple(
@@ -749,6 +753,17 @@ class Mapper(session.Logger):
         """
         
         session.Logger.__init__(self, name = 'mapping')
+        
+        
+        @_mapper_cleanup_timeloop.job(
+            interval = datetime.timedelta(
+                seconds = settings.get('mapper_cleanup_interval')
+            )
+        )
+        def _cleanup():
+            
+            self.remove_expired()
+        
         
         self.reuniprot = re.compile(
             r'[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]'
