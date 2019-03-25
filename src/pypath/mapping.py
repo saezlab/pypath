@@ -758,7 +758,7 @@ class Mapper(session.Logger):
         self.data = {}
         self.uniprot_mapped = []
         self.trace = []
-        self.uniprot_list_names = {
+        self.uniprot_static_names = {
             'uniprot_id': 'UniProtKB-ID',
             'embl': 'EMBL-CDS',
             'embl_id': 'EMBL',
@@ -921,9 +921,9 @@ class Mapper(session.Logger):
             
             if tbl is None:
                 
-                if id_type in self.uniprot_list_names:
+                if id_type in self.uniprot_static_names:
                     
-                    self.load_uniprot_mappings([id_type])
+                    self.load_uniprot_static([id_type])
                     
                     tbl = self.which_table(
                         id_type = id_type,
@@ -1529,6 +1529,10 @@ class Mapper(session.Logger):
     
     
     def load_genesymbol5(self, ncbi_tax_id = None):
+        """
+        Creates a Gene Symbol to UniProt mapping table with the first
+        5 characters of each Gene Symbol.
+        """
         
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
         
@@ -1558,20 +1562,24 @@ class Mapper(session.Logger):
                     genesymbol5_data[genesymbol5].update(uniprots)
         
         mapping_table = MappingTable(
+            data = genesymbol5_data,
             id_type = 'genesymbol5',
             target_id_type = 'uniprot',
             ncbi_tax_id = ncbi_tax_id,
-            data = genesymbol5_data,
         )
         
         self.tables[mapping_table.get_key()] = mapping_table
     
     
-    def load_uniprot_mappings(self, ac_types=None, bi=False,
-                              ncbi_tax_id = None):
+    def load_uniprot_static(
+            self,
+            ac_types = None,
+            bi = False,
+            ncbi_tax_id = None,
+        ):
 
-        ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
-        tables = self.tables[ncbi_tax_id]
+        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+        
         ac_types = ac_types if ac_types is not None else self.id_types.keys()
         # creating empty MappingTable objects:
         for ac_typ in ac_types:
@@ -1630,61 +1638,46 @@ class Mapper(session.Logger):
                                 open(cachefile, 'wb'))
     
     
-    def save_all_mappings(self):
+    def remove_table(self, id_type, target_id_type, ncbi_tax_id):
+        """
+        Removes the table defined by the ID types and organism.
+        """
         
-        self._msg(1, "Saving all mapping tables...")
-        for ncbi_tax_id in self.tables:
-            for table in self.tables[ncbi_tax_id]:
-                self._msg(2, "Saving table %s ..." % table[0])
-                param = mapping.pickleMapping(table)
-                self.tables[m].save_mapping_pickle(param)
-                self._msg(2, "Table %s has been written to %s.pickle." %
-                                (m, param.pickleFile))
+        key = MappingTableKey(
+            id_type = id_type,
+            target_id_type = target_id_type,
+            ncbi_tax_id = ncbi_tax_id,
+        )
+        
+        self.remove_key(key)
     
     
-    def load_uniprot_mapping(self, filename, ncbi_tax_id = None):
+    def remove_key(self, key):
         """
-        This is a wrapper to load a ... mapping table.
+        Removes the table with key ``key`` if exists.
         """
-
-        ncbi_tax_id = self.get_tax_id(ncbi_tax_id)
-        tables = self.tables[ncbi_tax_id]
-        umap = self.read_mapping_uniprot(filename, ncbi_tax_id,
-                                         self.ownlog)
-        for key, value in iteritems(umap):
-            tables[key] = value
+        
+        if key in self.tables:
+            
+            del self.tables[key]
     
     
-    def read_mapping_uniprot_mysql(self, filename, ncbi_tax_id, log, bi=False):
-        if not os.path.isfile(filename):
-            self._msg(2, "No such file %s in read_mapping_uniprot()" %
-                            (param, 'ERROR'))
-        infile = codecs.open(filename, encoding='utf-8', mode='r')
-        umap = {}
-        self._msg(2, "Loading UniProt mapping table from file %s" %
-                        filename)
-        for line in infile:
-            if len(line) == 0:
-                continue
-            line = line.split()
-            one = line[1].lower().replace("_", "-")
-            uniprot = line[0]
-            other = line[2]
-            mapTableName = one + "_uniprot"
-            if mapTableName not in umap:
-                umap[mapTableName] = mappingTable(one, "uniprot", "protein",
-                                                  "uniprot", None, None,
-                                                  ncbi_tax_id, log)
-            if other not in umap[mapTableName].mapping["to"]:
-                umap[mapTableName].mapping["to"][other] = []
-            umap[mapTableName].mapping["to"][other].append(uniprot)
-            if bi:
-                if uniprot not in umap[mapTableName].mapping["from"]:
-                    umap[mapTableName].mapping["from"][uniprot] = []
-                umap[mapTableName].mapping["from"][uniprot].append(other)
-        self._msg(2, "%u mapping tables from UniProt has been loaded" %
-                        len(umap))
-        return umap
+    def remove_expired(self):
+        """
+        Removes tables last used a longer time ago than their lifetime.
+        """
+        
+        to_remove = set()
+        
+        for key, table in iteritems(self.tables):
+            
+            if table._expired():
+                
+                to_remove.add(key)
+        
+        for key in to_remove:
+            
+            self.remove_key(key)
 
 
 def init():
