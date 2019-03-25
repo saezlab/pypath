@@ -27,7 +27,7 @@ __all__ = [
 ]
 
 
-class MappingInput(objet):
+class MappingInput(object):
     
     
     def __init__(

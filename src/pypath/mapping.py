@@ -33,6 +33,8 @@ import collections
 import urllib
 
 if not hasattr(urllib, 'urlencode'):
+    
+    import urllib.parse
     _urllib = urllib
     urllib = _urllib.parse
 
@@ -1104,7 +1106,6 @@ class Mapper(session.Logger):
                 target_id_type = target_id_type,
                 ncbi_tax_id = ncbi_tax_id,
                 strict = strict,
-                name,
             )
         
         # further attempts to set it right if
@@ -1423,7 +1424,7 @@ class Mapper(session.Logger):
         return key in self.tables
     
     
-    def load_mappings(
+    def load_mapp ings(
             self,
             inputs = None,
             ncbi_tax_id = None,
@@ -1739,13 +1740,24 @@ def init():
     globals()['mapper'] = Mapper()
 
 
+def get_mapper():
+    
+    if 'mapper' not in globals():
+        
+        init()
+    
+    return globals()['mapper']
+
+
 def map_name(
         name,
         id_type,
         target_id_type,
         ncbi_tax_id = None,
         strict = False,
-        silent = True
+        silent = True,
+        nameType = None,
+        targetNameType = None,
     ):
     
     mapper = get_mapper()
@@ -1757,16 +1769,9 @@ def map_name(
         ncbi_tax_id = ncbi_tax_id,
         strict = strict,
         silent = silent,
+        nameType = nameType,
+        targetNameType = targetNameType,
     )
-
-
-def get_mapper():
-    
-    if 'mapper' not in globals():
-        
-        init()
-    
-    return globals()['mapper']
 
 
 def map_names(
@@ -1776,8 +1781,8 @@ def map_names(
         ncbi_tax_id = None,
         strict = False,
         silent = True,
-        id_type = None,
-        target_id_type = None,
+        nameType = None,
+        targetNameType = None,
     ):
     
     mapper = get_mapper()
@@ -1789,6 +1794,6 @@ def map_names(
         ncbi_tax_id = ncbi_tax_id,
         strict = strict,
         silent = silent,
-        id_type = id_type,
-        target_id_type = target_id_type,
+        nameType = nameType,
+        targetNameType = targetNameType,
     )

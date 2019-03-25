@@ -156,7 +156,7 @@ class Logger(object):
             self._console(msg)
     
     
-    def label_message(self, label = None):
+    def label_message(self, msg, label = None):
         """
         Adds a label in front of the message.
         """
