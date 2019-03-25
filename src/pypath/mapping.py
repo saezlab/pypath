@@ -43,6 +43,9 @@ except:
     import pickle
 
 import timeloop
+# we use this for simple little tasks only
+# and don't want engage another logger
+timeloop.app.logging.disable(level = 9999)
 
 # from pypath:
 import pypath.progress as progress
@@ -772,8 +775,8 @@ class Mapper(session.Logger):
             'enst': 'ENSEMBL_TRS',
             'hgnc': 'HGNC',
         }
-        self.names_uniprot_list = (
-            common.swap_dict_simple(self.uniprot_list_names)
+        self.names_uniprot_static = (
+            common.swap_dict_simple(self.uniprot_static_names)
         )
     
     
@@ -821,6 +824,15 @@ class Mapper(session.Logger):
         
         tbl = None
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+        
+        def check_loaded():
+            
+            return self.which_table(
+                id_type = id_type,
+                target_id_type = target_id_type,
+                load = False,
+                ncbi_tax_id = ncbi_tax_id,
+            )
         
         tbl_key = self.get_table_key(
             id_type = id_type,
@@ -874,12 +886,7 @@ class Mapper(session.Logger):
                         ncbi_tax_id = ncbi_tax_id,
                     )
                     
-                    tbl = self.which_table(
-                        id_type = id_type,
-                        target_id_type = target_id_type,
-                        load = False,
-                        ncbi_tax_id = ncbi_tax_id,
-                    )
+                    tbl = check_loaded()
                     
                     break
                 
@@ -912,12 +919,13 @@ class Mapper(session.Logger):
                     
                     self.tables[tbl_key] = reader.mapping_table_a_to_b
                 
-                tbl = self.which_table(
-                    id_type = id_type,
-                    target_id_type = target_id_type,
-                    load = False,
-                    ncbi_tax_id = ncbi_tax_id,
-                )
+                tbl = check_loaded()
+            
+            if tbl is None and id_type == 'genesymbol5':
+                
+                self.load_genesymbol5(ncbi_tax_id = ncbi_tax_id)
+                
+                tbl = check_loaded()
             
             if tbl is None:
                 
@@ -925,12 +933,7 @@ class Mapper(session.Logger):
                     
                     self.load_uniprot_static([id_type])
                     
-                    tbl = self.which_table(
-                        id_type = id_type,
-                        target_id_type = target_id_type,
-                        load = False,
-                        ncbi_tax_id = ncbi_tax_id,
-                    )
+                    tbl = check_loaded()
         
         if hasattr(tbl, '_used'):
             
@@ -1573,69 +1576,105 @@ class Mapper(session.Logger):
     
     def load_uniprot_static(
             self,
-            ac_types = None,
-            bi = False,
-            ncbi_tax_id = None,
+            keys,
         ):
-
-        ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
+        """
+        Loads mapping tables from the huge static mapping file from UniProt.
+        Takes long to download and process.
+        """
         
-        ac_types = ac_types if ac_types is not None else self.id_types.keys()
-        # creating empty MappingTable objects:
-        for ac_typ in ac_types:
-            tables[(ac_typ, 'uniprot')] = MappingTable(
-                ac_typ,
-                'uniprot',
-                'protein',
-                ac_typ,
-                None,
-                ncbi_tax_id,
-                None,
-                log=self.ownlog)
+        cachedir = cache_mod.get_cachedir()
+        data = dict((key, collections.defaultdict(set)) for key in keys)
+        cache_files = {}
+        to_load = set()
+        
         # attempting to load them from Pickle
-        i = 0
-        for ac_typ in ac_types:
-            md5ac = common.md5((ac_typ, 'uniprot', bi, ncbi_tax_id))
-            cachefile = os.path.join(self.cachedir, md5ac)
-            if self.cache and os.path.isfile(cachefile):
-                tables[(ac_typ, 'uniprot')].mapping = \
-                    pickle.load(open(cachefile, 'rb'))
-                ac_types.remove(ac_typ)
-                tables[(ac_typ, 'uniprot')].mid = md5ac
+        for key in keys:
+            
+            mapping_id = common.md5(
+                json.dumps(
+                    (
+                        key,
+                        'uniprot_static',
+                    )
+                )
+            )
+            
+            cachefile = os.path.join(cachedir, mapping_id)
+            cache_files[key] = cachefile
+            
+            if os.path.exists(cachefile):
+                
+                data[key] = pickle.load(open(cachefile, 'rb'))
+                
+            else:
+                
+                to_load.add(key)
+        
         # loading the remaining from the big UniProt mapping file:
-        if len(ac_types) > 0:
+        if to_load:
+            
             url = urls.urls['uniprot_idmap_ftp']['url']
-            c = curl.Curl(url, silent=False, large=True)
-
-            prg = progress.Progress(c.size, "Processing ID conversion list",
-                                    99)
-            for l in c.result:
-                prg.step(len(l))
-                l = l.decode('ascii').strip().split('\t')
+            c = curl.Curl(url, silent = False, large = True)
+            
+            prg = progress.Progress(
+                c.size,
+                'Processing ID conversion list',
+                99,
+            )
+            
+            id_type_b = 'uniprot'
+            
+            for line in c.result:
+                
+                prg.step(len(line))
+                
+                line = line.decode('ascii').strip().split('\t')
+                
                 for ac_typ in ac_types:
-                    if len(l) > 2 and self.id_types[ac_typ] == l[1]:
-                        other = l[2].split('.')[0]
-                        if l[2] not in tables[(ac_typ, 'uniprot'
-                                                    )].mapping['to']:
-                            tables[(
-                                ac_typ, 'uniprot')].mapping['to'][other] = []
-                        tables[(ac_typ, 'uniprot')].mapping['to'][other].\
-                            append(l[0].split('-')[0])
-                        if bi:
-                            uniprot = l[0].split('-')[0]
-                            if uniprot not in tables[(ac_typ, 'uniprot')].\
-                                    mapping['from']:
-                                tables[(ac_typ, 'uniprot')].\
-                                    mapping['from'][uniprot] = []
-                            tables[(ac_typ, 'uniprot')].mapping['from'][uniprot].\
-                                append(other)
+                    
+                    if len(l) > 2 and l[1] in self.names_uniprot_static:
+                        
+                        id_type_a = self.names_uniprot_static[l[1]]
+                        
+                        key_a_to_b = MappingTableKey(
+                            id_type = id_type_a,
+                            target_id_type = id_type_b,
+                            ncbi_tax_id = ncbi_tax_id,
+                        )
+                        key_b_to_a = MappingTableKey(
+                            id_type = id_type_b,
+                            target_id_type = id_type_a,
+                            ncbi_tax_id = ncbi_tax_id,
+                        )
+                        
+                        this_uniprot = l[0].split('-')[0]
+                        
+                        if key_a_to_b in to_load:
+                            
+                            data[key_a_to_b][l[2]].add(this_uniprot)
+                        
+                        if key_b_to_a in to_load:
+                            
+                            data[key_b_to_a][this_uniprot].add(l[2])
+            
             prg.terminate()
-            if self.cache:
-                for ac_typ in ac_types:
-                    md5ac = common.md5((ac_typ, bi))
-                    cachefile = os.path.join(self.cachedir, md5ac)
-                    pickle.dump(tables[(ac_typ, 'uniprot')].mapping,
-                                open(cachefile, 'wb'))
+            
+            for key, this_data in iteritems(data):
+                
+                pickle.dump(this_data, open(cache_files[key], 'wb'))
+        
+        for key, this_data in iteritems(data):
+            
+            table = MappingTable(
+                data = this_data,
+                id_type = key.id_type,
+                target_id_type = key.target_id_type,
+                ncbi_tax_id = ncbi_tax_id,
+                lifetime = 600,
+            )
+            
+            self.tables[key] = table
     
     
     def remove_table(self, id_type, target_id_type, ncbi_tax_id):
