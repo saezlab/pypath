@@ -3433,26 +3433,30 @@ class PyPath(session_mod.Logger):
         del graph.es['id_old']
         del graph.vs['id_old']
 
-    def delete_by_taxon(self, tax):
+
+    def delete_by_organism(self, organisms_allowed = None):
         """
         Removes the proteins of all organisms which are not given in
         *tax*.
 
-        :arg list tax:
+        :arg list,set organisms_allowed:
             List of NCBI Taxonomy IDs [int] of the organism(s) that are
             to be kept.
         """
+        
         g = self.graph
-        toDel = []
+        
+        organisms_allowed = organisms_allowed or {self.ncbi_tax_id}
 
-        for v in g.vs:
+        to_delete = [
+            v.index for v in g.vs
+            if v['ncbi_tax_id'] not in organisms
+        ]
 
-            if v['ncbi_tax_id'] not in tax:
-                toDel.append(v.index)
-
-        g.delete_vertices(toDel)
+        g.delete_vertices(to_delete)
         self.update_vname()
         self.update_db_dict()
+
 
     def delete_unknown(
             self,
@@ -3529,7 +3533,7 @@ class PyPath(session_mod.Logger):
         sys.stdout.write(' done.\n')
 
 
-    def clean_graph(self):
+    def clean_graph(self, organisms_allowed = None):
         """
         Removes multiple edges, unknown molecules and those from wrong
         taxon. Multiple edges will be combined by
@@ -3547,10 +3551,8 @@ class PyPath(session_mod.Logger):
 
         self.delete_unmapped()
 
-        ## TODO: multiple taxons ##
-        if len(self.reflists) != 0:
-            self.delete_by_taxon([self.ncbi_tax_id])
-            self.delete_unknown([self.ncbi_tax_id])
+        self.delete_by_organism(organisms_allowed = organisms_allowed)
+        self.delete_unknown(organisms_allowed = organisms_allowed)
 
         x = g.vs.degree()
         zeroDeg = [i for i, j in enumerate(x) if j == 0]
