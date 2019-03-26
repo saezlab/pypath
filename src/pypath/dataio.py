@@ -690,12 +690,11 @@ def havugimana_complexes():
     return complexes
 
 
-def compleat_complexes(mapper = None, predicted = True):
+def compleat_complexes(predicted = True):
     """
     Retrieves complexes from the Compleat database.
     """
     
-    mapper = mapping.Mapper()
     url = urls.urls['compleat']['url']
     c = curl.Curl(url, large = True, silent = False)
     tab = list(csv.DictReader(
@@ -738,7 +737,7 @@ def compleat_complexes(mapper = None, predicted = True):
         
         for entrez in rec['members'].split():
             
-            uniprot = mapper.map_name(entrez.strip(), 'entrez', 'uniprot')
+            uniprot = mapping.map_name(entrez.strip(), 'entrez', 'uniprot')
             
             if uniprot:
                 
@@ -2082,7 +2081,7 @@ def get_comppi():
     return data
 
 
-def get_psite_phos(raw=True, organism='human', strict=True, mapper=None):
+def get_psite_phos(raw=True, organism='human', strict=True):
     """
     Downloads and preprocesses phosphorylation site data from PhosphoSitePlus.
     """
@@ -2115,14 +2114,13 @@ def get_psite_phos(raw=True, organism='human', strict=True, mapper=None):
                 # attempting to map by orthology:
                 if korg in common.taxa and organism in common.taxa:
 
-                    mapper = mapping.Mapper() if mapper is None else mapper
                     ktaxid = common.taxa[korg]
                     taxid = common.taxa[organism]
 
                     if korg not in orto:
                         orto[korg] = homologene_dict(ktaxid, taxid, 'refseqp')
 
-                    korg_refseq = mapper.map_name(r['kinase'],
+                    korg_refseq = mapping.map_name(r['kinase'],
                                                     'uniprot',
                                                     'refseqp',
                                                     ktaxid)
@@ -2132,7 +2130,7 @@ def get_psite_phos(raw=True, organism='human', strict=True, mapper=None):
                             itertools.chain(
                                 *map(
                                     lambda ors:
-                                        mapper.map_name(ors,
+                                        mapping.map_name(ors,
                                                         'refseqp',
                                                         'uniprot',
                                                         taxid),
@@ -2433,7 +2431,7 @@ def get_psite_reg():
 
     return regsites
 
-def regsites_one_organism(organism = 9606, mapper = None):
+def regsites_one_organism(organism = 9606):
     """
     Returns PhosphoSitePlus regulatory sites translated to
     one organism by orthology. Residue numbers will be translated
@@ -2447,10 +2445,6 @@ def regsites_one_organism(organism = 9606, mapper = None):
         provide the vast majority of the data, and are close enough to each
         other that the sites can be safely translated between orthologous
         proteins by sequence alignement.
-    :param pypath.mapping.Mapper mapper:
-        Here you can provide a Mapper instance, so name dictionaries do not
-        need to be loaded repeatedly, saving some memory space this way.
-        If None provided a new instance will be initiated.
     """
 
     def genesymbols2uniprots(genesymbols, tax):
@@ -2459,7 +2453,12 @@ def regsites_one_organism(organism = 9606, mapper = None):
                 itertools.chain(
                     *map(
                         lambda gs:
-                            mapper.map_name(gs, 'genesymbol', 'uniprot', ncbi_tax_id = tax),
+                            mapping.map_name(
+                                gs,
+                                'genesymbol',
+                                'uniprot',
+                                ncbi_tax_id = tax,
+                            ),
                         genesymbols
                     )
                 )
@@ -2485,8 +2484,6 @@ def regsites_one_organism(organism = 9606, mapper = None):
 
     mod_types = dict(common.psite_mod_types2)
 
-    mapper = mapping.Mapper() if mapper is None else mapper
-
     regsites = get_psite_reg()
 
     other_organisms = organisms - set([organism])
@@ -2497,7 +2494,10 @@ def regsites_one_organism(organism = 9606, mapper = None):
                 lambda other:
                     (
                         other,
-                        homologene_uniprot_dict(source = other, target = organism)
+                        homologene_uniprot_dict(
+                            source = other,
+                            target = organism
+                        )
                     ),
                 other_organisms
             )
@@ -2596,7 +2596,7 @@ def regsites_one_organism(organism = 9606, mapper = None):
 
     return result
 
-def regsites_tab(regsites, mapper, outfile=None):
+def regsites_tab(regsites, outfile=None):
     """
     Exports PhosphoSite regulatory sites as a tabular file, all
     IDs translated to UniProt.
@@ -2615,7 +2615,7 @@ def regsites_tab(regsites, mapper, outfile=None):
         for r in regsite:
             if r['organism'] == 'human':
                 for i in r['induces']:
-                    other = mapper.map_name(i, 'genesymbol', 'uniprot')
+                    other = mapping.map_name(i, 'genesymbol', 'uniprot')
                     for o in other:
                         if o != 'unmapped':
                             result.append([
@@ -2623,7 +2623,7 @@ def regsites_tab(regsites, mapper, outfile=None):
                                 '+', o
                             ])
                 for i in r['disrupts']:
-                    other = mapper.map_name(i, 'genesymbol', 'uniprot')
+                    other = mapping.map_name(i, 'genesymbol', 'uniprot')
                     for o in other:
                         if o != 'unmapped':
                             result.append([
@@ -5361,9 +5361,7 @@ def cellphonedb_interactions(
             )
 
 
-def cellphonedb_complexes(mapper = None):
-    
-    mapper = mapper or mapping.Mapper()
+def cellphonedb_complexes():
     
     
     def get_uniprots(rec):
@@ -5383,7 +5381,7 @@ def cellphonedb_complexes(mapper = None):
             return get_uniprots(rec)
         
         return tuple(
-            mapper.map_name(genesymbol, 'genesymbol', 'uniprot')[0]
+            mapping.map_name(genesymbol, 'genesymbol', 'uniprot')[0]
             for genesymbol in
             rec['stoichiometry'].split(';')
         )
@@ -5735,7 +5733,7 @@ def li2012_phospho():
     return result
 
 
-def li2012_dmi(mapper=None):
+def li2012_dmi():
     """
     Converts table read by `pypath.dataio.get_li2012()` to
     list of `pypath.intera.DomainMotif()` objects.
@@ -5745,19 +5743,19 @@ def li2012_dmi(mapper=None):
         If not provided, a new `Mapper()` instance will be
         initialized, reserving more memory.
     """
+    
     result = {}
     nondigit = re.compile(r'[^\d]+')
     se = uniprot_input.swissprot_seq(isoforms=True)
-    if type(mapper) is not mapping.Mapper:
-        mapper = mapping.Mapper(9606)
     data = get_li2012()
+    
     for l in data:
         subs_protein = l[1].split('/')[0]
         tk_protein = l[2].split()[0]
         reader_protein = l[3].split()[0]
-        subs_uniprots = mapper.map_name(subs_protein, 'genesymbol', 'uniprot')
-        tk_uniprots = mapper.map_name(tk_protein, 'genesymbol', 'uniprot')
-        reader_uniprots = mapper.map_name(reader_protein, 'genesymbol',
+        subs_uniprots = mapping.map_name(subs_protein, 'genesymbol', 'uniprot')
+        tk_uniprots = mapping.map_name(tk_protein, 'genesymbol', 'uniprot')
+        reader_uniprots = mapping.map_name(reader_protein, 'genesymbol',
                                           'uniprot')
         subs_resnum = int(non_digit.sub('', l[1].split('/')[1]))
         for su in subs_uniprots:
@@ -6081,7 +6079,7 @@ def load_macrophage():
     data = data.replace('?', '').replace('->', ',')
 
 
-def get_kegg(mapper=None):
+def get_kegg():
     """
     Downloads and processes KEGG Pathways.
     Returns list of interactions.
@@ -6089,7 +6087,6 @@ def get_kegg(mapper=None):
     rehsa = re.compile(r'.*(hsa[0-9]+).*')
     req_hdrs = ['Referer: http://www.genome.jp/kegg-bin/show_pathway'
         '?map=hsa04710&show_description=show']
-    mapper = mapper if mapper is not None else mapping.Mapper()
     hsa_list = []
     interactions = []
 
@@ -6125,7 +6122,7 @@ def get_kegg(mapper=None):
 
         uentries = dict([(eid, common.uniqList(
             common.flatList([
-                mapper.map_name(
+                mapping.map_name(
                     gn, 'genesymbol', 'uniprot', strict=True) for gn in gns
             ]))) for eid, gns in iteritems(entries)])
 
@@ -6140,9 +6137,9 @@ def get_kegg(mapper=None):
     return common.uniqList(interactions)
 
 
-def kegg_pathways(mapper=None):
+def kegg_pathways():
 
-    data = get_kegg(mapper=mapper)
+    data = get_kegg()
     pws = common.uniqList(map(lambda i: i[3], data))
     proteins_pws = dict(map(lambda pw: (pw, set([])), pws))
     interactions_pws = dict(map(lambda pw: (pw, set([])), pws))
@@ -8573,7 +8570,7 @@ def homologene_dict(source, target, id_type):
 
     return result
 
-def homologene_uniprot_dict(source, target, only_swissprot = True, mapper = None):
+def homologene_uniprot_dict(source, target, only_swissprot = True):
     """
     Returns orthology translation table as dict from UniProt to Uniprot,
     obtained from NCBI HomoloGene data. Uses RefSeq and Entrez IDs for
@@ -8582,7 +8579,6 @@ def homologene_uniprot_dict(source, target, only_swissprot = True, mapper = None
     :param int source: NCBI Taxonomy ID of the source species (keys).
     :param int target: NCBI Taxonomy ID of the target species (values).
     :param bool only_swissprot: Translate only SwissProt IDs.
-    :param pypath.mapping.Mapper mapper: A Mapper object.
     """
     result = {}
 
@@ -8594,8 +8590,6 @@ def homologene_uniprot_dict(source, target, only_swissprot = True, mapper = None
     if not only_swissprot:
         all_source_trembl = all_uniprots(organism = source, swissprot = 'NO')
         all_source.update(set(all_source_trembl))
-
-    m = mapping.Mapper() if mapper is None else mapper
 
     for u in all_source:
 
@@ -8892,10 +8886,8 @@ def get_imweb_req():
 
             fp.write(block)
 
-def get_proteinatlas(normal = True, pathology = True,
-                     cancer = True, mapper = None):
+def get_proteinatlas(normal = True, pathology = True, cancer = True):
 
-    mapper = mapper or mapping.Mapper()
     result = {
         'normal':    collections.defaultdict(lambda: {}),
         'pathology': collections.defaultdict(lambda: {})
@@ -8916,7 +8908,7 @@ def get_proteinatlas(normal = True, pathology = True,
 
             l = line(l)
 
-            uniprots = mapper.map_name(l[0], 'ensembl', 'uniprot')
+            uniprots = mapping.map_name(l[0], 'ensembl', 'uniprot')
             tissue = '%s:%s' % (l[2], l[3])
 
             for u in uniprots:
@@ -8932,7 +8924,7 @@ def get_proteinatlas(normal = True, pathology = True,
         for l in fp:
 
             l = line(l)
-            uniprots = mapper.map_name(l[0], 'ensembl', 'uniprot')
+            uniprots = mapping.map_name(l[0], 'ensembl', 'uniprot')
             tissue   = l[2]
 
             values = dict(
@@ -9397,7 +9389,6 @@ def get_locate_localizations(
         literature = True,
         external = True,
         predictions = False,
-        mapper = None,
     ):
     
     record = collections.namedtuple(
@@ -9406,7 +9397,6 @@ def get_locate_localizations(
     )
     record.__new__.__defaults__ = (None, None, None)
     
-    mapper = mapper or mapping.Mapper(ncbi_tax_id = organism)
     organism_uniprots = set(
         all_uniprots(organism = organism, swissprot = True)
     )
@@ -9472,7 +9462,7 @@ def get_locate_localizations(
             
             if this_uniprot:
                 
-                this_uniprots = mapper.map_name(
+                this_uniprots = mapping.map_name(
                     this_uniprot,
                     'uniprot',
                     'uniprot',
@@ -9481,7 +9471,7 @@ def get_locate_localizations(
                 
             if not this_uniprots and this_entrez:
                 
-                this_uniprots = mapper.map_name(
+                this_uniprots = mapping.map_name(
                     this_entrez,
                     'entrez',
                     'uniprot',
