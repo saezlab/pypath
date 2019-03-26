@@ -1580,7 +1580,7 @@ class PyPath(session_mod.Logger):
 
         self.__dict__ = copy.deepcopy(other.__dict__)
         self.update_vname()
-        self._log("Reinitialized", 'INFO')
+        self._log('PyPath object has been copied and reinitialized.')
 
     def __copy__(self):
 
@@ -2064,7 +2064,7 @@ class PyPath(session_mod.Logger):
 
         sys.stdout.write('\t:: Reading from cache: %s\n' % cache_file)
         sys.stdout.flush()
-        self._log('Data have been read from cache: %s' % cache_file)
+        self._log('Data have been read from cache: `%s`' % cache_file)
 
         return pickle.load(open(cache_file, 'rb'))
 
@@ -7154,8 +7154,7 @@ class PyPath(session_mod.Logger):
                     for pdb in u_pdb[v['name']]:
                         v['pdb'][pdb[0]] = (pdb[1], pdb[2])
 
-            self._log(
-                'PDB IDs for proteins has been retrieved.')
+            self._log('PDB IDs for proteins has been retrieved.')
 
     def load_pfam(self, graph=None):
         """
@@ -7185,7 +7184,7 @@ class PyPath(session_mod.Logger):
                 if v['name'] in u_pfam:
                     v['pfam'] += u_pfam[v['name']]
 
-            self._log('Pfam domains has been retrieved.', 'INFO')
+            self._log('Pfam domains has been retrieved.')
 
     def load_pfam2(self):
         """
@@ -7205,7 +7204,7 @@ class PyPath(session_mod.Logger):
         self.pfam_regions()
 
         if self.u_pfam is None:
-            self._log('Failed to download data from Pfam', 'ERROR')
+            self._log('Failed to download data from Pfam', -5)
 
         else:
             self.graph.vs['pfam'] = [{} for _ in self.graph.vs]
@@ -7215,7 +7214,7 @@ class PyPath(session_mod.Logger):
                 if v['name'] in self.u_pfam:
                     v['pfam'] = self.u_pfam[v['name']]
 
-            self._log('Pfam domains has been retrieved.', 'INFO')
+            self._log('Pfam domains has been retrieved.')
 
     def load_pfam3(self):
         """
@@ -7229,7 +7228,7 @@ class PyPath(session_mod.Logger):
         self.pfam_regions()
 
         if self.u_pfam is None:
-            self._log('Failed to download data from Pfam', 'ERROR')
+            self._log('Failed to download data from Pfam', -5)
 
         else:
             self.graph.vs['doms'] = [[] for _ in self.graph.vs]
@@ -7249,7 +7248,7 @@ class PyPath(session_mod.Logger):
                                     end=region['end'],
                                     isoform=region['isoform']))
 
-            self._log('Pfam domains has been retrieved.', 'INFO')
+            self._log('Pfam domains has been retrieved.')
 
     def load_corum(self, graph=None):
         """
@@ -7262,7 +7261,7 @@ class PyPath(session_mod.Logger):
         complexes, members = dataio.get_corum()
 
         if complexes is None:
-            self._log('Failed to download data from CORUM', 'ERROR')
+            self._log('Failed to download data from CORUM', -5)
 
         else:
             self.init_complex_attr(graph, 'corum')
@@ -7321,6 +7320,7 @@ class PyPath(session_mod.Logger):
         complexes = dataio.read_complexes_havugimana()
 
         if complexes is None:
+            
             self._log('Failed to read data from Havugimana')
 
         else:
@@ -7422,7 +7422,7 @@ class PyPath(session_mod.Logger):
         complexes = dataio.get_complexportal()
 
         if complexes is None:
-            self._log('Failed to read data from Havugimana', 'ERROR')
+            self._log('Failed to read data from Havugimana', -5)
 
         else:
 
@@ -8684,7 +8684,7 @@ class PyPath(session_mod.Logger):
         if data is None:
 
             if ddi.__module__.split('.')[1] == 'dataio':
-                self._log('Function %s() failed' % ddi, 'ERROR')
+                self._log('Function %s() failed' % ddi, -5)
 
             return None
 
@@ -8723,7 +8723,7 @@ class PyPath(session_mod.Logger):
         if data is None:
 
             if dmi.__module__.split('.')[1] == 'dataio':
-                self._log('Function %s() failed' % dmi, 'ERROR')
+                self._log('Function %s() failed' % dmi, -5)
 
             return None
 
