@@ -25,6 +25,13 @@ import json
 import datetime
 import time
 import timeloop
+
+try:
+    import cPickle as pickle
+
+except ImportError:
+    import pickle
+
 # we use this for simple little tasks only
 # and don't want engage another logger
 timeloop.app.logging.disable(level = 9999)
@@ -104,7 +111,7 @@ class ReferenceListManager(session_mod.Logger):
             
             self._log(
                 'Reference list for ID type `%s` for organism `%u` '
-                'has been loaded from `%s`.' % (key + (self.cachefile,))
+                'has been loaded from `%s`.' % (key + (cachefile,))
             )
             
         else:
@@ -113,7 +120,7 @@ class ReferenceListManager(session_mod.Logger):
             pickle.dump(self.lists[key], open(cachefile, 'wb'))
             self._log(
                 'Reference list for ID type `%s` for organism `%u` '
-                'has been saved to `%s`.' % (key + (self.cachefile,))
+                'has been saved to `%s`.' % (key + (cachefile,))
             )
     
     
@@ -122,30 +129,30 @@ class ReferenceListManager(session_mod.Logger):
         data = set()
         input_method = inputs[key[0]]
         
-        if os.path.exists(self.input):
+        if os.path.exists(input_method):
             
-            with open(self.input, 'r') as fp:
+            with open(input_method, 'r') as fp:
                 
                 data = {l.strip() for l in fp.readlines()}
             
             self._log(
-                'Reference list for ID type `%s` for has organism `%u` has '
-                'been loaded from `%s`.' % (key + (self.input,))
+                'Reference list for ID type `%s` for organism `%u` has '
+                'been loaded from `%s`.' % (key + (input_method,))
             )
             
         else:
             
-            if hasattr(dataio, self.input):
+            if hasattr(dataio, input_method):
                 
-                input_func = getattr(dataio, self.input)
+                input_func = getattr(dataio, input_method)
                 
-            else hasattr(mapping_input, self.input):
+            elif hasattr(mapping_input, input_method):
                 
-                input_func = getattr(mapping_input, self.input)
+                input_func = getattr(mapping_input, input_method)
             
-            data = input_func()
+            data = set(input_func())
             self._log(
-                'Reference list for ID type `%s` for has organism `%u` has '
+                'Reference list for ID type `%s` for organism `%u` has '
                 'been loaded by method `%s`.' % (key + (str(input_method),))
             )
         
@@ -196,6 +203,8 @@ class ReferenceListManager(session_mod.Logger):
             if time.time() - last_used > self.lifetime and key in self.lists:
                 
                 del self.lists[key]
+        
+        for key in self.expiry.keys():
             
             if key not in self.lists:
                 
@@ -231,7 +240,11 @@ def check(name, id_type, ncbi_tax_id = None):
     
     manager = get_manager()
     
-    manager.check(name = name, id_type = id_type, ncbi_tax_id = ncbi_tax_id)
+    return manager.check(
+        name = name,
+        id_type = id_type,
+        ncbi_tax_id = ncbi_tax_id,
+    )
 
 
 def select(names, id_type, ncbi_tax_id = None):
@@ -242,14 +255,14 @@ def select(names, id_type, ncbi_tax_id = None):
     
     manager = get_manager()
     
-    manager.select(
+    return manager.select(
         names = names,
         id_type = id_type,
         ncbi_tax_id = ncbi_tax_id,
     )
 
 
-def is_not(self, names, id_type, ncbi_tax_id = None):
+def is_not(names, id_type, ncbi_tax_id = None):
         """
         Returns the identifiers from ``names`` which are not instances of
         the provided ``id_type`` and from the given organism.
@@ -257,7 +270,7 @@ def is_not(self, names, id_type, ncbi_tax_id = None):
         
         manager = get_manager()
         
-        manager.is_not(
+        return manager.is_not(
             names = names,
             id_type = id_type,
             ncbi_tax_id = ncbi_tax_id,

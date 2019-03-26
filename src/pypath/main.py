@@ -3450,7 +3450,7 @@ class PyPath(session_mod.Logger):
 
         to_delete = [
             v.index for v in g.vs
-            if v['ncbi_tax_id'] not in organisms
+            if v['ncbi_tax_id'] not in organisms_allowed
         ]
 
         g.delete_vertices(to_delete)
@@ -3495,9 +3495,6 @@ class PyPath(session_mod.Logger):
         to_delete = []
         self.update_vname()
 
-        for t in tax:
-            idx = (default_name_type, typ, t)
-
         sys.stdout.write(' :: Comparing with reference lists...')
 
         names = g.vs['id_type']
@@ -3529,6 +3526,8 @@ class PyPath(session_mod.Logger):
         vertices_to_delete = [self.nodDct[n] for n in names_to_delete]
         
         g.delete_vertices(to_delete)
+        
+        self.update_vname()
         
         sys.stdout.write(' done.\n')
 
