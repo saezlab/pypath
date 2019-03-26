@@ -195,3 +195,16 @@ class Pdb(AbstractComplexResource):
             input_method = 'pdb_complexes',
             input_args = input_args or {},
         )
+
+
+class Signor(AbstractComplexResource):
+    
+    
+    def __init__(self, input_args = None, **kwargs):
+        
+        AbstractComplexResource.__init__(
+            self,
+            name = 'Signor',
+            input_method = 'signor_complexes',
+            input_args = input_args or {},
+        )

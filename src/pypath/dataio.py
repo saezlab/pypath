@@ -1997,6 +1997,7 @@ class ResidueMapper(object):
         self.clean()
 
     def load_mapping(self, pdb):
+        
         non_digit = re.compile(r'[^\d.-]+')
         pdb = pdb.lower()
         url = urls.urls['pdb_align']['url'] + pdb
@@ -2022,6 +2023,7 @@ class ResidueMapper(object):
         self.mappers[pdb] = mapper
 
     def get_residue(self, pdb, resnum, chain=None):
+        
         pdb = pdb.lower()
         if pdb not in self.mappers:
             self.load_mapping(pdb)
@@ -6299,6 +6301,29 @@ def signor_interactions(organism = 9606):
     as Signor updated both their data and webpage.
     """
     
+    
+    def process_name(name):
+        
+        name = name.split('-')
+        
+        if len(name) == 1:
+            
+            main = name[0]
+            isoform = None
+            
+        elif name[1].isdigit():
+            
+            main = name[0]
+            isoform = int(name[1])
+            
+        else:
+            
+            main = '-'.join(name)
+            isoform = None
+        
+        return main, isoform
+    
+    
     if type(organism) is int:
         if organism in common.taxids:
             _organism = common.taxids[organism]
@@ -6340,26 +6365,49 @@ def signor_interactions(organism = 9606):
             
             continue
         
-        source = line[2].split('-')
-        target = line[6].split('-')
+        source, source_isoform = process_name(line[2])
+        target, target_isoform = process_name(line[6])
         
-        line.append(
-            int(source[1])
-                if len(source) > 1 and source[1].isdigit() else
-            None
-        )
-        line.append(
-            int(target[1])
-                if len(target) > 1 and target[1].isdigit() else
-            None
-        )
+        line[2] = source
+        line[6] = target
         
-        line[2] = source[0]
-        line[6] = target[0]
+        line.append(source)
+        line.append(target)
         
         result.append(line)
     
     return result
+
+
+def signor_complexes(organism = 9606):
+    
+    complexes = {}
+    components = collections.defaultdict(set)
+    names = {}
+    
+    data = signor_interactions(organism = organism)
+    
+    for rec in data:
+        
+        if rec[8] == 'form complex':
+            
+            # collect UniProts by SIGNOR-C IDs
+            components[rec[6]].add(rec[2])
+            names[rec[6]] = rec[4]
+    
+    for signor_cid, comp in iteritems(components):
+        
+        cplex = intera.Complex(
+            name = names[signor_cid],
+            components = comp,
+            sources = 'Signor',
+            references = rec[21] if rec[21].isdigit() else None,
+            synonyms = {'Signor': signor_cid},
+        )
+        
+        complexes[cplex.__str__()] = cplex
+    
+    return complexes
 
 
 def rolland_hi_ii_14():
