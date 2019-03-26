@@ -113,34 +113,93 @@ misc = {
 
 
 uniprot = {
-    ('embl', 'uniprot'): input_formats.UniprotMapping('embl'),
-    ('genesymbol', 'uniprot'): input_formats.UniprotMapping(
-        'genesymbol', bi_directional = True),
+    ('embl', 'uniprot'):
+        input_formats.UniprotMapping(
+            id_type = 'embl',
+        ),
+    ('genesymbol', 'uniprot'): 
+        input_formats.UniprotMapping(
+            id_type = 'genesymbol',
+        ),
     ('genesymbol-syn', 'uniprot'):
-    input_formats.UniprotMapping('genesymbol-syn'),
-    ('entrez', 'uniprot'): input_formats.UniprotMapping('entrez'),
-    ('hgnc', 'uniprot'): input_formats.UniprotMapping('hgnc'),
-    ('enst', 'uniprot'): input_formats.UniprotMapping('enst'),
-    ('refseqp', 'uniprot'): input_formats.UniprotMapping('refseqp'),
+        input_formats.UniprotMapping(
+            id_type = 'genesymbol-syn'
+        ),
+    ('entrez', 'uniprot'):
+        input_formats.UniprotMapping(
+            id_typye = 'entrez',
+        ),
+    ('hgnc', 'uniprot'):
+        input_formats.UniprotMapping(
+            id_type = 'hgnc',
+        ),
+    ('enst', 'uniprot'):
+        input_formats.UniprotMapping(
+            id_type = 'enst',
+        ),
+    ('refseqp', 'uniprot'):
+        input_formats.UniprotMapping(
+            id_type = 'refseqp',
+        ),
     ('uniprot-entry', 'uniprot'):
-    input_formats.UniprotMapping('uniprot-entry'),
-    ('protein-name', 'uniprot'): input_formats.UniprotMapping('protein-name'),
-    ('protein-name-all', 'uniprot'): input_formats.UniprotMapping(
-        'protein-name', swissprot=None)
+        input_formats.UniprotMapping(
+            id_type = 'uniprot-entry',
+        ),
+    ('protein-name', 'uniprot'):
+        input_formats.UniprotMapping(
+            id_type = 'protein-name',
+        ),
+    ('protein-name-all', 'uniprot'):
+        input_formats.UniprotMapping(
+            id_type = 'protein-name',
+            swissprot = None,
+        )
 }
 
 
 mirbase = {
-    ('mir-mat-name', 'mirbase'): input_formats.FileMapping(
-        'mirbase_mature', 1, 0, None, header = 0),
-    ('mir-name', 'mir-pre'): input_formats.FileMapping(
-        'mirbase_precursor', 1, 0, None, header = 0),
-    ('mir-pre', 'mirbase'): input_formats.FileMapping(
-        'mirbase_ids', 1, 0, None, header = 0),
-    ('mir-name', 'mirbase'): input_formats.FileMapping(
-        'mirbase_precursor_to_mature',
-        1, 0, None, header = 0),
+    ('mir-mat-name', 'mirbase'):
+        input_formats.FileMapping(
+            id_type_a = 'mir-mat-name',
+            id_type_b = 'mirbase',
+            fname = 'mirbase_mature'
+            col_a = 1,
+            col_b = 0,
+            separator = None,
+            header = 0,
+        ),
+    ('mir-name', 'mir-pre'):
+        input_formats.FileMapping(
+            id_type_a = 'mir-name',
+            id_type_b = 'mir-pre',
+            fname = 'mirbase_precursor',
+            col_a = 1,
+            col_b = 0,
+            separator = None,
+            header = 0,
+        ),
+    ('mir-pre', 'mirbase'):
+        input_formats.FileMapping(
+            id_type_a = 'mir-pre',
+            id_type_b = 'mirbase',
+            fname = 'mirbase_ids',
+            col_a = 1,
+            col_b = 0,
+            separator = None,
+            header = 0,
+        ),
+    ('mir-name', 'mirbase'):
+        input_formats.FileMapping(
+            id_type_a = 'mir-name',
+            id_type_b = 'mirbase',
+            fname = 'mirbase_precursor_to_mature',
+            col_a = 1,
+            col_b = 0,
+            separator = None,
+            header = 0,
+        ),
 }
+
 
 basic = {
     ('uniprot-sec', 'uniprot-pri'): input_formats.FileMapping(
@@ -154,6 +213,9 @@ basic = {
         'genesymbol', bi_directional = True, swissprot=None)
 }
 
+
+# the part below should be removed
+#
 # this is all what is needed for corrections of unirpot ids
 # i.e. to get primary swissprot id for all proteins
 uniprot_old = [

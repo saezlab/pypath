@@ -878,7 +878,7 @@ class Mapper(session.Logger):
             id_types_rev = tuple(reversed(id_types))
             resource = None
             
-            for resource_attr in ['uniprot', 'misc', 'mirbase']:
+            for resource_attr in ['uniprot', 'basic', 'mirbase']:
                 
                 resources = getattr(maps, resource_attr)
                 
@@ -1110,16 +1110,6 @@ class Mapper(session.Logger):
         
         # further attempts to set it right if
         # first attempt was not successful
-        if not mapped_names:
-            
-            if target_id_type == 'genesymbol':
-                
-                mapped_names = self.map_names(
-                    name = name,
-                    id_type = 'genesymbol-fallback',
-                    target_id_type = target_id_type,
-                    ncbi_tax_id = ncbi_tax_id,
-                )
         
         if not mapped_names:
             

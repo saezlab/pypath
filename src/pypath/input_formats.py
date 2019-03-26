@@ -73,7 +73,6 @@ class FileMapping(MappingInput):
         self.separator = separator
         self.header = header
         self.entity_type = entity_type
-        self.bi_directional = bi_directional
         self.input_args = {'organism': self.ncbi_tax_id}
     
     
@@ -94,34 +93,29 @@ class UniprotMapping(MappingInput):
     def __init__(
             self,
             id_type,
-            bi_directional = False,
             ncbi_tax_id = 9606,
             swissprot = 'yes',
         ):
-        '''
+        """
         Defines an ID conversion table to retrieve from UniProt.
 
-        @id_type : str
+        id_type : str
             Type of accession numbers you would like to translate.
-        @target_id_type : str
+        target_id_type : str
             Type of accession numbers you would like to translate to.
-        @bi_directional : bool
-            Build the mapping table only from original AC to target AC,
-            or if bi = True, the reverse table is also generated (from
-            target to original).
-        @tax : int
+        tax : int
             NCBI Taxonomy ID of the organism of interest.
-        @swissprot : str
+        swissprot : str
             Look for SwissProt or Trembl.
             Passed directly to UniProt`s `reviewed` parameter. `yes` or `no`
             To fetch Trembl and SwissProt together, set value to None.
-        @mapping : bool
+        mapping : bool
             Get the data from UniProt`s programmatic access query interface,
             (uniprot.org/uniprot) or the batch retrieval/id mapping service
             (uniprot.org/mapping). These have slightly different APIs and
             capabilities. Some IDs can be obtained from the former, some
             from the latter.
-        '''
+        """
         
         self.type = 'uniprot'
         
@@ -133,7 +127,6 @@ class UniprotMapping(MappingInput):
             ncbi_tax_id = ncbi_tax_id,
         )
         
-        self.bi_directional = bi_directional
         self.ncbi_tax_id = int(ncbi_tax_id)
         self.typ = 'protein'
         self.swissprot = swissprot
