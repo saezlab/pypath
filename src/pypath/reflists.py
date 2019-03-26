@@ -37,7 +37,6 @@ except ImportError:
 timeloop.app.logging.disable(level = 9999)
 
 import pypath.uniprot_input as uniprot_input
-import pypath.dataio as dataio
 import pypath.common as common
 import pypath.session_mod as session_mod
 import pypath.settings as settings
@@ -142,9 +141,9 @@ class ReferenceListManager(session_mod.Logger):
             
         else:
             
-            if hasattr(dataio, input_method):
+            if hasattr(uniprot_input, input_method):
                 
-                input_func = getattr(dataio, input_method)
+                input_func = getattr(uniprot_input, input_method)
                 
             elif hasattr(mapping_input, input_method):
                 
