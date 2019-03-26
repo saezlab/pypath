@@ -1100,10 +1100,11 @@ class Mapper(session_mod.Logger):
             
             # RefSeq is special
             mapped_names = self._map_refseq(
-                name = name,
+                refseq = name,
                 id_type = id_type,
                 target_id_type = target_id_type,
                 ncbi_tax_id = ncbi_tax_id,
+                strict = strict,
             )
             
         else:
@@ -1272,6 +1273,7 @@ class Mapper(session_mod.Logger):
             id_type,
             target_id_type,
             ncbi_tax_id = None,
+            strict = False,
         ):
         """
         ID translation adapted to the specialities of RefSeq IDs.
@@ -1282,7 +1284,7 @@ class Mapper(session_mod.Logger):
         
         # try first as it is
         mapped_names = self._map_name(
-            refseq = refseq,
+            name = refseq,
             id_type = id_type,
             target_id_type = target_id_type,
             ncbi_tax_id = ncbi_tax_id,

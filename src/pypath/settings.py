@@ -68,6 +68,12 @@ _defaults = {
     'pubmed_cache': 'pubmed.pickle',
     'mapping_use_cache': True,
     'default_organism': 9606,
+    'default_name_types': {
+        'protein': 'uniprot',
+        'mirna': 'mirbase',
+        'drug': 'chembl',
+        'lncrna': 'lncrna-genesymbol',
+    },
 }
 
 in_datadir = {

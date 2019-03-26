@@ -95,7 +95,7 @@ misc = {
             col_a = 1,
             col_b = 0,
             separator = '\t',
-            header=0,
+            header = 0,
             ncbi_tax_id = 9606,
         ),
     ('entrez', 'uniprot'):

@@ -229,34 +229,34 @@ class ReadSettings:
             self,
             name = "unknown",
             separator = None,
-            nameColA = 0,
-            nameColB = 1,
-            id_typeA = "uniprot",
-            id_typeB = "uniprot",
-            typeA = "protein",
-            typeB = "protein",
-            isDirected = False,
+            id_col_a = 0,
+            id_col_b = 1,
+            id_type_a = "uniprot",
+            id_type_b = "uniprot",
+            entity_type_a = "protein",
+            entity_type_b = "protein",
+            is_directed = False,
             sign = False,
-            inFile = None,
+            input = None,
             references = False,
-            extraEdgeAttrs = None,
-            extraNodeAttrsA = None,
-            extraNodeAttrsB = None,
+            extra_edge_attrs = None,
+            extra_node_attrs_a = None,
+            extra_node_attrs_b = None,
             header = False,
-            taxonA = 9606,
-            taxonB = 9606,
-            ncbiTaxId = False,
-            interactionType = 'PPI',
-            positiveFilters = None,
-            negativeFilters = None,
+            taxon_a = 9606,
+            taxon_b = 9606,
+            ncbi_tax_id = False,
+            interaction_type = 'PPI',
+            positive_filters = None,
+            negative_filters = None,
             mark_source  =  None,
             mark_target  =  None,
-            inputArgs = None,
-            curlArgs = None,
+            input_args = None,
+            curl_args = None,
             must_have_references = True,
             huge = False,
             resource = None,
-            unique_fields = None
+            unique_fields = None,
         ):
         """
         :param str mark_source:
@@ -286,7 +286,7 @@ class ReadSettings:
         self.taxonA = taxonA
         self.taxonB = taxonB
         self.ncbiTaxId = ncbiTaxId
-        self.intType = interactionType
+        self.interaction_type = interaction_type
         self.positiveFilters = positiveFilters or []
         self.negativeFilters = negativeFilters or []
         self.inputArgs = inputArgs or {}
