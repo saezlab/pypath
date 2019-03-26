@@ -67,7 +67,6 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
     def __init__(self, input_method,
              ncbi_tax_id = 9606,
              trace = False,
-             mapper = None,
              enzyme_id_type = 'genesymbol',
              substrate_id_type = 'genesymbol',
              name = None,
@@ -117,11 +116,9 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         
         homology.Proteomes.__init__(self)
         
-        self.mapper = mapper
         self.enzyme_id_type = enzyme_id_type
         self.set_method()
         self.set_inputargs(**kwargs)
-        self.init_mapper()
         self.load()
     
     def load(self):
@@ -169,12 +166,14 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
             self.inputm = f
             self.name = self.name or 'Unknown'
     
+    
     def set_inputargs(self, **inputargs):
         """
         Sets the arguments to be provided for the input method.
         """
         
         self.inputargs = inputargs
+    
     
     def load_data(self):
         """
@@ -183,11 +182,6 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         
         self.data = self.inputm(**self.inputargs)
     
-    def init_mapper(self):
-        
-        if self.mapper is None:
-            
-            self.mapper = mapping.Mapper()
     
     def _phosphosite_setup(self):
         
@@ -198,14 +192,14 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
             self.inputargs['organism'] = (
                 common.taxids[self.inputargs['organism']]
             )
-        
-        self.inputargs['mapper'] = self.mapper
+    
     
     def _phosphoelm_setup(self):
         
         if self.ncbi_tax_id != 9606 and 'ltp_only' not in self.inputargs:
             
             self.inputargs['ltp_only'] = False
+    
     
     def _setup(self):
         
@@ -221,6 +215,7 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         if self.input_is(self.enzyme_id_uniprot, '__contains__'):
             self.enzyme_id_type = 'uniprot'
     
+    
     def _organism_setup(self):
         
         if self.input_is(self.organisms_supported, '__contains__'):
@@ -232,6 +227,7 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         
         self.load_proteome(self.ncbi_tax_id, False)
     
+    
     def _process(self, p):
         
         # human leukocyte antigenes result a result an
@@ -242,10 +238,12 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         if not isinstance(p['kinase'], list):
             p['kinase'] = [p['kinase']]
         
-        kinase_ups = self.mapper.map_names(p['kinase'],
-                        self.enzyme_id_type,
-                        'uniprot',
-                        ncbi_tax_id = self.ncbi_tax_id)
+        kinase_ups = mapping.map_names(
+            p['kinase'],
+            self.enzyme_id_type,
+            'uniprot',
+            ncbi_tax_id = self.ncbi_tax_id,
+        )
         
         substrate_ups_all = set([])
         
@@ -262,11 +260,11 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
             
             substrate_ups_all.update(
                 set(
-                    self.mapper.map_name(
+                    mapping.map_name(
                         p[sub_id_attr],
                         sub_id_type,
                         'uniprot',
-                        self.ncbi_tax_id
+                        self.ncbi_tax_id,
                     )
                 )
             )
@@ -443,18 +441,19 @@ class PtmHomologyProcessor(
         homology.PtmHomology,
         PtmProcessor):
     
+    
     def __init__(self,
-        input_method,
-        ncbi_tax_id,
-        map_by_homology_from = [9606],
-        trace = False,
-        mapper = None,
-        enzyme_id_type = 'genesymbol',
-        substrate_id_type = 'genesymbol',
-        name = None,
-        homology_only_swissprot = True,
-        ptm_homology_strict = False,
-        **kwargs):
+            input_method,
+            ncbi_tax_id,
+            map_by_homology_from = [9606],
+            trace = False,
+            enzyme_id_type = 'genesymbol',
+            substrate_id_type = 'genesymbol',
+            name = None,
+            homology_only_swissprot = True,
+            ptm_homology_strict = False,
+            **kwargs
+        ):
         """
         Unifies a `pypath.ptm.PtmProcessor` and
         a `pypath.homology.PtmHomology` object to build a set of
@@ -494,10 +493,13 @@ class PtmHomologyProcessor(
         self.name = name
         self.ptmprocargs = kwargs
         
-        homology.PtmHomology.__init__(self, target = ncbi_tax_id,
-                                        only_swissprot = homology_only_swissprot,
-                                        strict = ptm_homology_strict,
-                                        mapper = mapper)
+        homology.PtmHomology.__init__(
+            self,
+            target = ncbi_tax_id,
+            only_swissprot = homology_only_swissprot,
+            strict = ptm_homology_strict,
+        )
+    
     
     def __iter__(self):
         """
@@ -509,12 +511,16 @@ class PtmHomologyProcessor(
             
             self.set_default_source(source_taxon)
             
-            PtmProcessor.__init__(self, self.input_method, source_taxon,
-                              trace = self.trace, mapper = self.mapper,
-                              enzyme_id_type = self.enzyme_id_type,
-                              substrate_id_type = self.substrate_id_type,
-                              name = self.name, allow_mixed_organisms = True,
-                              **self.ptmprocargs)
+            PtmProcessor.__init__(
+                self,
+                self.input_method,
+                source_taxon,
+                trace = self.trace,
+                enzyme_id_type = self.enzyme_id_type,
+                substrate_id_type = self.substrate_id_type,
+                name = self.name, allow_mixed_organisms = True,
+                **self.ptmprocargs,
+            )
             
             #self.reset_ptmprocessor(ncbi_tax_id = source_taxon)
             
@@ -523,21 +529,22 @@ class PtmHomologyProcessor(
                 for tptm in self.translate(ptm):
                     
                     yield tptm
-    
+
+
 class PtmAggregator(object):
     
     def __init__(self,
-        input_methods = None,
-        ncbi_tax_id = 9606,
-        map_by_homology_from = [9606],
-        trace = False,
-        mapper = None,
-        enzyme_id_type = 'genesymbol',
-        substrate_id_type = 'genesymbol',
-        homology_only_swissprot = True,
-        ptm_homology_strict = False,
-        nonhuman_direct_lookup = True,
-        inputargs = {}):
+            input_methods = None,
+            ncbi_tax_id = 9606,
+            map_by_homology_from = None,
+            trace = False,
+            enzyme_id_type = 'genesymbol',
+            substrate_id_type = 'genesymbol',
+            homology_only_swissprot = True,
+            ptm_homology_strict = False,
+            nonhuman_direct_lookup = True,
+            inputargs = None,
+        ):
         """
         Docs not written yet.
         """
@@ -550,9 +557,10 @@ class PtmAggregator(object):
         for k, v in iteritems(locals()):
             setattr(self, k, v)
         
-        self.set_inputs()
+        self.inputargs = self.inputargs or {}
+        self.map_by_homology_from = self.map_by_homology_from or [9606]
         
-        self.init_mapper()
+        self.set_inputs()
         
         self.map_by_homology_from = set(self.map_by_homology_from)
         self.map_by_homology_from.discard(self.ncbi_tax_id)
@@ -560,23 +568,28 @@ class PtmAggregator(object):
         self.build_list()
         self.unique()
     
+    
     def __iter__(self):
         
         for ptm in itertools.chain(*self.enz_sub.values()):
             
             yield ptm
     
+    
     def reload(self):
+        
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist=[modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
     
+    
     def set_inputs(self):
         
         if self.input_methods is None:
             self.input_methods = self.builtin_inputs
+    
     
     def build_list(self):
         """
@@ -612,13 +625,14 @@ class PtmAggregator(object):
             
             if self.ncbi_tax_id == 9606 or self.nonhuman_direct_lookup:
                 
-                proc = PtmProcessor(input_method = input_method,
-                                    ncbi_tax_id = self.ncbi_tax_id,
-                                    trace = self.trace,
-                                    mapper = self.mapper,
-                                    enzyme_id_type = self.enzyme_id_type,
-                                    substrate_id_type = self.substrate_id_type,
-                                    **inputargs)
+                proc = PtmProcessor(
+                    input_method = input_method,
+                    ncbi_tax_id = self.ncbi_tax_id,
+                    trace = self.trace,
+                    enzyme_id_type = self.enzyme_id_type,
+                    substrate_id_type = self.substrate_id_type,
+                    **inputargs,
+                )
                 
                 extend_lists(proc.__iter__())
             
@@ -629,7 +643,6 @@ class PtmAggregator(object):
                     ncbi_tax_id = self.ncbi_tax_id,
                     map_by_homology_from = self.map_by_homology_from,
                     trace = self.trace,
-                    mapper = self.mapper,
                     enzyme_id_type = self.enzyme_id_type,
                     substrate_id_type = self.substrate_id_type,
                     homology_only_swissprot = self.homology_only_swissprot,
@@ -638,6 +651,7 @@ class PtmAggregator(object):
                 )
                 
                 extend_lists(proc.__iter__())
+    
     
     def unique(self):
         """
@@ -651,6 +665,7 @@ class PtmAggregator(object):
         for key, ptms in iteritems(self.enz_sub):
             
             self.enz_sub[key] = self.uniq_ptms(ptms)
+    
     
     @staticmethod
     def uniq_ptms(ptms):
@@ -668,9 +683,6 @@ class PtmAggregator(object):
         
         return ptms_uniq
     
-    def init_mapper(self):
-        
-        self.mapper = self.mapper or mapping.Mapper()
     
     def make_df(self, tax_id = False):
         
@@ -686,17 +698,26 @@ class PtmAggregator(object):
         self.df['enzyme_genesymbol'] = pd.Series([
             gss[0] if gss else '' for gss in
             (
-                self.mapper.map_name(
-                    u, 'uniprot', 'genesymbol', ncbi_tax_id = self.ncbi_tax_id
-                ) for u in self.df.enzyme
+                mapping.map_name(
+                    u,
+                    id_type = 'uniprot',
+                    target_id_type = 'genesymbol',
+                    ncbi_tax_id = self.ncbi_tax_id,
+                )
+                for u in self.df.enzyme
             )
         ])
+        
         self.df['substrate_genesymbol'] = pd.Series([
             gss[0] if gss else '' for gss in
             (
-                self.mapper.map_name(
-                    u, 'uniprot', 'genesymbol', ncbi_tax_id = self.ncbi_tax_id
-                ) for u in self.df.substrate
+                mapping.map_name(
+                    u,
+                    id_type = 'uniprot',
+                    target_id_type = 'genesymbol',
+                    ncbi_tax_id = self.ncbi_tax_id,
+                )
+                for u in self.df.substrate
             )
         ])
         
@@ -709,10 +730,12 @@ class PtmAggregator(object):
             
             self.df['ncbi_tax_id'] = [self.ncbi_tax_id] * self.df.shape[0]
     
+    
     def export_table(self, fname):
         
         self.make_df()
         self.df.to_csv(fname, sep = '\t', index = False)
+    
     
     def assign_to_network(self, pa):
         """
