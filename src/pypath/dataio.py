@@ -97,6 +97,7 @@ from xlrd.biffh import XLRDError
 # from this module
 
 import pypath.mapping as mapping
+import pypath.reflists as reflists
 import pypath.uniprot_input as uniprot_input
 import pypath.curl as curl
 import pypath.urls as urls
@@ -235,7 +236,7 @@ def get_pdb():
     return u_pdb, pdb_u
 
 
-def pdb_complexes():
+def pdb_complexes(organism = None):
     
     complexes = {}
     
@@ -247,6 +248,12 @@ def pdb_complexes():
         uniprots = tuple(chain['uniprot'] for chain in chains.values())
         
         if len(uniprots) == 1:
+            
+            continue
+        
+        # if the organism set and any of the UniProt IDs does not
+        # belong to this organism we drop the complex
+        if organism and reflists.is_not(uniprots, 'uniprot', organism):
             
             continue
         

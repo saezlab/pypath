@@ -189,6 +189,12 @@ class Pdb(AbstractComplexResource):
     
     def __init__(self, input_args = None, **kwargs):
         
+        input_args = input_args or {}
+        
+        if 'organism' not in input_args:
+            
+            input_args['organism'] = settings.get('default_organism')
+        
         AbstractComplexResource.__init__(
             self,
             name = 'PDB',
@@ -201,6 +207,12 @@ class Signor(AbstractComplexResource):
     
     
     def __init__(self, input_args = None, **kwargs):
+        
+        input_args = input_args or {}
+        
+        if 'organism' not in input_args:
+            
+            input_args['organism'] = settings.get('default_organism')
         
         AbstractComplexResource.__init__(
             self,
