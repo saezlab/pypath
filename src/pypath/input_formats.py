@@ -55,7 +55,6 @@ class FileMapping(MappingInput):
             col_b,
             separator = None,
             header = 0,
-            bi_directional  =  False,
             ncbi_tax_id = None,
             entity_type = 'protein',
         ):

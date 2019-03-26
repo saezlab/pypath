@@ -26,93 +26,91 @@ import pypath.input_formats as input_formats
 __all__ = ['misc', 'uniprot', 'mirbase', 'basic', 'uniprot_old']
 
 
-misc = [
-    {
-        "one": "uniprot-sec",
-        "two": "uniprot-pri",
-        "typ": "protein",
-        "src": "file",
-        "par": input_formats.FileMapping(
-            os.path.join(common.ROOT, 'data', 'sec_ac.txt'),
-            0,
-            1,
-            None,
-            header=0)
-    },
-    {
-        "one": "trembl",
-        "two": "genesymbol",
-        "typ": "protein",
-        "src": "file",
-        "par": input_formats.FileMapping(
-            os.path.join(common.ROOT, 'data', 'trembl3.tab'),
-            0,
-            1,
-            "\t",
-            header=0)
-    },
-    {
-        "one": "genesymbol",
-        "two": "swissprot",
-        "typ": "protein",
-        "src": "file",
-        "par": input_formats.FileMapping(
-            os.path.join(common.ROOT, 'data', 'swissprot3.tab'),
-            1,
-            0,
-            "\t",
-            header=0)
-    },
-    {
-        "one": "genesymbol",
-        "two": "uniprot",
-        "typ": "protein",
-        "src": "file",
-        "par": input_formats.FileMapping(
-            os.path.join(common.ROOT, 'data', 'uniprot3.tab'),
-            1,
-            0,
-            "\t",
+misc = {
+    ('uniprot-sec', 'uniprot-pri'):
+        input_formats.FileMapping(
+            id_type_a = 'uniprot-sec',
+            id_type_b = 'uniprot-pri',
+            entity_type = 'protein',
+            fname = os.path.join(common.ROOT, 'data', 'sec_ac.txt'),
+            col_a = 0,
+            col_b = 1,
+            separator = None,
+            header = 0,
+        ),
+    ('trembl', 'genesymbol'):
+        input_formats.FileMapping(
+            id_type_a = 'trembl',
+            id_type_b = 'genesymbol',
+            entity_type = 'protein',
+            fname = os.path.join(common.ROOT, 'data', 'trembl3.tab'),
+            col_a = 0,
+            col_b = 1,
+            separator = '\t',
+            header = 0,
+        ),
+    ('genesymbol', 'swissprot'):
+        input_formats.FileMapping(
+            id_type_a = 'genesymbol',
+            id_type_b = 'swissprot',
+            entity_type = 'protein',
+            fname = os.path.join(common.ROOT, 'data', 'swissprot3.tab'),
+            col_a = 1,
+            col_b = 0,
+            separator = '\t',
+            header = 0,
+        )
+    ('genesymbol', 'uniprot'):
+        input_formats.FileMapping(
+            id_type_a = 'genesymbol',
+            id_type_b = 'uniprot',
+            entity_type = 'protein',
+            fname = os.path.join(common.ROOT, 'data', 'uniprot3.tab'),
+            col_a = 1,
+            col_b = 0,
+            separator = '\t',
+            header = 0,
+        ),
+    ('genesymbol-fallback', 'uniprot'):
+        input_formats.FileMapping(
+            id_type_a = 'genesymbol-fallback',
+            id_type_b = 'uniprot',
+            entity_type = 'protein',
+            fname = os.path.join(
+                common.ROOT, 'data', 'human-genesymbol-all.tab'
+            ),
+            col_a = 1,
+            col_b = 0,
+            separator = '\t',
             header=0,
-            bi_directional = True)
-    },
-    {
-        "one": "genesymbol-fallback",
-        "two": "uniprot",
-        "typ": "protein",
-        "src": "file",
-        "par": input_formats.FileMapping(
-            os.path.join(common.ROOT, 'data', 'human-genesymbol-all.tab'),
-            1,
-            0,
-            "\t",
-            header=0)
-    },
-    {
-        "one": "refseq",
-        "two": "uniprot",
-        "typ": "protein",
-        "src": "file",
-        "par": input_formats.FileMapping(
-            os.path.join(common.ROOT, 'data', 'uniprot-refseq-human-1.tab'),
-            1,
-            0,
-            "\t",
-            header=0)
-    },
-    {
-        "one": "entrez",
-        "two": "uniprot",
-        "typ": "protein",
-        "src": "file",
-        "par": input_formats.FileMapping(
-            os.path.join(common.ROOT, 'data', 'entrez_uniprot.csv'),
-            1,
-            0,
-            ";",
-            header=0)
-    },
-]
+        ),
+    ('refseq', 'uniprot'):
+        input_formats.FileMapping(
+            id_type_a = 'refseq',
+            id_type_b = 'uniprot',
+            entity_type = 'protein',
+            fname = os.path.join(
+                common.ROOT, 'data', 'uniprot-refseq-human-1.tab'
+            ),
+            col_a = 1,
+            col_b = 0,
+            separator = '\t',
+            header=0,
+            ncbi_tax_id = 9606,
+        ),
+    ('entrez', 'uniprot'):
+        input_formats.FileMapping(
+            id_type_a = 'entrez',
+            id_type_b = 'uniprot',
+            entity_type = 'protein',
+            fname = os.path.join(common.ROOT, 'data', 'entrez_uniprot.csv'),
+            col_a = 1,
+            col_b = 0,
+            separator = ';',
+            header = 0,
+        ),
+}
+
 
 uniprot = {
     ('embl', 'uniprot'): input_formats.UniprotMapping('embl'),
@@ -130,6 +128,7 @@ uniprot = {
     ('protein-name-all', 'uniprot'): input_formats.UniprotMapping(
         'protein-name', swissprot=None)
 }
+
 
 mirbase = {
     ('mir-mat-name', 'mirbase'): input_formats.FileMapping(
@@ -159,48 +158,48 @@ basic = {
 # i.e. to get primary swissprot id for all proteins
 uniprot_old = [
     {
-        "one": "uniprot-sec",
-        "two": "uniprot-pri",
-        "typ": "protein",
-        "src": "file",
-        "par": input_formats.FileMapping(
+        id_type_a = 'uniprot-sec',
+        id_type_b = 'uniprot-pri',
+        entity_type = 'protein',
+        'src': 'file',
+        'par': input_formats.FileMapping(
             os.path.join(common.ROOT, 'data', 'sec_ac.txt'),
             0, 1, None, header = 0
         )
     },
     {
-        "one": "trembl",
-        "two": "genesymbol",
-        "typ": "protein",
-        "src": "file",
-        "par": input_formats.FileMapping(
+        id_type_a = 'trembl',
+        id_type_b = 'genesymbol',
+        entity_type = 'protein',
+        'src': 'file',
+        'par': input_formats.FileMapping(
             os.path.join(common.ROOT, 'data', 'trembl3.tab'),
-            0, 1, "\t", header = 0
+            0, 1, '\t', header = 0
         )
     },
     {
-        "one": "genesymbol",
-        "two": "swissprot",
-        "typ": "protein",
-        "src": "file",
-        "par": input_formats.FileMapping(
+        id_type_a = 'genesymbol',
+        id_type_b = 'swissprot',
+        entity_type = 'protein',
+        'src': 'file',
+        'par': input_formats.FileMapping(
             os.path.join(common.ROOT, 'data', 'swissprot3.tab'),
             1,
             0,
-            "\t",
+            '\t',
             header = 0
         )
     },
     {
-        "one": "genesymbol-fallback",
-        "two": "uniprot",
-        "typ": "protein",
-        "src": "file",
-        "par": input_formats.FileMapping(
+        id_type_a = 'genesymbol-fallback',
+        id_type_b = 'uniprot',
+        entity_type = 'protein',
+        'src': 'file',
+        'par': input_formats.FileMapping(
             os.path.join(common.ROOT, 'data', 'human-genesymbol-all.tab'),
             1,
             0,
-            "\t",
+            '\t',
             header = 0
         ),
     }

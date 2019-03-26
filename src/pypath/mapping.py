@@ -1112,6 +1112,17 @@ class Mapper(session.Logger):
         # first attempt was not successful
         if not mapped_names:
             
+            if target_id_type == 'genesymbol':
+                
+                mapped_names = self.map_names(
+                    name = name,
+                    id_type = 'genesymbol-fallback',
+                    target_id_type = target_id_type,
+                    ncbi_tax_id = ncbi_tax_id,
+                )
+        
+        if not mapped_names:
+            
             # maybe it's all uppercase (e.g. human gene symbols)?
             mapped_names = self._map_name(
                 name = name.upper(),
