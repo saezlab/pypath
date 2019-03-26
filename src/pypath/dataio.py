@@ -239,26 +239,30 @@ def pdb_complexes():
     
     complexes = {}
     
-    uniprot_pdb, pdb_uniprot = get_pdb()
+    uniprot_pdb, pdb_uniprot = get_pdb_chains()
     del uniprot_pdb
     
-    for pdb_id, uniprots in iteritems(pdb_uniprot):
+    for pdb_id, chains in iteritems(pdb_uniprot):
         
-        if len(uniprots) > 1:
+        uniprots = tuple(chain['uniprot'] for chain in chains.values())
+        
+        if len(uniprots) == 1:
             
-            cplex = intera.Complex(
-                components = uniprots,
-                sources = 'PDB',
-            )
+            continue
+        
+        cplex = intera.Complex(
+            components = uniprots,
+            sources = 'PDB',
+        )
+        
+        if cplex.__str__() in complexes:
             
-            if cplex.__str__() in complexes:
-                
-                complexes[cplex.__str__()].attrs['PDB'].add(pdb_id)
-                
-            else:
-                
-                cplex.add_attr('PDB', {pdb_id})
-                complexes[cplex.__str__()] = cplex
+            complexes[cplex.__str__()].attrs['PDB'].add(pdb_id)
+            
+        else:
+            
+            cplex.add_attr('PDB', {pdb_id})
+            complexes[cplex.__str__()] = cplex
     
     return complexes
 
@@ -839,7 +843,14 @@ def get_pdb_chains():
     return u_pdb, pdb_u
 
 
-def get_3dcomplexes():
+def get_3dcomplex():
+    """
+    Downloads and preprocesses data from the 3DComplex database.
+    
+    Returns dict of dicts where top level keys are PDB IDs, second level
+    keys are pairs of tuples of UniProt IDs and values are list with the
+    number of amino acids in contact.
+    """
 
     c = curl.Curl(urls.urls['3dcomplexes_contact']['url'], silent=False)
     contact = c.result
@@ -856,35 +867,56 @@ def get_3dcomplexes():
     corr_dict = {}
 
     for l in corresp:
+        
         l = l.replace('\r', '').split('\t')
+        
         if len(l) > 2:
+            
             pdb = l[0].split('.')[0]
+            
             if pdb not in corr_dict:
+                
                 corr_dict[pdb] = {}
+            
             corr_dict[pdb][l[1]] = l[2]
 
     compl_dict = {}
 
     for l in contact:
+        
         l = l.replace('\r', '').split('\t')
+        
         if len(l) > 11 and int(l[11]) == 0 and int(l[10]) == 0:
+            
             compl = l[0]
             pdb = compl.split('_')[0]
+            
             if pdb in corr_dict:
+                
                 if l[1] in corr_dict[pdb] and l[2] in corr_dict[pdb]:
+                    
                     ch1 = corr_dict[pdb][l[1]]
                     ch2 = corr_dict[pdb][l[2]]
+                    
                     if pdb in pdb_u and ch1 in pdb_u[pdb]:
+                        
                         up1 = pdb_u[pdb][ch1]['uniprot']
+                        
                         if pdb in pdb_u and ch2 in pdb_u[pdb]:
+                            
                             up2 = pdb_u[pdb][ch2]['uniprot']
+                            
                             if compl not in compl_dict:
+                                
                                 compl_dict[compl] = {}
+                            
                             uniprots = [up1, up2]
                             uniprots.sort()
                             uniprots = tuple(uniprots)
+                            
                             if uniprots not in compl_dict[compl]:
                                 compl_dict[compl][uniprots] = []
+                            
                             compl_dict[compl][uniprots].append(float(l[3]))
 
     return compl_dict

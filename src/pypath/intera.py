@@ -886,7 +886,7 @@ class Complex(object):
     
     def __repr__(self):
         
-        return 'Complex %s: %s' % (
+        return 'Complex%s: %s' % (
             ' %s' % self.name if self.name else '',
             self.__str__(),
         )
