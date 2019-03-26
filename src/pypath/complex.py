@@ -55,7 +55,6 @@ class AbstractComplexResource(resource.AbstractResource):
         resource.AbstractResource.__init__(
             self,
             name = name,
-            mapper = mapper,
             ncbi_tax_id = ncbi_tax_id,
             input_method = input_method,
             input_args = input_args,
@@ -125,12 +124,11 @@ class AbstractComplexResource(resource.AbstractResource):
 class CellPhoneDB(AbstractComplexResource):
     
     
-    def __init__(self, mapper = None, **kwargs):
+    def __init__(self, **kwargs):
         
         AbstractComplexResource.__init__(
             self,
             name = 'CellPhoneDB',
-            mapper = mapper,
             input_method = 'cellphonedb_complexes',
         )
 
@@ -138,12 +136,11 @@ class CellPhoneDB(AbstractComplexResource):
 class Corum(AbstractComplexResource):
     
     
-    def __init__(self, mapper = None, input_args = None, **kwargs):
+    def __init__(self, input_args = None, **kwargs):
         
         AbstractComplexResource.__init__(
             self,
             name = 'CORUM',
-            mapper = mapper,
             input_method = 'corum_complexes',
             input_args = input_args or {},
         )
@@ -152,12 +149,11 @@ class Corum(AbstractComplexResource):
 class Havugimana(AbstractComplexResource):
     
     
-    def __init__(self, mapper = None, input_args = None, **kwargs):
+    def __init__(self, input_args = None, **kwargs):
         
         AbstractComplexResource.__init__(
             self,
             name = 'Havugimana2012',
-            mapper = mapper,
             input_method = 'havugimana_complexes',
             input_args = input_args or {},
         )
@@ -166,32 +162,37 @@ class Havugimana(AbstractComplexResource):
 class Compleat(AbstractComplexResource):
     
     
-    def __init__(self, mapper = None, input_args = None, **kwargs):
-        
-        input_args = input_args or {}
-        
-        if 'mapper' not in input_args:
-            
-            input_args['mapper'] = mapper
+    def __init__(self, input_args = None, **kwargs):
         
         AbstractComplexResource.__init__(
             self,
             name = 'Compleat',
-            mapper = mapper,
             input_method = 'compleat_complexes',
-            input_args = input_args,
+            input_args = input_args or {},
         )
 
 
 class ComplexPortal(AbstractComplexResource):
     
     
-    def __init__(self, mapper = None, input_args = None, **kwargs):
+    def __init__(self, input_args = None, **kwargs):
         
         AbstractComplexResource.__init__(
             self,
             name = 'ComplexPortal',
-            mapper = mapper,
             input_method = 'complexportal_complexes',
+            input_args = input_args or {},
+        )
+
+
+class Pdb(AbstractComplexResource):
+    
+    
+    def __init__(self, input_args = None, **kwargs):
+        
+        AbstractComplexResource.__init__(
+            self,
+            name = 'PDB',
+            input_method = 'pdb_complexes',
             input_args = input_args or {},
         )

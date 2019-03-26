@@ -1029,9 +1029,7 @@ class Mapper(session_mod.Logger):
             targetNameType = targetNameType,
         )
         
-        if names:
-            
-            return list(names)[0]
+        return list(names)[0] if names else None
     
     def map_name(
             self,
@@ -1285,17 +1283,19 @@ class Mapper(session_mod.Logger):
         """
         
         return set.union(
-            self.map_name(
-                name = name,
-                id_type = id_type,
-                target_id_type = target_id_type,
-                ncbi_tax_id = ncbi_tax_id,
-                strict = strict,
-                silent = silent,
-                nameType = nameType,
-                targetNameType = targetNameType,
+            *(
+                self.map_name(
+                    name = name,
+                    id_type = id_type,
+                    target_id_type = target_id_type,
+                    ncbi_tax_id = ncbi_tax_id,
+                    strict = strict,
+                    silent = silent,
+                    nameType = nameType,
+                    targetNameType = targetNameType,
+                )
+                for name in names
             )
-            for name in names
         )
     
     

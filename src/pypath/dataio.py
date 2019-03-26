@@ -37,6 +37,7 @@ try:
     import urllib2
 except ImportError:
     # this works seemless in Py3:
+    import urllib.request
     urllib2 = urllib.request
 
 import httplib2
@@ -44,6 +45,7 @@ try:
     import urlparse
 except:
     # this works seemless in Py3:
+    import urllib.parse
     urlparse = urllib.parse
 
 try:
@@ -196,10 +198,12 @@ def read_table(cols,
 
 
 def all_uniprots(organism=9606, swissprot=None):
+    
     return uniprot_input.all_uniprots(organism, swissprot)
 
 
 def get_pdb():
+    
     c = curl.Curl(urls.urls['uniprot_pdb']['url'], silent=False)
     data = c.result
     if data is None:
@@ -227,7 +231,35 @@ def get_pdb():
                 if u not in u_pdb:
                     u_pdb[u] = []
                 u_pdb[u].append((pdb, met, res))
+    
     return u_pdb, pdb_u
+
+
+def pdb_complexes():
+    
+    complexes = {}
+    
+    pdb_data = get_pdb()
+    
+    for pdb_id, uniprots in iteritems(pdb_data):
+        
+        if len(uniprots) > 1:
+            
+            cplex = intera.Complex(
+                components = uniprots,
+                sources = 'PDB',
+            )
+            
+            if cplex.__str__() in complexes:
+                
+                complexes[cplex.__str__()].attrs['PDB'].add(pdb_id)
+                
+            else:
+                
+                cplex.add_attr('PDB', {pdb_id})
+                complexes[cplex.__str__()] = cplex
+    
+    return complexes
 
 
 def get_pfam(uniprots = None, organism = 9606):
@@ -5998,7 +6030,7 @@ def trip_interactions(exclude_methods=['Inference', 'Speculation'],
     ] for unipr, d in iteritems(data)]
 
 
-def load_signor_ptms(organism=9606):
+def load_signor_ptms(organism = 9606):
     """
     Loads and processes Signor PTMs.
     Returns dict of dicts.
@@ -6008,7 +6040,7 @@ def load_signor_ptms(organism=9606):
     aalet = dict((k.lower().capitalize(), v)
                  for k, v in iteritems(common.aaletters))
 
-    data = signor_interactions(organism=organism)
+    data = signor_interactions(organism = organism)
 
     for d in data:
 
@@ -6028,7 +6060,9 @@ def load_signor_ptms(organism=9606):
                 'end': aanum + 7,
                 'kinase': d[2],
                 'resaa': aa,
-                'motif': inst
+                'motif': inst,
+                'enzyme_isoform': d[27],
+                'substrate_isoform': d[28],
             })
 
     return result
@@ -6258,7 +6292,7 @@ def csv_sep_change(csv, old, new):
     return ''.join(clean_csv)
 
 
-def signor_interactions(organism=9606):
+def signor_interactions(organism = 9606):
     """
     Downloads the full dataset from Signor.
     Returns the file contents.
@@ -6266,6 +6300,7 @@ def signor_interactions(organism=9606):
     Note: this method has been updated Oct 2016,
     as Signor updated both their data and webpage.
     """
+    
     if type(organism) is int:
         if organism in common.taxids:
             _organism = common.taxids[organism]
@@ -6289,15 +6324,43 @@ def signor_interactions(organism=9606):
         follow=True,
         timeout=30,
         binary_data=binary_data,
-        return_headers=True)
+        return_headers=True
+    )
 
     _ = next(c.result)
     sep = '@#@#@'
     lines = ''.join(l for l in c.result)
     lines = csv_sep_change(lines, '\t', sep).split('\n')
-
-    result = filter(lambda l: len(l) > 1, map(lambda l: l.split(sep), lines))
-
+    
+    result = []
+    
+    for line in lines:
+        
+        line = line.split(sep)
+        
+        if len(line) <= 1:
+            
+            continue
+        
+        source = line[2].split('-')
+        target = line[6].split('-')
+        
+        line.append(
+            int(source[1])
+                if len(source) > 1 and source[1].isdigit() else
+            None
+        )
+        line.append(
+            int(target[1])
+                if len(target) > 1 and target[1].isdigit() else
+            None
+        )
+        
+        line[2] = source[0]
+        line[6] = target[0]
+        
+        result.append(line)
+    
     return result
 
 

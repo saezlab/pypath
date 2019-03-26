@@ -64,14 +64,18 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         'hprd': [('refseqp', 'substrate_refseqp')]
     }
     
-    def __init__(self, input_method,
-             ncbi_tax_id = 9606,
-             trace = False,
-             enzyme_id_type = 'genesymbol',
-             substrate_id_type = 'genesymbol',
-             name = None,
-             allow_mixed_organisms = False,
-             **kwargs):
+    
+    def __init__(
+            self,
+            input_method,
+            ncbi_tax_id = 9606,
+            trace = False,
+            enzyme_id_type = 'genesymbol',
+            substrate_id_type = 'genesymbol',
+            name = None,
+            allow_mixed_organisms = False,
+            **kwargs,
+        ):
         """
         Processes enzyme-substrate interaction data from various databases.
         Provedes generators to iterate over these interactions.
@@ -96,7 +100,7 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         
         """
         
-        self.mammal_taxa = set([9606, 10090, 10116])
+        self.mammal_taxa = {9606, 10090, 10116}
         self.nomatch = []
         self.kin_ambig = {}
         self.sub_ambig = {}
@@ -111,7 +115,9 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         self.load_seq(self.ncbi_tax_id)
         
         if self.allow_mixed_organisms:
+            
             for taxon in self.mammal_taxa:
+                
                 self.load_seq(taxon = taxon)
         
         homology.Proteomes.__init__(self)
@@ -121,17 +127,21 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         self.set_inputargs(**kwargs)
         self.load()
     
+    
     def load(self):
         
         self._setup()
         self.load_data()
     
+    
     def reload(self):
+        
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist=[modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
+    
     
     def reset_ptmprocessor(self, seq = None, ncbi_tax_id = None):
         
@@ -141,9 +151,12 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         self.load_seq(ncbi_tax_id)
         self.load_data()
     
+    
     def set_taxon(self, ncbi_tax_id):
+        
         self.ncbi_tax_id = ncbi_tax_id
         self._organism_setup()
+    
     
     def set_method(self):
         """
@@ -159,8 +172,10 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
             self.inputm = getattr(dataio, self.input_method)
             self.name = self.name or self.inputm.__name__
         elif self.input_is(self.methods, '__contains__'):
-            self.inputm = getattr(dataio,
-                                  self.methods[self.input_method.lower()])
+            self.inputm = getattr(
+                dataio,
+                self.methods[self.input_method.lower()]
+            )
             self.name = self.name or self.input_method
         else:
             self.inputm = f
@@ -274,33 +289,39 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         
         for s in substrate_ups_all:
             
-            se = self.get_seq(s)
-            
-            if se is None:
-                continue
-            
-            for isof in se.isoforms():
+            if 'substrate_isoform' in p and p['substrate_isoform']:
                 
-                if p['instance'] is not None:
+                substrate_ups.append((s, p['substrate_isoform']))
+                
+            else:
+                
+                se = self.get_seq(s)
+                
+                if se is None:
+                    continue
+                
+                for isof in se.isoforms():
                     
-                    if se.match(
-                        p['instance'],
-                        p['start'],
-                        p['end'],
-                        isoform=isof
-                    ):
+                    if p['instance'] is not None:
                         
-                        substrate_ups.append((s, isof))
-                    
-                else:
-                    
-                    if se.match(
-                        p['resaa'],
-                        p['resnum'],
-                        isoform=isof
-                    ):
+                        if se.match(
+                            p['instance'],
+                            p['start'],
+                            p['end'],
+                            isoform=isof
+                        ):
+                            
+                            substrate_ups.append((s, isof))
                         
-                        substrate_ups.append((s, isof))
+                    else:
+                        
+                        if se.match(
+                            p['resaa'],
+                            p['resnum'],
+                            isoform=isof
+                        ):
+                            
+                            substrate_ups.append((s, isof))
         
         if self.trace:
             

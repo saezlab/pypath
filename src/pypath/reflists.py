@@ -60,4 +60,5 @@ class ReferenceList(object):
 
 
 def get_reflists():
+    
     return [ReferenceList('uniprot', 'protein', 9606, 'all_uniprots')]
