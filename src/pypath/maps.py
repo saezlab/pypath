@@ -59,7 +59,7 @@ misc = {
             col_b = 0,
             separator = '\t',
             header = 0,
-        )
+        ),
     ('genesymbol', 'uniprot'):
         input_formats.FileMapping(
             id_type_a = 'genesymbol',
@@ -127,7 +127,7 @@ uniprot = {
         ),
     ('entrez', 'uniprot'):
         input_formats.UniprotMapping(
-            id_typye = 'entrez',
+            id_type = 'entrez',
         ),
     ('hgnc', 'uniprot'):
         input_formats.UniprotMapping(
@@ -162,7 +162,7 @@ mirbase = {
         input_formats.FileMapping(
             id_type_a = 'mir-mat-name',
             id_type_b = 'mirbase',
-            fname = 'mirbase_mature'
+            fname = 'mirbase_mature',
             col_a = 1,
             col_b = 0,
             separator = None,
@@ -202,67 +202,33 @@ mirbase = {
 
 
 basic = {
-    ('uniprot-sec', 'uniprot-pri'): input_formats.FileMapping(
-        'get_uniprot_sec', 0, 1, None, header=0, ncbi_tax_id = 0),
-    ('genesymbol', 'trembl'): input_formats.UniprotMapping(
-        'genesymbol', swissprot='no', bi_directional = True),
-    ('genesymbol', 'swissprot'): input_formats.UniprotMapping('genesymbol'),
-    ('genesymbol-syn', 'swissprot'):
-    input_formats.UniprotMapping('genesymbol-syn'),
-    ('genesymbol', 'uniprot'): input_formats.UniprotMapping(
-        'genesymbol', bi_directional = True, swissprot=None)
-}
-
-
-# the part below should be removed
-#
-# this is all what is needed for corrections of unirpot ids
-# i.e. to get primary swissprot id for all proteins
-uniprot_old = [
-    {
-        id_type_a = 'uniprot-sec',
-        id_type_b = 'uniprot-pri',
-        entity_type = 'protein',
-        'src': 'file',
-        'par': input_formats.FileMapping(
-            os.path.join(common.ROOT, 'data', 'sec_ac.txt'),
-            0, 1, None, header = 0
-        )
-    },
-    {
-        id_type_a = 'trembl',
-        id_type_b = 'genesymbol',
-        entity_type = 'protein',
-        'src': 'file',
-        'par': input_formats.FileMapping(
-            os.path.join(common.ROOT, 'data', 'trembl3.tab'),
-            0, 1, '\t', header = 0
-        )
-    },
-    {
-        id_type_a = 'genesymbol',
-        id_type_b = 'swissprot',
-        entity_type = 'protein',
-        'src': 'file',
-        'par': input_formats.FileMapping(
-            os.path.join(common.ROOT, 'data', 'swissprot3.tab'),
-            1,
-            0,
-            '\t',
-            header = 0
-        )
-    },
-    {
-        id_type_a = 'genesymbol-fallback',
-        id_type_b = 'uniprot',
-        entity_type = 'protein',
-        'src': 'file',
-        'par': input_formats.FileMapping(
-            os.path.join(common.ROOT, 'data', 'human-genesymbol-all.tab'),
-            1,
-            0,
-            '\t',
-            header = 0
+    ('uniprot-sec', 'uniprot-pri'):
+        input_formats.FileMapping(
+            id_type_a = 'uniprot-sec',
+            id_type_b = 'uniprot-pri',
+            fname = 'get_uniprot_sec',
+            col_a = 0,
+            col_b = 1,
+            separator = None,
+            header = 0,
+            ncbi_tax_id = 0
         ),
-    }
-]
+    ('genesymbol', 'trembl'):
+        input_formats.UniprotMapping(
+            id_type = 'genesymbol',
+            swissprot = 'no',
+        ),
+    ('genesymbol', 'swissprot'):
+        input_formats.UniprotMapping(
+            id_type = 'genesymbol',
+        ),
+    ('genesymbol-syn', 'swissprot'):
+        input_formats.UniprotMapping(
+            id_type = 'genesymbol-syn',
+        ),
+    ('genesymbol', 'uniprot'):
+        input_formats.UniprotMapping(
+            id_type = 'genesymbol',
+            swissprot = None,
+        )
+}

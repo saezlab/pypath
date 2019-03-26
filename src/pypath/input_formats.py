@@ -122,20 +122,18 @@ class UniprotMapping(MappingInput):
         MappingInput.__init__(
             self,
             type_ = 'file',
-            id_type_a = id_type_a,
-            id_type_b = id_type_b,
+            id_type_a = id_type,
+            id_type_b = 'uniprot',
             ncbi_tax_id = ncbi_tax_id,
         )
         
         self.ncbi_tax_id = int(ncbi_tax_id)
         self.typ = 'protein'
         self.swissprot = swissprot
-        self.id_type = id_type
-        self.target_id_type = 'uniprot'
         self.field = None if id_type not in ac_query \
-            else ac_query[id_type][0]
+            else ac_query[self.id_type_a][0]
         self.subfield = None if id_type not in ac_query \
-            else ac_query[id_type][1]
+            else ac_query[self.id_type_a][1]
     
     
     def set_organism(self, ncbi_tax_id):
