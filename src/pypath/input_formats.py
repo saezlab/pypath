@@ -267,30 +267,30 @@ class ReadSettings:
             Same as ``mark_source`` but for target vertices.
         """
         
-        self.typeA = typeA
-        self.typeB = typeB
-        self.nameColA = nameColA
-        self.nameColB = nameColB
-        self.id_typeA = id_typeA
-        self.id_typeB = id_typeB
-        self.isDirected = isDirected
-        self.inFile = inFile
-        self.extraEdgeAttrs = extraEdgeAttrs or {}
-        self.extraNodeAttrsA = extraNodeAttrsA or {}
-        self.extraNodeAttrsB = extraNodeAttrsB or {}
+        self.entity_type_a = entity_type_a
+        self.entity_type_b = entity_type_b
+        self.id_col_a = id_col_a
+        self.id_col_b = id_col_b
+        self.id_type_a = id_type_a
+        self.id_type_b = id_type_b
+        self.is_directed = is_directed
+        self.input = input
+        self.extra_edge_attrs = extra_edge_attrs or {}
+        self.extra_node_attrs_a = extra_node_attrs_a or {}
+        self.extra_node_attrs_b = extra_node_attrs_b or {}
         self.name = name
         self.separator = separator
         self.header = header
         self.refs = references
         self.sign = sign
-        self.taxonA = taxonA
-        self.taxonB = taxonB
-        self.ncbiTaxId = ncbiTaxId
+        self.taxon_a = taxon_a
+        self.taxon_b = taxon_b
+        self.ncbi_tax_id = ncbi_tax_id
         self.interaction_type = interaction_type
-        self.positiveFilters = positiveFilters or []
-        self.negativeFilters = negativeFilters or []
-        self.inputArgs = inputArgs or {}
-        self.curlArgs = curlArgs or {}
+        self.positive_filters = positive_filters or []
+        self.negative_filters = negative_filters or []
+        self.input_args = input_args or {}
+        self.curl_args = curl_args or {}
         self.must_have_references = must_have_references and bool(references)
         self.huge = huge
         self.resource = self.name if resource is None else resource
@@ -306,19 +306,19 @@ class ReadList:
             self,
             name = 'unknown',
             separator = None,
-            name_col = 0,
+            id_col = 0,
             id_type = 'uniprot',
             entity_type = 'protein',
-            fname = None,
-            extraAttrs = {},
+            input = None,
+            extra_attrs = None,
             header = False,
         ):
         
         self.enity_type = entity_type
-        self.name_col = name_col
+        self.id_col = id_col
         self.id_type = id_type
-        self.fname = fname
-        self.extraAttrs = extraAttrs
+        self.input = input
+        self.extra_attrs = extra_attrs or {}
         self.name = name
         self.separator = separator
         self.header = header

@@ -23,28 +23,39 @@ import pypath.dataio as dataio
 
 
 class ReferenceList(object):
-    def __init__(self, nameType, typ, tax, inFile, **kwargs):
-        self.infile = inFile
-        self.nameType = nameType
-        self.typ = typ
-        self.tax = tax
+    
+    
+    def __init__(self, id_type, entity_type, taxon, input, **kwargs):
+        
+        self.input = input
+        self.id_type = id_type
+        self.entity_type = entity_type
+        self.taxon = taxon
         self.kwargs = kwargs
+        
         if 'organism' not in self.kwargs:
-            self.kwargs['organism'] = self.tax
-
+            
+            self.kwargs['organism'] = self.taxon
+    
+    
     def load(self):
-        if hasattr(dataio, self.infile):
-            toCall = getattr(dataio, self.infile)
-            lst = toCall(**self.kwargs)
+        
+        if hasattr(dataio, self.input):
+            input_func = getattr(dataio, self.input)
+            lst = input_func(**self.kwargs)
+            
         else:
-            f = codecs.open(self.infile, encoding='utf-8', mode='r')
+            
+            f = codecs.open(self.input, encoding='utf-8', mode='r')
             lst = []
             for l in f:
                 lst.append(l.strip())
             f.close()
+        
         self.lst = set(lst)
 
     def __contains__(self, something):
+        
         return something in self.lst
 
 

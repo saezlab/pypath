@@ -36,12 +36,12 @@ import time
 
 from pypath.common import *
 from pypath.ig_drawing import *
-from pypath import logn
+import pypath.session_mod as session_mod
 
 __all__ = ['Plot', 'InterSet']
 
 
-class Plot(object):
+class Plot(session_mod.Logger):
     
     def __init__(self,
                  graph=None,
@@ -96,8 +96,6 @@ class Plot(object):
         self.default_vertex_label_size = 6.0
         self.plots = []
         self.session = gen_session_id()
-        self.loglevel = 'INFO'
-        self.ownlog = logn.logw(self.session, self.loglevel)
         self.name = self.name if self.name is not None else self.session
         self.label_sizes = {
             'small': (15.0, 13.7),

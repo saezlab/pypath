@@ -1476,7 +1476,7 @@ class PyPath(session_mod.Logger):
             g['directed'] = False
             g.vs['type'] = []
             g.vs['name'] = []
-            g.vs['nameType'] = []
+            g.vs['id_type'] = []
             g.vs['originalNames'] = [[] for _ in xrange(self.graph.vcount())]
             g.vs['ncbi_tax_id'] = []
             g.vs['exp'] = [{}]
@@ -1738,8 +1738,8 @@ class PyPath(session_mod.Logger):
 
             except:
                 self._log(
-                    'Wrong column index (%s) in extra attributes?
-                    Line #%u' % (str(col), lnum),
+                    'Wrong column index (%s) in extra attributes? '
+                    'Line #%u' % (str(col), lnum),
                     -5,
                 )
                 readError = 1
@@ -2111,7 +2111,7 @@ class PyPath(session_mod.Logger):
         return stim, inh
 
 
-    def process_direction(self, line, dirCol, dirVal, dirSep):
+    def process_direction(self, line, dir_col, dir_val, dir_sep):
         """
         Processes the direction information of an interaction according
         to a data file from a source.
@@ -2119,13 +2119,13 @@ class PyPath(session_mod.Logger):
         :arg list line:
             The stripped and separated line from the resource data file
             containing the information of an interaction.
-        :arg int dirCol:
+        :arg int dir_col:
             The column/position number where the information about the
             direction is to be found (on *line*).
-        :arg list dirVal:
+        :arg list dir_val:
             Contains the terms [str] for which that interaction is to be
             considered directed.
-        :arg str dirSep:
+        :arg str dir_sep:
             Separator for the field in *line* containing the direction
             information (if any).
 
@@ -2134,12 +2134,12 @@ class PyPath(session_mod.Logger):
             directed or not.
         """
 
-        if dirCol is None or dirVal is None:
+        if dir_col is None or dir_val is None:
             return False
 
         else:
-            this_directed = set(line[dirCol].split(dirSep))
-            return len(this_directed & dirVal) > 0
+            this_directed = set(line[dir_col].split(dir_sep))
+            return len(this_directed & dir_val) > 0
 
 
     def read_data_file(
@@ -2198,8 +2198,13 @@ class PyPath(session_mod.Logger):
             '%s.edges.pickle' % _name
         )
         if not reread and not redownload:
-            infile, edge_list_mapped = self.lookup_cache(_name, cache_files,
-                                                       int_cache, edges_cache)
+            
+            infile, edge_list_mapped = self.lookup_cache(
+                _name,
+                cache_files,
+                int_cache,
+                edges_cache
+            )
 
         if not len(edge_list_mapped):
 
@@ -2346,30 +2351,36 @@ class PyPath(session_mod.Logger):
             refSep = settings.refs[1] if isinstance(settings.refs,
                                                     tuple) else ';'
             sigCol = None if not isinstance(sign, tuple) else sign[0]
-            dirCol = None
-            dirVal = None
-            dirSep = None
+            dir_col = None
+            dir_val = None
+            dir_sep = None
 
             if isinstance(is_directed, tuple):
-                dirCol = is_directed[0]
-                dirVal = is_directed[1]
-                dirSep = is_directed[2] if len(is_directed) > 2 else None
+                
+                dir_col = is_directed[0]
+                dir_val = is_directed[1]
+                dir_sep = is_directed[2] if len(is_directed) > 2 else None
 
             elif isinstance(sign, tuple):
-                dirCol = sign[0]
-                dirVal = sign[1:3]
-                dirVal = dirVal if type(dirVal[
-                    0]) in common.simpleTypes else common.flatList(dirVal)
-                dirSep = sign[3] if len(sign) > 3 else None
+                
+                dir_col = sign[0]
+                dir_val = sign[1:3]
+                dir_val = dir_val if type(dir_val[
+                    0]) in common.simpleTypes else common.flatList(dir_val)
+                dir_sep = sign[3] if len(sign) > 3 else None
 
-            dirVal = set(dirVal if isinstance(dirVal, list) else [dirVal])
-            maxCol = max(
+            dir_val = set(dir_val if isinstance(dir_val, list) else [dir_val])
+            max_col = max(
                 filter(
                     lambda i: i is not None, [
-                        settings.id_col_a, settings.id_col_b, self.get_max(
-                            settings.extra_edge_attrs),
-                        self.get_max(settings.extra_node_attrs_a), self.get_max(
-                            settings.extra_node_attrs_b), refCol, dirCol, sigCol,
+                        settings.id_col_a,
+                        settings.id_col_b,
+                        self.get_max(settings.extra_edge_attrs),
+                        self.get_max(settings.extra_node_attrs_a),
+                        self.get_max(settings.extra_node_attrs_b),
+                        refCol,
+                        dir_col,
+                        sigCol,
                         max(itertools.chain(
                             map(lambda x: x[0],
                                 settings.positive_filters),
@@ -2410,11 +2421,11 @@ class PyPath(session_mod.Logger):
                     ]
 
                 # in case line has less fields than needed
-                if len(line) < maxCol:
+                if len(line) < max_col:
                     
                     self._log(
                         'Line #%u has less than %u fields,'
-                        ' skipping! :(\n' % (lnum, maxCol),
+                        ' skipping! :(\n' % (lnum, max_col),
                         5,
                     )
                     
@@ -2436,9 +2447,9 @@ class PyPath(session_mod.Logger):
                     else:
                         this_edge_dir = self.process_direction(
                             line,
-                            dirCol,
-                            dirVal,
-                            dirSep,
+                            dir_col,
+                            dir_val,
+                            dir_sep,
                         )
 
                     refs = []
@@ -2909,9 +2920,9 @@ class PyPath(session_mod.Logger):
         else:
             _input = settings.input
 
-        originalNameType = settings.nameType
-        defaultNameType = self.default_name_type[settings.typ]
-        mapTbl = ''.join([originalNameType, "_", defaultNameType])
+        original_name_type = settings.id_type
+        default_name_type = self.default_name_type[settings.typ]
+        mapTbl = ''.join([original_name_type, "_", default_name_type])
 
         if type(_input) in common.charTypes and os.path.isfile(_input):
             _input = curl.Curl(_input).result
@@ -2925,11 +2936,11 @@ class PyPath(session_mod.Logger):
         self._log("%s opened..." % settings.input)
         # finding the largest referred column number,
         # to avoid references out of index
-        maxCol = max([settings.nameCol, self.get_max(settings.extraAttrs)])
+        max_col = max([settings.id_col, self.get_max(settings.extra_attrs)])
         # iterating lines from input file
         lnum = 1
         readError = 0
-        itemList = []
+        item_list = []
 
         for line in _input: # XXX: Could use enumerate(_input) instead of lnum
 
@@ -2943,9 +2954,9 @@ class PyPath(session_mod.Logger):
                 line = line.rstrip().split(settings.separator)
 
             # in case line has less fields than needed
-            if len(line) < maxCol:
+            if len(line) < max_col:
                 self._log(
-                    'Line #%u has less than %u fields! :(\n' % (lnum, maxCol)
+                    'Line #%u has less than %u fields! :(\n' % (lnum, max_col)
                 )
                 readError = 1
                 break
@@ -2954,8 +2965,8 @@ class PyPath(session_mod.Logger):
 
                 # reading names and attributes
                 try:
-                    newItem = {"name": line[settings.nameCol],
-                               "nameType": settings.nameType,
+                    newItem = {"name": line[settings.id_col],
+                               "id_type": settings.id_type,
                                "type": settings.typ,
                                "source": settings.name}
 
@@ -2963,7 +2974,7 @@ class PyPath(session_mod.Logger):
                     self._log(
                         'Wrong name column indexes (%u and %u), '
                         'or wrong separator (%s)? Line #%u' % (
-                            settings.nameCol,
+                            settings.id_col,
                             settings.separator,
                             lnum,
                         )
@@ -2972,39 +2983,39 @@ class PyPath(session_mod.Logger):
                     break
 
                 # getting additional attributes
-                attrsItem = self.get_attrs(line, settings.extraAttrs, lnum)
+                attrsItem = self.get_attrs(line, settings.extra_attrs, lnum)
                 # merging dictionaries
                 newItem.update(attrsItem)
 
             if readError != 0:
                 break
 
-            itemList.append(newItem)
+            item_list.append(newItem)
             lnum += 1
 
         if hasattr(_input, 'close'):
             _input.close()
 
-        itemListMapped = self.map_list(itemList, singleList=True)
-        itemListMapped = list(set(itemListMapped))
+        item_list_mapped = self.map_list(item_list, single_list=True)
+        item_list_mapped = list(set(item_list_mapped))
         self._log(
             '%u lines have been read from %s, %u  items after mapping' % (
                 lnum,
                 settings.input,
-                len(itemListMapped)
+                len(item_list_mapped)
             )
         )
-        self.lists[settings.name] = itemListMapped
+        self.lists[settings.name] = item_list_mapped
 
 
-    def map_list(self, lst, singleList=False):
+    def map_list(self, lst, single_list=False):
         """
         Maps the names from a list of edges or items (molecules).
 
         :arg list lst:
             List of items or edge dictionaries whose names have to be
             mapped.
-        :arg bool singleList:
+        :arg bool single_list:
             Optional, ``False`` by default. Determines whether the
             provided elements are items or edges. This is, either calls
             :py:meth:`pypath.main.PyPath.map_edge` or
@@ -3015,19 +3026,19 @@ class PyPath(session_mod.Logger):
             (*list*) -- Copy of *lst* with their elements' names mapped.
         """
 
-        listMapped = []
+        list_mapped = []
 
-        if singleList:
+        if single_list:
 
             for item in lst:
-                listMapped += self.map_item(item)
+                list_mapped += self.map_item(item)
 
         else:
 
             for edge in lst:
-                listMapped += self.map_edge(edge)
+                list_mapped += self.map_edge(edge)
 
-        return listMapped
+        return list_mapped
 
     def map_item(self, item):
         """
@@ -3046,7 +3057,7 @@ class PyPath(session_mod.Logger):
 
         # TODO: include
         defaultNames = mapping.map_name(
-            item['name'], item['nameType'],
+            item['name'], item['id_type'],
             self.default_name_type[item['type']])
 
         if len(defaultNames) == 0:
@@ -3070,37 +3081,43 @@ class PyPath(session_mod.Logger):
             names.
         """
 
-        edgeStack = []
+        edge_stack = []
 
-        defNameA = mapping.map_name(edge['id_a'], edge['id_type_a'],
-                                        self.default_name_type[edge['entity_type_a']],
-                                        ncbi_tax_id = edge['taxon_a'])
-        # print 'mapped %s to %s' % (str(edge['id_a']), str(defaultNameA))
+        def_name_a = mapping.map_name(
+            edge['id_a'],
+            edge['id_type_a'],
+            self.default_name_type[edge['entity_type_a']],
+            ncbi_tax_id = edge['taxon_a']
+        )
+        # print 'mapped %s to %s' % (str(edge['id_a']), str(default_name_a))
 
-        defNameB = mapping.map_name(edge['id_b'], edge['id_type_b'],
-                                        self.default_name_type[edge['entity_type_b']],
-                                        ncbi_tax_id = edge['taxon_b'])
-        # print 'mapped %s to %s' % (str(edge['id_b']), str(defaultNameB))
+        def_name_b = mapping.map_name(
+            edge['id_b'],
+            edge['id_type_b'],
+            self.default_name_type[edge['entity_type_b']],
+            ncbi_tax_id = edge['taxon_b']
+        )
+        # print 'mapped %s to %s' % (str(edge['id_b']), str(default_name_b))
 
         # this is needed because the possibility ambigous mapping
         # one name can be mapped to multiple ones
         # this multiplies the nodes and edges
         # in case of proteins this does not happen too often
+        
+        for dnA, dnB in itertools.product(def_name_a, def_name_b):
+            
+            edge['default_name_a'] = dnA
+            edge['default_name_type_a'] = (
+                self.default_name_type[edge['entity_type_a']]
+            )
+            
+            edge['default_name_b'] = dnB
+            edge['default_name_type_b'] = (
+                self.default_name_type[edge['entity_type_b']]
+            )
+            edge_stack.append(edge)
 
-        # XXX: I refactored this into a single for loop (using itertools.product):
-
-        #for dnA in defNameA:
-            #for dnB in defNameB:
-        for dnA, dnB in itertools.product(defNameA, defNameB):
-            edge['defaultNameA'] = dnA
-            edge['defaultNameTypeA'] = self.default_name_type[edge['entity_type_a']]
-
-            edge['defaultNameB'] = dnB
-            edge['defaultNameTypeB'] = self.default_name_type[edge['entity_type_b']]
-            edgeStack.append(edge)
-            # print 'new edge: %s' % str(edge)
-
-        return edgeStack
+        return edge_stack
 
     def combine_attr(self, lst, num_method=max):
         """
@@ -3452,7 +3469,7 @@ class PyPath(session_mod.Logger):
         self.update_vname()
         self.update_db_dict()
 
-    def delete_unknown(self, tax, typ='protein', defaultNameType=None):
+    def delete_unknown(self, tax, typ='protein', default_name_type=None):
         """
         Removes those items which are not in the list of all default
         IDs of the organisms. By default, it means to remove all protein
@@ -3466,7 +3483,7 @@ class PyPath(session_mod.Logger):
             type. These can be ``'protein'``, ``'drug'``, ``'lncrna'``,
             ``'mirna'`` or any other type defined in
             :py:attr:`pypath.main.PyPath.default_name_type`.
-        :arg str defaultNameType:
+        :arg str default_name_type:
             Optional, ``None`` by default. The default name type for the
             given molecular species. If none is specified takes it from
             :py:attr:`pypath.main.PyPath.default_name_type` (e.g.: for
@@ -3475,15 +3492,15 @@ class PyPath(session_mod.Logger):
 
         g = self.graph
 
-        if not defaultNameType:
-            defaultNameType = self.default_name_type[typ]
+        if not default_name_type:
+            default_name_type = self.default_name_type[typ]
 
         toDel = []
         reflists = {}
         self.update_vname()
 
         for t in tax:
-            idx = (defaultNameType, typ, t)
+            idx = (default_name_type, typ, t)
 
             if idx in self.reflists:
                 reflists[t] = self.reflists[idx].lst
@@ -3500,8 +3517,8 @@ class PyPath(session_mod.Logger):
         sys.stdout.write(' :: Comparing with reference lists...')
 
         for t in tax:
-            nt = g.vs['nameType']
-            nt = [i for i, j in enumerate(nt) if j == defaultNameType]
+            nt = g.vs['id_type']
+            nt = [i for i, j in enumerate(nt) if j == default_name_type]
             ty = g.vs['type']
             ty = [i for i, j in enumerate(ty) if j == typ]
             tx = g.vs['ncbi_tax_id']
@@ -3568,8 +3585,8 @@ class PyPath(session_mod.Logger):
 
         return s
 
-    def add_update_vertex(self, defAttrs, originalName, originalNameType,
-                          extraAttrs={}, add=False):
+    def add_update_vertex(self, defAttrs, originalName, original_name_type,
+                          extra_attrs={}, add=False):
         """
         Updates the attributes of one node in the (undirected) network.
         Optionally it creates a new node and sets the attributes, but it
@@ -3580,10 +3597,10 @@ class PyPath(session_mod.Logger):
             The attribute dictionary of the node to be updated/created.
         :arg str originalName:
             Original node name (e.g.: UniProt ID).
-        :arg str originalNameType:
+        :arg str original_name_type:
             The original node name type (e.g.: for the previous example,
             this would be ``'uniprot'``).
-        :arg dict extraAttrs:
+        :arg dict extra_attrs:
             Optional, ``{}`` by default. Contains any extra attributes
             for the node to be updated.
         :arg bool add:
@@ -3602,7 +3619,7 @@ class PyPath(session_mod.Logger):
 
             n = g.vcount()
             g.add_vertices(1)
-            g.vs[n]['originalNames'] = {originalName: originalNameType}
+            g.vs[n]['originalNames'] = {originalName: original_name_type}
             thisNode = g.vs.find(name = defAttrs["name"])
 
         else:
@@ -3611,12 +3628,12 @@ class PyPath(session_mod.Logger):
             if thisNode["originalNames"] is None:
                 thisNode["originalNames"] = {}
 
-            thisNode["originalNames"][originalName] = originalNameType
+            thisNode["originalNames"][originalName] = original_name_type
 
         for key, value in iteritems(defAttrs):
             thisNode[key] = value
 
-        for key, value in iteritems(extraAttrs):
+        for key, value in iteritems(extra_attrs):
 
             if key not in g.vs.attributes():
                 g.vs[key] = ([[] for _ in xrange(self.graph.vcount())]
@@ -3625,7 +3642,7 @@ class PyPath(session_mod.Logger):
             thisNode[key] = self.combine_attr([thisNode[key], value])
 
     def add_update_edge(self, id_a, id_b, source, is_directed, refs, stim, inh,
-                        taxon_a, taxon_b, typ, extraAttrs={}, add=False):
+                        taxon_a, taxon_b, typ, extra_attrs={}, add=False):
         """
         Updates the attributes of one edge in the (undirected) network.
         Optionally it creates a new edge and sets the attributes, but it
@@ -3654,7 +3671,7 @@ class PyPath(session_mod.Logger):
             NCBI Taxonomic identifier of the target molecule.
         :arg str typ:
             The type of interaction (e.g.: ``'PPI'``)
-        :arg dict extraAttrs:
+        :arg dict extra_attrs:
             Optional, ``{}`` by default. Contains any extra attributes
             for the edge to be updated.
         :arg bool add:
@@ -3727,7 +3744,7 @@ class PyPath(session_mod.Logger):
         self.add_list_eattr(edge, 'type', typ)
 
         # adding extra attributes:
-        for key, value in iteritems(extraAttrs):
+        for key, value in iteritems(extra_attrs):
 
             if key not in g.es.attributes():
                 g.es[key] = ([[] for _ in xrange(self.graph.ecount())]
@@ -4417,30 +4434,30 @@ class PyPath(session_mod.Logger):
             total=len(edge_list), name="Processing nodes", interval=50)
 
         for e in edge_list:
-            aexists = self.node_exists(e["defaultNameA"])
-            bexists = self.node_exists(e["defaultNameB"])
+            aexists = self.node_exists(e["default_name_a"])
+            bexists = self.node_exists(e["default_name_b"])
 
             if not aexists and (not regulator or bexists):
-                nodes.append(e["defaultNameA"])
+                nodes.append(e["default_name_a"])
 
             if not bexists and not regulator:
-                nodes.append(e["defaultNameB"])
+                nodes.append(e["default_name_b"])
 
             prg.step()
 
         prg.terminate()
         self.new_nodes(set(nodes))
-        self._log('New nodes have been created', 'INFO')
+        self._log('New nodes have been created')
         self.update_vname()
         prg = Progress(
             total=len(edge_list), name='Processing edges', interval=50)
 
         for e in edge_list:
-            aexists = self.node_exists(e["defaultNameA"])
-            bexists = self.node_exists(e["defaultNameB"])
+            aexists = self.node_exists(e["default_name_a"])
+            bexists = self.node_exists(e["default_name_b"])
 
             if aexists and bexists:
-                edge = self.edge_exists(e["defaultNameA"], e["defaultNameB"])
+                edge = self.edge_exists(e["default_name_a"], e["default_name_b"])
 
                 if isinstance(edge, list):
                     edges.append(tuple(edge))
@@ -4449,9 +4466,8 @@ class PyPath(session_mod.Logger):
 
         prg.terminate()
         self.new_edges(set(edges))
-        self._log("New edges have been created", 'INFO')
-        self._log(("Introducing new node and edge attributes..."),
-                        'INFO')
+        self._log('New edges have been created')
+        self._log('Introducing new node and edge attributes...')
         prg = Progress(
             total=len(edge_list), name="Processing attributes", interval=30)
         nodes_updated = []
@@ -4460,32 +4476,32 @@ class PyPath(session_mod.Logger):
         for e in edge_list:
             # adding new node attributes
 
-            if e["defaultNameA"] not in nodes_updated:
+            if e["default_name_a"] not in nodes_updated:
                 defAttrs = {
-                    "name": e["defaultNameA"],
-                    "label": e["defaultNameA"],
-                    "nameType": e["defaultNameTypeA"],
+                    "name": e["default_name_a"],
+                    "label": e["default_name_a"],
+                    "id_type": e["default_name_typeA"],
                     "type": e["entity_type_a"],
                     "ncbi_tax_id": e["taxon_a"]
                 }
                 self.add_update_vertex(defAttrs, e["id_a"], e["id_type_a"],
                                        e["attrs_node_a"])
-                nodes_updated.append(e["defaultNameA"])
+                nodes_updated.append(e["default_name_a"])
 
-            if e["defaultNameB"] not in nodes_updated:
+            if e["default_name_b"] not in nodes_updated:
                 defAttrs = {
-                    "name": e["defaultNameB"],
-                    "label": e["defaultNameB"],
-                    "nameType": e["defaultNameTypeB"],
+                    "name": e["default_name_b"],
+                    "label": e["default_name_b"],
+                    "id_type": e["default_name_typeB"],
                     "type": e["entity_type_b"],
                     "ncbi_tax_id": e["taxon_b"]
                 }
                 self.add_update_vertex(defAttrs, e["id_b"], e["id_type_b"],
                                        e["attrs_node_b"])
-                nodes_updated.append(e["defaultNameB"])
+                nodes_updated.append(e["default_name_b"])
 
             # adding new edge attributes
-            self.add_update_edge(e["defaultNameA"], e["defaultNameB"],
+            self.add_update_edge(e["default_name_a"], e["default_name_b"],
                                  e["source"], e["is_directed"], e["references"],
                                  e["stim"], e["inh"], e["taxon_a"], e["taxon_b"],
                                  e["type"], e["attrs_edge"])
@@ -5282,8 +5298,8 @@ class PyPath(session_mod.Logger):
             self.genesymbol_labels(graph=self.dgraph, remap_all=remap_all)
 
         g = self.graph if graph is None else graph
-        defaultNameType = dnt["protein"]
-        labelNameTypes = {'protein': 'genesymbol',
+        default_name_type = dnt["protein"]
+        label_name_types = {'protein': 'genesymbol',
                           'mirna': 'mir-mat-name'}
 
         if 'label' not in g.vs.attributes():
@@ -5297,9 +5313,9 @@ class PyPath(session_mod.Logger):
             if l is None:
                 label = []
 
-                if v['type'] in labelNameTypes:
+                if v['type'] in label_name_types:
                     label = mapping.map_name(v['name'], dnt[v['type']],
-                                                labelNameTypes[v['type']],
+                                                label_name_types[v['type']],
                                                 ncbi_tax_id=v['ncbi_tax_id'])
 
                 if not len(label):
@@ -5986,7 +6002,7 @@ class PyPath(session_mod.Logger):
         """
 
         reflist.load()
-        idx = (reflist.nameType, reflist.typ, reflist.tax)
+        idx = (reflist.id_type, reflist.entity_type, reflist.taxon)
         self.reflists[idx] = reflist
 
     def load_negatives(self): # FIXME: global name 'negative' is not defined
@@ -6456,11 +6472,11 @@ class PyPath(session_mod.Logger):
                                  else e['negative_refs'] for e in g.es]
 
         for n in neg:
-            aexists = n["defaultNameA"] in g.vs['name']
-            bexists = n["defaultNameB"] in g.vs['name']
+            aexists = n["default_name_a"] in g.vs['name']
+            bexists = n["default_name_b"] in g.vs['name']
 
             if aexists and bexists:
-                edge = self.edge_exists(n["defaultNameA"], n["defaultNameB"])
+                edge = self.edge_exists(n["default_name_a"], n["default_name_b"])
 
                 if isinstance(edge, int):
                     g.es[edge]['negative'].add(settings.name)
@@ -6962,7 +6978,7 @@ class PyPath(session_mod.Logger):
 
         for v in self.graph.vs:
 
-            if v.index in nodes and v['nameType'] == 'uniprot':
+            if v.index in nodes and v['id_type'] == 'uniprot':
                 uniprots.append(v['name'])
 
         self.chembl.compounds_targets(uniprots, assay_types=assay_types,
