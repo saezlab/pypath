@@ -60,8 +60,8 @@ import pypath.mapping_input as mapping_input
 import pypath.uniprot_input as uniprot_input
 import pypath.input_formats as input_formats
 import pypath.settings as settings
-import pypath.session as session
-_logger = session.get_logger()
+import pypath.session_mod as session_mod
+_logger = session_mod.get_log()
 
 
 __all__ = ['MapReader', 'MappingTable', 'Mapper']
@@ -86,7 +86,7 @@ MappingTableKey = collections.namedtuple(
 MappingTableKey.__new__.__defaults__ = ('protein', 9606)
 
 
-class MapReader(session.Logger):
+class MapReader(session_mod.Logger):
     """
     Reads ID translation data and creates ``MappingTable`` instances.
     When initializing ID conversion tables for the first time
@@ -127,7 +127,7 @@ class MapReader(session.Logger):
             ``MappingTable``.
         """
         
-        session.Logger.__init__(self, name = 'mapping')
+        session_mod.Logger.__init__(self, name = 'mapping')
         
         self.id_type_a = param.id_type_a
         self.id_type_b = param.id_type_b
@@ -650,7 +650,7 @@ class MapReader(session.Logger):
         return {x.strip() for x in names}
 
 
-class MappingTable(session.Logger):
+class MappingTable(session_mod.Logger):
     """
     This is the class directly handling ID translation data.
     It does not care about loading it or what kind of IDs these
@@ -670,7 +670,7 @@ class MappingTable(session.Logger):
             lifetime = 300,
         ):
         
-        session.Logger.__init__(self, name = 'mapping')
+        session_mod.Logger.__init__(self, name = 'mapping')
         
         self.id_type = id_type
         self.target_id_type = target_id_type
@@ -736,7 +736,7 @@ class MappingTable(session.Logger):
         )
 
 
-class Mapper(session.Logger):
+class Mapper(session_mod.Logger):
     
     
     def __init__(
@@ -754,7 +754,7 @@ class Mapper(session.Logger):
             to be removed at next cleanup.
         """
         
-        session.Logger.__init__(self, name = 'mapping')
+        session_mod.Logger.__init__(self, name = 'mapping')
         
         
         @_mapper_cleanup_timeloop.job(

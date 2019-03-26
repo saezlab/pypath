@@ -59,6 +59,7 @@ try:
     import urllib2
 except ImportError:
     # this works seemless in Py3:
+    import urllib.request
     urllib2 = urllib.request
 
 import httplib2
@@ -66,9 +67,11 @@ try:
     import urlparse
 except:
     # this works seemless in Py3:
+    import urllib.parse
     urlparse = urllib.parse
 
 if not hasattr(urllib, 'quote'):
+    import urllib.parse
     _urllib = urllib
     urllib = _urllib.parse
 

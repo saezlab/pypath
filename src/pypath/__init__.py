@@ -25,7 +25,7 @@ data from various resources.
 """
 
 import pypath._version as _version_mod
-import pypath.session as _session_mod
+import pypath.session_mod as _session_mod
 
 __version__ = _version.__version__
 __author__ = _version.__author__
