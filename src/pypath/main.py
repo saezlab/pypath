@@ -1394,13 +1394,6 @@ class PyPath(session_mod.Logger):
     :var list raw_data:
         Contains a list of loaded edges [dict] from a data file. See
         :py:meth:`PyPath.read_data_file` for more information.
-    :var dict reflists:
-        Contains the reference list(s) loaded. Keys are [tuple]
-        containing the node name type [str] (e.g.: ``'uniprot'``), type
-        [str] (e.g.: ``'protein'``) and taxonomic ID [int] (e.g.:
-        ``'9606'``). Values are the corresponding
-        :py:class:`pypath.reflists.ReferenceList` instance (see class
-        documentation for more information).
     :var dict seq:
         (?)
     :var str session:
@@ -1507,7 +1500,6 @@ class PyPath(session_mod.Logger):
             self.ncbi_tax_id = ncbi_tax_id or settings.get('default_organism')
             self.default_name_type = settings.get('default_name_types')
             self.data = {}
-            self.reflists = {}
             self.negatives = {}
             self.raw_data = None
             self.lists = {}
@@ -1657,7 +1649,6 @@ class PyPath(session_mod.Logger):
 
                     return None
 
-        self.load_reflists() # XXX: This is redundant (see line 4565 in load_resources)
         self.load_resources(
             lst=lst, exclude=exclude, reread=reread, redownload=redownload,
             cache_files=cache_files)
@@ -3463,7 +3454,12 @@ class PyPath(session_mod.Logger):
         self.update_vname()
         self.update_db_dict()
 
-    def delete_unknown(self, tax, typ='protein', default_name_type=None):
+    def delete_unknown(
+            self,
+            organisms_allowed = None,
+            entity_type = 'protein',
+            default_name_type = None,
+        ):
         """
         Removes those items which are not in the list of all default
         IDs of the organisms. By default, it means to remove all protein
@@ -3487,44 +3483,51 @@ class PyPath(session_mod.Logger):
         g = self.graph
 
         if not default_name_type:
-            default_name_type = self.default_name_type[typ]
-
-        toDel = []
-        reflists = {}
+            
+            default_name_type = self.default_name_type[entity_type]
+        
+        organisms_allowed = organisms_allowed or {self.ncbi_tax_id}
+        
+        to_delete = []
         self.update_vname()
 
         for t in tax:
             idx = (default_name_type, typ, t)
 
-            if idx in self.reflists:
-                reflists[t] = self.reflists[idx].lst
-
-            else:
-                msg = (
-                    'Missing reference list for %s (default name type: %s), '
-                    'in taxon %u' % (idx[1], idx[0], t)
-                )
-                self._log(msg, -5)
-                sys.stdout.write(''.join(['\t', msg, '\n']))
-
-                return False
-
         sys.stdout.write(' :: Comparing with reference lists...')
 
-        for t in tax:
-            nt = g.vs['id_type']
-            nt = [i for i, j in enumerate(nt) if j == default_name_type]
-            ty = g.vs['type']
-            ty = [i for i, j in enumerate(ty) if j == typ]
-            tx = g.vs['ncbi_tax_id']
-            tx = [i for i, j in enumerate(tx) if j == t]
-            vs = list((set(nt) & set(ty)) & set(tx))
-            vn = [g.vs[i]['name'] for i in vs]
-            toDelNames = list(set(vn) - set(reflists[t]))
-            toDel += [self.nodDct[n] for n in toDelNames]
-
-        g.delete_vertices(toDel)
+        names = g.vs['id_type']
+        names = [i for i, j in enumerate(names) if j == default_name_type]
+        entity_types = g.vs['type']
+        entity_types = [
+            i for i, j in enumerate(entity_types)
+            if j == entity_type
+        ]
+        organisms = g.vs['ncbi_tax_id']
+        organisms = [
+            i for i, j in enumerate(organisms)
+            if j in organisms_allowed
+        ]
+        vertices = list((set(names) & set(entity_types)) & set(organisms))
+        names_selected = [g.vs[i]['name'] for i in vertices]
+        
+        names_to_delete = set.intersection(
+            *(
+                reflists.is_not(
+                    names = names_selected,
+                    id_type = default_name_type,
+                    ncbi_tax_id = ncbi_tax_id,
+                )
+                for ncbi_tax_id in organisms_allowed
+            )
+        )
+        
+        vertices_to_delete = [self.nodDct[n] for n in names_to_delete]
+        
+        g.delete_vertices(to_delete)
+        
         sys.stdout.write(' done.\n')
+
 
     def clean_graph(self):
         """
@@ -5886,7 +5889,6 @@ class PyPath(session_mod.Logger):
         if lst is None:
             lst = omnipath
 
-        self.load_reflists()
         huge = dict((k, v) for k, v in iteritems(lst) if v.huge
                     and k not in exclude and v.name not in cache_files)
         nothuge = dict((k, v) for k, v in iteritems(lst)
@@ -5976,40 +5978,6 @@ class PyPath(session_mod.Logger):
         self.update_sources()
         self.update_vertex_sources()
 
-    def load_reflists(self, reflst=None):
-        """
-        Loads the reference lists defined as
-        :py:class:`pypath.reflists.ReferenceList` instances, either
-        provided by user through keyword argument *reflist* or from
-        all human UniProts by default.
-
-        :arg list reflst:
-            Optional, ``None`` by default. Contains the instances of
-            :py:class:`pypath.reflists.ReferenceList` to be loaded. If
-            none is passed, loads the reference list of all UniProt.
-        """
-
-        if reflst is None:
-            reflst = reflists.get_reflists()
-
-        for rl in reflst:
-            self.load_reflist(rl)
-
-    def load_reflist(self, reflist):
-        """
-        Takes a :py:class:`pypath.reflists.ReferenceList` and loads it
-        into the current network's attribute
-        :py:attr:`pypath.main.PyPath.reflists`.
-
-        :arg pypath.reflists.ReferenceList reflist:
-            Contains the information and methods to load the specified
-            reference information from a resource. See the class
-            documentation for more information.
-        """
-
-        reflist.load()
-        idx = (reflist.id_type, reflist.entity_type, reflist.taxon)
-        self.reflists[idx] = reflist
 
     def load_negatives(self): # FIXME: global name 'negative' is not defined
         """
@@ -13741,12 +13709,7 @@ class PyPath(session_mod.Logger):
 
             self.update_vname()
             self.update_vindex()
-            self.genesymbol_labels(remap_all=True)
-            refl = ('uniprot', 'protein', target)
-
-            if refl not in self.reflists:
-                self.load_reflists([
-                    reflists.ReferenceList(*refl, input='all_uniprots')])
+            self.genesymbol_labels(remap_all = True)
 
             sys.stdout.write('\n')
             self.clean_graph()
@@ -13757,10 +13720,13 @@ class PyPath(session_mod.Logger):
                             ecount_before, graph.ecount()))
 
         if return_graph:
+            
             return graph
-
+    
+    
     homology_translation = orthology_translation
-
+    
+    
     def random_walk_with_return(self, q, graph=None, c=.5, niter=1000):
         """
         Random walk with return (RWR) starting from one or more query nodes.
