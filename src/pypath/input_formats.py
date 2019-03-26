@@ -50,7 +50,7 @@ class FileMapping(MappingInput):
             self,
             id_type_a,
             id_type_b,
-            fname,
+            input_,
             col_a,
             col_b,
             separator = None,
@@ -67,7 +67,7 @@ class FileMapping(MappingInput):
             ncbi_tax_id = ncbi_tax_id,
         )
         
-        self.fname = fname
+        self.input = input_
         self.col_a = col_a
         self.col_b = col_b
         self.separator = separator

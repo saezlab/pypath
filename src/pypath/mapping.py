@@ -397,23 +397,25 @@ class MapReader(session_mod.Logger):
     def read_mapping_file(self):
         
         if (
-            not os.path.exists(param.input) and
-            not hasattr(mapping_input, param.input)
+            not os.path.exists(self.param.input) and
+            not hasattr(mapping_input, self.param.input)
         ):
             
             return {}
         
-        if hasattr(mapping_input, param.input):
+        if hasattr(mapping_input, self.param.input):
         
-            to_call = getattr(mapping_input, param.input)
+            to_call = getattr(mapping_input, self.param.input)
             input_args = (
-                param.input_args if hasattr(param, 'input_args') else {}
+                self.param.input_args
+                    if hasattr(self.param, 'input_args') else
+                {}
             )
             infile = to_call(**input_args)
         
         else:
             
-            infile = open(param.input, encoding = 'utf-8', mode = 'r')
+            infile = open(self.param.input, encoding = 'utf-8', mode = 'r')
             total = os.path.getsize(param.input)
         
         a_to_b = collections.defaultdict(set)
@@ -421,7 +423,7 @@ class MapReader(session_mod.Logger):
         
         for i, line in enumerate(infile):
             
-            if param.header and i < param.header:
+            if self.param.header and i < self.param.header:
                 
                 continue
             
@@ -431,14 +433,14 @@ class MapReader(session_mod.Logger):
             
             if hasattr(line, 'rstrip'):
                 
-                line = line.rstrip().split(param.separator)
+                line = line.rstrip().split(self.param.separator)
             
-            if len(line) < max(param.col_a, param.col_b):
+            if len(line) < max(self.param.col_a, self.param.col_b):
                 
                 continue
             
-            id_a = line[param.col_a]
-            id_b = line[param.col_b]
+            id_a = line[self.param.col_a]
+            id_b = line[self.param.col_b]
             
             if self.load_a_to_b:
                 
@@ -469,7 +471,7 @@ class MapReader(session_mod.Logger):
             
             self.set_uniprot_space()
         
-        if param.target_id_type != 'uniprot':
+        if self.param.target_id_type != 'uniprot':
             
             u_target = self._read_mapping_uniprot_list('ACC')
             
@@ -521,8 +523,8 @@ class MapReader(session_mod.Logger):
         Reads a mapping table from UniProt "upload lists" service.
         """
         
-        id_type_a = param.target_ac_name
-        id_type_b = param.ac_name
+        id_type_a = self.param.target_ac_name
+        id_type_b = self.param.ac_name
         ac_list = ac_list or self.uniprots
         
         url = urls.urls['uniprot_basic']['lists']
@@ -703,7 +705,7 @@ class MappingTable(session_mod.Logger):
         
         if key in self.data:
             
-            return data[key]
+            return self.data[key]
         
         return set()
     
@@ -1220,7 +1222,7 @@ class Mapper(session_mod.Logger):
             
             # what is this? is it necessary?
             # probably should be removed
-            if orig - mapped_names > 0:
+            if orig - mapped_names:
                 
                 self.uniprot_mapped.append((orig, mapped_names))
             
@@ -1378,14 +1380,14 @@ class Mapper(session_mod.Logger):
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
         swissprots = set()
         
-        for uniprot in lst:
+        for uniprot in uniprots:
             
             swissprot = []
             genesymbols = self.map_name(
                 name = uniprot,
                 id_type = 'trembl',
                 target_id_type = 'genesymbol',
-                ncbi_tax_id = ncbi_tax_id
+                ncbi_tax_id = ncbi_tax_id,
             )
             
             for genesymbol in genesymbols:
@@ -1399,7 +1401,7 @@ class Mapper(session_mod.Logger):
             
             if not swissprot:
                 
-                swissprots.append(uniprot)
+                swissprots.add(uniprot)
                 
             else:
                 
@@ -1443,14 +1445,14 @@ class Mapper(session_mod.Logger):
         if (
             resource.type in {'file', 'pickle'} and
             not (
-                os.path.exists(resource.fname) or
-                hasattr(mapping_input, resource.fname)
+                os.path.exists(resource.input) or
+                hasattr(mapping_input, resource.input)
             )
         ):
             
             self._log(
                 'Could not load mapping: no such '
-                'file or function: `%s`.' % resource.fname
+                'file or function: `%s`.' % resource.input
             )
             return
         
