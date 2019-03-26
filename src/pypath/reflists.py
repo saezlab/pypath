@@ -18,47 +18,217 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
+
+import os
+import json
+import datetime
+import time
+import timeloop
+# we use this for simple little tasks only
+# and don't want engage another logger
+timeloop.app.logging.disable(level = 9999)
+
 import pypath.uniprot_input as uniprot_input
 import pypath.dataio as dataio
+import pypath.common as common
+import pypath.session_mod as session_mod
+import pypath.settings as settings
+import pypath.cache as cache_mod
 
 
-class ReferenceList(object):
+# method names for ID types
+inputs = {
+    'uniprot': 'all_uniprots',
+    'mirbase': 'mirbase_mature_all',
+    'mir-pre': 'mirbase_precursor_all',
+}
+
+
+_reflists_cleanup_timeloop = timeloop.Timeloop()
+
+
+class ReferenceListManager(session_mod.Logger):
     
     
-    def __init__(self, id_type, entity_type, taxon, input, **kwargs):
+    def __init__(self, cleanup_period = 10, lifetime = 300):
         
-        self.input = input
-        self.id_type = id_type
-        self.entity_type = entity_type
-        self.taxon = taxon
-        self.kwargs = kwargs
+        session_mod.Logger.__init__(self, name = 'reflists')
         
-        if 'organism' not in self.kwargs:
+        
+        @_reflists_cleanup_timeloop.job(
+            interval = datetime.timedelta(
+                seconds = cleanup_period
+            )
+        )
+        def _cleanup():
             
-            self.kwargs['organism'] = self.taxon
-    
-    
-    def load(self):
+            self._remove_expired()
         
-        if hasattr(dataio, self.input):
-            input_func = getattr(dataio, self.input)
-            lst = input_func(**self.kwargs)
+        
+        _reflists_cleanup_timeloop.start(block = False)
+        
+        self.lifetime = lifetime
+        self.lists = {}
+        self.expiry = {}
+        self.cachedir = cache_mod.get_cachedir()
+        
+        self._log('ReferenceListManager has been created.')
+    
+    
+    def which_list(self, id_type, ncbi_tax_id = None):
+        
+        ncbi_tax_id = ncbi_tax_id or settings.get('default_organism')
+        
+        key = (id_type, ncbi_tax_id)
+        
+        self.expiry[key] = time.time()
+        
+        if key not in self.lists:
+            
+            self.load(key)
+        
+        if key in self.lists:
+            
+            return self.lists[key]
+    
+    
+    def load(self, key):
+        
+        cachefile = common.md5(json.dumps(key))
+        cachefile = os.path.join(self.cachedir, cachefile)
+        
+        if os.path.exists(cachefile):
+            
+            self.lists[key] = pickle.load(open(cachefile, 'rb'))
+            
+            self._log(
+                'Reference list for ID type `%s` for organism `%u` '
+                'has been loaded from `%s`.' % (key + (self.cachefile,))
+            )
             
         else:
             
-            f = codecs.open(self.input, encoding='utf-8', mode='r')
-            lst = []
-            for l in f:
-                lst.append(l.strip())
-            f.close()
-        
-        self.lst = set(lst)
-
-    def __contains__(self, something):
-        
-        return something in self.lst
-
-
-def get_reflists():
+            self.lists[key] = self._load(key)
+            pickle.dump(self.lists[key], open(cachefile, 'wb'))
+            self._log(
+                'Reference list for ID type `%s` for organism `%u` '
+                'has been saved to `%s`.' % (key + (self.cachefile,))
+            )
     
-    return [ReferenceList('uniprot', 'protein', 9606, 'all_uniprots')]
+    
+    def _load(self, key):
+        
+        data = set()
+        input_method = inputs[key[0]]
+        
+        if os.path.exists(self.input):
+            
+            with open(self.input, 'r') as fp:
+                
+                data = {l.strip() for l in fp.readlines()}
+            
+            self._log(
+                'Reference list for ID type `%s` for has organism `%u` has '
+                'been loaded from `%s`.' % (key + (self.input,))
+            )
+            
+        else:
+            
+            if hasattr(dataio, self.input):
+                
+                input_func = getattr(dataio, self.input)
+                
+            else hasattr(mapping_input, self.input):
+                
+                input_func = getattr(mapping_input, self.input)
+            
+            data = input_func()
+            self._log(
+                'Reference list for ID type `%s` for has organism `%u` has '
+                'been loaded by method `%s`.' % (key + (str(input_method),))
+            )
+        
+        return data
+    
+    
+    def check(self, name, id_type, ncbi_tax_id = None):
+        """
+        Checks if the identifier ``name`` is in the reference list with
+        the provided ``id_type`` and organism.
+        """
+        
+        lst = self.which_list(id_type = id_type, ncbi_tax_id = ncbi_tax_id)
+        
+        return name in lst
+    
+    
+    def select(self, names, id_type, ncbi_tax_id = None):
+        """
+        Selects the identifiers in ``names`` which are in the reference list
+        with the provided ``id_type`` and organism.
+        """
+        
+        names = set(names)
+        
+        lst = self.which_list(id_type = id_type, ncbi_tax_id = ncbi_tax_id)
+        
+        return names & lst
+    
+    
+    def _remove_expired(self):
+        
+        for key, last_used in iteritems(self.expiry):
+            
+            if time.time() - last_used > self.lifetime and key in self.lists:
+                
+                del self.lists[key]
+            
+            if key not in self.lists:
+                
+                del self.expiry[key]
+    
+    
+    def __del__(self):
+        
+        _reflists_cleanup_timeloop.stop()
+
+
+def init():
+    
+    globals()['manager'] = ReferenceListManager()
+
+
+def get_manager():
+    
+    if 'manager' not in globals():
+        
+        init()
+    
+    return globals()['manager']
+
+
+def check(name, id_type, ncbi_tax_id = None):
+    """
+    Checks if the identifier ``name`` is in the reference list with
+    the provided ``id_type`` and organism.
+    """
+    
+    manager = get_manager()
+    
+    manager.check(name = name, id_type = id_type, ncbi_tax_id = ncbi_tax_id)
+
+
+def select(names, id_type, ncbi_tax_id = None):
+    """
+    Selects the identifiers in ``names`` which are in the reference list
+    with the provided ``id_type`` and organism.
+    """
+    
+    manager = get_manager()
+    
+    manager.select(
+        names = names,
+        id_type = id_type,
+        ncbi_tax_id = ncbi_tax_id,
+    )

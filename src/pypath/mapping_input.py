@@ -188,3 +188,13 @@ def mirbase_ids(organism = 9606):
         for mi in (mis if type(mis) not in common.simpleTypes else [mis]):
             
             yield ma, mi
+
+
+def mirbase_mature_all(organism = 9606):
+    
+    return [i[0] for i in mirbase_ids(organism = organism)]
+
+
+def mirbase_precursor_all(organism = 9606):
+    
+    return [i[1] for i in mirbase_ids(organism = organism)]
