@@ -1737,9 +1737,11 @@ class PyPath(session_mod.Logger):
                     fieldVal = line[spec[col]]
 
             except:
-                self.ownlog.msg(2, (
-                    """Wrong column index (%s) in extra attributes?
-                    Line #%u\n""" % (str(col), lnum)), 'ERROR')
+                self._log(
+                    'Wrong column index (%s) in extra attributes?
+                    Line #%u' % (str(col), lnum),
+                    -5,
+                )
                 readError = 1
                 break
 
@@ -2204,12 +2206,17 @@ class PyPath(session_mod.Logger):
             if infile is None:
 
                 if settings.__class__.__name__ != "ReadSettings":
-                    self.ownlog.msg(2, (
-                        """No proper input file definition!\n\'settings\'
-                        should be a \'ReadSettings\' instance\n"""), 'ERROR')
+                    
+                    self._log(
+                        'No proper input file definition! `settings` '
+                        'should be a `ReadSettings` instance',
+                        -5,
+                    )
+                    
                     return None
 
                 if settings.huge:
+                    
                     sys.stdout.write(
                         '\n\tProcessing %s requires huge memory.\n'
                         '\tPlease hit `y` if you have at least 2G free memory,\n'
@@ -2274,8 +2281,9 @@ class PyPath(session_mod.Logger):
                         x for x in infile.replace('\r', '').split('\n')
                         if len(x) > 0
                     ]
-                    self.ownlog.msg(2, "Retrieving data from%s ..." %
-                                    settings.input)
+                    self._log(
+                        "Retrieving data from%s ..." % settings.input
+                    )
 
                 # elif hasattr(dataio, settings.input):
                 elif input_func is not None:
@@ -2321,9 +2329,12 @@ class PyPath(session_mod.Logger):
                     self._log("%s opened..." % settings.input)
 
                 if infile is None:
-                    self.ownlog.msg(2, "%s: No such file or "
-                                    "dataio function! :(\n" %
-                                    (settings.input), 'ERROR')
+                    
+                    self._log(
+                        "%s: No such file or dataio function! :(\n" %
+                        settings.input,
+                        -5,
+                    )
                     return None
 
             # finding the largest referred column number,
@@ -2592,8 +2603,7 @@ class PyPath(session_mod.Logger):
         
             if reread or redownload:
                 pickle.dump(edge_list_mapped, open(edges_cache, 'wb'), -1)
-                self.ownlog.msg(2,
-                                'Mapped edge list saved to %s' % edges_cache)
+                self._log('Mapped edge list saved to %s' % edges_cache)
         if keep_raw:
             self.data[settings.name] = edge_list_mapped
         
@@ -2880,9 +2890,11 @@ class PyPath(session_mod.Logger):
         _input = None
 
         if settings.__class__.__name__ != "ReadList":
-            self.ownlog.msg(2,
-                            ("""No proper input file definition!\n\'settings\'
-                             should be a \'readList\' instance\n"""), 'ERROR')
+            self._log(
+                'No proper input file definition! `settings`'
+                'should be a `readList` instance',
+                -5,
+            )
             return None
 
         if hasattr(dataio, settings.input):
@@ -2907,8 +2919,7 @@ class PyPath(session_mod.Logger):
             #codecs.open(_input, encoding='utf-8', mode='r')
 
         if _input is None:
-            self.ownlog.msg(2, ("""Could not find '\
-                                'file or dataio function.\n"""), 'ERROR')
+            self._log('Could not find file or dataio function.', -5)
             return None
 
         self._log("%s opened..." % settings.input)
@@ -2933,8 +2944,9 @@ class PyPath(session_mod.Logger):
 
             # in case line has less fields than needed
             if len(line) < maxCol:
-                self.ownlog.msg(2, ("Line #%u has less than %u fields! :(\n" %
-                                    (lnum, maxCol)), 'ERROR')
+                self._log(
+                    'Line #%u has less than %u fields! :(\n' % (lnum, maxCol)
+                )
                 readError = 1
                 break
 
@@ -2948,11 +2960,14 @@ class PyPath(session_mod.Logger):
                                "source": settings.name}
 
                 except:
-                    self.ownlog.msg(2,
-                                    ("""Wrong name column indexes (%u and %u),
-                                     or wrong separator (%s)? Line #%u\n""" %
-                                     (settings.nameCol, settings.separator,
-                                      lnum)), 'ERROR')
+                    self._log(
+                        'Wrong name column indexes (%u and %u), '
+                        'or wrong separator (%s)? Line #%u' % (
+                            settings.nameCol,
+                            settings.separator,
+                            lnum,
+                        )
+                    )
                     readError = 1
                     break
 
@@ -2972,10 +2987,15 @@ class PyPath(session_mod.Logger):
 
         itemListMapped = self.map_list(itemList, singleList=True)
         itemListMapped = list(set(itemListMapped))
-        self.ownlog.msg(2, "%u lines have been read from %s, %u '\
-                        items after mapping" %
-                        (lnum, settings.input, len(itemListMapped)))
+        self._log(
+            '%u lines have been read from %s, %u  items after mapping' % (
+                lnum,
+                settings.input,
+                len(itemListMapped)
+            )
+        )
         self.lists[settings.name] = itemListMapped
+
 
     def map_list(self, lst, singleList=False):
         """
@@ -4242,14 +4262,16 @@ class PyPath(session_mod.Logger):
                 set([type(x) for x in self.graph.vs[attr] if x is not None]))
 
             if len(types) > 1:
-                self.ownlog.msg(2,
-                                'Vertex attribute `%s` has multiple types of'
-                                ' values: %s' % (attr, ', '.join(
-                                    [x.__name__ for x in types])), 'WARNING')
+                self._log(
+                    'Vertex attribute `%s` has multiple types of'
+                    ' values: %s' % (
+                        attr,
+                        ', '.join(x.__name__ for x in types)
+                    )
+                )
 
             elif len(types) == 0:
-                self.ownlog.msg(2, 'Vertex attribute `%s` has only None values'
-                                % (attr), 'WARNING')
+                self._log('Vertex attribute `%s` has only None values' % attr)
 
             if len(types) > 0:
 
@@ -4262,17 +4284,22 @@ class PyPath(session_mod.Logger):
                 self.init_vertex_attr(attr)
 
         for attr in list(set(self.graph.es.attributes()) - set(['dirs'])):
+            
             types = list(
                 set([type(x) for x in self.graph.es[attr] if x is not None]))
 
             if len(types) > 1:
-                self.ownlog.msg(2, 'Edge attribute `%s` has multiple types of'
-                                ' values: %s' % (attr, ', '.join(
-                                    [x.__name__ for x in types])), 'WARNING')
+                self._log(
+                    'Edge attribute `%s` has multiple types of'
+                    ' values: %s' % (
+                        attr,
+                        ', '.join(x.__name__ for x in types)
+                    )
+                )
 
             elif len(types) == 0:
-                self.ownlog.msg(2, 'Edge attribute `%s` has only None values' %
-                                (attr), 'WARNING')
+                
+                self._log('Edge attribute `%s` has only None values' % attr)
 
             if len(types) > 0:
 
@@ -4374,9 +4401,11 @@ class PyPath(session_mod.Logger):
                 edge_list = self.data[edge_list]
 
             else:
-                self.ownlog.msg(2, "`%s' looks like a source name, but no data"
-                                "available under this name." % (edge_list),
-                                'ERROR')
+                self._log(
+                    '`%s` looks like a source name, but no data '
+                    'available under this name.' % edge_list
+                )
+                
                 return False
 
         nodes = []
@@ -5877,7 +5906,7 @@ class PyPath(session_mod.Logger):
                          "\n from %u resources have been loaded,"
                          "\n for details see the log: ./%s\n"
                          % (self.graph.ecount(), self.graph.vcount(),
-                            len(self.sources), self.ownlog.logfile))
+                            len(self.sources), self._logger.fname))
 
     def load_mappings(self): # FIXME: module data_formats has no attribute mapList
         """
@@ -7112,8 +7141,7 @@ class PyPath(session_mod.Logger):
         u_pdb, pdb_u = dataio.get_pdb()
 
         if u_pdb is None:
-            self.ownlog.msg(2, 'Failed to download UniProt-PDB dictionary',
-                            'ERROR')
+            self._log('Failed to download UniProt-PDB dictionary')
 
         else:
             graph.vs['pdb'] = [None]
@@ -7126,8 +7154,8 @@ class PyPath(session_mod.Logger):
                     for pdb in u_pdb[v['name']]:
                         v['pdb'][pdb[0]] = (pdb[1], pdb[2])
 
-            self.ownlog.msg(2, 'PDB IDs for proteins has been retrieved.',
-                            'INFO')
+            self._log(
+                'PDB IDs for proteins has been retrieved.')
 
     def load_pfam(self, graph=None):
         """
@@ -7145,8 +7173,7 @@ class PyPath(session_mod.Logger):
         u_pfam, pfam_u = dataio.get_pfam(graph.vs['name'])
 
         if u_pfam is None:
-            self.ownlog.msg(2, 'Failed to download Pfam data from UniProt',
-                            'ERROR')
+            self._log('Failed to download Pfam data from UniProt')
 
         else:
         # FIXME: should assign `[None]` if the attribute is empty not otherwise
@@ -7266,8 +7293,7 @@ class PyPath(session_mod.Logger):
                                     'diseases': c[5],
                                 }
 
-            self.ownlog.msg(2, 'Complexes from CORUM have been retrieved.',
-                            'INFO')
+            self._log('Complexes from CORUM have been retrieved.')
 
     def init_complex_attr(self, graph, name):
         """
@@ -7295,7 +7321,7 @@ class PyPath(session_mod.Logger):
         complexes = dataio.read_complexes_havugimana()
 
         if complexes is None:
-            self._log('Failed to read data from Havugimana', 'ERROR')
+            self._log('Failed to read data from Havugimana')
 
         else:
             self.init_complex_attr(graph, 'havugimana')
@@ -7329,9 +7355,8 @@ class PyPath(session_mod.Logger):
                                 'all_members_original': c
                             }
 
-                self.ownlog.msg(
-                    2, 'Complexes from Havugimana have been retrieved.',
-                    'INFO')
+                self._log('Complexes from Havugimana have been retrieved.')
+
 
     def load_compleat(self, graph=None):
         """
@@ -7383,8 +7408,7 @@ class PyPath(session_mod.Logger):
                                     'references': c['pubmeds']
                                 }
 
-            self.ownlog.msg(2, 'Complexes from COMPLEAT have been retrieved.',
-                            'INFO')
+            self._log('Complexes from COMPLEAT have been retrieved.')
 
     def load_complexportal(self, graph=None):
         """
@@ -7444,9 +7468,7 @@ class PyPath(session_mod.Logger):
                             'description': c['description']
                         }
 
-            self.ownlog.msg(
-                2, 'Complexes from Complex Portal have been retrieved.',
-                'INFO')
+            self._log('Complexes from Complex Portal have been retrieved.')
 
     def load_3dcomplexes(self, graph=None):
         """
@@ -7456,8 +7478,7 @@ class PyPath(session_mod.Logger):
         c3d = dataio.get_3dcomplexes()
 
         if c3d is None:
-            self.ownlog.msg(
-                2, 'Failed to download data from 3DComplexes and PDB', 'ERROR')
+            self._log('Failed to download data from 3DComplexes and PDB', -5)
 
         else:
 
@@ -8584,9 +8605,10 @@ class PyPath(session_mod.Logger):
         domi = dataio.get_domino_ptms()
 
         if domi is None:
-            self.ownlog.msg(
-                2, 'Failed to load domain-motif interaction data from DOMINO',
-                'ERROR')
+            self._log(
+                'Failed to load domain-motif interaction data from DOMINO',
+                -5
+            )
             return None
 
         self.update_vname()
@@ -8623,9 +8645,10 @@ class PyPath(session_mod.Logger):
         dmi = dataio.process_3did_dmi()
 
         if dmi is None:
-            self.ownlog.msg(
-                2, 'Failed to load domain-motif interaction data from 3DID',
-                'ERROR')
+            self._log(
+                'Failed to load domain-motif interaction data from 3DID',
+                -5,
+            )
             return None
 
         self.update_vname()
@@ -8761,9 +8784,10 @@ class PyPath(session_mod.Logger):
         ddi, interfaces = dataio.get_3did_ddi(residues=True)
 
         if ddi is None or interfaces is None:
-            self.ownlog.msg(
-                2, 'Failed to load domain-domain interaction data from 3DID',
-                'ERROR')
+            self._log(
+                'Failed to load domain-domain interaction data from 3DID',
+                -5,
+            )
             return None
 
         if 'ddi' not in g.es.attributes():
@@ -8845,9 +8869,10 @@ class PyPath(session_mod.Logger):
         ddi, intfs = dataio.get_3did()
 
         if ddi is None or interfaces is None:
-            self.ownlog.msg(
-                2, 'Failed to load domain-domain interaction data from 3DID',
-                'ERROR')
+            self._log(
+                'Failed to load domain-domain interaction data from 3DID',
+                -5,
+            )
             return None
 
         # ERROR
