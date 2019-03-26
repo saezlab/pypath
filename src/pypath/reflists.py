@@ -176,6 +176,19 @@ class ReferenceListManager(session_mod.Logger):
         return names & lst
     
     
+    def is_not(self, names, id_type, ncbi_tax_id = None):
+        """
+        Returns the identifiers from ``names`` which are not instances of
+        the provided ``id_type`` and from the given organism.
+        """
+        
+        names = set(names)
+        
+        lst = self.which_list(id_type = id_type, ncbi_tax_id = ncbi_tax_id)
+        
+        return names - lst
+    
+    
     def _remove_expired(self):
         
         for key, last_used in iteritems(self.expiry):
@@ -232,3 +245,18 @@ def select(names, id_type, ncbi_tax_id = None):
         id_type = id_type,
         ncbi_tax_id = ncbi_tax_id,
     )
+
+
+def is_not(self, names, id_type, ncbi_tax_id = None):
+        """
+        Returns the identifiers from ``names`` which are not instances of
+        the provided ``id_type`` and from the given organism.
+        """
+        
+        manager = get_manager()
+        
+        manager.is_not(
+            names = names,
+            id_type = id_type,
+            ncbi_tax_id = ncbi_tax_id,
+        )
