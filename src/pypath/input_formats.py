@@ -92,7 +92,8 @@ class UniprotMapping(MappingInput):
 
     def __init__(
             self,
-            id_type,
+            id_type_a,
+            id_type_b = 'uniprot',
             ncbi_tax_id = 9606,
             swissprot = 'yes',
         ):
@@ -122,17 +123,17 @@ class UniprotMapping(MappingInput):
         MappingInput.__init__(
             self,
             type_ = 'uniprot',
-            id_type_a = id_type,
-            id_type_b = 'uniprot',
+            id_type_a = id_type_a,
+            id_type_b = id_type_b,
             ncbi_tax_id = ncbi_tax_id,
         )
         
         self.ncbi_tax_id = int(ncbi_tax_id)
         self.typ = 'protein'
         self.swissprot = swissprot
-        self.field = None if id_type not in ac_query \
+        self.field = None if id_type_a not in ac_query \
             else ac_query[self.id_type_a][0]
-        self.subfield = None if id_type not in ac_query \
+        self.subfield = None if id_type_a not in ac_query \
             else ac_query[self.id_type_a][1]
     
     

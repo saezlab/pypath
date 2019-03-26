@@ -202,6 +202,7 @@ class Logger(object):
     
     def __del__(self):
         
+        _log_flush_timeloop.stop()
         self.msg('Logger shut down, logfile `%s` closed.' % self.fname)
         self.msg('Bye.')
         self.close_logfile()

@@ -752,8 +752,8 @@ class Mapper(session_mod.Logger):
     def __init__(
             self,
             ncbi_tax_id = None,
-            cleanup_period = 30,
-            lifetime = 30,
+            cleanup_period = 10,
+            lifetime = 300,
         ):
         """
         cleanup_period : int
@@ -765,17 +765,22 @@ class Mapper(session_mod.Logger):
         """
         
         session_mod.Logger.__init__(self, name = 'mapping')
+        cleanup_period = (
+            cleanup_period or settings.get('mapper_cleanup_interval')
+        )
         
         
         @_mapper_cleanup_timeloop.job(
             interval = datetime.timedelta(
-                seconds = settings.get('mapper_cleanup_interval')
+                seconds = cleanup_period
             )
         )
         def _cleanup():
             
             self.remove_expired()
         
+        
+        _mapper_cleanup_timeloop.start(block = False)
         
         self.reuniprot = re.compile(
             r'[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]'
@@ -879,7 +884,7 @@ class Mapper(session_mod.Logger):
         
         elif tbl_key_rev in self.tables:
             
-            self.create_reverse(tbl_key)
+            self.create_reverse(tbl_key_rev)
             tbl = self.tables[tbl_key]
             
         elif load:
@@ -1000,6 +1005,33 @@ class Mapper(session_mod.Logger):
         
         self.tables[rev_key] = self.reverse_mapping(table)
     
+    
+    def map_name0(
+            self,
+            name,
+            id_type = None,
+            target_id_type = None,
+            ncbi_tax_id = None,
+            strict = False,
+            silent = True,
+            nameType = None,
+            targetNameType = None,
+        ):
+        
+        names = self.map_name(
+            name = name,
+            id_type = id_type,
+            target_id_type = target_id_type,
+            ncbi_tax_id = ncbi_tax_id,
+            strict = strict,
+            silent = silent,
+            nameType = nameType,
+            targetNameType = targetNameType,
+        )
+        
+        if names:
+            
+            return list(names)[0]
     
     def map_name(
             self,
@@ -1458,7 +1490,14 @@ class Mapper(session_mod.Logger):
             )
             return
         
-
+        self._log(
+            'Loading mapping table with identifiers `%s` and `%s`, '
+            'input type `%s`' % (
+                resource.id_type_a,
+                resource.id_type_b,
+                resource.type,
+            )
+        )
         
         reader = MapReader(param = resource, **kwargs)
         
@@ -1695,6 +1734,11 @@ class Mapper(session_mod.Logger):
         for key in to_remove:
             
             self.remove_key(key)
+    
+    
+    def __del__(self):
+        
+        _mapper_cleanup_timeloop.stop()
 
 
 def init():
@@ -1725,6 +1769,31 @@ def map_name(
     mapper = get_mapper()
     
     return mapper.map_name(
+        name = name,
+        id_type = id_type,
+        target_id_type = target_id_type,
+        ncbi_tax_id = ncbi_tax_id,
+        strict = strict,
+        silent = silent,
+        nameType = nameType,
+        targetNameType = targetNameType,
+    )
+
+
+def map_name0(
+        name,
+        id_type,
+        target_id_type,
+        ncbi_tax_id = None,
+        strict = False,
+        silent = True,
+        nameType = None,
+        targetNameType = None,
+    ):
+    
+    mapper = get_mapper()
+    
+    return mapper.map_name0(
         name = name,
         id_type = id_type,
         target_id_type = target_id_type,

@@ -115,43 +115,43 @@ misc = {
 uniprot = {
     ('embl', 'uniprot'):
         input_formats.UniprotMapping(
-            id_type = 'embl',
+            id_type_a = 'embl',
         ),
     ('genesymbol', 'uniprot'): 
         input_formats.UniprotMapping(
-            id_type = 'genesymbol',
+            id_type_a = 'genesymbol',
         ),
     ('genesymbol-syn', 'uniprot'):
         input_formats.UniprotMapping(
-            id_type = 'genesymbol-syn'
+            id_type_a = 'genesymbol-syn'
         ),
     ('entrez', 'uniprot'):
         input_formats.UniprotMapping(
-            id_type = 'entrez',
+            id_type_a = 'entrez',
         ),
     ('hgnc', 'uniprot'):
         input_formats.UniprotMapping(
-            id_type = 'hgnc',
+            id_type_a = 'hgnc',
         ),
     ('enst', 'uniprot'):
         input_formats.UniprotMapping(
-            id_type = 'enst',
+            id_type_a = 'enst',
         ),
     ('refseqp', 'uniprot'):
         input_formats.UniprotMapping(
-            id_type = 'refseqp',
+            id_type_a = 'refseqp',
         ),
     ('uniprot-entry', 'uniprot'):
         input_formats.UniprotMapping(
-            id_type = 'uniprot-entry',
+            id_type_a = 'uniprot-entry',
         ),
     ('protein-name', 'uniprot'):
         input_formats.UniprotMapping(
-            id_type = 'protein-name',
+            id_type_a = 'protein-name',
         ),
     ('protein-name-all', 'uniprot'):
         input_formats.UniprotMapping(
-            id_type = 'protein-name',
+            id_type_a = 'protein-name',
             swissprot = None,
         )
 }
@@ -215,20 +215,23 @@ basic = {
         ),
     ('genesymbol', 'trembl'):
         input_formats.UniprotMapping(
-            id_type = 'genesymbol',
+            id_type_a = 'genesymbol',
+            id_type_b = 'trembl',
             swissprot = 'no',
         ),
     ('genesymbol', 'swissprot'):
         input_formats.UniprotMapping(
-            id_type = 'genesymbol',
+            id_type_a = 'genesymbol',
+            id_type_b = 'swissprot',
         ),
     ('genesymbol-syn', 'swissprot'):
         input_formats.UniprotMapping(
-            id_type = 'genesymbol-syn',
+            id_type_a = 'genesymbol-syn',
+            id_type_b = 'swissprot',
         ),
     ('genesymbol', 'uniprot'):
         input_formats.UniprotMapping(
-            id_type = 'genesymbol',
+            id_type_a = 'genesymbol',
             swissprot = None,
         )
 }

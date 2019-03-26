@@ -1240,10 +1240,9 @@ class PyPath(session_mod.Logger):
     :arg str outdir:
         Optional, ``'results'`` by default. Output directory where to
         store all output files.
-    :arg str loglevel:
-        Optional, ``'INFO'`` by default. Sets the level of the logger.
-        Possible levels are: ``'DEBUG'``, ``'INFO'``, ``'WARNING'``,
-        ``'ERROR'`` or ``'CRITICAL'``.
+    :arg int loglevel:
+        Optional, 0 by default. Sets the level of the logger.
+        The higher the level the more messages will be written to the log.
     :arg bool loops:
         Optional, ``False`` by default. Determines if self-loop edges
         are allowed in the graph.
@@ -1436,7 +1435,7 @@ class PyPath(session_mod.Logger):
             name = 'unnamed',
             cache_dir  =  None,
             outdir = 'results',
-            loglevel = 'INFO',
+            loglevel = 0,
             loops = False,
         ):
         """Initializes the network object.
@@ -2391,14 +2390,12 @@ class PyPath(session_mod.Logger):
                             [0]))
                     ]))
             # iterating lines from input file
-            lnum = 0
             lFiltered = 0
             rFiltered = 0
             tFiltered = 0
             readError = 0
 
-            for line in infile: # XXX: here could be used enumerate for lnum
-                lnum += 1
+            for lnum, line in enumerate(infile):
 
                 if len(line) <= 1 or (lnum == 1 and settings.header):
                     # empty lines
@@ -2410,9 +2407,7 @@ class PyPath(session_mod.Logger):
                     if hasattr(line, 'decode'):
                         line = line.decode('utf-8')
                     
-                    # XXX: Maybe str.strip() instead of two str.replace()?
-                    line = line.replace('\n', '').replace('\r', '').\
-                        split(settings.separator)
+                    line = line.strip('\n\r').split(settings.separator)
 
                 else:
                     line = [
@@ -2913,8 +2908,7 @@ class PyPath(session_mod.Logger):
             _input = toCall(**kwargs)
 
         elif not os.path.isfile(settings.input):
-            self._log("%s: No such file! :(\n" % (settings.input),
-                            'ERROR')
+            self._log('%s: No such file! :(\n' % settings.input, -5)
             return None
 
         else:
@@ -3507,9 +3501,10 @@ class PyPath(session_mod.Logger):
 
             else:
                 msg = (
-                    'Missing reference list for %s (default name type: %s), in taxon %u'
-                ) % (idx[1], idx[0], t)
-                self._log(msg, 'ERROR')
+                    'Missing reference list for %s (default name type: %s), '
+                    'in taxon %u' % (idx[1], idx[0], t)
+                )
+                self._log(msg, -5)
                 sys.stdout.write(''.join(['\t', msg, '\n']))
 
                 return False
@@ -3540,7 +3535,7 @@ class PyPath(session_mod.Logger):
         :py:attr:`pypath.main.PyPath.loops` is set to ``True``.
         """
 
-        self._log("Removing duplicate edges...", 'INFO')
+        self._log('Removing duplicate edges...')
         g = self.graph
 
         if not g.is_simple():
@@ -3614,7 +3609,7 @@ class PyPath(session_mod.Logger):
         if not defAttrs["name"] in g.vs["name"]:
 
             if not add:
-                self._log('Failed to add some vertices', 'ERROR')
+                self._log('Failed to add some vertices', -5)
                 return False
 
             n = g.vcount()
@@ -3691,7 +3686,7 @@ class PyPath(session_mod.Logger):
 
             if not add:
                 sys.stdout.write('\tERROR: Failed to add some edges\n')
-                self._log('Failed to add some edges', 'ERROR')
+                self._log('Failed to add some edges', -5)
                 aid = self.nodDct[id_a]
                 bid = self.nodDct[id_b]
                 a = g.get_eid(aid, bid, error=False)
@@ -4408,8 +4403,7 @@ class PyPath(session_mod.Logger):
                 edge_list = self.raw_data
 
             else:
-                self._log("attach_network(): No data, nothing to do.",
-                                'INFO')
+                self._log('attach_network(): No data, nothing to do.')
                 return True
 
         if isinstance(edge_list, str):
@@ -4480,7 +4474,7 @@ class PyPath(session_mod.Logger):
                 defAttrs = {
                     "name": e["default_name_a"],
                     "label": e["default_name_a"],
-                    "id_type": e["default_name_typeA"],
+                    "id_type": e["default_name_type_a"],
                     "type": e["entity_type_a"],
                     "ncbi_tax_id": e["taxon_a"]
                 }
@@ -4492,7 +4486,7 @@ class PyPath(session_mod.Logger):
                 defAttrs = {
                     "name": e["default_name_b"],
                     "label": e["default_name_b"],
-                    "id_type": e["default_name_typeB"],
+                    "id_type": e["default_name_type_b"],
                     "type": e["entity_type_b"],
                     "ncbi_tax_id": e["taxon_b"]
                 }
@@ -4527,7 +4521,7 @@ class PyPath(session_mod.Logger):
         """
 
         if name not in self.lists:
-            self._log(("No such list: %s" % name), 'ERROR')
+            self._log('No such list: %s' % name, -5)
             return None
 
         g = self.graph
@@ -4609,11 +4603,11 @@ class PyPath(session_mod.Logger):
         """
 
         if id_a not in self.lists:
-            self._log(("No such list: %s" % id_a), 'ERROR')
+            self._log('No such list: %s' % id_a, -5)
             return None
 
         if id_b not in self.lists:
-            self._log(("No such list: %s" % id_b), 'ERROR')
+            self._log('No such list: %s' % id_b, -5)
             return None
 
         name = '_'.join([id_a, id_b]) if name is None else name
@@ -4670,11 +4664,12 @@ class PyPath(session_mod.Logger):
         ``'pypath-<session_id>.pickle'``.
         """
 
-        pickleFile = "pypath-" + self.session + ".pickle"
-        self._log(("Saving session to %s... " % pickleFile),
-                        'INFO')
+        pickle_file = (
+            'pypath-%s.pickle' % self.session_mod.get_session().label
+        )
+        self._log("Saving session to %s... " % pickle_file)
 
-        with open(pickleFile, "wb") as f:
+        with open(pickle_file, "wb") as f:
             pickle.dump(self, f, -1)
 
     ###
@@ -4757,7 +4752,7 @@ class PyPath(session_mod.Logger):
             return sor
 
         else:
-            self._log('No such function: %s()' % index_func, 'ERROR')
+            self._log('No such function: %s()' % index_func, -5)
 
     def sorensen_pathways(self, pwlist=None):
         """
@@ -4785,8 +4780,7 @@ class PyPath(session_mod.Logger):
         for p in pwlist:
 
             if p not in g.vs.attributes():
-                self._log(("No such vertex attribute: %s" % p),
-                                'ERROR')
+                self._log('No such vertex attribute: %s' % p, -5)
 
         edges = {} # Keys = <source>__<pathway>, values = lsit of edge IDs
         nodes = {} # Keys = <source>__<pathway>, values = lsit of node IDs
@@ -5314,15 +5308,19 @@ class PyPath(session_mod.Logger):
                 label = []
 
                 if v['type'] in label_name_types:
-                    label = mapping.map_name(v['name'], dnt[v['type']],
-                                                label_name_types[v['type']],
-                                                ncbi_tax_id=v['ncbi_tax_id'])
+                    
+                    label = mapping.map_name0(
+                        v['name'],
+                        dnt[v['type']],
+                        label_name_types[v['type']],
+                        ncbi_tax_id=v['ncbi_tax_id'],
+                    )
 
-                if not len(label):
+                if label:
                     labels[i] = v['name']
 
                 else:
-                    labels[i] = label[0]
+                    labels[i] = label
 
         g.vs['label'] = labels
 
@@ -5405,11 +5403,11 @@ class PyPath(session_mod.Logger):
         self.update_sources()
 
         if groupA not in self.graph.vs.attributes():
-            self._log(("No such attribute: %s" % groupA), 'ERROR')
+            self._log('No such attribute: %s' % groupA, -5)
             return False
 
         if groupB not in self.graph.vs.attributes():
-            self._log(("No such attribute: %s" % groupB), 'ERROR')
+            self._log('No such attribute: %s' % groupB, -5)
             return False
 
         deg_pathlen = {}
@@ -5742,7 +5740,7 @@ class PyPath(session_mod.Logger):
                 group = [group]
 
             if len(set(group) - set(self.graph.vs.attributes())) > 0:
-                self._log(("Missing vertex attribute!"), 'ERROR')
+                self._log('Missing vertex attribute!', -5)
                 return False
 
             for gr in group:
@@ -7385,7 +7383,7 @@ class PyPath(session_mod.Logger):
         complexes = dataio.get_compleat()
 
         if complexes is None:
-            self._log('Failed to load data from COMPLEAT', 'ERROR')
+            self._log('Failed to load data from COMPLEAT', -5)
 
         else:
             self.init_complex_attr(graph, 'compleat')
