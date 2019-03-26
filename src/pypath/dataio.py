@@ -239,9 +239,10 @@ def pdb_complexes():
     
     complexes = {}
     
-    pdb_data = get_pdb()
+    uniprot_pdb, pdb_uniprot = get_pdb()
+    del uniprot_pdb
     
-    for pdb_id, uniprots in iteritems(pdb_data):
+    for pdb_id, uniprots in iteritems(pdb_uniprot):
         
         if len(uniprots) > 1:
             

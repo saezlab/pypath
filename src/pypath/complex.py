@@ -34,7 +34,6 @@ class AbstractComplexResource(resource.AbstractResource):
     def __init__(
             self,
             name,
-            mapper = None,
             ncbi_tax_id = 9606,
             input_method = None,
             input_args = None,

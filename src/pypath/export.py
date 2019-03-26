@@ -300,6 +300,7 @@ class Export(object):
 
         return lines
 
+
     def add_extra_fields(self, e, line, dr = None):
         """
         Takes one table row and using the `igraph.Edge` object and the
@@ -348,6 +349,7 @@ class Export(object):
                 )
 
         return line
+
 
     @staticmethod
     def default_vertex_attr_processor(vattr):

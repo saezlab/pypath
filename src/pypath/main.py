@@ -5271,7 +5271,7 @@ class PyPath(session_mod.Logger):
         vertex (UniProt ID by default). If the attribute ``'label'`` has
         been already initialized, updates this attribute or recreates if
         *remap_all* is set to ``True``.
-
+        
         :arg igraph.Graph graph:
             Optional, ``None`` by default. The network graph object
             where the GeneSymbol labels are to be set/updated. If none
@@ -5281,32 +5281,39 @@ class PyPath(session_mod.Logger):
             Optional, ``False`` by default. Whether to map anew the
             GeneSymbol labels if those were already initialized.
         """
-
+        
         # XXX: What's the purpose of this? I mean attribute _directed is not
         #      accessed in this function (?)
         self._already_has_directed()
-
+        
         dnt = self.default_name_type
-
+        
         if graph is None and self.dgraph is not None:
             self.genesymbol_labels(graph=self.dgraph, remap_all=remap_all)
-
+        
         g = self.graph if graph is None else graph
         default_name_type = dnt["protein"]
         label_name_types = {'protein': 'genesymbol',
                           'mirna': 'mir-mat-name'}
-
+        
         if 'label' not in g.vs.attributes():
             remap_all = True
-
-        labels = [None if remap_all or v['label'] == v['name'] else v['label']
-                  for v in g.vs]
-
+        
+        labels = [
+            (
+                None
+                    if remap_all or v['label'] == v['name'] else
+                v['label']
+            )
+            for v in g.vs
+        ]
+        
         for v, l, i in zip(g.vs, labels, xrange(g.vcount())):
-
+            
             if l is None:
-                label = []
-
+                
+                label = None
+                
                 if v['type'] in label_name_types:
                     
                     label = mapping.map_name0(
@@ -5315,13 +5322,14 @@ class PyPath(session_mod.Logger):
                         label_name_types[v['type']],
                         ncbi_tax_id=v['ncbi_tax_id'],
                     )
-
+                
                 if label:
-                    labels[i] = v['name']
-
-                else:
+                    
                     labels[i] = label
-
+                
+                else:
+                    labels[i] = v['name']
+        
         g.vs['label'] = labels
 
     def network_stats(self, outfile=None):
