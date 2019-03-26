@@ -204,7 +204,9 @@ class ReferenceListManager(session_mod.Logger):
     
     def __del__(self):
         
-        _reflists_cleanup_timeloop.stop()
+        if hasattr(_reflists_cleanup_timeloop, 'stop'):
+            
+            _reflists_cleanup_timeloop.stop()
 
 
 def init():

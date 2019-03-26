@@ -1738,7 +1738,9 @@ class Mapper(session_mod.Logger):
     
     def __del__(self):
         
-        _mapper_cleanup_timeloop.stop()
+        if hasattr(_mapper_cleanup_timeloop, 'stop'):
+            
+            _mapper_cleanup_timeloop.stop()
 
 
 def init():

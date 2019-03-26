@@ -3469,9 +3469,6 @@ class PyPath(session_mod.Logger):
         IDs of the organisms. By default, it means to remove all protein
         nodes not having a human UniProt ID.
 
-        :arg list tax:
-            List of NCBI Taxonomy IDs [int] of the organism(s) of
-            interest.
         :arg str typ:
             Optional, ``'protein'`` by default. Determines the molecule
             type. These can be ``'protein'``, ``'drug'``, ``'lncrna'``,
@@ -3482,6 +3479,9 @@ class PyPath(session_mod.Logger):
             given molecular species. If none is specified takes it from
             :py:attr:`pypath.main.PyPath.default_name_type` (e.g.: for
             ``'protein'``, default is ``'uniprot'``).
+        :arg set organisms_allowed:
+            NCBI Taxonomy identifiers [int] of the organisms allowed in
+            the network.
         """
 
         g = self.graph
@@ -3540,6 +3540,10 @@ class PyPath(session_mod.Logger):
         :py:meth:`pypath.main.PyPath.combine_attr` method.
         Loops will be deleted unless the attribute
         :py:attr:`pypath.main.PyPath.loops` is set to ``True``.
+        
+        :arg set organisms_allowed:
+            NCBI Taxonomy identifiers [int] of the organisms allowed
+            in the network.
         """
 
         self._log('Removing duplicate edges...')
