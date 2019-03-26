@@ -29,6 +29,8 @@ import imp
 import copy
 import itertools
 import collections
+import datetime
+import time
 
 import urllib
 
@@ -129,6 +131,8 @@ class MapReader(session_mod.Logger):
         
         session_mod.Logger.__init__(self, name = 'mapping')
         
+        self.cachedir = cache_mod.get_cachedir()
+        
         self.id_type_a = param.id_type_a
         self.id_type_b = param.id_type_b
         self.load_a_to_b = load_a_to_b
@@ -145,6 +149,8 @@ class MapReader(session_mod.Logger):
             settings.get('default_organism')
         )
         self.uniprots = uniprots
+        
+        self.load()
     
     
     def reload(self):
@@ -154,6 +160,32 @@ class MapReader(session_mod.Logger):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
+    
+    
+    def load(self):
+        """
+        The complete process of loading mapping tables. First sets up the
+        paths of the cache files, then loads the tables from the cache files
+        or the original sources if necessary. Upon successful loading from an
+        original source writes the results to cache files.
+        """
+        
+        self.use_cache = settings.get('mapping_use_cache')
+        self.setup_cache()
+        
+        if self.use_cache:
+            
+            self.read_cache()
+        
+        if not self.tables_loaded():
+            
+            # read from the original source
+            self.read()
+            
+            if self.tables_loaded():
+                
+                # write cache only at successful loading
+                self.write_cache()
     
     
     @property
@@ -191,32 +223,6 @@ class MapReader(session_mod.Logger):
                 ncbi_tax_id = self.ncbi_tax_id,
                 lifetime = self.lifetime,
             )
-    
-    
-    def load(self):
-        """
-        The complete process of loading mapping tables. First sets up the
-        paths of the cache files, then loads the tables from the cache files
-        or the original sources if necessary. Upon successful loading from an
-        original source writes the results to cache files.
-        """
-        
-        self.use_cache = settings.get('mapping_use_cache')
-        self.setup_cache()
-        
-        if self.use_cache:
-            
-            self.read_cache()
-        
-        if not self.tables_loaded():
-            
-            # read from the original source
-            self.read()
-            
-            if self.tables_loaded():
-                
-                # write cache only at successful loading
-                self.write_cache()
     
     
     def tables_loaded(self):
@@ -297,15 +303,15 @@ class MapReader(session_mod.Logger):
         Reads the ID translation data from the original source.
         """
         
-        if source_type == "file":
+        if self.source_type == 'file':
             
             self.read_mapping_file()
             
-        elif source_type == "uniprot":
+        elif self.source_type == 'uniprot':
             
             self.read_mapping_uniprot()
             
-        elif source_type == "uniprot_list":
+        elif self.source_type == 'uniprot_list':
             
             self.read_mapping_uniprot_list()
     
@@ -384,7 +390,7 @@ class MapReader(session_mod.Logger):
         
         if os.path.exists(cachefile):
             
-            self._msg('Removing mapping table cache file `%s`.' % cachefile)
+            self._log('Removing mapping table cache file `%s`.' % cachefile)
             os.remove(cachefile)
     
     
@@ -574,8 +580,8 @@ class MapReader(session_mod.Logger):
         
         rev = (
             ''
-                if not param.swissprot else
-            ' AND reviewed:%s' % param.swissprot
+                if not self.param.swissprot else
+            ' AND reviewed:%s' % self.param.swissprot
         )
         query = 'organism:%u%s' % (int(self.ncbi_tax_id), rev)
         
@@ -584,8 +590,10 @@ class MapReader(session_mod.Logger):
             'query': query,
             'format': 'tab',
             'columns': 'id,%s%s' % (
-                param.field,
-                '' if param.subfield is None else '(%s)' % param.subfield
+                self.param.field,
+                ''
+                    if self.param.subfield is None else
+                '(%s)' % self.param.subfield
             ),
         }
         
@@ -596,7 +604,7 @@ class MapReader(session_mod.Logger):
         data = [
             [
                 [xx]
-                    if param.field == 'protein names' else
+                    if self.param.field == 'protein names' else
                 [
                     xxx for xxx in resep.split(recolend.sub('', xx.strip()))
                     if len(xxx) > 0
@@ -612,11 +620,11 @@ class MapReader(session_mod.Logger):
             
             for l in data:
                 
-                if l:
+                if len(l) >= 2:
                     
                     l[1] = (
                         self._process_protein_name(l[1][0])
-                            if param.field == 'protein names' else
+                            if self.param.field == 'protein names' else
                         l[1]
                     )
                     
@@ -775,7 +783,7 @@ class Mapper(session_mod.Logger):
         self.ncbi_tax_id = ncbi_tax_id or settings.get('default_organism')
         
         self.unmapped = []
-        self.data = {}
+        self.tables = {}
         self.uniprot_mapped = []
         self.trace = []
         self.uniprot_static_names = {
@@ -867,7 +875,7 @@ class Mapper(session_mod.Logger):
             
             tbl = self.tables[tbl_key]
         
-        elif tbl_name_rev in tables:
+        elif tbl_key_rev in self.tables:
             
             self.create_reverse(tbl_key)
             tbl = self.tables[tbl_key]
@@ -928,7 +936,7 @@ class Mapper(session_mod.Logger):
                     
                     reader = MapReader(
                         param = this_param,
-                        source_type = 'uniprotlist',
+                        source_type = 'uniprot_list',
                         ncbi_tax_id = ncbi_tax_id,
                         uniprots = None,
                         lifetime = 300,
@@ -1094,7 +1102,6 @@ class Mapper(session_mod.Logger):
                 id_type = id_type,
                 target_id_type = target_id_type,
                 ncbi_tax_id = ncbi_tax_id,
-                strict = strict,
             )
             
         else:
@@ -1105,7 +1112,6 @@ class Mapper(session_mod.Logger):
                 id_type = id_type,
                 target_id_type = target_id_type,
                 ncbi_tax_id = ncbi_tax_id,
-                strict = strict,
             )
         
         # further attempts to set it right if
@@ -1264,7 +1270,6 @@ class Mapper(session_mod.Logger):
             id_type,
             target_id_type,
             ncbi_tax_id = None,
-            strict = False,
         ):
         """
         ID translation adapted to the specialities of RefSeq IDs.
@@ -1427,55 +1432,55 @@ class Mapper(session_mod.Logger):
     
     def load_mapping(
             self,
-            param,
+            resource,
             **kwargs,
         ):
         """
-        Loads a single mapping table based on input definition in ``param``.
-        ``**kwargs`` passed to ``MapReader``.
+        Loads a single mapping table based on input definition in
+        ``resource``. ``**kwargs`` passed to ``MapReader``.
         """
         
         if (
-            param.type in {'file', 'pickle'} and
+            resource.type in {'file', 'pickle'} and
             not (
-                os.path.exists(param.fname) or
-                hasattr(mapping_input, param.fname)
+                os.path.exists(resource.fname) or
+                hasattr(mapping_input, resource.fname)
             )
         ):
             
-            self._msg(
+            self._log(
                 'Could not load mapping: no such '
-                'file or function: `%s`.' % param.fname
+                'file or function: `%s`.' % resource.fname
             )
             return
         
 
         
-        reader = MapReader(param = param, **kwargs)
+        reader = MapReader(param = resource, **kwargs)
         
         a_to_b = reader.mapping_table_a_to_b
         b_to_a = reader.mapping_table_b_to_a
         
         if a_to_b:
             
-            self._msg(
+            self._log(
                 '`%s` to `%s` mapping table for organism `%s` '
                 'successfully loaded.' % (
-                    param.id_type_a,
-                    param.id_type_b,
-                    str(param.ncbi_tax_id),
+                    resource.id_type_a,
+                    resource.id_type_b,
+                    str(resource.ncbi_tax_id),
                 )
             )
             self.tables[a_to_b.get_key()] = a_to_b
         
         if b_to_a:
             
-            self._msg(
+            self._log(
                 '`%s` to `%s` mapping table for organism `%s` '
                 'successfully loaded.' % (
-                    param.id_type_b,
-                    param.id_type_a,
-                    str(param.ncbi_tax_id),
+                    resource.id_type_b,
+                    resource.id_type_a,
+                    str(resource.ncbi_tax_id),
                 )
             )
             self.tables[b_to_a.get_key()] = b_to_a
@@ -1509,8 +1514,6 @@ class Mapper(session_mod.Logger):
         """
         
         ncbi_tax_id = ncbi_tax_id or self.ncbi_tax_id
-        
-        tables = self.tables[ncbi_tax_id]
         
         genesymbol_table = self.which_table(
             id_type = 'genesymbol',

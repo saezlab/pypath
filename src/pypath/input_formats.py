@@ -121,7 +121,7 @@ class UniprotMapping(MappingInput):
         
         MappingInput.__init__(
             self,
-            type_ = 'file',
+            type_ = 'uniprot',
             id_type_a = id_type,
             id_type_b = 'uniprot',
             ncbi_tax_id = ncbi_tax_id,
