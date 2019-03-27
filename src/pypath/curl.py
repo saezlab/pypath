@@ -544,14 +544,17 @@ class FileOpener(object):
     as you request. It examines the file type and size.
     """
 
-    def __init__(self,
-                 file_param,
-                 compr=None,
-                 extract=True,
-                 _open=True,
-                 set_fileobj=True,
-                 files_needed=None,
-                 large=True):
+    def __init__(
+            self,
+            file_param,
+            compr=None,
+            extract=True,
+            _open=True,
+            set_fileobj=True,
+            files_needed=None,
+            large=True,
+            default_mode = 'r',
+        ):
         if not hasattr(self, 'compr'):
             self.compr = compr
         if not hasattr(self, 'files_needed'):
@@ -641,11 +644,20 @@ class FileOpener(object):
             if self.files_needed is None or m in self.files_needed:
                 this_file = self.zipfile.open(m)
                 if self.large:
-                    self.files_multipart[m] = io.TextIOWrapper(
-                        io.BytesIO(
-                            this_file.read()
+                    
+                    if self.default_mode == 'rb':
+                        
+                        # keeping it in binary mode
+                        self.files_multipart[m] = this_file
+                        
+                    else:
+                        
+                        # wrapping the file for decoding
+                        self.files_multipart[m] = io.TextIOWrapper(
+                            io.BytesIO(
+                                this_file.read()
+                            )
                         )
-                    )
                 else:
                     self.files_multipart[m] = this_file.read()
                     this_file.close()
@@ -698,48 +710,52 @@ class Curl(FileOpener):
     It is able to show a progress and status indicator on the console.
     """
 
-    def __init__(self,
-                 url,
-                 silent=True,
-                 get=None,
-                 post=None,
-                 req_headers=None,
-                 cache=True,
-                 debug=False,
-                 outf=None,
-                 compr=None,
-                 encoding=None,
-                 files_needed=None,
-                 timeout=300,
-                 init_url=None,
-                 init_fun='get_jsessionid',
-                 init_use_cache = False,
-                 follow=True,
-                 large=False,
-                 override_post=False,
-                 init_headers=False,
-                 return_headers=False,
-                 compressed=False,
-                 binary_data=None,
-                 write_cache=True,
-                 force_quote=False,
-                 sftp_user=None,
-                 sftp_passwd=None,
-                 sftp_passwd_file='.secrets',
-                 sftp_port=22,
-                 sftp_host=None,
-                 sftp_ask=None,
-                 setup=True,
-                 call=True,
-                 process=True,
-                 retries=3,
-                 cache_dir=None):
+    def __init__(
+            self,
+            url,
+            silent = True,
+            get = None,
+            post = None,
+            req_headers = None,
+            cache = True,
+            debug = False,
+            outf = None,
+            compr = None,
+            encoding = None,
+            files_needed = None,
+            timeout = 300,
+            init_url = None,
+            init_fun = 'get_jsessionid',
+            init_use_cache  =  False,
+            follow = True,
+            large = False,
+            default_mode = 'r',
+            override_post = False,
+            init_headers = False,
+            return_headers = False,
+            compressed = False,
+            binary_data = None,
+            write_cache = True,
+            force_quote = False,
+            sftp_user = None,
+            sftp_passwd = None,
+            sftp_passwd_file = '.secrets',
+            sftp_port = 22,
+            sftp_host = None,
+            sftp_ask = None,
+            setup = True,
+            call = True,
+            process = True,
+            retries = 3,
+            cache_dir = None,
+        ):
 
         self.result = None
         self.download_failed = False
         self.status = 0
         self.get = get
         self.large = large
+        self.default_mode = default_mode
         self.silent = silent
         self.debug = debug or DEBUG
         self.url = url

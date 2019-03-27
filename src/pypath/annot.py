@@ -124,13 +124,6 @@ class AnnotationBase(resource.AbstractResource):
         setattr(self, '__class__', new)
     
     
-    def _process_method(self):
-        
-        self.annot = self.data
-        
-        delattr(self, 'data')
-    
-    
     def load_uniprots(self):
         """
         Retrieves a set of all UniProt IDs to have a base set of the entire
@@ -664,10 +657,12 @@ class Locate(AnnotationBase):
         )
     
     
-    def _process_method(self, *args, **kwargs):
+    def _process_method(self):
         
         #  already the appropriate format, no processing needed
-        pass
+        self.annot = self.data
+        
+        delattr(self, 'data')
 
 
 class GOCustomIntercell(go.GOCustomAnnotation):

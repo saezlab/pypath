@@ -9439,7 +9439,7 @@ def _matrixdb_protein_list(category, organism = 9606):
             continue
         
         proteins.add(
-            l.decode('utf-8').strip().replace('"', '').split('\t')[0]
+            l.strip().replace('"', '').split('\t')[0]
         )
     
     if organism:
@@ -9496,7 +9496,13 @@ def get_locate_localizations(
     url = urls.urls['locate']['url'] % organism_str
     fname = url.split('/')[-1][:-4]
     
-    c = curl.Curl(url, large = True, silent = False, files_needed = [fname])
+    c = curl.Curl(
+        url,
+        large = True,
+        default_mode = 'rb',
+        silent = False,
+        files_needed = [fname],
+    )
     c.result[fname]
     
     parser = etree.iterparse(c.result[fname], events = ('start', 'end'))
