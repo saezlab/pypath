@@ -30,11 +30,14 @@ import pandas as pd
 import pypath.ptm as ptm
 import pypath.export as export
 import pypath.main as main
-import pypath.mapping as mapping
 import pypath.data_formats as data_formats
+import pypath.session_mod as session_mod
 
 
-class WebserviceTables(object):
+class WebserviceTables(session_mod.Logger):
+    """
+    Creates the data frames which the web service uses to serve the data from.
+    """
     
     def __init__(
             self,
@@ -57,13 +60,8 @@ class WebserviceTables(object):
     
     def main(self):
         
-        self.init_mapper()
         self.interactions()
         self.ptms()
-    
-    def init_mapper(self):
-        
-        self.mapper = mapping.Mapper()
     
     def interactions(self):
         
@@ -83,7 +81,6 @@ class WebserviceTables(object):
         for to_call, kwargs in param:
             
             pa = main.PyPath()
-            pa.mapper = self.mapper
             getattr(pa, to_call)(**kwargs)
             
             e = export.Export(pa)
@@ -116,7 +113,6 @@ class WebserviceTables(object):
                             del e
                             del pa
                             pa = main.PyPath()
-                            pa.mapper = self.mapper
                             getattr(pa, to_call)(**kwargs)
                     
                     pa.orthology_translation(rodent)
@@ -138,7 +134,7 @@ class WebserviceTables(object):
         
         dataframes = []
         
-        ptma = ptm.PtmAggregator(mapper = self.mapper)
+        ptma = ptm.PtmAggregator()
         ptma.make_df(tax_id = True)
         dataframes.append(ptma.df)
         
@@ -149,7 +145,6 @@ class WebserviceTables(object):
                 ptma = ptm.PtmAggregator(
                     ncbi_tax_id = rodent1,
                     map_by_homology_from = (9606, rodent2),
-                    mapper = self.mapper
                 )
                 ptma.make_df(tax_id = True)
                 dataframes.append(ptma.df)
