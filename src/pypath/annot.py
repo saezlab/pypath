@@ -26,9 +26,9 @@ import sys
 import imp
 import collections
 import itertools
+
 import numpy as np
 import pandas as pd
-
 
 import pypath.dataio as dataio
 import pypath.common as common
@@ -261,6 +261,57 @@ class AnnotationBase(resource.AbstractResource):
         return (
             tuple(r[0] for r in result),
             np.vstack(r[1] for r in result).T
+        )
+    
+    
+    def make_df(self):
+        
+        discard = {'n/a', None}
+        
+        columns = [
+            'source',
+            'label',
+            'value',
+            'record_id',
+        ]
+        
+        records = []
+        
+        irec = 0
+        
+        for uniprot, annots in iteritems(self.annot):
+            
+            if not annots:
+                
+                records.append([
+                    self.name,
+                    'in %s' % self.name,
+                    'yes',
+                    irec,
+                ])
+                
+                irec += 1
+            
+            for annot in annots:
+                
+                for label, value in zip(annot._fields, annot):
+                    
+                    if value in discard:
+                        
+                        continue
+                    
+                    records.append([
+                        self.name,
+                        label,
+                        str(value),
+                        irec,
+                    ])
+                
+                irec += 1
+        
+        self.df = pd.DataFrame(
+            records,
+            columns = columns,
         )
     
     
@@ -962,3 +1013,14 @@ class AnnotationTable(object):
         )
         
         return df
+    
+    
+    def make_narrow_df(self):
+        
+        for annot in self.annots.values():
+            
+            annot.make_df()
+        
+        self.narrow_df = pd.concat(
+            annot.df for annot in self.annots.values()
+        )

@@ -25,10 +25,12 @@ from future.utils import iteritems
 
 import imp
 import copy
+
 import pandas as pd
 
 import pypath.ptm as ptm
 import pypath.complex as complex
+import pypath.annot as annot
 import pypath.export as export
 import pypath.main as main
 import pypath.data_formats as data_formats
@@ -40,18 +42,22 @@ class WebserviceTables(session_mod.Logger):
     Creates the data frames which the web service uses to serve the data from.
     """
     
+    
     def __init__(
             self,
             only_human = False,
             outfile_interactions = 'omnipath_webservice_interactions.tsv',
             outfile_ptms = 'omnipath_webservice_ptms.tsv',
             outfile_complexes = 'omnipath_webservice_complexes.tsv',
+            outfile_annotations = 'omnipath_webservice_annotations',
         ):
         
         self.only_human = only_human
         self.outfile_interactions = outfile_interactions
         self.outfile_ptms = outfile_ptms
-        self.outfile_complexes = omnipath_webservice_complexes
+        self.outfile_complexes = outfile_complexes
+        self.outfile_annotations = outfile_annotations
+    
     
     def reload(self):
         
@@ -61,11 +67,14 @@ class WebserviceTables(session_mod.Logger):
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
     
+    
     def main(self):
         
         self.interactions()
         self.ptms()
         self.complexes()
+        self.annotations()
+    
     
     def interactions(self):
         
@@ -134,6 +143,7 @@ class WebserviceTables(session_mod.Logger):
             index = False
         )
     
+    
     def ptms(self):
         
         dataframes = []
@@ -160,6 +170,7 @@ class WebserviceTables(session_mod.Logger):
             index = False
         )
     
+    
     def complexes(self):
         
         co = complex.ComplexAggregator()
@@ -174,4 +185,16 @@ class WebserviceTables(session_mod.Logger):
         )
     
     
-    
+    def annotations(self):
+        
+        an = annot.AnnotationTable(keep_annotators = True)
+        an.load()
+        
+        an.make_narrow_df()
+        
+        self.df_annotations = an.narrow_df
+        self.df_annotations.to_csv(
+            self.outfile_annotations,
+            sep = '\t',
+            index = False,
+        )
