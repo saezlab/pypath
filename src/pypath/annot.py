@@ -79,7 +79,6 @@ class AnnotationBase(resource.AbstractResource):
     def __init__(
             self,
             name,
-            mapper = None,
             ncbi_tax_id = 9606,
             input_method = None,
             input_args = None,
@@ -105,7 +104,6 @@ class AnnotationBase(resource.AbstractResource):
         resource.AbstractResource.__init__(
             self,
             name = name,
-            mapper = mapper,
             ncbi_tax_id = ncbi_tax_id,
             input_method = input_method,
             input_args = input_args,
@@ -391,7 +389,7 @@ class Membranome(AnnotationBase):
 class Exocarta(AnnotationBase):
     
     
-    def __init__(self, ncbi_tax_id = 9606, mapper = None, **kwargs):
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
         
         if 'organism' not in kwargs:
             
@@ -406,7 +404,6 @@ class Exocarta(AnnotationBase):
             name = kwargs['database'].capitalize(),
             ncbi_tax_id = ncbi_tax_id,
             input_method = '_get_exocarta_vesiclepedia',
-            mapper = mapper,
             input_args = kwargs,
         )
     
@@ -422,7 +419,7 @@ class Exocarta(AnnotationBase):
         
         for a in self.data:
             
-            uniprots = self.mapper.map_name(a[1], 'genesymbol', 'uniprot')
+            uniprots = mapping.map_name(a[1], 'genesymbol', 'uniprot')
             
             for u in uniprots:
                 
@@ -438,13 +435,12 @@ class Exocarta(AnnotationBase):
 class Vesiclepedia(Exocarta):
     
     
-    def __init__(self, ncbi_tax_id = 9606, mapper = None, **kwargs):
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
         
         Exocarta.__init__(
             self,
             ncbi_tax_id = ncbi_tax_id,
             database = 'vesiclepedia',
-            mapper = mapper,
             **kwargs,
         )
 
@@ -452,7 +448,7 @@ class Vesiclepedia(Exocarta):
 class Matrisome(AnnotationBase):
     
     
-    def __init__(self, ncbi_tax_id = 9606, mapper = None, **kwargs):
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
         
         if 'organism' not in kwargs:
             
@@ -464,7 +460,6 @@ class Matrisome(AnnotationBase):
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'get_matrisome',
             input_args = kwargs,
-            mapper = mapper,
         )
     
     
@@ -487,13 +482,12 @@ class Matrisome(AnnotationBase):
 class Surfaceome(AnnotationBase):
     
     
-    def __init__(self, mapper = None, **kwargs):
+    def __init__(self, **kwargs):
         
         AnnotationBase.__init__(
             self,
             name = 'Surfaceome',
             input_method = 'get_surfaceome',
-            mapper = mapper,
             **kwargs,
         )
     
@@ -524,7 +518,7 @@ class Surfaceome(AnnotationBase):
 class CellSurfaceProteinAtlas(AnnotationBase):
     
     
-    def __init__(self, ncbi_tax_id = 9606, mapper = None, **kwargs):
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
         """
         The name of this resource abbreviated as `CSPA`.
         """
@@ -539,14 +533,13 @@ class CellSurfaceProteinAtlas(AnnotationBase):
             ncbi_tax_id = ncbi_tax_id,
             input_method = 'get_cspa',
             input_args = kwargs,
-            mapper = mapper,
         )
 
 
 class HumanPlasmaMembraneReceptome(AnnotationBase):
     
     
-    def __init__(self, mapper = None, **kwargs):
+    def __init__(self, **kwargs):
         """
         The name of this resource abbreviated as `HPMR`.
         """
@@ -555,7 +548,6 @@ class HumanPlasmaMembraneReceptome(AnnotationBase):
             self,
             name = 'HPMR',
             input_method = 'get_hpmr',
-            mapper = mapper,
             **kwargs,
         )
     
@@ -565,7 +557,7 @@ class HumanPlasmaMembraneReceptome(AnnotationBase):
         self.annot = dict(
             (uniprot, set())
             for genesymbol in self.data
-            for uniprot in self.mapper.map_name(
+            for uniprot in mapping.map_name(
                 genesymbol, 'genesymbol', 'uniprot'
             )
         )
@@ -651,7 +643,6 @@ class Locate(AnnotationBase):
     def __init__(
             self,
             ncbi_tax_id = 9606,
-            mapper = None,
             literature = True,
             external = True,
             predictions = False,
@@ -659,7 +650,6 @@ class Locate(AnnotationBase):
         
         input_args = {
             'organism': ncbi_tax_id or 9606,
-            'mapper': mapper,
             'literature': literature,
             'external': external,
             'predictions': predictions,

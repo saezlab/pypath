@@ -19,7 +19,6 @@
 #
 
 import pypath.dataio as dataio
-import pypath.mapping as mapping
 import pypath.common as common
 
 
@@ -33,7 +32,6 @@ class AbstractResource(object):
     def __init__(
             self,
             name,
-            mapper = None,
             ncbi_tax_id = 9606,
             input_method = None,
             input_args = None,
@@ -49,7 +47,6 @@ class AbstractResource(object):
         self.name = name
         self._input_method = input_method
         self.input_args = input_args or {}
-        self._mapper = mapper
         self.ncbi_tax_id = ncbi_tax_id
     
     
@@ -105,20 +102,3 @@ class AbstractResource(object):
     def _process_method(self):
         
         pass
-    
-    
-    @property
-    def mapper(self):
-        
-        if self._mapper is None:
-            
-            self.set_mapper()
-        
-        return self._mapper
-    
-    
-    def set_mapper(self):
-        
-        if self._mapper is None:
-            
-            self._mapper = mapping.Mapper(ncbi_tax_id = self.ncbi_tax_id)
