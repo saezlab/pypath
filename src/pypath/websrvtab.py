@@ -28,6 +28,7 @@ import copy
 import pandas as pd
 
 import pypath.ptm as ptm
+import pypath.complex as complex
 import pypath.export as export
 import pypath.main as main
 import pypath.data_formats as data_formats
@@ -43,12 +44,14 @@ class WebserviceTables(session_mod.Logger):
             self,
             only_human = False,
             outfile_interactions = 'omnipath_webservice_interactions.tsv',
-            outfile_ptms = 'omnipath_webservice_ptms.tsv'
+            outfile_ptms = 'omnipath_webservice_ptms.tsv',
+            outfile_complexes = 'omnipath_webservice_complexes.tsv',
         ):
         
         self.only_human = only_human
         self.outfile_interactions = outfile_interactions
         self.outfile_ptms = outfile_ptms
+        self.outfile_complexes = omnipath_webservice_complexes
     
     def reload(self):
         
@@ -62,6 +65,7 @@ class WebserviceTables(session_mod.Logger):
         
         self.interactions()
         self.ptms()
+        self.complexes()
     
     def interactions(self):
         
@@ -155,3 +159,19 @@ class WebserviceTables(session_mod.Logger):
             sep = '\t',
             index = False
         )
+    
+    def complexes(self):
+        
+        co = complex.ComplexAggregator()
+        
+        co.make_df()
+        
+        self.df_complexes = co.df
+        self.df_complexes.to_csv(
+            self.outfile_complexes,
+            sep = '\t',
+            index = False,
+        )
+    
+    
+    

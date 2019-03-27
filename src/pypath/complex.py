@@ -22,6 +22,9 @@ from future.utils import iteritems
 
 import collections
 
+import numpy as np
+import pandas as pd
+
 import pypath.dataio as dataio
 import pypath.intera as intera
 import pypath.resource as resource
@@ -132,6 +135,47 @@ class AbstractComplexResource(resource.AbstractResource):
                 return other in self.complexes
         
         return False
+    
+    
+    def make_df(self):
+        
+        have_stoichiometry = {
+            'PDB',
+            'Compleat',
+            'ComplexPortal',
+            'CellPhoneDB',
+        }
+        
+        colnames = [
+            'name',
+            'all_components',
+            'component_uniprot',
+            'component_stoichiometry',
+            'sources',
+            'references',
+        ]
+        
+        records = []
+        
+        for cplex in self.complexes.values():
+            
+            has_stoi = have_stoichiometry & cplex.sources
+            
+            for comp, stoi in iteritems(cplex.components):
+                
+                records.append([
+                    cplex.name if cplex.name else None,
+                    cplex.__str__(),
+                    comp,
+                    '%u' % stoi if has_stoi else np.nan,
+                    ';'.join(cplex.sources),
+                    ';'.join(cplex.references),
+                ])
+        
+        self.df = pd.DataFrame(
+            records,
+            columns = colnames,
+        )
 
 
 class CellPhoneDB(AbstractComplexResource):
