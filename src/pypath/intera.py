@@ -904,7 +904,7 @@ class Complex(object):
     
     def __eq__(self, other):
         
-        self.__hash__() == other.__hash__()
+        return self.__hash__() == other.__hash__()
     
     
     def __iadd__(self, other):
@@ -925,9 +925,34 @@ class Complex(object):
             
             return
         
+        if (
+            set(self.components.values()) == {1} and
+            set(other.components.values()) != {1}
+        ):
+            # this complex has no stoichiometry information
+            # but the other has
+            self.components = other.components
+        
         self.sources.update(other.sources)
         self.references.update(other.references)
-        self.attrs.update(other.attrs)
+        
+        if self.synonyms and other.synonyms:
+            
+            self.synonyms.update(other.synonyms)
+            
+        elif other.synonyms:
+            
+            self.synonyms = other.synonyms
+        
+        for k, v in iteritems(other.attrs):
+            
+            if k not in self.attrs:
+                
+                self.attrs[k] = v
+                
+            elif isinstance(self.attrs[k], (dict, set)):
+                
+                self.attrs[k].update(v)
     
     
     def get_synonym(self, typ):

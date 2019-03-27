@@ -18,11 +18,25 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
+
 import collections
 
 import pypath.dataio as dataio
 import pypath.intera as intera
 import pypath.resource as resource
+import pypath.settings as settings
+
+
+complex_resources = (
+    'Signor',
+    'Corum',
+    'CellPhoneDB',
+    'Havugimana',
+    'Compleat',
+    'ComplexPortal',
+    'Pdb',
+)
 
 
 class AbstractComplexResource(resource.AbstractResource):
@@ -220,3 +234,60 @@ class Signor(AbstractComplexResource):
             input_method = 'signor_complexes',
             input_args = input_args or {},
         )
+
+
+class ComplexAggregator(AbstractComplexResource):
+    
+    
+    def __init__(
+            self,
+            resources = None,
+        ):
+        """
+        Combines complexes from multiple resources.
+        
+        :arg list resources:
+            List of resources. Names of complex resource classes in this
+            module or custom 
+        """
+        
+        self.resources = resources or complex_resources
+        
+        AbstractComplexResource.__init__(
+            self,
+            name = 'OmniPath',
+        )
+    
+    
+    def load(self):
+        
+        self.data = {}
+        
+        for res in self.resources:
+            
+            if not callable(res):
+                
+                if res in globals():
+                    
+                    res = globals()[res]
+            
+            if callable(res):
+                
+                processor = res()
+                
+            elif hasattr(res, 'complexes'):
+                
+                processor = res
+            
+            for key, cplex in iteritems(processor.complexes):
+                
+                if key in self.data:
+                    
+                    self.data[key] += cplex
+                    
+                else:
+                    
+                    self.data[key] = cplex
+        
+        resource.AbstractResource.load(self)
+        self.update_index()

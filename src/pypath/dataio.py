@@ -748,11 +748,11 @@ def compleat_complexes(predicted = True):
         
         for entrez in rec['members'].split():
             
-            uniprot = mapping.map_name(entrez.strip(), 'entrez', 'uniprot')
+            uniprot = mapping.map_name0(entrez.strip(), 'entrez', 'uniprot')
             
             if uniprot:
                 
-                uniprots.append(uniprot[0])
+                uniprots.append(uniprot)
         
         if not uniprots:
             
@@ -5427,9 +5427,8 @@ def cellphonedb_complexes():
             return get_uniprots(rec)
         
         return tuple(
-            mapping.map_name(genesymbol, 'genesymbol', 'uniprot')[0]
-            for genesymbol in
-            rec['stoichiometry'].split(';')
+            mapping.map_name0(genesymbol, 'genesymbol', 'uniprot')
+            for genesymbol in rec['stoichiometry'].split(';')
         )
     
     

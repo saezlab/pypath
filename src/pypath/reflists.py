@@ -197,16 +197,11 @@ class ReferenceListManager(session_mod.Logger):
     
     def _remove_expired(self):
         
-        for key, last_used in iteritems(self.expiry):
+        for key, last_used in list(self.expiry.items()):
             
             if time.time() - last_used > self.lifetime and key in self.lists:
                 
                 del self.lists[key]
-        
-        for key in self.expiry.keys():
-            
-            if key not in self.lists:
-                
                 del self.expiry[key]
     
     
