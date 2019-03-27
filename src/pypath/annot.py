@@ -269,6 +269,7 @@ class AnnotationBase(resource.AbstractResource):
         discard = {'n/a', None}
         
         columns = [
+            'uniprot',
             'source',
             'label',
             'value',
@@ -284,6 +285,7 @@ class AnnotationBase(resource.AbstractResource):
             if not annots:
                 
                 records.append([
+                    uniprot,
                     self.name,
                     'in %s' % self.name,
                     'yes',
@@ -300,7 +302,12 @@ class AnnotationBase(resource.AbstractResource):
                         
                         continue
                     
+                    if isinstance(value, (set, list, tuple)):
+                        
+                        value = ';'.join(map(str, value))
+                    
                     records.append([
+                        uniprot,
                         self.name,
                         label,
                         str(value),
