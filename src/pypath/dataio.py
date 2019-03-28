@@ -31,6 +31,12 @@ from __future__ import print_function
 from future.utils import iteritems
 from past.builtins import xrange, range
 
+import pypath.session_mod as session_mod
+
+_logger = session_mod.Logger(name = 'dataio')
+_log = _logger._log
+_console = _logger._console
+
 import urllib
 
 try:
@@ -89,8 +95,7 @@ import codecs
 try:
     import bioservices
 except ImportError:
-    sys.stdout.write('\t:: Module `bioservices` not available.\n')
-    sys.stdout.flush()
+    _log('Module `bioservices` not available.', -1)
 
 from xlrd import open_workbook
 from xlrd.biffh import XLRDError
@@ -124,6 +129,7 @@ ERASE_LINE = '\x1b[2K'
 
 
 def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
+    
     try:
         book = open_workbook(xls_file, on_demand = True)
         try:
@@ -138,8 +144,7 @@ def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
             if return_table:
                 return table
     except IOError:
-        sys.stdout.write('No such file: %s\n' % xls_file)
-    sys.stdout.flush()
+        _console('No such file: %s\n' % xls_file)
 
 
 def read_table(cols,
@@ -5836,23 +5841,31 @@ def li2012_dmi():
     return result
 
 
-def take_a_trip(cachefile = 'trip.pickle'):
+def take_a_trip(cachefile = None):
     """
     Downloads TRIP data from webpage and preprocesses it.
     Saves preprocessed data into `cachefile` and next
     time loads from this file.
 
-    @cachefile : str
-        Filename, located in `./cache`.
-        To disable cache, pass `None`.
-        To download again, remove file from `./cache`.
+    :arg cachefile str:
+        Path to pickle dump of preprocessed TRIP database. If does not exist
+        the database will be downloaded and saved to this file. By default
+        the path queried from the ``settings`` module.
     """
-    if cachefile is not None:
-        cachedir = settings.get('cachedir')
-        cachefile = os.path.join(cachedir, cachefile)
-        if os.path.exists(cachefile):
-            result = pickle.load(open(cachefile, 'rb'))
-            return result
+    
+    cachefile = cachefile or settings.get('trip_preprocessed')
+    
+    if os.path.exists(cachefile):
+        
+        _log(
+            'Loading preprocessed TRIP database '
+            'content from `%s`' % cachefile
+        )
+        result = pickle.load(open(cachefile, 'rb'))
+        return result
+    
+    _log('No cache found, downloading and preprocessing TRIP database.')
+    
     result = {'sc': {}, 'cc': {}, 'vvc': {}, 'vtc': {}, 'fc': {}}
     intrs = {}
     titles = {
@@ -5862,6 +5875,7 @@ def take_a_trip(cachefile = 'trip.pickle'):
         'Validation: In vivo validation': 'vvc',
         'Functional consequence': 'fc'
     }
+    
     interactors = {}
     base_url = urls.urls['trip']['base']
     show_url = urls.urls['trip']['show']
@@ -5879,6 +5893,7 @@ def take_a_trip(cachefile = 'trip.pickle'):
         [[a.attrs['href'] for a in ul.find_all('a')]
          for ul in mainsoup.find(
              'div', id = 'trp_selector').find('ul').find_all('ul')])
+    
     for trpp in trppages:
         trp = trpp.split('/')[-1]
         trpurl = show_url % trp
@@ -5886,14 +5901,19 @@ def take_a_trip(cachefile = 'trip.pickle'):
         trphtml = c.result
         trpsoup = bs4.BeautifulSoup(trphtml, 'html.parser')
         trp_uniprot = trip_find_uniprot(trpsoup)
+        
         if trp_uniprot is None or len(trp_uniprot) < 6:
-            sys.stdout.write('\t\tcould not find uniprot for %s\n' % trp)
-            sys.stdout.flush()
+            
+            _log('Could not find UniProt for %s' % trp)
+        
         for tab in trpsoup.find_all('th', colspan = ['11', '13']):
             ttl = titles[tab.text.strip()]
             tab = tab.find_parent('table')
             trip_process_table(tab, result[ttl], intrs, trp_uniprot)
+    
+    _log('Saving processed TRIP database content to `%s`' % cachefile)
     pickle.dump(result, open(cachefile, 'wb'))
+    
     return result
 
 

@@ -82,7 +82,7 @@ class Logger(object):
             verbosity = None,
             console_level = None,
             logdir = None,
-            max_width = 300,
+            max_width = 200,
         ):
         """
         fname : str

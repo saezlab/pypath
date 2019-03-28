@@ -1551,7 +1551,7 @@ class Curl(FileOpener):
             
             self._log(
                 'File at `%s` successfully retrieved. '
-                'Resulted file type `%s` with encoding `%s`. '
+                'Resulted file type `%s, %s`. '
                 'Local file at `%s`.' % (
                     self.url,
                     'plain text'

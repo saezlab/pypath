@@ -74,6 +74,7 @@ _defaults = {
         'drug': 'chembl',
         'lncrna': 'lncrna-genesymbol',
     },
+    'trip_preprocessed': 'trip_preprocessed.pickle',
 }
 
 in_datadir = {
@@ -98,6 +99,7 @@ in_datadir = {
 
 in_cachedir = {
     'pubmed_cache',
+    'trip_preprocessed',
 }
 
 
