@@ -81,7 +81,7 @@ class WebserviceTables(session_mod.Logger):
         dataframes = []
         
         tfregulons = copy.deepcopy(data_formats.transcription)
-        tfregulons['tfregulons'].inputArgs['levels'] = {
+        tfregulons['tfregulons'].input_args['levels'] = {
             'A', 'B', 'C', 'D', 'E'
         }
         

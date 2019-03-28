@@ -421,3 +421,20 @@ class TestDataio(object):
         c = dataio.complexportal_complexes()
         
         assert 'Q9NS61-Q9NZV8' in c
+    
+    
+    def test_cellphonedb_interactions(self):
+        
+        example = (
+            'Q16671',
+            'O00238',
+            'CellPhoneDB',
+            '',
+            'receptor-receptor',
+            'receptor',
+            'receptor',
+        )
+        
+        c = dataio.cellphonedb_interactions()
+        
+        assert example in c

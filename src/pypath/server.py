@@ -52,6 +52,7 @@ def stop_server():
 
 class BaseServer(resource.Resource):
     
+    
     def __init__(self):
         
         sys.stdout.write('BaseServer initialized\n')
@@ -66,6 +67,7 @@ class BaseServer(resource.Resource):
         
         self.isLeaf = True
         resource.Resource.__init__(self)
+    
     
     def render_GET(self, request):
         
@@ -127,6 +129,7 @@ class BaseServer(resource.Resource):
         
         return server.NOT_DONE_YET
     
+    
     def render_POST(self, request):
         
         if request.getHeader(b'content-type').startsWith(b'application/json'):
@@ -143,6 +146,7 @@ class BaseServer(resource.Resource):
             )
         
         return self.render_GET(request)
+    
     
     def _set_defaults(self, request, html=False):
         
@@ -171,11 +175,18 @@ class BaseServer(resource.Resource):
             request.args[b'format'] = [b'text']
             request.setHeader('Content-Type', 'text/plain; charset=utf-8')
         
-        request.args[b'header'] = [b'1'] if b'header' not in request.args \
-            else request.args[b'header']
+        request.args[b'header'] = (
+            [b'1']
+                if b'header' not in request.args else
+            request.args[b'header']
+        )
         
-        request.args[b'fields'] = [] if b'fields' not in request.args \
-            else request.args[b'fields']
+        request.args[b'fields'] = (
+            []
+                if b'fields' not in request.args else
+            request.args[b'fields']
+        )
+    
     
     def _process_postpath(self, req):
         
@@ -217,14 +228,21 @@ class BaseServer(resource.Resource):
             else:
                 req.args[b'source_target'] = left_right
     
+    
     def about(self, req):
+        
         return self.welcome_message
-
+    
+    
     def info(self, req):
+        
         return descriptions.gen_html()
-
+    
+    
     def root(self, req):
+        
         return _html.main_page()
+    
     
     def _parse_arg(self, arg):
         
@@ -351,7 +369,31 @@ class TableServer(BaseServer):
                 'and',
                 'or'
             }
-        }
+        },
+        'annotations': {
+            'header': None,
+            'format': {
+                'json',
+                'tab',
+                'text',
+                'tsv',
+                'table'
+            },
+            'databases': None,
+            'proteins': None,
+        },
+        'complexes': {
+            'header': None,
+            'format': {
+                'json',
+                'tab',
+                'text',
+                'tsv',
+                'table'
+            },
+            'databases': None,
+            'proteins': None,
+        },
     }
     
     datasets_ = {'omnipath', 'tfregulons', 'kinaseextra', 'mirnatarget'}
@@ -373,9 +415,12 @@ class TableServer(BaseServer):
         'isoforms', 'organism', 'ncbi_tax_id'
     }
     
+    
     def __init__(self, a = 'hey', tbls = {
             'interactions': 'omnipath_webservice_interactions.tsv',
-            'ptms': 'omnipath_webservice_ptms.tsv'
+            'ptms': 'omnipath_webservice_ptms.tsv',
+            'annotations': 'omnipath_webservice_annotations.tsv',
+            'complexes': 'omnipath_webservice_complexes.tsv',
         }):
         
         sys.stdout.write('TableServer initialized\n')
@@ -385,8 +430,11 @@ class TableServer(BaseServer):
         self._read_tables()
         self._preprocess_interactions()
         self._preprocess_ptms()
+        self._preprocess_annotations()
+        self._preprocess_complexes()
         
         BaseServer.__init__(self)
+    
     
     def _read_tables(self):
         
@@ -404,12 +452,13 @@ class TableServer(BaseServer):
             self.data[name] = pd.DataFrame.from_csv(
                 fname,
                 sep = '\t',
-                index_col = None
+                index_col = None,
             )
             
             sys.stdout.write(
                 'Table `%s` loaded from file `%s`\n' % (name, fname)
             )
+    
     
     def _network(self, req):
         
@@ -422,6 +471,7 @@ class TableServer(BaseServer):
         else:
             return '%s\n%s' % ('\t'.join(hdr), '\t'.join(
                 [str(val[h]) for h in hdr]))
+    
     
     def _preprocess_interactions(self):
         
@@ -439,6 +489,7 @@ class TableServer(BaseServer):
             ]
         )
     
+    
     def _preprocess_ptms(self):
         
         sys.stdout.write('Preprocessing ptms\n')
@@ -446,6 +497,25 @@ class TableServer(BaseServer):
         tbl['set_sources'] = pd.Series(
             [set(s.split(';')) for s in tbl.sources]
         )
+    
+    
+    def _preprocess_complexes(self):
+        
+        sys.stdout.write('Preprocessing complexes\n')
+        tbl = self.data['complexes']
+        tbl['set_sources'] = pd.Series(
+            [set(s.split(';')) for s in tbl.sources]
+        )
+        tbl['set_proteins'] = pd.Series(
+            [set(c.split('-')) for c in tbl.all_components]
+        )
+    
+    
+    def _preprocess_annotations(self):
+        
+        sys.stdout.write('Preprocessing annotations\n')
+        pass
+    
     
     def _check_args(self, req):
         
@@ -497,6 +567,7 @@ class TableServer(BaseServer):
                 'omnipath@googlegroups.com' % '\n'.join(result)
             )
     
+    
     def queries(self, req):
         
         query_type = (
@@ -539,10 +610,13 @@ class TableServer(BaseServer):
             return 'argument\tvalues\n%s' % '\n'.join(
                 '%s\t%s' % (
                     k,
-                    ';'.join(v) if type(v) in {list, set} else str(v)
+                    ';'.join(v)
+                        if isinstance(v, (list, set, tuple)) else
+                    str(v)
                 )
                 for k, v in iteritems(result)
             )
+    
     
     def databases(self, req):
         
@@ -598,9 +672,11 @@ class TableServer(BaseServer):
                 '%s\t%s' % (k, ';'.join(v)) for k, v in iteritems(result)
             )
     
+    
     def _get_datasets(self):
         
         return list(self.data['interactions'].type.unique())
+    
     
     def datasets(self, req):
         
@@ -625,6 +701,7 @@ class TableServer(BaseServer):
         else:
             
             return ';'.join(result)
+    
     
     def interactions(
             self,
@@ -956,6 +1033,67 @@ class TableServer(BaseServer):
         
         return self._serve_dataframe(tbl, req)
     
+    
+    def annotations(self):
+        
+        bad_req = self._check_args(req)
+        
+        if bad_req:
+            
+            return bad_req
+        
+        # starting from the entire dataset
+        tbl = self.data['annotations']
+        
+        hdr = self.tbl.columns
+        
+        # filtering for databases
+        if args['databases']:
+            
+            databases = set(args['databases'])
+            
+            tbl = tbl.source.isin(databases)
+        
+        # filtering for proteins
+        if args['proteins']:
+            
+            proteins = set(args['proteins'])
+            
+            tbl = tbl[tbl.uniprot.isin(proteins)
+        
+        return seld._serve_dataframe(tbl, req)
+    
+    
+    def complexes(self):
+        
+        bad_req = self._check_args(req)
+        
+        if bad_req:
+            
+            return bad_req
+        
+        # starting from the entire dataset
+        tbl = self.data['complexes']
+        
+        hdr = self.tbl.columns
+        
+        # filtering for databases
+        if args['databases']:
+            
+            databases = set(args['databases'])
+            
+            tbl = tbl = tbl[tbl.set_databases & databases]
+        
+        # filtering for proteins
+        if args['proteins']:
+            
+            proteins = set(args['proteins'])
+            
+            tbl = tbl[tbl.set_proteins & proteins]
+        
+        return seld._serve_dataframe(tbl, req)
+    
+    
     @classmethod
     def _serve_dataframe(cls, tbl, req):
         
@@ -987,6 +1125,7 @@ class TableServer(BaseServer):
                 index = False,
                 header = bool(req.args[b'header'])
             )
+    
     
     @staticmethod
     def _args_set(req, arg):
@@ -1117,8 +1256,10 @@ class PypathServer(BaseServer):
             return json.dumps([dict(zip(hdr, r)) for r in res])
         else:
             return self._table_output(res, hdr, req)
-
+    
+    
     def _table_output(self, res, hdr, req):
+        
         return '%s%s' % ('' if not bool(req.args[b'header']) else
                          '%s\n' % '\t'.join(hdr), '\n'.join([
                              '\t'.join([
@@ -1126,8 +1267,10 @@ class PypathServer(BaseServer):
                                  type(f) is set else str(f) for f in r
                              ]) for r in res
                          ]))
-
+    
+    
     def _get_eids(self, req):
+        
         names = None if len(req.postpath) <= 1 else req.postpath[1].split(',')
         ids = range(
             0, self.g.vcount()) if names is None else self.p.names2vids(names)
@@ -1146,7 +1289,8 @@ class PypathServer(BaseServer):
                         if e != -1:
                             elist.add(e)
         return elist
-
+    
+    
     def ptms(self, req):
         fields = [
             b'is_stimulation', b'is_inhibition', b'sources', b'references'

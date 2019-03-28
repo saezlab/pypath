@@ -1101,15 +1101,17 @@ class Mapper(session_mod.Logger):
         if isinstance(id_type, (list, set, tuple)):
             
             return set.union(
-                self.map_name(
-                    name = name,
-                    id_type = this_id_type,
-                    target_id_type = target_id_type,
-                    strict = strict,
-                    silent = silent,
-                    ncbi_tax_id = ncbi_tax_id,
+                *(
+                    self.map_name(
+                        name = name,
+                        id_type = this_id_type,
+                        target_id_type = target_id_type,
+                        strict = strict,
+                        silent = silent,
+                        ncbi_tax_id = ncbi_tax_id,
+                    )
+                    for this_id_type in id_type
                 )
-                for this_id_type in id_type
             )
         
         # translating from an ID type to the same ID type?

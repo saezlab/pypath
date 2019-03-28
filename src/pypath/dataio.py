@@ -122,9 +122,9 @@ ERASE_LINE = '\x1b[2K'
 #
 
 
-def read_xls(xls_file, sheet='', csv_file=None, return_table=True):
+def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
     try:
-        book = open_workbook(xls_file, on_demand=True)
+        book = open_workbook(xls_file, on_demand = True)
         try:
             sheet = book.sheet_by_name(sheet)
         except XLRDError:
@@ -142,13 +142,13 @@ def read_xls(xls_file, sheet='', csv_file=None, return_table=True):
 
 
 def read_table(cols,
-               fileObject=None,
-               data=None,
-               sep='\t',
-               sep2=None,
-               rem=[],
-               hdr=None,
-               encoding='ascii'):
+               fileObject = None,
+               data = None,
+               sep = '\t',
+               sep2 = None,
+               rem = [],
+               hdr = None,
+               encoding = 'ascii'):
     """
     Generic function to read data tables.
 
@@ -198,14 +198,14 @@ def read_table(cols,
     return res
 
 
-def all_uniprots(organism=9606, swissprot=None):
+def all_uniprots(organism = 9606, swissprot = None):
     
     return uniprot_input.all_uniprots(organism, swissprot)
 
 
 def get_pdb():
     
-    c = curl.Curl(urls.urls['uniprot_pdb']['url'], silent=False)
+    c = curl.Curl(urls.urls['uniprot_pdb']['url'], silent = False)
     data = c.result
     if data is None:
         return None, None
@@ -296,7 +296,7 @@ def get_pfam(uniprots = None, organism = 9606):
                 'columns': 'id,database(Pfam)'
             }
             for j in xrange(3):
-                c = curl.Curl(urls.urls['uniprot_basic']['url'], get=get)
+                c = curl.Curl(urls.urls['uniprot_basic']['url'], get = get)
                 data = c.result
                 if data is not None:
                     break
@@ -323,9 +323,9 @@ def get_pfam(uniprots = None, organism = 9606):
         for j in xrange(3):
             c = curl.Curl(
                 urls.urls['uniprot_basic']['url'],
-                get=get,
-                silent=False,
-                outf='uniprot-pfam-%u.tab' % organism)
+                get = get,
+                silent = False,
+                outf = 'uniprot-pfam-%u.tab' % organism)
             data_all = c.result
             if data_all is not None:
                 break
@@ -346,7 +346,7 @@ def get_pfam(uniprots = None, organism = 9606):
     return u_pfam, pfam_u
 
 
-def get_pfam_regions(uniprots=[], pfams=[], keepfile=False, dicts='both'):
+def get_pfam_regions(uniprots = [], pfams = [], keepfile = False, dicts = 'both'):
     url = urls.urls['pfam_up']['url']
     outf = url.split('/')[-1]
     urlmd5 = common.md5(url)
@@ -408,7 +408,7 @@ def get_pfam_regions(uniprots=[], pfams=[], keepfile=False, dicts='both'):
 
 
 def get_pfam_names():
-    c = curl.Curl(urls.urls['pfam_pdb']['url'], silent=False)
+    c = curl.Curl(urls.urls['pfam_pdb']['url'], silent = False)
     data = c.result
     if data is None:
         return None, None
@@ -436,7 +436,7 @@ def get_pfam_names():
 
 def get_pfam_pdb():
     non_digit = re.compile(r'[^\d.-]+')
-    c = curl.Curl(urls.urls['pfam_pdb']['url'], silent=False)
+    c = curl.Curl(urls.urls['pfam_pdb']['url'], silent = False)
     data = c.result
     if data is None:
         return None, None
@@ -672,7 +672,7 @@ def get_havugimana():
     """
     
     url = urls.urls['havugimana']['url']
-    c = curl.Curl(url, silent=False, large=True)
+    c = curl.Curl(url, silent = False, large = True)
     fname = c.fileobj.name
     del c
     table = read_xls(fname)
@@ -791,7 +791,7 @@ def get_pdb_chains():
 
         return int(non_digit.sub('', i))
 
-    c = curl.Curl(urls.urls['pdb_chains']['url'], silent=False)
+    c = curl.Curl(urls.urls['pdb_chains']['url'], silent = False)
     chains = c.result
     if chains is None:
         return None, None
@@ -859,9 +859,9 @@ def get_3dcomplex():
     number of amino acids in contact.
     """
 
-    c = curl.Curl(urls.urls['3dcomplexes_contact']['url'], silent=False)
+    c = curl.Curl(urls.urls['3dcomplexes_contact']['url'], silent = False)
     contact = c.result
-    c = curl.Curl(urls.urls['3dcomplexes_correspondancy']['url'], silent=False)
+    c = curl.Curl(urls.urls['3dcomplexes_correspondancy']['url'], silent = False)
     corresp = c.result
     u_pdb, pdb_u = get_pdb_chains()
 
@@ -1023,15 +1023,15 @@ def get_domino_ptms():
                 for i, resnum in enumerate(ptmre12):
                     res = intera.Residue(resnum, ptmrn12[i], uniprot2)
                     ptm = intera.Ptm(uniprot2,
-                                     typ=ptmty12[i],
-                                     residue=res,
-                                     source='DOMINO')
+                                     typ = ptmty12[i],
+                                     residue = res,
+                                     source = 'DOMINO')
                     dom = intera.Domain(uniprot1)
                     dm = intera.DomainMotif(
-                        domain=dom,
-                        ptm=ptm,
-                        sources='DOMINO',
-                        refs=l[5].split(';'))
+                        domain = dom,
+                        ptm = ptm,
+                        sources = 'DOMINO',
+                        refs = l[5].split(';'))
             # binding sites
             if l[10] != '' and l[11] != '':
                 try:
@@ -1063,75 +1063,75 @@ def get_domino_ptms():
                     for i, n in enumerate(bssrt1):
                         bs1.append(
                             intera.Domain(
-                                protein=uniprot1,
-                                domain=l[26],
-                                start=bssrt1[i],
-                                end=bsend1[i],
-                                domain_id_type='interpro',
-                                isoform=l[2]))
+                                protein = uniprot1,
+                                domain = l[26],
+                                start = bssrt1[i],
+                                end = bsend1[i],
+                                domain_id_type = 'interpro',
+                                isoform = l[2]))
                 else:
                     for i, n in enumerate(bssrt1):
                         mot = intera.Motif(
-                            protein=uniprot1,
-                            start=bssrt1[i],
-                            end=bsend1[i],
-                            isoform=l[2])
+                            protein = uniprot1,
+                            start = bssrt1[i],
+                            end = bsend1[i],
+                            isoform = l[2])
                         bs1.append(
-                            intera.Ptm(protein=uniprot1,
-                                       motif=mot,
-                                       source='DOMINO',
-                                       isoform=l[2]))
+                            intera.Ptm(protein = uniprot1,
+                                       motif = mot,
+                                       source = 'DOMINO',
+                                       isoform = l[2]))
                 if l[27] != '':
                     for i, n in enumerate(bssrt2):
                         bs2.append(
                             intera.Domain(
-                                protein=uniprot2,
-                                domain=l[27],
-                                start=bssrt2[i],
-                                end=bsend2[i],
-                                domain_id_type='interpro',
-                                isoform=l[3]))
+                                protein = uniprot2,
+                                domain = l[27],
+                                start = bssrt2[i],
+                                end = bsend2[i],
+                                domain_id_type = 'interpro',
+                                isoform = l[3]))
                 else:
                     for i, n in enumerate(bssrt2):
                         mot = intera.Motif(
-                            protein=uniprot2,
-                            start=bssrt2[i],
-                            end=bsend2[i],
-                            isoform=l[3])
+                            protein = uniprot2,
+                            start = bssrt2[i],
+                            end = bsend2[i],
+                            isoform = l[3])
                         bs2.append(
                             intera.Ptm(
-                                protein=uniprot2, motif=mot, source='DOMINO'))
+                                protein = uniprot2, motif = mot, source = 'DOMINO'))
                 for one in bs1:
                     for two in bs2:
                         if one.__class__.__name__ == 'Domain' and \
                                 two.__class__.__name__ == 'Domain':
                             dd = intera.DomainDomain(
-                                one, two, sources='DOMINO')
+                                one, two, sources = 'DOMINO')
                             ddi.append(dd)
                         if one.__class__.__name__ == 'Domain' and \
                                 two.__class__.__name__ == 'Ptm':
                             dm = intera.DomainMotif(
-                                domain=one,
-                                ptm=two,
-                                sources='DOMINO',
-                                refs=l[6].split(';'))
+                                domain = one,
+                                ptm = two,
+                                sources = 'DOMINO',
+                                refs = l[6].split(';'))
                             dmi.append(dm)
                         if two.__class__.__name__ == 'Domain' and \
                                 one.__class__.__name__ == 'Ptm':
                             dm = intera.DomainMotif(
-                                domain=two,
-                                ptm=one,
-                                sources='DOMINO',
-                                refs=l[6].split(';'))
+                                domain = two,
+                                ptm = one,
+                                sources = 'DOMINO',
+                                refs = l[6].split(';'))
                             dmi.append(dm)
     prg.terminate()
     return {'ddi': ddi, 'dmi': dmi}
 
 
 def get_3dc_ddi():
-    c = curl.Curl(urls.urls['3dcomplexes_contact']['url'], silent=False)
+    c = curl.Curl(urls.urls['3dcomplexes_contact']['url'], silent = False)
     contact = c.result
-    c = curl.Curl(urls.urls['3dcomplexes_correspondancy']['url'], silent=False)
+    c = curl.Curl(urls.urls['3dcomplexes_correspondancy']['url'], silent = False)
     corresp = c.result
     u_pdb, pdb_u = get_pdb_chains()
     del u_pdb
@@ -1167,7 +1167,7 @@ def get_3dc_ddi():
                     uniprots += [up1, up2]
     prg.terminate()
     uniprots = list(set(uniprots))
-    u_pfam = get_pfam_regions(uniprots, dicts='uniprot')
+    u_pfam = get_pfam_regions(uniprots, dicts = 'uniprot')
     prg = progress.Progress(len(contact), 'Processing contact information', 9)
     for l in contact:
         prg.step()
@@ -1203,25 +1203,25 @@ def get_3dc_ddi():
                                     for pfam1_d in pfam1_details:
                                         for pfam2_d in pfam2_details:
                                             dom1 = intera.Domain(
-                                                protein=up1,
-                                                domain=pfam1,
-                                                start=pfam1_d['start'],
-                                                end=pfam1_d['end'],
-                                                isoform=pfam1_d['isoform'],
-                                                chains={pdb: ch1})
+                                                protein = up1,
+                                                domain = pfam1,
+                                                start = pfam1_d['start'],
+                                                end = pfam1_d['end'],
+                                                isoform = pfam1_d['isoform'],
+                                                chains = {pdb: ch1})
                                             dom2 = intera.Domain(
-                                                protein=up2,
-                                                domain=pfam2,
-                                                start=pfam2_d['start'],
-                                                end=pfam2_d['end'],
-                                                isoform=pfam2_d['isoform'],
-                                                chains={pdb: ch2})
+                                                protein = up2,
+                                                domain = pfam2,
+                                                start = pfam2_d['start'],
+                                                end = pfam2_d['end'],
+                                                isoform = pfam2_d['isoform'],
+                                                chains = {pdb: ch2})
                                             dd = intera.DomainDomain(
                                                 dom1,
                                                 dom2,
-                                                pdbs=pdb,
-                                                sources='3DComplex',
-                                                contact_residues=float(l[3]))
+                                                pdbs = pdb,
+                                                sources = '3DComplex',
+                                                contact_residues = float(l[3]))
                                             ddi.append(dd)
     prg.terminate()
     return ddi
@@ -1280,7 +1280,7 @@ def get_pisa(pdblist):
         to = i + p
         thisPart = pdblist[i:to]
         url = urls.urls['pisa_interfaces']['url'] + ','.join(thisPart)
-        c = curl.Curl(url, cache=False)
+        c = curl.Curl(url, cache = False)
         data = c.result
         if data is None:
             msg = 'Could not download: \n\t\t%s' % url
@@ -1322,11 +1322,11 @@ def get_pisa(pdblist):
                                         stab_en) == 0 else float(stab_en)
                                     interfaces[pdb_id][uniprots] = \
                                         intera.Interface(uniprots[0],
-                                                         uniprots[1], source='PISA', pdb=pdb_id,
-                                                         css=css,
-                                                         solv_en=solv_en,
-                                                         area=area,
-                                                         stab_en=stab_en)
+                                                         uniprots[1], source = 'PISA', pdb = pdb_id,
+                                                         css = css,
+                                                         solv_en = solv_en,
+                                                         area = area,
+                                                         stab_en = stab_en)
                                 res1 = resconv.get_residue(pdb_id,
                                                            bond['seqnum_1'])
                                 res2 = resconv.get_residue(pdb_id,
@@ -1339,7 +1339,7 @@ def get_pisa(pdblist):
                                          uniprots[0]),
                                         (res2['resnum'], bond['res_2'],
                                          uniprots[1]),
-                                        typ=b)
+                                        typ = b)
                                 else:
                                     unmapped_residues.append(
                                         (pdb_id, bond['seqnum_1'],
@@ -1357,9 +1357,9 @@ def get_pisa(pdblist):
     return interfaces, unmapped_residues
 
 
-def get_3did_ddi(residues=False, ddi_flat=None, organism=9606):
+def get_3did_ddi(residues = False, ddi_flat = None, organism = 9606):
     if ddi_flat is None:
-        c = curl.Curl(urls.urls['3did_ddi']['url'], silent=False)
+        c = curl.Curl(urls.urls['3did_ddi']['url'], silent = False)
         data = c.result
         tmpfile = '3did_flat_tmp'
         if data is None:
@@ -1370,7 +1370,7 @@ def get_3did_ddi(residues=False, ddi_flat=None, organism=9606):
         del data
     else:
         tmpfile = ddi_flat
-    u_pfam, pfam_u = get_pfam(organism=organism)
+    u_pfam, pfam_u = get_pfam(organism = organism)
     u_pdb, pdb_u = get_pdb_chains()
     if pfam_u is None or pdb_u is None:
         return None
@@ -1384,10 +1384,10 @@ def get_3did_ddi(residues=False, ddi_flat=None, organism=9606):
         prg = progress.Progress(lnum, 'Reading data', 33)
         for l in f:
             prg.step()
-            if l.startswith('#=') and con_collect:
+            if l.startswith('# = ') and con_collect:
                 interfaces[(uniprot1, uniprot2, pdb)].append(this_interface)
                 con_collect = False
-            if l.startswith('#=ID'):
+            if l.startswith('# = ID'):
                 # new domain pair: attach previous to results:
                 if ddi_collect:
                     for u1 in uniprots1:
@@ -1408,7 +1408,7 @@ def get_3did_ddi(residues=False, ddi_flat=None, organism=9606):
                 uniprots2 = [] if pfam2 not in pfam_u else pfam_u[pfam2]
                 if len(set(uniprots1 + uniprots2)) > 1:
                     ddi_collect = True
-            elif l.startswith('#=3D'):
+            elif l.startswith('# = 3D'):
                 l = l.split('\t')
                 pdb = l[1]
                 chain1 = l[2].split(':')[0]
@@ -1435,7 +1435,7 @@ def get_3did_ddi(residues=False, ddi_flat=None, organism=9606):
                                 offset1 = pdb_u[pdb][chain1]['offset']
                                 offset2 = pdb_u[pdb][chain2]['offset']
                                 this_interface = common.Interface(
-                                    uniprot1, uniprot2, source='3DID', pdb=pdb)
+                                    uniprot1, uniprot2, source = '3DID', pdb = pdb)
                                 if (uniprot1, uniprot2, pdb) not in interfaces:
                                     interfaces[(uniprot1, uniprot2, pdb)] = []
                             else:
@@ -1468,7 +1468,7 @@ def get_3did_ddi(residues=False, ddi_flat=None, organism=9606):
         return ddi
 
 
-def get_3did(ddi_flat=None, res=True, organism=9606, pickl=True):
+def get_3did(ddi_flat = None, res = True, organism = 9606, pickl = True):
     resultfile = os.path.join(settings.get('cachedir'), '3did_ddi.pickle')
     if pickl and os.path.exists(resultfile):
         result = pickle.load(open(resultfile, 'rb'))
@@ -1477,7 +1477,7 @@ def get_3did(ddi_flat=None, res=True, organism=9606, pickl=True):
         else:
             return result[0], result[1]
     if ddi_flat is None:
-        c = curl.Curl(urls.urls['3did_ddi']['url'], silent=False)
+        c = curl.Curl(urls.urls['3did_ddi']['url'], silent = False)
         data = c.result
         tmpfile = '3did_flat_tmp'
         if data is None:
@@ -1491,7 +1491,7 @@ def get_3did(ddi_flat=None, res=True, organism=9606, pickl=True):
     else:
         return None
     u_pdb, pdb_u = get_pdb_chains()
-    all_unip = set(uniprot_input.all_uniprots(organism=organism))
+    all_unip = set(uniprot_input.all_uniprots(organism = organism))
     if all_unip is None or pdb_u is None:
         return None
     ddi = []
@@ -1506,10 +1506,10 @@ def get_3did(ddi_flat=None, res=True, organism=9606, pickl=True):
         for l in f:
             prg.step()
             l = l.split('\t')
-            if l[0].startswith('#=ID'):
+            if l[0].startswith('# = ID'):
                 pfam1 = l[3].split('.')[0][2:]
                 pfam2 = l[4].split('.')[0]
-            elif l[0].startswith('#=3D'):
+            elif l[0].startswith('# = 3D'):
                 pdb_prev = pdb
                 skip = True
                 pdb = l[1]
@@ -1534,13 +1534,13 @@ def get_3did(ddi_flat=None, res=True, organism=9606, pickl=True):
                     if l[2].count('-') == 1:
                         start1 = int(non_digit.sub('', l[2][2:].split('-')[0]))
                         end1 = int(non_digit.sub('', l[2][2:].split('-')[1]))
-                        u1start = rmap.pdb2uniprot(pdb, start1, chains=chain1)
-                        u1end = rmap.pdb2uniprot(pdb, end1, chains=chain1)
+                        u1start = rmap.pdb2uniprot(pdb, start1, chains = chain1)
+                        u1end = rmap.pdb2uniprot(pdb, end1, chains = chain1)
                     if l[3].count('-') == 1:
                         start2 = int(non_digit.sub('', l[3][2:].split('-')[0]))
                         end2 = int(non_digit.sub('', l[3][2:].split('-')[1]))
-                        u2start = rmap.pdb2uniprot(pdb, start2, chains=chain2)
-                        u2end = rmap.pdb2uniprot(pdb, end2, chains=chain2)
+                        u2start = rmap.pdb2uniprot(pdb, start2, chains = chain2)
+                        u2end = rmap.pdb2uniprot(pdb, end2, chains = chain2)
                     u1start = None if len (u1start) == 0 else \
                         u1start[chain1]['resnum']
                     u1end = None if len (u1end) == 0 else \
@@ -1551,23 +1551,23 @@ def get_3did(ddi_flat=None, res=True, organism=9606, pickl=True):
                         u2end[chain2]['resnum']
                     dom1 = intera.Domain(
                         uniprot1,
-                        domain=pfam1,
-                        start=u1start,
-                        end=u1end,
-                        isoform=1)
+                        domain = pfam1,
+                        start = u1start,
+                        end = u1end,
+                        isoform = 1)
                     dom2 = intera.Domain(
                         uniprot2,
-                        domain=pfam2,
-                        start=u2start,
-                        end=u2end,
-                        isoform=1)
+                        domain = pfam2,
+                        start = u2start,
+                        end = u2end,
+                        isoform = 1)
                     dd = intera.DomainDomain(dom1, dom2, [pdb], '3DID')
                     ddi.append(dd)
             elif not skip and res and not l[0].startswith('//'):
                 conv1 = rmap.pdb2uniprot(
-                    pdb, int(non_digit.sub('', l[2])), chains=chain1)
+                    pdb, int(non_digit.sub('', l[2])), chains = chain1)
                 conv2 = rmap.pdb2uniprot(
-                    pdb, int(non_digit.sub('', l[3])), chains=chain2)
+                    pdb, int(non_digit.sub('', l[3])), chains = chain2)
                 if len(conv1) > 0 and len(conv2) > 0:
                     intf.add_residues(
                         (conv1[chain1]['resnum'], l[0], uniprot1),
@@ -1584,12 +1584,12 @@ def get_3did(ddi_flat=None, res=True, organism=9606, pickl=True):
         return ddi
 
 
-def get_3did_dmi(dmi_flat=None):
+def get_3did_dmi(dmi_flat = None):
     resultfile = os.path.join(settings.get('cachedir'), '3did_dmi.pickle')
     if os.path.exists(resultfile):
         return pickle.load(open(resultfile, 'rb'))
     if dmi_flat is None:
-        c = curl.Curl(urls.urls['3did_dmi']['url'], silent=False)
+        c = curl.Curl(urls.urls['3did_dmi']['url'], silent = False)
         data = c.result
         tmpfile = '3did_dmi_flat_tmp'
         if data is None:
@@ -1614,11 +1614,11 @@ def get_3did_dmi(dmi_flat=None):
         for l in f:
             prg.step()
             l = l.strip().split()
-            if l[0].startswith('#=ID'):
+            if l[0].startswith('# = ID'):
                 domain = l[3]
-            if l[0].startswith('#=PT'):
+            if l[0].startswith('# = PT'):
                 regex = l[1]
-            if l[0].startswith('#=3D'):
+            if l[0].startswith('# = 3D'):
                 pdb = l[1]
                 chain1 = l[2].split(':')[0]
                 chain2 = l[3].split(':')[0]
@@ -1632,13 +1632,13 @@ def get_3did_dmi(dmi_flat=None):
                         for x in l[3].split(':')[1].split('-')
                     ]
                     u1start = rmap.pdb2uniprot(
-                        pdb, pdb_region1[0], chains=chain1)
+                        pdb, pdb_region1[0], chains = chain1)
                     u1end = rmap.pdb2uniprot(
-                        pdb, pdb_region1[1], chains=chain1)
+                        pdb, pdb_region1[1], chains = chain1)
                     u2start = rmap.pdb2uniprot(
-                        pdb, pdb_region2[0], chains=chain2)
+                        pdb, pdb_region2[0], chains = chain2)
                     u2end = rmap.pdb2uniprot(
-                        pdb, pdb_region2[1], chains=chain2)
+                        pdb, pdb_region2[1], chains = chain2)
                     if len(u1start) != 0 and len(u2start) != 0 and \
                             len(u1end) != 0 and len(u2end) != 0:
                         uniprot_key = (u1start[chain1]['uniprot'],
@@ -1697,19 +1697,19 @@ def process_3did_dmi():
                     domain_name = 'pfam' if pfam is not None else 'domain_name'
                     dom = intera.Domain(
                         uniprots[0],
-                        domain=domain,
-                        domain_id_type=domain_name,
-                        start=regions[0],
-                        end=regions[1])
+                        domain = domain,
+                        domain_id_type = domain_name,
+                        start = regions[0],
+                        end = regions[1])
                     mot = intera.Motif(
                         uniprots[1],
                         regions[2],
                         regions[3],
-                        instance=dm['instance'],
-                        regex=dm['regex'],
-                        motif_name=mname)
-                    ptm = intera.Ptm(uniprots[1], motif=mot, source='3DID')
-                    dommot = intera.DomainMotif(dom, ptm, sources='3DID')
+                        instance = dm['instance'],
+                        regex = dm['regex'],
+                        motif_name = mname)
+                    ptm = intera.Ptm(uniprots[1], motif = mot, source = '3DID')
+                    dommot = intera.DomainMotif(dom, ptm, sources = '3DID')
                     new = False
                 dommot.add_pdbs(dm['pdb'])
             dmi2[uniprots].append(dommot)
@@ -1725,7 +1725,7 @@ def get_instruct():
     domain-domain // protein-protein interaction.
     """
     non_digit = re.compile(r'[^\d.-]+')
-    c = curl.Curl(urls.urls['instruct_human']['url'], silent=False)
+    c = curl.Curl(urls.urls['instruct_human']['url'], silent = False)
     data = c.result
     if data is None:
         return None
@@ -1768,7 +1768,7 @@ def get_instruct_offsets():
     These offsets should be understood as from UniProt to PDB.
     """
     non_digit = re.compile(r'[^\d.-]+')
-    c = curl.Curl(urls.urls['instruct_offsets']['url'], silent=False)
+    c = curl.Curl(urls.urls['instruct_offsets']['url'], silent = False)
     data = c.result
     if data is None:
         return None
@@ -1802,7 +1802,7 @@ def get_i3d():
     if dname_pfam is None:
         sys.stdout.write('\n\t:: Could not get Pfam domain names\n\n')
     non_digit = re.compile(r'[^\d.-]+')
-    c = curl.Curl(urls.urls['i3d_human']['url'], silent=False)
+    c = curl.Curl(urls.urls['i3d_human']['url'], silent = False)
     data = c.result
     if data is None:
         return None
@@ -1856,7 +1856,7 @@ def get_switches_elm():
     """
     residue = re.compile(r'(^[A-Z])([0-9]+)')
     url = data.formats.urls['switches.elm']['url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     if data is None:
         return None
@@ -1885,7 +1885,7 @@ def get_switches_elm():
         'effectors': 22,
         'references': 26
     }
-    table = read_table(cols=cols, fileObject=buff, sep2=subf, hdr=1)
+    table = read_table(cols = cols, fileObject = buff, sep2 = subf, hdr = 1)
     mod_ont = get_ontology('MOD')
     for l in table:
         if l['modification'].startswith('MOD'):
@@ -1936,7 +1936,7 @@ def get_switches_elm():
     return table
 
 
-def get_csa(uniprots=None):
+def get_csa(uniprots = None):
     """
     Downloads and preprocesses catalytic sites data.
     This data tells which residues are involved in the catalytic
@@ -1944,7 +1944,7 @@ def get_csa(uniprots=None):
     """
 
     url = urls.urls['catalytic_sites']['url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     if data is None:
         return None
@@ -1960,7 +1960,7 @@ def get_csa(uniprots=None):
         'chem_fun': 5,
         'evidence': 6,
     }
-    table = read_table(cols=cols, fileObject=buff, sep=',', hdr=1)
+    table = read_table(cols = cols, fileObject = buff, sep = ',', hdr = 1)
     css = {}
     prg = progress.Progress(len(table), 'Processing catalytic sites', 11)
     for l in table:
@@ -2066,7 +2066,7 @@ class ResidueMapper(object):
             }
         self.mappers[pdb] = mapper
 
-    def get_residue(self, pdb, resnum, chain=None):
+    def get_residue(self, pdb, resnum, chain = None):
         
         pdb = pdb.lower()
         if pdb not in self.mappers:
@@ -2112,7 +2112,7 @@ def get_comppi():
         'fDlMLoc': 'all',
         'fDlSubmit': 'Download'
     }
-    c = curl.Curl(url, post=post, silent=False, compr='gz')
+    c = curl.Curl(url, post = post, silent = False, compr = 'gz')
     data = c.result
     cols = {
         'uniprot1': 0,
@@ -2123,18 +2123,18 @@ def get_comppi():
     }
     buff = StringIO()
     buff.write(data)
-    data = read_table(cols=cols, fileObject=buff, hdr=1, sep='\t')
+    data = read_table(cols = cols, fileObject = buff, hdr = 1, sep = '\t')
     return data
 
 
-def get_psite_phos(raw=True, organism='human', strict=True):
+def get_psite_phos(raw = True, organism = 'human', strict = True):
     """
     Downloads and preprocesses phosphorylation site data from PhosphoSitePlus.
     """
 
     url = urls.urls['psite_kin']['url']
     c = curl.Curl(
-        url, silent=False, compr='gz', encoding='iso-8859-1', large=True)
+        url, silent = False, compr = 'gz', encoding = 'iso-8859-1', large = True)
     orto = {}
     data = c.result
     cols = {
@@ -2145,7 +2145,7 @@ def get_psite_phos(raw=True, organism='human', strict=True):
         'residue': 9,
         'motif': 11
     }
-    data = read_table(cols=cols, fileObject=data, sep='\t', hdr=4)
+    data = read_table(cols = cols, fileObject = data, sep = '\t', hdr = 4)
     result = []
     non_digit = re.compile(r'[^\d.-]+')
     motre = re.compile(r'(_*)([A-Za-z]+)(_*)')
@@ -2228,26 +2228,26 @@ def get_psite_phos(raw=True, organism='human', strict=True):
                 else:
                     res = intera.Residue(r['resnum'], r['resaa'],
                                          r['substrate'],
-                                         isoform=sisoform)
+                                         isoform = sisoform)
 
                     mot = intera.Motif(
                         r['substrate'],
                         r['start'],
                         r['end'],
-                        instance=r['instance'],
-                        isoform=sisoform)
+                        instance = r['instance'],
+                        isoform = sisoform)
 
-                    ptm = intera.Ptm(protein=r['substrate'],
-                                    residue=res,
-                                    motif=mot,
-                                    typ='phosphorylation',
-                                    source='PhosphoSite',
-                                    isoform=sisoform)
+                    ptm = intera.Ptm(protein = r['substrate'],
+                                    residue = res,
+                                    motif = mot,
+                                    typ = 'phosphorylation',
+                                    source = 'PhosphoSite',
+                                    isoform = sisoform)
 
-                    dom = intera.Domain(protein=kinase, isoform=kisoform)
+                    dom = intera.Domain(protein = kinase, isoform = kisoform)
 
                     dommot = intera.DomainMotif(
-                        domain=dom, ptm=ptm, sources=['PhosphoSite'])
+                        domain = dom, ptm = ptm, sources = ['PhosphoSite'])
 
                     result.append(dommot)
 
@@ -2275,7 +2275,7 @@ def ptm_orthology():
         groups = {}
 
         url = urls.urls['psite_%s' % typ[0]]['url']
-        c = curl.Curl(url, silent=False, large=True)
+        c = curl.Curl(url, silent = False, large = True)
 
         data = c.result
 
@@ -2336,7 +2336,7 @@ def ptm_orthology():
 
     return result
 
-def get_psite_p(organism='human'):
+def get_psite_p(organism = 'human'):
     """
     Downloads the phosphorylation site dataset from PhosphoSitePlus.
     """
@@ -2345,7 +2345,7 @@ def get_psite_p(organism='human'):
     nondigit = re.compile(r'[^\d]+')
     remot = re.compile(r'(_*)([A-Za-z]+)(_*)')
 
-    c = curl.Curl(url, silent=False, large=True)
+    c = curl.Curl(url, silent = False, large = True)
     data = c.result
 
     for _ in xrange(4):
@@ -2375,15 +2375,15 @@ def get_psite_p(organism='human'):
                 end = None
                 instance = None
 
-            res = intera.Residue(num, aa, uniprot, isoform=isoform)
+            res = intera.Residue(num, aa, uniprot, isoform = isoform)
             mot = intera.Motif(
-                uniprot, start, end, instance=instance, isoform=isoform)
+                uniprot, start, end, instance = instance, isoform = isoform)
             ptm = intera.Ptm(uniprot,
-                             typ=typ,
-                             motif=mot,
-                             residue=res,
-                             source='PhosphoSite',
-                             isoform=isoform)
+                             typ = typ,
+                             motif = mot,
+                             residue = res,
+                             source = 'PhosphoSite',
+                             isoform = isoform)
             result.append(ptm)
 
     return result
@@ -2415,8 +2415,8 @@ def get_psite_reg():
     }
 
     url = urls.urls['psite_reg']['url']
-    c = curl.Curl(url, silent=False, compr='gz',
-                  encoding='iso-8859-1', large=True)
+    c = curl.Curl(url, silent = False, compr = 'gz',
+                  encoding = 'iso-8859-1', large = True)
     data = c.result
     cols = {
         'uniprot': 3,
@@ -2429,7 +2429,7 @@ def get_psite_reg():
         'comments': 19
     }
 
-    data = read_table(cols=cols, fileObject=data, sep='\t', hdr=4)
+    data = read_table(cols = cols, fileObject = data, sep = '\t', hdr = 4)
     regsites = {}
 
     for r in data:
@@ -2642,7 +2642,7 @@ def regsites_one_organism(organism = 9606):
 
     return result
 
-def regsites_tab(regsites, outfile=None):
+def regsites_tab(regsites, outfile = None):
     """
     Exports PhosphoSite regulatory sites as a tabular file, all
     IDs translated to UniProt.
@@ -2686,12 +2686,12 @@ def regsites_tab(regsites, outfile=None):
 
 
 def get_ielm_huge(ppi,
-                  id_type='UniProtKB_AC',
-                  mydomains='HMMS',
-                  maxwait=180,
-                  cache=True,
-                  part_size=500,
-                  headers=None):
+                  id_type = 'UniProtKB_AC',
+                  mydomains = 'HMMS',
+                  maxwait = 180,
+                  cache = True,
+                  part_size = 500,
+                  headers = None):
     """
     Loads iELM predicted domain-motif interaction data for a set of
     protein-protein interactions. This method breaks the list into
@@ -2732,8 +2732,8 @@ def get_ielm_huge(ppi,
                 mydomains,
                 maxwait,
                 cache,
-                part=True,
-                headers=headers)
+                part = True,
+                headers = headers)
             if this_res:
                 if type(this_res) is dict:
                     return this_res
@@ -2752,13 +2752,13 @@ def get_ielm_huge(ppi,
 
 
 def get_ielm(ppi,
-             id_type='UniProtKB_AC',
-             mydomains='HMMS',
-             maxwait=180,
-             cache=True,
-             part=False,
-             part_size=500,
-             headers=None):
+             id_type = 'UniProtKB_AC',
+             mydomains = 'HMMS',
+             maxwait = 180,
+             cache = True,
+             part = False,
+             part_size = 500,
+             headers = None):
     """
     Performs one query to iELM. Parameters are the same as at get_ielm_huge().
     """
@@ -2794,7 +2794,7 @@ def get_ielm(ppi,
         src = 'cache'
     else:
         c = curl.Curl(
-            url, post=post, silent=False, cache=False, req_headers=headers)
+            url, post = post, silent = False, cache = False, req_headers = headers)
         data = c.result
         soup = bs4.BeautifulSoup(data, 'html.parser')
         sessid = soup.find('input', {'name': 'session_ID'})['value']
@@ -2822,9 +2822,9 @@ def get_ielm(ppi,
         }
         c = curl.Curl(
             'http://i.elm.eu.org/wait_2/',
-            post=post,
-            cache=False,
-            req_headers=headers)
+            post = post,
+            cache = False,
+            req_headers = headers)
         data = c.result
         if data is not None:
             soup = bs4.BeautifulSoup(data, 'html.parser')
@@ -2883,7 +2883,7 @@ def get_ielm(ppi,
     return this_result
 
 
-def get_pepcyber(cache=None):
+def get_pepcyber(cache = None):
     """
     Downloads phosphoprotein binding protein interactions
     from the PEPCyber database.
@@ -2899,7 +2899,7 @@ def get_pepcyber(cache=None):
 
     url = urls.urls['pepcyber']['url']
     # this is huge, takes a few minutes!
-    c = curl.Curl(url, silent=False, timeout=600, encoding = 'iso-8859-1')
+    c = curl.Curl(url, silent = False, timeout = 600, encoding = 'iso-8859-1')
     data = c.result
     soup = bs4.BeautifulSoup(data, 'html.parser')
     rows = soup.find_all('tr')
@@ -2950,7 +2950,7 @@ def get_pepcyber(cache=None):
 def pepcyber_uniprot(num):
     result = {}
     url = urls.urls['pepcyber_details']['url'] % num
-    c = curl.Curl(url, cache=False, encoding = 'iso-8859-1')
+    c = curl.Curl(url, cache = False, encoding = 'iso-8859-1')
     data = c.result
     if data is None:
         return result
@@ -2977,7 +2977,7 @@ def get_pdzbase():
     """
 
     url = urls.urls['pdzbase']['url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     soup = bs4.BeautifulSoup(data, 'html.parser')
     rows = soup.find_all('table')[3].find('table').find('table').find_all('tr')
@@ -2989,7 +2989,7 @@ def get_pdzbase():
     return result
 
 
-def get_domino(none_values=False, outfile=None):
+def get_domino(none_values = False, outfile = None):
     result = []
     taxid = re.compile(r'taxid:(.*)\([a-zA-Z ]*\)')
     miont = re.compile(r'MI:[0-9]{4}\((.*)\)')
@@ -3003,7 +3003,7 @@ def get_domino(none_values=False, outfile=None):
     ptmty = re.compile(r'[0-9]*;MI:[0-9]*\((.*)\);.*;.*')
     refrs = re.compile(r'(pubmed|doi):["]*([-0-9a-zA-Z\.\(\)/]*)["]*')
     url = urls.urls['domino']['module_data']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     data = data.split('\n')
     del data[0]
@@ -3101,7 +3101,7 @@ def get_domino(none_values=False, outfile=None):
 def get_elm_domains():
     result = {}
     url = urls.urls['ielm_domains']['url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     soup = bs4.BeautifulSoup(data, 'html.parser')
     tbl = soup.find('table').find_all('td')
@@ -3117,7 +3117,7 @@ def get_elm_domains():
     return result
 
 
-def get_phosphoelm(organism=9606, ltp_only=True):
+def get_phosphoelm(organism = 9606, ltp_only = True):
     """
     Downloads kinase-substrate interactions from phosphoELM.
     Returns list of dicts.
@@ -3137,7 +3137,7 @@ def get_phosphoelm(organism=9606, ltp_only=True):
         return []
 
     url = urls.urls['p_elm']['url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     data = [
         n for d, n in iteritems(data)
@@ -3177,9 +3177,9 @@ def get_phosphoelm(organism=9606, ltp_only=True):
     return result
 
 
-def phelm_interactions(organism='Homo sapiens'):
+def phelm_interactions(organism = 'Homo sapiens'):
     result = []
-    data = get_phosphoelm(ltp_only=True)
+    data = get_phosphoelm(ltp_only = True)
     for l in data:
         result.append([
             l['kinase'], l['substrate'], ';'.join(l['references']),
@@ -3203,7 +3203,7 @@ def phelm_psites():
 def get_phelm_kinases():
     result = {}
     url = urls.urls['p_elm_kin']['url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     soup = bs4.BeautifulSoup(data, 'html.parser')
     for row in soup.find_all('table')[1].find_all('tr'):
@@ -3215,7 +3215,7 @@ def get_phelm_kinases():
 
 def get_elm_classes():
     url = urls.urls['elm_class']['url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     data = [
         x.split('\t')[:-2] for x in data.replace('"', '').split('\n')[6:]
@@ -3226,7 +3226,7 @@ def get_elm_classes():
 
 def get_elm_instances():
     url = urls.urls['elm_inst']['url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     data = data.replace('"', '').split('\t')
     data = data[6:]
@@ -3239,7 +3239,7 @@ def get_elm_interactions():
     """
     result = []
     url = urls.urls['elm_int']['url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     data = data.split('\n')
     del data[0]
@@ -3248,7 +3248,7 @@ def get_elm_interactions():
     return result
 
 
-def pfam_uniprot(uniprots, infile=None):
+def pfam_uniprot(uniprots, infile = None):
     result = {}
     url = urls.urls['pfam_up']['url']
     infile = infile if infile is not None \
@@ -3262,7 +3262,7 @@ def pfam_uniprot(uniprots, infile=None):
             _urllib.request.urlretrieve(url, infile)
     sys.stdout.write('\t:: Processing domains...\n')
     sys.stdout.flush()
-    gzfile = gzip.open(infile, mode='r')
+    gzfile = gzip.open(infile, mode = 'r')
     prg = progress.Progress(len(uniprots), 'Looking up domains', 1)
     for l in gzfile:
         l = l.split('\t')
@@ -3317,7 +3317,7 @@ def get_dbptm(organism = 9606):
     return data
 
 
-def get_dbptm_old(organism=9606):
+def get_dbptm_old(organism = 9606):
     """
     Downloads enzyme-substrate interactions from dbPTM.
     Returns list of dicts.
@@ -3337,7 +3337,7 @@ def get_dbptm_old(organism=9606):
 
     for url in urls.urls['dbptm']['urls']:
 
-        c = curl.Curl(url, silent=False)
+        c = curl.Curl(url, silent = False)
         extra = c.result
 
         for k, data in iteritems(extra):
@@ -3415,7 +3415,7 @@ def get_phosphonetworks():
     non_digit = re.compile(r'[^\d.-]+')
     motre = re.compile(r'(-*)([A-Za-z]+)(-*)')
     url = urls.urls['phosnw']['url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     if data is None:
         return None
@@ -3457,14 +3457,14 @@ def pnetworks_interactions():
     return [list(x) for x in list(set(result))]
 
 
-def get_depod(organism='Homo sapiens'):
+def get_depod(organism = 'Homo sapiens'):
     result = []
     reunip = re.compile(r'uniprotkb:([A-Z0-9]+)')
     url = urls.urls['depod']['urls'][0]
     url_mitab = urls.urls['depod']['urls'][1]
-    c = curl.Curl(url, silent=False, encoding='ascii')
+    c = curl.Curl(url, silent = False, encoding = 'ascii')
     data = c.result
-    data_c = curl.Curl(url_mitab, silent=False, encoding='iso-8859-1')
+    data_c = curl.Curl(url_mitab, silent = False, encoding = 'iso-8859-1')
     data_mitab = c.result
     data = [x.split('\t') for x in data.split('\n')]
     data_mitab = [x.split('\t') for x in data_mitab.split('\n')]
@@ -3487,7 +3487,7 @@ def get_mimp():
     non_digit = re.compile(r'[^\d.-]+')
     motre = re.compile(r'(-*)([A-Za-z]+)(-*)')
     url = urls.urls['mimp']['url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     kclass = get_kinase_class()
     if data is None:
@@ -3560,7 +3560,7 @@ def get_kinase_class():
     tabs = re.compile(r'[\t]{3,}')
     reps = re.compile(r'ps[0-9]*$')
     url = urls.urls['kinclass']['url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     data = tabs.sub('', data)
     data = [x.split('\t') for x in data.split('\n')]
@@ -3599,7 +3599,7 @@ def get_acsn():
     regreek = re.compile(r'\b(' + '|'.join(greek.keys()) + r')\b')
     result = []
     url = urls.urls['acsn']['url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     data = [
         x.split('\t')
@@ -3615,7 +3615,7 @@ def get_abs():
 
     result = []
     url = urls.urls['abs']['url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     data = [[x.replace('*', '') for x in xx.split('\t')]
             for xx in data.split('\n')]
@@ -3628,7 +3628,7 @@ def get_abs():
 def get_pazar():
 
     url = urls.urls['pazar']['url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     return [
         list(map(x.split('\t').__getitem__, (1, 4, 10)))
@@ -3640,8 +3640,8 @@ def get_htri():
 
     c = curl.Curl(
         urls.urls['htri']['url'],
-        init_url=urls.urls['htri']['init_url'],
-        silent=False)
+        init_url = urls.urls['htri']['init_url'],
+        silent = False)
     data = c.result
 
     return [
@@ -3651,7 +3651,7 @@ def get_htri():
     ][1:]
 
 
-def get_oreganno_old(organism=9606):
+def get_oreganno_old(organism = 9606):
 
     taxids = common.swap_dict(common.taxids)
 
@@ -3662,7 +3662,7 @@ def get_oreganno_old(organism=9606):
     nrem = re.compile(r'[-/]')
     result = []
     url = urls.urls['oreganno_old']['url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     data = [[xx.strip() for xx in x.split('\t')] for x in data.split('\n')
             if len(x) > 0][1:]
@@ -3680,7 +3680,7 @@ def get_oreganno_old(organism=9606):
             ])
     return result
 
-def get_oreganno(organism=9606):
+def get_oreganno(organism = 9606):
 
     taxids = common.phosphoelm_taxids
 
@@ -3692,7 +3692,7 @@ def get_oreganno(organism=9606):
     result = []
 
     url = urls.urls['oreganno']['url']
-    c = curl.Curl(url, silent=False, large=True)
+    c = curl.Curl(url, silent = False, large = True)
     data = c.result
     _ = next(data)
 
@@ -3723,11 +3723,11 @@ def get_cpdb_ltp():
         ['HPRD', 'BioGRID', 'PhosphoPOINT', 'MINT', 'BIND', 'IntAct'])
 
 
-def get_cpdb(exclude=None):
+def get_cpdb(exclude = None):
     exclude = set(exclude) if type(exclude) is list else exclude
     result = []
     url = urls.urls['cpdb']['url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     data = [
         x.split('\t') for x in data.split('\n')
@@ -3741,7 +3741,7 @@ def get_cpdb(exclude=None):
     return result
 
 
-def get_pathwaycommons(sources=None, types=None, sources_separated=True):
+def get_pathwaycommons(sources = None, types = None, sources_separated = True):
 
     result = {}
     interactions = []
@@ -3776,7 +3776,7 @@ def get_pathwaycommons(sources=None, types=None, sources_separated=True):
         if sources is None else sources
 
     prg = progress.Progress(
-        len(sources), 'Processing PathwayCommons', 1, percent=False)
+        len(sources), 'Processing PathwayCommons', 1, percent = False)
 
     url = urls.urls['pwcommons']['url']
 
@@ -3784,7 +3784,7 @@ def get_pathwaycommons(sources=None, types=None, sources_separated=True):
 
         prg.step()
         surl = url % s
-        c = curl.Curl(surl, silent=False, large=True)
+        c = curl.Curl(surl, silent = False, large = True)
 
         for l in c.result:
 
@@ -3821,7 +3821,7 @@ def get_pathwaycommons(sources=None, types=None, sources_separated=True):
     return interactions
 
 
-def go_annotations_uniprot(organism=9606, swissprot='yes'):
+def go_annotations_uniprot(organism = 9606, swissprot = 'yes'):
     """
     Deprecated, should be removed soon.
     """
@@ -3831,7 +3831,7 @@ def go_annotations_uniprot(organism=9606, swissprot='yes'):
     query = 'organism:%u%s' % (int(organism), rev)
     url = urls.urls['uniprot_basic']['url']
     get = {'query': query, 'format': 'tab', 'columns': 'id,go-id'}
-    c = curl.Curl(url, get=get, silent=False)
+    c = curl.Curl(url, get = get, silent = False)
     data = c.result
     return dict([(x[0], [go.strip() for go in x[1].split(';')])
                  for x in [x.split('\t') for x in data.split('\n')]
@@ -3875,7 +3875,7 @@ def go_annotations_goa(organism = 'human'):
 go_annotations = go_annotations_goa
 
 
-def go_ancestors_goose(aspects=('C','F','P')):
+def go_ancestors_goose(aspects = ('C','F','P')):
     """
     Queries the ancestors of GO terms by AmiGO goose.
 
@@ -4043,7 +4043,7 @@ def go_descendants_quickgo(
             
             url = urls.urls['quickgo_rest']['desc'] % (
                 ','.join(terms_part),
-                '?relations=%s' % relations_part,
+                '?relations = %s' % relations_part,
             )
             
             c = curl.Curl(
@@ -4102,12 +4102,12 @@ def go_terms_solr(aspects = ('C', 'F', 'P')):
     terms = dict((a, {}) for a in aspects)
     
     query = '''
-        ?q=document_category:"ontology_class" AND
+        ?q = document_category:"ontology_class" AND
             idspace:GO AND
             is_obsolete:0
-        &rows=9999999
-        &start=0
-        &fl=annotation_class,annotation_class_label,source
+        &rows = 9999999
+        &start = 0
+        &fl = annotation_class,annotation_class_label,source
     '''
     
     query = relin.sub(' ', reamp.sub(r'\1', query.strip()))
@@ -4126,15 +4126,15 @@ def go_terms_solr(aspects = ('C', 'F', 'P')):
         
         if ev == 'end' and elem.tag == 'doc':
             
-            asp  = elem.find('.//str[@name="source"]').text
+            asp  = elem.find('.//str[@name = "source"]').text
             asp  = ontol_short[asp]
             
             if asp not in aspects:
                 
                 continue
             
-            term = elem.find('.//str[@name="annotation_class"]').text
-            name = elem.find('.//str[@name="annotation_class_label"]').text
+            term = elem.find('.//str[@name = "annotation_class"]').text
+            name = elem.find('.//str[@name = "annotation_class_label"]').text
             
             terms[asp][term] = name
         
@@ -4421,13 +4421,13 @@ def go_annotations_solr(
     refs_part = ',reference' if references else ''
     
     query = '''
-        ?q=taxon:"NCBITaxon:%u" AND
+        ?q = taxon:"NCBITaxon:%u" AND
             type:protein AND
             document_category:annotation AND
             source:UniProtKB%s
-        &rows=9999999
-        &start=0
-        &fl=bioentity,annotation_class,aspect%s
+        &rows = 9999999
+        &start = 0
+        &fl = bioentity,annotation_class,aspect%s
     ''' % (
         organism,
         aspects_part,
@@ -4441,7 +4441,7 @@ def go_annotations_solr(
     c = curl.Curl(url, silent = False, large = True)
     
     # parsing XML by lxml.etree.iterparse
-    parser = etree.iterparse(c.fileobj, events=('start', 'end'))
+    parser = etree.iterparse(c.fileobj, events = ('start', 'end'))
     root = next(parser)
     used_elements = []
     
@@ -4449,19 +4449,19 @@ def go_annotations_solr(
         
         if ev == 'end' and elem.tag == 'doc':
             
-            id_ = elem.find('.//str[@name="bioentity"]').text
+            id_ = elem.find('.//str[@name = "bioentity"]').text
             
             if not id_.startswith('UniProtKB:'):
                 
                 continue
             
-            asp  = elem.find('.//str[@name="aspect"]').text
+            asp  = elem.find('.//str[@name = "aspect"]').text
             
             if asp not in aspects:
                 
                 continue
             
-            term = elem.find('.//str[@name="annotation_class"]').text
+            term = elem.find('.//str[@name = "annotation_class"]').text
             id_  = id_[10:] # removing the `UniProtKB:` prefix
             
             # adding the term to the annotation dict
@@ -4484,7 +4484,7 @@ def go_annotations_solr(
     return terms, annot
 
 
-def go_annotations_goose(organism=9606, aspects=('C','F','P'), uniprots=None):
+def go_annotations_goose(organism = 9606, aspects = ('C','F','P'), uniprots = None):
     """
     Queries GO annotations by AmiGO goose.
     
@@ -4571,7 +4571,7 @@ def go_annotations_goose(organism=9606, aspects=('C','F','P'), uniprots=None):
     return terms, annot
 
 
-def get_go_desc(go_ids, organism=9606):
+def get_go_desc(go_ids, organism = 9606):
     """
     Deprecated, should be removed soon.
     """
@@ -4585,7 +4585,7 @@ def get_go_desc(go_ids, organism=9606):
     url = urls.urls['quickgo_desc']['url'] % (organism, go_ids)
 
     c = curl.Curl(
-        url, silent=False, large=True, req_headers = {'Accept': 'text/tsv'}
+        url, silent = False, large = True, req_headers = {'Accept': 'text/tsv'}
     )
     _ = c.result.readline()
 
@@ -4593,9 +4593,9 @@ def get_go_desc(go_ids, organism=9606):
 
 
 def get_go_quick(
-        organism=9606,
-        slim=False,
-        names_only=False,
+        organism = 9606,
+        slim = False,
+        names_only = False,
         aspects = ('C', 'F', 'P'),
     ):
     """
@@ -4622,10 +4622,10 @@ def get_go_quick(
     url = urls.urls['quickgo']['url'] % (
         organism,
         aspects_param,
-        '&goUsage=slim' if slim else '',
+        '&goUsage = slim' if slim else '',
     )
 
-    c = curl.Curl(url, silent=False, large=True)
+    c = curl.Curl(url, silent = False, large = True)
     _ = next(c.result)
 
     for l in result:
@@ -4639,11 +4639,11 @@ def get_go_quick(
     return {'terms': terms, 'names': names}
 
 
-def get_goslim(url=None):
+def get_goslim(url = None):
     rego = re.compile(r'GO:[0-9]{7}')
     url = url if type(url) in [str, unicode] \
         else urls.urls['goslim_gen']['url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     result = []
     for l in data.split('\n'):
@@ -4656,7 +4656,7 @@ def netpath_names():
     repwnum = re.compile(r'_([0-9]+)$')
     result = {}
     url = urls.urls['netpath_names']['url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     html = c.result
     soup = bs4.BeautifulSoup(html, 'html.parser')
     for a in soup.find_all('a'):
@@ -4672,7 +4672,7 @@ def netpath_interactions():
     repwnum = re.compile(r'NetPath_([0-9]+)_')
     mi = '{net:sf:psidev:mi}'
     url = urls.urls['netpath_psimi']['url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     data = dict([(k, v) for k, v in iteritems(data) if k.endswith('xml')])
     pwnames = netpath_names()
@@ -4749,7 +4749,7 @@ def get_pubmeds(pmids):
         len(pmids) / 100 + 1,
         'Retrieving data from NCBI e-utils',
         1,
-        percent=False)
+        percent = False)
     for offset in xrange(0, len(pmids), 100):
         prg.step()
         post = {
@@ -4761,9 +4761,9 @@ def get_pubmeds(pmids):
             try:
                 c = curl.Curl(
                     url,
-                    silent=False,
-                    cache=cache,
-                    post=post,
+                    silent = False,
+                    cache = cache,
+                    post = post,
                     override_post = True,
                 )
                 res = c.result
@@ -4784,7 +4784,7 @@ def get_lincs_compounds():
         '\tIDs of compounds as keys, and tuples of PubChem, ChEMBL, ChEBI, InChi, \n'
         '\tInChi Key, SMILES and LINCS as values.\n\n')
     sys.stdout.flush()
-    c = curl.Curl(urls.urls['lincs-compounds']['url'], silent=False)
+    c = curl.Curl(urls.urls['lincs-compounds']['url'], silent = False)
     return dict(
         [(key, pair[1])
          for pair in [([
@@ -4881,7 +4881,7 @@ def kirouac2010_interactions():
     c = curl.Curl(url, silent = False, large = True)
     xlsname = c.fname
     del(c)
-    tbl = read_xls(xlsname, sheet='S12')
+    tbl = read_xls(xlsname, sheet = 'S12')
 
     result = []
 
@@ -4902,7 +4902,7 @@ def get_hpmr():
     Returns list of GeneSymbols.
     """
 
-    c = curl.Curl(urls.urls['hpmr']['url'], silent=False)
+    c = curl.Curl(urls.urls['hpmr']['url'], silent = False)
     html = c.result
     soup = bs4.BeautifulSoup(html, 'html.parser')
     gnames = [
@@ -4939,7 +4939,7 @@ def hpmr_interactions():
 
     rerecname = re.compile(r'Receptor ([A-z0-9]+) interacts with:')
     reint = re.compile(r'(Receptor|Ligand) ([A-z0-9]+) -')
-    rerefid = re.compile(r'list_uids=([- \.:,0-9A-z]+)')
+    rerefid = re.compile(r'list_uids = ([- \.:,0-9A-z]+)')
 
     result = []
     recpages = []
@@ -5021,7 +5021,7 @@ def hpmr_interactions():
     return result
 
 
-def get_tfcensus(classes=['a', 'b', 'other']):
+def get_tfcensus(classes = ['a', 'b', 'other']):
     """
     Downloads and processes list of all human transcripton factors.
     Returns dict with lists of ENSGene IDs and HGNC Gene Names.
@@ -5031,7 +5031,7 @@ def get_tfcensus(classes=['a', 'b', 'other']):
     hgnc = []
     reensg = re.compile(r'ENSG[0-9]{11}')
     url = urls.urls['vaquerizas2009']['url']
-    c = curl.Curl(url, silent=False, large=True)
+    c = curl.Curl(url, silent = False, large = True)
     f = c.result
     
     for l in f:
@@ -5111,7 +5111,7 @@ def get_guide2pharma(organism = 'human', endogenous = True):
     
     url = urls.urls['gtp']['url']
     
-    c = curl.Curl(url, silent=False, large = True, encoding = 'utf-8')
+    c = curl.Curl(url, silent = False, large = True, encoding = 'utf-8')
     
     data = csv.DictReader(c.result)
     
@@ -5314,7 +5314,8 @@ def cellphonedb_interactions(
     repmid = re.compile(r'PMID: ([0-9]+)')
 
     
-
+    ligands, receptors = cellphonedb_ligands_receptors()
+    
     url = urls.urls['cellphonedb']['interactions']
 
     c = curl.Curl(url, silent = False, large = True)
@@ -5472,7 +5473,7 @@ def open_pubmed(pmid):
     webbrowser.open(url)
 
 
-def only_pmids(idList, strict=True):
+def only_pmids(idList, strict = True):
     """
     Return elements unchanged which comply with the PubMed ID format,
     and attempts to translate the DOIs and PMC IDs using NCBI
@@ -5508,7 +5509,7 @@ def get_pmid(idList):
     if type(idList) in common.simpleTypes:
         idList = [idList]
     url = urls.urls['pubmed-eutils']['conv'] % ','.join(str(i) for i in idList)
-    c = curl.Curl(url, silent=True)
+    c = curl.Curl(url, silent = True)
     data = c.result
     try:
         js = json.loads(data)
@@ -5540,13 +5541,13 @@ def pmids_list(idList):
     return result
 
 
-def get_hprd(in_vivo=True):
+def get_hprd(in_vivo = True):
     """
     Downloads and preprocesses HPRD data.
     """
     url = urls.urls['hprd_all']['url']
     files = [urls.urls['hprd_all']['ptm_file']]
-    c = curl.Curl(url, silent=False, files_needed=files)
+    c = curl.Curl(url, silent = False, files_needed = files)
     data = c.result
     if len(data) == 0:
         return []
@@ -5556,19 +5557,19 @@ def get_hprd(in_vivo=True):
     return data
 
 
-def hprd_interactions(in_vivo=True):
+def hprd_interactions(in_vivo = True):
     """
     Processes HPRD data and extracts interactions.
     Returns list of interactions.
     """
-    return [i for i in get_hprd(in_vivo=in_vivo) if i[6] != '-']
+    return [i for i in get_hprd(in_vivo = in_vivo) if i[6] != '-']
 
 
 def hprd_htp():
     
     url = urls.urls['hprd_all']['url']
     fname = urls.urls['hprd_all']['int_file']
-    c = curl.Curl(url, silent=False, large=True, files_needed=[fname])
+    c = curl.Curl(url, silent = False, large = True, files_needed = [fname])
     
     return list(
         map(
@@ -5578,14 +5579,14 @@ def hprd_htp():
     )
 
 
-def get_hprd_ptms(in_vivo=True):
+def get_hprd_ptms(in_vivo = True):
     """
     Processes HPRD data and extracts PTMs.
     Returns list of kinase-substrate interactions.
     """
     ptms = []
     non_digit = re.compile(r'[^\d]+')
-    data = get_hprd(in_vivo=in_vivo)
+    data = get_hprd(in_vivo = in_vivo)
     for ptm in data:
         if ptm[6] != '-':
             resnums = [
@@ -5609,7 +5610,7 @@ def get_hprd_ptms(in_vivo=True):
     return ptms
 
 
-def get_disgenet(dataset='curated'):
+def get_disgenet(dataset = 'curated'):
     """
     Downloads and processes the list of all human disease related proteins
     from DisGeNet.
@@ -5622,7 +5623,7 @@ def get_disgenet(dataset='curated'):
     url = urls.urls['disgenet']['url'] % dataset
     c = curl.Curl(
         url,
-        silent=False
+        silent = False
     )
 
     cols = {
@@ -5636,7 +5637,7 @@ def get_disgenet(dataset='curated'):
         'source': 7
     }
 
-    data = read_table(cols=cols, data=c.result, hdr=1, sep='\t')
+    data = read_table(cols = cols, data = c.result, hdr = 1, sep = '\t')
 
     for i, d in enumerate(data):
 
@@ -5648,7 +5649,7 @@ def get_disgenet(dataset='curated'):
     return data
 
 
-def load_lmpid(fname='LMPID_DATA_pubmed_ref.xml', organism=9606):
+def load_lmpid(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
     """
     Reads and processes LMPID data from local file
     `pypath.data/LMPID_DATA_pubmed_ref.xml`.
@@ -5660,7 +5661,7 @@ def load_lmpid(fname='LMPID_DATA_pubmed_ref.xml', organism=9606):
     with open(os.path.join(common.ROOT, 'data', fname), 'r') as f:
         data = f.read()
     soup = bs4.BeautifulSoup(data, 'html.parser')
-    uniprots = uniprot_input.all_uniprots(organism=organism, swissprot=None)
+    uniprots = uniprot_input.all_uniprots(organism = organism, swissprot = None)
     prg = progress.Progress(
         len(soup.find_all('record')), 'Processing data from LMPID', 21)
     for rec in soup.find_all('record'):
@@ -5681,22 +5682,22 @@ def load_lmpid(fname='LMPID_DATA_pubmed_ref.xml', organism=9606):
     return result
 
 
-def lmpid_interactions(fname='LMPID_DATA_pubmed_ref.xml', organism=9606):
+def lmpid_interactions(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
     """
     Converts list of domain-motif interactions supplied by
     `pypath.dataio.load_lmpid()` to list of interactions.
     """
-    data = load_lmpid(fname=fname, organism=organism)
+    data = load_lmpid(fname = fname, organism = organism)
     return [[l['prey'], l['bait'], ';'.join(l['refs'])] for l in data]
 
 
-def lmpid_dmi(fname='LMPID_DATA_pubmed_ref.xml', organism=9606):
+def lmpid_dmi(fname = 'LMPID_DATA_pubmed_ref.xml', organism = 9606):
     """
     Converts list of domain-motif interactions supplied by
     `pypath.dataio.load_lmpid()` to list of
     `pypath.intera.DomainMotif() objects.
     """
-    data = load_lmpid(fname=fname, organism=organism)
+    data = load_lmpid(fname = fname, organism = organism)
     return [{
         'motif_protein': l['bait'],
         'domain_protein': l['prey'],
@@ -5716,7 +5717,7 @@ def get_hsn():
     Returns list of interactions.
     """
     url = urls.urls['hsn']['url']
-    c = curl.Curl(url, silent=False).split('\n')[1:]
+    c = curl.Curl(url, silent = False).split('\n')[1:]
     data = c.result
     data = [r.split(',') for r in data if len(r) > 0]
     return data
@@ -5728,11 +5729,11 @@ def get_li2012():
     Returns table (list of lists).
     """
     url = urls.urls['li2012']['url']
-    c = curl.Curl(url, silent=False, large=True)
+    c = curl.Curl(url, silent = False, large = True)
     xls = c.fileobj
     xlsfile = xls.name
     xls.close()
-    tbl = read_xls(xlsfile, sheet='File S1')
+    tbl = read_xls(xlsfile, sheet = 'File S1')
     return filter(lambda l: len(l[-1]) > 0, map(lambda l: l[:7], tbl[2:]))
 
 
@@ -5791,7 +5792,7 @@ def li2012_dmi():
     
     result = {}
     nondigit = re.compile(r'[^\d]+')
-    se = uniprot_input.swissprot_seq(isoforms=True)
+    se = uniprot_input.swissprot_seq(isoforms = True)
     data = get_li2012()
     
     for l in data:
@@ -5807,7 +5808,7 @@ def li2012_dmi():
             if su in se:
                 subs_iso = None
                 for iso, s in iteritems(se[su].isof):
-                    if se[su].get(subs_resnum, isoform=iso) == 'Y':
+                    if se[su].get(subs_resnum, isoform = iso) == 'Y':
                         subs_iso = iso
                         break
                 if subs_iso:
@@ -5815,26 +5816,26 @@ def li2012_dmi():
                     end = max(subs_resnum + 7, len(se[su].isof[subs_iso]))
                     for ku in tk_uniprots:
                         res = intera.Residue(
-                            subs_resnum, 'Y', su, isoform=subs_iso)
+                            subs_resnum, 'Y', su, isoform = subs_iso)
                         mot = intera.Motif(
                             su,
                             start,
                             end,
-                            isoform=subs_iso,
-                            instance=se[su].get(start, end, isoform=subs_iso))
+                            isoform = subs_iso,
+                            instance = se[su].get(start, end, isoform = subs_iso))
                         ptm = intera.Ptm(su,
-                                         motif=mot,
-                                         residue=res,
-                                         isoform=subs_iso,
-                                         source='Li2012')
+                                         motif = mot,
+                                         residue = res,
+                                         isoform = subs_iso,
+                                         source = 'Li2012')
                         dom = intera.Domain(ku)
                         dommot = intera.DomainMotif(
-                            domain=dom, ptm=ptm, sources=['Li2012'])
+                            domain = dom, ptm = ptm, sources = ['Li2012'])
                         result = {}
     return result
 
 
-def take_a_trip(cachefile='trip.pickle'):
+def take_a_trip(cachefile = 'trip.pickle'):
     """
     Downloads TRIP data from webpage and preprocesses it.
     Saves preprocessed data into `cachefile` and next
@@ -5876,18 +5877,18 @@ def take_a_trip(cachefile='trip.pickle'):
     trppages = common.flatList(
         [[a.attrs['href'] for a in ul.find_all('a')]
          for ul in mainsoup.find(
-             'div', id='trp_selector').find('ul').find_all('ul')])
+             'div', id = 'trp_selector').find('ul').find_all('ul')])
     for trpp in trppages:
         trp = trpp.split('/')[-1]
         trpurl = show_url % trp
-        c = curl.Curl(trpurl, silent=False)
+        c = curl.Curl(trpurl, silent = False)
         trphtml = c.result
         trpsoup = bs4.BeautifulSoup(trphtml, 'html.parser')
         trp_uniprot = trip_find_uniprot(trpsoup)
         if trp_uniprot is None or len(trp_uniprot) < 6:
             sys.stdout.write('\t\tcould not find uniprot for %s\n' % trp)
             sys.stdout.flush()
-        for tab in trpsoup.find_all('th', colspan=['11', '13']):
+        for tab in trpsoup.find_all('th', colspan = ['11', '13']):
             ttl = titles[tab.text.strip()]
             tab = tab.find_parent('table')
             trip_process_table(tab, result[ttl], intrs, trp_uniprot)
@@ -5952,17 +5953,17 @@ def trip_find_uniprot(soup):
     @soup : bs4.BeautifulSoup
         The `BeautifulSoup` instance returned by `pypath.dataio.trip_get_uniprot()`.
     """
-    for tr in soup.find_all('div', id='tab2')[0].find_all('tr'):
+    for tr in soup.find_all('div', id = 'tab2')[0].find_all('tr'):
         if tr.find('td') is not None and tr.find('td').text.strip() == 'Human':
             uniprot = tr.find_all('td')[2].text.strip()
             return uniprot
     return None
 
 
-def trip_process(exclude_methods=['Inference', 'Speculation'],
-                 predictions=False,
-                 species='Human',
-                 strict=False):
+def trip_process(exclude_methods = ['Inference', 'Speculation'],
+                 predictions = False,
+                 species = 'Human',
+                 strict = False):
     """
     Downloads TRIP data by calling `pypath.dadio.take_a_trip()` and
     further provcesses it.
@@ -6044,10 +6045,10 @@ def trip_process(exclude_methods=['Inference', 'Speculation'],
     return result
 
 
-def trip_interactions(exclude_methods=['Inference', 'Speculation'],
-                      predictions=False,
-                      species='Human',
-                      strict=False):
+def trip_interactions(exclude_methods = ['Inference', 'Speculation'],
+                      predictions = False,
+                      species = 'Human',
+                      strict = False):
     """
     Obtains processed TRIP interactions by calling `pypath.dataio.trip_process()`
     and returns list of interactions. All arguments are passed to
@@ -6131,28 +6132,28 @@ def get_kegg():
     """
     rehsa = re.compile(r'.*(hsa[0-9]+).*')
     req_hdrs = ['Referer: http://www.genome.jp/kegg-bin/show_pathway'
-        '?map=hsa04710&show_description=show']
+        '?map = hsa04710&show_description = show']
     hsa_list = []
     interactions = []
 
-    c = curl.Curl(urls.urls['kegg_pws']['list_url'], silent=True)
+    c = curl.Curl(urls.urls['kegg_pws']['list_url'], silent = True)
     htmllst = c.result
     lstsoup = bs4.BeautifulSoup(htmllst, 'html.parser')
 
-    for a in lstsoup.find_all('a', href=True):
+    for a in lstsoup.find_all('a', href = True):
         m = rehsa.match(a['href'])
         if m:
             hsa_list.append((m.groups(0)[0], a.text))
 
     prg = progress.Progress(
-        len(hsa_list), 'Processing KEGG Pathways', 1, percent=False)
+        len(hsa_list), 'Processing KEGG Pathways', 1, percent = False)
 
     for hsa, pw in hsa_list:
 
         prg.step()
         c = curl.Curl(urls.urls['kegg_pws']['kgml_url'] % hsa,
-                      silent=True,
-                      req_headers=req_hdrs)
+                      silent = True,
+                      req_headers = req_hdrs)
         kgml = c.result
         kgmlsoup = bs4.BeautifulSoup(kgml, 'html.parser')
         entries = {}
@@ -6168,7 +6169,7 @@ def get_kegg():
         uentries = dict([(eid, common.uniqList(
             common.flatList([
                 mapping.map_name(
-                    gn, 'genesymbol', 'uniprot', strict=True) for gn in gns
+                    gn, 'genesymbol', 'uniprot', strict = True) for gn in gns
             ]))) for eid, gns in iteritems(entries)])
 
         for rel in kgmlsoup.find_all('relation'):
@@ -6206,7 +6207,7 @@ def signor_pathways(**kwargs):
     proteins_pathways = {}
     interactions_pathways = {}
 
-    c = curl.Curl(url, silent=True)
+    c = curl.Curl(url, silent = True)
 
     soup = bs4.BeautifulSoup(c.result, 'html.parser')
 
@@ -6214,7 +6215,7 @@ def signor_pathways(**kwargs):
         len(soup.find('select', {'name': 'pathway_list'}).findAll('option')),
         'Downloading data from Signor',
         1,
-        percent=False
+        percent = False
     )
 
     for short, full in [
@@ -6385,12 +6386,12 @@ def signor_interactions(organism = 9606):
 
     c = curl.Curl(
         url,
-        silent=False,
-        large=True,
-        follow=True,
-        timeout=30,
-        binary_data=binary_data,
-        return_headers=True
+        silent = False,
+        large = True,
+        follow = True,
+        timeout = 30,
+        binary_data = binary_data,
+        return_headers = True
     )
 
     _ = next(c.result)
@@ -6460,11 +6461,11 @@ def rolland_hi_ii_14():
     Returns list of interactions.
     """
     url = urls.urls['hiii14']['url']
-    c = curl.Curl(url, silent=False, large=True)
+    c = curl.Curl(url, silent = False, large = True)
     xls = c.result
     xlsname = xls.name
     xls.close()
-    tbl = read_xls(xlsname, sheet='2G')
+    tbl = read_xls(xlsname, sheet = '2G')
     return map(lambda l: map(lambda c: c.split('.')[0], l), tbl)[1:]
 
 
@@ -6490,13 +6491,13 @@ def vidal_hi_iii(fname):
         )[1:]
 
 
-def read_xls(xls_file, sheet='', csv_file=None, return_table=True):
+def read_xls(xls_file, sheet = '', csv_file = None, return_table = True):
     """
     Generic function to read MS Excel XLS file, and convert one sheet
     to CSV, or return as a list of lists
     """
     try:
-        book = xlrd.open_workbook(xls_file, on_demand=True)
+        book = xlrd.open_workbook(xls_file, on_demand = True)
         try:
             sheet = book.sheet_by_name(sheet)
         except XLRDError:
@@ -6521,7 +6522,7 @@ def get_kinases():
     Returns a list of GeneSymbols.
     """
     url = urls.urls['kinome']['url']
-    c = curl.Curl(url, large=True, silent=False)
+    c = curl.Curl(url, large = True, silent = False)
     xlsf = c.fileobj
     xlsname = xlsf.name
     xlsf.close()
@@ -6537,7 +6538,7 @@ def get_dgidb():
     """
     genesymbols = []
     url = urls.urls['dgidb']['main_url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     html = c.result
     soup = bs4.BeautifulSoup(html, 'html.parser')
     cats = [
@@ -6561,12 +6562,12 @@ def reactome_sbml():
     Returns gzip.GzipFile object.
     """
     url = urls.urls['reactome']['sbml']
-    c = curl.Curl(url, silent=False, large=True)
+    c = curl.Curl(url, silent = False, large = True)
     sbml = c.result
     return sbml
 
 
-def reactome_biopax(organism=9606, cache=True):
+def reactome_biopax(organism = 9606, cache = True):
     """
     Downloads Reactome human reactions in SBML format.
     Returns File object.
@@ -6580,9 +6581,9 @@ def reactome_biopax(organism=9606, cache=True):
         url = urls.urls['reactome']['biopax_l3']
         c = curl.Curl(
             url,
-            silent=False,
-            large=True,
-            files_needed=['%s.owl' % organisms[organism]]).values()[0]
+            silent = False,
+            large = True,
+            files_needed = ['%s.owl' % organisms[organism]]).values()[0]
         with open(unzipped, 'w') as _unzipped:
             while True:
                 chunk = c.result.read(4096)
@@ -6596,19 +6597,19 @@ def reactome_biopax(organism=9606, cache=True):
 
 def pid_biopax():
     url = urls.urls['nci-pid']['biopax_l3']
-    c = curl.Curl(url, silent=False, large=True)
+    c = curl.Curl(url, silent = False, large = True)
     return c.result
 
 
 def panther_biopax():
     url = urls.urls['panther']['biopax_l3']
-    c = curl.Curl(url, silent=False, large=True).values()
+    c = curl.Curl(url, silent = False, large = True).values()
     return c.result
 
 
 def acsn_biopax():
     url = urls.urls['acsn']['biopax_l3']
-    c = curl.Curl(url, silent=False, large=True)
+    c = curl.Curl(url, silent = False, large = True)
     return c.result
 
 
@@ -6624,7 +6625,7 @@ def get_soup(elem):
     return bs4.BeautifulSoup(etree.tostring(elem), 'html.parser')
 
 
-def _bp_collect_resources(elem, tag, restype=None):
+def _bp_collect_resources(elem, tag, restype = None):
     rdfpref = '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
     rdfres = '%sresource' % rdfpref
     return [
@@ -6635,9 +6636,9 @@ def _bp_collect_resources(elem, tag, restype=None):
 
 
 def reactions_biopax(biopax_file,
-                     organism=9606,
-                     protein_name_type='UniProt',
-                     clean=True):
+                     organism = 9606,
+                     protein_name_type = 'UniProt',
+                     clean = True):
     """
     Processes a BioPAX file and extracts binary interactions.
     """
@@ -6720,7 +6721,7 @@ def reactions_biopax(biopax_file,
     modificationvocabulary = {}
     protein_name_type = protein_name_type.lower()
     # processing the XML
-    bpf = reactome_biopax(organism=organism)
+    bpf = reactome_biopax(organism = organism)
     bp_filesize = 0
     if type(biopax_file) is file:
         bp_filesize = os.path.getsize(biopax_file.name)
@@ -6733,7 +6734,7 @@ def reactions_biopax(biopax_file,
         f.close()
     prg = progress.Progress(bp_filesize, 'Processing BioPAX XML', 1)
     fpos = biopax_file.tell()
-    bp = etree.iterparse(biopax_file, events=('end', ))
+    bp = etree.iterparse(biopax_file, events = ('end', ))
     used_elements = []
     try:
         for ev, elem in bp:
@@ -7091,7 +7092,7 @@ def process_complex(depth, cref, entity_uniprot, complexes, complexvariations,
     entity_uniprot[cref].extend(this_cplex)
 
 
-def reactome_interactions(cacheFile=None, **kwargs):
+def reactome_interactions(cacheFile = None, **kwargs):
     """
     Downloads and processes Reactome BioPAX.
     Extracts binary interactions.
@@ -7134,12 +7135,12 @@ def panther_interactions(**kwargs):
     return get_interactions('panther', **kwargs)
 
 
-def get_interactions(source, mandatory_refs=True):
+def get_interactions(source, mandatory_refs = True):
     ctrls = get_controls(source)
     return process_controls(ctrls, mandatory_refs)[0]
 
 
-def get_controls(source, protein_name_type=None):
+def get_controls(source, protein_name_type = None):
     name_types = {
         'acsn': 'HGNC',
         'reactome': 'UniProt',
@@ -7155,14 +7156,14 @@ def get_controls(source, protein_name_type=None):
         for bpf in bpfile:
             result = dict(
                 reactions_biopax(
-                    bpf, protein_name_type=protein_name_type).items() +
+                    bpf, protein_name_type = protein_name_type).items() +
                 result.items())
     else:
-        result = reactions_biopax(bpfile, protein_name_type=protein_name_type)
+        result = reactions_biopax(bpfile, protein_name_type = protein_name_type)
     return result
 
 
-def process_controls(controls, mandatory_refs=True):
+def process_controls(controls, mandatory_refs = True):
     interactions = set([])
     ptms = []
     regulations = []
@@ -7340,7 +7341,7 @@ def _reactome_reactions_et():
     compartments = {}
     reactions = {}
     sbmlfile = reactome_sbml()
-    ctx = etree.iterparse(sbmlfile, events=('end', ))
+    ctx = etree.iterparse(sbmlfile, events = ('end', ))
     for ev, elem in ctx:
         if elem.tag == compStr:
             k, v = _reactome_compartment(elem)
@@ -7496,7 +7497,7 @@ def get_laudanna_directions():
     Returns list of directions.
     """
     url = urls.urls['laudanna']['sigflow']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     data = data.split('\n')[1:]
     directions = []
@@ -7513,7 +7514,7 @@ def get_laudanna_effects():
     Returns list of effects.
     """
     url = urls.urls['laudanna']['sigdir']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     data = data.split('\n')[1:]
     effects = []
@@ -7559,7 +7560,7 @@ def get_wang_effects():
     Returns list of effects.
     """
     url = urls.urls['wang']['url']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     data = data.split('\n')
     effects = []
@@ -7583,7 +7584,7 @@ def get_wang_effects():
     return effects
 
 
-def biogrid_interactions(organism=9606, htp_limit=1, ltp=True):
+def biogrid_interactions(organism = 9606, htp_limit = 1, ltp = True):
     """
     Downloads and processes BioGRID interactions.
     Keeps only the "low throughput" interactions.
@@ -7599,24 +7600,26 @@ def biogrid_interactions(organism=9606, htp_limit=1, ltp=True):
     interactions = []
     refc = []
     url = urls.urls['biogrid']['url']
-    c = curl.Curl(url, silent=False, large=True)
+    c = curl.Curl(url, silent = False, large = True)
     f = next(iter(c.result.values()))
     nul = f.readline()
+    
     for l in f:
-        l = l.decode('utf-8')
+        
         l = l.split('\t')
         if len(l) > 17:
             if l[17].startswith('Low') or not ltp and l[15] == organism and l[
                     16] == organism:
                 interactions.append([l[7], l[8], l[14]])
                 refc.append(l[14])
+    
     refc = Counter(refc)
     if htp_limit is not None:
         interactions = [i for i in interactions if refc[i[2]] <= htp_limit]
     return interactions
 
 
-def acsn_ppi(keep_in_complex_interactions=True):
+def acsn_ppi(keep_in_complex_interactions = True):
     """
     Processes ACSN data from local file.
     Returns list of interactions.
@@ -7683,7 +7686,7 @@ def get_graphviz_attrs():
     return graph_attrs, vertex_attrs, edge_attrs
 
 
-def get_phosphosite(cache=True):
+def get_phosphosite(cache = True):
     """
     Downloads curated and HTP data from Phosphosite,
     from preprocessed cache file if available.
@@ -7698,7 +7701,7 @@ def get_phosphosite(cache=True):
     result_curated = []
     result_noref = []
     url = urls.urls['psite_bp']['url']
-    c = curl.Curl(url, silent=False, large=True)
+    c = curl.Curl(url, silent = False, large = True)
     bpax = c.gzfile
     xml = ET.parse(bpax)
     xmlroot = xml.getroot()
@@ -7850,7 +7853,7 @@ def get_phosphosite_noref():
         return pickle.load(open(noref_cache, 'rb'))
 
 
-def phosphosite_directions(organism='human'):
+def phosphosite_directions(organism = 'human'):
     """
     From curated and HTP PhosphoSite data generates a
     list of directions.
@@ -7868,7 +7871,7 @@ def get_lit_bm_13():
     Returns list of interactions.
     """
     url = urls.urls['hid']['lit-bm-13']
-    c = curl.Curl(url, silent=False)
+    c = curl.Curl(url, silent = False)
     data = c.result
     return map(lambda l: l.strip().split('\t'), data.split('\n')[1:])
 
@@ -7879,14 +7882,14 @@ def get_ca1():
     Returns list of interactions.
     """
     url = urls.urls['ca1']['url']
-    c = curl.Curl(url, silent=False, files_needed=['S1.txt'])
+    c = curl.Curl(url, silent = False, files_needed = ['S1.txt'])
     data = c.result
     return filter(lambda l: len(l) == 13,
                   map(lambda l: l.strip().split(),
                       data['S1.txt'].split('\n')[1:]))
 
 
-def get_ccmap(organism=9606):
+def get_ccmap(organism = 9606):
     """
     Downloads and processes CancerCellMap.
     Returns list of interactions.
@@ -7899,12 +7902,12 @@ def get_ccmap(organism=9606):
     nodes_url = urls.urls['ccmap']['nodes']
     edges_url = urls.urls['ccmap']['edges']
     c = curl.Curl(
-        nodes_url, silent=False,
-        files_needed=['cell-map-node-attributes.txt'])
+        nodes_url, silent = False,
+        files_needed = ['cell-map-node-attributes.txt'])
     nodes = c.result
     c = curl.Curl(
-        edges_url, silent=False,
-        files_needed=['cell-map-edge-attributes.txt'])
+        edges_url, silent = False,
+        files_needed = ['cell-map-edge-attributes.txt'])
     edges = c.result
     nodes = dict(
         map(lambda l: (l[1], l[2].split(':')),
@@ -7927,7 +7930,7 @@ def get_ccmap(organism=9606):
     return interactions
 
 
-def get_cgc(user=None, passwd=None):
+def get_cgc(user = None, passwd = None):
     
     host = urls.urls['cgc']['host']
     fname = urls.urls['cgc']['file']
@@ -7942,11 +7945,11 @@ def get_cgc(user=None, passwd=None):
     
     c = curl.Curl(
         fname,
-        sftp_host=host,
-        sftp_ask=ask,
-        sftp_user=user,
-        sftp_passwd=passwd,
-        large=True)
+        sftp_host = host,
+        sftp_ask = ask,
+        sftp_user = user,
+        sftp_passwd = passwd,
+        large = True)
     
     data = c.result
     null = next(data)
@@ -7969,10 +7972,10 @@ def get_cgc(user=None, passwd=None):
         yield fields
 
 
-def get_matrixdb(organism=9606):
+def get_matrixdb(organism = 9606):
     
     url = urls.urls['matrixdb']['url']
-    c = curl.Curl(url, silent=False, large=True)
+    c = curl.Curl(url, silent = False, large = True)
     f = c.result
     i = []
     lnum = 0
@@ -8012,10 +8015,10 @@ def get_matrixdb(organism=9606):
     return i
 
 
-def get_innatedb(organism=9606):
+def get_innatedb(organism = 9606):
     
     url = urls.urls['innatedb']['url']
-    c = curl.Curl(url, silent=False, large=True)
+    c = curl.Curl(url, silent = False, large = True)
     f = c.result
     i = []
     lnum = 0
@@ -8070,18 +8073,18 @@ def mitab_field_uniprot(field):
         return None
 
 
-def get_dip(url=None,
-            organism=9606,
-            core_only=True,
-            direct_only=True,
-            small_scale_only=True):
+def get_dip(url = None,
+            organism = 9606,
+            core_only = True,
+            direct_only = True,
+            small_scale_only = True):
     strDipCore = 'dip-quality-status:core'
     strDirect = 'direct interaction'
     strPhysInt = 'physical interaction'
     strSmallS = 'small scale'
     url = urls.urls['dip']['url'] % ('CR' if core_only else '') \
         if url is None else url
-    c = curl.Curl(url, silent=False, large=True)
+    c = curl.Curl(url, silent = False, large = True)
     f = c.result
     i = []
     lnum = 0
@@ -8134,52 +8137,52 @@ def dip_login(user, passwd):
     req_hdrs = ['User-Agent: %s' % useragent]
     c = curl.Curl(
         url,
-        cache=False,
-        write_cache=False,
-        req_headers=req_hdrs,
-        return_headers=True,
-        debug=True)
+        cache = False,
+        write_cache = False,
+        req_headers = req_hdrs,
+        return_headers = True,
+        debug = True)
     res = c.result
     hdr = c.resp_headers
     cookie = hdr['set-cookie'].split(';')[0]
     cookie2 = '%s%u' % (cookie[:-1], int(cookie[-1]) + 1)
-    othercookie = 'DIPID=11133%3A'
+    othercookie = 'DIPID = 11133%3A'
     req_hdrs = [
         'Content-type: multipart/form-data; '
-        'boundary=%s' % bdr,
+        'boundary = %s' % bdr,
         'Cookie: %s' % cookie2,
         'Referer: %s' % url,
         'User-Agent: %s' % useragent,
         'Connection: keep-alive',
     ]
     post = {'lgn': '1', 'login': user, 'pass': passwd, 'Login': 'Login'}
-    login = '--%s\r\n\r\nContent-Disposition: form-data; name="lgn"\r\n\r\n1'\
-        '\r\n--%s\r\n\r\nContent-Disposition: form-data; name="login"\r\n\r\n'\
-        '%s\r\n--%s\r\n\r\nContent-Disposition: form-data; name="pass"\r\n\r'\
-        '\n%s\r\n--%s\r\n\r\nContent-Disposition: form-data; name="Login"\r\n'\
+    login = '--%s\r\n\r\nContent-Disposition: form-data; name = "lgn"\r\n\r\n1'\
+        '\r\n--%s\r\n\r\nContent-Disposition: form-data; name = "login"\r\n\r\n'\
+        '%s\r\n--%s\r\n\r\nContent-Disposition: form-data; name = "pass"\r\n\r'\
+        '\n%s\r\n--%s\r\n\r\nContent-Disposition: form-data; name = "Login"\r\n'\
         '\r\nLogin\r\n%s--\r\n' % (bdr, bdr, user, bdr, passwd, bdr, bdr)
     # login = login.replace('\r', '')
-    with codecs.open(loginfname, encoding='ISO-8859-1', mode='w') as f:
+    with codecs.open(loginfname, encoding = 'ISO-8859-1', mode = 'w') as f:
         f.write(login)
     c = curl.Curl(
         url,
-        cache=False,
-        write_cache=False,
-        follow=True,
-        req_headers=req_hdrs,
-        timeout=10,
-        binary_data=loginfname,
-        return_headers=True,
-        debug=True)
+        cache = False,
+        write_cache = False,
+        follow = True,
+        req_headers = req_hdrs,
+        timeout = 10,
+        binary_data = loginfname,
+        return_headers = True,
+        debug = True)
     res = c.result
     hdr = c.resp_headers
     return res, hdr
 
 
-def spike_interactions(high_confidence=True):
+def spike_interactions(high_confidence = True):
     url = urls.urls['spike']['url']
     c = curl.Curl(
-        url, silent=False, large=True, files_needed=['LatestSpikeDB.xml'])
+        url, silent = False, large = True, files_needed = ['LatestSpikeDB.xml'])
     spikexml = c.result
 
     xml = ET.parse(spikexml['LatestSpikeDB.xml'])
@@ -8252,9 +8255,9 @@ def spike_interactions(high_confidence=True):
     return result
 
 
-def mppi_interactions(organism=9606):
+def mppi_interactions(organism = 9606):
     url = urls.urls['mppi']['url']
-    c = curl.Curl(url, silent=False, large=True)
+    c = curl.Curl(url, silent = False, large = True)
     xmlfile = c.gzfile
 
     prefix = '{net:sf:psidev:mi}'
@@ -8318,10 +8321,10 @@ def mppi_interactions(organism=9606):
     return result
 
 
-def depod_interactions(organism=9606):
+def depod_interactions(organism = 9606):
     
     url = urls.urls['depod']['urls'][1]
-    c = curl.Curl(url, silent=False, large=True, encoding = 'iso-8859-1')
+    c = curl.Curl(url, silent = False, large = True, encoding = 'iso-8859-1')
     data = c.result
     result = []
     i = []
@@ -8361,7 +8364,7 @@ def depod_interactions(organism=9606):
 
 def negatome_pairs():
     url = urls.urls['negatome']['manual']
-    c = curl.Curl(url, silent=False, large=True)
+    c = curl.Curl(url, silent = False, large = True)
     f = c.result
     result = []
     for l in f:
@@ -8388,7 +8391,7 @@ def trim_macrophage_gname(gname):
 
 def macrophage_interactions():
     url = urls.urls['macrophage']['url']
-    c = curl.Curl(url, silent=False, large=True)
+    c = curl.Curl(url, silent = False, large = True)
     fname = c.fileobj.name
     del c
     tbl = read_xls(fname)[5:]
@@ -8419,13 +8422,22 @@ def macrophage_interactions():
     return lst
 
 
-def intact_interactions(miscore=0.6, organism=9606, complex_expansion=False):
+def intact_interactions(
+        miscore = 0.6,
+        organism = 9606,
+        complex_expansion = False,
+    ):
     
     result = {}
     url = urls.urls['intact']['mitab']
     if type(organism) is int:
         organism = '%u' % organism
-    c = curl.Curl(url, silent=False, large=True, files_needed=['intact.txt'])
+    c = curl.Curl(
+        url,
+        silent = False,
+        large = True,
+        files_needed = ['intact.txt'],
+    )
     data = c.result
     f = data['intact.txt']
     size = c.sizes['intact.txt']
@@ -8433,26 +8445,40 @@ def intact_interactions(miscore=0.6, organism=9606, complex_expansion=False):
     prg = progress.Progress(size, 'Reading IntAct MI-tab file', 99)
     
     for l in f:
+        
         prg.step(len(l))
         if lnum == 0:
             lnum += 1
             continue
-        l = l.decode('utf-8')
+        
         l = l.replace('\n', '').replace('\r', '').strip()
         l = l.split('\t')
         tax1 = '0' if l[9] == '-' \
             else l[9].split('|')[0].split(':')[1].split('(')[0]
         tax2 = '0' if l[10] == '-' \
             else l[10].split('|')[0].split(':')[1].split('(')[0]
-        if (organism is None or (tax1 == organism and tax2 == organism)) and \
-                (complex_expansion or 'expansion' not in l[15]):
+        
+        if (
+            (
+                organism is None or (
+                    tax1 == organism and
+                    tax2 == organism
+                )
+            ) and (
+                complex_expansion or
+                'expansion' not in l[15]
+            )
+        ):
+            
             sc = '0'
             au = '0'
+            
             for s in l[14].split('|'):
                 if s.startswith('intact-miscore'):
                     sc = s.split(':')[1]
                 if s.startswith('author'):
                     au = len(s.split(':')[1])
+            
             if float(sc) >= miscore:
                 nt1 = 'unknown' if l[0] == '-' else l[0].split(':')[0]
                 nt2 = 'unknown' if l[1] == '-' else l[1].split(':')[0]
@@ -8501,7 +8527,7 @@ def deathdomain_interactions():
     for fam in families:
 
         url = urls.urls['death']['url'] % fam
-        c = curl.Curl(url, silent=False)
+        c = curl.Curl(url, silent = False)
         html = c.result
 
         soup = bs4.BeautifulSoup(html, 'lxml')
@@ -8541,11 +8567,11 @@ def deathdomain_interactions():
     return result
 
 
-def get_string_effects(ncbi_tax_id=9606,
-                       stimulation=['activation'],
-                       inhibition=['inhibition'],
-                       exclude=['expression'],
-                       score_threshold=0):
+def get_string_effects(ncbi_tax_id = 9606,
+                       stimulation = ['activation'],
+                       inhibition = ['inhibition'],
+                       exclude = ['expression'],
+                       score_threshold = 0):
     
     effects = []
     if type(stimulation) is list:
@@ -8555,7 +8581,7 @@ def get_string_effects(ncbi_tax_id=9606,
     if type(exclude) is list:
         exclude = set(exclude)
     url = urls.urls['string']['actions'] % ncbi_tax_id
-    c = curl.Curl(url, silent=False, large=True)
+    c = curl.Curl(url, silent = False, large = True)
     _ = next(c.result)
     
     for l in c.result:
@@ -8573,7 +8599,7 @@ def get_string_effects(ncbi_tax_id=9606,
     return effects
 
 
-def get_reactions(types=None, sources=None):
+def get_reactions(types = None, sources = None):
     if type(types) is list:
         types = set(types)
     if type(sources) is list:
@@ -8605,7 +8631,7 @@ def get_homologene():
     Returns file pointer.
     """
     url = urls.urls['homologene']['url']
-    c = curl.Curl(url=url, silent=False, large=True)
+    c = curl.Curl(url = url, silent = False, large = True)
     return c.result
 
 def homologene_dict(source, target, id_type):
@@ -8870,7 +8896,7 @@ def encode_tf_mirna_interactions():
 def _get_imweb():
 
     def init_fun(resp_hdr):
-        return ['Cookie: access-token=%s' % resp_hdr['token']]
+        return ['Cookie: access-token = %s' % resp_hdr['token']]
 
     t = int(time.time() * 1000) - 3600000
 
@@ -8880,7 +8906,7 @@ def _get_imweb():
         'Host: www.intomics.com',
         'X-Requested-With: XMLHttpRequest',
         'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0',
-        'Accept-Language: en-US,en;q=0.5',
+        'Accept-Language: en-US,en;q = 0.5',
         'DNT: 1',
         'Connection: keep-alive',
         'Referer: https://www.intomics.com/inbio/map/',
@@ -8893,14 +8919,14 @@ def _get_imweb():
     hdrs = hdrs[:-2]
 
     hdrs.extend([
-        'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept: text/html,application/xhtml+xml,application/xml;q = 0.9,*/*;q = 0.8',
         'Upgrade-Insecure-Requests: 1',
         'Accept-Encoding: gzip'
     ])
 
-    # 'Host: www.intomics.com' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' --compressed -H 'Cookie: access_token='"$token" -H 'DNT: 1' -H 'Connection: keep-alive' -H 'Upgrade-Insecure-Requests: 1'
+    # 'Host: www.intomics.com' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q = 0.9,*/*;q = 0.8' -H 'Accept-Language: en-US,en;q = 0.5' --compressed -H 'Cookie: access_token = '"$token" -H 'DNT: 1' -H 'Connection: keep-alive' -H 'Upgrade-Insecure-Requests: 1'
 
-    hdrs.append('Cookie: access-token=%s' % json.loads(c0.result)['token'])
+    hdrs.append('Cookie: access-token = %s' % json.loads(c0.result)['token'])
 
     url = urls.urls['imweb']['url']
 
@@ -8921,8 +8947,8 @@ def get_imweb(verbose = 0):
     t = int(time.time() * 1000) - 3600000
 
     url   = 'https://www.intomics.com/inbio/map/api/'\
-            'get_data?file=InBio_Map_core_2016_09_12.tar.gz'
-    login = 'https://www.intomics.com/inbio/api/login_guest?ref=&_=%u' % t
+            'get_data?file = InBio_Map_core_2016_09_12.tar.gz'
+    login = 'https://www.intomics.com/inbio/api/login_guest?ref = &_ = %u' % t
 
     fp_login = open('imweb.login.tmp', 'wb')
     fp_imweb = open('imweb.tmp.tar.gz', 'wb')
@@ -8940,7 +8966,7 @@ def get_imweb(verbose = 0):
 
     print('Token: %s' % token)
 
-    hdrs = ['Cookie: access-token=%s' % token]
+    hdrs = ['Cookie: access-token = %s' % token]
 
     c1 = pycurl.Curl()
     c1.setopt(pycurl.URL, url)
@@ -8962,12 +8988,12 @@ def get_imweb_req():
     t = int(time.time() * 1000) - 3600000
 
     url   = 'https://www.intomics.com/inbio/map/api/'\
-            'get_data?file=InBio_Map_core_2016_09_12.tar.gz'
-    login = 'https://www.intomics.com/inbio/api/login_guest?ref=&_=%u' % t
+            'get_data?file = InBio_Map_core_2016_09_12.tar.gz'
+    login = 'https://www.intomics.com/inbio/api/login_guest?ref = &_ = %u' % t
 
     r0 = requests.get(login)
     token = json.loads(r0.text)['token']
-    hdrs = {'Cookie': 'access-token=%s' % token}
+    hdrs = {'Cookie': 'access-token = %s' % token}
 
     with open('imweb.tmp.tar.gz', 'wb') as fp:
 
@@ -9288,7 +9314,7 @@ def get_membranome():
         
         prot_url = urls.urls['membranome']['baseurl'] % (
             'proteins',
-            '?pageSize=1000&pageNum=%u' % page,
+            '?pageSize = 1000&pageNum = %u' % page,
         )
         c = curl.Curl(prot_url, large = True, silent = True)
         prot = json.loads(c.fileobj.read())
