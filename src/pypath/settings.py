@@ -75,6 +75,7 @@ _defaults = {
         'lncrna': 'lncrna-genesymbol',
     },
     'trip_preprocessed': 'trip_preprocessed.pickle',
+    'deathdomain': 'deathdomain.tsv',
 }
 
 in_datadir = {
@@ -94,6 +95,7 @@ in_datadir = {
     'old_dbptm',
     'slk3_edges',
     'slk01human',
+    'deathdomain',
 }
 
 

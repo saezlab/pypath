@@ -1304,7 +1304,8 @@ class Curl(FileOpener):
             self.progress.terminate(status = '%.02f%s downloaded' %
                                     (self.total[0], self.total[1]))
             self.progress = None
-
+    
+    
     def init_request(self):
         if self.init_url is not None:
             if self.progress is not None:
@@ -1313,16 +1314,23 @@ class Curl(FileOpener):
                                   use_cache = self.init_use_cache)
             headers = getattr(self.init_curl, self.init_fun)()
             self.req_headers.extend(headers)
-
+    
+    
     # caching:
-
+    
     def init_cache(self):
+        
         self.get_hash()
         self.cache_dir_exists()
         self.get_cache_file_name()
+        
+        self._log('Cache file path: `%s`' % self.cache_file_name)
+        
         self.select_cache_file()
-
+    
+    
     def get_hash(self):
+        
         self.post_str = '' if self.post is None else \
             '?' + '&'.join(sorted([i[0] + ' = ' + i[1]
                                    for i in iteritems(self.post)]))
@@ -1335,7 +1343,8 @@ class Curl(FileOpener):
         self.urlmd5 = hashlib.md5(
             self.unicode2bytes('%s%s%s' % \
                 (self.url, self.post_str, bindata))).hexdigest()
-
+    
+    
     def cache_dir_exists(self):
         
         if self.cache_dir is None:
@@ -1345,12 +1354,15 @@ class Curl(FileOpener):
         if not os.path.exists(self.cache_dir):
             
             os.makedirs(self.cache_dir)
-
+    
+    
     def get_cache_file_name(self):
+        
         self.cache_file_name = os.path.join(os.getcwd(), self.cache_dir,
                                             '%s-%s' %
                                             (self.urlmd5, self.filename))
-
+    
+    
     def delete_cache_file(self):
         
         if os.path.exists(self.cache_file_name):

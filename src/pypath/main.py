@@ -2162,13 +2162,16 @@ class PyPath(session_mod.Logger):
             Optional, ``False`` by default. Specifies whether to
             re-download the data and ignore the cache.
         """
-
+        
+        self._log('Reading network data from `%s`.' % settings.name)
+        
         listLike = set([list, tuple])
         edge_list = []
         nodeList = []
         edge_list_mapped = []
         infile = None
         _name = settings.name.lower()
+        
         int_cache = os.path.join(
             self.cache_dir,
             '%s.interactions.pickle' % _name
@@ -2177,19 +2180,20 @@ class PyPath(session_mod.Logger):
             self.cache_dir,
             '%s.edges.pickle' % _name
         )
+        
         if not reread and not redownload:
             
             infile, edge_list_mapped = self.lookup_cache(
                 _name,
                 cache_files,
                 int_cache,
-                edges_cache
+                edges_cache,
             )
-
+        
         if not len(edge_list_mapped):
-
+            
             if infile is None:
-
+                
                 if settings.__class__.__name__ != "ReadSettings":
                     
                     self._log(
@@ -2199,7 +2203,7 @@ class PyPath(session_mod.Logger):
                     )
                     
                     return None
-
+                
                 if settings.huge:
                     
                     sys.stdout.write(
@@ -2311,17 +2315,18 @@ class PyPath(session_mod.Logger):
                     ).result
                     #infile = codecs.open(
                     #settings.input, encoding='utf-8', mode='r')
-                    self._log("%s opened..." % settings.input)
+                    self._log('%s opened...' % settings.input)
 
                 if infile is None:
                     
                     self._log(
-                        "%s: No such file or dataio function! :(\n" %
+                        '`%s`: Could not find file or dataio function '
+                        'or failed preprocessing.' %
                         settings.input,
                         -5,
                     )
                     return None
-
+            
             # finding the largest referred column number,
             # to avoid references out of range
             is_directed = settings.is_directed
@@ -2575,7 +2580,7 @@ class PyPath(session_mod.Logger):
             ### !!!! ##
             edge_list_mapped = self.map_list(edge_list)
             self._log(
-                '%u lines have been read from %s,'
+                '%u lines have been read from %s, '
                 '%u links after mapping; '
                 '%u lines filtered by filters; '
                 '%u lines filtered because lack of references; '
@@ -2592,8 +2597,17 @@ class PyPath(session_mod.Logger):
         
             if reread or redownload:
                 pickle.dump(edge_list_mapped, open(edges_cache, 'wb'), -1)
-                self._log('Mapped edge list saved to %s' % edges_cache)
+                self._log('ID translated edge list saved to %s' % edges_cache)
+            
+        else:
+            
+            self._log(
+                'Previously ID translated edge list '
+                'has been loaded from `%s`.' % edges_cache
+            )
+        
         if keep_raw:
+            
             self.data[settings.name] = edge_list_mapped
         
         self.raw_data = edge_list_mapped
@@ -4377,7 +4391,7 @@ class PyPath(session_mod.Logger):
 
                 e[attr] = set(e[attr])
 
-    def attach_network(self, edge_list=False, regulator=False):
+    def attach_network(self, edge_list = False, regulator = False):
         """
         Adds edges to the network from *edge_list* obtained from file or
         other input method. If none is passed, checks for such data in
@@ -4394,7 +4408,9 @@ class PyPath(session_mod.Logger):
             previously existing nodes, will not be added (and hence, the
             edges involved).
         """
-
+        
+        self._log('Adding preprocessed edge list to existing network.')
+        
         g = self.graph
 
         if not edge_list:
@@ -5935,8 +5951,14 @@ class PyPath(session_mod.Logger):
 
         self.mapper.load_mappings(maps=data_formats.mapList)
 
-    def load_resource(self, settings, clean=True, cache_files={}, reread=False,
-                      redownload=False):
+    def load_resource(
+            self,
+            settings,
+            clean = True,
+            cache_files = {},
+            reread = False,
+            redownload = False,
+        ):
         """
         Loads the data from a single resource and attaches it to the
         network
@@ -5963,10 +5985,15 @@ class PyPath(session_mod.Logger):
             Optional, ``False`` by default. Specifies whether to
             re-download the data and ignore the cache.
         """
-
-        sys.stdout.write(' > ' + settings.name + '\n')
-        self.read_data_file(settings, cache_files=cache_files, reread=reread,
-                            redownload=redownload)
+        
+        self._log('Loading network data from resource `%s`.' % settings.name)
+        
+        self.read_data_file(
+            settings,
+            cache_files = cache_files,
+            reread = reread,
+            redownload = redownload,
+        )
         self.attach_network()
 
         if clean:

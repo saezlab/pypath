@@ -5895,6 +5895,7 @@ def take_a_trip(cachefile = None):
              'div', id = 'trp_selector').find('ul').find_all('ul')])
     
     for trpp in trppages:
+        
         trp = trpp.split('/')[-1]
         trpurl = show_url % trp
         c = curl.Curl(trpurl, silent = False)
@@ -5907,6 +5908,7 @@ def take_a_trip(cachefile = None):
             _log('Could not find UniProt for %s' % trp)
         
         for tab in trpsoup.find_all('th', colspan = ['11', '13']):
+            
             ttl = titles[tab.text.strip()]
             tab = tab.find_parent('table')
             trip_process_table(tab, result[ttl], intrs, trp_uniprot)
@@ -5932,23 +5934,34 @@ def trip_process_table(tab, result, intrs, trp_uniprot):
     @trp_uniprot : str
         UniProt ID of TRP domain containing protein.
     """
+    
     for row in tab.find_all('tr'):
+        
         cells = row.find_all(['td', 'th'])
+        
         if 'th' not in [c.name for c in cells]:
+            
             intr = cells[2].text.strip()
+            
             if intr not in intrs:
+                
                 intr_uniprot = trip_get_uniprot(intr)
                 intrs[intr] = intr_uniprot
+                
                 if intr_uniprot is None or len(intr_uniprot) < 6:
-                    sys.stdout.write('\t\tcould not find uniprot for %s\n' %
-                                     intr)
-                    sys.stdout.flush()
+                    
+                    _log('Could not find UniProt for %s' % intr)
+                
             else:
                 intr_uniprot = intrs[intr]
+            
             if (trp_uniprot, intr_uniprot) not in result:
+                
                 result[(trp_uniprot, intr_uniprot)] = []
+            
             result[(trp_uniprot, intr_uniprot)].append(
-                [c.text.strip() for c in cells])
+                [c.text.strip() for c in cells]
+            )
 
 
 def trip_get_uniprot(syn):
@@ -5959,10 +5972,12 @@ def trip_get_uniprot(syn):
     @syn : str
         The synonym as shown on TRIP webpage.
     """
+    
     url = urls.urls['trip']['show'] % syn
     c = curl.Curl(url)
     html = c.result
     soup = bs4.BeautifulSoup(html, 'html.parser')
+    
     return trip_find_uniprot(soup)
 
 
@@ -6063,6 +6078,7 @@ def trip_process(exclude_methods = ['Inference', 'Speculation'],
                 'effect': eff,
                 'regions': reg
             }
+    
     return result
 
 
@@ -8542,6 +8558,11 @@ def intact_interactions(
 
 
 def deathdomain_interactions():
+    """
+    Downloads HTML tables from the DeathDomain webpage and extracts
+    the interactions.
+    """
+    
     result = []
     families = ['CARD', 'DD', 'DED', 'PYD']
 
@@ -8586,6 +8607,24 @@ def deathdomain_interactions():
                     ])
 
     return result
+
+
+def deathdomain_interactions_static():
+    """
+    Loads the DeathDomain interactions from module data.
+    """
+    
+    fname = settings.get('deathdomain')
+    
+    with open(fname, 'r') as fp:
+        
+        _ = fp.readline()
+        
+        return [
+            i.strip()
+            for line in fp.read().split('\n')
+            for i in line.split('\t')
+        ]
 
 
 def get_string_effects(ncbi_tax_id = 9606,
