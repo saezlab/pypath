@@ -1,0 +1,185 @@
+ProteinA	ProteinB	Methods	References
+Apaf1	Caspase9	GST fusion protein pull-down;In vitro purification protein assembly(Size-exclusion chromatography);Yeast two-hybrid;Co-immunoprecipitation;Size-exclusion chromatography;Structure;Gel filtration;β-galactosidase staining;DAPI staining;Caspase cleaved assay	9390557;9922454;11408476;11821383;14993223;15542838;10206961;10376594;11230124;11904389;19494828;19337385;9488720;9539746;15253891;10617566;10692394;11550094;12460989;14602082
+Apaf1	NLRP1	GST fusion protein pull-down;Co-immunoprecipitation;DAPI staining	11113115;17418785
+Apaf1	Caspase2	Size-exclusion chromatography	12460989
+Apaf1	Caspase4	Co-immunoprecipitation	9539746
+ASC	CARD12	GST fusion protein pull-down;Two-hybrid;Yeast two-hybrid;Co-immunoprecipitation;β-galactosidase staining, Luciferase assay	11967258;11374873;19337385;12646168;15701651
+ASC	CARD16	GST fusion protein pull-down	11967258
+ASC	Caspase1	GST fusion protein pull-down;Yeast two-hybrid;Co-immunoprecipitation;Size-exclusion chromatography;ELISA;Luciferase assay	11967258;14634131;19337385;12019269;12667444;16585594;19401709;21862576;19066616
+ASC	caspase1	Co-immunoprecipitation	12191486
+ASC	RIPK2	Co-immunoprecipitation;Immunoprecipitation	14634131
+Bcl-10	BinCARD	GST fusion protein pull-down;Co-Immunofluorescence staining;Co-immunoprecipitation;Luciferase assay	15637807
+Bcl-10	CARD10	GST fusion protein pull-down;Two-hybrid;Co-immunoprecipitation;Luciferase assay	11259443;11387339;19538180
+Bcl-10	CARD11	GST fusion protein pull-down;In vitro purification protein assembly(chemical crosslinking);Two-hybrid;Co-Immunofluorescence staining;Co-immunoprecipitation;Luciferase assay;Immunofluorescence staining	11278692;20439115;11356195;12154360;16809782;16818229;17478723;18086859;18802088;19444310;19841089;21157432;21199863
+Bcl-10	CARD14	GST fusion protein pull-down;Two-hybrid;Co-immunoprecipitation;Luciferase assay	11278692
+Bcl-10	CARD9	GST fusion protein pull-down;Two-hybrid;Co-Immunofluorescence staining;Co-immunoprecipitation;Luciferase assay;EMSA	11053425;20538615
+Bcl-10	RAIDD	Two-hybrid;Co-immunoprecipitation;Immunoprecipitation	22323537
+Bcl-10	CARD12	Co-immunoprecipitation	11472070
+Bcl-10	CARMA1	Co-immunoprecipitation	22880103
+Bcl-10	CIAP2	Co-immunoprecipitation	12786973;16775419
+Bcl-10	RIPK2	Co-immunoprecipitation;Luciferase assay	14638696
+BinCARD	Bcl-10	GST fusion protein pull-down;Co-Immunofluorescence staining;Co-immunoprecipitation;Luciferase assay	15637807
+CARD10	Bcl-10	GST fusion protein pull-down;Two-hybrid;Co-immunoprecipitation;Luciferase assay	11259443;11387339;19538180
+CARD11	Bcl-10	GST fusion protein pull-down;In vitro purification protein assembly(chemical crosslinking);Two-hybrid;Co-Immunofluorescence staining;Co-immunoprecipitation;Luciferase assay;Immunofluorescence staining	11278692;20439115;11356195;12154360;16809782;16818229;17478723;18086859;18802088;19444310;19841089;21157432;21199863
+CARD12	ASC	GST fusion protein pull-down;Two-hybrid;Yeast two-hybrid;Co-immunoprecipitation;β-galactosidase staining, Luciferase assay	11967258;11374873;19337385;12646168;15701651
+CARD12	Caspase1	GST fusion protein pull-down;Co-immunoprecipitation;β-galactosidase staining	11390368;11374873;11472070;17418785
+CARD12	Bcl-10	Co-immunoprecipitation	11472070
+CARD12	NLRP1	Co-immunoprecipitation	11472070
+CARD12	NOD2	Co-immunoprecipitation	11472070
+CARD14	Bcl-10	GST fusion protein pull-down;Two-hybrid;Co-immunoprecipitation;Luciferase assay	11278692
+CARD16	ASC	GST fusion protein pull-down	11967258
+CARD16	CARD18	GST fusion protein pull-down;Co-immunoprecipitation	11536016
+CARD16	CARD8	GST fusion protein pull-down;Co-immunoprecipitation	11821383
+CARD16	Caspase1	GST fusion protein pull-down;Co-immunoprecipitation;Immunoprecipitation, ELISA;Immunoprecipitation	11536016;11821383;11432859
+CARD16	CARD17	Co-immunoprecipitation	15383541
+CARD16	RIPK2	Co-immunoprecipitation;Immunoprecipitation	11432859;11536016
+CARD18	CARD16	GST fusion protein pull-down;Co-immunoprecipitation	11536016
+CARD18	CARD8	GST fusion protein pull-down	11821383
+CARD18	Caspase1	GST fusion protein pull-down;In vitro purification protein assembly(immunoprecipitation);Co-immunoprecipitation;Immunoprecipitation;Caspase1 binding assay	11536016;11051551
+CARD18	CARD17	Co-immunoprecipitation	15383541
+CARD18	RIPK2	Co-immunoprecipitation	11536016
+CARD8	CARD16	GST fusion protein pull-down;Co-immunoprecipitation	11821383
+CARD8	CARD18	GST fusion protein pull-down	11821383
+CARD8	Caspase1	GST fusion protein pull-down;Yeast two-hybrid;Co-immunoprecipitation;Caspase cleaved assay, ELISA	11821383;19337385;15030775
+CARD8	Caspase9	GST fusion protein pull-down;Co-immunoprecipitation;DAPI staining, Immunoprecipitation	11408476
+CARD8	CARD6	Co-immunoprecipitation	12775719
+CARD9	Bcl-10	GST fusion protein pull-down;Two-hybrid;Co-Immunofluorescence staining;Co-immunoprecipitation;Luciferase assay;EMSA	11053425;20538615
+CARD9	RIPK2	Co-immunoprecipitation;Western blotting	17486093
+Caspase1	ASC	GST fusion protein pull-down;Yeast two-hybrid;Co-immunoprecipitation;Size-exclusion chromatography;ELISA;Luciferase assay	11967258;14634131;19337385;12019269;12667444;16585594;19401709;21862576;19066616
+Caspase1	CARD12	GST fusion protein pull-down;Co-immunoprecipitation;β-galactosidase staining	11390368;11374873;11472070;17418785
+Caspase1	CARD16	GST fusion protein pull-down;Co-immunoprecipitation;Immunoprecipitation, ELISA;Immunoprecipitation	11536016;11821383;11432859
+Caspase1	CARD18	GST fusion protein pull-down;In vitro purification protein assembly(immunoprecipitation);Co-immunoprecipitation;Immunoprecipitation;Caspase1 binding assay	11536016;11051551
+Caspase1	CARD8	GST fusion protein pull-down;Yeast two-hybrid;Co-immunoprecipitation;Caspase cleaved assay, ELISA	11821383;19337385;15030775
+Caspase1	RIPK2	GST fusion protein pull-down;Co-immunoprecipitation;Caspase cleaved assay;Reporter gene assay;Luciferase assay	11051551;9705938;11536016;15039421;16585594;21862576
+Caspase1	CARD17	Co-immunoprecipitation	15383541
+Caspase1	Caspase12	Co-immunoprecipitation;Caspase cleaved assay	16625199;18332441
+Caspase1	NLRP1	Co-immunoprecipitation;Size-exclusion chromatography;Luciferase assay;ELISA;Caspase cleaved assay	17349957;17418785;19401709;21252346;19066616
+Caspase1	NOD1	Co-immunoprecipitation;Immunoprecipitation	10329646;12459189
+Caspase1	NOD2	Co-immunoprecipitation;Caspase cleaved assay	18511561
+Caspase2	RAIDD	GST fusion protein pull-down;His fusion protein pull-down;In vitro purification protein assembly(Native gel-electrophoresis);In vitro purification protein assembly(Size-exclusion chromatography);Yeast two-hybrid;Co-Immunofluorescence staining;Co-immunoprecipitation;β-galactosidase staining;Trypan blue staining;TUNEL assay	9044836;8985253;20872280;15073321;11156409;10713730;11978827;16652156;18845684;19782032;22515271
+Caspase2	Apaf1	Size-exclusion chromatography	12460989
+Caspase2	NLRP1	Co-immunoprecipitation	11076957;12191486
+Caspase2	NOD1	Co-immunoprecipitation	10329646
+Caspase2	NOL3	Co-immunoprecipitation	9560245
+Caspase9	Apaf1	GST fusion protein pull-down;In vitro purification protein assembly(Size-exclusion chromatography);Yeast two-hybrid;Co-immunoprecipitation;Size-exclusion chromatography;Structure;Gel filtration;β-galactosidase staining;DAPI staining;Caspase cleaved assay	9390557;9922454;11408476;11821383;14993223;15542838;10206961;10376594;11230124;11904389;19494828;19337385;9488720;9539746;15253891;10617566;10692394;11550094;12460989;14602082
+Caspase9	CARD8	GST fusion protein pull-down;Co-immunoprecipitation;DAPI staining, Immunoprecipitation	11408476
+Caspase9	CIAP1	GST fusion protein pull-down;Co-immunoprecipitation;DAPI staining	9545235
+Caspase9	CIAP2	GST fusion protein pull-down;Co-immunoprecipitation;DAPI staining	9545235
+Caspase9	NOD1	Co-immunoprecipitation;Caspase cleaved assay, β-galactosidase staining	10329646
+CIAP1	Caspase9	GST fusion protein pull-down;Co-immunoprecipitation;DAPI staining	9545235
+CIAP1	RIPK2	GST fusion protein pull-down;Co-immunoprecipitation;β-galactosidase staining	19464198;21931591;9642260;9705938
+CIAP2	Caspase9	GST fusion protein pull-down;Co-immunoprecipitation;DAPI staining	9545235
+CIAP2	RIPK2	GST fusion protein pull-down;Co-immunoprecipitation	19464198;21931591;9705938
+CIAP2	Bcl-10	Co-immunoprecipitation	12786973;16775419
+NLRP1	Apaf1	GST fusion protein pull-down;Co-immunoprecipitation;DAPI staining	11113115;17418785
+NLRP1	CARD12	Co-immunoprecipitation	11472070
+NLRP1	CARD6	Co-immunoprecipitation	12775719
+NLRP1	Caspase1	Co-immunoprecipitation;Size-exclusion chromatography;Luciferase assay;ELISA;Caspase cleaved assay	17349957;17418785;19401709;21252346;19066616
+NLRP1	Caspase2	Co-immunoprecipitation	11076957;12191486
+NLRP1	Caspase4	Co-immunoprecipitation	12191486
+NLRP1	Caspase5	Co-immunoprecipitation;Caspase cleaved assay;ELISA	12191486;17418785
+NOD1	RIPK2	GST fusion protein pull-down;Yeast two-hybrid;Co-immunoprecipitation;Luciferase assay;Reporter gene assay	22470564;10224040;19337385;10329646;11463746;12459189;17054981
+NOD1	CARD6	Co-immunoprecipitation;Luciferase assay	12775719
+NOD1	Caspase1	Co-immunoprecipitation;Immunoprecipitation	10329646;12459189
+NOD1	Caspase2	Co-immunoprecipitation	10329646
+NOD1	Caspase4	Co-immunoprecipitation	10329646
+NOD1	Caspase9	Co-immunoprecipitation;Caspase cleaved assay, β-galactosidase staining	10329646
+NOD2	RIG-1	His Fusion protein pull-down;Co-Immunofluorescence staining;Co-immunoprecipitation;Reporter gene assay	21690088
+NOD2	RIPK2	GST fusion protein pull-down;Yeast two-hybrid;Co-immunoprecipitation;Luciferase assay;ELISA	22470564;19337385;11087742;15620648;18775659;19464198;22665475
+NOD2	CARD12	Co-immunoprecipitation	11472070
+NOD2	Caspase1	Co-immunoprecipitation;Caspase cleaved assay	18511561
+RAIDD	Bcl-10	Two-hybrid;Co-immunoprecipitation;Immunoprecipitation	22323537
+RAIDD	Caspase2	GST fusion protein pull-down;His fusion protein pull-down;In vitro purification protein assembly(Native gel-electrophoresis);In vitro purification protein assembly(Size-exclusion chromatography);Yeast two-hybrid;Co-Immunofluorescence staining;Co-immunoprecipitation;β-galactosidase staining;Trypan blue staining;TUNEL assay	9044836;8985253;20872280;15073321;11156409;10713730;11978827;16652156;18845684;19782032;22515271
+RIG-1	NOD2	His Fusion protein pull-down;Co-Immunofluorescence staining;Co-immunoprecipitation;Reporter gene assay	21690088
+RIG-1	Caspase12	Co-Immunofluorescence staining;GST fusion protein pull-down	20818395
+RIG-1	MAVS	Co-immunoprecipitation;Fluorescence resonance energy transfer;ELISA;Luciferase assay	16127453;16177806;17020950;21419663;19036819
+RIG-1	MDA5	Co-immunoprecipitation	22328336
+RIPK2	Caspase1	GST fusion protein pull-down;Co-immunoprecipitation;Caspase cleaved assay;Reporter gene assay;Luciferase assay	11051551;9705938;11536016;15039421;16585594;21862576
+RIPK2	CIAP1	GST fusion protein pull-down;Co-immunoprecipitation;β-galactosidase staining	19464198;21931591;9642260;9705938
+RIPK2	CIAP2	GST fusion protein pull-down;Co-immunoprecipitation	19464198;21931591;9705938
+RIPK2	NOD1	GST fusion protein pull-down;Yeast two-hybrid;Co-immunoprecipitation;Luciferase assay;Reporter gene assay	22470564;10224040;19337385;10329646;11463746;12459189;17054981
+RIPK2	NOD2	GST fusion protein pull-down;Yeast two-hybrid;Co-immunoprecipitation;Luciferase assay;ELISA	22470564;19337385;11087742;15620648;18775659;19464198;22665475
+RIPK2	ASC	Co-immunoprecipitation;Immunoprecipitation	14634131
+RIPK2	Bcl-10	Co-immunoprecipitation;Luciferase assay	14638696
+RIPK2	CARD16	Co-immunoprecipitation;Immunoprecipitation	11432859;11536016
+RIPK2	CARD18	Co-immunoprecipitation	11536016
+RIPK2	CARD6	Co-immunoprecipitation;Luciferase assay	12775719
+RIPK2	CARD9	Co-immunoprecipitation;Western blotting	17486093
+CARD17	CARD16	Co-immunoprecipitation	15383541
+CARD17	CARD18	Co-immunoprecipitation	15383541
+CARD17	Caspase1	Co-immunoprecipitation	15383541
+CARD6	CARD8	Co-immunoprecipitation	12775719
+CARD6	NLRP1	Co-immunoprecipitation	12775719
+CARD6	NOD1	Co-immunoprecipitation;Luciferase assay	12775719
+CARD6	RIPK2	Co-immunoprecipitation;Luciferase assay	12775719
+CARMA1	Bcl-10	Co-immunoprecipitation	22880103
+caspase1	ASC	Co-immunoprecipitation	12191486
+Caspase12	Caspase1	Co-immunoprecipitation;Caspase cleaved assay	16625199;18332441
+Caspase12	RIG-1	Co-Immunofluorescence staining;GST fusion protein pull-down	20818395
+Caspase4	Apaf1	Co-immunoprecipitation	9539746
+Caspase4	NLRP1	Co-immunoprecipitation	12191486
+Caspase4	NOD1	Co-immunoprecipitation	10329646
+Caspase5	NLRP1	Co-immunoprecipitation;Caspase cleaved assay;ELISA	12191486;17418785
+MAVS	MDA5	Co-immunoprecipitation;ELISA	16127453
+MAVS	RIG-1	Co-immunoprecipitation;Fluorescence resonance energy transfer;ELISA;Luciferase assay	16127453;16177806;17020950;21419663;19036819
+MDA5	MAVS	Co-immunoprecipitation;ELISA	16127453
+MDA5	RIG-1	Co-immunoprecipitation	22328336
+NOL3	Caspase2	Co-immunoprecipitation	9560245
+Caspase10	FADD	GST fusion protein pull-down;His fusion protein pull-down;Co-immunoprecipitation;Fluorescence resonance energy transfer;DAPI staining	12407100;9045686;11717445
+Caspase10	FLIP	GST fusion protein pull-down;Yeast two-hybrid;Co-immunoprecipitation;β-galactosidase staining	9228018;9208847;9211860;12887920
+Caspase10	Caspase8	Co-immunoprecipitation;Fluorescence resonance energy transfer	12887920;17159907;11717445
+Caspase10	DEDD2	Co-immunoprecipitation	12527898
+Caspase8	DEDD	GST fusion protein pull-down;Co-immunoprecipitation	9774341;11965497;11741985
+Caspase8	DEDD2	GST fusion protein pull-down;Co-immunoprecipitation	11965497;12527898
+Caspase8	FADD	Fluorescence resonance energy transfer;GST fusion protein pull-down;His fusion protein pull-down;In vitro purification protein assembly(2D gel electrophoresis);Yeast two-hybrid;;Co-immunoprecipitation;β-galactosidase staining;DNA fragmentation assay;Propidium iodide staining;Hoechst staining;PARP cleaved assay;MTT assay;DAPI staining	11717445;12407100;8681377;9045686;12010809;8681376;10526240;15782135;21525013;9582077;11432804;12220669;12887920;15701651;17159907;18485876;19060883;19524512;20547836;22890322
+Caspase8	FLIP	GST fusion protein pull-down;Yeast two-hybrid;Co-immunoprecipitation;β-galactosidase staining;Confocal microscopy	9228018;9208847;9289491;9326610;9211860;9380701;12215447;12887920;17159907
+Caspase8	Caspase10	Co-immunoprecipitation;Fluorescence resonance energy transfer	12887920;17159907;11717445
+Caspase8	PEA15	Co-immunoprecipitation;PARP cleaved assay	10442631
+DEDD	Caspase8	GST fusion protein pull-down;Co-immunoprecipitation	9774341;11965497;11741985
+DEDD	DEDD2	GST fusion protein pull-down;Co-immunoprecipitation	11965497;12527898
+DEDD	FADD	GST fusion protein pull-down;Co-immunoprecipitation;Data not shown	9774341;11741985
+DEDD	FLIP	GST fusion protein pull-down	11965497;11741985
+DEDD2	Caspase8	GST fusion protein pull-down;Co-immunoprecipitation	11965497;12527898
+DEDD2	DEDD	GST fusion protein pull-down;Co-immunoprecipitation	11965497;12527898
+DEDD2	FLIP	GST fusion protein pull-down;Co-Immunofluorescence staining;Co-immunoprecipitation	11741985;11965497
+DEDD2	Caspase10	Co-immunoprecipitation	12527898
+FADD	Caspase10	GST fusion protein pull-down;His fusion protein pull-down;Co-immunoprecipitation;Fluorescence resonance energy transfer;DAPI staining	12407100;9045686;11717445
+FADD	Caspase8	Fluorescence resonance energy transfer;GST fusion protein pull-down;His fusion protein pull-down;In vitro purification protein assembly(2D gel electrophoresis);Yeast two-hybrid;;Co-immunoprecipitation;β-galactosidase staining;DNA fragmentation assay;Propidium iodide staining;Hoechst staining;PARP cleaved assay;MTT assay;DAPI staining	11717445;12407100;8681377;9045686;12010809;8681376;10526240;15782135;21525013;9582077;11432804;12220669;12887920;15701651;17159907;18485876;19060883;19524512;20547836;22890322
+FADD	DEDD	GST fusion protein pull-down;Co-immunoprecipitation;Data not shown	9774341;11741985
+FADD	FLIP	GST fusion protein pull-down;Yeast two-hybrid;Co-immunoprecipitation;β-galactosidase staining;Annexin V staining;Confocal microscopy	9228018;12407100;9208847;9289491;9326610;11859150;12215447;12220669
+FADD	PEA15	GST fusion protein pull-down;Co-immunoprecipitation;DAPI, Annexin V staining, TUNEL assay	10493725;10442631;22179576
+FLIP	Caspase10	GST fusion protein pull-down;Yeast two-hybrid;Co-immunoprecipitation;β-galactosidase staining	9228018;9208847;9211860;12887920
+FLIP	Caspase8	GST fusion protein pull-down;Yeast two-hybrid;Co-immunoprecipitation;β-galactosidase staining;Confocal microscopy	9228018;9208847;9289491;9326610;9211860;9380701;12215447;12887920;17159907
+FLIP	DEDD	GST fusion protein pull-down	11965497;11741985
+FLIP	DEDD2	GST fusion protein pull-down;Co-Immunofluorescence staining;Co-immunoprecipitation	11741985;11965497
+FLIP	FADD	GST fusion protein pull-down;Yeast two-hybrid;Co-immunoprecipitation;β-galactosidase staining;Annexin V staining;Confocal microscopy	9228018;12407100;9208847;9289491;9326610;11859150;12215447;12220669
+PEA15	FADD	GST fusion protein pull-down;Co-immunoprecipitation;DAPI, Annexin V staining, TUNEL assay	10493725;10442631;22179576
+PEA15	Caspase8	Co-immunoprecipitation;PARP cleaved assay	10442631
+AIM2	ASC	GST fusion protein pull-down;Co-immunoprecipitation;Fluorescence resonance energy transfer;Luciferase assay;Caspase cleaved assay	19158676;19158675;21575908;22869553
+ASC	AIM2	GST fusion protein pull-down;Co-immunoprecipitation;Fluorescence resonance energy transfer;Luciferase assay;Caspase cleaved assay	19158676;19158675;21575908;22869553
+ASC	NLRP2	Co-immunoprecipitation;ELISA	15030775;15456791
+ASC	NLRP3	Co-immunoprecipitation;GST fusion protein pull-down;Two-hybrid;Yeast two-hybrid;Co-Immunofluorescence staining;Fluorescence resonance energy transfer;Luciferase assay;Caspase cleaved assay	15030775;23066025;11786556;19337385;16037825;12615073;19158675;21575908;21994322;22361007
+ASC	POP1	GST fusion protein pull-down;In vitro purification protein assembly(Surface plasmon resonance);Co-Immunofluorescence staining;Co-immunoprecipitation;Surface plasmon resonance;Luciferase assay	12656673;23066025;18362139;17178784
+ASC	POP2	GST fusion protein pull-down;Yeast two-hybrid;Co-Immunofluorescence staining;Co-immunoprecipitation;ELISA;Immunofluorescence staining	17178784;17339483
+ASC	Pyrin	His fusion protein pull-down;Co-Immunofluorescence staining;Co-immunoprecipitation;GST fusion protein pull-down;DAPI staining;Apoptotic DNA ladder assay;β-galactosidase staining, Luciferase assay;Caspase cleaved assay	16037825;11498534;12667444;12615073
+ASC	IFI16	Co-Immunofluorescence staining;Co-immunoprecipitation	21575908
+ASC	NLRP1	Co-immunoprecipitation;Size-exclusion chromatography	17418785;19401709;19066616
+ASC	NLRP10	Co-Immunofluorescence staining;Co-immunoprecipitation;Propidium iodide-Annexin V staining, Luciferase assay, Immunostaining;Annexin V staining, EMSA	20393137;15096476
+ASC	NLRP12	Co-Immunofluorescence staining;Luciferase assay, ELISA	12019269
+ASC	NLRP7	Co-immunoprecipitation	22361007
+NLRP1	POP2	Yeast two-hybrid	17178784
+NLRP1	ASC	Co-immunoprecipitation;Size-exclusion chromatography	17418785;19401709;19066616
+NLRP1	NLRP2	Co-immunoprecipitation	15456791
+NLRP2	ASC	Co-immunoprecipitation;ELISA	15030775;15456791
+NLRP2	POP2	GST fusion protein pull-down;Yeast two-hybrid;Co-Immunofluorescence staining;Co-immunoprecipitation;ELISA	17178784
+NLRP2	NLRP1	Co-immunoprecipitation	15456791
+NLRP3	ASC	Co-immunoprecipitation;GST fusion protein pull-down;Two-hybrid;Yeast two-hybrid;Co-Immunofluorescence staining;Fluorescence resonance energy transfer;Luciferase assay;Caspase cleaved assay	15030775;23066025;11786556;19337385;16037825;12615073;19158675;21575908;21994322;22361007
+POP1	ASC	GST fusion protein pull-down;In vitro purification protein assembly(Surface plasmon resonance);Co-Immunofluorescence staining;Co-immunoprecipitation;Surface plasmon resonance;Luciferase assay	12656673;23066025;18362139;17178784
+POP2	ASC	GST fusion protein pull-down;Yeast two-hybrid;Co-Immunofluorescence staining;Co-immunoprecipitation;ELISA;Immunofluorescence staining	17178784;17339483
+POP2	NLRP1	Yeast two-hybrid	17178784
+POP2	NLRP2	GST fusion protein pull-down;Yeast two-hybrid;Co-Immunofluorescence staining;Co-immunoprecipitation;ELISA	17178784
+Pyrin	ASC	His fusion protein pull-down;Co-Immunofluorescence staining;Co-immunoprecipitation;GST fusion protein pull-down;DAPI staining;Apoptotic DNA ladder assay;β-galactosidase staining, Luciferase assay;Caspase cleaved assay	16037825;11498534;12667444;12615073
+IFI16	ASC	Co-Immunofluorescence staining;Co-immunoprecipitation	21575908
+NLRP10	ASC	Co-Immunofluorescence staining;Co-immunoprecipitation;Propidium iodide-Annexin V staining, Luciferase assay, Immunostaining;Annexin V staining, EMSA	20393137;15096476
+NLRP12	ASC	Co-Immunofluorescence staining;Luciferase assay, ELISA	12019269
+NLRP7	ASC	Co-immunoprecipitation	22361007
