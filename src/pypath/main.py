@@ -1438,21 +1438,11 @@ class PyPath(session_mod.Logger):
         :py:meth:`PyPath.init_network`).
         """
         
-        session_mod.Logger.__init__(self, name = 'main')
+        session_mod.Logger.__init__(self, name = 'network')
 
         self.__version__ = _version.__version__
 
-        # Setting up the working directory
-        for d in ['results', 'log']:
-
-            if not os.path.exists(d):
-                os.makedirs(d)
-
         self.cache_dir = cache_mod.get_cachedir(cachedir = cache_dir)
-
-        if not os.path.exists(self.cache_dir):
-
-            os.makedirs(self.cache_dir)
 
         if copy is None:
             
@@ -2385,6 +2375,8 @@ class PyPath(session_mod.Logger):
             rFiltered = 0
             tFiltered = 0
             readError = 0
+            lnum = 0 # we need to define it here to avoid errors if the
+                     # loop below runs zero cycles
 
             for lnum, line in enumerate(infile):
 
