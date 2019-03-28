@@ -37,7 +37,7 @@ __all__ = [
     'igraph_graphics_attrs', 'md5', 'mod_keywords', 'Namespace', 'fun',
     'taxids', 'taxa', 'phosphoelm_taxids', 'dbptm_taxids',
     'uniqOrdList', 'dict_diff', 'to_set', 'to_list',
-    'unique_list',
+    'unique_list', 'basestring',
 ]
 
 # get the location

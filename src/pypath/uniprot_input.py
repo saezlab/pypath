@@ -26,17 +26,19 @@ import pypath.urls as urls
 import pypath.curl as curl
 
 
-def all_uniprots(organism=9606, swissprot=None):
+def all_uniprots(organism = 9606, swissprot = None):
+    
     swissprot = 'yes' if swissprot == True else swissprot
     rev = '' if not swissprot else ' AND reviewed: %s' % swissprot
     url = urls.urls['uniprot_basic']['url']
     get = {
         'query': 'organism:%s%s' % (str(organism), rev),
         'format': 'tab',
-        'columns': 'id'
+        'columns': 'id',
     }
-    c = curl.Curl(url, get=get, silent=False)
+    c = curl.Curl(url, get = get, silent = False)
     data = c.result
-    return list(
-        filter(lambda x: len(x) > 0,
-               map(lambda l: l.strip(), data.split('\n')[1:])))
+    
+    return [
+        l.strip() for l in data.split('\n')[1:] if l.strip()
+    ]

@@ -36,6 +36,9 @@ import io
 import shutil
 import struct
 
+import pypath.session_mod as session_mod
+_logger = session_mod.get_log()
+
 import pycurl
 try:
     from cStringIO import StringIO
@@ -78,11 +81,13 @@ if not hasattr(urllib, 'quote'):
 try:
     import pysftp
 except:
-    sys.stdout.write('''\n\t:: Module `pysftp` not available. 
-        Only downloading of a small number of resources 
-        relies on this module.
-        Please install by PIP if it is necessary for you.
-    ''')
+    _logger.msg(
+        'Module `pysftp` not available. '
+        'Only downloading of a small number of resources '
+        'relies on this module.'
+        'Please install by PIP if it is necessary for you.',
+        -1,
+    )
 import codecs
 import gzip
 import zipfile
@@ -95,8 +100,7 @@ try:
     from fabric.network import connect, HostConnectionCache
     from fabric.state import env
 except:
-    sys.stdout.write('\t:: Module `fabric` not available.\n')
-    sys.stdout.flush()
+    _logger.msg('Module `fabric` not available.', -1)
 
 from contextlib import closing
 
@@ -494,10 +498,10 @@ class RemoteFile(object):
                  user,
                  host,
                  passwd,
-                 port=22,
-                 sep='\t',
-                 header=True,
-                 rownames=True):
+                 port = 22,
+                 sep = '\t',
+                 header = True,
+                 rownames = True):
         for key, val in iteritems(locals()):
             setattr(self, key, val)
         env.keepalive = 60
@@ -518,12 +522,12 @@ class RemoteFile(object):
                 connect(self.user, self.host, self.port, HostConnectionCache(
                 ))) as ssh:
             stdin, stdout, stderr = ssh.exec_command(
-                'awk \'BEGIN{FS="%s"}{print $1}\' %s%s' %
+                'awk \'BEGIN{FS = "%s"}{print $1}\' %s%s' %
                 (self.sep, self.filename, ''
                  if not self.header else ' | tail -n +2'))
             return [x.strip() for x in stdout.readlines()]
 
-    def open(self, return_header=True):
+    def open(self, return_header = True):
         with closing(
                 connect(self.user, self.host, self.port, HostConnectionCache(
                 ))) as ssh:
@@ -535,7 +539,7 @@ class RemoteFile(object):
                         yield line
 
 
-class FileOpener(object):
+class FileOpener(session_mod.Logger):
     """
     This class opens a file, extracts it in case it is a
     gzip, tar.gz, tar.bz2 or zip archive, selects the requested
@@ -547,14 +551,19 @@ class FileOpener(object):
     def __init__(
             self,
             file_param,
-            compr=None,
-            extract=True,
-            _open=True,
-            set_fileobj=True,
-            files_needed=None,
-            large=True,
+            compr = None,
+            extract = True,
+            _open = True,
+            set_fileobj = True,
+            files_needed = None,
+            large = True,
             default_mode = 'r',
         ):
+        
+        if not hasattr(self, '_logger'):
+            
+            session_mod.Logger.__init__(self, name = 'curl')
+        
         if not hasattr(self, 'compr'):
             self.compr = compr
         if not hasattr(self, 'files_needed'):
@@ -571,7 +580,8 @@ class FileOpener(object):
             self.open()
         if extract:
             self.extract()
-
+    
+    
     def open(self):
         """
         Opens the file if exists.
@@ -586,24 +596,30 @@ class FileOpener(object):
             else:
                 
                 self.fileobj = open(self.fname, 'rb')
-
+    
+    
     def extract(self):
         """
         Calls the extracting method for compressed files.
         """
         
         getattr(self, 'open_%s' % self.type)()
-
+    
+    
     def open_tgz(self):
         """
         Extracts files from tar gz.
         """
         
+        self._log('Opening tar.gz file `%s`.' % self.fileobj.name)
+        
         self.files_multipart = {}
         self.sizes = {}
-        self.tarfile = tarfile.open(fileobj=self.fileobj, mode='r:gz')
+        self.tarfile = tarfile.open(fileobj = self.fileobj, mode = 'r:gz')
         self.members = self.tarfile.getmembers()
+        
         for m in self.members:
+            
             if (self.files_needed is None or m.name in self.files_needed) \
                     and m.size != 0:
                 # m.size is 0 for dierctories
@@ -612,27 +628,47 @@ class FileOpener(object):
                 if self.large:
                     self.files_multipart[m.name] = this_file
                 else:
+                    self._log(
+                        'Reading contents of file '
+                        'from archive: `%s`.' % m.name
+                    )
                     self.files_multipart[m.name] = this_file.read()
                     this_file.close()
+        
         if not self.large:
             self.tarfile.close()
+            self._log('File closed: `%s`.' % self.fileobj.name)
+        
         self.result = self.files_multipart
-
+    
+    
     def open_gz(self):
+        
+        self._log('Opening gzip file `%s`.' % self.fileobj.name)
+        
         self.fileobj.seek(-4, 2)
         self.size = struct.unpack('I', self.fileobj.read(4))[0]
         self.fileobj.seek(0)
-        self.gzfile = gzip.GzipFile(fileobj=self.fileobj, mode='rb')
+        self.gzfile = gzip.GzipFile(fileobj = self.fileobj, mode = 'rb')
         # try:
         if self.large:
             self.result = self.iterfile(self.gzfile)
+            self._log(
+                'Result is an iterator over the '
+                'lines of `%s`.' % self.fileobj.name
+            )
         else:
             self.result = self.gzfile.read()
             self.gzfile.close()
-        # except:
-        #    self.print_status('Error at extracting gzip file')
-
+            self._log(
+                'Data has been read from gzip file `%s`.'
+                'File has been closed' % self.fileobj.name
+            )
+    
+    
     def open_zip(self):
+        
+        self._log('Opening zip file `%s`.' % self.fileobj.name)
         
         self.files_multipart = {}
         self.sizes = {}
@@ -661,19 +697,38 @@ class FileOpener(object):
                 else:
                     self.files_multipart[m] = this_file.read()
                     this_file.close()
+        
         if not self.large:
+            
             self.zipfile.close()
+            self._log(
+                'Data has been read from zip file `%s`.'
+                'File has been closed' % self.fileobj.name
+            )
+        
         self.result = self.files_multipart
 
     def open_plain(self):
+        
+        self._log('Opening plain text file `%s`.' % self.fileobj.name)
+        
         self.size = os.path.getsize(self.fileobj.name)
+        
         if self.large:
+            
             self.result = self.iterfile(self.fileobj)
+            
         else:
+            
             self.result = self.fileobj.read()
             self.fileobj.close()
+            self._log(
+                'Contents of `%s` has been read '
+                'and the file has been closed.' % self.fileobj.name
+            )
 
     def get_type(self):
+        
         self.multifile = False
         if self.fname[-3:].lower() == 'zip' or self.compr == 'zip':
             self.type = 'zip'
@@ -688,6 +743,7 @@ class FileOpener(object):
         else:
             self.type = 'plain'
     
+    
     @staticmethod
     def iterfile(fileobj):
         
@@ -698,7 +754,7 @@ class FileOpener(object):
 
 class Curl(FileOpener):
     """
-    This class is a wrapper around pycurl.
+    This clss is a wrapper around pycurl.
     You can set a vast amount of parameters.
     In addition it has a cacheing functionality, using this downloads
     performed only once.
@@ -749,7 +805,11 @@ class Curl(FileOpener):
             retries = 3,
             cache_dir = None,
         ):
-
+        
+        if not hasattr(self, '_logger'):
+            
+            session_mod.Logger.__init__(self, name = 'curl')
+        
         self.result = None
         self.download_failed = False
         self.status = 0
@@ -763,6 +823,11 @@ class Curl(FileOpener):
         self.get = get
         self.force_quote = force_quote
         
+        self._log(
+            'Creating Curl object to retrieve '
+            'data from `%s`' % self.url
+        )
+        
         if not self.local_file:
             
             self.process_url()
@@ -771,6 +836,7 @@ class Curl(FileOpener):
             
         else:
             
+            self._log('The URL is a local file path.')
             self.filename = os.path.split(self.url)[-1]
         
         self.compr = compr
@@ -813,12 +879,15 @@ class Curl(FileOpener):
         self.sftp_passwd_file = sftp_passwd_file
 
         if CACHEPRINT:
+            
             self.show_cache()
 
         if CACHEDEL:
+            
             self.delete_cache_file()
 
         if not self.use_cache and not DRYRUN:
+            
             self.title = None
             self.set_title()
             if self.sftp_host is not None:
@@ -835,18 +904,15 @@ class Curl(FileOpener):
             
             if self.local_file:
                 
-                sys.stdout.write(
-                    '\t :: Loading data from local file `%s`' % self.url
-                )
+                self._log('Loading data from local file `%s`' % self.url)
                 
             else:
                 
-                sys.stdout.write(
-                    '\t:: Loading data from cache '
-                    'previously downloaded from %s\n' % self.domain
+                self._log(
+                    'Loading data from cache '
+                    'previously downloaded from `%s`' % self.domain
                 )
-            
-            sys.stdout.flush()
+        
         if process and not self.download_failed and not DRYRUN:
             self.process_file()
 
@@ -857,6 +923,7 @@ class Curl(FileOpener):
             self.print_debug_info('INFO', 'PRESERVING Curl() INSTANCE '
                                   'IN pypath.curl.LASTCURL')
             setattr(sys.modules[__name__], 'LASTCURL', self)
+    
     
     def __del__(self):
         
@@ -872,95 +939,120 @@ class Curl(FileOpener):
                     
                     f.close()
     
+    
     def reload(self):
+        
         modname = self.__class__.__module__
-        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-
+    
+    
     def print_debug_info(self, typ, msg):
-        msg = self.bytes2unicode(msg)
-        sys.stdout.write('\n\t%s\n\t%s\n' % (typ, msg))
-        sys.stdout.flush()
-
+        
+        msg = self._bytes_to_unicode(msg)
+        self._log('CURL DEBUG INFO: %s' % typ)
+        self._log(msg)
+    
+    
     def process_url(self):
-        self.domain = self.url.replace('https://', '').replace('http://', '').\
+        
+        self.domain = (
+            self.url.replace('https://', '').replace('http://', '').\
             replace('ftp://', '').split('/')[0]
+        )
         self.filename = self.url.split('/')[-1].split('?')[0]
-
+    
+    
     def is_quoted(self, string):
-        '''
+        """
         From http://stackoverflow.com/questions/
         1637762/test-if-string-is-url-encoded-in-php
-        '''
+        """
+        
         test = string
         while (urllib.unquote(test) != test):
             test = urllib.unquote(test)
         return urllib.quote(test,
                             '/%') == string or urllib.quote(test) == string
-
+    
+    
     def is_quoted_plus(self, string):
+        
         test = string
         while (urllib.unquote_plus(test) != test):
             test = urllib.unquote_plus(test)
         return urllib.quote_plus(
-            test, '&=') == string or urllib.quote_plus(test) == string
-
-    def url_fix(self, charset='utf-8'):
+            test, '& = ') == string or urllib.quote_plus(test) == string
+    
+    
+    def url_fix(self, charset = 'utf-8'):
         """
         From http://stackoverflow.com/a/121017/854988
         """
         if type(self.url) is bytes:
-            self.url = self.bytes2unicode(self.url, encoding=charset)
+            self.url = self._bytes_to_unicode(self.url, encoding = charset)
         scheme, netloc, path, qs, anchor = urlparse.urlsplit(self.url)
         if self.force_quote or not self.is_quoted(path):
             path = urllib.quote(path, '/%')
         if self.force_quote or not self.is_quoted_plus(qs):
-            qs = urllib.quote_plus(qs, '&=')
+            qs = urllib.quote_plus(qs, '& = ')
         self.url = urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
-
+    
+    
     def set_title(self):
+        
         if self.title is None:
             self.title = 'Downloading `%s` from %s' % \
                 (self.filename, self.domain)
-
+    
+    
     def set_post(self):
+        
         if type(self.post) is dict:
             self.postfields = urllib.urlencode(self.post)
             self.curl.setopt(self.curl.POSTFIELDS, self.postfields)
             self.curl.setopt(self.curl.POST, 1)
         else:
             self.postfields = None
-
+    
+    
     def set_get(self):
+        
         if self.get is not None:
+            
             self.qs = '&'.join(
                 map(lambda param: '%s=%s' % (param[0], param[1]),
                     map(lambda param: (urllib.quote_plus(param[0]), urllib.quote_plus(param[1])),
                         iteritems(self.get))))
             self.url = '%s%s%s' % (self.url, '&'
                                    if '?' in self.url else '?', self.qs)
-
+            
+            self._log('GET parameters added to the URL: `%s`' % self.url)
+    
+    
     def construct_binary_data(self):
         """
         The binary data content of a `form/multipart` type request
         can be constructed from a list of tuples (<field name>, <field value>),
         where field name and value are both type of bytes.
         """
+        
         bdr = b'---------------------------%s' % \
             common.gen_session_id(28).encode('ascii')
         self.binary_data_param = self.binary_data
         self.binary_data = b'\r\n'.join(
             map(lambda i: b'--%s\r\nContent-Disposition: form-data;'
-                b' name="%s"\r\n\r\n%s' % (bdr, i[0], i[1]),
+                b' name = "%s"\r\n\r\n%s' % (bdr, i[0], i[1]),
                 self.binary_data_param))
         self.binary_data = b'%s\r\n--%s--\r\n' % (self.binary_data, bdr)
         self.req_headers.append(
-            'Content-Type: multipart/form-data; boundary=%s' %
+            'Content-Type: multipart/form-data; boundary = %s' %
             bdr.decode('ascii'))
         self.req_headers.append('Content-Length: %u' % len(self.binary_data))
-
+    
+    
     def set_binary_data(self):
         """
         Set binary data to be transmitted attached to POST request.
@@ -968,6 +1060,7 @@ class Curl(FileOpener):
         `binary_data` is either a bytes string, or a filename, or
         a list of key-value pairs of a multipart form.
         """
+        
         if self.binary_data:
 
             if type(self.binary_data) is list:
@@ -986,14 +1079,18 @@ class Curl(FileOpener):
             self.curl.setopt(pycurl.READFUNCTION, self.binary_data_file.read)
             self.curl.setopt(pycurl.CUSTOMREQUEST, 'POST')
             self.curl.setopt(pycurl.POSTREDIR, 3)
-
-    def curl_init(self, url=False):
+    
+    
+    def curl_init(self, url = False):
+        
         self.curl = pycurl.Curl()
-        self.set_url(url=url)
+        self.set_url(url = url)
         self.curl.setopt(self.curl.FOLLOWLOCATION, self.follow_http_redirect)
         self.curl.setopt(self.curl.CONNECTTIMEOUT, self.timeout)
-
-    def set_url(self, url=False):
+    
+    
+    def set_url(self, url = False):
+        
         url = url or self.url
         
         if isinstance(url, basestring):
@@ -1007,6 +1104,8 @@ class Curl(FileOpener):
 
     def set_req_headers(self):
         if self.override_post:
+            self._log('Overriding HTTP method.')
+            
             self.req_headers.append('X-HTTP-Method-Override: GET')
         self.curl.setopt(
             self.curl.HTTPHEADER,
@@ -1022,12 +1121,14 @@ class Curl(FileOpener):
             self.curl.setopt(pycurl.VERBOSE, 1)
             self.curl.setopt(pycurl.DEBUGFUNCTION, self.print_debug_info)
     
+    
     def set_compressed(self):
         if self.compressed:
             self.curl.setopt(pycurl.ENCODING, 'gzip, deflate')
     
-    def curl_setup(self, url=False):
-        self.curl_init(url=url)
+    
+    def curl_setup(self, url = False):
+        self.curl_init(url = url)
         self.curl_progress_setup()
         self.set_target()
         self.set_debug()
@@ -1035,8 +1136,12 @@ class Curl(FileOpener):
         self.set_binary_data()
         self.set_req_headers()
         self.set_resp_headers()
-
+    
+    
     def curl_call(self):
+        
+        self._log('Setting up and calling pycurl.')
+        
         for attempt in xrange(self.retries):
             try:
                 if self.debug:
@@ -1064,7 +1169,7 @@ class Curl(FileOpener):
             except pycurl.error as e:
                 self.status = 500
                 if self.progress is not None:
-                    self.progress.terminate(status='failed')
+                    self.progress.terminate(status = 'failed')
                     self.progress = None
                 self.print_debug_info('ERROR',
                                       'PycURL error: %s' % str(e.args))
@@ -1072,12 +1177,14 @@ class Curl(FileOpener):
             self.download_failed = True
         self.curl.close()
         self.target.close()
-
+    
+    
     def progress_setup(self):
         if not self.silent and self.progress is None and not self.debug:
             self.progress = progress.Progress(
-                name=self.title, interval=1, status='initializing curl')
-
+                name = self.title, interval = 1, status = 'initializing curl')
+    
+    
     def curl_progress_setup(self):
         if self.progress is not None:
             self.curl.setopt(pycurl.NOPROGRESS, 0)
@@ -1086,7 +1193,7 @@ class Curl(FileOpener):
             elif hasattr(pycurl, 'PROGRESSFUNCTION'):
                 self.curl.setopt(pycurl.PROGRESSFUNCTION, self.update_progress)
 
-    def bytes2unicode(self, string, encoding=None):
+    def _bytes_to_unicode(self, string, encoding = None):
         
         if type(string) is unicode:
             return string
@@ -1103,7 +1210,7 @@ class Curl(FileOpener):
                     self.print_debug_info('ERROR', 'String decoding error')
                     return u''
 
-    def unicode2bytes(self, string, encoding=None):
+    def unicode2bytes(self, string, encoding = None):
         if type(string) is bytes:
             return string
         if encoding is not None:
@@ -1131,7 +1238,7 @@ class Curl(FileOpener):
     def get_headers(self):
         self.resp_headers_dict = {}
         for header_line in self.resp_headers:
-            header_line = self.bytes2unicode(header_line)
+            header_line = self._bytes_to_unicode(header_line)
             if ':' not in header_line:
                 continue
             name, value = header_line.split(':', 1)
@@ -1149,7 +1256,7 @@ class Curl(FileOpener):
                 if 'content-type' in self.resp_headers:
                     
                     content_type = self.resp_headers['content-type'].lower()
-                    match = re.search(r'charset=(\S+)', content_type)
+                    match = re.search(r'charset = (\S+)', content_type)
                     if match:
                         self.encoding = match.group(1)
         
@@ -1174,7 +1281,7 @@ class Curl(FileOpener):
 
     def get_jsessionid(self):
         self.jsessionid = [u'']
-        rejsess = re.compile(r'.*(JSESSIONID=[A-Z0-9]*)')
+        rejsess = re.compile(r'.*(JSESSIONID = [A-Z0-9]*)')
         for hdr in self.resp_headers_dict.values():
             jsess = rejsess.findall(hdr)
             if len(jsess) > 0:
@@ -1190,11 +1297,11 @@ class Curl(FileOpener):
                 (self.done[0], self.done[1], self.total[0], self.total[1])
             self.progress.set_total(float(download_total))
             self.progress.set_done(float(downloaded))
-            self.progress.step(step=0, msg=msg, status='downloading')
+            self.progress.step(step = 0, msg = msg, status = 'downloading')
 
     def terminate_progress(self):
         if self.progress is not None:
-            self.progress.terminate(status='%.02f%s downloaded' %
+            self.progress.terminate(status = '%.02f%s downloaded' %
                                     (self.total[0], self.total[1]))
             self.progress = None
 
@@ -1202,7 +1309,7 @@ class Curl(FileOpener):
         if self.init_url is not None:
             if self.progress is not None:
                 self.progress.set_status('requesting cookie')
-            self.init_curl = Curl(self.init_url, silent=True, debug=self.debug,
+            self.init_curl = Curl(self.init_url, silent = True, debug = self.debug,
                                   use_cache = self.init_use_cache)
             headers = getattr(self.init_curl, self.init_fun)()
             self.req_headers.extend(headers)
@@ -1217,7 +1324,7 @@ class Curl(FileOpener):
 
     def get_hash(self):
         self.post_str = '' if self.post is None else \
-            '?' + '&'.join(sorted([i[0] + '=' + i[1]
+            '?' + '&'.join(sorted([i[0] + ' = ' + i[1]
                                    for i in iteritems(self.post)]))
         
         if self.binary_data:
@@ -1245,6 +1352,7 @@ class Curl(FileOpener):
                                             (self.urlmd5, self.filename))
 
     def delete_cache_file(self):
+        
         if os.path.exists(self.cache_file_name):
             self.print_debug_info('INFO',
                                   'CACHE FILE = %s' % self.cache_file_name)
@@ -1257,25 +1365,42 @@ class Curl(FileOpener):
             self.print_debug_info('INFO', 'CACHE FILE DOES NOT EXIST')
 
     def select_cache_file(self):
+        
         self.use_cache = False
+        
         if type(CACHE) is bool:
             self.cache = CACHE
+        
         if self.cache and os.path.exists(self.cache_file_name):
+            
+            self._log('Cache file found, no need for download.')
+            
             self.use_cache = True
 
     def show_cache(self):
+        
         self.print_debug_info('INFO', 'URL = %s' % self.url)
         self.print_debug_info('INFO', 'CACHE FILE = %s' % self.cache_file_name)
         self.print_debug_info(
             'INFO', 'Using cache: %s; cache file exists: %s' %
             (self.cache, os.path.exists(self.cache_file_name)))
-
+    
+    
     # open files:
-
+    
     def transcode(self):
+        
         if not self.use_cache and self.type == 'plain':
+            
             self.guess_encoding()
+            
             if self.encoding is not None and self.encoding != 'utf-8':
+                
+                self._log(
+                    'Converting encoding from `%s` '
+                    'to `utf-8`.' % self.encoding
+                )
+                
                 tmp_file_name = os.path.join(os.getcwd(), self.cache_dir,
                                              'transcoding.tmp.txt')
                 os.rename(self.cache_file_name, tmp_file_name)
@@ -1290,18 +1415,35 @@ class Curl(FileOpener):
                                     'utf-8'))
                 os.remove(tmp_file_name)
                 self.encoding = 'utf-8'
-
+    
+    
     def copy_file(self):
+        
         self.transcode()
+        
         if self.outfile is not None and self.outfile != self.cache_file_name:
             if self.write_cache:
+                self._log(
+                    'Copying file `%s` to `%s`.' % (
+                        self.cache_file_name,
+                        self.outfile,
+                    )
+                )
                 shutil.copy(self.cache_file_name, self.outfile)
             else:
+                self._log(
+                    'Moving file `%s` to `%s`.' % (
+                        self.cache_file_name,
+                        self.outfile,
+                    )
+                )
                 os.rename(self.cache_file_name, self.outfile)
         else:
             self.outfile = self.cache_file_name
-
+    
+    
     def process_file(self):
+        
         self.guess_encoding()
         self.get_type()
         self.copy_file()
@@ -1309,25 +1451,33 @@ class Curl(FileOpener):
         self.extract_file()
         self.decode_result()
         self.report_ready()
-
+    
+    
     def open_file(self):
+        
         if not self.silent:
+            
             self.print_status('Opening file `%s`' % self.outfile)
-        super(Curl, self).__init__(self.outfile, extract=False)
+        
+        super(Curl, self).__init__(self.outfile, extract = False)
+    
     
     def close(self):
         """
         Closes all file objects.
         """
+        
         if type(self.result) is dict:
             for fp in self.result.values():
                 if hasattr(fp, 'close'):
                     fp.close()
         self.fileobj.close()
     
+    
     def extract_file(self):
+        
         if not self.silent:
-            self.print_status('Extracting %s data' % self.type)
+            self._log('Extracting data from file type `%s`' % self.type)
         self.extract()
     
     
@@ -1335,8 +1485,8 @@ class Curl(FileOpener):
         
         if self.progress is not None:
             
-            self.print_status(
-                'Decoding %s encoded data' % (self.encoding or 'utf-8')
+            self._log(
+                'Decoding `%s` encoded data' % (self.encoding or 'utf-8')
             )
     
         def _decode_result(content):
@@ -1375,6 +1525,7 @@ class Curl(FileOpener):
     
     
     def get_result_type(self):
+        
         if type(self.result) is dict:
             if len(self.result):
                 self.result_type = 'dict of %s' % (
@@ -1391,42 +1542,57 @@ class Curl(FileOpener):
                 if type(self.result) is bytes else 'unicode string'
                 if type(self.result) is unicode else 'file object')
     
+    
     def report_ready(self):
+        
         self.get_result_type()
+        
         if not self.silent:
-            self.print_status('Ready. Resulted `%s` of type %s. \n'
-                              '\t:: Local file at `%s`.' %
-                              ('plain text'
-                               if self.type == 'plain' else '%s extracted data'
-                               % self.type, self.result_type, self.outfile))
-            sys.stdout.write('\n')
-            sys.stdout.flush()
+            
+            self._log(
+                'File at `%s` successfully retrieved. '
+                'Resulted file type `%s` with encoding `%s`. '
+                'Local file at `%s`.' % (
+                    self.url,
+                    'plain text'
+                        if self.type == 'plain' else
+                    '%s extracted data' % self.type,
+                    self.result_type,
+                    self.outfile,
+                )
+            )
+    
     
     def print_status(self, status):
+        
         if self.progress is not None:
             self.terminate_progress()
         if self.debug:
             self.print_debug_info('INFO', status)
         elif not self.silent:
-            sys.stdout.write('\r%s' % (' ' * 150))
-            sys.stdout.write('\r\t:: %s' % status)
-            sys.stdout.flush()
+            self._log(status)
+    
     
     # sftp part:
     
     def sftp_url(self):
+        
         if self.sftp_host is not None:
             self.sftp_filename = self.url
             self.url = '%s%s' % (self.sftp_host, self.sftp_filename)
     
+    
     def sftp_call(self):
+        
         self.sftp_success = self.sftp_download()
         if self.sftp_success:
             self.status = 200
         else:
             self.status = 501
     
-    def ask_passwd(self, use_passwd_file=True):
+    
+    def ask_passwd(self, use_passwd_file = True):
+        
         if use_passwd_file and os.path.exists(self.sftp_passwd_file):
             with open(self.sftp_passwd_file, 'r') as f:
                 self.sftp_user = f.readline().strip()
@@ -1453,7 +1619,9 @@ class Curl(FileOpener):
             with open(self.sftp_passwd_file, 'w') as f:
                 f.write('%s\n%s' % (self.user, self.passwd))
     
+    
     def sftp_download(self):
+        
         self.sftp_ask = 'Please enter your login details for %s\n' % self.host \
             if self.sftp_ask is None else self.sftp_ask
         self.sftp_passwd_file = os.path.join('cache', '%s.login' % self.sftp_host) \
@@ -1465,10 +1633,10 @@ class Curl(FileOpener):
                 if self.sftp_passwd.strip() == '' \
                 else self.sftp_passwd
             with pysftp.Connection(
-                    host=self.sftp_host,
-                    username=self.sftp_user,
-                    password=self.sftp_passwd,
-                    port=self.sftp_port) as con:
+                    host = self.sftp_host,
+                    username = self.sftp_user,
+                    password = self.sftp_passwd,
+                    port = self.sftp_port) as con:
                 try:
                     con.get(self.sftp_filename, self.cache_file_name)
                     break
@@ -1481,7 +1649,7 @@ class Curl(FileOpener):
                     if '1' in whattodo:
                         continue
                     if '2' in whattodo:
-                        self.ask_passwd(use_passwd_file=False)
+                        self.ask_passwd(use_passwd_file = False)
                         continue
                     if '3' in whattodo:
                         return False

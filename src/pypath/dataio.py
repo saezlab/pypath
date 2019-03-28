@@ -85,9 +85,10 @@ import pycurl
 import webbrowser
 import requests
 import codecs
+
 try:
     import bioservices
-except ModuleNotFoundError:
+except ImportError:
     sys.stdout.write('\t:: Module `bioservices` not available.\n')
     sys.stdout.flush()
 
@@ -1384,10 +1385,10 @@ def get_3did_ddi(residues = False, ddi_flat = None, organism = 9606):
         prg = progress.Progress(lnum, 'Reading data', 33)
         for l in f:
             prg.step()
-            if l.startswith('# = ') and con_collect:
+            if l.startswith('#=') and con_collect:
                 interfaces[(uniprot1, uniprot2, pdb)].append(this_interface)
                 con_collect = False
-            if l.startswith('# = ID'):
+            if l.startswith('#=ID'):
                 # new domain pair: attach previous to results:
                 if ddi_collect:
                     for u1 in uniprots1:
@@ -1408,7 +1409,7 @@ def get_3did_ddi(residues = False, ddi_flat = None, organism = 9606):
                 uniprots2 = [] if pfam2 not in pfam_u else pfam_u[pfam2]
                 if len(set(uniprots1 + uniprots2)) > 1:
                     ddi_collect = True
-            elif l.startswith('# = 3D'):
+            elif l.startswith('#=3D'):
                 l = l.split('\t')
                 pdb = l[1]
                 chain1 = l[2].split(':')[0]
@@ -1506,10 +1507,10 @@ def get_3did(ddi_flat = None, res = True, organism = 9606, pickl = True):
         for l in f:
             prg.step()
             l = l.split('\t')
-            if l[0].startswith('# = ID'):
+            if l[0].startswith('#=ID'):
                 pfam1 = l[3].split('.')[0][2:]
                 pfam2 = l[4].split('.')[0]
-            elif l[0].startswith('# = 3D'):
+            elif l[0].startswith('#=3D'):
                 pdb_prev = pdb
                 skip = True
                 pdb = l[1]
@@ -1614,11 +1615,11 @@ def get_3did_dmi(dmi_flat = None):
         for l in f:
             prg.step()
             l = l.strip().split()
-            if l[0].startswith('# = ID'):
+            if l[0].startswith('#=ID'):
                 domain = l[3]
-            if l[0].startswith('# = PT'):
+            if l[0].startswith('#=PT'):
                 regex = l[1]
-            if l[0].startswith('# = 3D'):
+            if l[0].startswith('#=3D'):
                 pdb = l[1]
                 chain1 = l[2].split(':')[0]
                 chain2 = l[3].split(':')[0]
@@ -4126,15 +4127,15 @@ def go_terms_solr(aspects = ('C', 'F', 'P')):
         
         if ev == 'end' and elem.tag == 'doc':
             
-            asp  = elem.find('.//str[@name = "source"]').text
+            asp  = elem.find('.//str[@name="source"]').text
             asp  = ontol_short[asp]
             
             if asp not in aspects:
                 
                 continue
             
-            term = elem.find('.//str[@name = "annotation_class"]').text
-            name = elem.find('.//str[@name = "annotation_class_label"]').text
+            term = elem.find('.//str[@name="annotation_class"]').text
+            name = elem.find('.//str[@name="annotation_class_label"]').text
             
             terms[asp][term] = name
         
@@ -4449,19 +4450,19 @@ def go_annotations_solr(
         
         if ev == 'end' and elem.tag == 'doc':
             
-            id_ = elem.find('.//str[@name = "bioentity"]').text
+            id_ = elem.find('.//str[@name="bioentity"]').text
             
             if not id_.startswith('UniProtKB:'):
                 
                 continue
             
-            asp  = elem.find('.//str[@name = "aspect"]').text
+            asp  = elem.find('.//str[@name="aspect"]').text
             
             if asp not in aspects:
                 
                 continue
             
-            term = elem.find('.//str[@name = "annotation_class"]').text
+            term = elem.find('.//str[@name="annotation_class"]').text
             id_  = id_[10:] # removing the `UniProtKB:` prefix
             
             # adding the term to the annotation dict
@@ -4528,7 +4529,7 @@ def go_annotations_goose(organism = 9606, aspects = ('C','F','P'), uniprots = No
 
         aspects_part = '(%s) AND' % (
             ' OR '.join(
-                'term.term_type = "%s"' % ontologies[asp]
+                'term.term_type="%s"' % ontologies[asp]
                 for asp in aspects
             )
         )
@@ -4939,7 +4940,7 @@ def hpmr_interactions():
 
     rerecname = re.compile(r'Receptor ([A-z0-9]+) interacts with:')
     reint = re.compile(r'(Receptor|Ligand) ([A-z0-9]+) -')
-    rerefid = re.compile(r'list_uids = ([- \.:,0-9A-z]+)')
+    rerefid = re.compile(r'list_uids=([- \.:,0-9A-z]+)')
 
     result = []
     recpages = []
@@ -6132,7 +6133,7 @@ def get_kegg():
     """
     rehsa = re.compile(r'.*(hsa[0-9]+).*')
     req_hdrs = ['Referer: http://www.genome.jp/kegg-bin/show_pathway'
-        '?map = hsa04710&show_description = show']
+        '?map=hsa04710&show_description=show']
     hsa_list = []
     interactions = []
 
@@ -7503,7 +7504,7 @@ def get_laudanna_directions():
     directions = []
     for l in data:
         if len(l) > 0:
-            directions.append(l.split(' =')[0].split(' (pp) '))
+            directions.append(l.split('=')[0].split(' (pp) '))
     return directions
 
 
@@ -7520,7 +7521,7 @@ def get_laudanna_effects():
     effects = []
     for l in data:
         if len(l) > 0:
-            l = l.split(' = ')
+            l = l.split('=')
             effects.append(l[0].split(' (pp) ') + [l[1]])
     return effects
 
@@ -8146,7 +8147,7 @@ def dip_login(user, passwd):
     hdr = c.resp_headers
     cookie = hdr['set-cookie'].split(';')[0]
     cookie2 = '%s%u' % (cookie[:-1], int(cookie[-1]) + 1)
-    othercookie = 'DIPID = 11133%3A'
+    othercookie = 'DIPID=11133%3A'
     req_hdrs = [
         'Content-type: multipart/form-data; '
         'boundary = %s' % bdr,
@@ -8896,7 +8897,7 @@ def encode_tf_mirna_interactions():
 def _get_imweb():
 
     def init_fun(resp_hdr):
-        return ['Cookie: access-token = %s' % resp_hdr['token']]
+        return ['Cookie: access-token=%s' % resp_hdr['token']]
 
     t = int(time.time() * 1000) - 3600000
 
@@ -8906,7 +8907,7 @@ def _get_imweb():
         'Host: www.intomics.com',
         'X-Requested-With: XMLHttpRequest',
         'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0',
-        'Accept-Language: en-US,en;q = 0.5',
+        'Accept-Language: en-US,en;q=0.5',
         'DNT: 1',
         'Connection: keep-alive',
         'Referer: https://www.intomics.com/inbio/map/',
@@ -8919,14 +8920,14 @@ def _get_imweb():
     hdrs = hdrs[:-2]
 
     hdrs.extend([
-        'Accept: text/html,application/xhtml+xml,application/xml;q = 0.9,*/*;q = 0.8',
+        'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Upgrade-Insecure-Requests: 1',
         'Accept-Encoding: gzip'
     ])
 
     # 'Host: www.intomics.com' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q = 0.9,*/*;q = 0.8' -H 'Accept-Language: en-US,en;q = 0.5' --compressed -H 'Cookie: access_token = '"$token" -H 'DNT: 1' -H 'Connection: keep-alive' -H 'Upgrade-Insecure-Requests: 1'
 
-    hdrs.append('Cookie: access-token = %s' % json.loads(c0.result)['token'])
+    hdrs.append('Cookie: access-token=%s' % json.loads(c0.result)['token'])
 
     url = urls.urls['imweb']['url']
 
@@ -8947,8 +8948,8 @@ def get_imweb(verbose = 0):
     t = int(time.time() * 1000) - 3600000
 
     url   = 'https://www.intomics.com/inbio/map/api/'\
-            'get_data?file = InBio_Map_core_2016_09_12.tar.gz'
-    login = 'https://www.intomics.com/inbio/api/login_guest?ref = &_ = %u' % t
+            'get_data?file=InBio_Map_core_2016_09_12.tar.gz'
+    login = 'https://www.intomics.com/inbio/api/login_guest?ref=&_= %u' % t
 
     fp_login = open('imweb.login.tmp', 'wb')
     fp_imweb = open('imweb.tmp.tar.gz', 'wb')
@@ -8966,7 +8967,7 @@ def get_imweb(verbose = 0):
 
     print('Token: %s' % token)
 
-    hdrs = ['Cookie: access-token = %s' % token]
+    hdrs = ['Cookie: access-token=%s' % token]
 
     c1 = pycurl.Curl()
     c1.setopt(pycurl.URL, url)
@@ -8988,12 +8989,12 @@ def get_imweb_req():
     t = int(time.time() * 1000) - 3600000
 
     url   = 'https://www.intomics.com/inbio/map/api/'\
-            'get_data?file = InBio_Map_core_2016_09_12.tar.gz'
-    login = 'https://www.intomics.com/inbio/api/login_guest?ref = &_ = %u' % t
+            'get_data?file=InBio_Map_core_2016_09_12.tar.gz'
+    login = 'https://www.intomics.com/inbio/api/login_guest?ref=&_=%u' % t
 
     r0 = requests.get(login)
     token = json.loads(r0.text)['token']
-    hdrs = {'Cookie': 'access-token = %s' % token}
+    hdrs = {'Cookie': 'access-token=%s' % token}
 
     with open('imweb.tmp.tar.gz', 'wb') as fp:
 
@@ -9314,7 +9315,7 @@ def get_membranome():
         
         prot_url = urls.urls['membranome']['baseurl'] % (
             'proteins',
-            '?pageSize = 1000&pageNum = %u' % page,
+            '?pageSize=1000&pageNum=%u' % page,
         )
         c = curl.Curl(prot_url, large = True, silent = True)
         prot = json.loads(c.fileobj.read())
