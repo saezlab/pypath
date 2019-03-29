@@ -89,6 +89,10 @@ class IntercellAnnotation(session_mod.Logger):
     
     
     def collect_ecm(self):
+        """
+        Creates a consensus annotation of extracellular matrix structural
+        protein components.
+        """
         
         self.ecm_by_resource = {}
         
@@ -97,6 +101,20 @@ class IntercellAnnotation(session_mod.Logger):
         self.add_ecm_matrixdb()
         
         self.ecm_proteins = set.union(*self.ecm_by_resource.values())
+    
+    
+    def collect_ligands(self):
+        """
+        Creates a consensus annotation of protein ligands in intercellular
+        communication.
+        """
+        
+        self.ligands_by_resource = {}
+        
+        self.add_ligands_cellphonedb()
+        self.add_ligands_go()
+        
+        self.ligands = set.union(*self.ligands_by_resource.values())
     
     
     def add_receptors_hpmr(self):
@@ -156,6 +174,24 @@ class IntercellAnnotation(session_mod.Logger):
         
         self.ecm_by_resource['MatrixDB'] = (
             self.annot.annots['MatrixDB_ECM'].to_set()
+        )
+    
+    
+    def add_ligands_cellphonedb(self):
+        
+        self.ligands_by_resource['CellPhoneDB'] = (
+            self.annot.annots['CellPhoneDB'].get_subset(
+                secreted = bool,
+            )
+        )
+    
+    
+    def add_ligands_go(self):
+        
+        self.ligands_by_resource['GO'] = (
+            self.annot.annots['GO_Intercell'].get_subset(
+                mainclass = 'ligands',
+            )
         )
 
 
