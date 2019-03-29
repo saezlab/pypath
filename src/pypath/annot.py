@@ -143,7 +143,7 @@ class AnnotationBase(resource.AbstractResource):
         self.annot = dict((u, set()) for u in self.data)
     
     
-    def get_subset(self, **kwargs):
+    def get_subset(self, method = None, **kwargs):
         """
         Retrieves a subset by filtering based on ``kwargs``.
         Each argument should be a name and a value or set of values.
@@ -158,9 +158,17 @@ class AnnotationBase(resource.AbstractResource):
             
             for a in annot:
                 
-                if all(
+                # we either call a method on all records
+                # or check against conditions provided in **kwargs
+                if (
+                    callable(method) and
+                    method(a)
+                ) or all(
                     (
                         getattr(a, name) == value or (
+                            callable(value) and
+                            value(getattr(a, name))
+                        ) or (
                             isinstance(
                                 getattr(a, name),
                                 (common.basestring, tuple)
@@ -260,7 +268,7 @@ class AnnotationBase(resource.AbstractResource):
         
         return (
             tuple(r[0] for r in result),
-            np.vstack(r[1] for r in result).T
+            np.vstack([r[1] for r in result]).T
         )
     
     
@@ -836,6 +844,7 @@ class AnnotationTable(object):
             ncbi_tax_id = 9606,
             swissprot_only = True,
             keep_annotators = False,
+            load = True,
         ):
         """
         Sorry Nico I don't write docs because lab meeting tomorrow!
@@ -859,6 +868,10 @@ class AnnotationTable(object):
             reversed(i)
             for i in enumerate(self.uniprots)
         )
+        
+        if load:
+            
+            self.load()
     
     
     def reload(self):

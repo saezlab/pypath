@@ -73,12 +73,90 @@ class IntercellAnnotation(session_mod.Logger):
         )
     
     
-    def receptor(self):
+    def collect_receptors(self):
         """
         Creates a consensus annotation of plasma membrane receptors.
         """
         
-        pass
+        self.receptors_by_resource = {}
+        
+        self.add_receptors_cellphonedb()
+        self.add_receptors_hpmr()
+        self.add_receptors_go()
+        self.add_receptors_surfaceome()
+        
+        self.receptors = set.union(*self.receptors_by_resource.values())
+    
+    
+    def collect_ecm(self):
+        
+        self.ecm_by_resource = {}
+        
+        self.add_ecm_go()
+        self.add_ecm_matrisome()
+        self.add_ecm_matrixdb()
+        
+        self.ecm_proteins = set.union(*self.ecm_by_resource.values())
+    
+    
+    def add_receptors_hpmr(self):
+        
+        self.receptors_by_resource['HPMR'] = (
+            self.annot.annots['HPMR'].to_set()
+        )
+    
+    
+    def add_receptors_cellphonedb(self):
+        
+        self.receptors_by_resource['CellPhoneDB'] = (
+            self.annot.annots['CellPhoneDB'].get_subset(
+                receptor = bool,
+                transmembrane = True,
+            )
+        )
+    
+    
+    def add_receptors_go(self):
+        
+        self.receptors_by_resource['GO'] = (
+            self.annot.annots['GO_Intercell'].get_subset(
+                mainclass = 'receptors',
+            )
+        )
+    
+    
+    def add_receptors_surfaceome(self):
+        
+        self.receptors_by_resource['Surfaceome'] = (
+            self.annot.annots['Surfaceome'].get_subset(
+                mainclass = 'Receptors',
+            )
+        )
+    
+    
+    def add_ecm_matrisome(self):
+        
+        self.ecm_by_resource['Matrisome'] = (
+            self.annot.annots['Matrisome'].get_subset(
+                mainclass = 'Core matrisome',
+            )
+        )
+    
+    
+    def add_ecm_go(self):
+        
+        self.ecm_by_resource['GO'] = (
+            self.annot.annots['GO_Intercell'].get_subset(
+                mainclass = 'ecm structure',
+            )
+        )
+    
+    
+    def add_ecm_matrixdb(self):
+        
+        self.ecm_by_resource['MatrixDB'] = (
+            self.annot.annots['MatrixDB_ECM'].to_set()
+        )
 
 
 class Intercell(session_mod.Logger):
