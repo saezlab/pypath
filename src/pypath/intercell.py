@@ -45,6 +45,7 @@ class IntercellAnnotation(session_mod.Logger):
         self.annot = annot
         self.annot_args = annot_args or {}
         self.set_annot()
+        self.create_classes()
     
     
     def reload(self):
@@ -71,6 +72,17 @@ class IntercellAnnotation(session_mod.Logger):
                 **self.annot_args,
             )
         )
+    
+    
+    def create_classes(self):
+        """
+        Creates a classification of proteins according to their roles
+        in the intercellular communication.
+        """
+        
+        self.collect_receptors()
+        self.collect_ecm()
+        self.collect_ligands()
     
     
     def collect_receptors(self):
