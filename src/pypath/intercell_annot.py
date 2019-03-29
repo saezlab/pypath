@@ -33,8 +33,6 @@ Gene Ontology annotations to select categories relevant in intercellular
 signaling.
 """
 
-
-
 intercell_categories = {
     'junction':
         """

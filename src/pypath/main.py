@@ -18,10 +18,12 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-import __main__ # XXX: Bad practice
-
 from future.utils import iteritems
 from past.builtins import xrange, range, reduce
+
+import pypath.session_mod as session_mod
+
+_logger = session_mod.Logger(name = 'main')
 
 # external modules:
 import os
@@ -35,9 +37,9 @@ try:
     import cairo
 
 except ImportError: # XXX: Catching any exception like this is bad practice
-    sys.stdout.write(
-        '\t:: Module `cairo` not available.\n'
-        '\t   Some plotting functionalities won\'t be accessible.\n'
+    _logger._log(
+        'Module `cairo` not available. '
+        'Some plotting functionalities won\'t work.'
     ) # XXX: Single/double quotes are not consistent throughout the code
 
 import igraph
@@ -75,21 +77,20 @@ except ImportError:
 try:
     import pygraphviz as graphviz
 
-except ImportError:#ModuleNotFoundError:
-    sys.stdout.write(
-        '\t:: Module `pygraphviz` not available.\n'
-        '\t   You don\'t need it unless you want to export dot files.\n')
-    sys.stdout.flush()
+except ImportError:
+    _logger._log(
+        'Module `pygraphviz` not available. '
+        'You don\'t need it unless you want to export dot files.'
+    )
 
 try:
     import pandas
 
-except ModuleNotFoundError:
-    sys.stdout.write('\t:: Module `pandas` not available.\n')
-    sys.stdout.flush()
+except ImportError:
+    _logger._log('Module `pandas` not available.')
+
 
 # from this module:
-import pypath.session_mod as session_mod
 import pypath.cache as cache_mod
 import pypath.data_formats as data_formats
 import pypath.mapping as mapping
@@ -1860,7 +1861,8 @@ class PyPath(session_mod.Logger):
 
         if not replace:
             return gg
-
+    
+    
     def update_vname(self):
         """
         Fast lookup of node names and indexes, these are hold in a
@@ -1868,19 +1870,21 @@ class PyPath(session_mod.Logger):
         added, these should be updated. This function is automatically
         called after all operations affecting node indices.
         """
-
+        
+        self._log('Updating network component lookup dictionaries.')
+        
         self.genesymbol_labels()
         graph = self._get_undirected()
         self._already_has_directed()
         dgraph = self._directed
-
+        
         if graph is not None:
             self.nodInd = set(graph.vs['name'])
             self.nodDct = dict(zip(graph.vs['name'], xrange(graph.vcount())))
             self.labDct = dict(zip(graph.vs['label'], xrange(graph.vcount())))
             self.nodNam = dict(zip(xrange(graph.vcount()), graph.vs['name']))
             self.nodLab = dict(zip(xrange(graph.vcount()), graph.vs['label']))
-
+        
         if dgraph is not None:
             self.dnodInd = set(dgraph.vs['name'])
             self.dnodDct = dict(
@@ -1891,7 +1895,8 @@ class PyPath(session_mod.Logger):
                 zip(xrange(dgraph.vcount()), dgraph.vs['name']))
             self.dnodLab = dict(
                 zip(xrange(dgraph.vcount()), dgraph.vs['label']))
-
+    
+    
     def vsgs(self):
         """
         Returns a generator sequence of the node names as GeneSymbols
@@ -1903,7 +1908,8 @@ class PyPath(session_mod.Logger):
         """
 
         return _NamedVertexSeq(self.graph.vs, self.nodNam, self.nodLab).gs()
-
+    
+    
     def vsup(self):
         """
         Returns a generator sequence of the node names as UniProt IDs
@@ -1915,7 +1921,8 @@ class PyPath(session_mod.Logger):
         """
 
         return _NamedVertexSeq(self.graph.vs, self.nodNam, self.nodLab).up()
-
+    
+    
     def update_vindex(self): # XXX: If so, shouldn't it be removed?
         """
         This is deprecated.
@@ -1923,7 +1930,8 @@ class PyPath(session_mod.Logger):
 
         self.nodNam = dict(
             zip(range(0, self.graph.vcount()), self.graph.vs['name']))
-
+    
+    
     def vertex_pathways(self):
         """
         Some resources assignes interactions some others proteins to
@@ -1941,7 +1949,8 @@ class PyPath(session_mod.Logger):
                 for e in self.graph.es:
                     self.graph.vs[e.source][eattr] = e[eattr]
                     self.graph.vs[e.target][eattr] = e[eattr]
-
+    
+    
     # XXX: Not very clear for me what this function is actually doing...
     #      I mean, returns True/False and True as soon as the first
     #      len(thisVal & filtrVal) > 0
@@ -3501,7 +3510,7 @@ class PyPath(session_mod.Logger):
         to_delete = []
         self.update_vname()
 
-        sys.stdout.write(' :: Comparing with reference lists...')
+        self._log('Checking network components against reference lists.')
 
         names = g.vs['id_type']
         names = [i for i, j in enumerate(names) if j == default_name_type]
@@ -5939,18 +5948,16 @@ class PyPath(session_mod.Logger):
         self.update_pathways()
         self.update_pathway_types()
 
-        sys.stdout.write("\n > %u interactions between %u nodes"
-                         "\n from %u resources have been loaded,"
-                         "\n for details see the log: ./%s\n"
-                         % (self.graph.ecount(), self.graph.vcount(),
-                            len(self.sources), self._logger.fname))
-
-    def load_mappings(self): # FIXME: module data_formats has no attribute mapList
-        """
-        """
-
-        self.mapper.load_mappings(maps=data_formats.mapList)
-
+        self._log(
+            'Network has been built with %u interactions '
+            'between %u nodes from %u resources' % (
+                self.graph.ecount(),
+                self.graph.vcount(),
+                len(self.sources),
+            )
+        )
+    
+    
     def load_resource(
             self,
             settings,
@@ -6001,16 +6008,20 @@ class PyPath(session_mod.Logger):
 
         self.update_sources()
         self.update_vertex_sources()
-
-
+    
+    
     def load_negatives(self): # FIXME: global name 'negative' is not defined
         """
         """
-
+        
         for k, v in iteritems(negative):
-            sys.stdout.write(' > ' + v.name + '\n')
+            
+            self._log(
+                'Loading resource of negative interactions: `%s`.' % v.name
+            )
             self.apply_negative(v)
-
+    
+    
     def load_tfregulons(self, levels={'A', 'B'}, only_curated=False):
         """
         Adds TF-target interactions from TF regulons to the network.
@@ -6043,7 +6054,8 @@ class PyPath(session_mod.Logger):
     #      just removed one or several of them because he doesn't like/want them
     #      and then this function still prints them, as if they were still
     #      part of the network can be confusing).
-    def list_resources(self):
+    @staticmethod
+    def list_resources():
         """
         Prints the list of resources through the standard output.
         """
@@ -8488,8 +8500,8 @@ class PyPath(session_mod.Logger):
         elif fun0 in locals():
             toCall = locals()[fun0]
 
-        elif fun0 == __name__.split('.')[0]:
-            toCall = __main__
+        #elif fun0 == __name__.split('.')[0]:
+        #    toCall = __main__
 
         elif fun0 == 'self' or fun0 == __name__.split('.')[-1]:
             toCall = self
@@ -9904,11 +9916,12 @@ class PyPath(session_mod.Logger):
             if e['dirs'].is_directed():
                 isdir2 += 1
 
-        sys.stdout.write('\t:: Directionality set for %u interactions\n'
-                         '\t   based on known (de)phosphorylation events.\n' %
-                         (isdir2 - isdir))
-        sys.stdout.flush()
-
+        self._log(
+            'Directionality set for %u interactions '
+            'based on known (de)phosphorylation events.' % (isdir2 - isdir)
+        )
+    
+    
     def phosphorylation_signs(self):
         """
         """
@@ -9971,10 +9984,12 @@ class PyPath(session_mod.Logger):
                                                        ptm.sources)
                                     new_signs += 1
 
-        sys.stdout.write('\t:: Signes set based on phosphorylation-'
-                         'dephosphorylation pairs: %u\n' % new_signs)
-        sys.stdout.flush()
-
+        self._log(
+            'Signes set based on phosphorylation-'
+            'dephosphorylation pairs: %u' % new_signs
+        )
+    
+    
     def kinase_stats(self):
         """
         """
@@ -9985,11 +10000,16 @@ class PyPath(session_mod.Logger):
         psite_num = 0
 
         for e in self.graph.es:
+            
             ks_srcs = []
 
             for p in e['ptm']:
 
-                if p.__class__.__name__ == 'DomainMotif' and p.ptm.typ == 'phosphorylation':
+                if (
+                    p.__class__.__name__ == 'DomainMotif' and
+                    p.ptm.typ == 'phosphorylation'
+                ):
+                    
                     ks_srcs += p.ptm.sources + p.sources
                     p_srcs = p.ptm.sources + p.sources
                     p_srcs = sorted(set(p_srcs) - set(['Swiss-Prot']))
@@ -12551,15 +12571,20 @@ class PyPath(session_mod.Logger):
         zerodeg = [v.index for v in self.graph.vs if v.degree() == 0]
         self.graph.delete_vertices(zerodeg)
         self.update_vname()
-        sys.stdout.write(
-            '\t:: Interactions with only high-throughput references '
-            'have been removed.\n\t   %u interactions removed.\n\t   Number of edges '
-            'decreased from %u to %u, number of vertices from %u to %u.\n' %
-            (len(htedgs), ecount_before, self.graph.ecount(), vcount_before,
-             self.graph.vcount()))
-
-        sys.stdout.flush()
-
+        self._log(
+            'Interactions with only high-throughput references '
+            'have been removed. %u interactions removed. '
+            'Number of edges decreased from %u to %u, '
+            'number of vertices from %u to %u.' % (
+                len(htedgs),
+                ecount_before,
+                self.graph.ecount(),
+                vcount_before,
+                self.graph.vcount()
+            )
+        )
+    
+    
     def remove_undirected(self, min_refs=None):
         """
         """
@@ -12576,16 +12601,23 @@ class PyPath(session_mod.Logger):
         zerodeg = [v.index for v in self.graph.vs if v.degree() == 0]
         self.graph.delete_vertices(zerodeg)
         self.update_vname()
-        sys.stdout.write(
-            '\t:: Undirected interactions %s '
-            'have been removed.\n\t   %u interactions removed.\n\t   Number of edges '
-            'decreased from %u to %u, number of vertices from %u to %u.\n' %
-            ('' if min_refs is None else 'with less than %u references' %
-             min_refs, len(udedgs), ecount_before, self.graph.ecount(),
-             vcount_before, self.graph.vcount()))
-
-        sys.stdout.flush()
-
+        self._log(
+            'Undirected interactions %s have been removed. '
+            '%u interactions removed. Number of edges '
+            'decreased from %u to %u, number of vertices '
+            'from %u to %u.' % (
+                ''
+                    if min_refs is None else
+                'with less than %u references' % min_refs,
+                len(udedgs),
+                ecount_before,
+                self.graph.ecount(),
+                vcount_before,
+                self.graph.vcount()
+            )
+        )
+    
+    
     def numof_directed_edges(self):
         """
         """
@@ -12790,11 +12822,18 @@ class PyPath(session_mod.Logger):
 
                                     g.es[e]['dirs'].set_sign((s, t),
                                                              'negative', name)
-        sys.stdout.write(
-            '\t:: Directions and signs set for %u edges based on %s,'
-            ' %u new directions, %u new signs.\n' %
-            (sourcedirs, name, newdirs, newsigns))
-
+        
+        self._log(
+            'Directions and signs set for %u edges based on %s,'
+            ' %u new directions, %u new signs.' % (
+                sourcedirs,
+                name,
+                newdirs,
+                newsigns
+            )
+        )
+    
+    
     def curation_effort(self, sum_by_source=False):
         """
         Returns the total number of reference-interactions pairs.
@@ -13737,12 +13776,20 @@ class PyPath(session_mod.Logger):
 
             sys.stdout.write('\n')
             self.clean_graph()
-
-        sys.stdout.write(' > Network successfully translated from `%u` to'\
-            ' `%u`.\n   Nodes before: %u, after: %u\n   Edges before: %u,'\
-            ' after %u\n' % (source, target, vcount_before, graph.vcount(),
-                            ecount_before, graph.ecount()))
-
+        
+        self._log(
+            'Network successfully translated from organism `%u` to'
+            ' `%u`. Nodes before: %u, after: %u. Edges before: %u,'
+            ' after %u' % (
+                source,
+                target,
+                vcount_before,
+                graph.vcount(),
+                ecount_before,
+                graph.ecount()
+            )
+        )
+        
         if return_graph:
             
             return graph
