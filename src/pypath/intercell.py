@@ -23,6 +23,7 @@ import collections
 
 import pypath.session_mod as session_mod
 import pypath.annot as annot
+import pypath.intercell_annot as intercell_annot
 
 
 IntercellRole = collections.namedtuple(
@@ -31,39 +32,23 @@ IntercellRole = collections.namedtuple(
 )
 
 
-class IntercellAnnotation(session_mod.Logger):
+
+class IntercellAnnotation(annot.CustomAnnotation):
     
     
-    def __init__(
+    def __init__(self, class_definitions = None):
+        
+        class_definitions = (
+            class_definitions or intercell_annot.default_intercell_classes
+        )
+        
+        annot.CustomAnnotation.__init__(
             self,
-        ):
-        
-        session_mod.Logger.__init__(self, name = 'intercell')
-        
-        self.create_classes()
-    
-    
-    def reload(self):
-        """
-        Reloads the object from the module level.
-        """
-        
-        modname = self.__class__.__module__
-        mod = __import__(modname, fromlist = [modname.split('.')[0]])
-        imp.reload(mod)
-        new = getattr(mod, self.__class__.__name__)
-        setattr(self, '__class__', new)
-    
-    
-    def create_classes(self):
-        """
-        Creates a classification of proteins according to their roles
-        in the intercellular communication.
-        """
-        
-        self.collect_receptors()
-        self.collect_ecm()
-        self.collect_ligands()
+            class_definitions = class_definitions,
+        )
+
+
+
     
     
     def collect_receptors(self):
@@ -131,6 +116,9 @@ class IntercellAnnotation(session_mod.Logger):
             *self.extracellular_by_resource.values()
         )
     
+    (
+        
+    )
     
     def add_receptors_hpmr(self):
         
@@ -234,6 +222,16 @@ class IntercellAnnotation(session_mod.Logger):
             annot.db.annots['MatrixDB_Secreted'].to_set(),
             annot.db.annots['MatrixDB_ECM'].to_set(),
         )
+    
+    
+    def add_extracellular_surfaceome(self):
+        
+        self.extracellular_by_resource['Surfaceome'] = (
+            annot.db.annots['Surfaceome'].to_set()
+        )
+    
+    
+    def add_extracellular_membranome(self):
 
 
 class Intercell(session_mod.Logger):
