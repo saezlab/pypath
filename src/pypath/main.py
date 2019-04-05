@@ -902,7 +902,7 @@ class Direction(object):
 
         dirs = [self.straight, self.reverse]
 
-        result = {(d, None) for d in dirs}
+        result = dict((d, None) for d in dirs)
 
         for d in dirs:
             if self.has_sign(direction=d):
@@ -1460,7 +1460,7 @@ class PyPath(session_mod.Logger):
             g.vs['type'] = []
             g.vs['name'] = []
             g.vs['id_type'] = []
-            g.vs['originalNames'] = [[] for _ in xrange(self.graph.vcount())]
+            g.vs['original_names'] = [[] for _ in xrange(self.graph.vcount())]
             g.vs['ncbi_tax_id'] = []
             g.vs['exp'] = [{}]
             g.es['sources'] = [set([]) for _ in xrange(self.graph.ecount())]
@@ -1570,9 +1570,18 @@ class PyPath(session_mod.Logger):
 
         return new
 
-    def init_network(self, lst=None, exclude=[], cache_files={},
-                     pfile=False, save=False, reread=False, redownload=False,
-                     **kwargs): # XXX: kwargs is not used anywhere
+    def init_network(
+            self,
+            lst=None,
+            exclude=[],
+            cache_files={},
+            pfile=False,
+            save=False,
+            reread=False,
+            redownload=False,
+            keep_raw = False,
+            **kwargs,
+        ): # XXX: kwargs is not used anywhere
         """Loads the network data.
 
         This is a lazy way to start the module, load data and build the
@@ -1641,8 +1650,13 @@ class PyPath(session_mod.Logger):
                     return None
 
         self.load_resources(
-            lst=lst, exclude=exclude, reread=reread, redownload=redownload,
-            cache_files=cache_files)
+            lst = lst,
+            exclude = exclude,
+            reread = reread,
+            redownload = redownload,
+            cache_files = cache_files,
+            keep_raw = keep_raw,
+        )
 
         if save:
             sys.stdout.write('\t:: Saving igraph object to file `%s`...' %
@@ -2051,11 +2065,15 @@ class PyPath(session_mod.Logger):
             from a dictionary, the type will be [dict]).
         """
 
-        sys.stdout.write('\t:: Reading from cache: %s\n' % cache_file)
-        sys.stdout.flush()
+        self._log(
+            'Reading edge list pickle dump from cache: %s\n' % cache_file
+        )
+        
+        data = pickle.load(open(cache_file, 'rb'))
+        
         self._log('Data have been read from cache: `%s`' % cache_file)
-
-        return pickle.load(open(cache_file, 'rb'))
+        
+        return data
 
     def process_sign(self, signData, signDef):
         """
@@ -3543,8 +3561,6 @@ class PyPath(session_mod.Logger):
         g.delete_vertices(to_delete)
         
         self.update_vname()
-        
-        sys.stdout.write(' done.\n')
 
 
     def clean_graph(self, organisms_allowed = None):
@@ -3566,15 +3582,49 @@ class PyPath(session_mod.Logger):
         if not g.is_simple():
             g.simplify(loops=not self.loops, multiple=True,
                        combine_edges=self.combine_attr)
-
+        
+        self._log(
+            'After duplicate edge removal: '
+            'number of node: %u, edges: %u' % (
+                self.graph.vcount(),
+                self.graph.ecount(),
+            )
+        )
+        
         self.delete_unmapped()
+        
+        self._log(
+            'After removing unmapped nodes: '
+            'number of node: %u, edges: %u' % (
+                self.graph.vcount(),
+                self.graph.ecount(),
+            )
+        )
 
         self.delete_by_organism(organisms_allowed = organisms_allowed)
+        
+        self._log(
+            'After removing unknown organism nodes: '
+            'number of node: %u, edges: %u' % (
+                self.graph.vcount(),
+                self.graph.ecount(),
+            )
+        )
+        
         self.delete_unknown(organisms_allowed = organisms_allowed)
 
         x = g.vs.degree()
         zeroDeg = [i for i, j in enumerate(x) if j == 0]
         g.delete_vertices(zeroDeg)
+        
+        self._log(
+            'After removing zero degree nodes: '
+            'number of node: %u, edges: %u' % (
+                self.graph.vcount(),
+                self.graph.ecount(),
+            )
+        )
+        
         self.update_vname()
 
     ###
@@ -3603,7 +3653,7 @@ class PyPath(session_mod.Logger):
 
         return s
 
-    def add_update_vertex(self, defAttrs, originalName, original_name_type,
+    def add_update_vertex(self, defAttrs, original_name, original_name_type,
                           extra_attrs={}, add=False):
         """
         Updates the attributes of one node in the (undirected) network.
@@ -3613,7 +3663,7 @@ class PyPath(session_mod.Logger):
 
         :arg dict defAttrs:
             The attribute dictionary of the node to be updated/created.
-        :arg str originalName:
+        :arg str original_name:
             Original node name (e.g.: UniProt ID).
         :arg str original_name_type:
             The original node name type (e.g.: for the previous example,
@@ -3637,16 +3687,16 @@ class PyPath(session_mod.Logger):
 
             n = g.vcount()
             g.add_vertices(1)
-            g.vs[n]['originalNames'] = {originalName: original_name_type}
+            g.vs[n]['original_names'] = {original_name: original_name_type}
             thisNode = g.vs.find(name = defAttrs["name"])
 
         else:
             thisNode = g.vs.find(name = defAttrs["name"])
 
-            if thisNode["originalNames"] is None:
-                thisNode["originalNames"] = {}
+            if thisNode["original_names"] is None:
+                thisNode["original_names"] = {}
 
-            thisNode["originalNames"][originalName] = original_name_type
+            thisNode["original_names"][original_name] = original_name_type
 
         for key, value in iteritems(defAttrs):
             thisNode[key] = value
@@ -3944,7 +3994,9 @@ class PyPath(session_mod.Logger):
             ``True``, returns the copy of the directed graph. otherwise
             returns ``None``.
         """
-
+        
+        self._log('Creating directed network object.')
+        
         toDel = []
         g = self.graph if not graph else graph
         d = g.as_directed(mutual=True)
@@ -4035,7 +4087,9 @@ class PyPath(session_mod.Logger):
         self._get_directed()
         self._get_undirected()
         self.update_vname()
-
+        
+        self._log('Directed igraph object created.')
+        
         if graph or ret:
             return d
 
@@ -4466,7 +4520,7 @@ class PyPath(session_mod.Logger):
 
         prg.terminate()
         self.new_nodes(set(nodes))
-        self._log('New nodes have been created')
+        self._log('New nodes have been created (%u)' % len(nodes))
         self.update_vname()
         prg = Progress(
             total=len(edge_list), name='Processing edges', interval=50)
@@ -4525,7 +4579,15 @@ class PyPath(session_mod.Logger):
                                  e["stim"], e["inh"], e["taxon_a"], e["taxon_b"],
                                  e["type"], e["attrs_edge"])
             prg.step()
-
+        
+        self._log(
+            'New network resource added, current number '
+            'of nodes: %u, edges: %u.' % (
+                self.graph.vcount(),
+                self.graph.ecount()
+            )
+        )
+        
         prg.terminate()
         self.raw_data = None
         self.update_attrs()
@@ -5878,7 +5940,7 @@ class PyPath(session_mod.Logger):
         outf.close()
 
     def load_resources(self, lst=None, exclude=[], cache_files={},
-                       reread=False, redownload=False):
+                       reread=False, redownload=False, keep_raw = False):
         """
         Loads multiple resources, and cleans up after. Looks up ID
         types, and loads all ID conversion tables from UniProt if
@@ -5922,8 +5984,14 @@ class PyPath(session_mod.Logger):
         for lst in [huge, nothuge]:
 
             for k, v in iteritems(lst):
-                self.load_resource(v, clean=False, cache_files=cache_files,
-                                   reread=reread, redownload=redownload)
+                self.load_resource(
+                    v,
+                    clean = False,
+                    cache_files = cache_files,
+                    reread = reread,
+                    redownload = redownload,
+                    keep_raw = keep_raw,
+                )
 
                 # try:
                 #    self.load_resource(v, clean = False,
@@ -5941,6 +6009,14 @@ class PyPath(session_mod.Logger):
                 #    sys.stdout.flush()
 
         sys.stdout.write('\n')
+        
+        self._log(
+            'load_resources(): all resources have been loaded, '
+            'current number of nodes: %u, edges: %u' % (
+                self.graph.vcount(),
+                self.graph.ecount(),
+            )
+        )
 
         self.clean_graph()
         self.update_sources()
@@ -5965,6 +6041,7 @@ class PyPath(session_mod.Logger):
             cache_files = {},
             reread = False,
             redownload = False,
+            keep_raw = False,
         ):
         """
         Loads the data from a single resource and attaches it to the
@@ -6000,6 +6077,7 @@ class PyPath(session_mod.Logger):
             cache_files = cache_files,
             reread = reread,
             redownload = redownload,
+            keep_raw = keep_raw,
         )
         self.attach_network()
 
@@ -6973,7 +7051,7 @@ class PyPath(session_mod.Logger):
 
         chembl_mysql = chembl_mysql or self.chembl_mysql
         self.chembl = chembl.Chembl(
-            chembl_mysql, self.ncbi_tax_id, mapper=self.mapper)
+            chembl_mysql, self.ncbi_tax_id)
 
         if nodes is None:
 
@@ -8324,16 +8402,19 @@ class PyPath(session_mod.Logger):
     def _neighborhood(self, vs, order=1, mode='ALL'):
         """
         """
-
+        
         return _NamedVertexSeq(
-            map(
-                lambda vi: self.graph.vs[vi],
-                reduce(
-                    lambda a, b: a.extend(b),
-                    self.graph.neighborhood(
-                        vs, order=order, mode=mode), [])),
+            (
+                self.graph.vs[vi] for vi in
+                itertools.chain(
+                    *self.graph.neighborhood(
+                        vs, order = order, mode = mode
+                    )
+                )
+            ),
             self.nodNam,
-            self.nodLab)
+            self.nodLab,
+        )
 
     def up_neighborhood(self, uniprot, order=1, mode='ALL'):
         """
@@ -8832,7 +8913,7 @@ class PyPath(session_mod.Logger):
         for k, v in iteritems(ddi):
             uniprot1 = k[0]
             uniprot2 = k[1]
-            swprots = self.mapper.swissprots([uniprot1, uniprot2])
+            swprots = mapping.swissprots([uniprot1, uniprot2])
 
             for swprot1 in swprots[uniprot1]:
 
@@ -8849,7 +8930,7 @@ class PyPath(session_mod.Logger):
                                         iteritems(structures['pdbs']):
 
                                     for pdbuniprots in pdb_uniprot_pairs:
-                                        pdbswprots = self.mapper.swissprots(
+                                        pdbswprots = mapping.swissprots(
                                             pdbuniprots)
 
                                         for pdbswprot1 in pdbswprots[
@@ -9441,7 +9522,6 @@ class PyPath(session_mod.Logger):
             # here we don't share the mapper as later many
             # tables which we don't need any more would
             # just occupy memory
-            mapper = self.mapper,
             homology_only_swissprot = homology_only_swissprot,
             ptm_homology_strict = ptm_homology_strict,
             nonhuman_direct_lookup = nonhuman_direct_lookup,
@@ -9570,7 +9650,6 @@ class PyPath(session_mod.Logger):
 
             if 'strict' not in kwargs:
                 kwargs['strict'] = False
-                kwargs['mapper'] = self.mapper
 
         if source == 'Signor':
             kwargs['organism'] = self.ncbi_tax_id
@@ -11131,7 +11210,7 @@ class PyPath(session_mod.Logger):
         collections in MSigDB.
         """
 
-        self.gsea = gsea.GSEA(user=user, mapper=self.mapper)
+        self.gsea = gsea.GSEA(user=user)
         sys.stdout.write('\n :: GSEA object initialized, use '
                          'load_genesets() to load some of the collections.\n')
         sys.stdout.write('      e.g. load_genesets([\'H\'])\n\n')
@@ -11935,7 +12014,7 @@ class PyPath(session_mod.Logger):
 
         if hasattr(dataio, attrname):
             fun = getattr(dataio, attrname)
-            proteins_pws, interactions_pws = fun(mapper=self.mapper)
+            proteins_pws, interactions_pws = fun()
 
         return proteins_pws, interactions_pws
 
@@ -13589,7 +13668,7 @@ class PyPath(session_mod.Logger):
         source = self.ncbi_tax_id if source is None else source
         orto = dataio.homologene_uniprot_dict(source, target,
                                               only_swissprot=only_swissprot,
-                                              mapper=self.mapper)
+                                              )
 
         vcount_before = graph.vcount()
         ecount_before = graph.ecount()
