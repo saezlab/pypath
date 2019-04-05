@@ -1044,3 +1044,25 @@ class AnnotationTable(object):
         self.narrow_df = pd.concat(
             annot.df for annot in self.annots.values()
         )
+
+
+def init_db(keep_annotators = True):
+    """
+    Initializes or reloads the annotation database.
+    The database will be assigned to the ``db`` attribute of this module.
+    """
+    
+    globals()['db'] = AnnotationTable(keep_annotators = keep_annotators)
+
+
+def get_db(keep_annotators = True):
+    """
+    Retrieves the current database instance and initializes it if does
+    not exist yet.
+    """
+    
+    if 'db' not in globals():
+        
+        init_db(keep_annotators = keep_annotators)
+    
+    return globals()['db']
