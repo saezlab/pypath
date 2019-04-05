@@ -246,7 +246,7 @@ class ReadSettings:
             header = False,
             taxon_a = 9606,
             taxon_b = 9606,
-            ncbi_tax_id = False,
+            ncbi_tax_id = 9606,
             interaction_type = 'PPI',
             positive_filters = None,
             negative_filters = None,

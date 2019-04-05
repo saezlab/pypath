@@ -22,7 +22,7 @@ import imp
 import collections
 
 import pypath.session_mod as session_mod
-import pypath.annot as mod_annot
+import pypath.annot as annot
 
 
 IntercellRole = collections.namedtuple(
@@ -36,15 +36,10 @@ class IntercellAnnotation(session_mod.Logger):
     
     def __init__(
             self,
-            annot = None,
-            annot_args = None,
         ):
         
         session_mod.Logger.__init__(self, name = 'intercell')
         
-        self.annot = annot
-        self.annot_args = annot_args or {}
-        self.set_annot()
         self.create_classes()
     
     
@@ -58,20 +53,6 @@ class IntercellAnnotation(session_mod.Logger):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-    
-    
-    def set_annot(self):
-        """
-        Creates an ``annot.AnnotationTable`` object if not provided.
-        """
-        
-        self.annot = (
-            self.annot or
-            mod_annot.AnnotationTable(
-                keep_annotators = True,
-                **self.annot_args,
-            )
-        )
     
     
     def create_classes(self):
@@ -129,17 +110,39 @@ class IntercellAnnotation(session_mod.Logger):
         self.ligands = set.union(*self.ligands_by_resource.values())
     
     
+    def collect_ec_enzymes(self):
+        """
+        Creates a consensus annotation of extracellular enzymes.
+        """
+        
+        self.ec_enzymes = {}
+    
+    
+    def collect_extracellular(self):
+        
+        self.extracellular_by_resource = {}
+        
+        
+        self.add_extracellular_locatome()
+        self.add_extracellular_go()
+        self.add_extracellular_matrixdb()
+        
+        self.extracellular = set.union(
+            *self.extracellular_by_resource.values()
+        )
+    
+    
     def add_receptors_hpmr(self):
         
         self.receptors_by_resource['HPMR'] = (
-            self.annot.annots['HPMR'].to_set()
+            annot.db.annots['HPMR'].to_set()
         )
     
     
     def add_receptors_cellphonedb(self):
         
         self.receptors_by_resource['CellPhoneDB'] = (
-            self.annot.annots['CellPhoneDB'].get_subset(
+            annot.db.annots['CellPhoneDB'].get_subset(
                 receptor = bool,
                 transmembrane = True,
             )
@@ -149,7 +152,7 @@ class IntercellAnnotation(session_mod.Logger):
     def add_receptors_go(self):
         
         self.receptors_by_resource['GO'] = (
-            self.annot.annots['GO_Intercell'].get_subset(
+            annot.db.annots['GO_Intercell'].get_subset(
                 mainclass = 'receptors',
             )
         )
@@ -158,7 +161,7 @@ class IntercellAnnotation(session_mod.Logger):
     def add_receptors_surfaceome(self):
         
         self.receptors_by_resource['Surfaceome'] = (
-            self.annot.annots['Surfaceome'].get_subset(
+            annot.db.annots['Surfaceome'].get_subset(
                 mainclass = 'Receptors',
             )
         )
@@ -167,7 +170,7 @@ class IntercellAnnotation(session_mod.Logger):
     def add_ecm_matrisome(self):
         
         self.ecm_by_resource['Matrisome'] = (
-            self.annot.annots['Matrisome'].get_subset(
+            annot.db.annots['Matrisome'].get_subset(
                 mainclass = 'Core matrisome',
             )
         )
@@ -176,7 +179,7 @@ class IntercellAnnotation(session_mod.Logger):
     def add_ecm_go(self):
         
         self.ecm_by_resource['GO'] = (
-            self.annot.annots['GO_Intercell'].get_subset(
+            annot.db.annots['GO_Intercell'].get_subset(
                 mainclass = 'ecm structure',
             )
         )
@@ -185,14 +188,14 @@ class IntercellAnnotation(session_mod.Logger):
     def add_ecm_matrixdb(self):
         
         self.ecm_by_resource['MatrixDB'] = (
-            self.annot.annots['MatrixDB_ECM'].to_set()
+            annot.db.annots['MatrixDB_ECM'].to_set()
         )
     
     
     def add_ligands_cellphonedb(self):
         
         self.ligands_by_resource['CellPhoneDB'] = (
-            self.annot.annots['CellPhoneDB'].get_subset(
+            annot.db.annots['CellPhoneDB'].get_subset(
                 secreted = bool,
             )
         )
@@ -201,9 +204,35 @@ class IntercellAnnotation(session_mod.Logger):
     def add_ligands_go(self):
         
         self.ligands_by_resource['GO'] = (
-            self.annot.annots['GO_Intercell'].get_subset(
+            annot.db.annots['GO_Intercell'].get_subset(
                 mainclass = 'ligands',
             )
+        )
+    
+    
+    def add_extracellular_locatome(self):
+        
+        self.extracellular_by_resource['Locatome'] = (
+            annot.db['Locatome'].get_subset(
+                location = {'extracellular', 'extracellular region'}
+            )
+        ) & (
+            annot.db['Locatome'].get_subset(cls = 'secretome')
+        )
+    
+    
+    def add_extracellular_go(self):
+        
+        self.extracellular_by_resource['GO_Intercell'] = (
+            annot.db['GO_Intercell'].get_subset(mainclass = 'extracellular')
+        )
+    
+    
+    def add_extracellular_matrixdb(self):
+        
+        self.extracellular_by_resource['MatrixDB'] = set.union(
+            annot.db.annots['MatrixDB_Secreted'].to_set(),
+            annot.db.annots['MatrixDB_ECM'].to_set(),
         )
 
 

@@ -644,9 +644,13 @@ class DomainMotif(object):
             '  %s  %s'\
             '  Data sources: %s\n'\
             '  References: %s\n'\
-            '  3D structures: %s\n' % (self.domain.__str__(),
-                                       self.ptm.__str__(), ', '.join(self.sources),
-                                       ', '.join(self.refs), ', '.join(self.pdbs))
+            '  3D structures: \n' % (
+                self.domain.__str__(),
+                self.ptm.__str__(),
+                ', '.join(self.sources) if self.sources else '',
+                ', '.join(self.refs) if self.refs else '',
+                #', '.join(self.pdbs) if self.pdbs else '',
+            )
 
     def __eq__(self, other):
         if isinstance(other, DomainMotif) and \

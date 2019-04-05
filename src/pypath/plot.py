@@ -21,6 +21,9 @@
 from future.utils import iteritems
 from past.builtins import xrange, range, reduce
 
+from pypath import session_mod
+_logger = session_mod.get_log()
+
 import re
 import sys
 import os
@@ -42,7 +45,7 @@ import igraph
 try:
     import hcluster as hc2
 except:
-    sys.stdout.write('\t:: Module `hcluster` not available.\n')
+    _logger.msg('Module `hcluster` not available.')
 import matplotlib.gridspec as gridspec
 import matplotlib.backends.backend_pdf
 from matplotlib import ticker

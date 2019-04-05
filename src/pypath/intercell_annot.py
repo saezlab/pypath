@@ -107,6 +107,17 @@ intercell_categories = {
         cell surface OR
         external side of plasma membrane)
         """,
+    'secreted ligands':
+        """
+        receptor ligand activity AND
+        extracellular region
+        """,
+    'surface ligands':
+        """
+        receptor ligand activity AND
+        (cell surface OR
+        external side of plasma membrane)
+        """,
     'receptors':
         """
         signaling receptor activity AND

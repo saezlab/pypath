@@ -502,6 +502,10 @@ pathway = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {})
 }
+
+# synonym
+activity_flow = pathway
+
 '''
 Interaction databases included in OmniPath.
 These are subsets of the named databases, having
@@ -829,6 +833,10 @@ ptm = {
         extra_node_attrs_a = {},
         extra_node_attrs_b = {})
 }
+
+# synonym
+enzyme_substrate = ptm
+
 '''
 Other PTM datasets which are not used because the lack of
 references.
