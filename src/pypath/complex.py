@@ -335,3 +335,25 @@ class ComplexAggregator(AbstractComplexResource):
         
         resource.AbstractResource.load(self)
         self.update_index()
+
+
+def init_db():
+    """
+    Initializes or reloads the complex database.
+    The database will be assigned to the ``db`` attribute of this module.
+    """
+    
+    globals()['db'] = ComplexAggregator()
+
+
+def get_db():
+    """
+    Retrieves the current database instance and initializes it if does
+    not exist yet.
+    """
+    
+    if 'db' not in globals():
+        
+        init_db()
+    
+    return globals()['db']
