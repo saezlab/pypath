@@ -89,6 +89,7 @@ AnnotDef = collections.namedtuple(
     'AnnotDef',
     ['name', 'source', 'args'],
 )
+AnnotDef.__new__.__defaults__ = (None,)
 """
 Annotation operations consist of list of annotation definitions or names as
 they can be looked up in the ``class_definitions`` of the
@@ -98,6 +99,57 @@ they can be looked up in the ``class_definitions`` of the
 AnnotOp = collections.namedtuple(
     'AnnotOp',
     ['annots', 'op'],
+)
+
+
+intercell_classes_default = {
+    AnnotDef(
+        name = 'receptor',
+        source = AnnotOp(
+            annots = (
+                'receptor_cellphonedb',
+                'receptor_surfaceome',
+                'receptor_go',
+                'receptor_hpmr',
+            ),
+            op = set.union,
+        ),
+    ),
+    AnnotDef(
+        name = 'receptor_cellphonedb',
+        source = 'CellPhoneDB',
+        args = {
+            'receptor': bool,
+            'transmembrane': True,
+        },
+    ),
+    AnnotDef(
+        name = 'receptor_go',
+        source = 'GO_Intercell',
+        args = {
+            'mainclass': 'receptors',
+        },
+    ),
+    AnnotDef(
+        name = 'receptor_hpmr',
+        source = 'HPMR',
+    ),
+    AnnotDef(
+        name = 'receptor_surfaceome',
+        source = 'Surfaceome',
+        args = {
+            'mainclass': 'Receptors',
+        },
+    ),
+    AnnotDef(
+        name = 'ecm',
+        source = AnnotOp(
+            annots = (
+                
+            ),
+            op = set.union,
+        )
+    )
 )
 
 
@@ -133,6 +185,15 @@ class CustomAnnotation(session_mod.Logger):
     
     def add_class_definitions(self, class_definitions):
         
+        if not isinstance(class_definitions, dict):
+            
+            class_definitions = dict(
+                (
+                    classdef.name,
+                    classdef
+                ) for classdef in class_definitions
+            )
+        
         self._class_definitions.update(class_definitions)
     
     
@@ -142,20 +203,83 @@ class CustomAnnotation(session_mod.Logger):
         in the intercellular communication.
         """
         
-        for name, classdef in iteritems(self._class_definitions):
+        for classdef in self._class_definitions.values():
             
-            if name not in self.classes or update:
+            if classdef.name not in self.classes or update:
                 
-                self.create_class(name, classdef)
+                self.create_class(classdef)
     
     
-    def create_class(self, name, classdef):
+    def create_class(self, classdef):
         """
         Creates a category of entities with specific role in intercellular
         communication.
         """
         
+        self.classes[classdef.name] = self.process_annot(classdef)
+    
+    
+    def process_annot(self, classdef):
         
+        if isinstance(classdef.source, set):
+            
+            return classdef.source
+            
+        elif isinstance(classdef.source, common.basestring):
+            
+            if classdef.source in self.annotdb.annots:
+                
+                if not classdef.args:
+                    
+                    return self.annotdb.annots[classdef.source].to_set()
+                    
+                else:
+                    
+                    return self.annotdb.annots[classdef.source].get_subset(
+                        **classdef.args
+                    )
+            
+        elif callable(classdef.source):
+            
+            return classdef.source(**(classdef.args or {}))
+        
+        return set()
+    
+    
+    def _execute_operation(self, annotop):
+        """
+        Executes a set operation
+        """
+        
+        annots = tuple(
+            (
+                self._execute_operation(_annot)
+                    if isinstance(_annot, AnnotOp) else
+                self.process_annot(_annot)
+                    if isinstance(_annot, AnnotDef) else
+                _annot
+                    if isinstance(_annot, set) else
+                self.get_class(_annot)
+            )
+            for _annot in annotop.annots
+        )
+        
+        return getattr(annots[0], annotop.op)(*annots[1:])
+    
+    
+    def get_class(self, name):
+        """
+        Retrieves a class by its name and loads it if hasn't been loaded yet
+        but the name present in the class definitions.
+        """
+        
+        if name not in self.classes and name in self._class_definitions:
+            
+            self.create_class(self._class_definitions[name])
+        
+        if name in self.classes:
+            
+            return self.classes[name]
 
 
 class AnnotationBase(resource.AbstractResource):
