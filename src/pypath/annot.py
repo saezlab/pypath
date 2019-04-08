@@ -46,9 +46,7 @@ annotation_sources = {
     'Surfaceome',
     'CellSurfaceProteinAtlas',
     'HumanPlasmaMembraneReceptome',
-    'MatrixdbSecreted',
-    'MatrixdbMembrane',
-    'MatrixdbECM',
+    'Matrixdb',
     'Locate',
     'GOIntercell',
     'CellPhoneDB',
@@ -831,78 +829,25 @@ class HumanPlasmaMembraneReceptome(AnnotationBase):
         )
 
 
-class MatrixdbBase(AnnotationBase):
+class Matrixdb(AnnotationBase):
     
     
-    def __init__(self, category, ncbi_tax_id = 9606):
+    def __init__(self, ncbi_tax_id = 9606):
         """
         Protein annotations from MatrixDB.
-        
-        :arg str category:
-            The protein annotation category. Possible values: `ecm`, `membrane`
-            or `secreted`.
         """
         
         AnnotationBase.__init__(
             self,
-            name = 'MatrixDB_%s' % category,
+            name = 'MatrixDB',
             ncbi_tax_id = ncbi_tax_id,
-            input_method = 'matrixdb_%s_proteins' % category.lower(),
+            input_method = 'matrixdb_annotations',
         )
-
-
-class MatrixdbSecreted(MatrixdbBase):
     
     
-    def __init__(self, ncbi_tax_id = 9606):
-        """
-        Secreted proteins annotations from MatrixDB.
+    def _process_method(self):
         
-        :arg int ncbi_tax_id:
-            NCBI Taxonomy ID of the organism.
-        """
-        
-        MatrixdbBase.__init__(
-            self,
-            category = 'Secreted',
-            ncbi_tax_id = ncbi_tax_id,
-        )
-
-
-class MatrixdbMembrane(MatrixdbBase):
-    
-    
-    def __init__(self, ncbi_tax_id = 9606):
-        """
-        Membrane proteins annotations from MatrixDB.
-        
-        :arg int ncbi_tax_id:
-            NCBI Taxonomy ID of the organism.
-        """
-        
-        MatrixdbBase.__init__(
-            self,
-            category = 'Membrane',
-            ncbi_tax_id = ncbi_tax_id,
-        )
-
-
-class MatrixdbECM(MatrixdbBase):
-    
-    
-    def __init__(self, ncbi_tax_id = 9606):
-        """
-        ECM proteins annotations from MatrixDB.
-        
-        :arg int ncbi_tax_id:
-            NCBI Taxonomy ID of the organism.
-        """
-        
-        MatrixdbBase.__init__(
-            self,
-            category = 'ECM',
-            ncbi_tax_id = ncbi_tax_id,
-        )
+        pass
 
 
 class Locate(AnnotationBase):

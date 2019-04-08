@@ -9561,6 +9561,27 @@ def matrixdb_ecm_proteins(organism = 9606):
     return _matrixdb_protein_list('ecm', organism = organism)
 
 
+def matrixdb_annotations(organism = 9606):
+    
+    MatrixdbAnnotation = collections.namedtuple(
+        'MatrixdbAnnotation',
+        ('mainclass',),
+    )
+    annot = collections.defaultdict(set)
+    
+    for cls in ('membrane', 'secreted', 'ecm'):
+        
+        cls_annot = MatrixdbAnnotation(mainclass = cls)
+        
+        method = globals()['matrixdb_%s_proteins' % cls]
+        
+        for uniprot in method(organism = organism):
+            
+            annot[uniprot].add(cls_annot)
+    
+    return dict(annot)
+
+
 def get_locate_localizations(
         organism = 9606,
         literature = True,
