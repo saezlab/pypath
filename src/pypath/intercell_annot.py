@@ -40,7 +40,24 @@ intercell_categories = {
         cell junction assembly OR
         cell junction organization OR
         intercellular bridge organization OR
-        gap junction-mediated intercellular transport
+        gap junction-mediated intercellular transport OR
+        gap junction
+        """,
+    'gap junction':
+        """
+        gap junction
+        """,
+    'tight junction':
+        """
+        tight junction
+        """,
+    'cell-substrate junction':
+        """
+        cell-substrate junction
+        """,
+    'cell-cell junction':
+        """
+        cell-cell junction
         """,
     'extracellular':
         """
@@ -67,10 +84,23 @@ intercell_categories = {
         catalytic activity AND
         extracellular region
         """,
+    'enzyme':
+        """
+        catalytic activity
+        """,
     'extracell peptidase':
         """
         peptidase activity AND
         extracellular region
+        """,
+    'peptidase':
+        """
+        peptidase activity
+        """,
+    'growth factor binding':
+        """
+        growth factor binding AND
+        extracellular space
         """,
     'receptor regulation':
         """

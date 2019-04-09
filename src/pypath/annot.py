@@ -36,6 +36,7 @@ import pypath.mapping as mapping
 import pypath.resource as resource
 import pypath.go as go
 import pypath.intercell_annot as intercell_annot
+import pypath.session_mod as session_mod
 
 
 annotation_sources = {
@@ -100,7 +101,7 @@ AnnotOp = collections.namedtuple(
 )
 
 
-intercell_classes_default = {
+intercell_classes_default = (
     AnnotDef(
         name = 'receptor',
         source = AnnotOp(
@@ -143,11 +144,420 @@ intercell_classes_default = {
         name = 'ecm',
         source = AnnotOp(
             annots = (
-                
+                'ecm_matrixdb',
+                'ecm_matrisome',
+                'ecm_go',
+            ),
+            op = set.union,
+        ),
+    ),
+    AnnotDef(
+        name = 'ecm_matrisome',
+        source = AnnotOp(
+            annots = (
+                AnnotDef(
+                    name = 'ecm_matrisome_core',
+                    source = 'Matrisome',
+                    args = {
+                        'mainclass': 'Core matrisome',
+                    },
+                ),
+                AnnotOp(
+                    annots = (
+                        AnnotDef(
+                            name = 'ecm_matrisome_affiliated',
+                            source = 'Matrisome',
+                            args = {
+                                'mainclass': 'Matrisome-associated',
+                                'subclass': 'ECM-affiliated Proteins',
+                            },
+                        ),
+                        'cell surface',
+                    ),
+                    op = set.difference,
+                ),
+            ),
+            op = set.union,
+        ),
+    ),
+    AnnotDef(
+        name = 'ecm_matrixdb',
+        source = 'MatrixDB',
+        args = {
+            'mainclass': 'ecm',
+        },
+    ),
+    AnnotDef(
+        name = 'ecm_go',
+        source = 'GO_Intercell',
+        args = {
+            'mainclass': 'ecm structure',
+        },
+    ),
+    AnnotDef(
+        name = 'ligand',
+        source = AnnotOp(
+            annots = (
+                'ligand_cellphonedb',
+                'ligand_go',
+            ),
+            op = set.union,
+        ),
+    ),
+    AnnotDef(
+        name = 'ligand_cellphonedb',
+        source = 'CellPhoneDB',
+        args = {
+            'secreted': bool,
+        },
+    ),
+    AnnotDef(
+        name = 'ligand_go',
+        source = 'GO_Intercell',
+        args = {
+            'mainclass': 'ligands',
+        },
+    ),
+    AnnotDef(
+        name = 'extracellular',
+        source = AnnotOp(
+            annots = (
+                'extracellular_locate',
+                'extracellular_surfaceome',
+                'extracellular_matrixdb',
+                'extracellular_membranome',
+                'extracellular_cspa',
+                'extracellular_hpmr',
+                'extracellular_cellphonedb',
+            ),
+            op = set.union,
+        ),
+    ),
+    AnnotDef(
+        name = 'extracellular_locate',
+        source = AnnotOp(
+            annots = (
+                AnnotDef(
+                    name = 'locate_extracellular',
+                    source = 'Locate',
+                    args = {
+                        'location': {
+                            'extracellular',
+                            'extracellular region',
+                        },
+                    },
+                ),
+                AnnotDef(
+                    name = 'locate_secretome',
+                    source = 'Locate',
+                    args = {
+                        'cls': 'secretome',
+                    },
+                ),
+            ),
+            op = set.union,
+        ),
+    ),
+    AnnotDef(
+        name = 'extracellular_surfaceome',
+        source = 'Surfaceome',
+    ),
+    AnnotDef(
+        name = 'extracellular_matrixdb',
+        source = 'Matrixdb',
+    ),
+    AnnotDef(
+        name = 'extracellular_cspa',
+        source = 'CSPA',
+    ),
+    AnnotDef(
+        name = 'extracellular_membranome',
+        source = 'Membranome',
+        args = {
+            'membrane': 'Plasma membrane',
+            'side': 'extracellular side',
+        },
+    ),
+    AnnotDef(
+        name = 'extracellular_cellphonedb',
+        source = 'CellPhoneDB',
+        args = {
+            'extracellular': bool,
+        },
+    ),
+    AnnotDef(
+        name = 'extracellular_hpmr',
+        source = 'HPMR',
+    ),
+    AnnotDef(
+        name = 'cell_surface',
+        source = AnnotOp(
+            annots = (
+                'cell_surface_surfaceome',
+                'cell_surface_go',
+                'cell_surface_hpmr',
+                'cell_surface_membranome',
+                'cell_surface_cspa',
+                'cell_surface_cellphonedb',
+            ),
+            op = set.union,
+        ),
+    ),
+    AnnotDef(
+        name = 'cell_surface_hpmr',
+        source = 'HPMR',
+    ),
+    AnnotDef(
+        name = 'cell_surface_surfaceome',
+        source = 'Surfaceome',
+    ),
+    AnnotDef(
+        name = 'cell_surface_cspa',
+        source = 'CSPA',
+    ),
+    AnnotDef(
+        name = 'cell_surface_cellphonedb',
+        source = 'CellPhoneDB',
+        args = {
+            'method': lambda a: a.peripheral or a.transmembrane,
+        },
+    ),
+    AnnotDef(
+        name = 'cell_surface_go',
+        source = 'GO_Intercell',
+        args = {
+            'mainclass': 'cell surface',
+        },
+    ),
+    AnnotDef(
+        name = 'extracellular_membranome',
+        source = 'Membranome',
+        args = {
+            'membrane': 'Plasma membrane',
+            'side': 'extracellular side',
+        },
+    ),
+    AnnotDef(
+        name = 'adhesion',
+        source = AnnotOp(
+            annots = (
+                'adhesion_cellphonedb',
+                'adhesion_go',
+                'adhesion_matrisome',
             ),
             op = set.union,
         )
-    )
+    ),
+    AnnotDef(
+        name = 'adhesion_cellphonedb',
+        source = 'CellPhoneDB',
+        args = {
+            'adhesion': bool,
+        },
+    ),
+    AnnotDef(
+        name = 'adhesion_go',
+        source = 'GO_Intercell',
+        args = {
+            'mainclass': {'adhesion to matrix', 'adhesion to other cells'},
+        }
+    ),
+    AnnotDef(
+        name = 'adhesion_matrisome',
+        source = AnnotOp(
+            annots = (
+                AnnotDef(
+                    name = 'ecm_matrisome_affiliated',
+                    source = 'Matrisome',
+                    args = {
+                        'mainclass': 'Matrisome-associated',
+                        'subclass': 'ECM-affiliated Proteins',
+                    },
+                ),
+                'cell_surface',
+            ),
+            op = set.intersection,
+        ),
+    ),
+    AnnotDef(
+        name = 'surface_enzyme',
+        source = AnnotOp(
+            annots = (
+                'surface_enzyme_go',
+                'surface_enzyme_surfaceome',
+            ),
+            op = set.union,
+        ),
+    ),
+    AnnotDef(
+        name = 'surface_enzyme_go',
+        source = AnnotOp(
+            annots = (
+                'cell_surface',
+                AnnotDef(
+                    name = 'enzyme',
+                    source = 'GO_Intercell',
+                    args = {
+                        'mainclass': 'enzyme',
+                    },
+                ),
+                'cell_surface',
+            ),
+            op = set.intersection,
+        ),
+    ),
+    AnnotDef(
+        name = 'surface_enzyme_surfaceome',
+        source = 'Surfaceome',
+        args = {
+            'mainclass': 'Enzymes',
+        },
+    ),
+    AnnotDef(
+        name = 'surface_ligand',
+        source = AnnotOp(
+            annots = (
+                'cell_surface',
+                'ligand_go',
+            ),
+            op = set.intersection,
+        ),
+    ),
+    AnnotDef(
+        name = 'transporter',
+        source = AnnotOp(
+            annots = (
+                'transporter_surfaceome',
+                'transporter_go',
+            ),
+            op = set.union,
+        ),
+    ),
+    AnnotDef(
+        name = 'transporter_surfaceome',
+        source = 'Surfaceome',
+        args = {
+            'mainclass': 'Transporters',
+        },
+    ),
+    AnnotDef(
+        name = 'transporter_go',
+        source = 'GO_Intercell',
+        args = {
+            'mainclass': {'transport', 'ion channels'},
+        },
+    ),
+    AnnotDef(
+        name = 'extracellular_enzyme',
+        source = AnnotOp(
+            annots = (
+                AnnotOp(
+                    annots = (
+                        'extracellular',
+                        AnnotDef(
+                            name = 'enzyme',
+                            source = 'GO_Intercell',
+                            args = {
+                                'mainclass': 'enzyme',
+                            },
+                        ),
+                    ),
+                    op = set.intersection,
+                ),
+                AnnotDef(
+                    name = 'matrisome_regulators',
+                    source = 'Matrisome',
+                    args = {
+                        'subclass': 'ECM Regulators',
+                    },
+                ),
+            ),
+            op = set.union,
+        ),
+    ),
+    AnnotDef(
+        name = 'extracellular_peptidase',
+        source = AnnotOp(
+            annots = (
+                'extracellular',
+                AnnotDef(
+                    name = 'peptidase',
+                    source = 'GO_Intercell',
+                    args = {
+                        'mainclass': 'peptidase',
+                    },
+                ),
+            ),
+            op = set.intersection,
+        ),
+    ),
+    AnnotDef(
+        name = 'growth_factor_binder',
+        source = 'GO_Intercell',
+        args = {
+            'mainclass': 'growth factor binding',
+        },
+    ),
+    AnnotDef(
+        name = 'growth_factor_regulator',
+        source = AnnotOp(
+            annots = (
+                AnnotDef(
+                    name = 'matrisome_secreted',
+                    source = 'Matrisome',
+                    args = {
+                        'mainclass': 'Matrisome-associated',
+                        'subclass': 'Secreted Factors',
+                    },
+                ),
+                AnnotOp(
+                    annots = (
+                        'growth_factor_binder',
+                        'extracellular_enzyme',
+                    ),
+                    op = set.union,
+                ),
+            ),
+            op = set.intersection,
+        ),
+    ),
+    AnnotDef(
+        name = 'secreted',
+        source = AnnotOp(
+            annots = (
+                AnnotDef(
+                    name = 'locate_secreted',
+                    source = 'Locate',
+                    args = {
+                        'location': 'secreted',
+                    }
+                ),
+                AnnotDef(
+                    name = 'matrisome_secreted',
+                    source = 'Matrisome',
+                    args = {
+                        'mainclass': 'Matrisome-associated',
+                        'subclass': 'Secreted Factors',
+                    },
+                ),
+            ),
+            op = set.union,
+        ),
+    ),
+    AnnotDef(
+        name = 'gap_junction',
+        source = 'GO_Intercell',
+        args = {
+            'mainclass': 'gap junction',
+        },
+    ),
+    AnnotDef(
+        name = 'tight_junction',
+        source = 'GO_Intercell',
+        args = {
+            'mainclass': 'tight junction',
+        },
+    ),
 )
 
 
@@ -847,7 +1257,10 @@ class Matrixdb(AnnotationBase):
     
     def _process_method(self):
         
-        pass
+        #  already the appropriate format, no processing needed
+        self.annot = self.data
+        
+        delattr(self, 'data')
 
 
 class Locate(AnnotationBase):
@@ -1197,6 +1610,22 @@ class AnnotationTable(object):
         
         self.narrow_df = pd.concat(
             annot.df for annot in self.annots.values()
+        )
+    
+    
+    def search(self, protein):
+        """
+        Returns a dictionary with all annotations of a protein. Keys are the
+        resource names.
+        """
+        
+        return dict(
+            (
+                resource,
+                annot.annot[protein]
+            )
+            for resource, annot in iteritems(self.annots)
+            if protein in annot.annot
         )
 
 
