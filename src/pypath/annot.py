@@ -81,11 +81,12 @@ class CustomAnnotation(session_mod.Logger):
             class_definitions = None,
         ):
         
-        session_mod.Logger.__init__(self, name = 'func_annot')
+        session_mod.Logger.__init__(self, name = 'annot')
         
         self.annotdb = annot.get_db()
         
         self._class_definitions = {}
+        self.add_class_definitions(class_definitions or {})
         
         self.classes = {}
         self.populate_classes()
@@ -825,7 +826,7 @@ class GOCustomIntercell(go.GOCustomAnnotation):
         ``pypath.intercell_annot.intercell_categories``.
         """
         
-        categories = categories or intercell_annot.intercell_categories
+        categories = categories or intercell_annot.go_combined_classes
         
         go.GOCustomAnnotation.__init__(
             self,

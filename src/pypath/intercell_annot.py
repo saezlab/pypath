@@ -18,10 +18,6 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
-
-from future.utils import iteritems
-from past.builtins import xrange, range
-
 import imp
 
 import pypath.go as go
@@ -33,7 +29,7 @@ import pypath.annot_formats as af
 Gene Ontology annotations to select categories relevant in intercellular
 signaling.
 """
-intercell_categories = {
+go_combined_classes = {
     'junction':
         """
         cell junction OR
@@ -287,7 +283,7 @@ intercell_categories = {
 }
 
 
-intercell_annotation_categories = [
+annotation_categories = [
     ('MatrixDB_Secreted',),
     ('MatrixDB_ECM',),
     ('Surfaceome',),
@@ -332,7 +328,7 @@ intercell_annotation_categories = [
 ]
 
 
-intercell_go_terms = {
+go_single_terms = {
     
     # cellular component
     'C': {
@@ -596,7 +592,7 @@ intercell_go_terms = {
 """
 Higher level classes of intercellular communication roles.
 """
-intercell_classes_default = (
+annot_combined_classes = (
     af.AnnotDef(
         name = 'receptor',
         source = af.AnnotOp(
