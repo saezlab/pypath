@@ -26,13 +26,13 @@ import imp
 
 import pypath.go as go
 import pypath.dataio as dataio
+import pypath.annot_formats as af
 
 
 """
 Gene Ontology annotations to select categories relevant in intercellular
 signaling.
 """
-
 intercell_categories = {
     'junction':
         """
@@ -591,3 +591,466 @@ intercell_go_terms = {
     },
     
 }
+
+
+"""
+Higher level classes of intercellular communication roles.
+"""
+intercell_classes_default = (
+    af.AnnotDef(
+        name = 'receptor',
+        source = af.AnnotOp(
+            annots = (
+                'receptor_cellphonedb',
+                'receptor_surfaceome',
+                'receptor_go',
+                'receptor_hpmr',
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'receptor_cellphonedb',
+        source = 'CellPhoneDB',
+        args = {
+            'receptor': bool,
+            'transmembrane': True,
+        },
+    ),
+    af.AnnotDef(
+        name = 'receptor_go',
+        source = 'GO_Intercell',
+        args = {
+            'mainclass': 'receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'receptor_hpmr',
+        source = 'HPMR',
+    ),
+    af.AnnotDef(
+        name = 'receptor_surfaceome',
+        source = 'Surfaceome',
+        args = {
+            'mainclass': 'Receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ecm',
+        source = af.AnnotOp(
+            annots = (
+                'ecm_matrixdb',
+                'ecm_matrisome',
+                'ecm_go',
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'ecm_matrisome',
+        source = af.AnnotOp(
+            annots = (
+                af.AnnotDef(
+                    name = 'ecm_matrisome_core',
+                    source = 'Matrisome',
+                    args = {
+                        'mainclass': 'Core matrisome',
+                    },
+                ),
+                af.AnnotOp(
+                    annots = (
+                        af.AnnotDef(
+                            name = 'ecm_matrisome_affiliated',
+                            source = 'Matrisome',
+                            args = {
+                                'mainclass': 'Matrisome-associated',
+                                'subclass': 'ECM-affiliated Proteins',
+                            },
+                        ),
+                        'cell surface',
+                    ),
+                    op = set.difference,
+                ),
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'ecm_matrixdb',
+        source = 'MatrixDB',
+        args = {
+            'mainclass': 'ecm',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ecm_go',
+        source = 'GO_Intercell',
+        args = {
+            'mainclass': 'ecm structure',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ligand',
+        source = af.AnnotOp(
+            annots = (
+                'ligand_cellphonedb',
+                'ligand_go',
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'ligand_cellphonedb',
+        source = 'CellPhoneDB',
+        args = {
+            'secreted': bool,
+        },
+    ),
+    af.AnnotDef(
+        name = 'ligand_go',
+        source = 'GO_Intercell',
+        args = {
+            'mainclass': 'ligands',
+        },
+    ),
+    af.AnnotDef(
+        name = 'extracellular',
+        source = af.AnnotOp(
+            annots = (
+                'extracellular_locate',
+                'extracellular_surfaceome',
+                'extracellular_matrixdb',
+                'extracellular_membranome',
+                'extracellular_cspa',
+                'extracellular_hpmr',
+                'extracellular_cellphonedb',
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'extracellular_locate',
+        source = af.AnnotOp(
+            annots = (
+                af.AnnotDef(
+                    name = 'locate_extracellular',
+                    source = 'Locate',
+                    args = {
+                        'location': {
+                            'extracellular',
+                            'extracellular region',
+                        },
+                    },
+                ),
+                af.AnnotDef(
+                    name = 'locate_secretome',
+                    source = 'Locate',
+                    args = {
+                        'cls': 'secretome',
+                    },
+                ),
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'extracellular_surfaceome',
+        source = 'Surfaceome',
+    ),
+    af.AnnotDef(
+        name = 'extracellular_matrixdb',
+        source = 'Matrixdb',
+    ),
+    af.AnnotDef(
+        name = 'extracellular_cspa',
+        source = 'CSPA',
+    ),
+    af.AnnotDef(
+        name = 'extracellular_membranome',
+        source = 'Membranome',
+        args = {
+            'membrane': 'Plasma membrane',
+            'side': 'extracellular side',
+        },
+    ),
+    af.AnnotDef(
+        name = 'extracellular_cellphonedb',
+        source = 'CellPhoneDB',
+        args = {
+            'extracellular': bool,
+        },
+    ),
+    af.AnnotDef(
+        name = 'extracellular_hpmr',
+        source = 'HPMR',
+    ),
+    af.AnnotDef(
+        name = 'cell_surface',
+        source = af.AnnotOp(
+            annots = (
+                'cell_surface_surfaceome',
+                'cell_surface_go',
+                'cell_surface_hpmr',
+                'cell_surface_membranome',
+                'cell_surface_cspa',
+                'cell_surface_cellphonedb',
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'cell_surface_hpmr',
+        source = 'HPMR',
+    ),
+    af.AnnotDef(
+        name = 'cell_surface_surfaceome',
+        source = 'Surfaceome',
+    ),
+    af.AnnotDef(
+        name = 'cell_surface_cspa',
+        source = 'CSPA',
+    ),
+    af.AnnotDef(
+        name = 'cell_surface_cellphonedb',
+        source = 'CellPhoneDB',
+        args = {
+            'method': lambda a: a.peripheral or a.transmembrane,
+        },
+    ),
+    af.AnnotDef(
+        name = 'cell_surface_go',
+        source = 'GO_Intercell',
+        args = {
+            'mainclass': 'cell surface',
+        },
+    ),
+    af.AnnotDef(
+        name = 'extracellular_membranome',
+        source = 'Membranome',
+        args = {
+            'membrane': 'Plasma membrane',
+            'side': 'extracellular side',
+        },
+    ),
+    af.AnnotDef(
+        name = 'adhesion',
+        source = af.AnnotOp(
+            annots = (
+                'adhesion_cellphonedb',
+                'adhesion_go',
+                'adhesion_matrisome',
+            ),
+            op = set.union,
+        )
+    ),
+    af.AnnotDef(
+        name = 'adhesion_cellphonedb',
+        source = 'CellPhoneDB',
+        args = {
+            'adhesion': bool,
+        },
+    ),
+    af.AnnotDef(
+        name = 'adhesion_go',
+        source = 'GO_Intercell',
+        args = {
+            'mainclass': {'adhesion to matrix', 'adhesion to other cells'},
+        }
+    ),
+    af.AnnotDef(
+        name = 'adhesion_matrisome',
+        source = af.AnnotOp(
+            annots = (
+                af.AnnotDef(
+                    name = 'ecm_matrisome_affiliated',
+                    source = 'Matrisome',
+                    args = {
+                        'mainclass': 'Matrisome-associated',
+                        'subclass': 'ECM-affiliated Proteins',
+                    },
+                ),
+                'cell_surface',
+            ),
+            op = set.intersection,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'surface_enzyme',
+        source = af.AnnotOp(
+            annots = (
+                'surface_enzyme_go',
+                'surface_enzyme_surfaceome',
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'surface_enzyme_go',
+        source = af.AnnotOp(
+            annots = (
+                'cell_surface',
+                af.AnnotDef(
+                    name = 'enzyme',
+                    source = 'GO_Intercell',
+                    args = {
+                        'mainclass': 'enzyme',
+                    },
+                ),
+                'cell_surface',
+            ),
+            op = set.intersection,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'surface_enzyme_surfaceome',
+        source = 'Surfaceome',
+        args = {
+            'mainclass': 'Enzymes',
+        },
+    ),
+    af.AnnotDef(
+        name = 'surface_ligand',
+        source = af.AnnotOp(
+            annots = (
+                'cell_surface',
+                'ligand_go',
+            ),
+            op = set.intersection,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'transporter',
+        source = af.AnnotOp(
+            annots = (
+                'transporter_surfaceome',
+                'transporter_go',
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'transporter_surfaceome',
+        source = 'Surfaceome',
+        args = {
+            'mainclass': 'Transporters',
+        },
+    ),
+    af.AnnotDef(
+        name = 'transporter_go',
+        source = 'GO_Intercell',
+        args = {
+            'mainclass': {'transport', 'ion channels'},
+        },
+    ),
+    af.AnnotDef(
+        name = 'extracellular_enzyme',
+        source = af.AnnotOp(
+            annots = (
+                af.AnnotOp(
+                    annots = (
+                        'extracellular',
+                        af.AnnotDef(
+                            name = 'enzyme',
+                            source = 'GO_Intercell',
+                            args = {
+                                'mainclass': 'enzyme',
+                            },
+                        ),
+                    ),
+                    op = set.intersection,
+                ),
+                af.AnnotDef(
+                    name = 'matrisome_regulators',
+                    source = 'Matrisome',
+                    args = {
+                        'subclass': 'ECM Regulators',
+                    },
+                ),
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'extracellular_peptidase',
+        source = af.AnnotOp(
+            annots = (
+                'extracellular',
+                af.AnnotDef(
+                    name = 'peptidase',
+                    source = 'GO_Intercell',
+                    args = {
+                        'mainclass': 'peptidase',
+                    },
+                ),
+            ),
+            op = set.intersection,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'growth_factor_binder',
+        source = 'GO_Intercell',
+        args = {
+            'mainclass': 'growth factor binding',
+        },
+    ),
+    af.AnnotDef(
+        name = 'growth_factor_regulator',
+        source = af.AnnotOp(
+            annots = (
+                af.AnnotDef(
+                    name = 'matrisome_secreted',
+                    source = 'Matrisome',
+                    args = {
+                        'mainclass': 'Matrisome-associated',
+                        'subclass': 'Secreted Factors',
+                    },
+                ),
+                af.AnnotOp(
+                    annots = (
+                        'growth_factor_binder',
+                        'extracellular_enzyme',
+                    ),
+                    op = set.union,
+                ),
+            ),
+            op = set.intersection,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'secreted',
+        source = af.AnnotOp(
+            annots = (
+                af.AnnotDef(
+                    name = 'locate_secreted',
+                    source = 'Locate',
+                    args = {
+                        'location': 'secreted',
+                    }
+                ),
+                af.AnnotDef(
+                    name = 'matrisome_secreted',
+                    source = 'Matrisome',
+                    args = {
+                        'mainclass': 'Matrisome-associated',
+                        'subclass': 'Secreted Factors',
+                    },
+                ),
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'gap_junction',
+        source = 'GO_Intercell',
+        args = {
+            'mainclass': 'gap junction',
+        },
+    ),
+    af.AnnotDef(
+        name = 'tight_junction',
+        source = 'GO_Intercell',
+        args = {
+            'mainclass': 'tight junction',
+        },
+    ),
+)
