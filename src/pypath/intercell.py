@@ -233,9 +233,12 @@ class IntercellAnnotation(annot.CustomAnnotation):
     
     def add_extracellular_membranome(self):
 
+        self.extracellular_by_resource['Membranome'] = (
+            annot.db.annots['Membranome'].to_set()
+        )
+
 
 class Intercell(session_mod.Logger):
-    
     
     def __init__(self, network):
         
