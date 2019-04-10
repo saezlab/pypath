@@ -83,7 +83,7 @@ class CustomAnnotation(session_mod.Logger):
         
         session_mod.Logger.__init__(self, name = 'annot')
         
-        self.annotdb = annot.get_db()
+        self.annotdb = get_db()
         
         self._class_definitions = {}
         self.add_class_definitions(class_definitions or {})
@@ -141,6 +141,9 @@ class CustomAnnotation(session_mod.Logger):
     
     
     def process_annot(self, classdef):
+        """
+        Processes an annotation definition and returns a set if identifiers.
+        """
         
         if isinstance(classdef.source, set):
             
@@ -163,13 +166,17 @@ class CustomAnnotation(session_mod.Logger):
         elif callable(classdef.source):
             
             return classdef.source(**(classdef.args or {}))
+            
+        elif isinstance(classdef.source, annot_formats.AnnotOp):
+            
+            return self._execute_operation(classdef.source)
         
         return set()
     
     
     def _execute_operation(self, annotop):
         """
-        Executes a set operation
+        Executes a set operation on anntation sets.
         """
         
         annots = tuple(
@@ -201,6 +208,8 @@ class CustomAnnotation(session_mod.Logger):
         if name in self.classes:
             
             return self.classes[name]
+        
+        self._log('No such annotation class: `%s`' % name)
 
 
 class AnnotationBase(resource.AbstractResource):
@@ -291,19 +300,48 @@ class AnnotationBase(resource.AbstractResource):
                 # we either call a method on all records
                 # or check against conditions provided in **kwargs
                 if (
-                    callable(method) and
+                    not callable(method) or
                     method(a)
-                ) or all(
+                ) and all(
                     (
-                        getattr(a, name) == value or (
-                            callable(value) and
+                        # simple agreement
+                        (
+                            getattr(a, name) == value
+                        )
+                        # custom method returns bool
+                        or
+                        (
+                            callable(value)
+                            and
                             value(getattr(a, name))
-                        ) or (
-                            isinstance(
-                                getattr(a, name),
-                                (common.basestring, tuple)
-                            ) and
+                        )
+                        # multiple value in annotation slot
+                        # and value is a set: checking if they have
+                        # any in common
+                        or
+                        (
+                            isinstance(getattr(a, name), (tuple, list, set))
+                            and
+                            isinstance(value, set)
+                            and
+                            set(getattr(a, name)) | value
+                        )
+                        # search value is a set, checking if contains
+                        # the record's value
+                        or
+                        (
+                            isinstance(value, set)
+                            and
                             getattr(a, name) in value
+                        )
+                        # record's value contains multiple elements
+                        # (set, list or tuple), checking if it contains
+                        # the search value
+                        or
+                        (
+                            isinstance(getattr(a, name), (tuple, list, set))
+                            and
+                            value in getattr(a, name)
                         )
                     )
                     for name, value in iteritems(kwargs)
@@ -913,7 +951,7 @@ class CellPhoneDB(AnnotationBase):
         )
 
 
-class AnnotationTable(object):
+class AnnotationTable(session_mod.Logger):
     
     
     def __init__(
@@ -929,6 +967,8 @@ class AnnotationTable(object):
         """
         Sorry Nico I don't write docs because lab meeting tomorrow!
         """
+        
+        session_mod.Logger.__init__(self, name = 'annot')
         
         self._module = sys.modules[self.__module__]
         self.use_sources = use_sources or annotation_sources

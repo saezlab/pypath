@@ -825,7 +825,8 @@ class Curl(FileOpener):
         
         self._log(
             'Creating Curl object to retrieve '
-            'data from `%s`' % self.url
+            'data from `%s`' % self.url[:200] # we just don't flood the log
+                                              # with super long URLs
         )
         
         if not self.local_file:

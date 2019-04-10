@@ -663,7 +663,7 @@ annot_combined_classes = (
                                 'subclass': 'ECM-affiliated Proteins',
                             },
                         ),
-                        'cell surface',
+                        'cell_surface',
                     ),
                     op = set.difference,
                 ),
@@ -817,7 +817,15 @@ annot_combined_classes = (
         name = 'cell_surface_go',
         source = 'GO_Intercell',
         args = {
-            'mainclass': 'cell surface',
+            'mainclass': 'cell_surface',
+        },
+    ),
+    af.AnnotDef(
+        name = 'cell_surface_membranome',
+        source = 'Membranome',
+        args = {
+            'membrane': 'Plasma membrane',
+            'side': 'extracellular side',
         },
     ),
     af.AnnotDef(

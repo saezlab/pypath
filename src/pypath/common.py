@@ -672,7 +672,8 @@ def get_args(loc_dict, remove=set([])):
 
 # From http://stackoverflow.com/a/20024348/854988
 def rotate(point, angle, center=(0.0, 0.0)): # XXX: Not used? Wrote the docs before checking XD
-    """Rotates a point with respect to a center.
+    """
+    Rotates a point with respect to a center.
 
     Rotates a given *point* around a *center* according to the specified
     *angle* (in degrees) in a two-dimensional space. The rotation is

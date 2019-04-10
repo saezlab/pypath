@@ -32,7 +32,6 @@ IntercellRole = collections.namedtuple(
 )
 
 
-
 class IntercellAnnotation(annot.CustomAnnotation):
     
     

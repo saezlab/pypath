@@ -32,6 +32,7 @@ import pypath.dataio as dataio
 import pypath.progress as progress
 import pypath.common as common
 from pypath.common import *
+import pypath.session_mod as session_mod
 
 
 # this is for GO terms parsing:
@@ -45,7 +46,7 @@ _reexprname = re.compile(
 )
 
 
-class GeneOntology(object):
+class GeneOntology(session_mod.Logger):
     
     all_relations = {
         'is_a', 'part_of', 'occurs_in', 'regulates',
@@ -57,6 +58,8 @@ class GeneOntology(object):
         """
         Loads data about Gene Ontology terms and their relations.
         """
+        
+        session_mod.Logger.__init__(self, name = 'go')
         
         self._load()
     
@@ -328,7 +331,7 @@ class GeneOntology(object):
         )
 
 
-class GOAnnotation(object):
+class GOAnnotation(session_mod.Logger):
     
     aspects = ('C', 'F', 'P')
     
@@ -338,6 +341,8 @@ class GOAnnotation(object):
         For one organism loads Gene Ontology annotations, in addition it
         accepts or creates a ``GeneOntology`` object.
         """
+        
+        session_mod.Logger.__init__(self, name = 'go')
         
         self.ontology = ontology or GeneOntology()
         
@@ -817,7 +822,7 @@ class GOAnnotation(object):
         return idx
 
 
-class GOCustomAnnotation(object):
+class GOCustomAnnotation(session_mod.Logger):
     
     
     def __init__(
@@ -839,7 +844,10 @@ class GOCustomAnnotation(object):
             A :class:``pypath.go.GOAnnotation`` object.
         """
         
-        self.go_annot = go_annot or GOAnnotation(organism = ncbi_tax_id)
+        session_mod.Logger.__init__(self, name = 'go')
+        
+        self.go_annot = go_annot or get_db() # TODO: consider ncbi_tax_id at
+                                             # selection DB
         
         self._categories = categories
         self.process_categories()
@@ -870,7 +878,7 @@ class GOCustomAnnotation(object):
             
             if isinstance(list(self._categories.values())[0], set):
                 
-                self._categories = set.union(self._categories.values())
+                self._categories = set.union(*self._categories.values())
                 
             elif isinstance(list(self._categories.values())[0], dict):
                 
@@ -967,3 +975,29 @@ def annotate(graph, organism = 9606, aspects = ('C', 'F', 'P')):
 
 # old name as synonym
 load_go = annotate
+
+
+def init_db():
+    """
+    Initializes or reloads the GO annotation database.
+    The database will be assigned to the ``db`` attribute of this module.
+    """
+    
+    globals()['db'] = GOAnnotation()
+
+
+def get_db():
+    """
+    Retrieves the current database instance and initializes it if does
+    not exist yet.
+    """
+    
+    # TODO: consider organism
+    # TODO: delete the DB if not used to free memory
+    # TODO: introduce pickle cache to make it load quicker
+    
+    if 'db' not in globals():
+        
+        init_db()
+    
+    return globals()['db']
