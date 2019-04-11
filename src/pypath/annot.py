@@ -225,7 +225,7 @@ class CustomAnnotation(session_mod.Logger):
         )
     
     
-    def make_df(self):
+    def make_df(self, all_annotations = False):
         
         self.df = pd.DataFrame(
             data = [
@@ -236,11 +236,17 @@ class CustomAnnotation(session_mod.Logger):
                     '; '.join(
                         mapping.map_name(uniprot, 'uniprot', 'protein-name')
                     ),
-                ]
+                ] + (
+                    [self.annotdb.all_annotations_str(uniprot)]
+                        if all_annotations else
+                    []
+                )
                 for cls, members in iteritems(self.classes)
                 for uniprot in members
             ],
-            columns = ['category', 'uniprot', 'genesymbol', 'full_name']
+            columns = ['category', 'uniprot', 'genesymbol', 'full_name'] + (
+                ['all_annotations'] if all_annotations else []
+            )
         )
     
     
@@ -1213,6 +1219,30 @@ class AnnotationTable(session_mod.Logger):
             )
             for resource, annot in iteritems(self.annots)
             if protein in annot.annot
+        )
+    
+    
+    def all_annotations(self, protein):
+        """
+        Returns all annotation records for one protein in a single list.
+        """
+        
+        return [
+            aa
+            for a in self.annots.values()
+            if protein in a.annot
+            for aa in a.annot[protein]
+        ]
+    
+    
+    def all_annotations_str(self, protein):
+        """
+        Returns all annotation records for one protein serialized.
+        """
+        
+        return '; '.join(
+            str(a) for a in
+            self.all_annotations(protein = protein)
         )
 
 
