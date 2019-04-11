@@ -5287,7 +5287,13 @@ def hpmr_annotations(use_cache = None):
         annot[i[0]].add(HPMRAnnotation(*args1))
         annot[i[2]].add(HPMRAnnotation(*args2))
     
-    return annot
+    for uniprot, classes in iteritems(hpmr_data['families']):
+        
+        args = ('Receptor',) + classes
+        
+        annot[uniprot].add(HPMRAnnotation(*args))
+    
+    return dict(annot)
 
 
 def get_tfcensus(classes = ['a', 'b', 'other']):
