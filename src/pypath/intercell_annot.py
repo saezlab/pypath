@@ -623,6 +623,9 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'receptor_hpmr',
         source = 'HPMR',
+        args = {
+            'role': 'Receptor',
+        },
     ),
     af.AnnotDef(
         name = 'receptor_surfaceome',
@@ -691,6 +694,7 @@ annot_combined_classes = (
             annots = (
                 'ligand_cellphonedb',
                 'ligand_go',
+                'ligand_hpmr',
             ),
             op = set.union,
         ),
@@ -707,6 +711,13 @@ annot_combined_classes = (
         source = 'GO_Intercell',
         args = {
             'mainclass': 'ligands',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ligand_hpmr',
+        source = 'HPMR',
+        args = {
+            'role': 'Ligand',
         },
     ),
     af.AnnotDef(
@@ -797,6 +808,9 @@ annot_combined_classes = (
     af.AnnotDef(
         name = 'cell_surface_hpmr',
         source = 'HPMR',
+        args = {
+            'role': 'Receptor',
+        },
     ),
     af.AnnotDef(
         name = 'cell_surface_surfaceome',

@@ -67,6 +67,7 @@ _defaults = {
     'cachedir': None,
     'pubmed_cache': 'pubmed.pickle',
     'mapping_use_cache': True,
+    'use_intermediate_cache': True,
     'default_organism': 9606,
     'default_name_types': {
         'protein': 'uniprot',
@@ -76,6 +77,7 @@ _defaults = {
     },
     'trip_preprocessed': 'trip_preprocessed.pickle',
     'deathdomain': 'deathdomain.tsv',
+    'hpmr_preprocessed': 'hpmr_preprocessed.pickle',
 }
 
 in_datadir = {
@@ -102,6 +104,7 @@ in_datadir = {
 in_cachedir = {
     'pubmed_cache',
     'trip_preprocessed',
+    'hpmr_preprocessed',
 }
 
 

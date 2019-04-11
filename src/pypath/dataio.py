@@ -4987,7 +4987,7 @@ def hpmr_interactions():
 
             # print('Could not find receptor name: %s' % url)
             continue
-
+        
         for td in ints.find_all('td'):
 
             interactors = []
@@ -5025,6 +5025,269 @@ def hpmr_interactions():
         fp.write('\n'.join('\t'.join(r) for r in result))
 
     return result
+
+
+def get_hpmr(use_cache = None):
+    """
+    Downloads ligand-receptor and receptor-receptor interactions from the
+    Human Plasma Membrane Receptome database.
+    """
+    
+    
+    def get_complex(interactors, typ, recname = None, references = None):
+        """
+        typ : str
+            `Receptor` or `Ligand`.
+        """
+        
+        components = [i[1] for i in interactors if i[0] == typ]
+        
+        if typ == 'Receptor' and recname:
+            
+            components.append(recname)
+        
+        if len(components) == 1:
+            
+            return components[0]
+            
+        elif len(components) > 1:
+            
+            return components
+    
+    
+    cachefile = settings.get('hpmr_preprocessed')
+    use_cache = (
+        use_cache
+            if isinstance(use_cache, bool) else
+        settings.get('use_intermediate_cache')
+    )
+
+    if os.path.exists(cachefile) and use_cache:
+        
+        _log('Reading HPMR data from cache file `%s`.' % cachefile)
+        
+        return pickle.load(open(cachefile, 'rb'))
+
+    rerecname = re.compile(r'Receptor ([A-z0-9]+) interacts with:')
+    reint = re.compile(r'(Receptor|Ligand) ([A-z0-9]+) -')
+    rerefid = re.compile(r'list_uids=([- \.:,0-9A-z]+)')
+    refamid = re.compile(r'.*FamId=([0-9\.]+)')
+    
+    a_family_title = 'Open Family Page'
+    a_receptor_title = 'Open Receptor Page'
+    a_titles = {a_family_title, a_receptor_title}
+
+    interactions = []
+    complex_interactions = []
+    families = {}
+    recpages = []
+
+    c = curl.Curl(urls.urls['hpmri']['browse'])
+    soup = bs4.BeautifulSoup(c.result, 'html.parser')
+    
+    this_family = ('0', None)
+    this_subfamily = ('0', None)
+    this_subsubfamily = ('0', None)
+    
+    for a in soup.find_all('a'):
+        
+        a_title = a.attrs['title'] if 'title' in a.attrs else None
+        
+        if a_title not in a_titles:
+            
+            continue
+        
+        if a_title == a_family_title:
+            
+            family_id = refamid.match(a.attrs['href']).groups()[0]
+            
+            if family_id.startswith(this_subfamily[0]):
+                
+                this_subsubfamily = (family_id, a.text)
+                
+            elif family_id.startswith(this_family[0]):
+                
+                this_subfamily = (family_id, a.text)
+                this_subsubfamily = ('0', None)
+                
+            else:
+                
+                this_family = (family_id, a.text)
+                this_subfamily = ('0', None)
+                this_subsubfamily = ('0', None)
+            
+        elif a_title == a_receptor_title:
+            
+            recpages.append((
+                a.attrs['href'],
+                this_family[1],
+                this_subfamily[1],
+                this_subsubfamily[1],
+            ))
+
+    prg = progress.Progress(len(recpages), 'Downloading HPMR data', 1)
+
+    for url, family, subfamily, subsubfamily in recpages:
+
+        prg.step()
+
+        c = curl.Curl(url)
+        
+        if c.result is None:
+
+            #print('No receptor page: %s' % url)
+            continue
+
+        soup = bs4.BeautifulSoup(c.result, 'html.parser')
+        ints = soup.find('div', {'id': 'GeneInts'})
+
+        if not ints:
+
+            #print('No interactions: %s' % url)
+            continue
+
+        recname = rerecname.search(
+            ints.find_previous_sibling('span').text
+        )
+        recname = recname.groups()[0] if recname else 'Unknown'
+
+        if recname == 'Unknown':
+
+            # print('Could not find receptor name: %s' % url)
+            continue
+        
+        recname_u = mapping.map_name0(recname, 'genesymbol', 'uniprot')
+        
+        if not recname_u:
+            
+            continue
+        
+        families[recname_u] = (
+            family,
+            subfamily,
+            subsubfamily,
+        )
+        
+        for td in ints.find_all('td'):
+
+            interactors = []
+
+            for span in td.find_all('span', {'class': 'IntRow'}):
+
+                ints = reint.search(span.text)
+
+                if ints:
+
+                    interactors.append(ints.groups())
+
+            references = []
+
+            for ref in td.find_all(
+                'a', {'title': 'click to open reference in new window'}):
+
+                references.append(
+                    rerefid.search(ref.attrs['href']).groups()[0]
+                )
+            
+            interactors_u = []
+            
+            for role, genesymbol in interactors:
+                
+                uniprot = (
+                    mapping.map_name0(genesymbol, 'genesymbol', 'uniprot')
+                )
+                
+                if uniprot:
+                    
+                    interactors_u.append((role, uniprot))
+            
+            interactions.extend([
+                [recname_u, i[0], i[1], ';'.join(references)]
+                for i in interactors_u
+            ])
+            
+            rec_complex = get_complex(
+                interactors_u,
+                'Receptor',
+                recname = recname_u,
+                references = references,
+            )
+            lig_complex = get_complex(
+                interactors_u,
+                'Ligand',
+                references = references,
+            )
+            
+            if (
+                isinstance(rec_complex, intera.Complex) or
+                isinstance(lig_complex, intera.Complex)
+            ):
+                
+                complex_interactions.append((rec_complex, lig_complex))
+
+    prg.terminate()
+    
+    result = {
+        'interactions': interactions,
+        'families': families,
+        'complex_interactions': complex_interactions,
+    }
+    
+    pickle.dump(result, open(cachefile, 'wb'))
+    
+    return result
+
+
+def hpmr_complexes(use_cache = None):
+    
+    hpmr_data = get_hpmr(use_cache = use_cache)
+    
+    complexes = {}
+    
+    for cplex in itertools.chain(*hpmr_data['complex_interactions']):
+        
+        if isinstance(cplex, intera.Complex):
+            
+            complexes[cplex.__str__()] = cplex
+    
+    return complexes
+
+
+def hpmr_interactions(use_cache = None):
+    
+    hpmr_data = get_hpmr(use_cache = use_cache)
+    
+    return hpmr_data['interactions']
+
+
+def hpmr_annotations(use_cache = None):
+    
+    annot = collections.defaultdict(set)
+    
+    HPMRAnnotation = collections.namedtuple(
+        'HPMRAnnotation',
+        ('role', 'mainclass', 'subclass', 'subsubclass'),
+    )
+    
+    hpmr_data = get_hpmr(use_cache = use_cache)
+    
+    for i in hpmr_data['interactions']:
+        
+        args1 = (i[1],) + (
+            hpmr_data['families'][i[0]]
+                if i[0] in hpmr_data['families'] else
+            (None, None, None)
+        )
+        args2 = (i[1],) + (
+            hpmr_data['families'][i[2]]
+                if i[2] in hpmr_data['families'] else
+            (None, None, None)
+        )
+        
+        annot[i[0]].add(HPMRAnnotation(*args1))
+        annot[i[2]].add(HPMRAnnotation(*args2))
+    
+    return annot
 
 
 def get_tfcensus(classes = ['a', 'b', 'other']):

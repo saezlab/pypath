@@ -210,6 +210,45 @@ class CustomAnnotation(session_mod.Logger):
             return self.classes[name]
         
         self._log('No such annotation class: `%s`' % name)
+    
+    
+    def __len__(self):
+        
+        return len(self.classes)
+    
+    
+    def __contains__(self, other):
+        
+        return (
+            other in self.classes or
+            any(other in v for v in self.classes.values)
+        )
+    
+    
+    def make_df(self):
+        
+        self.df = pd.DataFrame(
+            data = [
+                [
+                    cls,
+                    uniprot,
+                    mapping.map_name0(uniprot, 'uniprot', 'genesymbol'),
+                    '; '.join(
+                        mapping.map_name(uniprot, 'uniprot', 'protein-name')
+                    ),
+                ]
+                for cls, members in iteritems(self.classes)
+                for uniprot in members
+            ],
+            columns = ['category', 'uniprot', 'genesymbol', 'full_name']
+        )
+    
+    
+    def export(self, fname, **kwargs):
+        
+        self.make_df()
+        
+        self.df.to_csv(fname, **kwargs)
 
 
 class AnnotationBase(resource.AbstractResource):
@@ -774,20 +813,15 @@ class HumanPlasmaMembraneReceptome(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = 'HPMR',
-            input_method = 'get_hpmr',
+            input_method = 'hpmr_annotations',
             **kwargs,
         )
     
     
     def _process_method(self):
         
-        self.annot = dict(
-            (uniprot, set())
-            for genesymbol in self.data
-            for uniprot in mapping.map_name(
-                genesymbol, 'genesymbol', 'uniprot'
-            )
-        )
+        self.annot = self.data
+        del self.data
 
 
 class Matrixdb(AnnotationBase):

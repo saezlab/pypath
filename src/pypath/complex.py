@@ -39,6 +39,7 @@ complex_resources = (
     'Compleat',
     'ComplexPortal',
     'Pdb',
+    'Hpmr',
 )
 
 
@@ -276,6 +277,21 @@ class Signor(AbstractComplexResource):
             self,
             name = 'Signor',
             input_method = 'signor_complexes',
+            input_args = input_args or {},
+        )
+
+
+class Hpmr(AbstractComplexResource):
+    
+    
+    def __init__(self, input_args = None, **kwargs):
+        
+        input_args = input_args or {}
+        
+        AbstractComplexResource.__init__(
+            self,
+            name = 'HPMR',
+            input_method = 'hpmr_complexes',
             input_args = input_args or {},
         )
 
