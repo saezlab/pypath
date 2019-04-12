@@ -991,6 +991,58 @@ class CellPhoneDB(AnnotationBase):
         )
 
 
+class Ramilowski2015(AnnotationBase):
+    
+    
+    def __init__(self, load_sources = False, **kwargs):
+        
+        self.load_sources = load_sources
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'Ramilowski2015',
+            input_method = 'ramilowski_interactions',
+            ncbi_tax_id = 9606,
+        )
+    
+    
+    def _process_method(self, *args, **kwargs):
+        
+        
+        def process_record(record, typ, annot):
+            
+            genesymbol = record[0 if typ == 'ligand' else 1]
+            uniprot = mapping.map_name0(genesymbol, 'genesymbol', 'uniprot')
+            
+            if uniprot:
+                
+                annot[uniprot].add(
+                    RamilowskiAnnotation(
+                        mainclass = typ,
+                        sources = (
+                            record[3].split(';')
+                                if self.load_sources else
+                            None
+                        ),
+                    )
+                )
+        
+        
+        RamilowskiAnnotation = collections.namedtuple(
+            'RamilowskiAnnotation',
+            ('mainclass', 'sources')
+        )
+        
+        annot = collections.defaultdict(set)
+        
+        for record in self.data:
+            
+            process_record(record, typ = 'ligand', annot = annot)
+            process_record(record, typ = 'receptor', annot = annot)
+        
+        self.annot = dict(annot)
+
+
 class AnnotationTable(session_mod.Logger):
     
     
