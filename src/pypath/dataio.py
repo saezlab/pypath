@@ -4901,8 +4901,10 @@ def kirouac2010_interactions():
     return result
 
 
-def get_hpmr():
+def get_hpmr_old():
     """
+    Deprecated, should be removed soon.
+    
     Downloads and processes the list of all human receptors from
     human receptor census (HPMR -- Human Plasma Membrane Receptome).
     Returns list of GeneSymbols.
@@ -4911,6 +4913,7 @@ def get_hpmr():
     c = curl.Curl(urls.urls['hpmr']['url'], silent = False)
     html = c.result
     soup = bs4.BeautifulSoup(html, 'html.parser')
+    
     gnames = [
         row[1].text
         for row in (
@@ -4921,11 +4924,14 @@ def get_hpmr():
         )
         if len(row) > 1 and not row[1].text.lower().startswith('similar')
     ]
+    
     return common.uniqList(gnames)
 
 
-def hpmr_interactions():
+def hpmr_interactions_old():
     """
+    Deprecated, should be removed soon.
+    
     Downloads ligand-receptor and receptor-receptor interactions from the
     Human Plasma Membrane Receptome database.
     """
@@ -5186,7 +5192,7 @@ def get_hpmr(use_cache = None):
                 'a', {'title': 'click to open reference in new window'}):
 
                 references.append(
-                    rerefid.search(ref.attrs['href']).groups()[0]
+                    rerefid.search(ref.attrs['href']).groups()[0].strip()
                 )
             
             interactors_u = []
@@ -5273,11 +5279,14 @@ def hpmr_annotations(use_cache = None):
     
     for i in hpmr_data['interactions']:
         
-        args1 = (i[1],) + (
+        # first partner is always a receptor
+        # (because ligand pages simply don't work on HPMR webpage)
+        args1 = ('Receptor',) + (
             hpmr_data['families'][i[0]]
                 if i[0] in hpmr_data['families'] else
             (None, None, None)
         )
+        # the second is either a ligand or another receptor
         args2 = (i[1],) + (
             hpmr_data['families'][i[2]]
                 if i[2] in hpmr_data['families'] else
