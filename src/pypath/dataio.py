@@ -530,7 +530,7 @@ def corum_complexes(organism = 9606):
             components = uniprots,
             sources = 'CORUM',
             references = pubmeds,
-            ids = rec['Complex id'],
+            ids = rec['ComplexID'],
         )
         
         if cplex.__str__() in complexes:
@@ -792,7 +792,7 @@ def compleat_complexes(predicted = True):
             sources = sources,
             references = references,
             name = name,
-            ids = rec['compleat_id'],
+            ids = {'Compleat': rec['compleat_id']},
         )
         
         if cplex.__str__() in complexes:
