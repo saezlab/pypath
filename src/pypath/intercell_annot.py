@@ -601,6 +601,9 @@ annot_combined_classes = (
                 'receptor_surfaceome',
                 'receptor_go',
                 'receptor_hpmr',
+                'receptor_ramilowski',
+                'receptor_kirouac',
+                'receptor_guide2pharma',
             ),
             op = set.union,
         ),
@@ -632,6 +635,27 @@ annot_combined_classes = (
         source = 'Surfaceome',
         args = {
             'mainclass': 'Receptors',
+        },
+    ),
+    af.AnnotDef(
+        name = 'receptor_ramilowski',
+        source = 'Ramilowski2015',
+        args = {
+            'mainclass': 'receptor',
+        },
+    ),
+    af.AnnotDef(
+        name = 'receptor_kirouac',
+        source = 'Kirouac2010',
+        args = {
+            'mainclass': 'receptor',
+        },
+    ),
+    af.AnnotDef(
+        name = 'receptor_guide2pharma',
+        source = 'GuideToPharmacology',
+        args = {
+            'mainclass': 'receptor',
         },
     ),
     af.AnnotDef(
@@ -695,6 +719,9 @@ annot_combined_classes = (
                 'ligand_cellphonedb',
                 'ligand_go',
                 'ligand_hpmr',
+                'ligand_ramilowski',
+                'ligand_kirouac',
+                'ligand_guide2pharma',
             ),
             op = set.union,
         ),
@@ -718,6 +745,27 @@ annot_combined_classes = (
         source = 'HPMR',
         args = {
             'role': 'Ligand',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ligand_ramilowski',
+        source = 'Ramilowski2015',
+        args = {
+            'mainclass': 'ligand',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ligand_kirouac',
+        source = 'Kirouac2010',
+        args = {
+            'mainclass': 'ligand',
+        },
+    ),
+    af.AnnotDef(
+        name = 'ligand_guide2pharma',
+        source = 'GuideToPharmacology',
+        args = {
+            'mainclass': 'ligand',
         },
     ),
     af.AnnotDef(

@@ -53,6 +53,8 @@ annotation_sources = {
     'GOIntercell',
     'CellPhoneDB',
     'Ramilowski2015',
+    'Kirouac2010',
+    'GuideToPharmacology',
 }
 
 default_fields = {
