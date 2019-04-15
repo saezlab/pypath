@@ -1030,7 +1030,9 @@ class Curl(FileOpener):
             self.url = '%s%s%s' % (self.url, '&'
                                    if '?' in self.url else '?', self.qs)
             
-            self._log('GET parameters added to the URL: `%s`' % self.url)
+            self._log(
+                'GET parameters added to the URL: `%s`' % self.url[:200]
+            )
     
     
     def construct_binary_data(self):
