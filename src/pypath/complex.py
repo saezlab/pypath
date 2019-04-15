@@ -40,6 +40,7 @@ complex_resources = (
     'ComplexPortal',
     'Pdb',
     'Hpmr',
+    'GuideToPharmacology',
 )
 
 
@@ -292,6 +293,21 @@ class Hpmr(AbstractComplexResource):
             self,
             name = 'HPMR',
             input_method = 'hpmr_complexes',
+            input_args = input_args or {},
+        )
+
+
+class GuideToPharmacology(AbstractComplexResource):
+    
+    
+    def __init__(self, input_args = None, **kwargs):
+        
+        input_args = input_args or {}
+        
+        AbstractComplexResource.__init__(
+            self,
+            name = 'Guide2Pharma',
+            input_method = 'guide2pharma_complexes',
             input_args = input_args or {},
         )
 

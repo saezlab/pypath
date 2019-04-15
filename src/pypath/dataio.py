@@ -5390,7 +5390,7 @@ def get_guide2pharma(
     
     
     interactions = []
-    complexes = []
+    complexes = {}
     
     url = urls.urls['gtp']['url']
     
@@ -5496,13 +5496,20 @@ def get_guide2pharma(
                     )
                 ):
                     
-                    complexes.append(
-                        intera.Complex(
-                            components = targets,
-                            sources = 'Guide2Pharma',
-                            references = references,
-                        )
+                    cplex = intera.Complex(
+                        components = targets,
+                        sources = 'Guide2Pharma',
+                        references = references,
                     )
+                    key = cplex.__str__()
+                    
+                    if key in complexes:
+                        
+                        complexes[key] += cplex
+                        
+                    else:
+                        
+                        complexes[key] = cplex
                 
                 if (
                     len(ligands) > 1 and
@@ -5517,13 +5524,20 @@ def get_guide2pharma(
                     
                     if len(ligand_uniprots) > 1:
                         
-                        complexes.append(
-                            intera.Complex(
-                                components = ligand_uniprots,
-                                sources = 'Guide2Pharma',
-                                references = references,
-                            )
+                        cplex = intera.Complex(
+                            components = ligand_uniprots,
+                            sources = 'Guide2Pharma',
+                            references = references,
                         )
+                        key = cplex.__str__()
+                        
+                        if key in complexes:
+                            
+                            complexes[key] += cplex
+                            
+                        else:
+                            
+                            complexes[key] = cplex
     
     return interactions, complexes
 
