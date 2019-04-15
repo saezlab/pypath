@@ -5320,7 +5320,12 @@ def get_tfcensus(classes = ['a', 'b', 'other']):
     return {'ensg': ensg, 'hgnc': hgnc}
 
 
-def get_guide2pharma(organism = 'human', endogenous = True):
+def get_guide2pharma(
+        organism = 'human',
+        endogenous = True,
+        process_interactions = True,
+        process_complexes = True,
+    ):
     """
     Downloads and processes Guide to Pharmacology data.
     Returns list of dicts.
@@ -5384,6 +5389,9 @@ def get_guide2pharma(organism = 'human', endogenous = True):
         return term.lower().strip() in negatives
     
     
+    interactions = []
+    complexes = []
+    
     url = urls.urls['gtp']['url']
     
     c = curl.Curl(url, silent = False, large = True, encoding = 'utf-8')
@@ -5427,41 +5435,117 @@ def get_guide2pharma(organism = 'human', endogenous = True):
             
             ligand_taxid = get_taxid(ligand_taxon)
             
-            yield (
-                GuideToPharmacologyInteraction(
-                    d['ligand_gene_symbol'] or d['ligand_pubchem_sid'],
-                    (
-                        'genesymbol'
-                            if d['ligand_gene_symbol'] else
-                        'pubchem_sid'
-                            if d['ligand_pubchem_sid'] else
-                        None
-                    ),
-                    (
-                        d['target_uniprot'] or
-                        d['target_ligand_uniprot'] or
-                        d['target_ligand_pubchem_sid']
-                    ),
-                    (
-                        'uniprot'
-                            if (
-                                d['target_uniprot'] or
-                                d['target_ligand_uniprot']
-                            ) else
-                        'pubchem_sid'
-                            if d['target_ligand_pubchem_sid'] else
-                        None
-                    ),
-                    bool(d['target_ligand']),
-                    ligand_taxid,
-                    get_taxid(d['target_species']),
-                    effect,
-                    d['ligand_context'].strip().lower() or None,
-                    d['receptor_site'].strip().lower() or None,
-                    d['endogenous'].strip() == 't',
-                    d['pubmed_id'].split('|') if d['pubmed_id'] else []
-                )
+            ligands = d['ligand_gene_symbol'] or d['ligand_pubchem_sid']
+            ligands = ligands.split('|')
+            targets = (
+                d['target_uniprot'] or
+                d['target_ligand_uniprot'] or
+                d['target_ligand_pubchem_sid']
             )
+            targets = targets.split('|')
+            references = d['pubmed_id'].split('|') if d['pubmed_id'] else []
+            
+            if process_interactions:
+                
+                for ligand, target in itertools.product(ligands, targets):
+                    
+                    interactions.append(
+                        GuideToPharmacologyInteraction(
+                            ligand = ligand,
+                            ligand_id_type = (
+                                'genesymbol'
+                                    if d['ligand_gene_symbol'] else
+                                'pubchem_sid'
+                                    if d['ligand_pubchem_sid'] else
+                                None
+                            ),
+                            target = target,
+                            target_id_type = (
+                                'uniprot'
+                                    if (
+                                        d['target_uniprot'] or
+                                        d['target_ligand_uniprot']
+                                    ) else
+                                'pubchem_sid'
+                                    if d['target_ligand_pubchem_sid'] else
+                                None
+                            ),
+                            target_is_ligand = bool(d['target_ligand']),
+                            ligand_organism = ligand_taxid,
+                            target_organism = get_taxid(d['target_species']),
+                            effect = effect,
+                            ligand_location = (
+                                d['ligand_context'].strip().lower() or None
+                            ),
+                            target_type = (
+                                d['receptor_site'].strip().lower() or None
+                            ),
+                            ligand_endogenous = (
+                                d['endogenous'].strip() == 't'
+                            ),
+                            pubmed_ids = references,
+                        )
+                    )
+            
+            if process_complexes:
+                
+                if (
+                    len(targets) > 1 and (
+                        d['target_uniprot'] or
+                        d['target_ligand_uniprot']
+                    )
+                ):
+                    
+                    complexes.append(
+                        intera.Complex(
+                            components = targets,
+                            sources = 'Guide2Pharma',
+                            references = references,
+                        )
+                    )
+                
+                if (
+                    len(ligands) > 1 and
+                    d['ligand_gene_symbol']
+                ):
+                    
+                    ligand_uniprots = [
+                        mapping.map_name0(ligand, 'genesymbol', 'uniprot')
+                        for ligand in ligands
+                    ]
+                    ligand_uniprots = [u for u in ligand_uniprots if u]
+                    
+                    if len(ligand_uniprots) > 1:
+                        
+                        complexes.append(
+                            intera.Complex(
+                                components = ligand_uniprots,
+                                sources = 'Guide2Pharma',
+                                references = references,
+                            )
+                        )
+    
+    return interactions, complexes
+
+
+def guide2pharma_interactions(**kwargs):
+    
+    interactions, complexes = get_guide2pharma(
+        process_complexes = False,
+        **kwargs,
+    )
+    
+    return interactions
+
+
+def guide2pharma_complexes(**kwargs):
+    
+    interactions, complexes = get_guide2pharma(
+        process_interactions = False,
+        **kwargs,
+    )
+    
+    return complexes
 
 
 def cellphonedb_ligands_receptors():
