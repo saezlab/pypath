@@ -258,6 +258,26 @@ class CustomAnnotation(session_mod.Logger):
         self.make_df()
         
         self.df.to_csv(fname, **kwargs)
+    
+    
+    def counts(self):
+        """
+        Returns a dict with number of elements in each class.
+        """
+        
+        return dict(
+            (name, len(members))
+            for name, members in iteritems(self.classes)
+        )
+    
+    
+    def classes_by_element(self, element):
+        
+        return set(
+            cls
+            for cls, elements in iteritems(self.classes)
+            if element in elements
+        )
 
 
 class AnnotationBase(resource.AbstractResource):
@@ -1025,6 +1045,10 @@ class LigandReceptor(AnnotationBase):
             self._default_record_processor
         )
         
+        if 'ncbi_tax_id' not in kwargs:
+            
+            kwargs['ncbi_tax_id'] = 9606
+        
         AnnotationBase.__init__(
             self,
             name = self.name,
@@ -1108,7 +1132,6 @@ class Ramilowski2015(LigandReceptor):
             self,
             name = 'Ramilowski2015',
             input_method = 'ramilowski_interactions',
-            ncbi_tax_id = 9606,
             record_extra_fields = ('sources',),
             extra_fields_methods = extra_fields_methods,
             ligand_col = 0,
@@ -1128,7 +1151,6 @@ class Kirouac2010(LigandReceptor):
             self,
             name = 'Kirouac2010',
             input_method = 'kirouac2010_interactions',
-            ncbi_tax_id = 9606,
             ligand_col = 0,
             receptor_col = 1,
             ligand_id_type = 'genesymbol',
@@ -1146,7 +1168,6 @@ class GuideToPharmacology(LigandReceptor):
             self,
             name = 'Guide2Pharma',
             input_method = 'guide2pharma_interactions',
-            ncbi_tax_id = 9606,
             ligand_col = 0,
             receptor_col = 2,
             ligand_id_type = 'genesymbol',

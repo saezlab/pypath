@@ -657,7 +657,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'receptor_guide2pharma',
-        source = 'GuideToPharmacology',
+        source = 'Guide2Pharma',
         args = {
             'mainclass': 'receptor',
         },
@@ -767,7 +767,7 @@ annot_combined_classes = (
     ),
     af.AnnotDef(
         name = 'ligand_guide2pharma',
-        source = 'GuideToPharmacology',
+        source = 'Guide2Pharma',
         args = {
             'mainclass': 'ligand',
         },
