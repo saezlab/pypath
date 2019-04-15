@@ -52,6 +52,7 @@ annotation_sources = {
     'Locate',
     'GOIntercell',
     'CellPhoneDB',
+    'Ramilowski2015',
 }
 
 default_fields = {
@@ -991,56 +992,178 @@ class CellPhoneDB(AnnotationBase):
         )
 
 
-class Ramilowski2015(AnnotationBase):
+class LigandReceptor(AnnotationBase):
     
     
-    def __init__(self, load_sources = False, **kwargs):
+    def __init__(
+            self,
+            name,
+            ligand_col = None,
+            receptor_col = None,
+            ligand_id_type = None,
+            receptor_id_type = None,
+            record_processor_method = None,
+            record_extra_fields = None,
+            record_defaults = None,
+            extra_fields_methods = None,
+            **kwargs,
+        ):
         
-        self.load_sources = load_sources
+        self.name = name
+        self.ligand_col = ligand_col
+        self.receptor_col = receptor_col
+        self.ligand_id_type = ligand_id_type
+        self.receptor_id_type = receptor_id_type
+        self._record_extra_fields = record_extra_fields or ()
+        self._record_defaults = record_defaults or ()
+        self._extra_fields_methods = extra_fields_methods or {}
+        self._set_record_template()
+        self.record_processor_method = (
+            record_processor_method or
+            self._default_record_processor
+        )
         
         AnnotationBase.__init__(
             self,
-            name = 'Ramilowski2015',
-            input_method = 'ramilowski_interactions',
-            ncbi_tax_id = 9606,
+            name = self.name,
+            **kwargs,
+        )
+    
+    
+    def _set_record_template(self):
+        
+        self.record = collections.namedtuple(
+            '%sAnnotation' % self.name,
+            ('mainclass',) + self._record_extra_fields,
+        )
+        self.record.__new__.__defaults__ = () + self._record_defaults
+    
+    
+    def _default_record_processor(self, record, typ, annot):
+        
+        i_id = self.ligand_col if typ == 'ligand' else self.receptor_col
+        id_type = (
+            self.ligand_id_type if typ == 'ligand' else self.receptor_id_type
+        )
+        original_id = record[i_id]
+        uniprot = mapping.map_name0(original_id, id_type, 'uniprot')
+        
+        if uniprot:
+            
+            annot[uniprot].add(
+                self.record(
+                    mainclass = typ,
+                    **self._get_extra_fields(record),
+                )
+            )
+    
+    
+    def _get_extra_fields(self, record):
+        
+        return dict(
+            (
+                name,
+                method(record),
+            )
+            for name, method in iteritems(self._extra_fields_methods)
         )
     
     
     def _process_method(self, *args, **kwargs):
         
-        
-        def process_record(record, typ, annot):
-            
-            genesymbol = record[0 if typ == 'ligand' else 1]
-            uniprot = mapping.map_name0(genesymbol, 'genesymbol', 'uniprot')
-            
-            if uniprot:
-                
-                annot[uniprot].add(
-                    RamilowskiAnnotation(
-                        mainclass = typ,
-                        sources = (
-                            record[3].split(';')
-                                if self.load_sources else
-                            None
-                        ),
-                    )
-                )
-        
-        
-        RamilowskiAnnotation = collections.namedtuple(
-            'RamilowskiAnnotation',
-            ('mainclass', 'sources')
-        )
-        
         annot = collections.defaultdict(set)
         
         for record in self.data:
             
-            process_record(record, typ = 'ligand', annot = annot)
-            process_record(record, typ = 'receptor', annot = annot)
+            self.record_processor_method(
+                record,
+                typ = 'ligand',
+                annot = annot,
+            )
+            self.record_processor_method(
+                record,
+                typ = 'receptor',
+                annot = annot,
+            )
         
         self.annot = dict(annot)
+
+
+class Ramilowski2015(LigandReceptor):
+    
+    
+    def __init__(self, load_sources = False, **kwargs):
+        
+        extra_fields_methods = {
+            'sources':
+                lambda record: (
+                    tuple(record[3].split(';')) if load_sources else None
+                ),
+        }
+        
+        
+        LigandReceptor.__init__(
+            self,
+            name = 'Ramilowski2015',
+            input_method = 'ramilowski_interactions',
+            ncbi_tax_id = 9606,
+            record_extra_fields = ('sources',),
+            extra_fields_methods = extra_fields_methods,
+            ligand_col = 0,
+            receptor_col = 1,
+            ligand_id_type = 'genesymbol',
+            receptor_id_type = 'genesymbol',
+            **kwargs,
+        )
+
+
+class Kirouac2010(LigandReceptor):
+    
+    
+    def __init__(self, load_sources = False, **kwargs):
+        
+        LigandReceptor.__init__(
+            self,
+            name = 'Kirouac2010',
+            input_method = 'kirouac2010_interactions',
+            ncbi_tax_id = 9606,
+            ligand_col = 0,
+            receptor_col = 1,
+            ligand_id_type = 'genesymbol',
+            receptor_id_type = 'genesymbol',
+            **kwargs,
+        )
+
+
+class GuideToPharmacology(LigandReceptor):
+    
+    
+    def __init__(self, load_sources = False, **kwargs):
+        
+        LigandReceptor.__init__(
+            self,
+            name = 'Guide2Pharma',
+            input_method = 'get_guide2pharma',
+            ncbi_tax_id = 9606,
+            ligand_col = 0,
+            receptor_col = 2,
+            ligand_id_type = 'genesymbol',
+            receptor_id_type = 'uniprot',
+            **kwargs,
+        )
+    
+    
+    def _default_record_processor(self, record, typ, annot):
+        
+        if (
+            record.ligand_id_type != 'genesymbol' or
+            record.target_id_type != 'uniprot'
+        ):
+            
+            return
+        
+        LigandReceptor._default_record_processor(self, record, typ, annot)
+
 
 
 class AnnotationTable(session_mod.Logger):
