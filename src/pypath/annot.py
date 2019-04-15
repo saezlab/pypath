@@ -1143,7 +1143,7 @@ class GuideToPharmacology(LigandReceptor):
         LigandReceptor.__init__(
             self,
             name = 'Guide2Pharma',
-            input_method = 'get_guide2pharma',
+            input_method = 'guide2pharma_interactions',
             ncbi_tax_id = 9606,
             ligand_col = 0,
             receptor_col = 2,
