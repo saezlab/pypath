@@ -139,6 +139,11 @@ class AbstractComplexResource(resource.AbstractResource):
         return False
     
     
+    def __len__(self):
+        
+        return len(self.complexes)
+    
+    
     def make_df(self):
         
         have_stoichiometry = {
