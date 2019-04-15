@@ -1130,3 +1130,27 @@ annot_combined_classes = (
         },
     ),
 )
+
+class_types = {
+    'above_main': {
+        'cell_surface',
+        'extracellular',
+        'secreted',
+    },
+    'main': {
+        'adhesion',
+        'ecm',
+        'ligand',
+        'receptor',
+        'surface_enzyme',
+        'surface_ligand',
+        'transporter',
+        'extracellular_enzyme',
+    },
+    'small_main': {
+        'gap_junction',
+        'growth_factor_binder',
+        'growth_factor_regulator',
+        'tight_junction',
+    }
+}
