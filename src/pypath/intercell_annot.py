@@ -146,7 +146,11 @@ go_combined_classes = {
         """,
     'receptors':
         """
-        signaling receptor activity AND
+        (signaling receptor activity OR
+        cell surface receptor signaling pathway OR
+        transmembrane signaling receptor activity OR
+        receptor complex OR
+        (cellular response to stimulus AND signal transduction)) AND
         (cell surface OR
         external side of plasma membrane)
         """,
@@ -954,17 +958,23 @@ annot_combined_classes = (
         name = 'surface_enzyme_go',
         source = af.AnnotOp(
             annots = (
-                'cell_surface',
-                af.AnnotDef(
-                    name = 'enzyme',
-                    source = 'GO_Intercell',
-                    args = {
-                        'mainclass': 'enzyme',
-                    },
+                af.AnnotOp(
+                    annots = (
+                        'cell_surface',
+                        af.AnnotDef(
+                            name = 'enzyme',
+                            source = 'GO_Intercell',
+                            args = {
+                                'mainclass': 'enzyme',
+                            },
+                        ),
+                        'cell_surface',
+                    ),
+                    op = set.intersection,
                 ),
-                'cell_surface',
+                'receptor',
             ),
-            op = set.intersection,
+            op = set.difference,
         ),
     ),
     af.AnnotDef(
