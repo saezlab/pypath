@@ -178,7 +178,7 @@ class GeneOntology(session_mod.Logger):
         and their names.
         """
         
-        return [(term, self.get_name(name)) for term in terms]
+        return [(term, self.get_name(term)) for term in terms]
     
     
     def terms_to_names_aspects(self, terms):
@@ -188,7 +188,7 @@ class GeneOntology(session_mod.Logger):
         """
         
         return [
-            (term, self.get_name(name), self.get_aspect(term))
+            (term, self.get_name(term), self.get_aspect(term))
             for term in terms
         ]
     
@@ -250,7 +250,7 @@ class GeneOntology(session_mod.Logger):
             terms = {terms}
         
         graph = getattr(self, direction)
-        subgraph = set()
+        subgraph = set(terms)
         
         for term in terms:
             
