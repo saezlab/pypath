@@ -1047,11 +1047,11 @@ class Curl(FileOpener):
         self.binary_data_param = self.binary_data
         self.binary_data = b'\r\n'.join(
             map(lambda i: b'--%s\r\nContent-Disposition: form-data;'
-                b' name = "%s"\r\n\r\n%s' % (bdr, i[0], i[1]),
+                b' name="%s"\r\n\r\n%s' % (bdr, i[0], i[1]),
                 self.binary_data_param))
         self.binary_data = b'%s\r\n--%s--\r\n' % (self.binary_data, bdr)
         self.req_headers.append(
-            'Content-Type: multipart/form-data; boundary = %s' %
+            'Content-Type: multipart/form-data; boundary=%s' %
             bdr.decode('ascii'))
         self.req_headers.append('Content-Length: %u' % len(self.binary_data))
     

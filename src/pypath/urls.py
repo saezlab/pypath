@@ -609,7 +609,8 @@ urls = {
         'list_url': 'https://signor.uniroma2.it/downloads.php',
         'base_url': 'https://signor.uniroma2.it/%s',
         'all_url': 'https://signor.uniroma2.it/DownloadServlet?action=all',
-        'all_url_new': 'https://signor.uniroma2.it/download_entity.php'
+        'all_url_new': 'https://signor.uniroma2.it/download_entity.php',
+        'complexes': 'https://signor.uniroma2.it/download_complexes.php',
     },
     'hiii14': {
         'label': 'Rolland et al 2014, Human Interactome II',

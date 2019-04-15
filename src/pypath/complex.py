@@ -105,6 +105,7 @@ class AbstractComplexResource(resource.AbstractResource):
         
         self.proteins = collections.defaultdict(set)
         self.resources = collections.defaultdict(set)
+        self.ids = {}
         
         for cplex in self:
             
@@ -115,6 +116,12 @@ class AbstractComplexResource(resource.AbstractResource):
             for db in cplex.sources:
                 
                 self.resources[protein].add(cplex)
+            
+            for db, ids in iteritems(cplex.ids):
+                
+                for _id in ids:
+                    
+                    self.ids[(db, _id)] = cplex
     
     
     def __contains__(self, other):

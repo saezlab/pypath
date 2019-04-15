@@ -266,15 +266,15 @@ def pdb_complexes(organism = None):
         cplex = intera.Complex(
             components = uniprots,
             sources = 'PDB',
+            ids = pdb_id,
         )
         
         if cplex.__str__() in complexes:
             
-            complexes[cplex.__str__()].attrs['PDB'].add(pdb_id)
+            complexes[cplex.__str__()] += cplex
             
         else:
             
-            cplex.add_attr('PDB', {pdb_id})
             complexes[cplex.__str__()] = cplex
     
     return complexes
@@ -530,6 +530,7 @@ def corum_complexes(organism = 9606):
             components = uniprots,
             sources = 'CORUM',
             references = pubmeds,
+            ids = rec['Complex id'],
         )
         
         if cplex.__str__() in complexes:
@@ -588,6 +589,7 @@ def complexportal_complexes(organism = 9606, return_details = False):
             names = {}
             pdbs = []
             uniprots = []
+            ids = collections.defaultdict(set)
             
             for a in i.find_all('attribute'):
                 
@@ -604,8 +606,18 @@ def complexportal_complexes(organism = 9606, return_details = False):
             
             for pr in i.find_all('primaryref'):
                 
-                if pr.attrs['db'] in ['wwpdb', 'rcsb pdb', 'pdbe']:
+                if pr.attrs['db'] in {'wwpdb', 'rcsb pdb', 'pdbe'}:
                     pdbs.append(pr.attrs['id'])
+            
+            for sr in i.find('xref').find_all('secondaryref'):
+                
+                if (
+                    'reftype' in sr.attrs and
+                    sr.attrs['db'] in {'intact', 'reactome'} and
+                    sr.attrs['reftype'] == 'identity'
+                ):
+                    
+                    ids[sr.attrs['db']].add(sr.attrs['id'])
             
             pubmeds = list(set(pubmeds))
             pdbs = list(set(pdbs))
@@ -637,11 +649,16 @@ def complexportal_complexes(organism = 9606, return_details = False):
             
             if uniprots:
                 
+                if pdbs:
+                    
+                    ids['PDB'].update(set(pdbs))
+                
                 cplex = intera.Complex(
                     components = uniprots,
                     name = names[name_key] if name_key in names else None,
                     references = set(pubmeds),
                     sources = 'ComplexPortal',
+                    ids = ids,
                 )
                 
                 if cplex.__str__() in complexes:
@@ -700,6 +717,7 @@ def havugimana_complexes():
         cplex = intera.Complex(
             components = rec[2].split(','),
             sources = 'Havugimana2012',
+            ids = rec[0],
         )
         
         complexes[cplex.__str__()] = cplex
@@ -774,6 +792,7 @@ def compleat_complexes(predicted = True):
             sources = sources,
             references = references,
             name = name,
+            ids = rec['compleat_id'],
         )
         
         if cplex.__str__() in complexes:
@@ -5130,9 +5149,11 @@ def get_hpmr(use_cache = None):
                 this_subfamily[1],
                 this_subsubfamily[1],
             ))
-
+    
     prg = progress.Progress(len(recpages), 'Downloading HPMR data', 1)
-
+    
+    i_complex = 0
+    
     for url, family, subfamily, subsubfamily in recpages:
 
         prg.step()
@@ -5225,11 +5246,11 @@ def get_hpmr(use_cache = None):
             )
             
             if (
-                isinstance(rec_complex, intera.Complex) or
-                isinstance(lig_complex, intera.Complex)
+                isinstance(rec_complex, list) or
+                isinstance(lig_complex, list)
             ):
                 
-                complex_interactions.append((rec_complex, lig_complex))
+                complex_interactions.append((lig_complex, rec_complex))
 
     prg.terminate()
     
@@ -5250,9 +5271,17 @@ def hpmr_complexes(use_cache = None):
     
     complexes = {}
     
-    for cplex in itertools.chain(*hpmr_data['complex_interactions']):
+    i_complex = 0
+    
+    for components in itertools.chain(*hpmr_data['complex_interactions']):
         
-        if isinstance(cplex, intera.Complex):
+        if isinstance(components, list):
+            
+            cplex = intera.Complex(
+                components = components,
+                sources = 'HPMR',
+                ids = 'HPMR-COMPLEX-%u' % i_complex,
+            )
             
             complexes[cplex.__str__()] = cplex
     
@@ -5828,8 +5857,10 @@ def cellphonedb_complexes():
         comp = get_stoichiometry(rec)
         
         cplex = intera.Complex(
+            name = rec['name'],
             components = comp,
             sources = 'CellPhoneDB',
+            ids = rec['name'],
         )
         
         key = cplex.__str__()
@@ -6836,33 +6867,65 @@ def signor_interactions(organism = 9606):
     return result
 
 
-def signor_complexes(organism = 9606):
+def signor_protein_families(organism = 9606):
+    #TODO: implement organism
     
-    complexes = {}
-    components = collections.defaultdict(set)
-    names = {}
+    families = {}
     
     data = signor_interactions(organism = organism)
+    url = urls.urls['signor']['complexes']
+    c = curl.Curl(
+        url,
+        binary_data = [(b'submit', b'Download protein family data')],
+        large = True,
+    )
+    _ = next(c.result)
     
-    for rec in data:
+    for rec in c.result:
         
-        if rec[8] == 'form complex':
+        rec = rec.split(';')
+        components = [u.strip('\n\r" ') for u in rec[2].split(',')]
+        families[rec[0]] = components
+    
+    return families
+
+
+def signor_complexes(organism = 9606):
+    #TODO: implement organism
+    
+    complexes = {}
+    
+    families = signor_protein_families(organism = organism)
+    
+    data = signor_interactions(organism = organism)
+    url = urls.urls['signor']['complexes']
+    c = curl.Curl(
+        url,
+        binary_data = [(b'submit', b'Download complex data')],
+        large = True,
+    )
+    _ = next(c.result)
+    
+    for rec in c.result:
+        
+        rec = rec.split(';')
+        components = [u.strip('\n\r" ') for u in rec[2].split(',')]
+        
+        components = [
+            families[comp] if comp in families else [comp]
+            for comp in components
+        ]
+        
+        for this_components in itertools.product(*components):
             
-            # collect UniProts by SIGNOR-C IDs
-            components[rec[6]].add(rec[2])
-            names[rec[6]] = rec[4]
-    
-    for signor_cid, comp in iteritems(components):
-        
-        cplex = intera.Complex(
-            name = names[signor_cid],
-            components = comp,
-            sources = 'Signor',
-            references = rec[21] if rec[21].isdigit() else None,
-            synonyms = {'Signor': signor_cid},
-        )
-        
-        complexes[cplex.__str__()] = cplex
+            cplex = intera.Complex(
+                name = rec[1],
+                components = this_components,
+                sources = 'Signor',
+                ids = rec[0],
+            )
+            
+            complexes[cplex.__str__()] = cplex
     
     return complexes
 

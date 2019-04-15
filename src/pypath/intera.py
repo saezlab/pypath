@@ -826,12 +826,11 @@ class Complex(object):
             self,
             components,
             name = None,
-            synonyms = None,
+            ids = None,
             sources = None,
             interactions = None,
             references = None,
             proteins = None,
-            long_name = None,
         ):
         """
         Represents a molecular complex.
@@ -843,20 +842,19 @@ class Complex(object):
             of identifiers.
         name : str
             A custom name or identifier of the complex.
-        synonyms : dict
-            Alternative names, with type of the name is key and name as
-            value in the dict.
-        sources : set
-            Databases the complex has been defined in.
+        ids : dict
+            Identifiers. If ``sources`` is a set, list or tuple it should be
+            a dict with database names as keys and set of identifiers as
+            values. If ``sources`` is a string, it can be a set of
+            identifiers or a single identifier.
+        sources : set,str
+            Database(s) the complex has been defined in.
         interactions : list,dict
             Interactions between the components of the complex. Either
             a list of tuples of component IDs or a dict with tuples as
             keys and custom interaction properties as values.
         proteins : list,dict
             Synonym for `components`, kept for compatibility.
-        long_name : str
-            More verbose name, kept for compatibility, will be added to
-            `synonyms`.
         """
         
         components = components or proteins
@@ -871,14 +869,11 @@ class Complex(object):
         
         self.proteins = self.components
         self.name = name
-        self.synonyms = synonyms
+        self.ids = collections.defaultdict(set)
+        self.add_ids(ids, source = sources)
         self.sources = common.to_set(sources)
         self.references = common.to_set(references)
         self.attrs = {}
-        
-        if long_name:
-            
-            self.add_synonym('long_name', synonym)
         
         self.interactions = interactions
     
@@ -940,13 +935,7 @@ class Complex(object):
         self.sources.update(other.sources)
         self.references.update(other.references)
         
-        if self.synonyms and other.synonyms:
-            
-            self.synonyms.update(other.synonyms)
-            
-        elif other.synonyms:
-            
-            self.synonyms = other.synonyms
+        self.add_ids(other.ids)
         
         for k, v in iteritems(other.attrs):
             
@@ -959,17 +948,22 @@ class Complex(object):
                 self.attrs[k].update(v)
     
     
-    def get_synonym(self, typ):
+    def add_ids(self, ids, source = None):
         
-        if self.synonyms and typ in self.synonyms:
+        if not isinstance(ids, dict):
             
-            return self.synonyms[typ]
-    
-    
-    def set_synonym(self, typ, synonym):
+            ids = common.to_set(ids)
         
-        self.synonyms = self.synonyms or {}
-        self.synonyms[typ] = synonym
+        if isinstance(ids, set) and source:
+            
+            ids = {source: ids}
+        
+        if isinstance(ids, dict):
+            
+            for this_source, this_ids in iteritems(ids):
+                
+                this_ids = common.to_set(this_ids)
+                self.ids[this_source].update(this_ids)
     
     
     def get_interaction(self, component1, component2):
