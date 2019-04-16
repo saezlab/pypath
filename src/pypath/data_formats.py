@@ -467,28 +467,28 @@ pathway = {
     'signor': input_formats.ReadSettings(
         name = "Signor",
         separator = None,
-        id_col_a = 2,
-        id_col_b = 6,
+        id_col_a = 0,
+        id_col_b = 1,
         id_type_a = "uniprot",
         id_type_b = "uniprot",
         # only direct interactions
-        positive_filters = [(22, 'YES')],
+        positive_filters = [(10, True)],
         # exclude TF-target interactions
-        negative_filters = [(9, 'transcriptional regulation')],
+        negative_filters = [(7, 'transcriptional regulation')],
         entity_type_a = "protein",
         entity_type_b = "protein",
-        ncbi_tax_id = {'col': 12,
+        ncbi_tax_id = {'col': 8,
                    'dict': {
                        '9606;9606': 9606,
                        '9606': 9606
                    }},
-        is_directed = (8, [
+        is_directed = (6, [
             'up-regulates', 'up-regulates activity',
             'up-regulates quantity by stabilization', 'down-regulates',
             'down-regulates activity',
             'down-regulates quantity by destabilization'
         ]),
-        sign = (8, [
+        sign = (6, [
             'up-regulates', 'up-regulates activity',
             'up-regulates quantity by stabilization'
         ], [
@@ -496,11 +496,12 @@ pathway = {
             'down-regulates quantity by destabilization'
         ]),
         input = 'signor_interactions',
-        references = (21, ";"),
+        references = (9, ";"),
         header = True,
-        extra_edge_attrs = {"signor_mechanism": (9, ';')},
+        extra_edge_attrs = {"signor_mechanism": (7, ';')},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {})
+        extra_node_attrs_b = {},
+    )
 }
 
 # synonym
@@ -1281,7 +1282,8 @@ transcription_onebyone = {
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
     'encode_dist': input_formats.ReadSettings(
         name = "ENCODE_distal",
         separator = None,
@@ -1300,7 +1302,8 @@ transcription_onebyone = {
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
     'encode_prox': input_formats.ReadSettings(
         name = "ENCODE_proximal",
         separator = None,
@@ -1319,7 +1322,8 @@ transcription_onebyone = {
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
     'pazar': input_formats.ReadSettings(
         name = "PAZAR",
         separator = None,
@@ -1338,7 +1342,8 @@ transcription_onebyone = {
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
     'htri': input_formats.ReadSettings(
         name = "HTRI",
         separator = None,
@@ -1357,7 +1362,8 @@ transcription_onebyone = {
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
     'oreganno': input_formats.ReadSettings(
         name = "ORegAnno",
         separator = None,
@@ -1376,25 +1382,26 @@ transcription_onebyone = {
         header = False,
         extra_edge_attrs = {},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
     'signor': input_formats.ReadSettings(
         name = "Signor",
         separator = None,
-        id_col_a = 2,
-        id_col_b = 6,
+        id_col_a = 0,
+        id_col_b = 1,
         id_type_a = "uniprot",
         id_type_b = "uniprot",
         # only direct TF-target interactions
-        positive_filters = [(22, 'YES'), (9, 'transcriptional regulation')],
+        positive_filters = [(10, True), (7, 'transcriptional regulation')],
         entity_type_a = "protein",
         entity_type_b = "protein",
-        ncbi_tax_id = {'col': 12,
+        ncbi_tax_id = {'col': 8,
                    'dict': {
                        '9606;9606': 9606,
                        '9606': 9606
                    }},
         is_directed = True,
-        sign = (8, [
+        sign = (6, [
             'up-regulates', 'up-regulates activity',
             'up-regulates quantity by stabilization'
         ], [
@@ -1402,11 +1409,12 @@ transcription_onebyone = {
             'down-regulates quantity by destabilization'
         ]),
         input = 'signor_interactions',
-        references = (21, ";"),
+        references = (9, ";"),
         header = True,
-        extra_edge_attrs = {"signor_mechanism": (9, ';')},
+        extra_edge_attrs = {"signor_mechanism": (7, ';')},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {})
+        extra_node_attrs_b = {},
+    ),
 }
 
 """
@@ -1778,28 +1786,28 @@ small_molecule_protein = {
         'signor': input_formats.ReadSettings(
         name = "Signor",
         separator = None,
-        id_col_a = 2,
-        id_col_b = 6,
+        id_col_a = 0,
+        id_col_b = 1,
         id_type_a = "pubchem-cid",
         id_type_b = "uniprot",
         # only direct interactions
-        positive_filters = [(22, 'YES'), (1, 'chemical')],
+        positive_filters = [(10, True), (6, 'chemical')],
         # exclude TF-target interactions
-        negative_filters = [(9, 'transcriptional regulation')],
+        negative_filters = [(7, 'transcriptional regulation')],
         entity_type_a = "small_molecule",
         entity_type_b = "protein",
-        ncbi_tax_id = {'col': 12,
+        ncbi_tax_id = {'col': 8,
                    'dict': {
                        '9606;9606': 9606,
                        '9606': 9606
                    }},
-        is_directed = (8, [
+        is_directed = (6, [
             'up-regulates', 'up-regulates activity',
             'up-regulates quantity by stabilization', 'down-regulates',
             'down-regulates activity',
             'down-regulates quantity by destabilization'
         ]),
-        sign = (8, [
+        sign = (6, [
             'up-regulates', 'up-regulates activity',
             'up-regulates quantity by stabilization'
         ], [
@@ -1807,11 +1815,12 @@ small_molecule_protein = {
             'down-regulates quantity by destabilization'
         ]),
         input = 'signor_interactions',
-        references = (21, ";"),
+        references = (9, ";"),
         header = True,
-        extra_edge_attrs = {"signor_mechanism": (9, ';')},
+        extra_edge_attrs = {"signor_mechanism": (7, ';')},
         extra_node_attrs_a = {},
-        extra_node_attrs_b = {}),
+        extra_node_attrs_b = {},
+    ),
 }
 
 ligand_receptor['guide2pharma'] = pathway['guide2pharma']
