@@ -2151,7 +2151,7 @@ class PyPath(session_mod.Logger):
 
     def read_data_file(
             self,
-            settings,
+            param,
             keep_raw = False,
             cache_files = {},
             reread = False,
@@ -2165,7 +2165,7 @@ class PyPath(session_mod.Logger):
         preprocess data, and then give it to this function to finally
         attach to the network.
 
-        :arg pypath.input_formats.ReadSettings settings:
+        :arg pypath.input_formats.ReadSettings param:
             :py:class:`pypath.input_formats.ReadSettings` instance
             containing the detailed definition of the input format of
             the file. Instead of the file name (on the
@@ -2190,14 +2190,14 @@ class PyPath(session_mod.Logger):
             re-download the data and ignore the cache.
         """
         
-        self._log('Reading network data from `%s`.' % settings.name)
+        self._log('Reading network data from `%s`.' % param.name)
         
         listLike = set([list, tuple])
         edge_list = []
         nodeList = []
         edge_list_mapped = []
         infile = None
-        _name = settings.name.lower()
+        _name = param.name.lower()
         
         int_cache = os.path.join(
             self.cache_dir,
@@ -2221,17 +2221,17 @@ class PyPath(session_mod.Logger):
             
             if infile is None:
                 
-                if settings.__class__.__name__ != "ReadSettings":
+                if param.__class__.__name__ != "ReadSettings":
                     
                     self._log(
-                        'No proper input file definition! `settings` '
+                        'No proper input file definition! `param` '
                         'should be a `ReadSettings` instance',
                         -5,
                     )
                     
                     return None
                 
-                if settings.huge:
+                if param.huge:
                     
                     sys.stdout.write(
                         '\n\tProcessing %s requires huge memory.\n'
@@ -2240,8 +2240,8 @@ class PyPath(session_mod.Logger):
                         '\tAfter processing once, it will be saved in \n'
                         '\t%s, so next time can be loaded quickly.\n\n'
                         '\tProcess %s now? [y/n]\n' %
-                        (settings.name, settings.name, edges_cache,
-                         settings.name))
+                        (param.name, param.name, edges_cache,
+                         param.name))
                     sys.stdout.flush()
 
                     while True:
@@ -2258,23 +2258,23 @@ class PyPath(session_mod.Logger):
                                 '\n\tPlease answer `y` or `n`:\n\t')
                             sys.stdout.flush()
 
-                input_func = self.get_function(settings.input)
+                input_func = self.get_function(param.input)
 
-                if input_func is None and hasattr(dataio, settings.input):
-                    input_func = getattr(dataio, settings.input)
+                if input_func is None and hasattr(dataio, param.input):
+                    input_func = getattr(dataio, param.input)
 
                 # reading from remote or local file, or executing import
                 # function:
                 if (
-                    isinstance(settings.input, basestring) and (
-                        settings.input.startswith('http') or
-                        settings.input.startswith('ftp')
+                    isinstance(param.input, basestring) and (
+                        param.input.startswith('http') or
+                        param.input.startswith('ftp')
                     )
                 ):
 
                     curl_use_cache = not redownload
                     c = curl.Curl(
-                        settings.input,
+                        param.input,
                         silent=False,
                         large=True,
                         cache=curl_use_cache)
@@ -2298,10 +2298,10 @@ class PyPath(session_mod.Logger):
                         if len(x) > 0
                     ]
                     self._log(
-                        "Retrieving data from%s ..." % settings.input
+                        "Retrieving data from%s ..." % param.input
                     )
 
-                # elif hasattr(dataio, settings.input):
+                # elif hasattr(dataio, param.input):
                 elif input_func is not None:
                     self._log("Retrieving data by dataio.%s() ..." %
                                     input_func.__name__)
@@ -2312,7 +2312,7 @@ class PyPath(session_mod.Logger):
                     # once correct exception handling will
                     # be implemented in every input function
                     try:
-                        infile = input_func(**settings.input_args)
+                        infile = input_func(**param.input_args)
 
                     except Exception as e:
                         sys.stdout.write(
@@ -2334,33 +2334,33 @@ class PyPath(session_mod.Logger):
 
                     curl.CACHE = _store_cache
 
-                elif os.path.isfile(settings.input):
+                elif os.path.isfile(param.input):
                     infile = curl.Curl(
-                        settings.input,
+                        param.input,
                         large = True,
                         silent = False
                     ).result
                     #infile = codecs.open(
-                    #settings.input, encoding='utf-8', mode='r')
-                    self._log('%s opened...' % settings.input)
+                    #param.input, encoding='utf-8', mode='r')
+                    self._log('%s opened...' % param.input)
 
                 if infile is None:
                     
                     self._log(
                         '`%s`: Could not find file or dataio function '
                         'or failed preprocessing.' %
-                        settings.input,
+                        param.input,
                         -5,
                     )
                     return None
             
             # finding the largest referred column number,
             # to avoid references out of range
-            is_directed = settings.is_directed
-            sign = settings.sign
-            refCol = settings.refs[0] if isinstance(settings.refs, tuple) \
-                else settings.refs if isinstance(settings.refs, int) else None
-            refSep = settings.refs[1] if isinstance(settings.refs,
+            is_directed = param.is_directed
+            sign = param.sign
+            refCol = param.refs[0] if isinstance(param.refs, tuple) \
+                else param.refs if isinstance(param.refs, int) else None
+            refSep = param.refs[1] if isinstance(param.refs,
                                                     tuple) else ';'
             sigCol = None if not isinstance(sign, tuple) else sign[0]
             dir_col = None
@@ -2385,21 +2385,21 @@ class PyPath(session_mod.Logger):
             max_col = max(
                 filter(
                     lambda i: i is not None, [
-                        settings.id_col_a,
-                        settings.id_col_b,
-                        self.get_max(settings.extra_edge_attrs),
-                        self.get_max(settings.extra_node_attrs_a),
-                        self.get_max(settings.extra_node_attrs_b),
+                        param.id_col_a,
+                        param.id_col_b,
+                        self.get_max(param.extra_edge_attrs),
+                        self.get_max(param.extra_node_attrs_a),
+                        self.get_max(param.extra_node_attrs_b),
                         refCol,
                         dir_col,
                         sigCol,
                         max(itertools.chain(
                             map(lambda x: x[0],
-                                settings.positive_filters),
+                                param.positive_filters),
                             [0])),
                         max(itertools.chain(
                             map(lambda x: x[0],
-                                settings.negative_filters),
+                                param.negative_filters),
                             [0]))
                     ]))
             # iterating lines from input file
@@ -2412,7 +2412,7 @@ class PyPath(session_mod.Logger):
 
             for lnum, line in enumerate(infile):
 
-                if len(line) <= 1 or (lnum == 1 and settings.header):
+                if len(line) <= 1 or (lnum == 1 and param.header):
                     # empty lines
                     # or header row
                     continue
@@ -2422,7 +2422,7 @@ class PyPath(session_mod.Logger):
                     if hasattr(line, 'decode'):
                         line = line.decode('utf-8')
                     
-                    line = line.strip('\n\r').split(settings.separator)
+                    line = line.strip('\n\r').split(param.separator)
 
                 else:
                     line = [
@@ -2445,8 +2445,8 @@ class PyPath(session_mod.Logger):
                 else:
 
                     # applying filters:
-                    if self.filters(line, settings.positive_filters,
-                                    settings.negative_filters):
+                    if self.filters(line, param.positive_filters,
+                                    param.negative_filters):
                         lFiltered += 1
                         continue
 
@@ -2477,19 +2477,19 @@ class PyPath(session_mod.Logger):
                     
                     refs = dataio.only_pmids([r.strip() for r in refs])
                     
-                    if len(refs) == 0 and settings.must_have_references:
+                    if len(refs) == 0 and param.must_have_references:
                         rFiltered += 1
                         continue
 
                     # to give an easy way:
-                    if isinstance(settings.ncbi_tax_id, int):
-                        taxon_a = settings.ncbi_tax_id
-                        taxon_b = settings.ncbi_tax_id
+                    if isinstance(param.ncbi_tax_id, int):
+                        taxon_a = param.ncbi_tax_id
+                        taxon_b = param.ncbi_tax_id
 
                     # to enable more sophisticated inputs:
-                    elif isinstance(settings.ncbi_tax_id, dict):
+                    elif isinstance(param.ncbi_tax_id, dict):
 
-                        taxx = self.get_taxon(settings.ncbi_tax_id, line)
+                        taxx = self.get_taxon(param.ncbi_tax_id, line)
 
                         if isinstance(taxx, tuple):
                             taxon_a = taxx[0]
@@ -2499,13 +2499,13 @@ class PyPath(session_mod.Logger):
                             taxon_a = taxon_b = taxx
 
                         taxdA = (
-                            settings.ncbi_tax_id['A']
-                            if 'A' in settings.ncbi_tax_id else
-                            settings.ncbi_tax_id)
+                            param.ncbi_tax_id['A']
+                            if 'A' in param.ncbi_tax_id else
+                            param.ncbi_tax_id)
                         taxdB = (
-                            settings.ncbi_tax_id['B']
-                            if 'B' in settings.ncbi_tax_id else
-                            settings.ncbi_tax_id)
+                            param.ncbi_tax_id['B']
+                            if 'B' in param.ncbi_tax_id else
+                            param.ncbi_tax_id)
 
                         if (('include' in taxdA and
                             taxon_a not in taxdA['include']) or
@@ -2533,19 +2533,19 @@ class PyPath(session_mod.Logger):
                         stim, inh = self.process_sign(line[sign[0]], sign)
 
                     resource = (
-                        [line[settings.resource]]
-                        if type(settings.resource) is int else
-                        line[settings.resource[0]].split(settings.resource[1])
-                        if type(settings.resource) is tuple else
-                        [settings.resource]
+                        [line[param.resource]]
+                        if type(param.resource) is int else
+                        line[param.resource[0]].split(param.resource[1])
+                        if type(param.resource) is tuple else
+                        [param.resource]
                     )
                     new_edge = {
-                        "id_a": line[settings.id_col_a].strip(),
-                        "id_b": line[settings.id_col_b].strip(),
-                        "id_type_a": settings.id_type_a,
-                        "id_type_b": settings.id_type_b,
-                        "entity_type_a": settings.entity_type_a,
-                        "entity_type_b": settings.entity_type_b,
+                        "id_a": line[param.id_col_a].strip(),
+                        "id_b": line[param.id_col_b].strip(),
+                        "id_type_a": param.id_type_a,
+                        "id_type_b": param.id_type_b,
+                        "entity_type_a": param.entity_type_a,
+                        "entity_type_b": param.entity_type_b,
                         "source": resource,
                         "is_directed": this_edge_dir,
                         "references": refs,
@@ -2553,33 +2553,33 @@ class PyPath(session_mod.Logger):
                         "inh": inh,
                         "taxon_a": taxon_a,
                         "taxon_b": taxon_b,
-                        "type": settings.interaction_type,
+                        "type": param.interaction_type,
                     }
 
                     # getting additional edge and node attributes
                     attrs_edge = self.get_attrs(
                         line,
-                        settings.extra_edge_attrs,
+                        param.extra_edge_attrs,
                         lnum,
                     )
                     attrs_node_a = self.get_attrs(
                         line,
-                        settings.extra_node_attrs_a,
+                        param.extra_node_attrs_a,
                         lnum,
                     )
                     attrs_node_b = self.get_attrs(
                         line,
-                        settings.extra_node_attrs_b,
+                        param.extra_node_attrs_b,
                         lnum,
                     )
 
-                    if settings.mark_source:
+                    if param.mark_source:
 
-                        attrs_node_a[settings.mark_source] = this_edge_dir
+                        attrs_node_a[param.mark_source] = this_edge_dir
 
-                    if settings.mark_target:
+                    if param.mark_target:
 
-                        attrs_node_b[settings.mark_target] = this_edge_dir
+                        attrs_node_b[param.mark_target] = this_edge_dir
 
                     # merging dictionaries
                     node_attrs = {
@@ -2614,7 +2614,7 @@ class PyPath(session_mod.Logger):
                 '%u lines filtered by taxon filters.' %
                 (
                     lnum - 1,
-                    settings.input,
+                    param.input,
                     len(edge_list_mapped),
                     lFiltered,
                     rFiltered,
@@ -2635,7 +2635,7 @@ class PyPath(session_mod.Logger):
         
         if keep_raw:
             
-            self.data[settings.name] = edge_list_mapped
+            self.data[param.name] = edge_list_mapped
         
         self.raw_data = edge_list_mapped
     
