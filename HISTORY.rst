@@ -39,9 +39,47 @@ This is a summary of the changelog.
 * Orthology translation of PTMs
 * Better processing of PhosphoSite regulatory sites
 
+0.7.0
++++++++++++
+* TF-target, miRNA-mRNA and TF-miRNA interactions from many databases
+
+0.7.74
++++++++++++
+* New web server based on `pandas` data frames
+* New module `export` for generating data frames of interactions or enzyme-substrate interactions
+* New module `websrvtab` for exporting data frames for the web server
+* TF-target interactions from DoRothEA
+
+0.7.93
++++++++++++
+
+* New `dataio` methods for Gene Ontology
+
+0.7.110
++++++++++++
+* Many new docstrings
+
+
+0.8
++++++++++++
+* New module `complex`: a comprehensive database of complexes
+* New module `annot`: database of protein annotations (function, location)
+* New module `intercell`: special methods for data integration focusing on intercellular communication
+* New module `bel`: BEL integration
+* Module `go` and all the connected `dataio` methods have been rewritten offering a workaround for
+  data access despite GO's terrible web services and providing much more versatile query methods
+* Removed MySQL support (e.g. loading mapping tables from MySQL)
+* Modules `mapping`, `reflists`, `complex`, `ptm`, `annot`, `go` became services:
+  these modules build databases and provide query methods, sometimes they even automatically
+  delete data to free memory
+* New interaction category in `data_formats`: `ligand_receptor`
+* Improved logging and control over verbosity
+* Better control over paremeters by the `settings` module
+* Many methods in `dataio` have been improved or fixed, docs and code style largely improved
+* Started to add tests especially for methods in `dataio`
+
 Upcoming:
 +++++++++++
 * New, more flexible network reader class
 * Full support for multi-species molecular interaction networks (e.g. pathogene-host)
 * Better support for not protein only molecular interaction networks (metabolites, drug compounds, RNA)
-* Silent mode: a way to suppress messages and progress bars
