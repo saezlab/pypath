@@ -78,6 +78,7 @@ _defaults = {
     'trip_preprocessed': 'trip_preprocessed.pickle',
     'deathdomain': 'deathdomain.tsv',
     'hpmr_preprocessed': 'hpmr_preprocessed.pickle',
+    'network_expand_complexes': True,
 }
 
 in_datadir = {

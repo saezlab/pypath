@@ -6780,37 +6780,74 @@ def csv_sep_change(csv, old, new):
     return ''.join(clean_csv)
 
 
-def signor_interactions(organism = 9606):
+def signor_interactions(organism = 9606, raw_records = False):
     """
     Downloads the full dataset from Signor.
-    Returns the file contents.
-
-    Note: this method has been updated Oct 2016,
-    as Signor updated both their data and webpage.
+    Returns the records with the most important fields.
+    IF ``raw_records`` is `True` it returns the table split to list of
+    lists but unchanged content.
     """
+    
+    
+    SignorInteraction = collections.namedtuple(
+        'SignorInteraction',
+        (
+            'source',
+            'target',
+            'source_isoform',
+            'target_isoform',
+            'source_type',
+            'target_type',
+            'effect',
+            'mechanism',
+            'ncbi_tax_id',
+            'pubmeds',
+            'direct',
+        )
+    )
     
     
     def process_name(name):
         
-        name = name.split('-')
+        isoform = None
         
-        if len(name) == 1:
+        if name in families:
             
-            main = name[0]
-            isoform = None
+            main = families[name]
             
-        elif name[1].isdigit():
+        elif name in complexes_by_id:
             
-            main = name[0]
-            isoform = int(name[1])
+            main = complexes_by_id[name]
             
         else:
             
-            main = '-'.join(name)
-            isoform = None
+            name = name.split('-')
+            
+            if len(name) > 1 and name[1].isdigit():
+                
+                isoform = int(name[1])
+                main = name[0]
+                
+            else:
+                
+                main = '-'.join(name)
+            
+            main = (main,)
+            
         
         return main, isoform
     
+    
+    families = signor_protein_families(organism = organism)
+    complexes = signor_complexes(organism = organism)
+    
+    complexes_by_id = collections.defaultdict(set)
+    
+    for cplex in complexes.values():
+        
+        for cplex_id in cplex.ids['Signor']:
+            
+            complexes_by_id[cplex_id].add(cplex)
     
     if type(organism) is int:
         if organism in common.taxids:
@@ -6853,16 +6890,31 @@ def signor_interactions(organism = 9606):
             
             continue
         
-        source, source_isoform = process_name(line[2])
-        target, target_isoform = process_name(line[6])
+        if raw_records:
+            
+            result.append(line)
+            continue
         
-        line[2] = source
-        line[6] = target
+        sources, source_isoform = process_name(line[2])
+        targets, target_isoform = process_name(line[6])
         
-        line.append(source)
-        line.append(target)
-        
-        result.append(line)
+        for source, target in itertools.product(sources, targets):
+            
+            this_record = SignorInteraction(
+                source = source,
+                target = target,
+                source_isoform = source_isoform,
+                target_isoform = target_isoform,
+                source_type = line[1],
+                target_type = line[5],
+                effect = line[8],
+                mechanism = line[9],
+                ncbi_tax_id = line[12],
+                pubmeds = line[21],
+                direct = line[22] == 'YES',
+            )
+            
+            result.append(this_record)
     
     return result
 
@@ -6872,7 +6924,6 @@ def signor_protein_families(organism = 9606):
     
     families = {}
     
-    data = signor_interactions(organism = organism)
     url = urls.urls['signor']['complexes']
     c = curl.Curl(
         url,
@@ -6893,11 +6944,50 @@ def signor_protein_families(organism = 9606):
 def signor_complexes(organism = 9606):
     #TODO: implement organism
     
+    
+    def process_on_hold(on_hold, complexes_by_id, complexes):
+        
+        on_hold_next = []
+        
+        for name, components, id_ in on_hold:
+            
+            components = [
+                [comp.components for comp in complexes_by_id[comp_id]]
+                    if comp_id in complexes_by_id else
+                ((comp_id,),)
+                for comp_id in components
+            ]
+            
+            for components0 in itertools.product(*components):
+                
+                this_components = list(itertools.chain(*components0))
+                
+                if any(
+                    comp.startswith('SIGNOR-C') for comp in this_components
+                ):
+                    
+                    on_hold_next.append((name, this_components, id_))
+                    
+                else:
+                    
+                    cplex = intera.Complex(
+                        name = name,
+                        components = this_components,
+                        sources = 'Signor',
+                        ids = id_,
+                    )
+                    
+                    complexes[cplex.__str__()] = cplex
+                    complexes_by_id[id_].add(cplex)
+        
+        return on_hold_next, complexes_by_id, complexes
+    
+    
     complexes = {}
+    on_hold = []
     
     families = signor_protein_families(organism = organism)
     
-    data = signor_interactions(organism = organism)
     url = urls.urls['signor']['complexes']
     c = curl.Curl(
         url,
@@ -6905,6 +6995,8 @@ def signor_complexes(organism = 9606):
         large = True,
     )
     _ = next(c.result)
+    
+    complexes_by_id = collections.defaultdict(set)
     
     for rec in c.result:
         
@@ -6918,14 +7010,34 @@ def signor_complexes(organism = 9606):
         
         for this_components in itertools.product(*components):
             
-            cplex = intera.Complex(
-                name = rec[1],
-                components = this_components,
-                sources = 'Signor',
-                ids = rec[0],
-            )
+            # some complex contains other complexes
+            if any(comp.startswith('SIGNOR-C') for comp in this_components):
+                
+                on_hold.append((rec[1], this_components, rec[0]))
+                
+            else:
+                
+                cplex = intera.Complex(
+                    name = rec[1],
+                    components = this_components,
+                    sources = 'Signor',
+                    ids = rec[0],
+                )
+                
+                complexes[cplex.__str__()] = cplex
+                complexes_by_id[rec[0]].add(cplex)
+    
+    while True:
+        
+        # complexes are defined recursively
+        count_on_hold = len(on_hold)
+        on_hold, complexes_by_id, complexes = (
+            process_on_hold(on_hold, complexes_by_id, complexes)
+        )
+        
+        if len(on_hold) == count_on_hold:
             
-            complexes[cplex.__str__()] = cplex
+            break
     
     return complexes
 
