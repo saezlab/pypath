@@ -13793,8 +13793,6 @@ class PyPath(session_mod.Logger):
         orto = dict(filter(lambda i: i[0] in vids and len(i[1]),
                            iteritems(orto)))
 
-        # print(list(iteritems(vdict))[:10])
-
         toDel = list(map(lambda v: v[1],
                          filter(lambda v: ((v[0] not in orto
                                     or not len(orto[v[0]])) and
@@ -14124,6 +14122,43 @@ class PyPath(session_mod.Logger):
             tuple(_sort((names[e.source], names[e.target])))
             for e in graph.es
         ]
+    
+    # shortcuts for the most often used igraph attributes:
+    
+    @property
+    def vcount(self):
+        
+        return self.graph.vcount()
+    
+    
+    @property
+    def ecount(self):
+        
+        return self.graph.ecount()
+    
+    
+    @property
+    def vs(self):
+        
+        return self.graph.vs
+    
+    
+    @property
+    def es(self):
+        
+        return self.graph.es
+    
+    
+    @property
+    def vertex_attributes(self):
+        
+        return self.graph.vertex_attributes()
+    
+    
+    @property
+    def edge_attributes(self):
+        
+        return self.graph.edge_attributes()
     
     
     def reload(self):
