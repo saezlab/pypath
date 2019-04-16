@@ -3169,16 +3169,17 @@ class PyPath(session_mod.Logger):
         # in case of proteins this does not happen too often
         for id_a, id_b in itertools.product(default_id_a, default_id_b):
             
-            edge['default_name_a'] = id_a
-            edge['default_name_type_a'] = (
+            this_edge = modcopy.copy(edge)
+            this_edge['default_name_a'] = id_a
+            this_edge['default_name_type_a'] = (
                 self.default_name_type[edge['entity_type_a']]
             )
             
-            edge['default_name_b'] = id_b
-            edge['default_name_type_b'] = (
+            this_edge['default_name_b'] = id_b
+            this_edge['default_name_type_b'] = (
                 self.default_name_type[edge['entity_type_b']]
             )
-            edge_stack.append(edge)
+            edge_stack.append(this_edge)
         
         return edge_stack
     
@@ -14107,7 +14108,24 @@ class PyPath(session_mod.Logger):
             (resource, self.nodes_by_resource(resource))
             for resource in self.sources
         )
-
+    
+    
+    def name_edgelist(self, graph = None):
+        """
+        Returns an edge list, i.e. a list with tuples of vertex names.
+        """
+        
+        graph = graph or self.graph
+        
+        _sort = (lambda _: _) if graph.is_directed() else sorted
+        names = graph.vs['name']
+        
+        return [
+            tuple(_sort((names[e.source], names[e.target])))
+            for e in graph.es
+        ]
+    
+    
     def reload(self):
         """Reloads the object from the module level."""
 

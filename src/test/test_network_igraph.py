@@ -37,13 +37,15 @@ class TestPyPath(object):
         
         input_param = {'Signor': data_formats.pathway['signor']}
         
+        settings.setup(network_pickle_cache = False)
         # a network with all complexes expanded to single proteins
-        settings.setup(network_complex_expansion = True)
+        settings.setup(network_expand_complexes = True)
         netw_complex_expanded = main.PyPath()
+        netw_complex_expanded.keep_raw = True
         netw_complex_expanded.init_network(input_param)
         
         # a network with complexes as entities (vertices) in it
-        settings.setup(network_complex_expansion = False)
+        settings.setup(network_expand_complexes = False)
         netw_complex_entities = main.PyPath()
         netw_complex_entities.init_network(input_param)
         
@@ -58,20 +60,33 @@ class TestPyPath(object):
             
             for vid_nb in netw_complex_entities.graph.neighbors(v.index):
                 
-                for cplex_comp in v['name'].components.keys():
+                names_nb = netw_complex_entities.graph.vs[vid_nb]['name']
+                # if the neighbor is another complex
+                uniprots_nb = (
+                    names_nb.components.keys()
+                        if hasattr(names_nb, 'components') else
+                    (names_nb,)
+                )
+                
+                for uniprot_nb in uniprots_nb:
                     
-                    expanded_connections.add((
-                        netw_complex_entities.vs['name'][vid_nb],
-                        cplex_comp,
-                    ))
+                    for uniprot_comp in v['name'].components.keys():
+                        
+                        expanded_connections.add(tuple(sorted((
+                            uniprot_nb,
+                            uniprot_comp,
+                        ))))
         
         # checking if all these connections exist in the expanded network
         missing = set()
         
         for uniprot1, uniprot2 in expanded_connections:
             
-            if not netw_complex_expanded.get_edge(uniprot1, uniprot2):
+            if (
+                not netw_complex_expanded.get_edge(uniprot1, uniprot2) and
+                uniprot1 != uniprot2
+            ):
                 
-                missing.add(uniprot1, uniprot2)
+                missing.add((uniprot1, uniprot2))
         
         assert not missing
