@@ -79,6 +79,8 @@ _defaults = {
     'deathdomain': 'deathdomain.tsv',
     'hpmr_preprocessed': 'hpmr_preprocessed.pickle',
     'network_expand_complexes': True,
+    'network_keep_original_names': True,
+    'network_pickle_cache': True,
 }
 
 in_datadir = {

@@ -913,6 +913,16 @@ class Complex(object):
         return self
     
     
+    def __lt__(self, other):
+        
+        return self.__str__() < other
+    
+    
+    def __gt__(self, other):
+        
+        return self.__str__() > other
+    
+    
     def merge(self, other):
         """
         Adds the annotations (sources, references, attrs) of the other

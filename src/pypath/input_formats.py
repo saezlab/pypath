@@ -258,6 +258,7 @@ class ReadSettings:
             huge = False,
             resource = None,
             unique_fields = None,
+            expand_complexes = None,
         ):
         """
         :param str mark_source:
@@ -298,6 +299,7 @@ class ReadSettings:
         self.mark_source = mark_source
         self.mark_target = mark_target
         self.unique_fields = unique_fields or set()
+        self.expand_complexes = expand_complexes
 
 
 class ReadList:

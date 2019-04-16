@@ -1039,6 +1039,7 @@ class Mapper(session_mod.Logger):
             ncbi_tax_id = None,
             strict = False,
             silent = True,
+            expand_complexes = True,
             nameType = None,
             targetNameType = None,
         ):
@@ -1114,8 +1115,19 @@ class Mapper(session_mod.Logger):
                 )
             )
         
+        # complexes
+        if hasattr(name, 'components'):
+            
+            if expand_complexes:
+                
+               return set(name.components.keys())
+                
+            else:
+                
+                return {name}
+            
         # translating from an ID type to the same ID type?
-        if id_type == target_id_type:
+        elif id_type == target_id_type:
             
             if target_id_type != 'uniprot':
                 
@@ -1771,6 +1783,7 @@ def map_name(
         ncbi_tax_id = None,
         strict = False,
         silent = True,
+        expand_complexes = True,
         nameType = None,
         targetNameType = None,
     ):
@@ -1784,6 +1797,7 @@ def map_name(
         ncbi_tax_id = ncbi_tax_id,
         strict = strict,
         silent = silent,
+        expand_complexes = expand_complexes,
         nameType = nameType,
         targetNameType = targetNameType,
     )
