@@ -2330,25 +2330,23 @@ class PyPath(session_mod.Logger):
                         infile = input_func(**param.input_args)
 
                     except Exception as e:
-                        sys.stdout.write(
-                            '\n\t:: Error in `pypath.dataio.%s()`. '
-                            'Skipping to next resource.\n' %
-                            input_func.__name__)
-                        sys.stdout.write('\t:: %s\n' % str(e.args))
-                        sys.stdout.flush()
+                        self._log(
+                            'Error in `pypath.dataio.%s()`. '
+                            'Skipping to next resource. '
+                            'See below the traceback.' % input_func.__name__
+                        )
+                        self._log(str(e.args))
 
                         try:
                             traceback.print_tb(
-                                e.__traceback__, file=sys.stdout)
+                                e.__traceback__, file = sys.stdout)
 
                         except Exception as e:
-                            sys.stdout.write(
-                                '\t:: Failed handling exception.\n')
-                            sys.stdout.write('\t%s\n' % str(e.args))
-                            sys.stdout.flush()
-
+                            self._log('Failed handling exception.')
+                            self._log(str(e.args))
+                    
                     curl.CACHE = _store_cache
-
+                    
                 elif os.path.isfile(param.input):
                     infile = curl.Curl(
                         param.input,

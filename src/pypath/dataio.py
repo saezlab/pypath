@@ -9016,27 +9016,41 @@ def intact_interactions(
         complex_expansion = False,
     ):
     
-    result = {}
-    url = urls.urls['intact']['mitab']
-    if type(organism) is int:
-        organism = '%u' % organism
-    c = curl.Curl(
-        url,
-        silent = False,
-        large = True,
-        files_needed = ['intact.txt'],
+    IntactInteraction = collections.namedtuple(
+        'ItactInteraction',
+        (
+            'source',
+            'target',
+            'source_isoform',
+            'target_isoform',
+            'pubmeds',
+            'methods',
+        ),
     )
-    data = c.result
-    f = data['intact.txt']
-    size = c.sizes['intact.txt']
-    lnum = 0
+    
+result = {}
+url = urls.urls['intact']['mitab']
+if type(organism) is int:
+    organism = '%u' % organism
+c = curl.Curl(
+    url,
+    silent = False,
+    large = True,
+    files_needed = ['intact.txt'],
+    default_mode = 'rb',
+)
+data = c.result
+f = data['intact.txt']
+size = c.sizes['intact.txt']
+lnum = 0
     prg = progress.Progress(size, 'Reading IntAct MI-tab file', 99)
     
-    for l in f:
+    for lnum, l in enumerate(f):
         
         prg.step(len(l))
+        
         if lnum == 0:
-            lnum += 1
+            
             continue
         
         l = l.replace('\n', '').replace('\r', '').strip()
@@ -9062,12 +9076,14 @@ def intact_interactions(
             au = '0'
             
             for s in l[14].split('|'):
+                
                 if s.startswith('intact-miscore'):
                     sc = s.split(':')[1]
                 if s.startswith('author'):
                     au = len(s.split(':')[1])
             
             if float(sc) >= miscore:
+                
                 nt1 = 'unknown' if l[0] == '-' else l[0].split(':')[0]
                 nt2 = 'unknown' if l[1] == '-' else l[1].split(':')[0]
                 if nt1 == 'uniprotkb' and nt2 == 'uniprotkb':
@@ -9298,6 +9314,7 @@ def homologene_dict(source, target, id_type):
 
     return result
 
+
 def homologene_uniprot_dict(source, target, only_swissprot = True):
     """
     Returns orthology translation table as dict from UniProt to Uniprot,
@@ -9321,8 +9338,8 @@ def homologene_uniprot_dict(source, target, only_swissprot = True):
 
     for u in all_source:
 
-        source_e = m.map_name(u, 'uniprot', 'entrez', source)
-        source_r = m.map_name(u, 'uniprot', 'refseqp', source)
+        source_e = mapping.map_name(u, 'uniprot', 'entrez', source)
+        source_r = mapping.map_name(u, 'uniprot', 'refseqp', source)
         target_u = set([])
         target_r = set([])
         target_e = set([])

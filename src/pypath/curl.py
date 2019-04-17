@@ -689,10 +689,9 @@ class FileOpener(session_mod.Logger):
                     else:
                         
                         # wrapping the file for decoding
+                        # TODO: check if this is compatible with Py2
                         self.files_multipart[m] = io.TextIOWrapper(
-                            io.BytesIO(
-                                this_file.read()
-                            )
+                            this_file,
                         )
                 else:
                     self.files_multipart[m] = this_file.read()
