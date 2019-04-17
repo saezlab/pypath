@@ -1099,7 +1099,6 @@ interaction_misc = {
 interaction_htp = {
     'intact': input_formats.ReadSettings(
         name = "IntAct",
-        separator = ",",
         id_col_a = 0,
         id_col_b = 1,
         id_type_a = "uniprot",
@@ -1109,12 +1108,13 @@ interaction_htp = {
         is_directed = False,
         sign = False,
         input = 'intact_interactions',
-        references = (2, ";"),
+        references = 4,
         ncbi_tax_id = 9606,
-        extra_edge_attrs = {"intact_methods": (3, ';')},
+        extra_edge_attrs = {},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
-        input_args = {'miscore': 0.0}),
+        input_args = {'miscore': 0.0}
+    ),
     'biogrid': input_formats.ReadSettings(
         name = "BioGRID",
         separator = None,

@@ -6789,6 +6789,26 @@ def signor_interactions(organism = 9606, raw_records = False):
     """
     
     
+    def process_name(name):
+        
+        isoform = None
+        
+        if name in families:
+            
+            main = families[name]
+            
+        elif name in complexes_by_id:
+            
+            main = complexes_by_id[name]
+            
+        else:
+            
+            main, isoform = _try_isoform(name)
+            main = (main,)
+        
+        return main, isoform
+    
+    
     SignorInteraction = collections.namedtuple(
         'SignorInteraction',
         (
@@ -6805,38 +6825,6 @@ def signor_interactions(organism = 9606, raw_records = False):
             'direct',
         )
     )
-    
-    
-    def process_name(name):
-        
-        isoform = None
-        
-        if name in families:
-            
-            main = families[name]
-            
-        elif name in complexes_by_id:
-            
-            main = complexes_by_id[name]
-            
-        else:
-            
-            name = name.split('-')
-            
-            if len(name) > 1 and name[1].isdigit():
-                
-                isoform = int(name[1])
-                main = name[0]
-                
-            else:
-                
-                main = '-'.join(name)
-            
-            main = (main,)
-            
-        
-        return main, isoform
-    
     
     families = signor_protein_families(organism = organism)
     complexes = signor_complexes(organism = organism)
@@ -6872,7 +6860,7 @@ def signor_interactions(organism = 9606, raw_records = False):
         follow = True,
         timeout = 30,
         binary_data = binary_data,
-        return_headers = True
+        return_headers = True,
     )
 
     _ = next(c.result)
@@ -6917,6 +6905,23 @@ def signor_interactions(organism = 9606, raw_records = False):
             result.append(this_record)
     
     return result
+
+
+def _try_isoform(name):
+    
+    name = name.split('-')
+    
+    if len(name) > 1 and name[1].isdigit():
+        
+        isoform = int(name[1])
+        main = name[0]
+        
+    else:
+        
+        main = '-'.join(name)
+        isoform = None
+    
+    return main, isoform
 
 
 def signor_protein_families(organism = 9606):
@@ -9014,38 +9019,83 @@ def intact_interactions(
         miscore = 0.6,
         organism = 9606,
         complex_expansion = False,
+        only_proteins = False,
+        only_ids = False,
     ):
+    """
+    only_proteins : bool
+        Keep only records of protein-protein interactions.
+    only_ids : bool
+        Load only the identifiers of interacting pairs
+        (smaller memory footprint).
+    """
+    
+    id_types = {
+        'uniprotkb': 'uniprot',
+    }
     
     IntactInteraction = collections.namedtuple(
-        'ItactInteraction',
+        'IntactInteraction',
         (
-            'source',
-            'target',
-            'source_isoform',
-            'target_isoform',
+            'id_a',
+            'id_b',
+            'id_type_a',
+            'id_type_b',
             'pubmeds',
             'methods',
+            'mi_score',
+            'isoform_a',
+            'isoform_b',
         ),
     )
+    IntactInteraction.__new__.__defaults__ = (None,) * 7
     
-result = {}
-url = urls.urls['intact']['mitab']
-if type(organism) is int:
-    organism = '%u' % organism
-c = curl.Curl(
-    url,
-    silent = False,
-    large = True,
-    files_needed = ['intact.txt'],
-    default_mode = 'rb',
-)
-data = c.result
-f = data['intact.txt']
-size = c.sizes['intact.txt']
-lnum = 0
+    
+    def get_id_type(field):
+        
+        id_type = None if field == '-' else field.split(':')[0]
+        
+        return id_types[id_type] if id_type in id_types else id_type
+    
+    
+    def get_id(field):
+        
+        if field == '-':
+            
+            return None, None
+            
+        else:
+            
+            return _try_isoform(field.split(':')[1].replace('"', ''))
+    
+    
+    def get_taxon(field):
+        
+        return (
+            0
+                if field == '-' else
+            field.split('|')[0].split(':')[1].split('(')[0]
+        )
+    
+    
+    results = []
+    url = urls.urls['intact']['mitab']
+    
+    if type(organism) is int:
+        organism = '%u' % organism
+    
+    c = curl.Curl(
+        url,
+        silent = False,
+        large = True,
+        files_needed = ['intact.txt'],
+    )
+    
+    data = c.result['intact.txt']
+    size = c.sizes['intact.txt']
     prg = progress.Progress(size, 'Reading IntAct MI-tab file', 99)
     
-    for lnum, l in enumerate(f):
+    for lnum, l in enumerate(data):
         
         prg.step(len(l))
         
@@ -9053,18 +9103,16 @@ lnum = 0
             
             continue
         
-        l = l.replace('\n', '').replace('\r', '').strip()
-        l = l.split('\t')
-        tax1 = '0' if l[9] == '-' \
-            else l[9].split('|')[0].split(':')[1].split('(')[0]
-        tax2 = '0' if l[10] == '-' \
-            else l[10].split('|')[0].split(':')[1].split('(')[0]
+        l = l.strip('\n\r ').split('\t')
+        
+        taxon_a = get_taxon(l[9])
+        taxon_b = get_taxon(l[10])
         
         if (
             (
                 organism is None or (
-                    tax1 == organism and
-                    tax2 == organism
+                    taxon_a == organism and
+                    taxon_b == organism
                 )
             ) and (
                 complex_expansion or
@@ -9072,6 +9120,7 @@ lnum = 0
             )
         ):
             
+            # finding mi-score and author
             sc = '0'
             au = '0'
             
@@ -9079,49 +9128,61 @@ lnum = 0
                 
                 if s.startswith('intact-miscore'):
                     sc = s.split(':')[1]
+                
                 if s.startswith('author'):
                     au = len(s.split(':')[1])
             
-            if float(sc) >= miscore:
+            # filtering for mi-score
+            if float(sc) < miscore:
                 
-                nt1 = 'unknown' if l[0] == '-' else l[0].split(':')[0]
-                nt2 = 'unknown' if l[1] == '-' else l[1].split(':')[0]
-                if nt1 == 'uniprotkb' and nt2 == 'uniprotkb':
-                    u1 = 'unknown' if l[0] == '-' \
-                        else '-'.join(l[0].split(':')[1:]).replace('"', '')
-                    u2 = 'unknown' if l[1] == '-' \
-                        else '-'.join(l[1].split(':')[1:]).replace('"', '')
-                    uniprots = tuple(sorted([u1, u2]))
-                    if uniprots not in result:
-                        result[uniprots] = [set([]), set([]), set([])]
-                    list(
-                        map(result[uniprots][0].add,
-                            map(lambda ref: ref[1],
-                                filter(lambda ref: ref[0] == 'pubmed',
-                                       map(lambda pm: pm.split(':'), l[8]
-                                           .split('|'))))))
-                    list(
-                        map(result[uniprots][1].add,
-                            map(
-                                lambda m:
-                                    m.split('(')[1].replace(
-                                        ')', '').replace('"', ''),
-                                l[6].split('|')
-                            )
-                        )
-                    )
-                    if l[15] != '-':
-                        result[uniprots][2].add(l[15].split('(')[1].replace(
-                            ')', ''))
+                continue
+            
+            id_type_a = get_id_type(l[0])
+            id_type_b = get_id_type(l[0])
+            
+            if (
+                only_proteins and not (
+                    id_type_a == 'uniprot' and
+                    id_type_b == 'uniprot'
+                )
+            ):
+                
+                continue
+            
+            id_a, isoform_a = get_id(l[0])
+            id_b, isoform_b = get_id(l[1])
+            
+            key = tuple(sorted((id_a, id_b)))
+            
+            pubmeds = set(
+                ref[1] for ref in (
+                    ref.split(':')
+                    for ref in l[8].split('|')
+                )
+                if ref[0] == 'pubmed'
+            )
+            methods = set(
+                met.split('(')[1].strip(')"')
+                for met in  l[6].split('|')
+            )
+            
+            results.append(
+                IntactInteraction(
+                    id_a = id_a,
+                    id_b = id_b,
+                    id_type_a = id_type_a,
+                    id_type_b = id_type_b,
+                    pubmeds = pubmeds,
+                    methods = methods,
+                    mi_score = sc,
+                    isoform_a = isoform_a,
+                    isoform_b = isoform_b,
+                )
+            )
     
-    result = map(lambda d:
-                 [d[0][0], d[0][1], ';'.join(list(d[1][0])), ';'.join(
-                     list(d[1][1])), ';'.join(list(d[1][2]))],
-                 iteritems(result)
-                 )
     prg.terminate()
     
-    return list(result)
+    return results
 
 
 def deathdomain_interactions():
