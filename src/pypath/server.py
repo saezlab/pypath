@@ -24,10 +24,10 @@ import sys
 import os
 
 try:
-    from twisted.web import server, resource
-    from twisted.internet import reactor
+    import twisted.web
+    import twisted.internet
 except:
-    sys.stdout.write('\t:: No `twisted` available.\n')
+    self._log('\t:: No `twisted` available.\n')
 
 import urllib
 import json
@@ -38,6 +38,7 @@ import numpy as np
 import pypath.descriptions as descriptions
 import pypath._html as _html
 import pypath.urls as urls
+import pypath.session_mod as session_mod
 from pypath.common import flatList
 from pypath._version import __version__
 
@@ -50,12 +51,14 @@ def stop_server():
     reactor.removeAll()
 
 
-class BaseServer(resource.Resource):
+class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
     
     
     def __init__(self):
         
-        sys.stdout.write('BaseServer initialized\n')
+        session_mod.Logger.__init__(name = 'server')
+        
+        self._log('Initializing BaseServer.')
         
         self.htmls = ['info', '']
         self.welcome_message = (
@@ -66,7 +69,9 @@ class BaseServer(resource.Resource):
         )
         
         self.isLeaf = True
-        resource.Resource.__init__(self)
+        
+        twisted.web.resource.Resource.__init__(self)
+        self._log('Twisted resource initialized.')
     
     
     def render_GET(self, request):
@@ -127,7 +132,7 @@ class BaseServer(resource.Resource):
         
         request.finish()
         
-        return server.NOT_DONE_YET
+        return twisted.web.server.NOT_DONE_YET
     
     
     def render_POST(self, request):
@@ -260,7 +265,7 @@ class BaseServer(resource.Resource):
         return bool(arg)
 
 
-class TableServer(BaseServer):
+class TableServer(session_mod.Logger, BaseServer):
     
     list_fields = {
         'sources',
@@ -423,7 +428,9 @@ class TableServer(BaseServer):
             'complexes': 'omnipath_webservice_complexes.tsv',
         }):
         
-        sys.stdout.write('TableServer initialized\n')
+        session_mod.Logger.__init__(self, name = 'server')
+        
+        self._log('TableServer starting up.')
         
         self.tbls = tbls
         self.data = {}
@@ -434,19 +441,20 @@ class TableServer(BaseServer):
         self._preprocess_complexes()
         
         BaseServer.__init__(self)
+        self._log('TableServer startup ready.')
     
     
     def _read_tables(self):
         
-        sys.stdout.write('Loading data tables\n')
+        self._log('Loading data tables.')
         
         for name, fname in iteritems(self.tbls):
             
             if not os.path.exists(fname):
                 
-                sys.stdout.write('\t:: Server: missing table: `%s`\n' % (
-                    fname
-                ))
+                self._log(
+                    'Server: missing table: `%s`.' % fname
+                )
                 continue
             
             self.data[name] = pd.DataFrame.from_csv(
@@ -455,8 +463,8 @@ class TableServer(BaseServer):
                 index_col = None,
             )
             
-            sys.stdout.write(
-                'Table `%s` loaded from file `%s`\n' % (name, fname)
+            self._log(
+                'Table `%s` loaded from file `%s`.' % (name, fname)
             )
     
     
@@ -475,7 +483,7 @@ class TableServer(BaseServer):
     
     def _preprocess_interactions(self):
         
-        sys.stdout.write('Preprocessing interactions\n')
+        self._log('Preprocessing interactions.')
         tbl = self.data['interactions']
         tbl['set_sources'] = pd.Series(
             [set(s.split(';')) for s in tbl.sources]
@@ -492,7 +500,7 @@ class TableServer(BaseServer):
     
     def _preprocess_ptms(self):
         
-        sys.stdout.write('Preprocessing ptms\n')
+        self._log('Preprocessing ptms.')
         tbl = self.data['ptms']
         tbl['set_sources'] = pd.Series(
             [set(s.split(';')) for s in tbl.sources]
@@ -501,7 +509,7 @@ class TableServer(BaseServer):
     
     def _preprocess_complexes(self):
         
-        sys.stdout.write('Preprocessing complexes\n')
+        self._log('Preprocessing complexes.')
         tbl = self.data['complexes']
         tbl['set_sources'] = pd.Series(
             [set(s.split(';')) for s in tbl.sources]
@@ -513,7 +521,7 @@ class TableServer(BaseServer):
     
     def _preprocess_annotations(self):
         
-        sys.stdout.write('Preprocessing annotations\n')
+        self._log('Preprocessing annotations.')
         pass
     
     
@@ -1059,9 +1067,9 @@ class TableServer(BaseServer):
             
             proteins = set(args['proteins'])
             
-            tbl = tbl[tbl.uniprot.isin(proteins)
+            tbl = tbl[tbl.uniprot.isin(proteins)]
         
-        return seld._serve_dataframe(tbl, req)
+        return self._serve_dataframe(tbl, req)
     
     
     def complexes(self):
@@ -1432,6 +1440,6 @@ class Rest(object):
         """
         
         self.port = port
-        self.site = server.Site(serverclass(**kwargs))
-        reactor.listenTCP(self.port, self.site)
-        reactor.run()
+        self.site = twisted.web.server.Site(serverclass(**kwargs))
+        twisted.internet.reactor.listenTCP(self.port, self.site)
+        twisted.internet.reactor.run()

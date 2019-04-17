@@ -52,6 +52,9 @@ class WebserviceTables(session_mod.Logger):
             outfile_annotations = 'omnipath_webservice_annotations',
         ):
         
+        session_mod.Logger.__init__(self, name = 'websrvtab')
+        self._log('WebserviceTables initialized.')
+        
         self.only_human = only_human
         self.outfile_interactions = outfile_interactions
         self.outfile_ptms = outfile_ptms
@@ -78,6 +81,7 @@ class WebserviceTables(session_mod.Logger):
     
     def interactions(self):
         
+        self._log('Building `interactions` data frame.')
         dataframes = []
         
         tfregulons = copy.deepcopy(data_formats.transcription)
@@ -142,9 +146,14 @@ class WebserviceTables(session_mod.Logger):
             sep = '\t',
             index = False
         )
+        self._log('Data frame `interactions` has been exported to `%s`.' % (
+            self.outfile_interactions,
+        ))
     
     
     def ptms(self):
+        
+        self._log('Building `ptms` data frame.')
         
         dataframes = []
         
@@ -169,9 +178,15 @@ class WebserviceTables(session_mod.Logger):
             sep = '\t',
             index = False
         )
+        
+        self._log('Data frame `ptms` has been exported to `%s`.' % (
+            self.outfile_ptms,
+        ))
     
     
     def complexes(self):
+        
+        self._log('Building `complexes` data frame.')
         
         co = complex.ComplexAggregator()
         
@@ -183,9 +198,15 @@ class WebserviceTables(session_mod.Logger):
             sep = '\t',
             index = False,
         )
+        
+        self._log('Data frame `complexes` has been exported to `%s`.' % (
+            self.outfile_complexes,
+        ))
     
     
     def annotations(self):
+        
+        self._log('Building `annotations` data frame.')
         
         an = annot.AnnotationTable(keep_annotators = True)
         an.load()
@@ -198,3 +219,7 @@ class WebserviceTables(session_mod.Logger):
             sep = '\t',
             index = False,
         )
+        
+        self._log('Data frame `annotations` has been exported to `%s`.' % (
+            self.outfile_annotations,
+        ))
