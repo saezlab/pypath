@@ -85,7 +85,7 @@ descriptions = {
         'omnipath': False,
         'pypath': {
             'get': ['pypath.dataio.get_lit_bm_13()'],
-            'data': ['pypath.data_formats.urls[\'hid\'][\'lit-bm-13\']'],
+            'data': ['pypath.urls.urls[\'hid\'][\'lit-bm-13\']'],
             'input': ['pypath.data_formats.interaction_misc[\'lit13\']']
         },
         'license': {
@@ -135,10 +135,10 @@ descriptions = {
         },
         'pypath': {
             'data': [
-                'pypath.data_formats.urls[\'ielm_domains\'][\'url\']',
-                'pypath.data_formats.urls[\'elm_class\'][\'url\']',
-                'pypath.data_formats.urls[\'elm_inst\'][\'url\']',
-                'data_formats.urls[\'elm_int\'][\'url\']'
+                'pypath.urls.urls[\'ielm_domains\'][\'url\']',
+                'pypath.urls.urls[\'elm_class\'][\'url\']',
+                'pypath.urls.urls[\'elm_inst\'][\'url\']',
+                'urls.urls[\'elm_int\'][\'url\']'
             ],
             'format': [
                 'pypath.data_formats.ptm[\'elm\']',
@@ -231,13 +231,13 @@ descriptions = {
         'emails': [('haw2002@med.cornell.edu', 'Harel Weinstein'),
                    ('pdzbase@med.cornell.edu', 'PDZBase Team')],
         'type': 'literature curated',
-        'subtype': 'pathway',
+        'subtype': 'activity flow',
         'omnipath': True,
         'pypath': {
             'intr': ['pypath.dataio.get_pdzbase()'],
             'data': [
-                'pypath.data_formats.urls[\'pdzbase\']',
-                'pypath.data_formats.urls[\'pdz_details\']'
+                'pypath.urls.urls[\'pdzbase\']',
+                'pypath.urls.urls[\'pdz_details\']'
             ],
             'format': [
                 'pypath.data_formats.pathway[\'pdz\']',
@@ -281,7 +281,7 @@ descriptions = {
         [('enquiries@guidetopharmacology.org', 'Guide to Pharmacology Team'),
          ('cdsouthan@hotmail.com', 'Cristopher Southan')],
         'type': 'literature curated',
-        'subtype': 'pathway',
+        'subtype': 'activity flow',
         'omnipath': True,
         'license': {
             'name': 'CC-Attribution-ShareAlike-3.0',
@@ -339,8 +339,8 @@ descriptions = {
                 'pypath.data_formats.omnipath[\'phelm\']'
             ],
             'data': [
-                'pypath.data_formats.urls[\'p_elm\'][\'psites\']',
-                'data_formats.urls[\'p_elm_kin\'][\'url\']'
+                'pypath.urls.urls[\'p_elm\'][\'psites\']',
+                'urls.urls[\'p_elm_kin\'][\'url\']'
             ],
             'intr': ['pypath.dataio.phelm_interactions()'],
             'input': [
@@ -390,7 +390,7 @@ descriptions = {
             'url': 'http://creativecommons.org/licenses/by/2.5'
         },
         'pypath': {
-            'data': ['pypath.data_formats.urls[\'domino\'][\'url\']'],
+            'data': ['pypath.urls.urls[\'domino\'][\'url\']'],
             'input':
             ['pypath.dataio.get_domino()', 'pypath.dataio.get_domino_ddi()'],
             'format': [
@@ -450,8 +450,8 @@ descriptions = {
                 'pypath.data_formats.omnipath[\'dbptm\']'
             ],
             'data': [
-                'pypath.data_formats.urls[\'dbptm_benchmark\'][\'urls\']',
-                'pypath.data_formats.urls[\'dbptm\'][\'urls\']'
+                'pypath.urls.urls[\'dbptm_benchmark\'][\'urls\']',
+                'pypath.urls.urls[\'dbptm\'][\'urls\']'
             ],
             'input': ['pypath.dataio.get_dbptm()'],
             'intr': ['pypath.dataio.dbptm_interactions()'],
@@ -485,7 +485,7 @@ descriptions = {
         'color': '',
         'data_import': ['SignaLink3', 'PhosphoSite'],
         'type': 'literature curated',
-        'subtype': 'pathway',
+        'subtype': 'activity flow',
         'omnipath': True,
         'emails': [('perfetto@live.it', 'Livia Perfetto')],
         'license': {
@@ -493,7 +493,7 @@ descriptions = {
             'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
         },
         'pypath': {
-            'data': ['pypath.data_formats.urls[\'signor\'][\'all_url\']'],
+            'data': ['pypath.urls.urls[\'signor\'][\'all_url\']'],
             'format': ['pypath.data_formats.pathway[\'signor\']'],
             'intr': ['pypath.dataio.signor_interactions()'],
             'ptm': [
@@ -573,7 +573,7 @@ descriptions = {
         'emails': [('korcsmaros@gmail.com', 'Tamas Korcsmaros'),
                    ('tamas.korcsmaros@tgac.ac.uk', 'Tamas Korcsmaros')],
         'type': 'literature curated',
-        'subtype': 'pathway',
+        'subtype': 'activity flow',
         'omnipath': True,
         'license': {
             'name': 'CC-Attribution-NonCommercial-ShareAlike-3.0',
@@ -610,7 +610,7 @@ descriptions = {
         'emails': [('korcsmaros@gmail.com', 'Tamas Korcsmaros'),
                    ('tamas.korcsmaros@tgac.ac.uk', 'Tamas Korcsmaros')],
         'type': 'literature curated',
-        'subtype': 'pathway',
+        'subtype': 'activity flow',
         'omnipath': True,
         'license': {
             'name': 'CC-Attribution-NonCommercial-ShareAlike-3.0',
@@ -643,7 +643,7 @@ descriptions = {
         'emails': [('korcsmaros@gmail.com', 'Tamas Korcsmaros'),
                    ('tamas.korcsmaros@tgac.ac.uk', 'Tamas Korcsmaros')],
         'type': 'literature curated',
-        'subtype': 'pathway',
+        'subtype': 'activity flow',
         'omnipath': True,
         'license': {
             'name': 'CC-Attribution-NonCommercial-ShareAlike-3.0',
@@ -685,8 +685,8 @@ descriptions = {
         },
         'pypath': {
             'data': [
-                'data_formats.urls[\'hprd_all\'][\'url\']',
-                'data_formats.urls[\'hprd_all\'][\'ptm_file\']'
+                'urls.urls[\'hprd_all\'][\'url\']',
+                'urls.urls[\'hprd_all\'][\'ptm_file\']'
             ],
             'input': ['pypath.dataio.get_hprd()'],
             'intr': ['pypath.dataio.hprd_interactions()'],
@@ -731,10 +731,10 @@ descriptions = {
         },
         'pypath': {
             'data': [
-                'pypath.data_formats.urls[\'acsn\'][\'url\']',
+                'pypath.urls.urls[\'acsn\'][\'url\']',
                 'pypath.data_formats.files[\'acsn\'][\'ppi\']',
                 'pypath.data_formats.files[\'acsn\'][\'names\']',
-                'pypath.data_formats.urls[\'acsn\'][\'biopax_l3\']'
+                'pypath.urls.urls[\'acsn\'][\'biopax_l3\']'
             ],
             'input': [
                 'pypath.dataio.get_acsn()', 'pypath.dataio.get_acsn_effects()',
@@ -797,7 +797,7 @@ descriptions = {
             '''
         ],
         'type': 'literature curated',
-        'subtype': 'pathway',
+        'subtype': 'activity flow',
         'omnipath': True,
         'data_integration': 'static',
         'license': {
@@ -858,7 +858,7 @@ descriptions = {
             '''
         ],
         'type': 'literature curated',
-        'subtype': 'pathway',
+        'subtype': 'activity flow',
         'omnipath': True,
         'pypath': {
             'input': [
@@ -869,9 +869,9 @@ descriptions = {
             ],
             'intr': ['pypath.dataio.trip_interactions()'],
             'data': [
-                'pypath.data_formats.urls[\'trip\'][\'intr\']',
-                'pypath.data_formats.urls[\'trip\'][\'show\']',
-                'pypath.data_formats.urls[\'trip\'][\'json\']',
+                'pypath.urls.urls[\'trip\'][\'intr\']',
+                'pypath.urls.urls[\'trip\'][\'show\']',
+                'pypath.urls.urls[\'trip\'][\'json\']',
             ],
             'format': [
                 'pypath.data_formats.pathway[\'trip\']',
@@ -904,7 +904,7 @@ descriptions = {
             '''
         ],
         'type': 'literature curated',
-        'subtype': 'pathway',
+        'subtype': 'activity flow',
         'omnipath': False,
         'license': {
             'name': 'No license',
@@ -950,7 +950,7 @@ descriptions = {
             '''
         ],
         'type': 'literature curated',
-        'subtype': 'pathway',
+        'subtype': 'activity flow',
         'omnipath': False,
         'license': {
             'name': 'No license',
@@ -990,7 +990,7 @@ descriptions = {
             '''
         ],
         'type': 'literature curated',
-        'subtype': 'pathway',
+        'subtype': 'activity flow',
         'omnipath': False,
         'license': {
             'name':
@@ -1045,11 +1045,11 @@ descriptions = {
             '''
         ],
         'type': 'literature curated',
-        'subtype': 'pathway',
+        'subtype': 'activity flow',
         'omnipath': True,
         'data_integration': 'dynamic',
         'pypath': {
-            'intr': ['pypath.data_formats.urls[\'ca1\'][\'url\']'],
+            'intr': ['pypath.urls.urls[\'ca1\'][\'url\']'],
             'data': ['pypath.dataio.get_ca1()'],
             'format': [
                 'pypath.data_formats.pathway[\'ca1\']',
@@ -1093,8 +1093,8 @@ descriptions = {
         'pypath': {
             'intr': ['pypath.dataio.get_ccmap()'],
             'data': [
-                'pypath.data_formats.urls[\'ccmap\'][\'nodes\']',
-                'pypath.data_formats.urls[\'ccmap\'][\'edges\']'
+                'pypath.urls.urls[\'ccmap\'][\'nodes\']',
+                'pypath.urls.urls[\'ccmap\'][\'edges\']'
             ],
             'format': [
                 'pypath.data_formats.interaction[\'ccmap\']',
@@ -1164,14 +1164,14 @@ descriptions = {
         ],
         'type': 'literature curated',
         'data_integration': 'dynamic',
-        'subtype': 'pathway',
+        'subtype': 'activity flow',
         'omnipath': False,
         'license': {
             'name': 'No license',
             'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
         },
         'pypath': {
-            'data': ['pypath.data_formats.urls[\'hsn\']'],
+            'data': ['pypath.urls.urls[\'hsn\']'],
             'format': ['pypath.data_formats.interaction_misc[\'hsn\']'],
             'intr': ['pypath.dataio.get_hsn()']
         }
@@ -1237,7 +1237,7 @@ descriptions = {
             '''
         ],
         'type': 'literature curated',
-        'subtype': 'reaction network',
+        'subtype': 'process description',
         'data_integration': 'dynamic',
         'omnipath': False,
         'emails': [('help@reactome.org', 'Reactome Team'),
@@ -1248,9 +1248,9 @@ descriptions = {
         },
         'pypath': {
             'data': [
-                'pypath.data_formats.urls[\'reactome\'][\'sbml\']',
-                'pypath.data_formats.urls[\'reactome\'][\'biopax_l2\']',
-                'pypath.data_formats.urls[\'reactome\'][\'biopax_l3\']'
+                'pypath.urls.urls[\'reactome\'][\'sbml\']',
+                'pypath.urls.urls[\'reactome\'][\'biopax_l2\']',
+                'pypath.urls.urls[\'reactome\'][\'biopax_l3\']'
             ],
             'format': ['pypath.data_formats.reaction_misc[\'reactome\']'],
             'intr': ['pypath.dataio.reactome_interactions()'],
@@ -1284,7 +1284,7 @@ descriptions = {
         'pypath': {
             'input': ['pypath.dataio.get_li2012()'],
             'data': [
-                'pypath.data_formats.urls[\'li2012\'][\'file\']'
+                'pypath.urls.urls[\'li2012\'][\'file\']'
                 'pypath.data/li2012.csv'
             ],
             'intr': ['pypath.dataio.li2012_interactions()'],
@@ -1319,7 +1319,7 @@ descriptions = {
             '''
         ],
         'type': 'literature curated',
-        'subtype': 'pathway',
+        'subtype': 'activity flow',
         'omnipath': False,
         'license': {
             'name': 'No license.',
@@ -1358,7 +1358,7 @@ descriptions = {
         ],
         'type': 'literature curated',
         'data_integration': 'static',
-        'subtype': 'pathway',
+        'subtype': 'activity flow',
         'omnipath': False,
         'pypath': {
             'data': ['pypath.data/alzpw-ppi.csv'],
@@ -1478,7 +1478,7 @@ descriptions = {
             '''
         ],
         'type': 'literature curated',
-        'subtype': 'pathway',
+        'subtype': 'activity flow',
         'omnipath': True,
         'license': {
             'name': 'No license',
@@ -1545,7 +1545,7 @@ descriptions = {
             '''
         ],
         'type': 'literature curated',
-        'subtype': 'reaction network',
+        'subtype': 'process description',
         'data_integration': 'dynamic',
         'omnipath': False,
         'license': {
@@ -1556,8 +1556,8 @@ descriptions = {
             'input': ['pypath.dataio.netpath_names()'],
             'intr': ['pypath.dataio.netpath()'],
             'data': [
-                'pypath.data_formats.urls[\'netpath_psimi\']',
-                'pypath.data_formats.urls[\'netpath_names\']'
+                'pypath.urls.urls[\'netpath_psimi\']',
+                'pypath.urls.urls[\'netpath_names\']'
             ],
             'format': ['pypath.data_formats.interaction[\'netpath\']']
         },
@@ -1652,7 +1652,7 @@ descriptions = {
             'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
         },
         'pypath': {
-            'data': ['pypath.data_formats.urls[\'corum\'][\'url\']'],
+            'data': ['pypath.urls.urls[\'corum\'][\'url\']'],
             'input': [
                 'pypath.dataio.get_corum()',
                 'pypath.pypath.PyPath().load_corum()'
@@ -1687,7 +1687,7 @@ descriptions = {
             '''
         ],
         'type': 'literature curated',
-        'subtype': 'pathway',
+        'subtype': 'activity flow',
         'omnipath': False,
         'license': {
             'name': 'No license.',
@@ -1803,7 +1803,7 @@ descriptions = {
             ],
             'data': [
                 'pypath.data/depod-refs.csv',
-                'pypath.data_formats.urls[\'depod\'][\'url\']'
+                'pypath.urls.urls[\'depod\'][\'url\']'
             ],
             'input': ['pypath.dataio.get_depod()'],
             'ptm': ['pypath.pypath.PyPath().load_depod_dmi()']
@@ -1876,7 +1876,7 @@ descriptions = {
             '''
         ],
         'type': 'literature curated',
-        'subtype': 'reaction network',
+        'subtype': 'process description',
         'omnipath': False,
         'emails': [('feedback@pantherdb.org', 'Panther Team'),
                    ('paul.thomas@sri.com', 'Paul Thomas')],
@@ -1936,10 +1936,10 @@ descriptions = {
                 'pypath.data_formats.ptm_misc[\'psite_noref\']'
             ],
             'data': [
-                'pypath.data_formats.urls[\'psite_bp\'][\'url\']',
-                'pypath.data_formats.urls[\'psite_kin\'][\'url\']',
-                'pypath.data_formats.urls[\'psite_p\'][\'url\']',
-                'pypath.data_formats.urls[\'psite_reg\'][\'url\']',
+                'pypath.urls.urls[\'psite_bp\'][\'url\']',
+                'pypath.urls.urls[\'psite_kin\'][\'url\']',
+                'pypath.urls.urls[\'psite_p\'][\'url\']',
+                'pypath.urls.urls[\'psite_reg\'][\'url\']',
                 'pypath.data_formats.files[\'phosphosite\'][\'curated\']',
                 'pypath.data_formats.files[\'phosphosite\'][\'noref\']'
             ],
@@ -1986,7 +1986,7 @@ descriptions = {
             '''
         ],
         'type': 'literature curated',
-        'subtype': 'pathway',
+        'subtype': 'activity flow',
         'data_integration': 'static',
         'omnipath': True,
         'emails': [('rshamir@tau.ac.il', 'Ron Shamir')],
@@ -2043,7 +2043,7 @@ descriptions = {
             '''
         ],
         'type': 'literature curated',
-        'subtype': 'reaction network',
+        'subtype': 'process description',
         'omnipath': False,
         'emails': [('yanch@mail.nih.gov', 'Chunhua Yan')],
         'license': {
@@ -2051,7 +2051,7 @@ descriptions = {
             'url': 'http://www.gnu.org/licenses/license-list.html#NoLicense'
         },
         'pypath': {
-            'data': ['pypath.data_formats.urls[\'nci-pid\'][\'biopax_l3\']'],
+            'data': ['pypath.urls.urls[\'nci-pid\'][\'biopax_l3\']'],
             'format': ['pypath.data_formats.reaction_misc[\'nci_pid\']'],
             'input': ['pypath.dataio.pid_biopax()'],
             'intr': ['pypath.dataio.pid_interactions()']
@@ -2080,7 +2080,7 @@ descriptions = {
             '''
         ],
         'type': 'literature curated',
-        'subtype': 'reaction network',
+        'subtype': 'process description',
         'omnipath': False,
         'emails': [('thomaskelder@gmail.com', 'Thomas Kelder'),
                    ('apico@gladstone.ucsf.edu', 'Alex Pico')],
@@ -2117,7 +2117,7 @@ descriptions = {
             '''
         ],
         'type': 'literature curated',
-        'subtype': 'pathway',
+        'subtype': 'activity flow',
         'emails': [('kamburov@molgen.mpg.de', 'Atanas Kamburov')],
         'license': {
             'name':
@@ -2144,7 +2144,7 @@ descriptions = {
             '''
         ],
         'type': 'literature curated',
-        'subtype': 'reaction network',
+        'subtype': 'process description',
         'omnipath': False,
         'emails': [('kanehisa@kuicr.kyoto-u.ac.jp', 'Minoru Kaneshia')],
         'license': {
@@ -2154,8 +2154,8 @@ descriptions = {
         'pathguide': 16,
         'pypath': {
             'data': [
-                'pypath.data_formats.urls[\'kegg_pws\'][\'kgml_url\']',
-                'pypath.data_formats.urls[\'kegg_pws\'][\'list_url\']'
+                'pypath.urls.urls[\'kegg_pws\'][\'kgml_url\']',
+                'pypath.urls.urls[\'kegg_pws\'][\'list_url\']'
             ],
             'input': ['pypath.dataio.kegg_pathways()'],
             'misc': ['pypath.pypath.kegg_directions()']
@@ -2202,7 +2202,7 @@ descriptions = {
                 'pypath.data_formats.interaction[\'biogrid\']',
                 'pypath.data_formats.omnipath[\'biogrid\']'
             ],
-            'data': ['pypath.data_formats.urls[\'biogrid\']'],
+            'data': ['pypath.urls.urls[\'biogrid\']'],
             'intr': ['pypath.dataio.biogrid_interactions()']
         },
         'pathguide': 7
@@ -2445,8 +2445,8 @@ descriptions = {
         },
         'pypath': {
             'data': [
-                'pypath.data_formats.urls[\'sigflow\']',
-                'pypath.data_formats.urls[\'sigdir\']'
+                'pypath.urls.urls[\'sigflow\']',
+                'pypath.urls.urls[\'sigdir\']'
             ],
             'input': [
                 'pypath.dataio.get_laudanna_directions()',
@@ -2457,7 +2457,94 @@ descriptions = {
                 'pypath.pypath.PyPath().laudanna_effects()'
             ]
         }
-    }
+    },
+    'ORegAnno': {
+        'year': 2016,
+        'urls': {
+            'articles': [
+                'https://academic.oup.com/nar/article/44/D1/D126/2502683',
+            ],
+            'webpages': [
+                'http://www.oreganno.org/',
+            ]
+        },
+        'emails': [('ogriffit@genome.wustl.edu', 'Obi L. Griffith')],
+        'type': 'literature curated & high throughput',
+        'subtype': 'transcription regulation',
+        'full_name': 'Open Regulatory Annotation',
+        'omnipath': False,
+        'dorothea': True,
+        'pubmeds': ['26578589'],
+        'license': {
+            'name': 'GNU LGPLv3',
+            'url': 'http://www.gnu.org/licenses/license-list.html#LGPLv3'
+        },
+        'notes': [
+            '''
+            One of the largest TF-target databases. Covers at least 18
+            organisms and contains data from literature curation and many
+            screening technologies and in silico prediction.
+            '''
+        ],
+        'pypath': {
+            'data': [
+                'pypath.urls.urls[\'oreganno\']',
+            ],
+            'input': [
+                'pypath.dataio.get_oreganno()',
+            ],
+        },
+        'omictools': ['https://omictools.com/oreganno-tool'],
+    },
+    'PAZAR': {
+        'year': 2009,
+        'releases': [2007],
+        'urls': {
+            'articles': [
+                (
+                    'https://genomebiology.biomedcentral.com/'
+                    'articles/10.1186/gb-2007-8-10-r207'
+                ),
+                'https://academic.oup.com/nar/article/37/suppl_1/D54/1010368',
+            ],
+            'webpages': [
+                'http://www.pazar.info/',
+            ],
+        },
+        'emails': [('wyeth@cmmt.ubc.ca', 'Wyeth Wasserman')],
+        'authors': ['Wasserman Lab'],
+        'type': 'literature curated & high throughput',
+        'subtype': 'transcription regulation',
+        'full_name': (
+            'A Public Database of Transcription Factor '
+            'and Regulatory Sequence Annotation'
+        ),
+        'omnipath': False,
+        'dorothea': True,
+        'pubmeds': ['18971253', '17916232'],
+        'license': {
+            'name': 'GNU LGPLv3',
+            'url': 'http://www.gnu.org/licenses/license-list.html#LGPLv3'
+        },
+        'notes': [
+            '''
+            One of the oldest and largest TF-target databases. From the
+            Wasserman Lab, who also developed JASPAR and many other tools.
+            Unfortunately the website is down at the moment (April 2019).
+            Which was, by the way, in that time (2007) a super nice and
+            innovative design for a molecular database webpage.
+            '''
+        ],
+        'pypath': {
+            'data': [
+                'pypath.urls.urls[\'pazar\']',
+            ],
+            'input': [
+                'pypath.dataio.get_pazar()',
+            ],
+        },
+        'omictools': ['http://omictools.com/pazar-tool'],
+    },
 }
 
 pypath_methods = {
