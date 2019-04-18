@@ -9414,16 +9414,21 @@ def homologene_uniprot_dict(source, target, only_swissprot = True):
                 target_r.update(hgr[r])
 
         for e in target_e:
-            target_u.update(set(m.map_name(e, 'entrez', 'uniprot', target)))
+            target_u.update(
+                mapping.map_name(e, 'entrez', 'uniprot', target)
+            )
 
         for r in target_r:
-            target_u.update(set(m.map_name(e, 'refseqp', 'uniprot', target)))
+            target_u.update(
+                mapping.map_name(e, 'refseqp', 'uniprot', target)
+            )
+            
 
         target_u = \
             itertools.chain(
                 *map(
                     lambda tu:
-                        m.map_name(tu, 'uniprot', 'uniprot', target),
+                        mapping.map_name(tu, 'uniprot', 'uniprot', target),
                     target_u
                 )
             )

@@ -3492,7 +3492,7 @@ class PyPath(session_mod.Logger):
                               else d.translate(ids))
 
                 # copying `refs_by_dir`
-                te['refs_by_dir'] = self.translate_refsdir(e['refs_by_dir'],
+                te['refs_by_dir'] = self._translate_refsdir(e['refs_by_dir'],
                                                            ids)
 
                 # copying further attributes:
@@ -3844,7 +3844,6 @@ class PyPath(session_mod.Logger):
         if isinstance(edge, list):
 
             if not add:
-                sys.stdout.write('\tERROR: Failed to add some edges\n')
                 self._log('Failed to add some edges', -5)
                 aid = self.nodDct[id_a]
                 bid = self.nodDct[id_b]
@@ -6096,6 +6095,7 @@ class PyPath(session_mod.Logger):
         for lst in [huge, nothuge]:
 
             for k, v in iteritems(lst):
+                
                 self.load_resource(
                     v,
                     clean = False,
@@ -6104,21 +6104,6 @@ class PyPath(session_mod.Logger):
                     redownload = redownload,
                     keep_raw = keep_raw,
                 )
-
-                # try:
-                #    self.load_resource(v, clean = False,
-                #        cache_files = cache_files,
-                #        reread = reread,
-                #        redownload = redownload)
-                # except:
-                #    sys.stdout.write('\t:: Could not load %s, unexpected error '\
-                #        'occurred, see %s for error.\n'%(k, self.ownlog.logfile))
-                #    self.ownlog.msg(1, 'Error at loading %s: \n%s\n, \t%s, %s\n' % \
-                #            (k, sys.exc_info()[1],
-                #            sys.exc_info()[2],
-                #            sys.exc_info()[0]),
-                #        'ERROR')
-                #    sys.stdout.flush()
 
         sys.stdout.write('\n')
         
@@ -13742,6 +13727,7 @@ class PyPath(session_mod.Logger):
 
     def in_complex(self, csources=['corum']):
         """
+        Deprecated, will be removed.
         """
 
         self.graph.es['in_complex'] = \
@@ -13753,217 +13739,341 @@ class PyPath(session_mod.Logger):
     # Methods for translating network to other organism
     #
 
-    def translate_refsdir(self, rd, ids):
+    def _translate_refsdir(self, rd, ids):
         """
+        Homology translation of the `references by direction` dictionaries.
         """
-
+        
         new_refsdir = {}
-
+        
         for k, v in iteritems(rd):
             di = (ids[k[0]], ids[k[1]]) if type(k) is tuple else k
             new_refsdir[di] = v
-
+            
             return new_refsdir
-
-    def orthology_translation(self, target, source=None, only_swissprot=True,
-                              graph=None):
+    
+    
+    def orthology_translation(
+            self,
+            target,
+            source = None,
+            only_swissprot = True,
+            graph = None
+        ):
         """
         Translates the current object to another organism by orthology.
         Proteins without known ortholog will be deleted.
-
-        :param int target: NCBI Taxonomy ID of the target organism.
-            E.g. 10090 for mouse.
+        
+        :param int target:
+            NCBI Taxonomy ID of the target organism. E.g. 10090 for mouse.
         """
-
+        
         return_graph = graph is not None
         graph = self.graph if graph is None else graph
         source = self.ncbi_tax_id if source is None else source
-        orto = dataio.homologene_uniprot_dict(source, target,
-                                              only_swissprot=only_swissprot,
-                                              )
-
+        name_old__name_new = dataio.homologene_uniprot_dict(
+            source = source,
+            target = target,
+            only_swissprot = only_swissprot,
+        )
+        
         vcount_before = graph.vcount()
         ecount_before = graph.ecount()
-
+        
         # nodes could not be mapped are to be deleted
-        vids = dict(map(lambda v: (v[1], v[0]), enumerate(graph.vs['name'])))
-
-        orto = dict(filter(lambda i: i[0] in vids and len(i[1]),
-                           iteritems(orto)))
-
-        toDel = list(map(lambda v: v[1],
-                         filter(lambda v: ((v[0] not in orto
-                                    or not len(orto[v[0]])) and
-                                # nodes of other species or compounds ignored
-                                    graph.vs[v[1]]['ncbi_tax_id'] == source),
-                                iteritems(vids))))
-
-        ndel = len(toDel)
-        graph.delete_vertices(toDel)
-
+        name_old__vid_old = dict(
+            (name, vid)
+            for vid, name in enumerate(graph.vs['name'])
+        )
+        
+        name_old__name_new = dict(
+            (name_old, name_new)
+            for name_old, name_new in iteritems(name_old__name_new)
+            if name_old in name_old__vid_old and name_new
+        )
+        
+        delete_vids = [
+            vid_old
+            for name_old, vid_old in iteritems(name_old__vid_old)
+            if (
+                (
+                    name_old not in name_old__name_new or
+                    not len(name_old__name_new[name_old])
+                ) and
+                # nodes of other species or compounds ignored
+                graph.vs[vid_old]['ncbi_tax_id'] == source
+            )
+        ]
+        
+        ndel = len(delete_vids)
+        graph.delete_vertices(delete_vids)
+        
+        del delete_vids
+        del name_old__vid_old
+        
         # this for permanent identification of nodes:
-        graph.vs['id_old'] = list(range(graph.vcount()))
+        graph.vs['id_old'] = list(xrange(graph.vcount()))
         # a dict of these permanent ids and the orthologs:
-        ovid_orto = dict(map(lambda v: (v['id_old'], orto[v['name']]),
-                             graph.vs))
-
-        # renaming vertices
-        newnames = list(map(lambda v:(orto[v['name']][0]
-                                      if v['ncbi_tax_id'] == source
-                                # nodes of other species or compounds ignored
-                                      else v['name']), graph.vs))
-
-        graph.vs['name'] = newnames
-
+        vid_old__name_new = dict(
+            (
+                v['id_old'],
+                name_old__name_new[v['name']]
+            )
+            for v in graph.vs
+        )
+        
+        # renaming vertices using the first ortholog
+        new_names = [
+            (
+                name_old__name_new[v['name']][0]
+                    if v['ncbi_tax_id'] == source else
+                # nodes of other species or compounds ignored
+                v['name']
+            )
+            for v in graph.vs
+        ]
+        
+        graph.vs['name'] = new_names
+        
+        del new_names
+        
         # the new nodes to be added because of ambiguous mapping
-        toAdd = list(set(itertools.chain(*map(lambda v: v[1:], orto.values())))
-                    # except those already exist:
-                     - set(graph.vs['name']))
-
-        graph += toAdd
-
+        new_nodes = list(
+            set(
+                itertools.chain(*(
+                    names_new[1:]
+                    for names_new in name_old__name_new.values()
+                ))
+            ) -
+            # except those already exist:
+            set(graph.vs['name'])
+        )
+        
+        graph += new_nodes
+        
+        del new_nodes
+        
         # this for permanent identification of nodes:
-        graph.vs['id_new'] = list(range(graph.vcount()))
-
+        graph.vs['id_new'] = list(xrange(graph.vcount()))
+        
         # this is a dict of vertices to be multiplied:
-                                # key is id_new
-        vmul = dict(map(lambda v: (graph.vs.select(id_old = v[0])[0]['id_new'],
-                                    # id_new of all new orthologs
-                                   list(map(lambda vv:
-                                        graph.vs.select(name=vv)[0]['id_new'],
-                                        v[1]))),
-                        iteritems(ovid_orto)))
-
+        vid_new_orig__vid_new_all = dict(
+            (
+                # keys are id_new of the original node
+                graph.vs.select(id_old = vid_old)[0]['id_new'],
+                # id_new of all orthologs
+                [
+                    graph.vs.select(name = name_new)[0]['id_new']
+                    for name_new in names_new
+                ]
+            )
+            for vid_old, names_new in iteritems(vid_old__name_new)
+        )
+        
         # compiling a dict of new edges to be added due to ambigous mapping
-
+        
         # this is for unambiguously identify edges both at directed and
         # undirected graphs after reindexing at adding new edges:
-        graph.es['id_old'] = list(range(graph.ecount()))
-        graph.es['s_t_old'] = list(map(lambda e: (graph.vs[e.source]['id_new'],
-                                                  graph.vs[e.target]['id_new']),
-                                       graph.es))
-        graph.es['u_old'] = list(map(lambda e: (graph.vs[e.source]['name'],
-                                                graph.vs[e.target]['name']),
-                                     graph.es))
+        graph.es['id_orig'] = list(range(graph.ecount()))
+        # pairs of new vertex IDs and names for the original edges
+        graph.es['vids_new__e_orig'] = [
+            (
+                graph.vs[e.source]['id_new'],
+                graph.vs[e.target]['id_new'],
+            )
+            for e in graph.es
+        ]
+        graph.es['names_new__e_orig'] = [
+            (
+                graph.vs[e.source]['name'],
+                graph.vs[e.target]['name'],
+            )
+            for e in graph.es
+        ]
+        
+        # the parent edge original id as key
+        eid_orig__vids_new_not_orig = dict(
+            (
+                eid_orig,
+                [
+                    vids_new__e_new
+                    for vids_new__e_new in itertools.product(
+                        vid_new_orig__vid_new_all[vids_new__e_orig[0]],
+                        vid_new_orig__vid_new_all[vids_new__e_orig[1]],
+                    )
+                    # not the parent edge itself
+                    if not (
+                        vids_new__e_new[0] == vids_new__e_orig[0] and
+                        vids_new__e_new[1] == vids_new__e_orig[1]
+                    )
+                ]
+            )
+            for eid_orig, vids_new__e_orig in (
+                (e['id_orig'], e['vids_new__e_orig']) for e in graph.es
+            )
+        )
 
-                                # the parent edge original id as key
-        edgesToAdd = dict(map(lambda epar: (epar[0], list(filter(lambda enew:
-                                # removing the parent edge itself
-                                (enew[0] != epar[1][0] or
-                                 enew[1] != epar[1][1]),
-                                itertools.product(vmul[epar[1][0]],
-                                                  vmul[epar[1][1]])))),
-                              map(lambda e: (e['id_old'], e['s_t_old']),
-                                  graph.es)))
-
-        # translating the dict values to vertex indices
-        edgesToAddVids = list(set(map(lambda e: (
-                            graph.vs.select(id_new = e[0])[0].index,
-                            graph.vs.select(id_new = e[1])[0].index),
-                        itertools.chain(*edgesToAdd.values()))))
-
+        # translating the dict values to new vertex indices
+        vids_missing = list(
+            set(
+                (
+                    graph.vs.select(id_new = s_vid_new)[0].index,
+                    graph.vs.select(id_new = t_vid_new)[0].index,
+                )
+                for s_vid_new, t_vid_new in (
+                    itertools.chain(*eid_orig__vids_new_not_orig.values())
+                )
+            ) -
+            # but not any existing edge
+            set((e.source, e.target) for e in graph.es) -
+            (
+                set()
+                    if graph.is_directed() else
+                set((e.target, e.source) for e in graph.es)
+            )
+        )
+        
         # creating new edges
-        graph += edgesToAddVids
+        graph += vids_missing
 
         # id_new > current index
-        vids = dict(map(lambda v: (v['id_new'], v.index), graph.vs))
-        # id_new > uniprot
-        vnms = dict(map(lambda v: (v['id_new'], v['name']), graph.vs))
+        vid_new__vid = dict((v['id_new'], v.index) for v in graph.vs)
+        # id_new > name
+        vid_new__name = dict((v['id_new'], v['name']) for v in graph.vs)
+        
         prg = Progress(graph.ecount(), 'Translating network by homology', 21)
 
         # setting attributes on old and new edges:
         for e in graph.es:
+            
             prg.step()
+            
             d = e['dirs']
-
+            
             # this lookup is appropriate as old node names are certainly
             # unique; for newly added edges `dirs` will be None
-            if d is not None and d.nodes[0] in orto and d.nodes[1] in orto:
+            if (
+                d is not None and
+                d.nodes[0] in name_old__name_new and
+                d.nodes[1] in name_old__name_new
+            ):
+                
                 # translation of direction object attached to original edges
-                ids = {d.nodes[0]: orto[d.nodes[0]][0],
-                       d.nodes[1]: orto[d.nodes[1]][0]}
+                ids = {
+                    d.nodes[0]: name_old__name_new[d.nodes[0]][0],
+                    d.nodes[1]: name_old__name_new[d.nodes[1]][0],
+                }
                 e['dirs'] = d.translate(ids)
-                e['refs_by_dir'] = self.translate_refsdir(e['refs_by_dir'],
-                                                          ids)
-
+                e['refs_by_dir'] = (
+                    self._translate_refsdir(e['refs_by_dir'], ids)
+                )
+                
                 # if new edges have been introduced
                 # based on this specific edge
-                if e['id_old'] in edgesToAdd:
-
-                    # iterating new edges between orthologs
-                    for enew in edgesToAdd[e['id_old']]:
-                        vid1 = vids[enew[0]]
-                        vid2 = vids[enew[1]]
-                        # in case of directed graphs this will be correct:
-                        es = graph.es.select(_source=vid1, _target=vid2)
-
-                        if not len(es):
-                            # at undirected graphs
-                            # source/target might be opposite:
-                            es = graph.es.select(_source=vid2, _target=vid1)
-
-                        if not len(es):
-                            sys.stdout.write('\t:: Could not find edge '\
-                                             'between %s and %s!\n' % (
-                                                graph.vs[vid1]['name'],
-                                                graph.vs[vid2]['name']
-                                                ))
-                            continue
-
-                        # this is a new edge between orthologs
-                        eenew = es[0]
-
-                        ids = {e['u_old'][0]: graph.vs[vid1]['name'],
-                               e['u_old'][1]: graph.vs[vid2]['name']}
-
-                        eenew['dirs'] = e['dirs'].translate(ids)
-                        eenew['refs_by_dir'] = \
-                            self.translate_refsdir(e['refs_by_dir'], ids)
-
-                        # copying the remaining attributes
-                        for eattr in e.attributes():
-
-                            if eattr != 'dirs' and eattr != 'refs_by_dir':
-                                eenew[eattr] = modcopy.deepcopy(e[eattr])
-
+                if e['id_orig'] not in eid_orig__vids_new_not_orig:
+                    
+                    continue
+                
+                # iterating new edges between orthologs
+                for vid_new_s, vid_new_t in (
+                    eid_orig__vids_new_not_orig[e['id_orig']]
+                ):
+                    
+                    # the current vertex indices
+                    vid_s = vid_new__vid[vid_new_s]
+                    vid_t = vid_new__vid[vid_new_t]
+                    # in case of directed graphs this will be correct:
+                    es = graph.es.select(_source = vid_s, _target = vid_t)
+                    
+                    if not len(es):
+                        # at undirected graphs
+                        # source/target might be opposite:
+                        es = graph.es.select(
+                            _source = vid_t,
+                            _target = vid_s,
+                        )
+                    
+                    if not len(es):
+                        
+                        self._log(
+                            'Homology translation: could not find edge '
+                            'between %s and %s!' % (
+                                graph.vs[vid_s]['name'],
+                                graph.vs[vid_t]['name']
+                            ),
+                            -5,
+                        )
+                        continue
+                    
+                    # this is a new edge between orthologs
+                    new_edge = es[0]
+                    
+                    # this mapping supposed to be correct because
+                    # the vid_s and vid_t pairs built at the same time
+                    # as the `names_new__e_orig` edge attr
+                    ids = {
+                        e['names_new__e_orig'][0]: graph.vs[vid_s]['name'],
+                        e['names_new__e_orig'][1]: graph.vs[vid_t]['name'],
+                    }
+                    
+                    new_edge['dirs'] = e['dirs'].translate(ids)
+                    new_edge['refs_by_dir'] = (
+                        self._translate_refsdir(e['refs_by_dir'], ids)
+                    )
+                    
+                    # copying the remaining attributes
+                    for eattr in e.attributes():
+                        
+                        if eattr != 'dirs' and eattr != 'refs_by_dir':
+                            
+                            new_edge[eattr] = modcopy.deepcopy(e[eattr])
+        
         prg.terminate()
         # id_new > current index
-        vids = dict(map(lambda v: (v['id_new'], v.index), graph.vs))
-
+        vid_new__vid = dict((v['id_new'], v.index) for v in graph.vs)
+        
         # setting attributes of vertices
-        for vn0, vns in iteritems(vmul):
+        for vid_new_orig, vids_new_all in (
+            iteritems(vid_new_orig__vid_new_all)
+        ):
+            
             # the first ortholog:
-            v0 = graph.vs[vids[vn0]]
+            v_orig = graph.vs[vid_new__vid[vid_new_orig]]
             # now setting its taxon to the target:
-            v0['ncbi_tax_id'] = target
-
-            for vn in vns:
+            v_orig['ncbi_tax_id'] = target
+            
+            for vid_new in vids_new_all:
                 # iterating further orthologs:
-                v = graph.vs[vids[vn]]
-
+                v_new = graph.vs[vid_new__vid[vid_new]]
+                
+                if v_new == v_orig:
+                    
+                    continue
+                
                 # copying attributes:
-                for vattr in v0.attributes():
-
+                for vattr in v_orig.attributes():
+                    
                     if vattr != 'name':
-                        v[vattr] = modcopy.deepcopy(v0[vattr])
-
+                        
+                        v_new[vattr] = modcopy.deepcopy(v_orig[vattr])
+        
         # removing temporary edge attributes
-        del self.graph.es['id_old']
+        del self.graph.es['id_orig']
         del self.graph.vs['id_old']
         del self.graph.vs['id_new']
-        del self.graph.es['s_t_old']
-        del self.graph.es['u_old']
-
-        self.collapse_by_name(graph=graph)
-
+        del self.graph.es['vids_new__e_orig']
+        del self.graph.es['names_new__e_orig']
+        
+        self.collapse_by_name(graph = graph)
+        
         if not return_graph:
+            
             self.ncbi_tax_id = target
-
+            
             self.update_vname()
             self.update_vindex()
             self.genesymbol_labels(remap_all = True)
-
-            sys.stdout.write('\n')
+            
             self.clean_graph()
         
         self._log(
