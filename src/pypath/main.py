@@ -91,6 +91,7 @@ except ImportError:
 
 
 # from this module:
+import pypath
 import pypath.cache as cache_mod
 import pypath.data_formats as data_formats
 import pypath.mapping as mapping
@@ -1509,30 +1510,8 @@ class PyPath(session_mod.Logger):
             self.palette = ['#6EA945', '#007B7F', '#FCCC06', '#DA0025',
                             '#000000']
             
-            self.disclaimer = '\n\t=== d i s c l a i m e r ===\n\n'\
-                '\tAll data coming with this module\n'\
-                '\teither as redistributed copy or downloaded using the\n'\
-                '\tprogrammatic interfaces included in the present module\n'\
-                '\tare available under public domain, are free to use at\n'\
-                '\tleast for academic research or education purposes.\n'\
-                '\tPlease be aware of the licences of all the datasets\n'\
-                '\tyou use in your analysis, and please give appropriate\n'\
-                '\tcredits for the original sources when you publish your\n'\
-                '\tresults. To find out more about data sources please\n'\
-                '\tlook at `pypath.descriptions` and\n'\
-                '\t`pypath.data_formats.urls`.\n\n'
-            self.licence()
             self._log('PyPath has been initialized')
-            sys.stdout.write(
-                """\t> New PyPath object created,\n\tsession ID: '%s'\n"""
-                """\tlogfile: './%s'\n"""
-                """\tpypath version: %s\n""" % (
-                    session_mod.get_session().label,
-                    self._logger.fname,
-                    _version.__version__
-                )
-            )
-
+            
         else:
             self.copy(copy)
 
@@ -3333,7 +3312,7 @@ class PyPath(session_mod.Logger):
 
         return uniqLst
 
-    def collapse_by_name(self, graph=None):
+    def collapse_by_name(self, graph = None):
         """
         Collapses nodes with the same name by copying and merging
         all edges and attributes. Operates directly on the provided
@@ -3345,20 +3324,23 @@ class PyPath(session_mod.Logger):
             :py:attr:`pypath.main.PyPath.graph` (undirected network) by
             default.
         """
-
+        
         graph = self.graph if graph is None else graph
-
-        dupli = Counter(graph.vs['name'])
-
-        for name, count in iteritems(dupli):
-
+        
+        multiple = Counter(graph.vs['name'])
+        
+        for name, count in iteritems(multiple):
+            
             if count > 1:
+                
                 nodes = graph.vs.select(name = name)
-
+                
                 # the number of nodes might have changed
                 if len(nodes) > 1:
+                    
                     self.merge_nodes(nodes)
-
+    
+    
     def merge_nodes(self, nodes, primary=None, graph=None):
         """
         Merges all attributes and edges of selected nodes and assigns
@@ -3383,29 +3365,30 @@ class PyPath(session_mod.Logger):
         primary = nodes[0] if primary is None else primary
         primary = primary.index if type(primary) is not int else primary
         nonprimary = list(filter(lambda n: n != primary, nodes))
-        graph.vs['id_merge'] = list(range(graph.vcount()))
-
+        graph.vs['id_merge'] = list(xrange(graph.vcount()))
+        
         # combining vertex attributes:
         vprim = graph.vs[primary]
-
+        
         for attr in vprim.attributes():
-
-            if attr != 'name':
+            
+            if attr != 'name' and attr != 'id_merge':
+                
                 vprim[attr] = self.combine_attr(list(map(
                                 lambda vid: graph.vs[vid][attr],
                                 # combining from all nodes
                                 nodes)))
-
+        
         # moving edges of non primary vertices to the primary one
         self.copy_edges(nonprimary, primary, move = True, graph = graph)
-
+        
         # deleting non primary vertices:
-        toDel = list(map(lambda i: graph.vs.select(id_merge=i)[0].index,
-                         nonprimary))
-
+        toDel = [graph.vs.select(id_merge = i)[0].index for i in nonprimary]
+        
         graph.delete_vertices(toDel)
         del graph.vs['id_merge']
-
+    
+    
     def copy_edges(self, sources, target, move=False, graph=None):
         """
         Copies edges from *sources* node(s) to another one (*target*),
@@ -3459,7 +3442,7 @@ class PyPath(session_mod.Logger):
                 if te == -1:
                     # target edge not found, needs to be added:
                     toAdd.add((vid1, vid2))
-
+        
         # creating new edges
         graph.add_edges(toAdd)
 
@@ -3630,7 +3613,7 @@ class PyPath(session_mod.Logger):
         
         self._log(
             'After duplicate edge removal: '
-            'number of node: %u, edges: %u' % (
+            'number of nodes: %u, edges: %u' % (
                 self.graph.vcount(),
                 self.graph.ecount(),
             )
@@ -3640,7 +3623,7 @@ class PyPath(session_mod.Logger):
         
         self._log(
             'After removing unmapped nodes: '
-            'number of node: %u, edges: %u' % (
+            'number of nodes: %u, edges: %u' % (
                 self.graph.vcount(),
                 self.graph.ecount(),
             )
@@ -3650,7 +3633,7 @@ class PyPath(session_mod.Logger):
         
         self._log(
             'After removing unknown organism nodes: '
-            'number of node: %u, edges: %u' % (
+            'number of nodes: %u, edges: %u' % (
                 self.graph.vcount(),
                 self.graph.ecount(),
             )
@@ -5480,8 +5463,10 @@ class PyPath(session_mod.Logger):
             GeneSymbol labels if those were already initialized.
         """
         
+        self._log('Updating vertex labels.')
+        
         # XXX: What's the purpose of this? I mean attribute _directed is not
-        #      accessed in this function (?)
+        #      accessed in this function (?)        
         self._already_has_directed()
         
         dnt = self.default_name_type
@@ -13758,7 +13743,7 @@ class PyPath(session_mod.Logger):
             target,
             source = None,
             only_swissprot = True,
-            graph = None
+            graph = None,
         ):
         """
         Translates the current object to another organism by orthology.
@@ -13771,14 +13756,33 @@ class PyPath(session_mod.Logger):
         return_graph = graph is not None
         graph = self.graph if graph is None else graph
         source = self.ncbi_tax_id if source is None else source
+        
+        self._log(
+            'Translating network by orthology '
+            'from taxon `%u` to taxon `%u`.' % (source, target)
+        )
+        
         name_old__name_new = dataio.homologene_uniprot_dict(
             source = source,
             target = target,
             only_swissprot = only_swissprot,
         )
         
+        self._log(
+            'UniProt to UniProt homology dictionary obtained from '
+            'NCBI Homologene. Contains %u UniProt IDs for taxon `%u`.' % (
+                len(name_old__name_new),
+                source,
+            )
+        )
+        
         vcount_before = graph.vcount()
         ecount_before = graph.ecount()
+        
+        self._log(
+            'Starting translation. Original network consists of %u '
+            'nodes and %u edges.' % (vcount_before, ecount_before)
+        )
         
         # nodes could not be mapped are to be deleted
         name_old__vid_old = dict(
@@ -13806,7 +13810,24 @@ class PyPath(session_mod.Logger):
         ]
         
         ndel = len(delete_vids)
+        
+        self._log(
+            'Found orthologues for %u node IDs, %u nodes will be '
+            'deleted because no ortholog is known.' % (
+                len(name_old__name_new),
+                ndel,
+            )
+        )
+        
         graph.delete_vertices(delete_vids)
+        
+        self._log(
+            'Number of nodes reduced from %u to %u after '
+            'deletion of nodes with no known orthologs.' % (
+                vcount_before,
+                graph.vcount(),
+            )
+        )
         
         del delete_vids
         del name_old__vid_old
@@ -13835,6 +13856,12 @@ class PyPath(session_mod.Logger):
         
         graph.vs['name'] = new_names
         
+        self._log(
+            '%u nodes renamed to the name of the first ortholog. '
+            'New nodes will be created for genes mapping to multiple '
+            'orthologues.' % len(new_names)
+        )
+        
         del new_names
         
         # the new nodes to be added because of ambiguous mapping
@@ -13850,6 +13877,14 @@ class PyPath(session_mod.Logger):
         )
         
         graph += new_nodes
+        
+        self._log(
+            '%u new nodes have been added due to genes mapped to more '
+            'than one orthologues. Total node count is %u.' % (
+                len(new_nodes),
+                graph.vcount(),
+            )
+        )
         
         del new_nodes
         
@@ -13868,6 +13903,17 @@ class PyPath(session_mod.Logger):
                 ]
             )
             for vid_old, names_new in iteritems(vid_old__name_new)
+        )
+        
+        self._log(
+            'Dictionary of nodes created: '
+            '%u nodes are affected by ambiguous mapping.' % (
+                len([
+                    1
+                    for v in vid_new_orig__vid_new_all.values()
+                    if len(v) > 1
+                ]),
+            )
         )
         
         # compiling a dict of new edges to be added due to ambigous mapping
@@ -13912,7 +13958,21 @@ class PyPath(session_mod.Logger):
                 (e['id_orig'], e['vids_new__e_orig']) for e in graph.es
             )
         )
-
+        
+        self._log(
+            '%u edges have to be mapped to %u other edges due to '
+            'ambiguous mapping of their endpoints. The network '
+            'consists of %u edges in total.' % (
+                len([
+                    1
+                    for v in eid_orig__vids_new_not_orig.values()
+                    if len(v)
+                ]),
+                sum(len(v) for v in eid_orig__vids_new_not_orig.values()),
+                graph.ecount(),
+            )
+        )
+        
         # translating the dict values to new vertex indices
         vids_missing = list(
             set(
@@ -13935,14 +13995,27 @@ class PyPath(session_mod.Logger):
         
         # creating new edges
         graph += vids_missing
-
+        
+        self._log(
+            '%u new edges have been added, number of edges '
+            'increased to %u.' % (len(vids_missing), graph.ecount())
+        )
+        
         # id_new > current index
         vid_new__vid = dict((v['id_new'], v.index) for v in graph.vs)
         # id_new > name
         vid_new__name = dict((v['id_new'], v['name']) for v in graph.vs)
         
         prg = Progress(graph.ecount(), 'Translating network by homology', 21)
-
+        
+        self._log(
+            'Copying edge attributes from original edges '
+            'to corresponding new edges between orthologues. '
+            'Number of edges without attributes: %u.' % (
+                len([1 for e in graph.es if e['dirs'] is None]),
+            )
+        )
+        
         # setting attributes on old and new edges:
         for e in graph.es:
             
@@ -13959,16 +14032,19 @@ class PyPath(session_mod.Logger):
             ):
                 
                 # translation of direction object attached to original edges
+                
                 ids = {
                     d.nodes[0]: name_old__name_new[d.nodes[0]][0],
                     d.nodes[1]: name_old__name_new[d.nodes[1]][0],
                 }
+                
                 e['dirs'] = d.translate(ids)
+                
                 e['refs_by_dir'] = (
                     self._translate_refsdir(e['refs_by_dir'], ids)
                 )
                 
-                # if new edges have been introduced
+                # if no new edges have been introduced
                 # based on this specific edge
                 if e['id_orig'] not in eid_orig__vids_new_not_orig:
                     
@@ -13983,20 +14059,24 @@ class PyPath(session_mod.Logger):
                     vid_s = vid_new__vid[vid_new_s]
                     vid_t = vid_new__vid[vid_new_t]
                     # in case of directed graphs this will be correct:
-                    es = graph.es.select(_source = vid_s, _target = vid_t)
+                    new_edges_0 = graph.es.select(
+                        _source = vid_s,
+                        _target = vid_t,
+                    )
+                    new_edges_1 = ()
                     
-                    if not len(es):
+                    if not graph.is_directed():
                         # at undirected graphs
                         # source/target might be opposite:
-                        es = graph.es.select(
-                            _source = vid_t,
-                            _target = vid_s,
-                        )
+                        new_edges_1 = graph.es.select(
+                        _source = vid_t,
+                        _target = vid_s,
+                    )
                     
-                    if not len(es):
+                    if not len(new_edges_0) and not len(new_edges_1):
                         
                         self._log(
-                            'Homology translation: could not find edge '
+                            'Orthology translation: could not find edge '
                             'between %s and %s!' % (
                                 graph.vs[vid_s]['name'],
                                 graph.vs[vid_t]['name']
@@ -14006,31 +14086,51 @@ class PyPath(session_mod.Logger):
                         continue
                     
                     # this is a new edge between orthologs
-                    new_edge = es[0]
-                    
-                    # this mapping supposed to be correct because
-                    # the vid_s and vid_t pairs built at the same time
-                    # as the `names_new__e_orig` edge attr
-                    ids = {
-                        e['names_new__e_orig'][0]: graph.vs[vid_s]['name'],
-                        e['names_new__e_orig'][1]: graph.vs[vid_t]['name'],
-                    }
-                    
-                    new_edge['dirs'] = e['dirs'].translate(ids)
-                    new_edge['refs_by_dir'] = (
-                        self._translate_refsdir(e['refs_by_dir'], ids)
-                    )
-                    
-                    # copying the remaining attributes
-                    for eattr in e.attributes():
+                    for new_edge in itertools.chain(new_edges_0, new_edges_1):
                         
-                        if eattr != 'dirs' and eattr != 'refs_by_dir':
+                        # this mapping supposed to be correct because
+                        # the vid_s and vid_t pairs built at the same time
+                        # as the `names_new__e_orig` edge attr
+                        
+                        ids = {
+                            e['names_new__e_orig'][0]:
+                                graph.vs[vid_s]['name'],
+                            e['names_new__e_orig'][1]:
+                                graph.vs[vid_t]['name'],
+                        }
+                        
+                        new_edge['dirs'] = e['dirs'].translate(ids)
+                        
+                        new_edge['refs_by_dir'] = (
+                            self._translate_refsdir(e['refs_by_dir'], ids)
+                        )
+                        
+                        # copying the remaining attributes
+                        for eattr in e.attributes():
                             
-                            new_edge[eattr] = modcopy.deepcopy(e[eattr])
+                            if eattr != 'dirs' and eattr != 'refs_by_dir':
+                                
+                                new_edge[eattr] = modcopy.deepcopy(e[eattr])
         
         prg.terminate()
+        
+        self._log(
+            'Copying edge attributes finished. '
+            'Number of edges without attributes (should be zero): %u.' % (
+                len([1 for e in graph.es if e['dirs'] is None]),
+            )
+        )
+        
         # id_new > current index
         vid_new__vid = dict((v['id_new'], v.index) for v in graph.vs)
+        
+        self._log(
+            'Copying node attributes from original nodes '
+            'to their corresponding orthologues. '
+            'Number of nodes without attributes: %u' % (
+                len([1 for v in graph.vs if v['ncbi_tax_id'] is None])
+            )
+        )
         
         # setting attributes of vertices
         for vid_new_orig, vids_new_all in (
@@ -14057,6 +14157,13 @@ class PyPath(session_mod.Logger):
                         
                         v_new[vattr] = modcopy.deepcopy(v_orig[vattr])
         
+        self._log(
+            'Copying node attributes from original nodes finished.'
+            'Number of nodes without attributes: %u' % (
+                len([1 for v in graph.vs if v['ncbi_tax_id'] is None])
+            )
+        )
+        
         # removing temporary edge attributes
         del self.graph.es['id_orig']
         del self.graph.vs['id_old']
@@ -14064,9 +14171,17 @@ class PyPath(session_mod.Logger):
         del self.graph.es['vids_new__e_orig']
         del self.graph.es['names_new__e_orig']
         
+        self._log('Collapsing any duplicate node or edge.')
+        
         self.collapse_by_name(graph = graph)
         
         if not return_graph:
+            
+            self._log(
+                'Setting the PyPath object`s default taxon to `%u`.' % (
+                    target
+                )
+            )
             
             self.ncbi_tax_id = target
             
@@ -14277,17 +14392,21 @@ class PyPath(session_mod.Logger):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-
+    
+    
+    @staticmethod
     def _disclaimer(self):
         """
         Prints a disclaimer about respecting data licences.
         """
-
-        sys.stdout.write(self.disclaimer)
-
-    def licence(self):
+        
+        pypath._disclaimer()
+    
+    
+    @staticmethod
+    def license(self):
         """
         Prints information about data licences.
         """
-
-        self._disclaimer()
+        
+        pypath.license()

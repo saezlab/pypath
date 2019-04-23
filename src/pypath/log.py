@@ -132,7 +132,7 @@ class Logger(object):
         self.msg('Logger started, logging into `%s`.' % self.fname)
     
     
-    def msg(self, msg = '', label = None, level = 0):
+    def msg(self, msg = '', label = None, level = 0, wrap = True):
         """
         Writes a message into the log file.
 
@@ -147,7 +147,7 @@ class Logger(object):
         if level <= self.verbosity:
             
             msg = self.label_message(msg, label = label)
-            msg = self.wrapper.fill(msg)
+            msg = self.wrapper.fill(msg) if wrap else msg
             msg = self.timestamp_message(msg)
             self.fp.write(msg)
         
@@ -221,7 +221,7 @@ class Logger(object):
         
         os.makedirs(dirname, exist_ok = True)
         
-        return dirname
+        return os.path.abspath(dirname)
     
     
     def open_logfile(self):

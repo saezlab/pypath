@@ -24,6 +24,9 @@ but also with several submodules for accessing, preprocessing and serving
 data from various resources.
 """
 
+import sys
+import os
+
 import pypath._version as _version_mod
 import pypath.session_mod as _session_mod
 
@@ -32,3 +35,51 @@ __author__ = _version.__author__
 
 _session_mod.new_session()
 session = _session_mod.get_session()
+
+_disclaimer_text = (
+    '\n\t=== d i s c l a i m e r ===\n\n'
+    '\tAll data accessed through this module,\n'
+    '\teither as redistributed copy or downloaded using the\n'
+    '\tprogrammatic interfaces included in the present module,\n'
+    '\tare free to use at least for academic research or '
+    '\teducation purposes.\n'
+    '\tPlease be aware of the licenses of all the datasets\n'
+    '\tyou use in your analysis, and please give appropriate\n'
+    '\tcredits for the original sources when you publish your\n'
+    '\tresults. To find out more about data sources please\n'
+    '\tlook at `pypath.descriptions` or\n'
+    '\thttp://omnipathdb.org/info and \n'
+    '\t`pypath.data_formats.urls`.\n\n'
+)
+
+
+def _disclaimer():
+    
+    sys.stdout.write(_disclaimer_text)
+    sys.stdout.flush()
+
+
+def license():
+    
+    _disclaimer()
+
+# from now on we print this at import
+# not at creation of PyPath object:
+_disclaimer()
+_session_mod.get_log().msg(
+    (
+        '\n'
+        '\t- session ID: `%s`\n'
+        '\t- working directory: `%s`\n'
+        '\t- logfile: `%s`\n'
+        '\t- pypath version: %s' % (
+            session_mod.get_session().label,
+            os.getcwd(),
+            session_mod.get_log().fname,
+            __version__
+        )
+    ),
+    label = 'pypath',
+    level = -9,
+    wrap = False,
+)
