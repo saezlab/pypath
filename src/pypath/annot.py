@@ -456,7 +456,7 @@ class AnnotationBase(resource.AbstractResource):
     
     def to_array(self, uniprots = None, use_fields = None):
         
-        uniprots = uniprots or self.all_uniprots()
+        uniprots = uniprots if uniprots is not None else self.all_uniprots()
         all_fields = self.get_names()
         fields = use_fields or all_fields
         ifields = tuple(
