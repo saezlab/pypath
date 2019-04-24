@@ -11388,17 +11388,18 @@ class PyPath(session_mod.Logger):
         """
         Creates an adjacency list in a list of sets format.
         """
-
+        
         graph = graph or self.graph
         self.adjlist = [
-            set(graph.neighbors(
-                node, mode=mode)) for node in xrange(graph.vcount())
+            set(graph.neighbors(node, mode = mode))
+            for node in xrange(graph.vcount())
         ]
 
     def find_all_paths(
             self,
             start,
             end,
+            attr = None,
             mode = 'OUT',
             maxlen = 2,
             graph = None,
@@ -11411,16 +11412,20 @@ class PyPath(session_mod.Logger):
         get_all_shortest_paths() finds only the shortest, not any
         path up to a defined length.
 
-        @start : int or list
+        start : int or list
             Indices of the starting node(s) of the paths.
-        @end : int or list
+        end : int or list
             Indices of the target node(s) of the paths.
-        @mode : 'IN', 'OUT', 'ALL'
+        attr : str
+            Name of the vertex attribute to identify the vertices by.
+            Necessary if ``start`` and ``end`` are not igraph vertex ids
+            but for example vertex names or labels.
+        mode : 'IN', 'OUT', 'ALL'
             Passed to igraph.Graph.neighbors()
-        @maxlen : int
+        maxlen : int
             Maximum length of paths in steps, i.e. if maxlen = 3, then
             the longest path may consist of 3 edges and 4 nodes.
-        @graph : igraph.Graph object
+        graph : igraph.Graph object
             The graph you want to find paths in. self.graph by default.
         """
 
@@ -11447,8 +11452,15 @@ class PyPath(session_mod.Logger):
             self.update_adjlist(graph, mode = mode)
 
         all_paths = []
+        
         start = start if isinstance(start, list) else [start]
         end = end if isinstance(end, list) else [end]
+        
+        if attr:
+            
+            attr_to_id = dict(reversed(i) for i in enumerate(graph.vs[attr]))
+            start = [attr_to_id[a] for a in start]
+            end = [attr_to_id[a] for a in end]
 
         if not silent:
             prg = Progress(
@@ -11466,7 +11478,14 @@ class PyPath(session_mod.Logger):
 
         if not silent:
             prg.terminate()
-
+        
+        if attr:
+            
+            all_paths = [
+                [graph.vs[i][attr] for i in path]
+                for path in all_paths
+            ]
+        
         return all_paths
     
     

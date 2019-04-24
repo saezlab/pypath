@@ -23,6 +23,7 @@
 from future.utils import iteritems
 
 import re
+import collections
 
 import pypath.uniprot_input as uniprot_input
 import pypath.curl as curl
@@ -132,18 +133,20 @@ def mirbase_precursor_to_mature(organism = 9606):
     pre = mirbase_precursor(organism)
     ids = mirbase_ids(organism)
     
-    _ids = {}
+    _ids = collections.defaultdict(set)
+    _pre = collections.defaultdict(set)
     
-    for mpre, mmat in ids:
-        
-        if mpre not in _ids:
-            _ids[mpre] = set([])
+    for mmat, mpre in ids:
         
         _ids[mpre].add(mmat)
     
+    for preid, prename in pre:
+        
+        _pre[prename].add(preid)
+    
     result = {}
     
-    for prename, mpres in pre:
+    for prename, mpres in iteritems(_pre):
         
         for mpre in mpres:
             
