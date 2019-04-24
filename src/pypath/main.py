@@ -1610,18 +1610,20 @@ class PyPath(session_mod.Logger):
                 else os.path.join(self.cache_dir, 'default_network.pickle')
 
             if os.path.exists(pfile):
-                sys.stdout.write(
-                    '\t:: Loading igraph object from file `%s`...' % pfile)
-                sys.stdout.flush()
+                self._log(
+                    'Loading igraph object from file `%s`...' % pfile
+                )
                 graph = pickle.load(open(pfile, 'rb'))
 
                 if isinstance(graph, igraph.Graph) and graph.vcount() > 0:
                     self.graph = graph
-                    sys.stdout.write(
-                        '\r%s\r\t:: Network loaded from `%s`. %u nodes, '
-                        '%u edges.\n' % (' ' * 90, pfile, self.graph.vcount(),
-                                         self.graph.ecount()))
-                    sys.stdout.flush()
+                    self._log(
+                        'Network loaded from `%s`. %u nodes, %u edges.' % (
+                            pfile,
+                            self.graph.vcount(),
+                            self.graph.ecount(),
+                        )
+                    )
                     self.update_vname()
                     self.update_vindex()
                     self.update_sources()
@@ -3340,7 +3342,6 @@ class PyPath(session_mod.Logger):
                     
                     self.merge_nodes(nodes)
     
-    
     def merge_nodes(self, nodes, primary=None, graph=None):
         """
         Merges all attributes and edges of selected nodes and assigns
@@ -3372,7 +3373,7 @@ class PyPath(session_mod.Logger):
         
         for attr in vprim.attributes():
             
-            if attr != 'name' and attr != 'id_merge':
+            if attr not in {'name', 'id_merge', 'label'}:
                 
                 vprim[attr] = self.combine_attr(list(map(
                                 lambda vid: graph.vs[vid][attr],
@@ -3407,7 +3408,7 @@ class PyPath(session_mod.Logger):
             which the nodes are to be merged. If none is passed, takes
             the undirected network graph.
         """
-
+        
         toDel = set([])
         graph = self.graph if graph is None else graph
         graph.vs['id_old'] = list(range(graph.vcount()))
@@ -3415,86 +3416,142 @@ class PyPath(session_mod.Logger):
 
         # preserve a permanent marker of the target vertex
         ovidt = graph.vs[target]['id_old']
-
+        
         # collecting the edges of all source vertices into dict
-        ses = dict(map(lambda s: (
-                        # id_old of source vertices:
-                        s,
-                        # edges of current source node:
-                        set(map(lambda e: e.index,
-                                itertools.chain(graph.es.select(_source=s),
-                                                graph.es.select(_target=s))))),
-                       sources))
-
+        ses = dict(
+            (
+                # id_old of source vertices:
+                s,
+                # edges of current source node:
+                set(
+                    e.index for e in
+                    itertools.chain(
+                        graph.es.select(_source = s),
+                        graph.es.select(_target = s),
+                    )
+                )
+            )
+            for s in sources
+        )
+        
         # collecting edges to be newly created
         toAdd = set([])
-
+        
         for s, es in iteritems(ses):
-
+            
             for eid in es:
                 # the source edge:
                 e = graph.es[eid]
+                
+                new_source = target if e.source == s else e.source
+                new_target = target if e.target == s else e.target
+                
+                es0 = graph.es.select(
+                    _source = new_source,
+                    _target = new_target,
+                )
+                es1 = ()
+                if not graph.is_directed():
+                    es1 = graph.es.select(
+                        _source = new_target,
+                        _target = new_source,
+                    )
                 # looking up if target edge already exists:
-                vid1 = target if e.source == s else e.source
-                vid2 = target if e.target == s else e.target
-                te = graph.get_eid(vid1, vid2, error = False)
-
-                if te == -1:
-                    # target edge not found, needs to be added:
-                    toAdd.add((vid1, vid2))
+                
+                if not len(list(itertools.chain(es0, es1))):
+                    
+                    toAdd.add((new_source, new_target))
         
         # creating new edges
         graph.add_edges(toAdd)
-
+        nvidt = graph.vs.select(id_old = target)[0].index
+        
         # copying attributes:
+        
         for ovids, es in iteritems(ses):
-
+            
             for oeid in es:
-                # this is the index of the current source node:
-                s = graph.vs.select(id_old = ovids)[0].index
-                # this is the index of the current target node:
-                t = graph.vs.select(id_old = ovidt)[0].index
+                
                 # this is the current source edge:
                 e = graph.es.select(id_old = oeid)[0]
-                # looking up target edge and peer vertex:
-                vid1 = t if e.source == s else e.source
-                vid2 = t if e.target == s else e.target
-                vid_peer = e.source if e.target == s else e.target
-                te = graph.es[graph.get_eid(vid1, vid2)]
-
-                # old direction:
-                d = e['dirs']
-                # dict from old names to new ones
-                # the peer does no change, only s->t
-                ids = {graph.vs[s]['name']: graph.vs[t]['name'],
-                       graph.vs[vid_peer]['name']: graph.vs[vid_peer]['name']}
-
-                # copying directions and signs:
-                te['dirs'] = (d.translate(ids).merge(te['dirs'])
-                              if isinstance(te['dirs'], Direction)
-                              else d.translate(ids))
-
-                # copying `refs_by_dir`
-                te['refs_by_dir'] = self._translate_refsdir(e['refs_by_dir'],
-                                                           ids)
-
-                # copying further attributes:
-                for eattr in e.attributes():
-
-                    if eattr != 'dirs' and eattr != 'refs_by_dir':
-                        te[eattr] = self.combine_attr([te[eattr], e[eattr]])
-
+                # this is the index of the other (peer) node:
+                new_source = (
+                    nvidt
+                        if graph.vs[e.source]['id_old'] == ovids else
+                    e.source
+                )
+                new_target = (
+                    nvidt
+                        if graph.vs[e.target]['id_old'] == ovids else
+                    e.target
+                )
+                nvids = graph.vs.select(id_old = ovids)[0].index
+                nvid_other = e.target if e.source == nvids else e.source
+                
+                # looking up new edge:
+                es0 = graph.es.select(
+                    _source = new_source,
+                    _target = new_target,
+                )
+                es1 = ()
+                
+                if not graph.is_directed():
+                    
+                    es1 = graph.es.select(
+                        _source = new_target,
+                        _target = new_source,
+                    )
+                
+                es_all = list(itertools.chain(es0, es1))
+                
+                for new_edge in es_all:
+                    
+                    # old direction:
+                    d = e['dirs']
+                    # dict from old names to new ones
+                    # the peer does no change, only s->t
+                    ids = {
+                        graph.vs[nvids]['name']:
+                            graph.vs[nvidt]['name'],
+                        graph.vs[nvid_other]['name']:
+                            graph.vs[nvid_other]['name'],
+                    }
+                    
+                    # copying directions and signs:
+                    new_dirs = d.translate(ids)
+                    
+                    if new_edge['dirs']:
+                        new_dirs.merge(new_edge['dirs'])
+                    
+                    new_edge['dirs'] = new_dirs
+                    
+                    # copying `refs_by_dir`
+                    new_edge['refs_by_dir'] = self._translate_refsdir(
+                        e['refs_by_dir'], ids,
+                    )
+                    
+                    # copying further attributes:
+                    for eattr in e.attributes():
+                    
+                        if eattr not in {'dirs', 'refs_by_dir', 'id_old'}:
+                            
+                            new_edge[eattr] = self.combine_attr([
+                                new_edge[eattr],
+                                e[eattr]
+                            ])
+                
                 # in case we want to delete old edges:
                 toDel.add(e.index)
 
         if move:
+            
             graph.delete_edges(list(toDel))
-
+        
         # removing temporary attributes
         del graph.es['id_old']
         del graph.vs['id_old']
-
-
+    
+    
     def delete_by_organism(self, organisms_allowed = None):
         """
         Removes the proteins of all organisms which are not given in
@@ -13829,6 +13886,8 @@ class PyPath(session_mod.Logger):
             )
         )
         
+        graph.vs['old_name'] = modcopy.deepcopy(graph.vs['name'])
+        
         del delete_vids
         del name_old__vid_old
         
@@ -14174,6 +14233,7 @@ class PyPath(session_mod.Logger):
         self._log('Collapsing any duplicate node or edge.')
         
         self.collapse_by_name(graph = graph)
+        self.genesymbol_labels(remap_all = True)
         
         if not return_graph:
             
@@ -14187,7 +14247,6 @@ class PyPath(session_mod.Logger):
             
             self.update_vname()
             self.update_vindex()
-            self.genesymbol_labels(remap_all = True)
             
             self.clean_graph()
         
