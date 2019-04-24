@@ -870,7 +870,7 @@ urls = {
     'tfregulons_git': {
         'label': 'TF Regulons TF-taget database from its git repo',
         'url': 'https://github.com/saezlab/DoRothEA/raw/master/data/'
-            'TFregulons/table/database_20180915.csv.zip'
+            'TFregulons/consensus/table/database_normal_20180915.csv.zip',
     },
     'hpmri': {
         'label': 'Human Plasma Membrane Receptome "browse" view',
