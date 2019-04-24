@@ -247,7 +247,13 @@ class PtmProcessor(homology.Proteomes,homology.SequenceContainer):
         
         # human leukocyte antigenes result a result an
         # extremely high number of combinations
-        if not p['kinase'] or p['substrate'].startswith('HLA'):
+        if (
+            not p['kinase'] or (
+                isinstance(p['substrate'], common.basestring) and
+                p['substrate'].startswith('HLA')
+            )
+        ):
+            
             return
         
         if not isinstance(p['kinase'], list):
@@ -717,29 +723,27 @@ class PtmAggregator(object):
         )
         
         self.df['enzyme_genesymbol'] = pd.Series([
-            gss[0] if gss else '' for gss in
             (
-                mapping.map_name(
+                mapping.map_name0(
                     u,
                     id_type = 'uniprot',
                     target_id_type = 'genesymbol',
                     ncbi_tax_id = self.ncbi_tax_id,
                 )
                 for u in self.df.enzyme
-            )
+            ) or ''
         ])
         
         self.df['substrate_genesymbol'] = pd.Series([
-            gss[0] if gss else '' for gss in
             (
-                mapping.map_name(
+                mapping.map_name0(
                     u,
                     id_type = 'uniprot',
                     target_id_type = 'genesymbol',
                     ncbi_tax_id = self.ncbi_tax_id,
                 )
                 for u in self.df.substrate
-            )
+            ) or ''
         ])
         
         hdr.insert(2, 'enzyme_genesymbol')

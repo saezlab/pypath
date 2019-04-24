@@ -34,15 +34,18 @@ import pypath.urls as urls
 import pypath.curl as curl
 import pypath.uniprot_input as uniprot_input
 import pypath.seq as _se
+import pypath.session_mod as session_mod
 
 
-class SequenceContainer(object):
+class SequenceContainer(session_mod.Logger):
     
     def __init__(self, preload_seq = [], isoforms = True):
         """
         This is an object to store sequences of multiple
         organisms and select the appropriate one.
         """
+        
+        session_mod.Logger.__init__(name = 'homology')
         
         self.seq_isoforms = isoforms
         
@@ -137,7 +140,7 @@ class Proteomes(object):
 
 class ProteinHomology(Proteomes):
     
-    def __init__(self, target, source = None, only_swissprot = True, mapper = None):
+    def __init__(self, target, source = None, only_swissprot = True):
         """
         This class translates between homologous UniProt IDs of
         2 organisms based on NCBI HomoloGene data.
@@ -158,7 +161,6 @@ class ProteinHomology(Proteomes):
         self.target = target
         self.source = source
         self.set_default_source(source)
-        self.mapper = mapping.Mapper() if mapper is None else mapper
         
         Proteomes.__init__(self)
         self.load_proteome(self.target, self.only_swissprot)
@@ -227,9 +229,9 @@ class ProteinHomology(Proteomes):
         
         for u in self._proteomes[(source, self.only_swissprot)]:
             
-            source_e = self.mapper.map_name(
+            source_e = mapping.map_name(
                 u, 'uniprot', 'entrez', source)
-            source_r = self.mapper.map_name(
+            source_r = mapping.map_name(
                 u, 'uniprot', 'refseqp', source)
             target_u = set([])
             target_r = set([])
@@ -244,18 +246,18 @@ class ProteinHomology(Proteomes):
                     target_r.update(hgr[r])
             
             for e in target_e:
-                target_u.update(set(self.mapper.map_name(
+                target_u.update(set(mapping.map_name(
                     e, 'entrez', 'uniprot', self.target)))
             
             for r in target_r:
-                target_u.update(set(self.mapper.map_name(
+                target_u.update(set(mapping.map_name(
                     e, 'refseqp', 'uniprot', self.target)))
             
             target_u = \
                 itertools.chain(
                     *map(
                         lambda tu:
-                            self.mapper.map_name(
+                            mapping.map_name(
                                 tu, 'uniprot', 'uniprot', self.target),
                         target_u
                     )
@@ -263,15 +265,18 @@ class ProteinHomology(Proteomes):
             
             self.homo[source][u] = sorted(list(target_u))
 
-class PtmHomology(ProteinHomology,SequenceContainer):
+
+class PtmHomology(ProteinHomology, SequenceContainer):
     
     def __init__(self, target, source = None, only_swissprot = True,
-             mapper = None, strict = True):
+             strict = True):
         
-        ProteinHomology.__init__(self, target,
-                                       source,
-                                       only_swissprot,
-                                       mapper)
+        ProteinHomology.__init__(
+            self,
+            target,
+            source,
+            only_swissprot,
+        )
         
         SequenceContainer.__init__(self)
         self.load_seq(taxon = self.target)
@@ -551,5 +556,8 @@ class PtmHomology(ProteinHomology,SequenceContainer):
                         self.ptmhomo[site1][site2[4]].add(site2)
         
         if len(unknown_taxa):
-            sys.stdout.write('\t:: Unknown taxa encountered:\n\t   %s\n' %
-                             ', '.join(sorted(unknown_taxa)))
+            self._log(
+                'Unknown taxa encountered: %s' % (
+                    ', '.join(sorted(unknown_taxa))
+                )
+            )
