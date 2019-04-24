@@ -6532,26 +6532,26 @@ def load_signor_ptms(organism = 9606):
     data = signor_interactions(organism = organism)
 
     for d in data:
-
-        resm = reres.match(d[10])
+        
+        resm = reres.match(d.ptm_residue)
 
         if resm is not None:
             aa = aalet[resm.groups()[0].capitalize()]
             aanum = int(resm.groups()[1])
-            typ = d[9]
-            inst = d[11].upper()
+            typ = d.ptm_type,
+            inst = d.ptm_motif.upper()
             result.append({
-                'typ': d[9],
+                'typ': d.ptm_type,
                 'resnum': aanum,
                 'instance': inst,
-                'substrate': d[6],
+                'substrate': d.target,
                 'start': aanum - 7,
                 'end': aanum + 7,
-                'kinase': d[2],
+                'kinase': d.source,
                 'resaa': aa,
                 'motif': inst,
-                'enzyme_isoform': d[27],
-                'substrate_isoform': d[28],
+                'enzyme_isoform': d.source_isoform,
+                'substrate_isoform': d.target_isoform,
             })
 
     return result
@@ -6823,6 +6823,9 @@ def signor_interactions(organism = 9606, raw_records = False):
             'ncbi_tax_id',
             'pubmeds',
             'direct',
+            'ptm_type',
+            'ptm_residue',
+            'ptm_motif',
         )
     )
     
@@ -6900,6 +6903,9 @@ def signor_interactions(organism = 9606, raw_records = False):
                 ncbi_tax_id = line[12],
                 pubmeds = line[21],
                 direct = line[22] == 'YES',
+                ptm_type = line[9],
+                ptm_residue = line[10],
+                ptm_motif = line[11],
             )
             
             result.append(this_record)
@@ -9581,7 +9587,7 @@ def encode_tf_mirna_interactions():
 
     for l in c.result:
 
-        l = l.decode('ascii').strip().split()
+        l = l.strip().split()
 
         if l[1] == '(TF-miRNA)':
 
@@ -9834,8 +9840,6 @@ def get_tfregulons(
     _ = c.result['database.csv'].readline()
 
     for l in c.result['database.csv']:
-
-        l = l.decode('utf-8')
 
         l = csv_sep_change(l, ',', '%&%&%&')
 
