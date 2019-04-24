@@ -11395,8 +11395,16 @@ class PyPath(session_mod.Logger):
                 node, mode=mode)) for node in xrange(graph.vcount())
         ]
 
-    def find_all_paths(self, start, end, mode='OUT', maxlen=2,
-                       graph=None, silent=False):
+    def find_all_paths(
+            self,
+            start,
+            end,
+            mode = 'OUT',
+            maxlen = 2,
+            graph = None,
+            silent = False,
+            update_adjlist = True,
+        ):
         """
         Finds all paths up to length `maxlen` between groups of
         vertices. This function is needed only becaues igraph`s
@@ -11434,7 +11442,8 @@ class PyPath(session_mod.Logger):
 
         graph = graph or self.graph
 
-        if not hasattr(self, 'adjlist'):
+        if update_adjlist or not hasattr(self, 'adjlist'):
+            
             self.update_adjlist(graph, mode = mode)
 
         all_paths = []
@@ -11459,9 +11468,18 @@ class PyPath(session_mod.Logger):
             prg.terminate()
 
         return all_paths
-
-    def find_all_paths2(self, graph, start, end, mode='OUT', maxlen=2,
-                        psize=100):
+    
+    
+    def find_all_paths2(
+            self,
+            graph,
+            start,
+            end,
+            mode = 'OUT',
+            maxlen = 2,
+            psize = 100,
+            update_adjlist = True,
+        ):
         """
         """
 
@@ -11502,14 +11520,17 @@ class PyPath(session_mod.Logger):
         sys.stdout.write('\n')
         adjlist = [
             set(graph.neighbors(
-                node, mode=mode)) for node in xrange(graph.vcount())
+                node, mode = mode
+            ))
+            for node in xrange(graph.vcount())
         ]
         paths = [[s] for s in start]
         all_paths = parts(paths, end, adjlist, maxlen, psize)
         sys.stdout.write('\n')
-
+        
         return all_paths
-
+    
+    
     def transcription_factors(self):
         """
         """
