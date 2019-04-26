@@ -24,7 +24,8 @@ import sys
 import os
 
 try:
-    import twisted.web
+    import twisted.web.resource
+    import twisted.web.server
     import twisted.internet
 except:
     self._log('\t:: No `twisted` available.\n')
@@ -56,7 +57,9 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
     
     def __init__(self):
         
-        session_mod.Logger.__init__(name = 'server')
+        if not hasattr(self, '_log_name'):
+            
+            session_mod.Logger.__init__(name = 'server')
         
         self._log('Initializing BaseServer.')
         
@@ -265,7 +268,7 @@ class BaseServer(twisted.web.resource.Resource, session_mod.Logger):
         return bool(arg)
 
 
-class TableServer(session_mod.Logger, BaseServer):
+class TableServer(BaseServer):
     
     list_fields = {
         'sources',
@@ -386,6 +389,8 @@ class TableServer(session_mod.Logger, BaseServer):
             },
             'databases': None,
             'proteins': None,
+            'fields': None,
+            'genesymbols': {'1', '0', 'no', 'yes'},
         },
         'complexes': {
             'header': None,
@@ -398,6 +403,7 @@ class TableServer(session_mod.Logger, BaseServer):
             },
             'databases': None,
             'proteins': None,
+            'fields': None,
         },
     }
     
@@ -453,14 +459,14 @@ class TableServer(session_mod.Logger, BaseServer):
             if not os.path.exists(fname):
                 
                 self._log(
-                    'Server: missing table: `%s`.' % fname
+                    'Missing table: `%s`.' % fname
                 )
                 continue
             
-            self.data[name] = pd.DataFrame.from_csv(
+            self.data[name] = pd.read_csv(
                 fname,
                 sep = '\t',
-                index_col = None,
+                index_col = False,
             )
             
             self._log(
@@ -517,6 +523,8 @@ class TableServer(session_mod.Logger, BaseServer):
         tbl['set_proteins'] = pd.Series(
             [set(c.split('-')) for c in tbl.all_components]
         )
+        tbl.component_stoichiometry.fillna(value = 0, inplace = True)
+        tbl.component_stoichiometry = tbl.component_stoichiometry.astype(int)
     
     
     def _preprocess_annotations(self):
@@ -1042,7 +1050,7 @@ class TableServer(session_mod.Logger, BaseServer):
         return self._serve_dataframe(tbl, req)
     
     
-    def annotations(self):
+    def annotations(self, req):
         
         bad_req = self._check_args(req)
         
@@ -1053,26 +1061,38 @@ class TableServer(session_mod.Logger, BaseServer):
         # starting from the entire dataset
         tbl = self.data['annotations']
         
-        hdr = self.tbl.columns
+        hdr = tbl.columns
         
         # filtering for databases
-        if args['databases']:
+        if b'databases' in req.args:
             
-            databases = set(args['databases'])
+            databases = set(req.args[b'databases'])
             
             tbl = tbl.source.isin(databases)
         
         # filtering for proteins
-        if args['proteins']:
+        if b'proteins' in req.args:
             
-            proteins = set(args['proteins'])
+            proteins = set(req.args[b'proteins'])
             
             tbl = tbl[tbl.uniprot.isin(proteins)]
+        
+        # provide genesymbols: yes or no
+        if (
+            b'genesymbols' in req.args and
+            self._parse_arg(req.args[b'genesymbols'])
+        ):
+            genesymbols = True
+            hdr.insert(1, 'genesymbol')
+        else:
+            genesymbols = False
+        
+        tbl = tbl.loc[:,hdr]
         
         return self._serve_dataframe(tbl, req)
     
     
-    def complexes(self):
+    def complexes(self, req):
         
         bad_req = self._check_args(req)
         
@@ -1083,23 +1103,27 @@ class TableServer(session_mod.Logger, BaseServer):
         # starting from the entire dataset
         tbl = self.data['complexes']
         
-        hdr = self.tbl.columns
+        hdr = list(tbl.columns)
+        hdr.remove('set_sources')
+        hdr.remove('set_proteins')
         
         # filtering for databases
-        if args['databases']:
+        if b'databases' in req.args:
             
-            databases = set(args['databases'])
+            databases = set(req.args[b'databases'])
             
             tbl = tbl = tbl[tbl.set_databases & databases]
         
         # filtering for proteins
-        if args['proteins']:
+        if b'proteins' in req.args:
             
-            proteins = set(args['proteins'])
+            proteins = set(req.args[b'proteins'])
             
             tbl = tbl[tbl.set_proteins & proteins]
         
-        return seld._serve_dataframe(tbl, req)
+        tbl = tbl.loc[:,hdr]
+        
+        return self._serve_dataframe(tbl, req)
     
     
     @classmethod

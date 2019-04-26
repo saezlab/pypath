@@ -514,6 +514,7 @@ class AnnotationBase(resource.AbstractResource):
         
         columns = [
             'uniprot',
+            'genesymbol',
             'source',
             'label',
             'value',
@@ -530,6 +531,7 @@ class AnnotationBase(resource.AbstractResource):
                 
                 records.append([
                     uniprot,
+                    mapping.map_name0(uniprot, 'uniprot', 'genesymbol'),
                     self.name,
                     'in %s' % self.name,
                     'yes',
@@ -552,6 +554,7 @@ class AnnotationBase(resource.AbstractResource):
                     
                     records.append([
                         uniprot,
+                        mapping.map_name0(uniprot, 'uniprot', 'genesymbol'),
                         self.name,
                         label,
                         str(value),

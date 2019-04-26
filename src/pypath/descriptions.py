@@ -2474,7 +2474,7 @@ descriptions = {
         'full_name': 'Open Regulatory Annotation',
         'omnipath': False,
         'dorothea': True,
-        'pubmeds': ['26578589'],
+        'pubmeds': [26578589],
         'license': {
             'name': 'GNU LGPLv3',
             'url': 'http://www.gnu.org/licenses/license-list.html#LGPLv3'
@@ -2521,7 +2521,7 @@ descriptions = {
         ),
         'omnipath': False,
         'dorothea': True,
-        'pubmeds': ['18971253', '17916232'],
+        'pubmeds': [18971253, 17916232],
         'license': {
             'name': 'GNU LGPLv3',
             'url': 'http://www.gnu.org/licenses/license-list.html#LGPLv3'

@@ -49,7 +49,7 @@ class WebserviceTables(session_mod.Logger):
             outfile_interactions = 'omnipath_webservice_interactions.tsv',
             outfile_ptms = 'omnipath_webservice_ptms.tsv',
             outfile_complexes = 'omnipath_webservice_complexes.tsv',
-            outfile_annotations = 'omnipath_webservice_annotations',
+            outfile_annotations = 'omnipath_webservice_annotations.tsv',
         ):
         
         session_mod.Logger.__init__(self, name = 'websrvtab')
