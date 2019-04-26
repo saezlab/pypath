@@ -1693,7 +1693,7 @@ _footer = u'''
         <p> <a href="http://denes.omnipathdb.org/">Dénes Türei</a>,
             <a href="http://saezlab.org/person/nicolas-palacio/">
                 Nicolàs Palacio</a>,
-            <a href="http://saezlab.org/">Saez Lab</a> 2016-2018. 
+            <a href="http://saezlab.org/">Saez Lab</a> 2016-2019. 
             Feedback: omnipath@googlegroups.com </p>
         <p>
             <a href="https://validator.w3.org/check/referer">
