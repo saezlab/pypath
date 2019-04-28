@@ -72,8 +72,9 @@ __all__ = [
 Resource = Union[PyPath, PtmAggregator, AbstractComplexResource]
 
 
-class Bel(BELManagerMixin):
-    """Converts pypath objects to BEL format.
+class Bel(BELManagerMixin, session_mod.Logger):
+    """
+    Converts pypath objects to BEL format.
     
     Parameters
     ----------
@@ -83,10 +84,10 @@ class Bel(BELManagerMixin):
     Examples
     --------
     >>> import os
-    >>> from pypath import PyPath, data_formats, bel
-    >>> pa = PyPath()
+    >>> from pypath import main, data_formats, bel
+    >>> pa = main.PyPath()
     >>> pa.init_network(data_formats.pathway)
-    >>> be = bel.Bel(resource=pa)
+    >>> be = bel.Bel(resource = pa)
     >>> be.main()
     >>> be.to_bel_json(os.path.join(os.path.expanduser('~'), 'Desktop', 'omnipath.bel.json'))
     """
@@ -97,6 +98,8 @@ class Bel(BELManagerMixin):
             only_sources: Optional[Set[str]] = None,
             init: bool = False,
     ) -> None:
+        
+        session_mod.Logger.__init__(self, name = 'bel')
         self.bel_graph = pybel.BELGraph()
         self.resource = resource
         self.only_sources = only_sources
@@ -119,7 +122,9 @@ class Bel(BELManagerMixin):
 
     def main(self):
         """Convert the resource object to list of BEL relationships."""
-
+        
+        self._log('Building bel graph from the resource provided.')
+        
         if isinstance(self.resource, PyPath):
             self.resource_to_relationships_graph(self.resource.graph)
 
@@ -132,11 +137,22 @@ class Bel(BELManagerMixin):
         # FIXME NetworkResource does not exist...
         elif hasattr(self.resource, 'network'):  # NetworkResource object
             self.resource_to_relationships_network(self.resource.network)
+            
+        else:
+            
+            self._log(
+                'Unknown resource type, don\'t know how to convert '
+                'to bel graph: `%s`.' % type(self.resource)
+            )
+        
 
         return self
 
     def resource_to_relationships_graph(self, graph, use_tqdm: bool = False) -> None:
         """Convert a PyPath igraph object into list of BEL relationships."""
+        
+        self._log('Building bel graph from PyPath object (igraph graph).')
+        
         edges = graph.es
         if use_tqdm:
             edges = tqdm(edges)
@@ -197,6 +213,8 @@ class Bel(BELManagerMixin):
                         citation=citation,
                         evidence='From OmniPath',
                     )
+        
+        self._log('Building bel graph from PyPath object finished.')
 
     def _references(self, edge, direction) -> Set[str]:
         by_dir = edge['refs_by_dir']
@@ -240,12 +258,24 @@ class Bel(BELManagerMixin):
         return pybel.dsl.Protein(namespace=id_type.upper(), name=identifier)
 
     def resource_to_relationships_enzyme_substrate(self, enz_sub):
-        pass
+        self._log(
+            'Building bel graph from `pypath.ptm.PtmAggregator` '
+            'object. Sorry this is not implemented yet!'
+        )
+        raise NotImplementedError
 
     def resource_to_relationships_complexes(self, complexes):
+        self._log(
+            'Building bel graph from `pypath.complex.ComplexAggregator` '
+            'object. Sorry this is not implemented yet!'
+        )
         raise NotImplementedError
 
     def resource_to_relationships_network(self, network):
+        self._log(
+            'Building bel graph from `pypath.network.Network` '
+            'object. Sorry this is not implemented yet!'
+        )
         raise NotImplementedError
 
     def export_relationships(self, path: str) -> None:
