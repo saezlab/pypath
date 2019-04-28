@@ -729,9 +729,9 @@ class PtmAggregator(object):
                     id_type = 'uniprot',
                     target_id_type = 'genesymbol',
                     ncbi_tax_id = self.ncbi_tax_id,
-                )
-                for u in self.df.enzyme
-            ) or ''
+                ) or ''
+            )
+            for u in self.df.enzyme
         ])
         
         self.df['substrate_genesymbol'] = pd.Series([
@@ -741,9 +741,9 @@ class PtmAggregator(object):
                     id_type = 'uniprot',
                     target_id_type = 'genesymbol',
                     ncbi_tax_id = self.ncbi_tax_id,
-                )
-                for u in self.df.substrate
-            ) or ''
+                ) or ''
+            )
+            for u in self.df.substrate
         ])
         
         hdr.insert(2, 'enzyme_genesymbol')

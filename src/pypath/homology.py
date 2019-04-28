@@ -45,7 +45,7 @@ class SequenceContainer(session_mod.Logger):
         organisms and select the appropriate one.
         """
         
-        session_mod.Logger.__init__(name = 'homology')
+        session_mod.Logger.__init__(self, name = 'homology')
         
         self.seq_isoforms = isoforms
         
