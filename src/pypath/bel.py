@@ -214,6 +214,8 @@ class Bel(BELManagerMixin, session_mod.Logger):
                         evidence='From OmniPath',
                     )
         
+        self.bel_graph.name = 'OmniPath_interactions'
+        
         self._log('Building bel graph from PyPath object finished.')
 
     def _references(self, edge, direction) -> Set[str]:
