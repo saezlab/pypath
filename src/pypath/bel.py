@@ -32,16 +32,20 @@ from pypath import data_formats
 from pypath.complex import AbstractComplexResource
 from pypath.main import PyPath
 from pypath.ptm import PtmAggregator
+import pypath.session_mod as session_mod
+
+_logger = session_mod.Logger(name = 'bel')
 
 try:
     import pybel
 
     if hasattr(pybel, 'ob'):
-        sys.stdout.write(
-            'pypath.bel: You have the `openbabel` module installed '
-            'instead of `pybel`.\n'
+        
+        _logger._log(
+            'You have the `openbabel` module installed '
+            'instead of `pybel`. '
             'To be able to use `pybel`, create a virtual env and install '
-            'it by `pip install pybel`.\n'
+            'it by `pip install pybel`.'
         )
 
         # unimport openbabel
@@ -49,9 +53,10 @@ try:
         pybel = None
 
 except ModuleNotFoundError:
-    sys.stdout.write(
-        'pypath.bel: module `pybel` not available.\n'
-        'You won\'t be able to read or write BEL models.\n'
+    
+    _logger._log(
+        'Module `pybel` not available. '
+        'You won\'t be able to read or write BEL models.'
     )
     pybel = None
 
