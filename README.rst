@@ -370,19 +370,19 @@ Main improvements in the past releases:
 * New module `intercell`: special methods for data integration focusing on intercellular communication
 * New module `bel`: BEL integration
 * Module `go` and all the connected `dataio` methods have been rewritten offering a workaround for
-data access despite GO's terrible web services and providing much more versatile query methods
+  data access despite GO's terrible web services and providing much more versatile query methods
 * Removed MySQL support (e.g. loading mapping tables from MySQL)
 * Modules `mapping`, `reflists`, `complex`, `ptm`, `annot`, `go` became services:
-these modules build databases and provide query methods, sometimes they even automatically
-delete data to free memory
+  these modules build databases and provide query methods, sometimes they even automatically
+  delete data to free memory
 * New interaction category in `data_formats`: `ligand_receptor`
 * Improved logging and control over verbosity
 * Better control over paremeters by the `settings` module
 * Many methods in `dataio` have been improved or fixed, docs and code style largely improved
 * Started to add tests especially for methods in `dataio`
 
-Upcoming:
-+++++++++++
+Upcoming
+--------
 
 * New, more flexible network reader class
 * Full support for multi-species molecular interaction networks (e.g. pathogene-host)
