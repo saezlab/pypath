@@ -219,7 +219,8 @@ class Logger(object):
 
         dirname = dirname or '%s_log' % settings.get('module_name')
 
-        os.makedirs(dirname, exist_ok = True)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
 
         return os.path.abspath(dirname)
 
