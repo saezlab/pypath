@@ -1421,8 +1421,8 @@ class PyPath(session_mod.Logger):
         corresponding types (e.g.: ``set``, ``list``, ``str``, ...) as
         values.
     """
-    
-    
+
+
     def __init__(
             self,
             ncbi_tax_id = None,
@@ -1439,7 +1439,7 @@ class PyPath(session_mod.Logger):
         until the corresponding function is called (e.g.:
         :py:meth:`PyPath.init_network`).
         """
-        
+
         session_mod.Logger.__init__(self, name = 'network')
 
         self.__version__ = _version.__version__
@@ -1447,11 +1447,11 @@ class PyPath(session_mod.Logger):
         self.cache_dir = cache_mod.get_cachedir(cachedir = cache_dir)
 
         if copy is None:
-            
+
             # Setting up graph object
             self.graph = igraph.Graph(0)
             g = self.graph
-            
+
             g['entity_types'] = {}
             g['ncbi_tax_id'] = ncbi_tax_id
             g['name'] = name
@@ -1477,13 +1477,13 @@ class PyPath(session_mod.Logger):
             g['layout_type'] = None
             g['layout_data'] = None
             g['only_directed'] = False
-            
+
             self.loops = loops
             self.dgraph = None
             self._undirected = self.graph
             self._directed = None
             self.failed_edges = []
-            
+
             # self.set_chembl_mysql(chembl_mysql[1], chembl_mysql[0])
             # self.mysql = mysql.MysqlRunner(self.mysql_conf)
             self.unmapped = []
@@ -1509,9 +1509,9 @@ class PyPath(session_mod.Logger):
             self.seq = None
             self.palette = ['#6EA945', '#007B7F', '#FCCC06', '#DA0025',
                             '#000000']
-            
+
             self._log('PyPath has been initialized')
-            
+
         else:
             self.copy(copy)
 
@@ -1559,7 +1559,7 @@ class PyPath(session_mod.Logger):
             reread=None,
             redownload=False,
             keep_raw = False,
-            **kwargs,
+            **kwargs
         ): # XXX: kwargs is not used anywhere
         """Loads the network data.
 
@@ -1856,8 +1856,8 @@ class PyPath(session_mod.Logger):
 
         if not replace:
             return gg
-    
-    
+
+
     def update_vname(self):
         """
         Fast lookup of node names and indexes, these are hold in a
@@ -1865,21 +1865,21 @@ class PyPath(session_mod.Logger):
         added, these should be updated. This function is automatically
         called after all operations affecting node indices.
         """
-        
+
         self._log('Updating network component lookup dictionaries.')
-        
+
         self.genesymbol_labels()
         graph = self._get_undirected()
         self._already_has_directed()
         dgraph = self._directed
-        
+
         if graph is not None:
             self.nodInd = set(graph.vs['name'])
             self.nodDct = dict(zip(graph.vs['name'], xrange(graph.vcount())))
             self.labDct = dict(zip(graph.vs['label'], xrange(graph.vcount())))
             self.nodNam = dict(zip(xrange(graph.vcount()), graph.vs['name']))
             self.nodLab = dict(zip(xrange(graph.vcount()), graph.vs['label']))
-        
+
         if dgraph is not None:
             self.dnodInd = set(dgraph.vs['name'])
             self.dnodDct = dict(
@@ -1890,8 +1890,8 @@ class PyPath(session_mod.Logger):
                 zip(xrange(dgraph.vcount()), dgraph.vs['name']))
             self.dnodLab = dict(
                 zip(xrange(dgraph.vcount()), dgraph.vs['label']))
-    
-    
+
+
     def vsgs(self):
         """
         Returns a generator sequence of the node names as GeneSymbols
@@ -1903,8 +1903,8 @@ class PyPath(session_mod.Logger):
         """
 
         return _NamedVertexSeq(self.graph.vs, self.nodNam, self.nodLab).gs()
-    
-    
+
+
     def vsup(self):
         """
         Returns a generator sequence of the node names as UniProt IDs
@@ -1916,8 +1916,8 @@ class PyPath(session_mod.Logger):
         """
 
         return _NamedVertexSeq(self.graph.vs, self.nodNam, self.nodLab).up()
-    
-    
+
+
     def update_vindex(self): # XXX: If so, shouldn't it be removed?
         """
         This is deprecated.
@@ -1925,8 +1925,8 @@ class PyPath(session_mod.Logger):
 
         self.nodNam = dict(
             zip(range(0, self.graph.vcount()), self.graph.vs['name']))
-    
-    
+
+
     def vertex_pathways(self):
         """
         Some resources assignes interactions some others proteins to
@@ -1944,8 +1944,8 @@ class PyPath(session_mod.Logger):
                 for e in self.graph.es:
                     self.graph.vs[e.source][eattr] = e[eattr]
                     self.graph.vs[e.target][eattr] = e[eattr]
-    
-    
+
+
     # XXX: Not very clear for me what this function is actually doing...
     #      I mean, returns True/False and True as soon as the first
     #      len(thisVal & filtrVal) > 0
@@ -2049,11 +2049,11 @@ class PyPath(session_mod.Logger):
         self._log(
             'Reading edge list pickle dump from cache: %s\n' % cache_file
         )
-        
+
         data = pickle.load(open(cache_file, 'rb'))
-        
+
         self._log('Data have been read from cache: `%s`' % cache_file)
-        
+
         return data
 
     def process_sign(self, signData, signDef):
@@ -2170,9 +2170,9 @@ class PyPath(session_mod.Logger):
             Optional, ``False`` by default. Specifies whether to
             re-download the data and ignore the cache.
         """
-        
+
         self._log('Reading network data from `%s`.' % param.name)
-        
+
         expand_complexes = (
             param.expand_complexes
                 if isinstance(param.expand_complexes, bool) else
@@ -2183,18 +2183,18 @@ class PyPath(session_mod.Logger):
                 if isinstance(reread, bool) else
             not settings.get('network_pickle_cache')
         )
-        
+
         self._log('Expanding complexes for `%s`: %s' % (
             param.name, str(expand_complexes),
         ))
-        
+
         listLike = {list, tuple}
         edge_list = []
         nodeList = []
         edge_list_mapped = []
         infile = None
         _name = param.name.lower()
-        
+
         int_cache = os.path.join(
             self.cache_dir,
             '%s.interactions.pickle' % _name
@@ -2203,32 +2203,32 @@ class PyPath(session_mod.Logger):
             self.cache_dir,
             '%s.edges.pickle' % _name
         )
-        
+
         if not reread and not redownload:
-            
+
             infile, edge_list_mapped = self.lookup_cache(
                 _name,
                 cache_files,
                 int_cache,
                 edges_cache,
             )
-        
+
         if not len(edge_list_mapped):
-            
+
             if infile is None:
-                
+
                 if param.__class__.__name__ != "ReadSettings":
-                    
+
                     self._log(
                         'No proper input file definition! `param` '
                         'should be a `ReadSettings` instance',
                         -5,
                     )
-                    
+
                     return None
-                
+
                 if param.huge:
-                    
+
                     sys.stdout.write(
                         '\n\tProcessing %s requires huge memory.\n'
                         '\tPlease hit `y` if you have at least 2G free memory,\n'
@@ -2325,9 +2325,9 @@ class PyPath(session_mod.Logger):
                         except Exception as e:
                             self._log('Failed handling exception.')
                             self._log(str(e.args))
-                    
+
                     curl.CACHE = _store_cache
-                    
+
                 elif os.path.isfile(param.input):
                     infile = curl.Curl(
                         param.input,
@@ -2339,7 +2339,7 @@ class PyPath(session_mod.Logger):
                     self._log('%s opened...' % param.input)
 
                 if infile is None:
-                    
+
                     self._log(
                         '`%s`: Could not find file or dataio function '
                         'or failed preprocessing.' %
@@ -2347,7 +2347,7 @@ class PyPath(session_mod.Logger):
                         -5,
                     )
                     return None
-            
+
             # finding the largest referred column number,
             # to avoid references out of range
             is_directed = param.is_directed
@@ -2362,13 +2362,13 @@ class PyPath(session_mod.Logger):
             dir_sep = None
 
             if isinstance(is_directed, tuple):
-                
+
                 dir_col = is_directed[0]
                 dir_val = is_directed[1]
                 dir_sep = is_directed[2] if len(is_directed) > 2 else None
 
             elif isinstance(sign, tuple):
-                
+
                 dir_col = sign[0]
                 dir_val = sign[1:3]
                 dir_val = dir_val if type(dir_val[
@@ -2403,51 +2403,51 @@ class PyPath(session_mod.Logger):
             readError = 0
             lnum = 0 # we need to define it here to avoid errors if the
                      # loop below runs zero cycles
-            
+
             for lnum, line in enumerate(infile):
-                
+
                 if len(line) <= 1 or (lnum == 1 and param.header):
                     # empty lines
                     # or header row
                     continue
-                
+
                 if not isinstance(line, (list, tuple)):
-                    
+
                     if hasattr(line, 'decode'):
                         line = line.decode('utf-8')
-                    
+
                     line = line.strip('\n\r').split(param.separator)
-                    
+
                 else:
                     line = [
                         x.replace('\n', '').replace('\r', '')
                         if hasattr(x, 'replace') else x for x in line
                     ]
-                
+
                 # in case line has less fields than needed
                 if len(line) < max_col:
-                    
+
                     self._log(
                         'Line #%u has less than %u fields,'
                         ' skipping! :(\n' % (lnum, max_col),
                         5,
                     )
-                    
+
                     readError = 1
                     continue
-                    
+
                 else:
-                    
+
                     # applying filters:
                     if self.filters(line, param.positive_filters,
                                     param.negative_filters):
                         lFiltered += 1
                         continue
-                    
+
                     # reading names and attributes:
                     if is_directed and not isinstance(is_directed, tuple):
                         this_edge_dir = True
-                        
+
                     else:
                         this_edge_dir = self.process_direction(
                             line,
@@ -2455,43 +2455,43 @@ class PyPath(session_mod.Logger):
                             dir_val,
                             dir_sep,
                         )
-                    
+
                     refs = []
                     if refCol is not None:
-                        
+
                         if not isinstance(line[refCol], (list, set, tuple)):
-                            
+
                             refs = line[refCol].split(refSep)
-                            
+
                         else:
-                            
+
                             refs = line[refCol]
-                        
+
                         refs = common.delEmpty(list(set(refs)))
-                    
+
                     refs = dataio.only_pmids([r.strip() for r in refs])
-                    
+
                     if len(refs) == 0 and param.must_have_references:
                         rFiltered += 1
                         continue
-                    
+
                     # to give an easy way:
                     if isinstance(param.ncbi_tax_id, int):
                         taxon_a = param.ncbi_tax_id
                         taxon_b = param.ncbi_tax_id
-                        
+
                     # to enable more sophisticated inputs:
                     elif isinstance(param.ncbi_tax_id, dict):
-                        
+
                         taxx = self.get_taxon(param.ncbi_tax_id, line)
-                        
+
                         if isinstance(taxx, tuple):
                             taxon_a = taxx[0]
                             taxon_b = taxx[1]
-                            
+
                         else:
                             taxon_a = taxon_b = taxx
-                        
+
                         taxdA = (
                             param.ncbi_tax_id['A']
                             if 'A' in param.ncbi_tax_id else
@@ -2500,7 +2500,7 @@ class PyPath(session_mod.Logger):
                             param.ncbi_tax_id['B']
                             if 'B' in param.ncbi_tax_id else
                             param.ncbi_tax_id)
-                        
+
                         if (('include' in taxdA and
                             taxon_a not in taxdA['include']) or
                             ('include' in taxdB and
@@ -2509,23 +2509,23 @@ class PyPath(session_mod.Logger):
                             taxon_a in taxdA['exclude']) or
                             ('exclude' in taxdB and
                             taxon_b in taxdB['exclude'])):
-                            
+
                             tFiltered += 1
                             continue
-                        
+
                     else:
                         taxon_a = taxon_b = self.ncbi_tax_id
-                    
+
                     if taxon_a is None or taxon_b is None:
                         tFiltered += 1
                         continue
-                    
+
                     stim = False
                     inh = False
-                    
+
                     if isinstance(sign, tuple):
                         stim, inh = self.process_sign(line[sign[0]], sign)
-                    
+
                     resource = (
                         [line[param.resource]]
                         if type(param.resource) is int else
@@ -2533,12 +2533,12 @@ class PyPath(session_mod.Logger):
                         if type(param.resource) is tuple else
                         [param.resource]
                     )
-                    
+
                     id_a = line[param.id_col_a]
                     id_b = line[param.id_col_b]
                     id_a = id_a.strip() if hasattr(id_a, 'strip') else id_a
                     id_b = id_b.strip() if hasattr(id_b, 'strip') else id_b
-                    
+
                     new_edge = {
                         'id_a': id_a,
                         'id_b': id_b,
@@ -2555,7 +2555,7 @@ class PyPath(session_mod.Logger):
                         'taxon_b': taxon_b,
                         'type': param.interaction_type,
                     }
-                    
+
                     # getting additional edge and node attributes
                     attrs_edge = self.get_attrs(
                         line,
@@ -2572,15 +2572,15 @@ class PyPath(session_mod.Logger):
                         param.extra_node_attrs_b,
                         lnum,
                     )
-                    
+
                     if param.mark_source:
-                        
+
                         attrs_node_a[param.mark_source] = this_edge_dir
-                    
+
                     if param.mark_target:
-                        
+
                         attrs_node_b[param.mark_target] = this_edge_dir
-                    
+
                     # merging dictionaries
                     node_attrs = {
                         'attrs_node_a': attrs_node_a,
@@ -2588,28 +2588,28 @@ class PyPath(session_mod.Logger):
                         'attrs_edge': attrs_edge,
                     }
                     new_edge.update(node_attrs)
-                
+
                 if readError != 0:
-                    
+
                     self._log(
                         'Errors occured, certain lines skipped.'
                         'Trying to read the remaining.\n',
                         5,
                     )
                     readError = 1
-                
+
                 edge_list.append(new_edge)
-            
+
             if hasattr(infile, 'close'):
-                
+
                 infile.close()
-            
+
             # ID translation of edges
             edge_list_mapped = self.map_list(
                 edge_list,
                 expand_complexes = expand_complexes,
             )
-            
+
             self._log(
                 '%u lines have been read from %s, '
                 '%u links after mapping; '
@@ -2625,25 +2625,25 @@ class PyPath(session_mod.Logger):
                     tFiltered,
                 )
             )
-        
+
             if reread or redownload:
                 pickle.dump(edge_list_mapped, open(edges_cache, 'wb'), -1)
                 self._log('ID translated edge list saved to %s' % edges_cache)
-            
+
         else:
-            
+
             self._log(
                 'Previously ID translated edge list '
                 'has been loaded from `%s`.' % edges_cache
             )
-        
+
         if keep_raw:
-            
+
             self.data[param.name] = edge_list_mapped
-        
+
         self.raw_data = edge_list_mapped
-    
-    
+
+
     def load_list(self, lst, name): # XXX: Not used anywhere
         """
         Loads a custom list to the object's node data lists. See
@@ -2948,7 +2948,7 @@ class PyPath(session_mod.Logger):
 
         if type(_input) in common.charTypes and os.path.isfile(_input):
             _input = curl.Curl(_input).result
-            
+
             #codecs.open(_input, encoding='utf-8', mode='r')
 
         if _input is None:
@@ -3050,28 +3050,28 @@ class PyPath(session_mod.Logger):
         :return:
             (*list*) -- Copy of *lst* with their elements' names mapped.
         """
-        
+
         list_mapped = []
-        
+
         if single_list:
-            
+
             for item in lst:
                 list_mapped += self.map_item(
                     item,
                     expand_complexes = expand_complexes,
                 )
-            
+
         else:
-            
+
             for edge in lst:
                 list_mapped += self.map_edge(
                     edge,
                     expand_complexes = expand_complexes,
                 )
-        
+
         return list_mapped
-    
-    
+
+
     def map_item(self, item, expand_complexes = True):
         """
         Translates the name in *item* representing a molecule. Default
@@ -3079,31 +3079,31 @@ class PyPath(session_mod.Logger):
         :py:attr:`pypath.main.PyPath.default_name_type` If the mapping
         is unsuccessful, the item will be added to
         :py:attr:`pypath.main.PyPath.unmapped` list.
-        
+
         :arg dict item:
             Item whose name is to be mapped to a default name type.
         :arg bool expand_complexes:
             Expand complexes, i.e. create links between each member of
             the complex and the interacting partner.
-        
+
         :return:
             (*list*) -- The default mapped name(s) [str] of *item*.
         """
-        
+
         # TODO: include
         default_id = mapping.map_name(
             item['name'], item['id_type'],
             self.default_name_type[item['type']],
             expand_complexes = expand_complexes,
         )
-        
+
         if len(default_id) == 0:
-            
+
             self.unmapped.append(item['name'])
-        
+
         return default_id
-    
-    
+
+
     def map_edge(self, edge, expand_complexes = True):
         """
         Translates the identifiers in *edge* representing an edge. Default
@@ -3111,20 +3111,20 @@ class PyPath(session_mod.Logger):
         :py:attr:`pypath.main.PyPath.default_name_type` If the mapping
         is unsuccessful, the item will be added to
         :py:attr:`pypath.main.PyPath.unmapped` list.
-        
+
         :arg dict edge:
             Item whose name is to be mapped to a default name type.
         :arg bool expand_complexes:
             Expand complexes, i.e. create links between each member of
             the complex and the interacting partner.
-        
+
         :return:
             (*list*) -- Contains the edge(s) [dict] with default mapped
             names.
         """
-        
+
         edge_stack = []
-        
+
         default_id_a = mapping.map_name(
             edge['id_a'],
             edge['id_type_a'],
@@ -3132,7 +3132,7 @@ class PyPath(session_mod.Logger):
             ncbi_tax_id = edge['taxon_a'],
             expand_complexes = expand_complexes,
         )
-        
+
         default_id_b = mapping.map_name(
             edge['id_b'],
             edge['id_type_b'],
@@ -3140,29 +3140,29 @@ class PyPath(session_mod.Logger):
             ncbi_tax_id = edge['taxon_b'],
             expand_complexes = expand_complexes,
         )
-        
+
         # this is needed because the possibility ambigous mapping
         # and expansion of complexes
         # one name can be mapped to multiple ones
         # this multiplies the nodes and edges
         # in case of proteins this does not happen too often
         for id_a, id_b in itertools.product(default_id_a, default_id_b):
-            
+
             this_edge = modcopy.copy(edge)
             this_edge['default_name_a'] = id_a
             this_edge['default_name_type_a'] = (
                 self.default_name_type[edge['entity_type_a']]
             )
-            
+
             this_edge['default_name_b'] = id_b
             this_edge['default_name_type_b'] = (
                 self.default_name_type[edge['entity_type_b']]
             )
             edge_stack.append(this_edge)
-        
+
         return edge_stack
-    
-    
+
+
     def combine_attr(self, lst, num_method = max):
         """
         Combines multiple attributes into one. This method attempts
@@ -3326,22 +3326,22 @@ class PyPath(session_mod.Logger):
             :py:attr:`pypath.main.PyPath.graph` (undirected network) by
             default.
         """
-        
+
         graph = self.graph if graph is None else graph
-        
+
         multiple = Counter(graph.vs['name'])
-        
+
         for name, count in iteritems(multiple):
-            
+
             if count > 1:
-                
+
                 nodes = graph.vs.select(name = name)
-                
+
                 # the number of nodes might have changed
                 if len(nodes) > 1:
-                    
+
                     self.merge_nodes(nodes)
-    
+
     def merge_nodes(self, nodes, primary=None, graph=None):
         """
         Merges all attributes and edges of selected nodes and assigns
@@ -3367,29 +3367,29 @@ class PyPath(session_mod.Logger):
         primary = primary.index if type(primary) is not int else primary
         nonprimary = list(filter(lambda n: n != primary, nodes))
         graph.vs['id_merge'] = list(xrange(graph.vcount()))
-        
+
         # combining vertex attributes:
         vprim = graph.vs[primary]
-        
+
         for attr in vprim.attributes():
-            
+
             if attr not in {'name', 'id_merge', 'label'}:
-                
+
                 vprim[attr] = self.combine_attr(list(map(
                                 lambda vid: graph.vs[vid][attr],
                                 # combining from all nodes
                                 nodes)))
-        
+
         # moving edges of non primary vertices to the primary one
         self.copy_edges(nonprimary, primary, move = True, graph = graph)
-        
+
         # deleting non primary vertices:
         toDel = [graph.vs.select(id_merge = i)[0].index for i in nonprimary]
-        
+
         graph.delete_vertices(toDel)
         del graph.vs['id_merge']
-    
-    
+
+
     def copy_edges(self, sources, target, move=False, graph=None):
         """
         Copies edges from *sources* node(s) to another one (*target*),
@@ -3408,7 +3408,7 @@ class PyPath(session_mod.Logger):
             which the nodes are to be merged. If none is passed, takes
             the undirected network graph.
         """
-        
+
         toDel = set([])
         graph = self.graph if graph is None else graph
         graph.vs['id_old'] = list(range(graph.vcount()))
@@ -3416,7 +3416,7 @@ class PyPath(session_mod.Logger):
 
         # preserve a permanent marker of the target vertex
         ovidt = graph.vs[target]['id_old']
-        
+
         # collecting the edges of all source vertices into dict
         ses = dict(
             (
@@ -3433,19 +3433,19 @@ class PyPath(session_mod.Logger):
             )
             for s in sources
         )
-        
+
         # collecting edges to be newly created
         toAdd = set([])
-        
+
         for s, es in iteritems(ses):
-            
+
             for eid in es:
                 # the source edge:
                 e = graph.es[eid]
-                
+
                 new_source = target if e.source == s else e.source
                 new_target = target if e.target == s else e.target
-                
+
                 es0 = graph.es.select(
                     _source = new_source,
                     _target = new_target,
@@ -3457,21 +3457,21 @@ class PyPath(session_mod.Logger):
                         _target = new_source,
                     )
                 # looking up if target edge already exists:
-                
+
                 if not len(list(itertools.chain(es0, es1))):
-                    
+
                     toAdd.add((new_source, new_target))
-        
+
         # creating new edges
         graph.add_edges(toAdd)
         nvidt = graph.vs.select(id_old = target)[0].index
-        
+
         # copying attributes:
-        
+
         for ovids, es in iteritems(ses):
-            
+
             for oeid in es:
-                
+
                 # this is the current source edge:
                 e = graph.es.select(id_old = oeid)[0]
                 # this is the index of the other (peer) node:
@@ -3487,25 +3487,25 @@ class PyPath(session_mod.Logger):
                 )
                 nvids = graph.vs.select(id_old = ovids)[0].index
                 nvid_other = e.target if e.source == nvids else e.source
-                
+
                 # looking up new edge:
                 es0 = graph.es.select(
                     _source = new_source,
                     _target = new_target,
                 )
                 es1 = ()
-                
+
                 if not graph.is_directed():
-                    
+
                     es1 = graph.es.select(
                         _source = new_target,
                         _target = new_source,
                     )
-                
+
                 es_all = list(itertools.chain(es0, es1))
-                
+
                 for new_edge in es_all:
-                    
+
                     # old direction:
                     d = e['dirs']
                     # dict from old names to new ones
@@ -3516,42 +3516,42 @@ class PyPath(session_mod.Logger):
                         graph.vs[nvid_other]['name']:
                             graph.vs[nvid_other]['name'],
                     }
-                    
+
                     # copying directions and signs:
                     new_dirs = d.translate(ids)
-                    
+
                     if new_edge['dirs']:
                         new_dirs.merge(new_edge['dirs'])
-                    
+
                     new_edge['dirs'] = new_dirs
-                    
+
                     # copying `refs_by_dir`
                     new_edge['refs_by_dir'] = self._translate_refsdir(
                         e['refs_by_dir'], ids,
                     )
-                    
+
                     # copying further attributes:
                     for eattr in e.attributes():
-                    
+
                         if eattr not in {'dirs', 'refs_by_dir', 'id_old'}:
-                            
+
                             new_edge[eattr] = self.combine_attr([
                                 new_edge[eattr],
                                 e[eattr]
                             ])
-                
+
                 # in case we want to delete old edges:
                 toDel.add(e.index)
 
         if move:
-            
+
             graph.delete_edges(list(toDel))
-        
+
         # removing temporary attributes
         del graph.es['id_old']
         del graph.vs['id_old']
-    
-    
+
+
     def delete_by_organism(self, organisms_allowed = None):
         """
         Removes the proteins of all organisms which are not given in
@@ -3561,21 +3561,21 @@ class PyPath(session_mod.Logger):
             List of NCBI Taxonomy IDs [int] of the organism(s) that are
             to be kept.
         """
-        
+
         g = self.graph
-        
+
         organisms_allowed = organisms_allowed or {self.ncbi_tax_id}
-        
+
         to_delete = [
             v.index for v in g.vs
             if v['ncbi_tax_id'] not in organisms_allowed
         ]
-        
+
         g.delete_vertices(to_delete)
         self.update_vname()
         self.update_db_dict()
-    
-    
+
+
     def delete_unknown(
             self,
             organisms_allowed = None,
@@ -3605,11 +3605,11 @@ class PyPath(session_mod.Logger):
         g = self.graph
 
         if not default_name_type:
-            
+
             default_name_type = self.default_name_type[entity_type]
-        
+
         organisms_allowed = organisms_allowed or {self.ncbi_tax_id}
-        
+
         to_delete = []
         self.update_vname()
 
@@ -3629,7 +3629,7 @@ class PyPath(session_mod.Logger):
         ]
         vertices = list((set(names) & set(entity_types)) & set(organisms))
         names_selected = [g.vs[i]['name'] for i in vertices]
-        
+
         names_to_delete = set.intersection(
             *(
                 reflists.is_not(
@@ -3640,11 +3640,11 @@ class PyPath(session_mod.Logger):
                 for ncbi_tax_id in organisms_allowed
             )
         )
-        
+
         vertices_to_delete = [self.nodDct[n] for n in names_to_delete]
-        
+
         g.delete_vertices(to_delete)
-        
+
         self.update_vname()
 
 
@@ -3655,7 +3655,7 @@ class PyPath(session_mod.Logger):
         :py:meth:`pypath.main.PyPath.combine_attr` method.
         Loops will be deleted unless the attribute
         :py:attr:`pypath.main.PyPath.loops` is set to ``True``.
-        
+
         :arg set organisms_allowed:
             NCBI Taxonomy identifiers [int] of the organisms allowed
             in the network.
@@ -3667,7 +3667,7 @@ class PyPath(session_mod.Logger):
         if not g.is_simple():
             g.simplify(loops=not self.loops, multiple=True,
                        combine_edges=self.combine_attr)
-        
+
         self._log(
             'After duplicate edge removal: '
             'number of nodes: %u, edges: %u' % (
@@ -3675,9 +3675,9 @@ class PyPath(session_mod.Logger):
                 self.graph.ecount(),
             )
         )
-        
+
         self.delete_unmapped()
-        
+
         self._log(
             'After removing unmapped nodes: '
             'number of nodes: %u, edges: %u' % (
@@ -3687,7 +3687,7 @@ class PyPath(session_mod.Logger):
         )
 
         self.delete_by_organism(organisms_allowed = organisms_allowed)
-        
+
         self._log(
             'After removing unknown organism nodes: '
             'number of nodes: %u, edges: %u' % (
@@ -3695,13 +3695,13 @@ class PyPath(session_mod.Logger):
                 self.graph.ecount(),
             )
         )
-        
+
         self.delete_unknown(organisms_allowed = organisms_allowed)
 
         x = g.vs.degree()
         zeroDeg = [i for i, j in enumerate(x) if j == 0]
         g.delete_vertices(zeroDeg)
-        
+
         self._log(
             'After removing zero degree nodes: '
             'number of node: %u, edges: %u' % (
@@ -3709,7 +3709,7 @@ class PyPath(session_mod.Logger):
                 self.graph.ecount(),
             )
         )
-        
+
         self.update_vname()
 
     ###
@@ -3737,8 +3737,8 @@ class PyPath(session_mod.Logger):
                 s += 1
 
         return s
-    
-    
+
+
     def add_update_vertex(
             self,
             default_attrs,
@@ -3768,21 +3768,21 @@ class PyPath(session_mod.Logger):
             node is not in the network, it will be created. Otherwise,
             in such case it will raise an error message.
         """
-        
+
         keep_original_names = settings.get('network_keep_original_names')
-        
+
         g = self.graph
         g.vs._reindex_names()
-        
+
         if not default_attrs['name'] in g.vs['name']:
-            
+
             if not add:
                 self._log('Failed to add some vertices', -5)
                 return False
-            
+
             n = g.vcount()
             g.add_vertices(1)
-            
+
             # only keep track of original names if they are strings
             # not, for example, complexes
             if (
@@ -3792,49 +3792,49 @@ class PyPath(session_mod.Logger):
                 g.vs[n]['original_names'] = {
                     original_name: original_name_type,
                 }
-            
+
             this_node = g.vs[g.vs._name_index[default_attrs['name']]]
-            
+
         else:
-            
+
             this_node = g.vs[g.vs._name_index[default_attrs['name']]]
-            
+
             if this_node['original_names'] is None:
-                
+
                 this_node['original_names'] = {}
-            
+
             # only keep track of original names if they are strings
             # not, for example, complexes
             if (
                 keep_original_names and
                 isinstance(original_name, common.basestring)
             ):
-                
+
                 this_node['original_names'][original_name] = (
                     original_name_type
                 )
-        
+
         if isinstance(default_attrs['name'], intera.Complex):
-            
+
             default_attrs['type'] = 'complex'
-        
+
         for key, value in iteritems(default_attrs):
-            
+
             this_node[key] = value
-        
+
         for key, value in iteritems(extra_attrs):
-            
+
             if key not in g.vs.attributes():
-                
+
                 g.vs[key] = (
                     [[] for _ in xrange(self.graph.vcount())]
                         if isinstance(value, list) else
                     [None]
                 )
-            
+
             this_node[key] = self.combine_attr([this_node[key], value])
-    
-    
+
+
     def add_update_edge(self, id_a, id_b, source, is_directed, refs, stim, inh,
                         taxon_a, taxon_b, typ, extra_attrs={}, add=False):
         """
@@ -4119,9 +4119,9 @@ class PyPath(session_mod.Logger):
             ``True``, returns the copy of the directed graph. otherwise
             returns ``None``.
         """
-        
+
         self._log('Creating directed network object.')
-        
+
         toDel = []
         g = self.graph if not graph else graph
         d = g.as_directed(mutual=True)
@@ -4212,9 +4212,9 @@ class PyPath(session_mod.Logger):
         self._get_directed()
         self._get_undirected()
         self.update_vname()
-        
+
         self._log('Directed igraph object created.')
-        
+
         if graph or ret:
             return d
 
@@ -4498,7 +4498,7 @@ class PyPath(session_mod.Logger):
                 self.init_vertex_attr(attr)
 
         for attr in list(set(self.graph.es.attributes()) - set(['dirs'])):
-            
+
             types = list(
                 set([type(x) for x in self.graph.es[attr] if x is not None]))
 
@@ -4512,7 +4512,7 @@ class PyPath(session_mod.Logger):
                 )
 
             elif len(types) == 0:
-                
+
                 self._log('Edge attribute `%s` has only None values' % attr)
 
             if len(types) > 0:
@@ -4596,33 +4596,33 @@ class PyPath(session_mod.Logger):
             previously existing nodes, will not be added (and hence, the
             edges involved).
         """
-        
+
         self._log('Adding preprocessed edge list to existing network.')
-        
+
         g = self.graph
-        
+
         if not edge_list:
-            
+
             if self.raw_data is not None:
                 edge_list = self.raw_data
-            
+
             else:
                 self._log('attach_network(): No data, nothing to do.')
                 return True
-        
+
         if isinstance(edge_list, str):
-            
+
             if edge_list in self.data:
                 edge_list = self.data[edge_list]
-            
+
             else:
                 self._log(
                     '`%s` looks like a source name, but no data '
                     'available under this name.' % edge_list
                 )
-                
+
                 return False
-        
+
         nodes = []
         edges = []
         # adding nodes and edges first in bunch,
@@ -4630,42 +4630,42 @@ class PyPath(session_mod.Logger):
         self.update_vname()
         prg = Progress(
             total=len(edge_list), name="Processing nodes", interval=50)
-        
+
         for e in edge_list:
             aexists = self.node_exists(e["default_name_a"])
             bexists = self.node_exists(e["default_name_b"])
-            
+
             if not aexists and (not regulator or bexists):
                 nodes.append(e["default_name_a"])
-            
+
             if not bexists and not regulator:
                 nodes.append(e["default_name_b"])
-            
+
             prg.step()
-        
+
         prg.terminate()
         self.new_nodes(set(nodes))
         self._log('New nodes have been created (%u)' % len(nodes))
         self.update_vname()
         prg = Progress(
             total=len(edge_list), name='Processing edges', interval=50)
-        
+
         for e in edge_list:
             aexists = self.node_exists(e["default_name_a"])
             bexists = self.node_exists(e["default_name_b"])
-            
+
             if aexists and bexists:
-                
+
                 edge = self.edge_exists(
                     e["default_name_a"],
                     e["default_name_b"],
                 )
-                
+
                 if isinstance(edge, list):
                     edges.append(tuple(edge))
-                
+
                 prg.step()
-        
+
         prg.terminate()
         self.new_edges(set(edges))
         self._log('New edges have been created')
@@ -4677,10 +4677,10 @@ class PyPath(session_mod.Logger):
         )
         nodes_updated = []
         self.update_vname()
-        
+
         for e in edge_list:
             # adding new node attributes
-            
+
             if e['default_name_a'] not in nodes_updated:
                 default_attrs = {
                     'name': e['default_name_a'],
@@ -4696,7 +4696,7 @@ class PyPath(session_mod.Logger):
                     e['attrs_node_a'],
                 )
                 nodes_updated.append(e['default_name_a'])
-            
+
             if e['default_name_b'] not in nodes_updated:
                 default_attrs = {
                     'name': e['default_name_b'],
@@ -4712,7 +4712,7 @@ class PyPath(session_mod.Logger):
                     e['attrs_node_b'],
                 )
                 nodes_updated.append(e['default_name_b'])
-            
+
             # adding new edge attributes
             self.add_update_edge(
                 e['default_name_a'],
@@ -4727,9 +4727,9 @@ class PyPath(session_mod.Logger):
                 e['type'],
                 e['attrs_edge'],
             )
-            
+
             prg.step()
-        
+
         self._log(
             'New network resource added, current number '
             'of nodes: %u, edges: %u.' % (
@@ -4737,12 +4737,12 @@ class PyPath(session_mod.Logger):
                 self.graph.ecount()
             )
         )
-        
+
         prg.terminate()
         self.raw_data = None
         self.update_attrs()
-    
-    
+
+
     def apply_list(self, name, node_or_edge = 'node'):
         """
         Creates vertex or edge attribute based on a list.
@@ -5509,7 +5509,7 @@ class PyPath(session_mod.Logger):
         vertex (UniProt ID by default). If the attribute ``'label'`` has
         been already initialized, updates this attribute or recreates if
         *remap_all* is set to ``True``.
-        
+
         :arg igraph.Graph graph:
             Optional, ``None`` by default. The network graph object
             where the GeneSymbol labels are to be set/updated. If none
@@ -5519,26 +5519,26 @@ class PyPath(session_mod.Logger):
             Optional, ``False`` by default. Whether to map anew the
             GeneSymbol labels if those were already initialized.
         """
-        
+
         self._log('Updating vertex labels.')
-        
+
         # XXX: What's the purpose of this? I mean attribute _directed is not
-        #      accessed in this function (?)        
+        #      accessed in this function (?)
         self._already_has_directed()
-        
+
         dnt = self.default_name_type
-        
+
         if graph is None and self.dgraph is not None:
             self.genesymbol_labels(graph=self.dgraph, remap_all=remap_all)
-        
+
         g = self.graph if graph is None else graph
         default_name_type = dnt["protein"]
         label_name_types = {'protein': 'genesymbol',
                           'mirna': 'mir-mat-name'}
-        
+
         if 'label' not in g.vs.attributes():
             remap_all = True
-        
+
         labels = [
             (
                 None
@@ -5547,29 +5547,29 @@ class PyPath(session_mod.Logger):
             )
             for v in g.vs
         ]
-        
+
         for v, l, i in zip(g.vs, labels, xrange(g.vcount())):
-            
+
             if l is None:
-                
+
                 label = None
-                
+
                 if v['type'] in label_name_types:
-                    
+
                     label = mapping.map_name0(
                         v['name'],
                         dnt[v['type']],
                         label_name_types[v['type']],
                         ncbi_tax_id=v['ncbi_tax_id'],
                     )
-                
+
                 if label:
-                    
+
                     labels[i] = label
-                
+
                 else:
                     labels[i] = v['name']
-        
+
         g.vs['label'] = labels
 
     def network_stats(self, outfile=None):
@@ -6137,7 +6137,7 @@ class PyPath(session_mod.Logger):
         for lst in [huge, nothuge]:
 
             for k, v in iteritems(lst):
-                
+
                 self.load_resource(
                     v,
                     clean = False,
@@ -6148,7 +6148,7 @@ class PyPath(session_mod.Logger):
                 )
 
         sys.stdout.write('\n')
-        
+
         self._log(
             'load_resources(): all resources have been loaded, '
             'current number of nodes: %u, edges: %u' % (
@@ -6171,8 +6171,8 @@ class PyPath(session_mod.Logger):
                 len(self.sources),
             )
         )
-    
-    
+
+
     def load_resource(
             self,
             settings,
@@ -6208,9 +6208,9 @@ class PyPath(session_mod.Logger):
             Optional, ``False`` by default. Specifies whether to
             re-download the data and ignore the cache.
         """
-        
+
         self._log('Loading network data from resource `%s`.' % settings.name)
-        
+
         self.read_data_file(
             settings,
             cache_files = cache_files,
@@ -6225,20 +6225,20 @@ class PyPath(session_mod.Logger):
 
         self.update_sources()
         self.update_vertex_sources()
-    
-    
+
+
     def load_negatives(self): # FIXME: global name 'negative' is not defined
         """
         """
-        
+
         for k, v in iteritems(negative):
-            
+
             self._log(
                 'Loading resource of negative interactions: `%s`.' % v.name
             )
             self.apply_negative(v)
-    
-    
+
+
     def load_tfregulons(self, levels={'A', 'B'}, only_curated=False):
         """
         Adds TF-target interactions from TF regulons to the network.
@@ -7563,7 +7563,7 @@ class PyPath(session_mod.Logger):
         complexes = dataio.read_complexes_havugimana()
 
         if complexes is None:
-            
+
             self._log('Failed to read data from Havugimana')
 
         else:
@@ -8541,7 +8541,7 @@ class PyPath(session_mod.Logger):
     def _neighborhood(self, vs, order=1, mode='ALL'):
         """
         """
-        
+
         return _NamedVertexSeq(
             (
                 self.graph.vs[vi] for vi in
@@ -10138,8 +10138,8 @@ class PyPath(session_mod.Logger):
             'Directionality set for %u interactions '
             'based on known (de)phosphorylation events.' % (isdir2 - isdir)
         )
-    
-    
+
+
     def phosphorylation_signs(self):
         """
         """
@@ -10206,8 +10206,8 @@ class PyPath(session_mod.Logger):
             'Signes set based on phosphorylation-'
             'dephosphorylation pairs: %u' % new_signs
         )
-    
-    
+
+
     def kinase_stats(self):
         """
         """
@@ -10218,7 +10218,7 @@ class PyPath(session_mod.Logger):
         psite_num = 0
 
         for e in self.graph.es:
-            
+
             ks_srcs = []
 
             for p in e['ptm']:
@@ -10227,7 +10227,7 @@ class PyPath(session_mod.Logger):
                     p.__class__.__name__ == 'DomainMotif' and
                     p.ptm.typ == 'phosphorylation'
                 ):
-                    
+
                     ks_srcs += p.ptm.sources + p.sources
                     p_srcs = p.ptm.sources + p.sources
                     p_srcs = sorted(set(p_srcs) - set(['Swiss-Prot']))
@@ -11388,7 +11388,7 @@ class PyPath(session_mod.Logger):
         """
         Creates an adjacency list in a list of sets format.
         """
-        
+
         graph = graph or self.graph
         self.adjlist = [
             set(graph.neighbors(node, mode = mode))
@@ -11448,16 +11448,16 @@ class PyPath(session_mod.Logger):
         graph = graph or self.graph
 
         if update_adjlist or not hasattr(self, 'adjlist'):
-            
+
             self.update_adjlist(graph, mode = mode)
 
         all_paths = []
-        
+
         start = start if isinstance(start, list) else [start]
         end = end if isinstance(end, list) else [end]
-        
+
         if attr:
-            
+
             attr_to_id = dict(reversed(i) for i in enumerate(graph.vs[attr]))
             start = [attr_to_id[a] for a in start]
             end = [attr_to_id[a] for a in end]
@@ -11478,17 +11478,17 @@ class PyPath(session_mod.Logger):
 
         if not silent:
             prg.terminate()
-        
+
         if attr:
-            
+
             all_paths = [
                 [graph.vs[i][attr] for i in path]
                 for path in all_paths
             ]
-        
+
         return all_paths
-    
-    
+
+
     def find_all_paths2(
             self,
             graph,
@@ -11546,10 +11546,10 @@ class PyPath(session_mod.Logger):
         paths = [[s] for s in start]
         all_paths = parts(paths, end, adjlist, maxlen, psize)
         sys.stdout.write('\n')
-        
+
         return all_paths
-    
-    
+
+
     def transcription_factors(self):
         """
         """
@@ -12841,8 +12841,8 @@ class PyPath(session_mod.Logger):
                 self.graph.vcount()
             )
         )
-    
-    
+
+
     def remove_undirected(self, min_refs=None):
         """
         """
@@ -12874,8 +12874,8 @@ class PyPath(session_mod.Logger):
                 self.graph.vcount()
             )
         )
-    
-    
+
+
     def numof_directed_edges(self):
         """
         """
@@ -13080,7 +13080,7 @@ class PyPath(session_mod.Logger):
 
                                     g.es[e]['dirs'].set_sign((s, t),
                                                              'negative', name)
-        
+
         self._log(
             'Directions and signs set for %u edges based on %s,'
             ' %u new directions, %u new signs.' % (
@@ -13090,8 +13090,8 @@ class PyPath(session_mod.Logger):
                 newsigns
             )
         )
-    
-    
+
+
     def curation_effort(self, sum_by_source=False):
         """
         Returns the total number of reference-interactions pairs.
@@ -13825,16 +13825,16 @@ class PyPath(session_mod.Logger):
         """
         Homology translation of the `references by direction` dictionaries.
         """
-        
+
         new_refsdir = {}
-        
+
         for k, v in iteritems(rd):
             di = (ids[k[0]], ids[k[1]]) if type(k) is tuple else k
             new_refsdir[di] = v
-            
+
             return new_refsdir
-    
-    
+
+
     def orthology_translation(
             self,
             target,
@@ -13845,26 +13845,26 @@ class PyPath(session_mod.Logger):
         """
         Translates the current object to another organism by orthology.
         Proteins without known ortholog will be deleted.
-        
+
         :param int target:
             NCBI Taxonomy ID of the target organism. E.g. 10090 for mouse.
         """
-        
+
         return_graph = graph is not None
         graph = self.graph if graph is None else graph
         source = self.ncbi_tax_id if source is None else source
-        
+
         self._log(
             'Translating network by orthology '
             'from taxon `%u` to taxon `%u`.' % (source, target)
         )
-        
+
         name_old__name_new = dataio.homologene_uniprot_dict(
             source = source,
             target = target,
             only_swissprot = only_swissprot,
         )
-        
+
         self._log(
             'UniProt to UniProt homology dictionary obtained from '
             'NCBI Homologene. Contains %u UniProt IDs for taxon `%u`.' % (
@@ -13872,27 +13872,27 @@ class PyPath(session_mod.Logger):
                 source,
             )
         )
-        
+
         vcount_before = graph.vcount()
         ecount_before = graph.ecount()
-        
+
         self._log(
             'Starting translation. Original network consists of %u '
             'nodes and %u edges.' % (vcount_before, ecount_before)
         )
-        
+
         # nodes could not be mapped are to be deleted
         name_old__vid_old = dict(
             (name, vid)
             for vid, name in enumerate(graph.vs['name'])
         )
-        
+
         name_old__name_new = dict(
             (name_old, name_new)
             for name_old, name_new in iteritems(name_old__name_new)
             if name_old in name_old__vid_old and name_new
         )
-        
+
         delete_vids = [
             vid_old
             for name_old, vid_old in iteritems(name_old__vid_old)
@@ -13905,9 +13905,9 @@ class PyPath(session_mod.Logger):
                 graph.vs[vid_old]['ncbi_tax_id'] == source
             )
         ]
-        
+
         ndel = len(delete_vids)
-        
+
         self._log(
             'Found orthologues for %u node IDs, %u nodes will be '
             'deleted because no ortholog is known.' % (
@@ -13915,9 +13915,9 @@ class PyPath(session_mod.Logger):
                 ndel,
             )
         )
-        
+
         graph.delete_vertices(delete_vids)
-        
+
         self._log(
             'Number of nodes reduced from %u to %u after '
             'deletion of nodes with no known orthologs.' % (
@@ -13925,12 +13925,12 @@ class PyPath(session_mod.Logger):
                 graph.vcount(),
             )
         )
-        
+
         graph.vs['old_name'] = modcopy.deepcopy(graph.vs['name'])
-        
+
         del delete_vids
         del name_old__vid_old
-        
+
         # this for permanent identification of nodes:
         graph.vs['id_old'] = list(xrange(graph.vcount()))
         # a dict of these permanent ids and the orthologs:
@@ -13941,7 +13941,7 @@ class PyPath(session_mod.Logger):
             )
             for v in graph.vs
         )
-        
+
         # renaming vertices using the first ortholog
         new_names = [
             (
@@ -13952,17 +13952,17 @@ class PyPath(session_mod.Logger):
             )
             for v in graph.vs
         ]
-        
+
         graph.vs['name'] = new_names
-        
+
         self._log(
             '%u nodes renamed to the name of the first ortholog. '
             'New nodes will be created for genes mapping to multiple '
             'orthologues.' % len(new_names)
         )
-        
+
         del new_names
-        
+
         # the new nodes to be added because of ambiguous mapping
         new_nodes = list(
             set(
@@ -13974,9 +13974,9 @@ class PyPath(session_mod.Logger):
             # except those already exist:
             set(graph.vs['name'])
         )
-        
+
         graph += new_nodes
-        
+
         self._log(
             '%u new nodes have been added due to genes mapped to more '
             'than one orthologues. Total node count is %u.' % (
@@ -13984,12 +13984,12 @@ class PyPath(session_mod.Logger):
                 graph.vcount(),
             )
         )
-        
+
         del new_nodes
-        
+
         # this for permanent identification of nodes:
         graph.vs['id_new'] = list(xrange(graph.vcount()))
-        
+
         # this is a dict of vertices to be multiplied:
         vid_new_orig__vid_new_all = dict(
             (
@@ -14003,7 +14003,7 @@ class PyPath(session_mod.Logger):
             )
             for vid_old, names_new in iteritems(vid_old__name_new)
         )
-        
+
         self._log(
             'Dictionary of nodes created: '
             '%u nodes are affected by ambiguous mapping.' % (
@@ -14014,9 +14014,9 @@ class PyPath(session_mod.Logger):
                 ]),
             )
         )
-        
+
         # compiling a dict of new edges to be added due to ambigous mapping
-        
+
         # this is for unambiguously identify edges both at directed and
         # undirected graphs after reindexing at adding new edges:
         graph.es['id_orig'] = list(range(graph.ecount()))
@@ -14035,7 +14035,7 @@ class PyPath(session_mod.Logger):
             )
             for e in graph.es
         ]
-        
+
         # the parent edge original id as key
         eid_orig__vids_new_not_orig = dict(
             (
@@ -14057,7 +14057,7 @@ class PyPath(session_mod.Logger):
                 (e['id_orig'], e['vids_new__e_orig']) for e in graph.es
             )
         )
-        
+
         self._log(
             '%u edges have to be mapped to %u other edges due to '
             'ambiguous mapping of their endpoints. The network '
@@ -14071,7 +14071,7 @@ class PyPath(session_mod.Logger):
                 graph.ecount(),
             )
         )
-        
+
         # translating the dict values to new vertex indices
         vids_missing = list(
             set(
@@ -14091,22 +14091,22 @@ class PyPath(session_mod.Logger):
                 set((e.target, e.source) for e in graph.es)
             )
         )
-        
+
         # creating new edges
         graph += vids_missing
-        
+
         self._log(
             '%u new edges have been added, number of edges '
             'increased to %u.' % (len(vids_missing), graph.ecount())
         )
-        
+
         # id_new > current index
         vid_new__vid = dict((v['id_new'], v.index) for v in graph.vs)
         # id_new > name
         vid_new__name = dict((v['id_new'], v['name']) for v in graph.vs)
-        
+
         prg = Progress(graph.ecount(), 'Translating network by homology', 21)
-        
+
         self._log(
             'Copying edge attributes from original edges '
             'to corresponding new edges between orthologues. '
@@ -14114,14 +14114,14 @@ class PyPath(session_mod.Logger):
                 len([1 for e in graph.es if e['dirs'] is None]),
             )
         )
-        
+
         # setting attributes on old and new edges:
         for e in graph.es:
-            
+
             prg.step()
-            
+
             d = e['dirs']
-            
+
             # this lookup is appropriate as old node names are certainly
             # unique; for newly added edges `dirs` will be None
             if (
@@ -14129,31 +14129,31 @@ class PyPath(session_mod.Logger):
                 d.nodes[0] in name_old__name_new and
                 d.nodes[1] in name_old__name_new
             ):
-                
+
                 # translation of direction object attached to original edges
-                
+
                 ids = {
                     d.nodes[0]: name_old__name_new[d.nodes[0]][0],
                     d.nodes[1]: name_old__name_new[d.nodes[1]][0],
                 }
-                
+
                 e['dirs'] = d.translate(ids)
-                
+
                 e['refs_by_dir'] = (
                     self._translate_refsdir(e['refs_by_dir'], ids)
                 )
-                
+
                 # if no new edges have been introduced
                 # based on this specific edge
                 if e['id_orig'] not in eid_orig__vids_new_not_orig:
-                    
+
                     continue
-                
+
                 # iterating new edges between orthologs
                 for vid_new_s, vid_new_t in (
                     eid_orig__vids_new_not_orig[e['id_orig']]
                 ):
-                    
+
                     # the current vertex indices
                     vid_s = vid_new__vid[vid_new_s]
                     vid_t = vid_new__vid[vid_new_t]
@@ -14163,7 +14163,7 @@ class PyPath(session_mod.Logger):
                         _target = vid_t,
                     )
                     new_edges_1 = ()
-                    
+
                     if not graph.is_directed():
                         # at undirected graphs
                         # source/target might be opposite:
@@ -14171,9 +14171,9 @@ class PyPath(session_mod.Logger):
                         _source = vid_t,
                         _target = vid_s,
                     )
-                    
+
                     if not len(new_edges_0) and not len(new_edges_1):
-                        
+
                         self._log(
                             'Orthology translation: could not find edge '
                             'between %s and %s!' % (
@@ -14183,46 +14183,46 @@ class PyPath(session_mod.Logger):
                             -5,
                         )
                         continue
-                    
+
                     # this is a new edge between orthologs
                     for new_edge in itertools.chain(new_edges_0, new_edges_1):
-                        
+
                         # this mapping supposed to be correct because
                         # the vid_s and vid_t pairs built at the same time
                         # as the `names_new__e_orig` edge attr
-                        
+
                         ids = {
                             e['names_new__e_orig'][0]:
                                 graph.vs[vid_s]['name'],
                             e['names_new__e_orig'][1]:
                                 graph.vs[vid_t]['name'],
                         }
-                        
+
                         new_edge['dirs'] = e['dirs'].translate(ids)
-                        
+
                         new_edge['refs_by_dir'] = (
                             self._translate_refsdir(e['refs_by_dir'], ids)
                         )
-                        
+
                         # copying the remaining attributes
                         for eattr in e.attributes():
-                            
+
                             if eattr != 'dirs' and eattr != 'refs_by_dir':
-                                
+
                                 new_edge[eattr] = modcopy.deepcopy(e[eattr])
-        
+
         prg.terminate()
-        
+
         self._log(
             'Copying edge attributes finished. '
             'Number of edges without attributes (should be zero): %u.' % (
                 len([1 for e in graph.es if e['dirs'] is None]),
             )
         )
-        
+
         # id_new > current index
         vid_new__vid = dict((v['id_new'], v.index) for v in graph.vs)
-        
+
         self._log(
             'Copying node attributes from original nodes '
             'to their corresponding orthologues. '
@@ -14230,66 +14230,66 @@ class PyPath(session_mod.Logger):
                 len([1 for v in graph.vs if v['ncbi_tax_id'] is None])
             )
         )
-        
+
         # setting attributes of vertices
         for vid_new_orig, vids_new_all in (
             iteritems(vid_new_orig__vid_new_all)
         ):
-            
+
             # the first ortholog:
             v_orig = graph.vs[vid_new__vid[vid_new_orig]]
             # now setting its taxon to the target:
             v_orig['ncbi_tax_id'] = target
-            
+
             for vid_new in vids_new_all:
                 # iterating further orthologs:
                 v_new = graph.vs[vid_new__vid[vid_new]]
-                
+
                 if v_new == v_orig:
-                    
+
                     continue
-                
+
                 # copying attributes:
                 for vattr in v_orig.attributes():
-                    
+
                     if vattr != 'name':
-                        
+
                         v_new[vattr] = modcopy.deepcopy(v_orig[vattr])
-        
+
         self._log(
             'Copying node attributes from original nodes finished.'
             'Number of nodes without attributes: %u' % (
                 len([1 for v in graph.vs if v['ncbi_tax_id'] is None])
             )
         )
-        
+
         # removing temporary edge attributes
         del self.graph.es['id_orig']
         del self.graph.vs['id_old']
         del self.graph.vs['id_new']
         del self.graph.es['vids_new__e_orig']
         del self.graph.es['names_new__e_orig']
-        
+
         self._log('Collapsing any duplicate node or edge.')
-        
+
         self.collapse_by_name(graph = graph)
         self.genesymbol_labels(remap_all = True)
-        
+
         if not return_graph:
-            
+
             self._log(
                 'Setting the PyPath object`s default taxon to `%u`.' % (
                     target
                 )
             )
-            
+
             self.ncbi_tax_id = target
-            
+
             self.update_vname()
             self.update_vindex()
-            
+
             self.clean_graph()
-        
+
         self._log(
             'Network successfully translated from organism `%u` to'
             ' `%u`. Nodes before: %u, after: %u. Edges before: %u,'
@@ -14302,15 +14302,15 @@ class PyPath(session_mod.Logger):
                 graph.ecount()
             )
         )
-        
+
         if return_graph:
-            
+
             return graph
-    
-    
+
+
     homology_translation = orthology_translation
-    
-    
+
+
     def random_walk_with_return(self, q, graph=None, c=.5, niter=1000):
         """
         Random walk with return (RWR) starting from one or more query nodes.
@@ -14428,61 +14428,61 @@ class PyPath(session_mod.Logger):
             (resource, self.nodes_by_resource(resource))
             for resource in self.sources
         )
-    
-    
+
+
     def name_edgelist(self, graph = None):
         """
         Returns an edge list, i.e. a list with tuples of vertex names.
         """
-        
+
         graph = graph or self.graph
-        
+
         _sort = (lambda _: _) if graph.is_directed() else sorted
         names = graph.vs['name']
-        
+
         return [
             tuple(_sort((names[e.source], names[e.target])))
             for e in graph.es
         ]
-    
+
     # shortcuts for the most often used igraph attributes:
-    
+
     @property
     def vcount(self):
-        
+
         return self.graph.vcount()
-    
-    
+
+
     @property
     def ecount(self):
-        
+
         return self.graph.ecount()
-    
-    
+
+
     @property
     def vs(self):
-        
+
         return self.graph.vs
-    
-    
+
+
     @property
     def es(self):
-        
+
         return self.graph.es
-    
-    
+
+
     @property
     def vertex_attributes(self):
-        
+
         return self.graph.vertex_attributes()
-    
-    
+
+
     @property
     def edge_attributes(self):
-        
+
         return self.graph.edge_attributes()
-    
-    
+
+
     def reload(self):
         """Reloads the object from the module level."""
 
@@ -14491,21 +14491,21 @@ class PyPath(session_mod.Logger):
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
         setattr(self, '__class__', new)
-    
-    
+
+
     @staticmethod
     def _disclaimer(self):
         """
         Prints a disclaimer about respecting data licences.
         """
-        
+
         pypath._disclaimer()
-    
-    
+
+
     @staticmethod
     def license(self):
         """
         Prints information about data licences.
         """
-        
+
         pypath.license()
