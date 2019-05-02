@@ -26,9 +26,8 @@ import sys
 from typing import Optional, Set, Union
 
 import click
-from tqdm import tqdm
 
-from pypath import data_formats
+from pypath import progress
 import pypath.session_mod as session_mod
 
 _logger = session_mod.Logger(name = 'bel')
@@ -86,7 +85,13 @@ class Bel(BELManagerMixin, session_mod.Logger):
     >>> pa.init_network(data_formats.pathway)
     >>> be = bel.Bel(resource = pa)
     >>> be.main()
-    >>> be.to_bel_json(os.path.join(os.path.expanduser('~'), 'Desktop', 'omnipath.bel.json'))
+    >>> be.to_bel_json(
+    ...     os.path.join(
+    ...         os.path.expanduser('~'),
+    ...         'Desktop',
+    ...         'omnipath.bel.json'
+    ...     )
+    ... )
     """
 
     def __init__(
@@ -106,10 +111,14 @@ class Bel(BELManagerMixin, session_mod.Logger):
 
     @property
     def initialized(self) -> bool:
-        """Check if the BEL graph has been initialized."""
+        """
+        Check if the BEL graph has been initialized.
+        """
+        
         return 0 < self.bel_graph.number_of_nodes()
 
     def reload(self):
+        
         modname = self.__class__.__module__
         mod = __import__(modname, fromlist = [modname.split('.')[0]])
         import imp
@@ -118,7 +127,9 @@ class Bel(BELManagerMixin, session_mod.Logger):
         setattr(self, '__class__', new)
 
     def main(self):
-        """Convert the resource object to list of BEL relationships."""
+        """
+        Convert the resource object to list of BEL relationships.
+        """
         
         self._log('Building bel graph from the resource provided.')
         
@@ -147,26 +158,36 @@ class Bel(BELManagerMixin, session_mod.Logger):
                 'to bel graph: `%s`.' % type(self.resource)
             )
         
-
         return self
-
-    def resource_to_relationships_graph(self, graph, use_tqdm: bool = False) -> None:
-        """Convert a PyPath igraph object into list of BEL relationships."""
+    
+    
+    def resource_to_relationships_graph(
+            self,
+            graph,
+        ) -> None:
+        """
+        Convert a PyPath igraph object into list of BEL relationships.
+        """
         
         self._log('Building bel graph from PyPath object (igraph graph).')
         
         edges = graph.es
-        if use_tqdm:
-            edges = tqdm(edges)
+        prg = progress.Progress(
+            len(edges),
+            'Building bel graph from PyPath object (igraph graph).',
+            1,
+        )
         for edge in edges:
+            prg.step()
             directions = edge['dirs']
 
             for direction in (directions.straight, directions.reverse):
+                
                 if not directions.dirs[direction]:
                     # this direction does not exist
                     continue
 
-                dir_sources = directions.get_dir(direction, sources=True)
+                dir_sources = directions.get_dir(direction, sources = True)
 
                 if self.only_sources and not dir_sources & self.only_sources:
                     # this direction not provided
@@ -194,11 +215,13 @@ class Bel(BELManagerMixin, session_mod.Logger):
                 citations = self._references(edge, direction)
 
                 for predicate, citation in itt.product(predicates, citations):
+                    
                     self.bel_graph.add_qualified_edge(
-                        source, target,
-                        relation=predicate,
-                        citation=citation,
-                        evidence='From OmniPath',
+                        source,
+                        target,
+                        relation = predicate,
+                        citation = citation,
+                        evidence = 'From OmniPath',
                     )
 
             if not self._has_direction(directions):
@@ -218,6 +241,7 @@ class Bel(BELManagerMixin, session_mod.Logger):
         
         self.bel_graph.name = 'OmniPath_interactions'
         
+        prg.terminate()
         self._log('Building bel graph from PyPath object finished.')
 
     def _references(self, edge, direction) -> Set[str]:
@@ -289,10 +313,14 @@ class Bel(BELManagerMixin, session_mod.Logger):
             Filename.
         """
         with open(path, 'w') as fp:
-            print('Subject\tPredicate\tObject', file=fp)
-            for u, v, d in self.bel_graph.edges(data=True):
-                print('\t'.join((u.name, d[pc.RELATION], v.name)), file=fp)
-
+            
+            print('Subject\tPredicate\tObject', file = fp)
+            
+            for u, v, d in self.bel_graph.edges(data = True):
+                
+                print('\t'.join((u.name, d[pc.RELATION], v.name)), file = fp)
+    
+    
     def to_bel(self) -> pybel.BELGraph:
         """Export the BEL graph."""
         if not self.initialized:
@@ -316,19 +344,51 @@ class Bel(BELManagerMixin, session_mod.Logger):
         """Get the command line interface main group."""
 
         def get_resource(dataset: str):
-            if dataset == 'PyPath':
-                pa = PyPath()
+            
+            if dataset == 'graph':
+                
+                from pypath import main
+                from pypath import data_formats
+                pa = main.PyPath()
                 pa.init_network(data_formats.pathway)
                 return pa
             # TODO add more options
+            elif dataset == 'complexes':
+                
+                from pypath import complexes
+                co = complexes.ComplexAggregator()
+                return co
+                
+            elif dataset == 'ptms':
+                
+                from pypath import ptm
+                es = ptm.PtmAggregator()
+                return es
+                
+            elif dataset == 'annotations':
+                
+                from pypath import annot
+                an = ptm.AnnotationTable(keep_annotators = True)
+                return an
+                
+            else:
+                
+                _logger._log('Unknown resource type: `%s`.' % dataset)
 
         @click.group()
-        @click.option('-r', '--resource-name', type=click.Choice(['PyPath']), default='PyPath')
+        @click.option(
+            '-r',
+            '--resource-name',
+            type = click.Choice([
+                'graph', 'complexes', 'ptms', 'annotations',
+            ]),
+            default = 'graph',
+        )
         @click.pass_context
         def _main(ctx: click.Context, resource_name: str):
             """Bio2BEL OmniPath CLI."""
             resource = get_resource(resource_name)
-            ctx.obj = cls(resource=resource)
+            ctx.obj = cls(resource = resource)
 
         @_main.group()
         def bel():
