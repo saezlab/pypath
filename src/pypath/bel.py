@@ -29,9 +29,6 @@ import click
 from tqdm import tqdm
 
 from pypath import data_formats
-from pypath.complex import AbstractComplexResource
-from pypath.main import PyPath
-from pypath.ptm import PtmAggregator
 import pypath.session_mod as session_mod
 
 _logger = session_mod.Logger(name = 'bel')
@@ -114,7 +111,7 @@ class Bel(BELManagerMixin, session_mod.Logger):
 
     def reload(self):
         modname = self.__class__.__module__
-        mod = __import__(modname, fromlist=[modname.split('.')[0]])
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
         import imp
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
@@ -125,16 +122,21 @@ class Bel(BELManagerMixin, session_mod.Logger):
         
         self._log('Building bel graph from the resource provided.')
         
-        if isinstance(self.resource, PyPath):
+        if hasattr(self.resource, 'graph'):
+            
             self.resource_to_relationships_graph(self.resource.graph)
 
-        elif isinstance(self.resource, PtmAggregator):
-            self.resource_to_relationships_enzyme_substrate(self.resource.enz_sub)
+        elif hasattr(self.resource, 'enz_sub'):
+            
+            self.resource_to_relationships_enzyme_substrate(
+                self.resource.enz_sub
+            )
 
-        elif isinstance(self.resource, AbstractComplexResource):
+        elif hasattr(self.resource, 'complexes'):
             self.resource_to_relationships_complexes(self.resource.complexes)
-
+            
         # FIXME NetworkResource does not exist...
+        # this will work once the new reader and network module will be ready
         elif hasattr(self.resource, 'network'):  # NetworkResource object
             self.resource_to_relationships_network(self.resource.network)
             
