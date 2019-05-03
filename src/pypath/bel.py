@@ -21,7 +21,9 @@ See accompanying file LICENSE.txt or copy at
 Website: http://pypath.omnipathdb.org/
 """
 
-import itertools as itt
+from future.utils import iteritems
+
+import itertools
 import sys
 from typing import Optional, Set, Union
 
@@ -212,55 +214,72 @@ class Bel(BELManagerMixin, session_mod.Logger):
 
                 source = self._protein(direction[0])
                 target = self._protein(direction[1])
-                citations = self._references(edge, direction)
-
-                for predicate, citation in itt.product(predicates, citations):
+                evid_cits = self._references(edge, direction)
+                
+                for (
+                    predicate, (evid, cits)
+                ) in itertools.product(predicates, evid_cits):
                     
-                    self.bel_graph.add_qualified_edge(
-                        source,
-                        target,
-                        relation = predicate,
-                        citation = citation,
-                        evidence = 'From OmniPath',
-                    )
+                    for cit in cits:
+                        
+                        self.bel_graph.add_qualified_edge(
+                            source,
+                            target,
+                            relation = predicate,
+                            citation = cit,
+                            evidence = 'OmniPath',
+                        )
+                        self.bel_graph.add_qualified_edge(
+                            source,
+                            target,
+                            relation = predicate,
+                            citation = cit,
+                            evidence = evid,
+                        )
 
             if not self._has_direction(directions):
                 # add an undirected relationship
                 # if no direction available
 
-                citations = self._references(edge, 'undirected')
+                evid_cits = self._references(edge, 'undirected')
                 source = self._protein(directions.nodes[0])
                 target = self._protein(directions.nodes[1])
 
-                for citation in citations:
-                    self.bel_graph.add_association(
-                        source, target,
-                        citation=citation,
-                        evidence='From OmniPath',
-                    )
+                for evid, cits in evid_cits:
+                    
+                    for cit in cits:
+                        
+                        self.bel_graph.add_association(
+                            source, target,
+                            citation = cit,
+                            evidence = 'OmniPath',
+                        )
+                        self.bel_graph.add_association(
+                            source, target,
+                            citation = cit,
+                            evidence = evid,
+                        )
         
         self.bel_graph.name = 'OmniPath_interactions'
         
         prg.terminate()
         self._log('Building bel graph from PyPath object finished.')
-
+    
+    
     def _references(self, edge, direction) -> Set[str]:
         by_dir = edge['refs_by_dir']
-        references = by_dir[direction] if direction in by_dir else set()
-
-        if self.only_sources:
-            references = (
-                    references &
-                    set.union(
-                        *(
-                            edge['refs_by_source'][src]
-                            for src in (self.only_sources & edge['sources'])
-                        )
-                    )
+        refs_this_dir = by_dir[direction] if direction in by_dir else set()
+        
+        return tuple(
+            (
+                src,
+                tuple(str(ref.pmid) for ref in refs & refs_this_dir)
             )
-
-        return {str(ref.pmid) for ref in references}
-
+            for src, refs in iteritems(edge['refs_by_source'])
+            if not self.only_sources or src in self.only_sources
+        )
+    
+    
     def _check_sign(self, this_sign_sources):
         return (
                 this_sign_sources and
@@ -282,7 +301,8 @@ class Bel(BELManagerMixin, session_mod.Logger):
         )
 
     @staticmethod
-    def _protein(identifier, id_type='uniprot') -> pybel.dsl.Protein:
+    def _protein(identifier, id_type = 'uniprot') -> pybel.dsl.Protein:
+        
         return pybel.dsl.Protein(namespace=id_type.upper(), name=identifier)
 
     def resource_to_relationships_enzyme_substrate(self, enz_sub):
@@ -293,6 +313,7 @@ class Bel(BELManagerMixin, session_mod.Logger):
         raise NotImplementedError
 
     def resource_to_relationships_complexes(self, complexes):
+        
         self._log(
             'Building bel graph from `pypath.complex.ComplexAggregator` '
             'object. Sorry this is not implemented yet!'
@@ -300,6 +321,7 @@ class Bel(BELManagerMixin, session_mod.Logger):
         raise NotImplementedError
 
     def resource_to_relationships_network(self, network):
+        
         self._log(
             'Building bel graph from `pypath.network.Network` '
             'object. Sorry this is not implemented yet!'
@@ -312,6 +334,7 @@ class Bel(BELManagerMixin, session_mod.Logger):
         path : str
             Filename.
         """
+        
         with open(path, 'w') as fp:
             
             print('Subject\tPredicate\tObject', file = fp)
