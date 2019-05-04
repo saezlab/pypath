@@ -664,7 +664,7 @@ class Membranome(AnnotationBase):
             self,
             name = 'Membranome',
             input_method = 'get_membranome',
-            **kwargs,
+            **kwargs
         )
 
 
@@ -739,7 +739,7 @@ class Vesiclepedia(Exocarta):
             self,
             ncbi_tax_id = ncbi_tax_id,
             database = 'vesiclepedia',
-            **kwargs,
+            **kwargs
         )
 
 
@@ -786,7 +786,7 @@ class Surfaceome(AnnotationBase):
             self,
             name = 'Surfaceome',
             input_method = 'get_surfaceome',
-            **kwargs,
+            **kwargs
         )
 
 
@@ -846,7 +846,7 @@ class HumanPlasmaMembraneReceptome(AnnotationBase):
             self,
             name = 'HPMR',
             input_method = 'hpmr_annotations',
-            **kwargs,
+            **kwargs
         )
 
 
@@ -1031,7 +1031,7 @@ class LigandReceptor(AnnotationBase):
             record_extra_fields = None,
             record_defaults = None,
             extra_fields_methods = None,
-            **kwargs,
+            **kwargs
         ):
 
         self.name = name
@@ -1055,7 +1055,7 @@ class LigandReceptor(AnnotationBase):
         AnnotationBase.__init__(
             self,
             name = self.name,
-            **kwargs,
+            **kwargs
         )
 
 
@@ -1141,7 +1141,7 @@ class Ramilowski2015(LigandReceptor):
             receptor_col = 1,
             ligand_id_type = 'genesymbol',
             receptor_id_type = 'genesymbol',
-            **kwargs,
+            **kwargs
         )
 
 
@@ -1158,7 +1158,7 @@ class Kirouac2010(LigandReceptor):
             receptor_col = 1,
             ligand_id_type = 'genesymbol',
             receptor_id_type = 'genesymbol',
-            **kwargs,
+            **kwargs
         )
 
 
@@ -1175,7 +1175,7 @@ class GuideToPharmacology(LigandReceptor):
             receptor_col = 2,
             ligand_id_type = 'genesymbol',
             receptor_id_type = 'uniprot',
-            **kwargs,
+            **kwargs
         )
 
 

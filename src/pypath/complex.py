@@ -48,15 +48,15 @@ class AbstractComplexResource(resource.AbstractResource):
     """
     A resource which provides information about molecular complexes.
     """
-    
-    
+
+
     def __init__(
             self,
             name,
             ncbi_tax_id = 9606,
             input_method = None,
             input_args = None,
-            **kwargs,
+            **kwargs
         ):
         """
         name : str
@@ -67,9 +67,9 @@ class AbstractComplexResource(resource.AbstractResource):
             Method processing the data and yielding ``intera.Complex``
             instances.
         """
-        
+
         self.complexes = {}
-        
+
         resource.AbstractResource.__init__(
             self,
             name = name,
@@ -77,89 +77,89 @@ class AbstractComplexResource(resource.AbstractResource):
             input_method = input_method,
             input_args = input_args,
         )
-        
+
         self.load()
-    
-    
+
+
     def load(self):
-        
+
         resource.AbstractResource.load(self)
         self.update_index()
-    
-    
+
+
     def _process_method(self):
-        
+
         self.complexes = self.data
-        
+
         delattr(self, 'data')
-    
-    
+
+
     def __iter__(self):
-        
+
         for cplex in self.complexes.values():
-            
+
             yield cplex
-    
-    
+
+
     def update_index(self):
-        
+
         self.proteins = collections.defaultdict(set)
         self.resources = collections.defaultdict(set)
         self.ids = {}
-        
+
         for cplex in self:
-            
+
             for protein in cplex:
-                
+
                 self.proteins[protein].add(cplex)
-            
+
             for db in cplex.sources:
-                
+
                 self.resources[protein].add(cplex)
-            
+
             for db, ids in iteritems(cplex.ids):
-                
+
                 for _id in ids:
-                    
+
                     self.ids[(db, _id)] = cplex
-    
-    
+
+
     def __contains__(self, other):
-        
+
         # a Complex instance
         if isinstance(other, intera.Complex):
-            
+
             other = other.__str__()
-        
+
         # either a UniProt ID or
         # a complex string representation
         if isinstance(other, common.basestring):
-            
+
             if len(other) <= 10:
-                
+
                 return other in self.proteins
-                
+
             else:
-                
+
                 return other in self.complexes
-        
+
         return False
-    
-    
+
+
     def __len__(self):
-        
+
         return len(self.complexes)
-    
-    
+
+
     def make_df(self):
-        
+
         have_stoichiometry = {
             'PDB',
             'Compleat',
             'ComplexPortal',
             'CellPhoneDB',
         }
-        
+
         colnames = [
             'name',
             'all_components',
@@ -168,15 +168,15 @@ class AbstractComplexResource(resource.AbstractResource):
             'sources',
             'references',
         ]
-        
+
         records = []
-        
+
         for cplex in self.complexes.values():
-            
+
             has_stoi = have_stoichiometry & cplex.sources
-            
+
             for comp, stoi in iteritems(cplex.components):
-                
+
                 records.append([
                     cplex.name if cplex.name else None,
                     cplex.__str__(),
@@ -185,7 +185,7 @@ class AbstractComplexResource(resource.AbstractResource):
                     ';'.join(cplex.sources),
                     ';'.join(cplex.references),
                 ])
-        
+
         self.df = pd.DataFrame(
             records,
             columns = colnames,
@@ -193,10 +193,10 @@ class AbstractComplexResource(resource.AbstractResource):
 
 
 class CellPhoneDB(AbstractComplexResource):
-    
-    
+
+
     def __init__(self, **kwargs):
-        
+
         AbstractComplexResource.__init__(
             self,
             name = 'CellPhoneDB',
@@ -205,10 +205,10 @@ class CellPhoneDB(AbstractComplexResource):
 
 
 class Corum(AbstractComplexResource):
-    
-    
+
+
     def __init__(self, input_args = None, **kwargs):
-        
+
         AbstractComplexResource.__init__(
             self,
             name = 'CORUM',
@@ -218,10 +218,10 @@ class Corum(AbstractComplexResource):
 
 
 class Havugimana(AbstractComplexResource):
-    
-    
+
+
     def __init__(self, input_args = None, **kwargs):
-        
+
         AbstractComplexResource.__init__(
             self,
             name = 'Havugimana2012',
@@ -231,10 +231,10 @@ class Havugimana(AbstractComplexResource):
 
 
 class Compleat(AbstractComplexResource):
-    
-    
+
+
     def __init__(self, input_args = None, **kwargs):
-        
+
         AbstractComplexResource.__init__(
             self,
             name = 'Compleat',
@@ -244,10 +244,10 @@ class Compleat(AbstractComplexResource):
 
 
 class ComplexPortal(AbstractComplexResource):
-    
-    
+
+
     def __init__(self, input_args = None, **kwargs):
-        
+
         AbstractComplexResource.__init__(
             self,
             name = 'ComplexPortal',
@@ -257,16 +257,16 @@ class ComplexPortal(AbstractComplexResource):
 
 
 class Pdb(AbstractComplexResource):
-    
-    
+
+
     def __init__(self, input_args = None, **kwargs):
-        
+
         input_args = input_args or {}
-        
+
         if 'organism' not in input_args:
-            
+
             input_args['organism'] = settings.get('default_organism')
-        
+
         AbstractComplexResource.__init__(
             self,
             name = 'PDB',
@@ -276,16 +276,16 @@ class Pdb(AbstractComplexResource):
 
 
 class Signor(AbstractComplexResource):
-    
-    
+
+
     def __init__(self, input_args = None, **kwargs):
-        
+
         input_args = input_args or {}
-        
+
         if 'organism' not in input_args:
-            
+
             input_args['organism'] = settings.get('default_organism')
-        
+
         AbstractComplexResource.__init__(
             self,
             name = 'Signor',
@@ -295,12 +295,12 @@ class Signor(AbstractComplexResource):
 
 
 class Hpmr(AbstractComplexResource):
-    
-    
+
+
     def __init__(self, input_args = None, **kwargs):
-        
+
         input_args = input_args or {}
-        
+
         AbstractComplexResource.__init__(
             self,
             name = 'HPMR',
@@ -310,12 +310,12 @@ class Hpmr(AbstractComplexResource):
 
 
 class GuideToPharmacology(AbstractComplexResource):
-    
-    
+
+
     def __init__(self, input_args = None, **kwargs):
-        
+
         input_args = input_args or {}
-        
+
         AbstractComplexResource.__init__(
             self,
             name = 'Guide2Pharma',
@@ -325,58 +325,58 @@ class GuideToPharmacology(AbstractComplexResource):
 
 
 class ComplexAggregator(AbstractComplexResource):
-    
-    
+
+
     def __init__(
             self,
             resources = None,
         ):
         """
         Combines complexes from multiple resources.
-        
+
         :arg list resources:
             List of resources. Names of complex resource classes in this
-            module or custom 
+            module or custom
         """
-        
+
         self.resources = resources or complex_resources
-        
+
         AbstractComplexResource.__init__(
             self,
             name = 'OmniPath',
         )
-    
-    
+
+
     def load(self):
-        
+
         self.data = {}
-        
+
         for res in self.resources:
-            
+
             if not callable(res):
-                
+
                 if res in globals():
-                    
+
                     res = globals()[res]
-            
+
             if callable(res):
-                
+
                 processor = res()
-                
+
             elif hasattr(res, 'complexes'):
-                
+
                 processor = res
-            
+
             for key, cplex in iteritems(processor.complexes):
-                
+
                 if key in self.data:
-                    
+
                     self.data[key] += cplex
-                    
+
                 else:
-                    
+
                     self.data[key] = cplex
-        
+
         resource.AbstractResource.load(self)
         self.update_index()
 
@@ -386,7 +386,7 @@ def init_db():
     Initializes or reloads the complex database.
     The database will be assigned to the ``db`` attribute of this module.
     """
-    
+
     globals()['db'] = ComplexAggregator()
 
 
@@ -395,9 +395,9 @@ def get_db():
     Retrieves the current database instance and initializes it if does
     not exist yet.
     """
-    
+
     if 'db' not in globals():
-        
+
         init_db()
-    
+
     return globals()['db']
