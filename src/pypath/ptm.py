@@ -603,6 +603,11 @@ class PtmAggregator(object):
             yield ptm
     
     
+    def __len__(self):
+        
+        return sum([len(esub) for esub in self.enz_sub.values()])
+    
+    
     def reload(self):
         
         modname = self.__class__.__module__
