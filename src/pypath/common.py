@@ -37,7 +37,9 @@ __all__ = [
     'igraph_graphics_attrs', 'md5', 'mod_keywords', 'Namespace', 'fun',
     'taxids', 'taxa', 'phosphoelm_taxids', 'dbptm_taxids',
     'uniqOrdList', 'dict_diff', 'to_set', 'to_list',
-    'unique_list', 'basestring',
+    'unique_list', 'basestring', 'amino_acids', 'aminoa_1_to_3_letter',
+    'aminoa_3_to_1_letter', 'pmod_bel', 'pmod_other_to_bel',
+    'pmod_bel_to_other',
 ]
 
 # get the location
@@ -1252,10 +1254,82 @@ psite_mod_types2 = [('p', 'phosphorylation'),
                     ('sn', 'nitrosylation'),
                     ('ca', 'caspase-cleavage')]
 
+
+pmod_bel = (
+    ('Ac', ('acetylation',)),
+    ('ADPRib', ('ADP-ribosylation', 'ADP-rybosylation', 'adenosine diphosphoribosyl',)),
+    ('Farn', ('farnesylation',)),
+    ('Gerger', ('geranylgeranylation',)),
+    ('Glyco', ('glycosylation',)),
+    ('Hy', ('hydroxylation',)),
+    ('ISG', ('ISGylation', 'ISG15-protein conjugation',)),
+    ('Me', ('methylation',)),
+    ('Me1', ('monomethylation', 'mono-methylation',)),
+    ('Me2', ('dimethylation', 'di-methylation',)),
+    ('Me3', ('trimethylation', 'tri-methylation',)),
+    ('Myr', ('myristoylation',)),
+    ('Nedd', ('neddylation',)),
+    ('NGlyco', ('N-linked glycosylation',)),
+    ('OGlyco', ('O-linked glycosylation',)),
+    ('Palm', ('palmitoylation',)),
+    ('Ph', ('phosphorylation',)),
+    ('Sumo', ('sumoylation',)),
+    ('Ub', ('ubiquitination', 'ubiquitinylation', 'ubiquitylation',)),
+    ('UbK48', ('Lysine 48-linked polyubiquitination',)),
+    ('UbK63', ('Lysine 63-linked polyubiquitination',)),
+    ('UbMono', ('monoubiquitination',)),
+    ('UbPoly', ('polyubiquitination',)),
+)
+
+pmod_bel_to_other = dict(pmod_bel)
+pmod_other_to_bel = dict(
+    (other_name, bel_name)
+    for bel_name, other_names in pmod_bel
+    for other_name in other_names
+)
+
+
 mirbase_taxids = {9606: 'hsa',
                   10090: 'mmu',
                   10116: 'rno',
                   7227: 'dme'}
+
+amino_acids = (
+    ('alanine', 'Ala', 'A'),
+    ('arginine', 'Arg', 'R'),
+    ('asparagine', 'Asn', 'N'),
+    ('aspartic acid', 'Asp', 'D'),
+    ('asparagine or aspartic acid', 'Asx', 'B'),
+    ('cysteine', 'Cys', 'C'),
+    ('glutamic acid', 'Glu', 'E'),
+    ('glutamine', 'Gln', 'Q'),
+    ('glutamine or glutamic acid', 'Glx', 'Z'),
+    ('glycine', 'Gly', 'G'),
+    ('histidine', 'His', 'H'),
+    ('isoleucine', 'Ile', 'I'),
+    ('leucine', 'Leu', 'L'),
+    ('lysine', 'Lys', 'K'),
+    ('methionine', 'Met', 'M'),
+    ('phenylalanine', 'Phe', 'F'),
+    ('proline', 'Pro', 'P'),
+    ('serine', 'Ser', 'S'),
+    ('threonine', 'Thr', 'T'),
+    ('tryptophan', 'Trp', 'W'),
+    ('tyrosine', 'Tyr', 'Y'),
+    ('valine', 'Val', 'V'),
+)
+
+
+aminoa_3_to_1_letter = dict(
+    (code3, code1)
+    for name, code3, code1 in amino_acids
+)
+
+
+aminoa_1_to_3_letter = dict(
+    (code1, code3)
+    for name, code3, code1 in amino_acids
+)
 
 
 class silent(object): # XXX: Never used
