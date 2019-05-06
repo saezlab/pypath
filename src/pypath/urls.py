@@ -895,10 +895,10 @@ urls = {
         'interactions': 'https://raw.githubusercontent.com/Teichlab/'\
             'cellphonedb/master/cellphonedb/src/core/data/interaction.csv',
         'curated': 'https://raw.githubusercontent.com/Teichlab/'\
-            'cellphonedb/master/cellphonedb/src/tools/data/'\
+            'cellphonedb/master/cellphonedb/tools/data/'\
             'interaction_curated_20180729.csv',
         'negative': 'https://raw.githubusercontent.com/Teichlab/'\
-            'cellphonedb/master/cellphonedb/src/tools/data/'\
+            'cellphonedb/master/cellphonedb/tools/data/'\
             'remove_interactions_20180330.csv',
     },
     'stitch': {

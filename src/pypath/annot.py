@@ -473,7 +473,7 @@ class AnnotationBase(resource.AbstractResource):
 
             this_ifields = ifields[:i+1]
             this_fields  =  fields[:i+1]
-
+            
             value_combinations = set(
                 tuple(annot[j] for j in this_ifields)
                 for annots in self.annot.values()
@@ -485,9 +485,18 @@ class AnnotationBase(resource.AbstractResource):
                 if not any(v is None for v in values) and
                 not any(isinstance(v, float) for v in values)
             )
-
+            
             for values in value_combinations:
-
+                
+                labels = tuple(
+                    'not-%s' % this_fields[ival]
+                        if isinstance(val, bool) and not val else
+                    this_fields[ival]
+                        if isinstance(val, bool) and val else
+                    val
+                    for ival, val in enumerate(values)
+                )
+                
                 this_values = dict(zip(this_fields, values))
 
                 this_array = self.get_subset_bool_array(
@@ -497,7 +506,7 @@ class AnnotationBase(resource.AbstractResource):
 
                 result.append(
                     (
-                        (self.name,) + values,
+                        (self.name,) + labels,
                         this_array,
                     )
                 )
