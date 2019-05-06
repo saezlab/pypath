@@ -57,6 +57,13 @@ annotation_sources = {
     'GuideToPharmacology',
 }
 
+complex_annotation_sources = {
+    'CellPhoneDBComplex',
+    'CorumFuncat',
+    'CorumGO',
+    'HpmrComplex',
+}
+
 default_fields = {
     'Matrisome': ('mainclass', 'subclass'),
     'Locate': ('location',),
@@ -72,7 +79,7 @@ default_fields = {
         'transporter',
         'transmembrane',
         'extracellular',
-    )
+    ),
 }
 
 
@@ -1026,6 +1033,92 @@ class CellPhoneDB(AnnotationBase):
         )
 
 
+class CellPhoneDBComplex(CellPhoneDB):
+    
+    
+    def __init__(self, **kwargs):
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'CellPhoneDB',
+            input_method = 'cellphonedb_complex_annotations',
+            ncbi_tax_id = 9606,
+        )
+
+
+class HpmrComplex(AnnotationBase):
+    
+    
+    def __init__(self, **kwargs):
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'HPMR',
+            input_method = 'hpmr_complexes',
+            ncbi_tax_id = 9606,
+        )
+    
+    
+    def _process_method(self, *args, **kwargs):
+        
+        self.annot = dict(
+            (cplex.__str__(), set())
+            for cplex in self.data
+        )
+        del self.data
+
+
+class Corum(AnnotationBase):
+    
+    
+    def __init__(self, annot_attr, **kwargs):
+        
+        self._annot_attr = annot_attr
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'CORUM',
+            input_method = 'corum_complexes',
+        )
+    
+    
+    def _process_method(self, *args, **kwargs):
+        
+        CorumAnnotation = (
+            collections.namedtuple('CorumAnnotation', (self._annot_attr,))
+        )
+        
+        self.annot = dict(
+            (
+                cplex.__str__(),
+                set(
+                    CorumAnnotation(annot_val)
+                    for annot_val in cplex.attrs[self._annot_attr]
+                    if annot_val != 'None'
+                )
+            )
+            for cplex in self.data.values()
+        )
+        
+        del self.data
+
+
+class CorumFuncat(Corum):
+    
+    
+    def __init__(self, **kwargs):
+        
+        Corum.__init__(self, annot_attr = 'funcat')
+
+
+class CorumGO(Corum):
+    
+    
+    def __init__(self, **kwargs):
+        
+        Corum.__init__(self, annot_attr = 'go')
+
+
 class LigandReceptor(AnnotationBase):
 
 
@@ -1211,6 +1304,7 @@ class AnnotationTable(session_mod.Logger):
             use_fields = None,
             ncbi_tax_id = 9606,
             swissprot_only = True,
+            complexes = True,
             keep_annotators = False,
             load = True,
         ):
@@ -1221,7 +1315,14 @@ class AnnotationTable(session_mod.Logger):
         session_mod.Logger.__init__(self, name = 'annot')
 
         self._module = sys.modules[self.__module__]
-        self.use_sources = use_sources or annotation_sources
+        self.complexes = complexes
+        self.use_sources = (
+            use_sources or (
+                annotation_sources | complex_annotation_sources
+                    if self.complexes else
+                annotation_sources
+            )
+        )
         self.use_fields = use_fields or default_fields
         self.ncbi_tax_id = ncbi_tax_id
         self.keep_annotators = keep_annotators

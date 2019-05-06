@@ -949,6 +949,11 @@ urls = {
         'label': 'Locate protein localization database',
         'url': 'http://locate.imb.uq.edu.au/info_files/'\
             'LOCATE_%s_v6_20081121.xml.zip',
+    },
+    'proteincomplexes': {
+        'label': 'Map of human protein complexes from '\
+            'integration of 9,000 MS experiments',
+        'url': 'http://proteincomplexes.org/static/downloads/clusters.txt',
     }
 }
 

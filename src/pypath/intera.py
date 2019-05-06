@@ -831,6 +831,7 @@ class Complex(object):
             interactions = None,
             references = None,
             proteins = None,
+            attrs = None,
         ):
         """
         Represents a molecular complex.
@@ -874,6 +875,8 @@ class Complex(object):
         self.sources = common.to_set(sources)
         self.references = common.to_set(references)
         self.attrs = {}
+        if isinstance(attrs, dict):
+            self.attrs.update(attrs)
         
         self.interactions = interactions
     

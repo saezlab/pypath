@@ -531,6 +531,10 @@ def corum_complexes(organism = 9606):
             sources = 'CORUM',
             references = pubmeds,
             ids = rec['ComplexID'],
+            attrs = {
+                'funcat': set(rec['FunCat description'].split(';')),
+                'go': set(rec['GO description'].split(';')),
+            },
         )
 
         if cplex.__str__() in complexes:
@@ -803,6 +807,31 @@ def compleat_complexes(predicted = True):
 
             complexes[cplex.__str__()] = cplex
 
+    return complexes
+
+
+def humap_complexes():
+    
+    url = urls.urls['proteincomplexes']['url']
+    c = curl.Curl(url, large = True)
+    
+    complexes = {}
+    
+    for l in c.result:
+        
+        l = l.strip().split()
+        
+        for uniprots in itertools.product(*(
+            mapping.map_name(entrez, 'entrez', 'uniprot') for entrez in l
+        )):
+            
+            cplex = intera.Complex(
+                components = uniprots,
+                sources = 'hu.MAP',
+            )
+            
+            complexes[cplex.__str__()] = cplex
+    
     return complexes
 
 

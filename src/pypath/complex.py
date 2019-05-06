@@ -41,6 +41,7 @@ complex_resources = (
     'Pdb',
     'Hpmr',
     'GuideToPharmacology',
+    'Humap',
 )
 
 
@@ -311,6 +312,18 @@ class Hpmr(AbstractComplexResource):
             name = 'HPMR',
             input_method = 'hpmr_complexes',
             input_args = input_args or {},
+        )
+
+
+class Humap(AbstractComplexResource):
+    
+    
+    def __init__(self, input_args = None, **kwargs):
+        
+        AbstractComplexResource.__init__(
+            self,
+            name = 'hu.MAP',
+            input_method = 'humap_complexes',
         )
 
 
