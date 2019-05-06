@@ -99,6 +99,7 @@ import pypath.descriptions as descriptions
 import pypath.chembl as chembl
 import pypath.mysql as mysql
 import pypath.dataio as dataio
+import pypath.network as network
 import pypath.uniprot_input as uniprot_input
 import pypath.curl as curl
 import pypath.intera as intera
@@ -14444,7 +14445,113 @@ class PyPath(session_mod.Logger):
             tuple(_sort((names[e.source], names[e.target])))
             for e in graph.es
         ]
-
+        
+    def __iter__(self):
+        
+        return self.iter_interactions()
+    
+    def iter_interactions(self):
+        """
+        Iterates over edges and yields interaction records.
+        """
+        
+        def get_references(sources, edge):
+            
+            return set(
+                ref.pmid
+                for this_refs in
+                (
+                    refs
+                    for src, refs in iteritems(edge['refs_by_source'])
+                    if src in sources
+                )
+                for ref in this_refs
+            )
+        
+        
+        for edge in self.graph.es:
+            
+            directions = edge['dirs']
+            
+            for direction in (directions.straight, directions.reverse):
+                
+                if not directions.dirs[direction]:
+                    # this direction does not exist
+                    continue
+                
+                dir_sources = directions.get_dir(direction, sources = True)
+                
+                id_a = direction[0]
+                id_b = direction[1]
+                type_a = self.uniprot(id_a)['type']
+                type_b = self.uniprot(id_b)['type']
+                
+                for effect, sign_sources in zip(
+                    (1, -1),
+                    directions.get_sign(direction, sources = True)
+                ):
+                    
+                    if sign_sources:
+                        
+                        references = get_references(sign_sources, edge)
+                        
+                        yield network.Interaction(
+                            id_a = id_a,
+                            id_b = id_b,
+                            type_a = type_a,
+                            type_b = type_b,
+                            type = edge['type'],
+                            directed = True,
+                            effect = effect,
+                            sources = sign_sources,
+                            references = references,
+                        )
+                
+                sources_with_sign = set.union(
+                    *directions.get_sign(direction, sources = True)
+                )
+                sources_without_sign = dir_sources - sources_with_sign
+                
+                if sources_without_sign:
+                    
+                    references = get_references(sources_without_sign, edge)
+                    
+                    yield network.Interaction(
+                        id_a = id_a,
+                        id_b = id_b,
+                        type_a = type_a,
+                        type_b = type_b,
+                        type = edge['type'],
+                        directed = True,
+                        effect = 0,
+                        sources = sources_without_sign,
+                        references = references,
+                    )
+            
+            undirected_sources = (
+                directions.get_dir('undirected', sources = True)
+            )
+            
+            if undirected_sources:
+                
+                id_a = self.graph.vs[edge.source]['name']
+                id_b = self.graph.vs[edge.target]['name']
+                type_a = self.graph.vs[edge.source]['type']
+                type_b = self.graph.vs[edge.target]['type']
+                references = get_references(undirected_sources, edge)
+                
+                yield network.Interaction(
+                    id_a = id_a,
+                    id_b = id_b,
+                    type_a = type_a,
+                    type_b = type_b,
+                    type = edge['type'],
+                    directed = False,
+                    effect = 0,
+                    sources = undirected_sources,
+                    references = references,
+                )
+    
     # shortcuts for the most often used igraph attributes:
 
     @property
