@@ -492,7 +492,7 @@ class AnnotationBase(resource.AbstractResource):
 
                 this_array = self.get_subset_bool_array(
                     uniprots = uniprots,
-                    **this_values,
+                    **this_values
                 )
 
                 result.append(
