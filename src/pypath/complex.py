@@ -180,7 +180,7 @@ class AbstractComplexResource(resource.AbstractResource):
                 cplex.__str__(),
                 ':'.join(
                     '%u' % (cplex.components[comp] if has_stoi else 0)
-                    for comp in sorted(cpex.components.keys())
+                    for comp in sorted(cplex.components.keys())
                 ),
                 ';'.join(cplex.sources),
                 ';'.join(cplex.references),
