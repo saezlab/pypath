@@ -162,11 +162,11 @@ class AbstractComplexResource(resource.AbstractResource):
 
         colnames = [
             'name',
-            'all_components',
-            'component_uniprot',
-            'component_stoichiometry',
+            'components',
+            'stoichiometry',
             'sources',
             'references',
+            'identifiers',
         ]
 
         records = []
@@ -175,16 +175,21 @@ class AbstractComplexResource(resource.AbstractResource):
 
             has_stoi = have_stoichiometry & cplex.sources
 
-            for comp, stoi in iteritems(cplex.components):
-
-                records.append([
-                    cplex.name if cplex.name else None,
-                    cplex.__str__(),
-                    comp,
-                    '%u' % stoi if has_stoi else np.nan,
-                    ';'.join(cplex.sources),
-                    ';'.join(cplex.references),
-                ])
+            records.append([
+                cplex.name if cplex.name else None,
+                cplex.__str__(),
+                ':'.join(
+                    '%u' % (cplex.components[comp] if has_stoi else 0)
+                    for comp in sorted(cpex.components.keys())
+                ),
+                ';'.join(cplex.sources),
+                ';'.join(cplex.references),
+                ';'.join(
+                    '%s:%s' % (db, _id)
+                    for db, ids in iteritems(cplex.ids)
+                    for _id in ids
+                ),
+            ])
 
         self.df = pd.DataFrame(
             records,

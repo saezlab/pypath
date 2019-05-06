@@ -521,10 +521,8 @@ class TableServer(BaseServer):
             [set(s.split(';')) for s in tbl.sources]
         )
         tbl['set_proteins'] = pd.Series(
-            [set(c.split('-')) for c in tbl.all_components]
+            [set(c.split('-')) for c in tbl.components]
         )
-        tbl.component_stoichiometry.fillna(value = 0, inplace = True)
-        tbl.component_stoichiometry = tbl.component_stoichiometry.astype(int)
     
     
     def _preprocess_annotations(self):
