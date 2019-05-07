@@ -1184,7 +1184,7 @@ class LigandReceptor(AnnotationBase):
             annot[uniprot].add(
                 self.record(
                     mainclass = typ,
-                    **self._get_extra_fields(record),
+                    **self._get_extra_fields(record)
                 )
             )
 

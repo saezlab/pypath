@@ -669,6 +669,19 @@ class GOAnnotation(session_mod.Logger):
             # tokenizing expression if it is a string
             # (method is recursive)
             expr = _reexprterm.findall(expr)
+            
+            if any(e is None for e in expr):
+                
+                self._log(
+                    'Could not process Gene Ontology expression: `%s`. '
+                    'Please check if the expression consists only of '
+                    'GO terms and/or ACs, the operators `AND`, `OR` and '
+                    '`NOT`, and braces. Whitespaces and newlines are OK. '
+                    'If you think the expression is correct please open '
+                    'an issue for `pypath`.' % expr,
+                    -9,
+                )
+                return set()
         
         # initial values
         result   = set()
