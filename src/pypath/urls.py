@@ -954,6 +954,12 @@ urls = {
         'label': 'Map of human protein complexes from '\
             'integration of 9,000 MS experiments',
         'url': 'http://proteincomplexes.org/static/downloads/clusters.txt',
+    },
+    'adhesome': {
+        'label': 'Literature curated database about adhesion related '\
+            'proteins and their interactions',
+        'components': 'http://www.adhesome.org/components.csv',
+        'interactions': 'http://www.adhesome.org/interactions.csv',
     }
 }
 

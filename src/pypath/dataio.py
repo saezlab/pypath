@@ -10066,6 +10066,40 @@ def get_membranome():
             membr[p['membrane_id']]['topology_out'],
         )
 
+def get_adhesome():
+    
+    AdhesomeAnnotation = collections.namedtuple(
+        'AdhesomeAnnotation',
+        ['mainclass', 'intrinsic'],
+    )
+    
+    result = collections.defaultdict(set)
+    
+    url = urls.urls['adhesome']['components']
+    c = curl.Curl(url, large = True, silent = False)
+    
+    data = csv.DictReader(c.result, delimiter = ',')
+    
+    for rec in data:
+        
+        uniprots = rec['Swiss-Prot ID']
+        
+        for uniprot in uniprots.split(','):
+            
+            uniprot = uniprot.strip()
+            
+            if uniprot == 'null':
+                
+                continue
+            
+            result[uniprot].add(AdhesomeAnnotation(
+                mainclass = rec['Functional Category'].strip(),
+                intrinsic = rec['FA'].strip() == 'Intrinsic Proteins',
+            ))
+    
+    return result
+
+
 def get_exocarta(organism = 9606, types = None):
     """
     :param set types:

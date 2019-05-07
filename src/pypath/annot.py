@@ -55,6 +55,7 @@ annotation_sources = {
     'Ramilowski2015',
     'Kirouac2010',
     'GuideToPharmacology',
+    'Adhesome',
 }
 
 complex_annotation_sources = {
@@ -827,6 +828,25 @@ class Surfaceome(AnnotationBase):
             )
 
         self.annot = dict(_annot)
+
+
+class Adhesome(AnnotationBase):
+    
+    
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'Adhesome',
+            ncbi_tax_id = ncbi_tax_id,
+            input_method = 'get_adhesome',
+        )
+    
+    
+    def _process_method(self):
+        
+        self.annot = self.data
+        delattr(self, 'data')
 
 
 class CellSurfaceProteinAtlas(AnnotationBase):
