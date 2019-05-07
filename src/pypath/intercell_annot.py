@@ -120,7 +120,7 @@ go_combined_classes = {
         """,
     'receptor activation':
         """
-        receptor activator activity AND
+        signaling receptor activator activity AND
         (extracellular region OR
         cell surface OR
         external side of plasma membrane OR
@@ -183,7 +183,7 @@ go_combined_classes = {
         """,
     'endocytosis':
         """
-        endocytic adaptor activity
+        cargo adaptor activity
         """,
     'adhesion to matrix':
         """
@@ -436,14 +436,14 @@ go_single_terms = {
         'peptidase activator activity',
         # receptors
         'receptor regulator activity',
-        'receptor activator activity',
+        'signaling receptor activator activity',
         'receptor inhibitor activity',
         'receptor ligand activity',
         'neurotransmitter receptor regulator activity',
         'signaling receptor activity',
         'negative regulation of signaling receptor activity',
         'positive regulation of signaling receptor activity',
-        'receptor activator activity',
+        'signaling receptor activator activity',
         'receptor inhibitor activity',
         'regulation of signaling receptor activity',
         'receptor complex',
@@ -457,7 +457,7 @@ go_single_terms = {
         'neurotransmitter binding',
         
         # endocytosis
-        'endocytic adaptor activity',
+        'cargo adaptor activity',
         
         # ECM, structural proteins
         'structural molecule activity',

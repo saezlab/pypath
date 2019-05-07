@@ -163,13 +163,19 @@ class GeneOntology(session_mod.Logger):
         If ``name`` is a GO accession returns it unchanged.
         """
         
-        return (
+        result = (
             name
                 if self.is_term(name) else
             None
                 if name not in self.term else
             self.term[name]
         )
+        
+        if result is None:
+            
+            self._log('Could not find GO term name: `%s`.' % name)
+        
+        return result
     
     
     def terms_to_names(self, terms):
@@ -624,13 +630,27 @@ class GOAnnotation(session_mod.Logger):
             the selected UniProt IDs.
         """
         
-        expr = self.expr_names_to_terms(expr)
+        expr_terms = self.expr_names_to_terms(expr)
         
-        return self.select_by_expr_terms(
-            expr = expr,
+        result = self.select_by_expr_terms(
+            expr = expr_terms,
             uniprots = uniprots,
             return_uniprots = return_uniprots,
         )
+        
+        if any(e is None for e in result):
+            
+            self._log(
+                'Could not process Gene Ontology expression: `%s`. '
+                'Please check if the expression consists only of '
+                'GO terms and/or ACs, the operators `AND`, `OR` and '
+                '`NOT`, and braces. Whitespaces and newlines are OK. '
+                'If you think the expression is correct please open '
+                'an issue for `pypath`.' % expr,
+                -9,
+            )
+        
+        return result
     
     
     def select_by_expr_terms(
@@ -715,6 +735,16 @@ class GOAnnotation(session_mod.Logger):
                     # token is something else
                     # add to sub-selection stack
                     stack.append(it)
+                
+            elif it is None:
+                
+                self._log(
+                    'One part of a Gene Ontology the expression failed to '
+                    'translate to GO AC. Substituting with empty set, this '
+                    'will alter your results. Check for more specific '
+                    'information earlier in the log.'
+                )
+                this_set = set()
                 
             # we do actual processing of the expression
             elif it.lower() == 'not':
