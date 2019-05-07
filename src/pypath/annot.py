@@ -56,6 +56,7 @@ annotation_sources = {
     'Kirouac2010',
     'GuideToPharmacology',
     'Adhesome',
+    'Integrins',
 }
 
 complex_annotation_sources = {
@@ -833,12 +834,11 @@ class Surfaceome(AnnotationBase):
 class Adhesome(AnnotationBase):
     
     
-    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+    def __init__(self, **kwargs):
         
         AnnotationBase.__init__(
             self,
             name = 'Adhesome',
-            ncbi_tax_id = ncbi_tax_id,
             input_method = 'adhesome_annotations',
         )
     
@@ -847,6 +847,18 @@ class Adhesome(AnnotationBase):
         
         self.annot = self.data
         delattr(self, 'data')
+
+
+class Integrins(AnnotationBase):
+    
+    
+    def __init__(self, **kwargs):
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'Integrins',
+            input_method = 'get_integrins',
+        )
 
 
 class CellSurfaceProteinAtlas(AnnotationBase):

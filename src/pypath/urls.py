@@ -960,7 +960,11 @@ urls = {
             'proteins and their interactions',
         'components': 'http://www.adhesome.org/components.csv',
         'interactions': 'http://www.adhesome.org/interactions.csv',
-    }
+    },
+    'integrins': {
+        'url': 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1929136/'\
+            'table/T1/?report=objectonly',
+    },
 }
 
 files = {
