@@ -438,3 +438,15 @@ class TestDataio(object):
         c = dataio.cellphonedb_interactions()
         
         assert example in c
+    
+    
+    def test_adhesome_annotations(self):
+        
+        a = dataio.adhesome_annotations()
+        
+        assert ('Adaptor', True) in a['Q9NQ75']
+    
+    
+    def test_adhesome_interactions(self):
+        
+        a = dataio.adhesome_interactions()

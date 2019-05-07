@@ -5363,6 +5363,36 @@ def hpmr_annotations(use_cache = None):
     return dict(annot)
 
 
+def adhesome_interactions():
+    
+    AdhesomeInteraction = collections.namedtuple(
+        'AdhesomeInteraction',
+        ['source', 'target', 'effect', 'type', 'pmid'],
+    )
+    
+    url = urls.urls['adhesome']['interactions']
+    
+    c = curl.Curl(url, large = True, silent = False)
+    
+    data = csv.DictReader(c.result, delimiter = ',')
+    
+    result = []
+    
+    for rec in data:
+        
+        result.append(
+            AdhesomeInteraction(
+                source = rec['Source'],
+                target = rec['Target'],
+                effect = rec['Effect'],
+                type   = rec['Type'],
+                pmid   = rec['PMID'],
+            )
+        )
+    
+    return result
+
+
 def get_tfcensus(classes = ['a', 'b', 'other']):
     """
     Downloads and processes list of all human transcripton factors.
