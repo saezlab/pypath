@@ -4066,6 +4066,7 @@ def go_descendants_quickgo(
         aspects = ('C', 'F', 'P'),
         terms = None,
         relations = None,
+        quickgo_download_size = 500,
     ):
     """
     Queries descendants of GO terms by QuickGO REST API.
@@ -4079,21 +4080,15 @@ def go_descendants_quickgo(
     :param dict terms:
         Result from ``go_terms_solr``. If ``None`` the method will be called.
     """
+    
+    
+    def download_in_chunks(terms, chunk_size, target = None):
+        
+        target = target or collections.defaultdict(set)
+        
+        paginator = common.paginate(terms, chunk_size)
 
-    desc = dict((a, collections.defaultdict(set)) for a in aspects)
-
-    terms = terms or go_terms_quickgo(aspects = aspects)
-    relations = relations or ('is_a', 'part_of', 'occurs_in', 'regulates',)
-
-    req_headers = ['Accept:application/json']
-
-    relations_part = ','.join(relations)
-
-    for asp in aspects:
-
-        paginator = common.paginate(list(terms[asp].keys()), size = 500)
-
-        for terms_part in paginator:
+        for p, terms_part in enumerate(paginator):
 
             url = urls.urls['quickgo_rest']['desc'] % (
                 ','.join(terms_part),
@@ -4106,21 +4101,64 @@ def go_descendants_quickgo(
                 silent = True,
                 large = True,
             )
-
-            result = json.load(c.fileobj)
-
+            
+            try:
+                result = json.load(c.fileobj)
+            except json.decoder.JSONDecodeError:
+                done = chunk_size * p
+                remaining = terms[done:]
+                new_chunk_size = chunk_size // 2
+                
+                if new_chunk_size < 10:
+                    
+                    _log(
+                        'Failed to download QuickGO, tried to decrease the '
+                        'number of terms in each query, went below 10 terms '
+                        'per query but still getting erroneous JSON. '
+                        'This might be due to very slow network connection. '
+                        'You might increase the timeout of CURL. '
+                        'But then it will take forever.'
+                    )
+                    
+                    return target
+                
+                return download_in_chunks(
+                    terms = remaining,
+                    chunk_size = new_chunk_size,
+                    target = taret,
+                )
+            
             for res in result['results']:
-
+            
                 if 'children' not in res:
 
                     continue
 
-                desc[asp][res['id']].update(
+                target[res['id']].update(
                     set(
                         (child['id'], child['relation'])
                         for child in res['children']
                     )
                 )
+        
+        return target
+    
+    
+    desc = {}
+
+    terms = terms or go_terms_quickgo(aspects = aspects)
+    relations = relations or ('is_a', 'part_of', 'occurs_in', 'regulates',)
+
+    req_headers = ['Accept:application/json']
+
+    relations_part = ','.join(relations)
+
+    for asp in aspects:
+
+        desc[asp] = download_in_chunks(
+            terms = list(terms[asp].keys()),
+            chunk_size = quickgo_download_size,
+        )
 
     return desc
 
