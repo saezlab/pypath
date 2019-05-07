@@ -965,6 +965,17 @@ urls = {
         'url': 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1929136/'\
             'table/T1/?report=objectonly',
     },
+    'opm': {
+        'label': 'Orientations of proteins in membranes database',
+        'proteins': 'https://lomize-group-opm.herokuapp.com/'\
+            'primary_structures?fileFormat=csv',
+        'families': 'https://lomize-group-opm.herokuapp.com/'\
+            'families?fileFormat=csv',
+        'classes': 'https://lomize-group-opm.herokuapp.com/'\
+            'classes?fileFormat=csv',
+        'types': 'https://lomize-group-opm.herokuapp.com/'\
+            'types?fileFormat=csv',
+    }
 }
 
 files = {

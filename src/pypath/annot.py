@@ -57,6 +57,7 @@ annotation_sources = {
     'GuideToPharmacology',
     'Adhesome',
     'Integrins',
+    'Opm',
 }
 
 complex_annotation_sources = {
@@ -840,6 +841,27 @@ class Adhesome(AnnotationBase):
             self,
             name = 'Adhesome',
             input_method = 'adhesome_annotations',
+        )
+    
+    
+    def _process_method(self):
+        
+        self.annot = self.data
+        delattr(self, 'data')
+
+
+class Opm(AnnotationBase):
+    
+    
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'OPM',
+            input_method = 'opm_annotations',
+            input_args = {
+                'organism': ncbi_tax_id,
+            }
         )
     
     

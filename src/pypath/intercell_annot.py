@@ -65,6 +65,10 @@ go_combined_classes = {
         cell surface OR
         external side of plasma membrane
         """,
+    'transmembrane':
+        """
+        plasma membrane
+        """,
     'ecm':
         """
         extracellular matrix OR
@@ -786,6 +790,13 @@ annot_combined_classes = (
             ),
             op = set.union,
         ),
+    ),
+    af.AnnotDef(
+        name = 'transmembrane',
+        source = 'GO_Intercell',
+        args = {
+            'mainclass': 'transmembrane',
+        },
     ),
     af.AnnotDef(
         name = 'extracellular_locate',
