@@ -450,3 +450,7 @@ class TestDataio(object):
     def test_adhesome_interactions(self):
         
         a = dataio.adhesome_interactions()
+        
+        example = ('PRKACA', 'MAPK1', '+', 'Binding', '10592173')
+        
+        assert example in a
