@@ -839,7 +839,7 @@ class Adhesome(AnnotationBase):
             self,
             name = 'Adhesome',
             ncbi_tax_id = ncbi_tax_id,
-            input_method = 'get_adhesome',
+            input_method = 'adhesome_annotations',
         )
     
     

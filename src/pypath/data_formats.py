@@ -501,7 +501,26 @@ pathway = {
         extra_edge_attrs = {"signor_mechanism": (7, ';')},
         extra_node_attrs_a = {},
         extra_node_attrs_b = {},
-    )
+    ),
+    'adhesome': input_formats.ReadSettings(
+        name = "Adhesome",
+        separator = None,
+        id_col_a = 0,
+        id_col_b = 1,
+        id_type_a = "genesymbol",
+        id_type_b = "genesymbol",
+        entity_type_a = "protein",
+        entity_type_b = "protein",
+        ncbi_tax_id = 9606,
+        is_directed = (2, ('+', '_')),
+        sign = (2, '+', '_'),
+        input = 'adhesome_interactions',
+        references = 4,
+        header = True,
+        extra_edge_attrs = {},
+        extra_node_attrs_a = {},
+        extra_node_attrs_b = {},
+    ),
 }
 
 # synonym

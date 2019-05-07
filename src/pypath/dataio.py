@@ -10096,7 +10096,7 @@ def get_membranome():
             membr[p['membrane_id']]['topology_out'],
         )
 
-def get_adhesome():
+def adhesome_annotations():
     
     AdhesomeAnnotation = collections.namedtuple(
         'AdhesomeAnnotation',
