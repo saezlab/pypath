@@ -10268,6 +10268,124 @@ def opm_annotations(organism = 9606):
     return result
 
 
+def topdb_annotations(ncbi_tax_id = 9606):
+    
+    TopdbAnnotation = collections.namedtuple(
+        'TopdbAnnotation',
+        ['membrane', 'topology', 'score', 'tmregions'],
+    )
+    
+    result = collections.defaultdict(set)
+    
+    url = urls.urls['topdb']['url']
+    c = curl.Curl(
+        url,
+        large = True,
+        default_mode = 'rb',
+        silent = False,
+    )
+    
+    parser = etree.iterparse(c.fileobj, events = ('start', 'end'))
+    
+    result = collections.defaultdict(set)
+    root = next(parser)
+    used_elements = []
+
+    for ev, elem in parser:
+        
+        if ev == 'end' and elem.tag == 'TOPDB':
+            
+            used_elements.append(elem)
+            
+            organism = elem.find('Organism').text
+            
+            if (
+                organism not in common.latin_name_to_ncbi_tax_id or
+                common.latin_name_to_ncbi_tax_id[organism] != ncbi_tax_id
+            ):
+                
+                continue
+            
+            tag_uniprots = elem.find('./CrossRef/UniProt')
+            
+            if tag_uniprots is None:
+                
+                continue
+            
+            uniprots = [u.text for u in tag_uniprots.findall('AC')]
+            uniprots = set(
+                mapping.map_name0(
+                    u,
+                    'uniprot',
+                    'uniprot',
+                    ncbi_tax_id = ncbi_tax_id,
+                )
+                for u in uniprots
+            )
+            
+            if not uniprots:
+                
+                continue
+            
+            membranes = set(
+                mem
+                for tag_mem in elem.findall('Membrane')
+                for mem in tag_mem.text.split(';')
+            )
+            
+            ntm = 0
+            score = 0
+            topologies = ()
+            tag_topo = elem.find('Topology')
+            
+            if tag_topo is not None:
+                
+                ntm = int(tag_topo.find('Numtm').attrib['Count'])
+                score = int(tag_topo.find('Reliability').text)
+                
+                topologies = set(
+                    tag_reg.attrib['Loc']
+                    for tag_reg in tag_topo.findall('./Regions/Region')
+                )
+            
+            if not membranes:
+                
+                membranes = (None,)
+            
+            if not topologies:
+                
+                topologies = (None,)
+            
+            for topology, membrane, uniprot in itertools.product(
+                topologies,
+                membranes,
+                uniprots,
+            ):
+                
+                result[uniprot].add(
+                    TopdbAnnotation(
+                        membrane = membrane,
+                        topology = topology,
+                        tmregions = ntm,
+                        score = score,
+                    )
+                )
+        
+        # removing used elements to keep memory low
+        if len(used_elements) > 2000:
+            
+            for _ in xrange(1000):
+                
+                e = used_elements.pop(0)
+                e.clear()
+    
+    # closing the XML
+    c.fileobj.close()
+    del c
+    
+    return result
+
+
 def adhesome_annotations():
     
     AdhesomeAnnotation = collections.namedtuple(

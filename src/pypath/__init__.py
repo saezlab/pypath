@@ -41,7 +41,7 @@ _disclaimer_text = (
     '\tAll data accessed through this module,\n'
     '\teither as redistributed copy or downloaded using the\n'
     '\tprogrammatic interfaces included in the present module,\n'
-    '\tare free to use at least for academic research or '
+    '\tare free to use at least for academic research or\n'
     '\teducation purposes.\n'
     '\tPlease be aware of the licenses of all the datasets\n'
     '\tyou use in your analysis, and please give appropriate\n'

@@ -975,7 +975,11 @@ urls = {
             'classes?fileFormat=csv',
         'types': 'https://lomize-group-opm.herokuapp.com/'\
             'types?fileFormat=csv',
-    }
+    },
+    'topdb': {
+        'label': 'Membrane protein topology database',
+        'url': 'http://topdb.enzim.hu/?m=download&file=topdb_all.xml',
+    },
 }
 
 files = {

@@ -591,7 +591,13 @@ class FileOpener(session_mod.Logger):
             
             if self.encoding and self.type == 'plain':
                 
-                self.fileobj = open(self.fname, 'r', encoding = self.encoding)
+                self.fileobj = open(
+                    self.fname,
+                    self.default_mode,
+                    encoding = (
+                        None if self.default_mode == 'rb' else self.encoding
+                    ),
+                )
                 
             else:
                 

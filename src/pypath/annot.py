@@ -58,6 +58,7 @@ annotation_sources = {
     'Adhesome',
     'Integrins',
     'Opm',
+    'Topdb',
 }
 
 complex_annotation_sources = {
@@ -861,6 +862,27 @@ class Opm(AnnotationBase):
             input_method = 'opm_annotations',
             input_args = {
                 'organism': ncbi_tax_id,
+            }
+        )
+    
+    
+    def _process_method(self):
+        
+        self.annot = self.data
+        delattr(self, 'data')
+
+
+class Topdb(AnnotationBase):
+    
+    
+    def __init__(self, ncbi_tax_id = 9606, **kwargs):
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'TopDB',
+            input_method = 'topdb_annotations',
+            input_args = {
+                'ncbi_tax_id': ncbi_tax_id,
             }
         )
     
