@@ -980,6 +980,15 @@ urls = {
         'label': 'Membrane protein topology database',
         'url': 'http://topdb.enzim.hu/?m=download&file=topdb_all.xml',
     },
+    'hgnc': {
+        'label': 'Web download interface of HGNC (genenames.org).',
+        'groups': (
+            'https://www.genenames.org/cgi-bin/download/custom?'
+            'col=gd_app_sym&col=gd_pub_acc_ids&col=md_prot_id&'
+            'col=family.name&status=Approved&hgnc_dbtag=on&'
+            'order_by=gd_app_sym_sort&format=text&submit=submit'
+        ),
+    },
 }
 
 files = {

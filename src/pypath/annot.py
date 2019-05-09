@@ -59,6 +59,7 @@ annotation_sources = {
     'Integrins',
     'Opm',
     'Topdb',
+    'Hgnc',
 }
 
 complex_annotation_sources = {
@@ -842,6 +843,24 @@ class Adhesome(AnnotationBase):
             self,
             name = 'Adhesome',
             input_method = 'adhesome_annotations',
+        )
+    
+    
+    def _process_method(self):
+        
+        self.annot = self.data
+        delattr(self, 'data')
+
+
+class Hgnc(AnnotationBase):
+    
+    
+    def __init__(self, **kwargs):
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'HGNC',
+            input_method = 'hgnc_genegroups',
         )
     
     

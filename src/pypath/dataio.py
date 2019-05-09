@@ -10386,6 +10386,43 @@ def topdb_annotations(ncbi_tax_id = 9606):
     return result
 
 
+def hgnc_genegroups():
+    
+    HGNCGeneGroupAnnotation = collections.namedtuple(
+        'HGNCGeneGroupAnnotation',
+        ['mainclass'],
+    )
+    result = collections.defaultdict(set)
+    
+    url = urls.urls['hgnc']['groups']
+    c = curl.Curl(url, large = True, silent = False)
+    
+    _ = next(c.result)
+    
+    for rec in c.result:
+        
+        rec = rec.split('\t')
+        uniprot = rec[2]
+        
+        if not uniprot:
+            
+            continue
+        
+        groups = rec[3].split('|')
+        
+        for group in groups:
+            
+            group = group.strip()
+            
+            if group:
+                
+                result[uniprot].add(
+                    HGNCGeneGroupAnnotation(mainclass = group)
+                )
+    
+    return result
+
+
 def adhesome_annotations():
     
     AdhesomeAnnotation = collections.namedtuple(
