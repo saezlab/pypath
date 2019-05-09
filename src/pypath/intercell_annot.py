@@ -612,9 +612,26 @@ annot_combined_classes = (
                 'receptor_ramilowski',
                 'receptor_kirouac',
                 'receptor_guide2pharma',
+                'receptor_hgnc',
             ),
             op = set.union,
         ),
+    ),
+    af.AnnotDef(
+        name = 'receptor_hgnc',
+        source = af.AnnotOp(
+            annots = (
+                'interleukin_receptors_hgnc',
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'interleukin_receptors_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Interleukin receptors',
+        },
     ),
     af.AnnotDef(
         name = 'receptor_cellphonedb',
@@ -730,9 +747,46 @@ annot_combined_classes = (
                 'ligand_ramilowski',
                 'ligand_kirouac',
                 'ligand_guide2pharma',
+                'ligand_hgnc',
             ),
             op = set.union,
         ),
+    ),
+    af.AnnotDef(
+        name = 'ligand_hgnc',
+        source = af.AnnotOp(
+            annots = (
+                'interleukins_hgnc',
+                'endogenous_ligands_hgnc',
+                'chemokine_ligands_hgnc',
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'interleukins_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Interleukins',
+        },
+    ),
+    af.AnnotDef(
+        name = 'endogenous_ligands_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': {
+                'Endogenous ligands',
+                'Neurotrophins',
+                'GDNF family ligands',
+            },
+        },
+    ),
+    af.AnnotDef(
+        name = 'chemokine_ligands_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': 'Chemokine ligands',
+        },
     ),
     af.AnnotDef(
         name = 'ligand_cellphonedb',
@@ -920,15 +974,54 @@ annot_combined_classes = (
                 'adhesion_cellphonedb',
                 'adhesion_go',
                 'adhesion_matrisome',
+                'adhesion_hgnc',
+                'adhesion_integrins',
+                'adhesion_zhong2015',
             ),
             op = set.union,
-        )
+        ),
     ),
     af.AnnotDef(
         name = 'adhesion_cellphonedb',
         source = 'CellPhoneDB',
         args = {
             'adhesion': bool,
+        },
+    ),
+    af.AnnotDef(
+        name = 'adhesion_integrins',
+        source = 'Integrins',
+    ),
+    af.AnnotDef(
+        name = 'adhesion_zhong2015',
+        source = 'Zhong2015',
+    ),
+    af.AnnotDef(
+        name = 'adhesion_hgnc',
+        source = 'HGNC',
+        args = {
+            'mainclass': {
+                'Type I classical cadherins',
+                'Type II classical cadherins',
+                '7D cadherins',
+                'Desmosomal cadherins',
+                'CELSR cadherins',
+                'Clustered protocadherins',
+                'Non-clustered protocadherins',
+                'Cadherin related',
+                'Integrin beta subunits',
+                'Integrin alpha subunits',
+                'Sialic acid binding Ig like lectins',
+                'IgLON cell adhesion molecules',
+                'IgCAM CXADR-related subfamily',
+                'Nectins and nectin-like molecules',
+                'Neurexins',
+                'Neuroligins',
+                (
+                    'Carcinoemryonic antigen related '
+                    'cell adhesion molecule family'
+                ),
+            }
         },
     ),
     af.AnnotDef(

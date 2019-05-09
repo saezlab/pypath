@@ -10423,6 +10423,42 @@ def hgnc_genegroups():
     return result
 
 
+def zhong2015_annotations():
+    
+    types = {
+        'i': 'iCAM',
+        'm': 'matrix adhesion',
+        'ag': 'axonal guidance',
+        'aj': 'adherens junction',
+        'c': 'cell-cell adhesion',
+        'fa': 'focal adhesion',
+        'tj': 'tight junction',
+        'my': 'myelin interactions',
+    }
+    
+    Zhong2015Annotation = collections.namedtuple(
+        'Zhong2015Annotation',
+        ['type'],
+    )
+    result = collections.defaultdict(set)
+    
+    fname = urls.files['zhong2015']['s1']
+    
+    with open(fname, 'r') as fp:
+        
+        _ = fp.readline()
+        
+        for rec in fp:
+            
+            rec = rec.split('\t')
+            
+            uniprot = mapping.map_name0(rec[0], 'genesymbol', 'uniprot')
+            
+            result[uniprot].add(Zhong2015Annotation(type = types[rec[2]]))
+    
+    return result
+
+
 def adhesome_annotations():
     
     AdhesomeAnnotation = collections.namedtuple(

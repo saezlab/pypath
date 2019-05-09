@@ -60,6 +60,7 @@ annotation_sources = {
     'Opm',
     'Topdb',
     'Hgnc',
+    'Zhong2015',
 }
 
 complex_annotation_sources = {
@@ -861,6 +862,25 @@ class Hgnc(AnnotationBase):
             self,
             name = 'HGNC',
             input_method = 'hgnc_genegroups',
+        )
+    
+    
+    def _process_method(self):
+        
+        self.annot = self.data
+        delattr(self, 'data')
+
+
+
+class Zhong2015(AnnotationBase):
+    
+    
+    def __init__(self, **kwargs):
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'Zhong2015',
+            input_method = 'zhong2015_annotations',
         )
     
     

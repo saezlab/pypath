@@ -1016,4 +1016,7 @@ files = {
     'dbptm': {
         'old_dbptm': os.path.join(common.ROOT, 'data', 'old_dbptm.tab'),
     },
+    'zhong2015': {
+        's1': os.path.join(common.ROOT, 'data', 'zhong2015_S1.tsv'),
+    },
 }
