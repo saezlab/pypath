@@ -10454,7 +10454,11 @@ def zhong2015_annotations():
             
             uniprot = mapping.map_name0(rec[0], 'genesymbol', 'uniprot')
             
-            result[uniprot].add(Zhong2015Annotation(type = types[rec[2]]))
+            if uniprot:
+                
+                result[uniprot].add(
+                    Zhong2015Annotation(type = types[rec[2]])
+                )
     
     return result
 
