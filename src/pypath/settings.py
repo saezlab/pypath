@@ -81,6 +81,20 @@ _defaults = {
     'network_expand_complexes': True,
     'network_keep_original_names': True,
     'network_pickle_cache': True,
+    'network_extra_directions': {
+        'Wang',
+        'KEGG',
+        'STRING',
+        'ACSN',
+        'PhosphoSite',
+        'PhosphoPoint',
+        'CancerCellMap',
+        'PhosphoSite_dir',
+        'PhosphoSite_noref',
+        'PhosphoNetworks',
+        'MIMP',
+        'HPRD-phos',
+    },
 }
 
 in_datadir = {

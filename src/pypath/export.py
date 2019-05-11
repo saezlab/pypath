@@ -33,6 +33,7 @@ import itertools
 import pypath.progress as progress
 import pypath.urls as urls
 import pypath.data_formats as data_formats
+import pypath.settings as settings
 
 strip_json = re.compile(r'[\[\]{}\"]')
 simple_types = {bool, int, float, type(None)}
@@ -387,7 +388,7 @@ class Export(object):
         have no better way than try: if calling with 2 arguments fails with
         `TypeError` we call with one argument.
         """
-
+        
         try:
 
             return proc(obj, dr)
@@ -439,6 +440,7 @@ class Export(object):
         sources_omnipath = set(
             f.name for f in data_formats.omnipath.values()
         )
+        sources_extra_directions = settings.get('network_extra_directions')
         sources_kinase_extra = set(
             f.name for f in data_formats.ptm_misc.values()
         )
@@ -453,7 +455,19 @@ class Export(object):
             },
             extra_edge_attrs = {
                 'omnipath': lambda e, d: (
-                    bool(e['dirs'].sources[d] & sources_omnipath) and
+                    (
+                        bool(e['dirs'].sources[d] & sources_omnipath) or
+                        (
+                            bool(
+                                e['dirs'].sources['undirected'] &
+                                sources_omnipath
+                            ) and
+                            bool(
+                                e['dirs'].sources[d] &
+                                sources_extra_directions
+                            )
+                        )
+                    ) and
                     'PPI' in e['type']
                 ),
                 'kinaseextra': lambda e, d: (

@@ -12923,16 +12923,16 @@ class PyPath(session_mod.Logger):
         for interactions already supported by literature
         evidences from other sources.
         """
-
+        
         if use_string_effects:
             self.string_effects(graph = graph)
-
+        
         self.kegg_directions(graph=graph)
-
+        
         if use_laudanna_data:
             self.laudanna_effects(graph=graph)
             self.laudanna_directions(graph=graph)
-
+        
         self.wang_effects(graph=graph)
         self.acsn_effects(graph=graph)
         self.phosphosite_directions(graph=graph)
