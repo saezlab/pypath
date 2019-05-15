@@ -734,22 +734,41 @@ class Exocarta(AnnotationBase):
             '%sAnnotation' % self.name,
             ['pmid', 'tissue', 'vesicle'],
         )
-
+        
         _annot = collections.defaultdict(set)
-
+        
+        missing_name = False
+        
         for a in self.data:
+            
+            if not a[1]:
+                
+                missing_name = True
+                continue
 
             uniprots = mapping.map_name(a[1], 'genesymbol', 'uniprot')
 
             for u in uniprots:
-
+                
                 for vesicle in (
-                    a[3][3] if self.name == 'Vesiclepedia' else ('Exosomes',)
+                    a[3][3]
+                        if self.name == 'Vesiclepedia' else
+                    ('Exosomes',)
                 ):
-
+                    
                     _annot[u].add(record(a[3][0], a[3][2], vesicle))
 
         self.annot = dict(_annot)
+        
+        if missing_name:
+            
+            self._log(
+                'One or more names were missing while processing '
+                'annotations from %s. Best if you check your cache '
+                'file and re-download the data if it\' corrupted.' % (
+                    self.name
+                )
+            )
 
 
 class Vesiclepedia(Exocarta):

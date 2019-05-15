@@ -8812,6 +8812,7 @@ def get_dip(url = None,
             core_only = True,
             direct_only = True,
             small_scale_only = True):
+    
     strDipCore = 'dip-quality-status:core'
     strDirect = 'direct interaction'
     strPhysInt = 'physical interaction'
