@@ -57,6 +57,10 @@ class pypath(object):
         '\t`pypath.data_formats.urls`.\n\n'
     )
     
+    def __init__(self):
+        
+        pass
+    
     @classmethod
     def _disclaimer(cls):
         
@@ -81,7 +85,7 @@ class pypath(object):
             return object.__getattribute__(self, attr)
 
 
-sys.modules['pypath'] = pypath()
+#sys.modules['pypath'] = pypath()
 
 
 # from now on we print this at import
@@ -115,3 +119,12 @@ def __getattr__(attr):
     except ImportError:
         
         return __import__(__name__).__getattribute__(attr)
+
+
+def __dir__():
+    
+    return object.__dir__(__import__(__name__)) + [
+        py[:-3]
+        for py in os.listdir(os.path.abspath(os.path.dirname(__file__)))
+        if py.endswith('.py')
+    ]
