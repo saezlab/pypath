@@ -454,3 +454,20 @@ class TestDataio(object):
         example = ('PRKACA', 'MAPK1', '+', 'Binding', '10592173')
         
         assert example in a
+    
+    
+    def test_hippie_interactions(self):
+        
+        h = dataio.test_hippie_interactions()
+        
+        example = (
+            'P11233',
+            'P0DP24',
+            0.87,
+            None,
+            ('12034722', '15817490', '9188503'),
+            None,
+            None,
+        )
+        
+        assert example in h

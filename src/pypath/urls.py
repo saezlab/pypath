@@ -989,6 +989,15 @@ urls = {
             'order_by=gd_app_sym_sort&format=text&submit=submit'
         ),
     },
+    'hippie': {
+        'label': (
+            'HIPPIE: human integrated protein-protein interaction resource'
+        ),
+        'url': (
+            'http://cbdm-01.zdv.uni-mainz.de/~mschaefer/'
+            'hippie/hippie_current.txt'
+        ),
+    },
 }
 
 files = {

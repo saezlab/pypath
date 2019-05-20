@@ -999,6 +999,13 @@ annot_combined_classes = (
             'transmembrane': True,
         },
     ),
+    af.AnnotDef(
+        name = 'transmembrane_topdb',
+        source = 'TopDB',
+        args = {
+            'topology': 'Membrane',
+        },
+    ),
     # adhesion
     af.AnnotDef(
         name = 'adhesion',
