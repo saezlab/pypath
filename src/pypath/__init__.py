@@ -26,46 +26,67 @@ data from various resources.
 
 import sys
 import os
+import importlib
 
 import pypath._version as _version_mod
 import pypath.session_mod as _session_mod
 
-__version__ = _version.__version__
-__author__ = _version.__author__
 
-_session_mod.new_session()
-session = _session_mod.get_session()
-
-_disclaimer_text = (
-    '\n\t=== d i s c l a i m e r ===\n\n'
-    '\tAll data accessed through this module,\n'
-    '\teither as redistributed copy or downloaded using the\n'
-    '\tprogrammatic interfaces included in the present module,\n'
-    '\tare free to use at least for academic research or\n'
-    '\teducation purposes.\n'
-    '\tPlease be aware of the licenses of all the datasets\n'
-    '\tyou use in your analysis, and please give appropriate\n'
-    '\tcredits for the original sources when you publish your\n'
-    '\tresults. To find out more about data sources please\n'
-    '\tlook at `pypath.descriptions` or\n'
-    '\thttp://omnipathdb.org/info and \n'
-    '\t`pypath.data_formats.urls`.\n\n'
-)
-
-
-def _disclaimer():
+class pypath(object):
     
-    sys.stdout.write(_disclaimer_text)
-    sys.stdout.flush()
-
-
-def license():
     
-    _disclaimer()
+    __version__ = _version.__version__
+    __author__ = _version.__author__
+    
+    _session_mod.new_session()
+    session = _session_mod.get_session()
+    
+    _disclaimer_text = (
+        '\n\t=== d i s c l a i m e r ===\n\n'
+        '\tAll data accessed through this module,\n'
+        '\teither as redistributed copy or downloaded using the\n'
+        '\tprogrammatic interfaces included in the present module,\n'
+        '\tare free to use at least for academic research or\n'
+        '\teducation purposes.\n'
+        '\tPlease be aware of the licenses of all the datasets\n'
+        '\tyou use in your analysis, and please give appropriate\n'
+        '\tcredits for the original sources when you publish your\n'
+        '\tresults. To find out more about data sources please\n'
+        '\tlook at `pypath.descriptions` or\n'
+        '\thttp://omnipathdb.org/info and \n'
+        '\t`pypath.data_formats.urls`.\n\n'
+    )
+    
+    @classmethod
+    def _disclaimer(cls):
+        
+        sys.stdout.write(cls._disclaimer_text)
+        sys.stdout.flush()
+    
+    
+    @classmethod
+    def license(cls):
+        
+        cls_disclaimer()
+    
+    
+    def __getattribute__(self, attr):
+        
+        try:
+            
+            return importlib.import_module('pypath.%s' % attr)
+            
+        except ImportError:
+            
+            return object.__getattribute__(self, attr)
+
+
+sys.modules['pypath'] = pypath()
+
 
 # from now on we print this at import
 # not at creation of PyPath object:
-_disclaimer()
+pypath._disclaimer()
 _session_mod.get_log().msg(
     (
         '\n'
@@ -76,10 +97,21 @@ _session_mod.get_log().msg(
             session_mod.get_session().label,
             os.getcwd(),
             session_mod.get_log().fname,
-            __version__
+            pypath.__version__
         )
     ),
     label = 'pypath',
     level = -9,
     wrap = False,
 )
+
+
+def __getattr__(attr):
+    
+    try:
+        
+        return importlib.import_module('pypath.%s' % attr)
+        
+    except ImportError:
+        
+        return __import__(__name__).__getattribute__(attr)
