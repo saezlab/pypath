@@ -67,7 +67,8 @@ go_combined_classes = {
         """,
     'transmembrane':
         """
-        plasma membrane
+        integral to membrane OR
+        transmembrane signaling receptor activity
         """,
     'ecm':
         """
@@ -601,6 +602,7 @@ go_single_terms = {
 Higher level classes of intercellular communication roles.
 """
 annot_combined_classes = (
+    # receptor
     af.AnnotDef(
         name = 'receptor',
         source = af.AnnotOp(
@@ -683,6 +685,7 @@ annot_combined_classes = (
             'mainclass': 'receptor',
         },
     ),
+    # ECM
     af.AnnotDef(
         name = 'ecm',
         source = af.AnnotOp(
@@ -737,6 +740,7 @@ annot_combined_classes = (
             'mainclass': 'ecm structure',
         },
     ),
+    # ligand
     af.AnnotDef(
         name = 'ligand',
         source = af.AnnotOp(
@@ -830,6 +834,7 @@ annot_combined_classes = (
             'mainclass': 'ligand',
         },
     ),
+    # extracellular
     af.AnnotDef(
         name = 'extracellular',
         source = af.AnnotOp(
@@ -844,13 +849,6 @@ annot_combined_classes = (
             ),
             op = set.union,
         ),
-    ),
-    af.AnnotDef(
-        name = 'transmembrane',
-        source = 'GO_Intercell',
-        args = {
-            'mainclass': 'transmembrane',
-        },
     ),
     af.AnnotDef(
         name = 'extracellular_locate',
@@ -909,6 +907,15 @@ annot_combined_classes = (
         source = 'HPMR',
     ),
     af.AnnotDef(
+        name = 'extracellular_membranome',
+        source = 'Membranome',
+        args = {
+            'membrane': 'Plasma membrane',
+            'side': 'extracellular side',
+        },
+    ),
+    # cell surface
+    af.AnnotDef(
         name = 'cell_surface',
         source = af.AnnotOp(
             annots = (
@@ -959,14 +966,32 @@ annot_combined_classes = (
             'side': 'extracellular side',
         },
     ),
+    # transmembrane
     af.AnnotDef(
-        name = 'extracellular_membranome',
-        source = 'Membranome',
+        name = 'transmembrane',
+        source = af.AnnotOp(
+            annots = (
+                'transmembrane_cellphonedb',
+                'transmembrane_go',
+            ),
+            op = set.union,
+        ),
+    ),
+    af.AnnotDef(
+        name = 'transmembrane_go',
+        source = 'GO_Intercell',
         args = {
-            'membrane': 'Plasma membrane',
-            'side': 'extracellular side',
+            'mainclass': 'transmembrane',
         },
     ),
+    af.AnnotDef(
+        name = 'transmembrane_cellphonedb',
+        source = 'CellPhoneDB',
+        args = {
+            'transmembrane': True,
+        },
+    ),
+    # adhesion
     af.AnnotDef(
         name = 'adhesion',
         source = af.AnnotOp(
@@ -1048,6 +1073,7 @@ annot_combined_classes = (
             op = set.intersection,
         ),
     ),
+    # surface enzyme
     af.AnnotDef(
         name = 'surface_enzyme',
         source = af.AnnotOp(
@@ -1088,6 +1114,7 @@ annot_combined_classes = (
             'mainclass': 'Enzymes',
         },
     ),
+    # surface ligand
     af.AnnotDef(
         name = 'surface_ligand',
         source = af.AnnotOp(
@@ -1098,6 +1125,7 @@ annot_combined_classes = (
             op = set.intersection,
         ),
     ),
+    # transporter
     af.AnnotDef(
         name = 'transporter',
         source = af.AnnotOp(
@@ -1122,6 +1150,7 @@ annot_combined_classes = (
             'mainclass': {'transport', 'ion channels'},
         },
     ),
+    # extracellular enzyme
     af.AnnotDef(
         name = 'extracellular_enzyme',
         source = af.AnnotOp(
@@ -1150,6 +1179,7 @@ annot_combined_classes = (
             op = set.union,
         ),
     ),
+    # extracellular peptidase
     af.AnnotDef(
         name = 'extracellular_peptidase',
         source = af.AnnotOp(
@@ -1166,6 +1196,7 @@ annot_combined_classes = (
             op = set.intersection,
         ),
     ),
+    # growth factor binder or regulator
     af.AnnotDef(
         name = 'growth_factor_binder',
         source = 'GO_Intercell',
@@ -1196,6 +1227,7 @@ annot_combined_classes = (
             op = set.intersection,
         ),
     ),
+    # secreted
     af.AnnotDef(
         name = 'secreted',
         source = af.AnnotOp(
@@ -1219,6 +1251,7 @@ annot_combined_classes = (
             op = set.union,
         ),
     ),
+    # junctions
     af.AnnotDef(
         name = 'gap_junction',
         source = 'GO_Intercell',
