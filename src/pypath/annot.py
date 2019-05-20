@@ -495,8 +495,10 @@ class AnnotationBase(resource.AbstractResource):
             value_combinations = sorted(
                 values
                 for values in value_combinations
-                if not any(v is None for v in values) and
-                not any(isinstance(v, float) for v in values)
+                if not any(
+                    isinstance(v, (type(None), float, int))
+                    for v in values
+                )
             )
             
             for values in value_combinations:
@@ -1628,15 +1630,15 @@ class AnnotationTable(session_mod.Logger):
 
 
     def to_dataframe(self):
-
+        
         colnames = ['__'.join(name) for name in self.names]
-
+        
         df = pd.DataFrame(
             data = self.data,
             index = self.uniprots,
             columns = colnames,
         )
-
+        
         return df
 
 
