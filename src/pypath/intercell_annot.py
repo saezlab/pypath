@@ -973,6 +973,7 @@ annot_combined_classes = (
             annots = (
                 'transmembrane_cellphonedb',
                 'transmembrane_go',
+                'transmembrane_opm',
             ),
             op = set.union,
         ),
@@ -991,6 +992,13 @@ annot_combined_classes = (
             'transmembrane': True,
         },
     ),
+    af.AnnotDef(
+        name = 'transmembrane_opm',
+        source = 'OPM',
+        args = {
+            'transmembrane': True,
+        },
+    ),
     # adhesion
     af.AnnotDef(
         name = 'adhesion',
@@ -1002,6 +1010,7 @@ annot_combined_classes = (
                 'adhesion_hgnc',
                 'adhesion_integrins',
                 'adhesion_zhong2015',
+                'adhesion_adhesome',
             ),
             op = set.union,
         ),
@@ -1072,6 +1081,10 @@ annot_combined_classes = (
             ),
             op = set.intersection,
         ),
+    ),
+    af.AnnotDef(
+        name = 'adhesion_adhesome',
+        source = 'Adhesome',
     ),
     # surface enzyme
     af.AnnotDef(
