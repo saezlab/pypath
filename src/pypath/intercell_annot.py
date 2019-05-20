@@ -1293,6 +1293,7 @@ class_types = {
         'cell_surface',
         'extracellular',
         'secreted',
+        'transmembrane',
     },
     'main': {
         'adhesion',

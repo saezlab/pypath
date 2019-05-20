@@ -18,3 +18,63 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+import pypath.session_mod as session_mod
+import pypath.main as main_mod
+import pypath.network as network_mod
+import pypath.data_formats as data_formats
+import pypath.annot as annot
+
+
+class CellphoneDB(session_mod.Logger):
+    
+    def __init__(
+            self,
+            network = None,
+            annotations = None,
+            network_param = None,
+            omnipath = False,
+        ):
+        
+        session_mod.Logger.__init__(self, name = 'cellphonedb')
+        
+        self.network = network
+        self.annotations = annotations
+        self.network_param = network_param or {}
+        self.omnipath = omnipath
+    
+    
+    def reload(self):
+        
+        modname = self.__class__.__module__
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
+        import imp
+        imp.reload(mod)
+        new = getattr(mod, self.__class__.__name__)
+        setattr(self, '__class__', new)
+    
+    
+    def main(self):
+        
+        self.setup_network()
+        self.setup_annot()
+        self.setup_complex()
+    
+    
+    def setup_network(self):
+        
+        if self.network is None:
+            
+            if not self.omnipath and 'lst' not in self.network_param:
+                
+                self.network_param['lst'] = data_formats.pathway
+            
+            self.network = main_mod.PyPath()
+            self.network.init_network(**self.network_param)
+        
+        if isinstance(self.network, main_mod.PyPath):
+            
+            self.network = network_mod.Network(records = self.network)
+            
+        if isinstance(self.network, network_mod.Network):
+            
+            pass
