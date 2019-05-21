@@ -10017,7 +10017,7 @@ def get_proteinatlas(normal = True, pathology = True, cancer = True):
 
     def line(l):
 
-        return l.split('\t')
+        return l.strip('\n\r').split('\t')
 
     if normal:
 
@@ -10030,14 +10030,14 @@ def get_proteinatlas(normal = True, pathology = True, cancer = True):
 
             l = line(l)
 
-            uniprots = mapping.map_name(l[0], 'ensembl', 'uniprot')
+            uniprots = mapping.map_name(l[1], 'genesymbol', 'uniprot')
             tissue = '%s:%s' % (l[2], l[3])
 
             for u in uniprots:
                 result['normal'][tissue][u] = (l[4], l[5].strip())
 
     if cancer or pathology:
-
+        
         c = curl.Curl(urls.urls['proteinatlas']['pathology'],
                     silent = False, large = True)
         fp = list(c.result.values())[0]
@@ -10046,7 +10046,7 @@ def get_proteinatlas(normal = True, pathology = True, cancer = True):
         for l in fp:
 
             l = line(l)
-            uniprots = mapping.map_name(l[0], 'ensembl', 'uniprot')
+            uniprots = mapping.map_name(l[1], 'genesymbol', 'uniprot')
             tissue   = l[2]
 
             values = dict(
