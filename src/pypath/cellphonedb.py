@@ -18,12 +18,103 @@
 #  Website: http://pypath.omnipathdb.org/
 #
 
+from future.utils import iteritems
+
+import imp
+import collections
+
 import pypath.session_mod as session_mod
 import pypath.main as main_mod
 import pypath.network as network_mod
 import pypath.data_formats as data_formats
 import pypath.annot as annot
 import pypath.intercell as intercell
+
+
+CellPhoneDBGene = collections.namedtuple(
+    'CellPhoneDBGene',
+    [
+        'gene_name',
+        'uniprot',
+        'hgnc_symbol',
+        'ensembl',
+    ],
+)
+
+
+CellPhoneDBProtein = collections.namedtuple(
+    'CellPhoneDBProtein',
+    [
+        'uniprot',
+        'adhesion',
+        'cytoplasm',
+        'entry_name',
+        'extracellular',
+        'integrin_interaction',
+        'other',
+        'other_desc',
+        'pdb_id',
+        'pdb_structure',
+        'peripheral',
+        'receptor',
+        'receptor_desc',
+        'secreted_desc',
+        'secreted_highlight',
+        'secretion',
+        'stoichiometry',
+        'tags_description',
+        'transmembrane',
+        'transporter',
+        'tags',
+        'tags_reason',
+    ],
+)
+
+
+CellPhoneDBInteraction = collections.namedtuple(
+    'CellPhoneDBInteraction',
+    [
+        'comments_interaction',
+        'dlrp',
+        'family',
+        'iuphar',
+        'multidata_name_1',
+        'multidata_name_2',
+        'score_1',
+        'score_2',
+        'source',
+    ],
+)
+
+
+CellPhoneDBComplex = collections.namedtuple(
+    'CellPhoneDBComplex',
+    [
+        'name',
+        'uniprot_1',
+        'uniprot_2',
+        'uniprot_3',
+        'uniprot_4',
+        'adhesion',
+        'cytoplasm',
+        'extracellular',
+        'integrin_interaction',
+        'other',
+        'other_desc',
+        'peripheral',
+        'receptor',
+        'receptor_desc',
+        'secreted_desc',
+        'secreted_highlight',
+        'secretion',
+        'transmembrane',
+        'transporter',
+        'pdb_structure',
+        'pdb_id',
+        'stoichiometry',
+        'comments_complex',
+    ],
+)
 
 
 class CellphoneDB(session_mod.Logger):
