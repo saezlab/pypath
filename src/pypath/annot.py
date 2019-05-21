@@ -62,6 +62,7 @@ annotation_sources = {
     'Hgnc',
     'Zhong2015',
     'HumanProteinAtlas',
+    'Comppi',
 }
 
 complex_annotation_sources = {
@@ -978,6 +979,24 @@ class HumanProteinAtlas(AnnotationBase):
             self,
             name = 'HPA',
             input_method = 'proteinatlas_annotations',
+        )
+        
+        
+    def _process_method(self):
+        
+        self.annot = self.data
+        delattr(self, 'data')
+
+
+class Comppi(AnnotationBase):
+    
+    
+    def __init__(self, **kwargs):
+        
+        AnnotationBase.__init__(
+            self,
+            name = 'ComPPI',
+            input_method = 'comppi_locations',
         )
         
         
