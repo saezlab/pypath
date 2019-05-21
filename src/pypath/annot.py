@@ -96,8 +96,10 @@ class CustomAnnotation(session_mod.Logger):
             self,
             class_definitions = None,
         ):
-
-        session_mod.Logger.__init__(self, name = 'annot')
+        
+        if not hasattr(self, '_log_name'):
+            
+            session_mod.Logger.__init__(self, name = 'annot')
 
         self.annotdb = get_db()
 

@@ -23,6 +23,7 @@ import pypath.main as main_mod
 import pypath.network as network_mod
 import pypath.data_formats as data_formats
 import pypath.annot as annot
+import pypath.intercell as intercell
 
 
 class CellphoneDB(session_mod.Logger):
@@ -30,16 +31,18 @@ class CellphoneDB(session_mod.Logger):
     def __init__(
             self,
             network = None,
-            annotations = None,
+            annotation = None,
             network_param = None,
+            annot_param = None,
             omnipath = False,
         ):
         
         session_mod.Logger.__init__(self, name = 'cellphonedb')
         
         self.network = network
-        self.annotations = annotations
+        self.annotation = annotation
         self.network_param = network_param or {}
+        self.annot_param = annot_param or {}
         self.omnipath = omnipath
     
     
@@ -56,7 +59,7 @@ class CellphoneDB(session_mod.Logger):
     def main(self):
         
         self.setup_network()
-        self.setup_annot()
+        self.setup_annotation()
         self.setup_complex()
     
     
@@ -78,3 +81,12 @@ class CellphoneDB(session_mod.Logger):
         if isinstance(self.network, network_mod.Network):
             
             pass
+    
+    
+    def setup_annotation(self):
+        
+        if self.annotation is None:
+            
+            self.annotation = intercell.IntercellAnnotation(
+                **self.annot_param
+            )
